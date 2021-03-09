@@ -1,0 +1,433 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+ ~ Copyright (c) 2021, WSO2 Inc. (http://www.wso2.com). All Rights Reserved.
+ ~
+ ~ This software is the property of WSO2 Inc. and its suppliers, if any.
+ ~ Dissemination of any information or reproduction of any material contained
+ ~ herein is strictly forbidden, unless permitted by WSO2 in accordance with
+ ~ the WSO2 Commercial License available at http://wso2.com/licenses.
+ ~ For specific language governing the permissions and limitations under this
+ ~ license, please see the license as well as any agreement you’ve entered into
+ ~ with WSO2 governing the purchase of this software and any associated services.
+-->
+
+<project xmlns="http://maven.apache.org/POM/4.0.0"
+         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+    <modelVersion>4.0.0</modelVersion>
+
+    <groupId>com.wso2.openbanking</groupId>
+    <artifactId>open-banking-toolkit-cds</artifactId>
+    <packaging>pom</packaging>
+    <version>3.0.0-M2-SNAPSHOT</version>
+    <parent>
+        <groupId>org.wso2</groupId>
+        <artifactId>wso2</artifactId>
+        <version>5</version>
+    </parent>
+
+    <name>WSO2 Open Banking - Parent</name>
+    <description>WSO2 Open Banking CDS Toolkit</description>
+
+    <modules>
+        <module>components/dynamic-client-registration</module>
+    </modules>
+
+    <repositories>
+<!--        <repository>-->
+<!--            <id>wso2-nexus</id>-->
+<!--            <name>WSO2 internal Repository</name>-->
+<!--            <url>http://maven.wso2.org/nexus/content/groups/wso2-public/</url>-->
+<!--            <releases>-->
+<!--                <enabled>true</enabled>-->
+<!--                <updatePolicy>daily</updatePolicy>-->
+<!--                <checksumPolicy>ignore</checksumPolicy>-->
+<!--            </releases>-->
+<!--        </repository>-->
+<!--        <repository>-->
+<!--            <id>wso2.releases</id>-->
+<!--            <name>WSO2 internal Repository</name>-->
+<!--            <url>http://maven.wso2.org/nexus/content/repositories/releases/</url>-->
+<!--            <releases>-->
+<!--                <enabled>true</enabled>-->
+<!--                <updatePolicy>daily</updatePolicy>-->
+<!--                <checksumPolicy>ignore</checksumPolicy>-->
+<!--            </releases>-->
+<!--        </repository>-->
+        <repository>
+            <id>wso2.snapshots</id>
+            <name>Apache Snapshot Repository</name>
+            <url>http://maven.wso2.org/nexus/content/repositories/snapshots/</url>
+            <snapshots>
+                <enabled>true</enabled>
+                <updatePolicy>daily</updatePolicy>
+            </snapshots>
+            <releases>
+                <enabled>false</enabled>
+            </releases>
+        </repository>
+    </repositories>
+
+    <pluginRepositories>
+        <pluginRepository>
+            <id>wso2-maven2-repository-1</id>
+            <url>http://dist.wso2.org/maven2</url>
+        </pluginRepository>
+        <pluginRepository>
+            <id>wso2-maven2-repository-2</id>
+            <url>http://dist.wso2.org/snapshots/maven2</url>
+        </pluginRepository>
+        <pluginRepository>
+            <id>repository.dev.java.net-maven2</id>
+            <name>Java.net Repository for Maven</name>
+            <url>http://download.java.net/maven/2/</url>
+            <layout>default</layout>
+        </pluginRepository>
+    </pluginRepositories>
+
+    <!-- ask about the scm repository-->
+
+<!--    <scm>-->
+<!--        <url>https://github.com/wso2/financial-open-banking.git</url>-->
+<!--        <developerConnection>scm:git:https://github.com/wso2/financial-open-banking.git</developerConnection>-->
+<!--        <connection>scm:git:https://github.com/wso2/financial-open-banking.git</connection>-->
+<!--        <tag>HEAD</tag>-->
+<!--    </scm>-->
+
+    <build>
+        <pluginManagement>
+            <plugins>
+                <plugin><!-- Overridden from parent pom to exclude generated sources -->
+                    <groupId>org.codehaus.mojo</groupId>
+                    <artifactId>findbugs-maven-plugin</artifactId>
+                    <version>${maven.findbugsplugin.version}</version>
+                    <configuration>
+                        <effort>Max</effort>
+                        <threshold>Low</threshold>
+                        <xmlOutput>true</xmlOutput>
+                        <findbugsXmlOutputDirectory>${project.build.directory}/findbugs
+                        </findbugsXmlOutputDirectory>
+                        <!--<excludeFilterFile>findbugs_exclude.xml</excludeFilterFile>-->
+                        <!--Exclude generated sources-->
+                    </configuration>
+                    <executions>
+                        <execution>
+                            <id>analyze-compile</id>
+                            <phase>compile</phase>
+                            <goals>
+                                <goal>check</goal>
+                            </goals>
+                        </execution>
+                    </executions>
+                </plugin>
+                <plugin>
+                    <groupId>org.apache.maven.plugins</groupId>
+                    <artifactId>maven-compiler-plugin</artifactId>
+                    <version>${maven.compiler.plugin.version}</version>
+                    <inherited>true</inherited>
+                    <configuration>
+                        <encoding>UTF-8</encoding>
+                        <source>${wso2.maven.compiler.source}</source>
+                        <target>${wso2.maven.compiler.target}</target>
+                    </configuration>
+                </plugin>
+                <plugin>
+                    <groupId>org.apache.felix</groupId>
+                    <artifactId>maven-bundle-plugin</artifactId>
+                    <version>${maven.bundle.plugin.version}</version>
+                    <extensions>true</extensions>
+                    <configuration>
+                        <obrRepository>NONE</obrRepository>
+                        <instructions>
+                            <SCM-Revision>${buildNumber}</SCM-Revision>
+                        </instructions>
+                    </configuration>
+                </plugin>
+                <plugin>
+                    <groupId>org.apache.maven.plugins</groupId>
+                    <artifactId>maven-surefire-plugin</artifactId>
+                    <version>${maven.surefire.plugin.version}</version>
+                </plugin>
+<!--                <plugin>-->
+<!--                    <groupId>org.jacoco</groupId>-->
+<!--                    <artifactId>jacoco-maven-plugin</artifactId>-->
+<!--                    <version>${jacoco.version}</version>-->
+<!--                </plugin>-->
+            </plugins>
+        </pluginManagement>
+    </build>
+
+    <dependencyManagement>
+        <dependencies>
+            <!--Open banking components-->
+<!--            <dependency>-->
+<!--                <groupId>com.wso2.finance</groupId>-->
+<!--                <artifactId>com.wso2.finance.openbanking.accelerator.common</artifactId>-->
+<!--                <version>${project.version}</version>-->
+<!--            </dependency>-->
+<!--            <dependency>-->
+<!--                <groupId>com.wso2.finance</groupId>-->
+<!--                <artifactId>com.wso2.finance.openbanking.accelerator.gateway</artifactId>-->
+<!--                <version>${project.version}</version>-->
+<!--            </dependency>-->
+<!--            <dependency>-->
+<!--                <groupId>com.wso2.finance</groupId>-->
+<!--                <artifactId>com.wso2.finance.openbanking.accelerator.identity</artifactId>-->
+<!--                <version>${project.version}</version>-->
+<!--            </dependency>-->
+
+<!--            &lt;!&ndash;Dependencies for IAM &ndash;&gt;-->
+<!--            <dependency>-->
+<!--                <groupId>org.wso2.carbon.identity.inbound.auth.oauth2</groupId>-->
+<!--                <artifactId>org.wso2.carbon.identity.oauth.dcr</artifactId>-->
+<!--                <version>${identity.inbound.auth.oauth.version}</version>-->
+<!--            </dependency>-->
+<!--            <dependency>-->
+<!--                <groupId>org.wso2.carbon.identity.inbound.auth.oauth2</groupId>-->
+<!--                <artifactId>org.wso2.carbon.identity.oauth</artifactId>-->
+<!--                <version>${identity.inbound.auth.oauth.version}</version>-->
+<!--            </dependency>-->
+<!--            <dependency>-->
+<!--                <groupId>org.wso2.carbon.identity.framework</groupId>-->
+<!--                <artifactId>org.wso2.carbon.identity.application.mgt</artifactId>-->
+<!--                <version>${carbon.identity.framework.version}</version>-->
+<!--            </dependency>-->
+<!--            <dependency>-->
+<!--                <groupId>org.wso2.carbon.identity.framework</groupId>-->
+<!--                <artifactId>org.wso2.carbon.identity.application.common</artifactId>-->
+<!--                <version>${carbon.identity.framework.version}</version>-->
+<!--            </dependency>-->
+
+<!--            <dependency>-->
+<!--                <groupId>org.apache.tomcat</groupId>-->
+<!--                <artifactId>tomcat-catalina</artifactId>-->
+<!--                <version>${tomcat.catalina.version}</version>-->
+<!--            </dependency>-->
+<!--            <dependency>-->
+<!--                <groupId>org.wso2.carbon</groupId>-->
+<!--                <artifactId>org.wso2.carbon.logging</artifactId>-->
+<!--                <version>${carbon.kernel.ob.version}</version>-->
+<!--            </dependency>-->
+<!--            <dependency>-->
+<!--                <groupId>org.wso2.carbon</groupId>-->
+<!--                <artifactId>org.wso2.carbon.core</artifactId>-->
+<!--                <version>${carbon.kernel.version}</version>-->
+<!--            </dependency>-->
+<!--            <dependency>-->
+<!--                <groupId>org.apache.ws.commons.axiom.wso2</groupId>-->
+<!--                <artifactId>axiom</artifactId>-->
+<!--                <version>${axiom.wso2.version}</version>-->
+<!--            </dependency>-->
+<!--            <dependency>-->
+<!--                <groupId>commons-logging</groupId>-->
+<!--                <artifactId>commons-logging</artifactId>-->
+<!--                <version>${commons.logging.version}</version>-->
+<!--            </dependency>-->
+<!--            <dependency>-->
+<!--                <groupId>commons-lang</groupId>-->
+<!--                <artifactId>commons-lang</artifactId>-->
+<!--                <version>${commons-lang.version}</version>-->
+<!--            </dependency>-->
+<!--            <dependency>-->
+<!--                <groupId>commons-dbcp</groupId>-->
+<!--                <artifactId>commons-dbcp</artifactId>-->
+<!--                <version>${commons-dbcp.version}</version>-->
+<!--            </dependency>-->
+<!--            <dependency>-->
+<!--                <groupId>org.wso2.securevault</groupId>-->
+<!--                <artifactId>org.wso2.securevault</artifactId>-->
+<!--                <version>${org.wso2.securevault.version}</version>-->
+<!--            </dependency>-->
+<!--            <dependency>-->
+<!--                <groupId>org.wso2.eclipse.osgi</groupId>-->
+<!--                <artifactId>org.eclipse.osgi.services</artifactId>-->
+<!--                <version>${org.osgi.eclipse.version}</version>-->
+<!--            </dependency>-->
+<!--            <dependency>-->
+<!--                <groupId>org.eclipse.osgi</groupId>-->
+<!--                <artifactId>org.eclipse.osgi</artifactId>-->
+<!--                <version>${org.osgi.bundle.version}</version>-->
+<!--            </dependency>-->
+<!--            <dependency>-->
+<!--                <groupId>org.apache.synapse</groupId>-->
+<!--                <artifactId>synapse-core</artifactId>-->
+<!--                <version>${apache.synapse.version}</version>-->
+<!--            </dependency>-->
+<!--            <dependency>-->
+<!--                <groupId>commons-beanutils</groupId>-->
+<!--                <artifactId>commons-beanutils</artifactId>-->
+<!--                <version>${commons.bean.utils.version}</version>-->
+<!--            </dependency>-->
+<!--            <dependency>-->
+<!--                <groupId>org.hibernate</groupId>-->
+<!--                <artifactId>hibernate-validator</artifactId>-->
+<!--                <version>${hibernate-validator}</version>-->
+<!--            </dependency>-->
+<!--            <dependency>-->
+<!--                <groupId>io.swagger</groupId>-->
+<!--                <artifactId>swagger-jaxrs</artifactId>-->
+<!--                <version>${swagger-jaxrs.version}</version>-->
+<!--            </dependency>-->
+<!--            <dependency>-->
+<!--                <groupId>javax.ws.rs</groupId>-->
+<!--                <artifactId>javax.ws.rs-api</artifactId>-->
+<!--                <version>${javax.ws.rs-api.version}</version>-->
+<!--            </dependency>-->
+<!--            <dependency>-->
+<!--                <groupId>org.eclipse.equinox</groupId>-->
+<!--                <artifactId>javax.servlet</artifactId>-->
+<!--                <version>${equinox.javax.servlet.version}</version>-->
+<!--            </dependency>-->
+<!--            &lt;!&ndash; Dependencies for testing &ndash;&gt;-->
+<!--            <dependency>-->
+<!--                <groupId>org.jacoco</groupId>-->
+<!--                <artifactId>org.jacoco.agent</artifactId>-->
+<!--                <classifier>runtime</classifier>-->
+<!--                <version>${jacoco.version}</version>-->
+<!--            </dependency>-->
+<!--            <dependency>-->
+<!--                <groupId>org.testng</groupId>-->
+<!--                <artifactId>testng</artifactId>-->
+<!--                <version>${org.testng.version}</version>-->
+<!--                <scope>test</scope>-->
+<!--            </dependency>-->
+<!--            <dependency>-->
+<!--                <groupId>org.mockito</groupId>-->
+<!--                <artifactId>mockito-all</artifactId>-->
+<!--                <version>${mockito.version}</version>-->
+<!--                <scope>test</scope>-->
+<!--            </dependency>-->
+<!--            <dependency>-->
+<!--                <groupId>com.h2database</groupId>-->
+<!--                <artifactId>h2</artifactId>-->
+<!--                <version>${h2database.version}</version>-->
+<!--            </dependency>-->
+<!--            <dependency>-->
+<!--                <groupId>org.powermock</groupId>-->
+<!--                <artifactId>powermock-module-testng</artifactId>-->
+<!--                <version>${powermock.version}</version>-->
+<!--                <scope>test</scope>-->
+<!--            </dependency>-->
+<!--            <dependency>-->
+<!--                <groupId>org.powermock</groupId>-->
+<!--                <artifactId>powermock-api-mockito</artifactId>-->
+<!--                <version>${powermock.version}</version>-->
+<!--                <scope>test</scope>-->
+<!--            </dependency>-->
+<!--            <dependency>-->
+<!--                <groupId>org.springframework</groupId>-->
+<!--                <artifactId>spring-test</artifactId>-->
+<!--                <version>${spring-web-test.version}</version>-->
+<!--                <scope>test</scope>-->
+<!--            </dependency>-->
+<!--            <dependency>-->
+<!--                <groupId>org.springframework</groupId>-->
+<!--                <artifactId>spring-core</artifactId>-->
+<!--                <version>${spring-web.version}</version>-->
+<!--                <scope>test</scope>-->
+<!--            </dependency>-->
+<!--            <dependency>-->
+<!--                <groupId>org.apache.logging.log4j</groupId>-->
+<!--                <artifactId>log4j-core</artifactId>-->
+<!--                <version>${org.apache.logging.log4j}</version>-->
+<!--            </dependency>-->
+<!--            <dependency>-->
+<!--                <groupId>org.apache.cxf</groupId>-->
+<!--                <artifactId>cxf-bundle-jaxrs</artifactId>-->
+<!--                <version>${cxf-bundle-package.version}</version>-->
+<!--            </dependency>-->
+<!--            <dependency>-->
+<!--                <groupId>com.fasterxml.jackson.core</groupId>-->
+<!--                <artifactId>jackson-databind</artifactId>-->
+<!--                <version>${jackson.databinding.version}</version>-->
+<!--            </dependency>-->
+<!--            <dependency>-->
+<!--                <groupId>io.swagger</groupId>-->
+<!--                <artifactId>swagger-annotations</artifactId>-->
+<!--                <version>${swagger-annotations.version}</version>-->
+<!--            </dependency>-->
+<!--            <dependency>-->
+<!--                <groupId>javax.ws.rs</groupId>-->
+<!--                <artifactId>jsr311-api</artifactId>-->
+<!--                <version>${javax.ws.rs.version}</version>-->
+<!--            </dependency>-->
+<!--            <dependency>-->
+<!--                <groupId>javax.validation</groupId>-->
+<!--                <artifactId>validation-api</artifactId>-->
+<!--                <version>${javax.validation.api.version}</version>-->
+<!--            </dependency>-->
+<!--            <dependency>-->
+<!--                <groupId>org.hibernate</groupId>-->
+<!--                <artifactId>hibernate-validator</artifactId>-->
+<!--                <version>${hibernate-validator}</version>-->
+<!--            </dependency>-->
+<!--            <dependency>-->
+<!--                <groupId>org.springframework</groupId>-->
+<!--                <artifactId>spring-web</artifactId>-->
+<!--                <version>${spring-web.version}</version>-->
+<!--            </dependency>-->
+<!--            <dependency>-->
+<!--                <groupId>net.minidev</groupId>-->
+<!--                <artifactId>json-smart</artifactId>-->
+<!--                <version>${json-smart}</version>-->
+<!--            </dependency>-->
+        </dependencies>
+    </dependencyManagement>
+
+    <properties>
+        <identity.inbound.auth.oauth.version>[6.4.111,7.0.0)</identity.inbound.auth.oauth.version>
+        <wso2.maven.compiler.source>1.8</wso2.maven.compiler.source>
+        <wso2.maven.compiler.target>1.8</wso2.maven.compiler.target>
+        <identity.inbound.auth.oauth.version>6.4.2</identity.inbound.auth.oauth.version>
+        <hibernate-validator>6.0.17.Final</hibernate-validator>
+        <org.wso2.carbon.apimgt.version>[6.6.163, 7.0.0)</org.wso2.carbon.apimgt.version>
+        <axiom.wso2.version>1.2.11-wso2v16</axiom.wso2.version>
+        <commons.logging.version>1.2</commons.logging.version>
+        <commons-lang.version>2.6</commons-lang.version>
+        <commons-dbcp.version>1.4</commons-dbcp.version>
+        <commons.bean.utils.version>1.9.3</commons.bean.utils.version>
+        <maven.bundle.plugin.version>3.2.0</maven.bundle.plugin.version>
+        <org.wso2.securevault.version>1.1.3</org.wso2.securevault.version>
+        <maven.surefire.plugin.version>2.22.2</maven.surefire.plugin.version>
+        <maven.compiler.plugin.version>2.3.2</maven.compiler.plugin.version>
+        <maven.findbugsplugin.version>3.0.5</maven.findbugsplugin.version>
+        <maven-deploy-plugin-version>2.8.2</maven-deploy-plugin-version>
+        <jacoco.version>0.8.6</jacoco.version>
+        <apache.synapse.version>2.1.7-wso2v147</apache.synapse.version>
+        <mockito.version>1.10.19</mockito.version>
+        <org.testng.version>7.3.0</org.testng.version>
+        <carbon.identity.framework.version>[5.18.187,6.0.0)</carbon.identity.framework.version>
+        <org.apache.logging.log4j>2.12.0</org.apache.logging.log4j>
+        <jackson.databinding.version>2.12.0</jackson.databinding.version>
+        <cxf-bundle-package.version>2.7.18</cxf-bundle-package.version>
+        <swagger-jaxrs.version>1.5.20</swagger-jaxrs.version>
+        <swagger-annotations.version>1.5.10</swagger-annotations.version>
+        <javax.ws.rs.version>1.1.1</javax.ws.rs.version>
+        <javax.validation.api.version>2.0.1.Final</javax.validation.api.version>
+        <maven-war-plugin.version>2.2</maven-war-plugin.version>
+        <spring-web.version>5.1.2.RELEASE</spring-web.version>
+        <json-smart>2.3</json-smart>
+        <nimbusds.osgi.version.range>[7.3.0,8.0.0)</nimbusds.osgi.version.range>
+        <gson.version>[2.8.5, 3.0.0)</gson.version>
+        <h2database.version>1.3.175</h2database.version>
+        <commons-lang.version>2.6</commons-lang.version>
+        <spring-web.version>5.3.3</spring-web.version>
+        <powermock.version>1.7.1</powermock.version>
+        <spring-web-test.version>2.5</spring-web-test.version>
+        <tomcat.catalina.version>9.0.11</tomcat.catalina.version>
+        <javax.ws.rs-api.version>2.0.1</javax.ws.rs-api.version>
+        <carbon.identity.framework.version.range>[5.11.0, 6.1.0)</carbon.identity.framework.version.range>
+        <tomcat.wso2.imp.pkg.version.range>[9.0.0, 9.5.0)</tomcat.wso2.imp.pkg.version.range>
+        <imp.pkg.version.javax.servlet>[2.6.0, 3.0.0)</imp.pkg.version.javax.servlet>
+        <carbon.kernel.version>4.6.0</carbon.kernel.version>
+        <carbon.kernel.ob.version>4.4.32</carbon.kernel.ob.version>
+        <equinox.javax.servlet.version>3.0.0.v201112011016</equinox.javax.servlet.version>
+        <org.json.version>3.0.0.wso2v1</org.json.version>
+<!--        &lt;!&ndash; OSGi Version ranges &ndash;&gt;-->
+<!--        <osgi.framework.imp.pkg.version.range>[1.7.0, 2.0.0)</osgi.framework.imp.pkg.version.range>-->
+<!--        <osgi.service.component.imp.pkg.version.range>[1.2.0, 2.0.0)</osgi.service.component.imp.pkg.version.range>-->
+<!--        <org.osgi.eclipse.version>3.5.100.v20160504-1419</org.osgi.eclipse.version>-->
+<!--        <org.osgi.bundle.version>3.9.1.v20130814-1242</org.osgi.bundle.version>-->
+    </properties>
+
+</project>
