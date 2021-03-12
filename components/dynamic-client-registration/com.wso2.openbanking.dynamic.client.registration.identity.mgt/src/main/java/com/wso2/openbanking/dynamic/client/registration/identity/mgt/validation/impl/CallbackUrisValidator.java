@@ -11,8 +11,8 @@
  */
 package com.wso2.openbanking.dynamic.client.registration.identity.mgt.validation.impl;
 
+import com.wso2.finance.openbanking.accelerator.common.util.JWTUtils;
 import com.wso2.finance.openbanking.accelerator.identity.dcr.model.RegistrationRequest;
-import com.wso2.finance.openbanking.accelerator.identity.dcr.utils.ValidatorUtils;
 import com.wso2.openbanking.dynamic.client.registration.identity.mgt.constants.CDSValidationConstants;
 import com.wso2.openbanking.dynamic.client.registration.identity.mgt.validation.annotation.ValidateCallbackUris;
 import org.apache.commons.beanutils.BeanUtils;
@@ -56,7 +56,7 @@ public class CallbackUrisValidator implements ConstraintValidator<ValidateCallba
             String softwareStatement = BeanUtils.getProperty(cdsRegistrationRequest, ssaPath);
             List<String> callbackUris =  registrationRequest.getCallbackUris();
             if (callbackUris != null && !callbackUris.isEmpty()) {
-                final Object ssaCallbackUris = ValidatorUtils.decodeRequestJWT(softwareStatement, "body")
+                final Object ssaCallbackUris = JWTUtils.decodeRequestJWT(softwareStatement, "body")
                         .get(CDSValidationConstants.SSA_REDIRECT_URIS);
 
                 return matchRedirectURI(callbackUris, ssaCallbackUris);
