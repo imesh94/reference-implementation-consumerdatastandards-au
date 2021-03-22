@@ -23,4 +23,8 @@ public class CDSValidationConstants {
     public static final String SSA_SCOPES = "openid bank:accounts.basic:read bank:accounts.detail:read " +
             "bank:transactions:read bank:payees:read bank:regular_payments:read common:customer.basic:read " +
             "common:customer.detail:read cdr:registration";
+
+    //registration request params
+    public static final String ID_TOKEN_ENCRYPTION_RESPONSE_ALG = "id_token_encrypted_response_alg";
+    public static final String ID_TOKEN_ENCRYPTION_RESPONSE_ENC = "id_token_encrypted_response_enc";
 }

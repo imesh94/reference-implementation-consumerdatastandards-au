@@ -13,6 +13,7 @@ package com.wso2.openbanking.dynamic.client.registration.identity.mgt.listener.a
 
 import com.wso2.finance.openbanking.accelerator.common.exception.OpenBankingException;
 import com.wso2.finance.openbanking.accelerator.identity.listener.application.ApplicationUpdaterImpl;
+import com.wso2.openbanking.dynamic.client.registration.identity.mgt.constants.CDSValidationConstants;
 import org.wso2.carbon.identity.oauth.dto.OAuthConsumerAppDTO;
 
 import java.util.Map;
@@ -25,13 +26,21 @@ public class CDSApplicationUpdaterImpl extends ApplicationUpdaterImpl {
     @Override
     public void setOauthAppProperties(boolean isRegulatoryApp, OAuthConsumerAppDTO oauthApplication,
                                       Map<String, Object> spMetaData) throws OpenBankingException {
-        oauthApplication.setIdTokenEncryptionEnabled(true);
 
-        if (spMetaData.get("id_token_encrypted_response_alg") != null &&
-                spMetaData.get("id_token_encrypted_response_enc") != null) {
-            oauthApplication.setIdTokenEncryptionAlgorithm(spMetaData.get("id_token_encrypted_response_alg")
-                    .toString());
-            oauthApplication.setIdTokenEncryptionMethod(spMetaData.get("id_token_encrypted_response_enc").toString());
+        if (spMetaData.get(CDSValidationConstants.ID_TOKEN_ENCRYPTION_RESPONSE_ALG) != null &&
+                spMetaData.get(CDSValidationConstants.ID_TOKEN_ENCRYPTION_RESPONSE_ENC) != null) {
+            oauthApplication.setIdTokenEncryptionEnabled(true);
+            oauthApplication.setIdTokenEncryptionAlgorithm(spMetaData
+                    .get(CDSValidationConstants.ID_TOKEN_ENCRYPTION_RESPONSE_ALG).toString());
+            oauthApplication.setIdTokenEncryptionMethod(spMetaData
+                    .get(CDSValidationConstants.ID_TOKEN_ENCRYPTION_RESPONSE_ENC).toString());
         }
+    }
+
+    @Override
+    public void publishData(Map<String, Object> spMetaData, OAuthConsumerAppDTO oAuthConsumerAppDTO) 
+            throws OpenBankingException {
+        super.publishData(spMetaData, oAuthConsumerAppDTO);
+        // TODO: 2021-03-22 Add data publishing logic for application here later 
     }
 }
