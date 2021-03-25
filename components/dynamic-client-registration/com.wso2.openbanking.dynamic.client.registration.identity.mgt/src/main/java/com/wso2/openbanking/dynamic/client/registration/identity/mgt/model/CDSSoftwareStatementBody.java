@@ -31,8 +31,6 @@ import javax.validation.constraints.NotEmpty;
  */
 public class CDSSoftwareStatementBody extends SoftwareStatementBody {
 
-    private String iss;
-
     @SerializedName("logo_uri")
     private String logoUri;
 
@@ -65,20 +63,6 @@ public class CDSSoftwareStatementBody extends SoftwareStatementBody {
 
     @SerializedName("software_roles")
     private String softwareRoles;
-
-    @ValidateSSAIssuer(message = "Invalid Issuer in software statement:" + DCRCommonConstants.INVALID_META_DATA,
-            groups = AttributeChecks.class)
-    @NotBlank(message = "Issuer Roles can not be null or empty in SSA:" + DCRCommonConstants.INVALID_META_DATA,
-            groups = MandatoryChecks.class)
-    public String getIss() {
-
-        return iss;
-    }
-
-    public void setIss(String iss) {
-
-        this.iss = iss;
-    }
 
     public String getLogoUri() {
 
@@ -192,6 +176,16 @@ public class CDSSoftwareStatementBody extends SoftwareStatementBody {
     public void setSoftwareRoles(String softwareRoles) {
 
         this.softwareRoles = softwareRoles;
+    }
+
+    @Override
+    @ValidateSSAIssuer(message = "Invalid Issuer in software statement:" + DCRCommonConstants.INVALID_META_DATA,
+            groups = AttributeChecks.class)
+    @NotBlank(message = "Issuer can not be null or empty in SSA:" + DCRCommonConstants.INVALID_META_DATA,
+            groups = MandatoryChecks.class)
+    public String getSsaIssuer() {
+
+        return super.getSsaIssuer();
     }
 
     @Override
