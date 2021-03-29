@@ -28,7 +28,7 @@
     <name>WSO2 Open Banking CDS Toolkit - Dynamic Client Registration Module</name>
 
     <modules>
-        <module>com.wso2.openbanking.dynamic.client.registration.identity.mgt</module>
+        <module>com.wso2.openbanking.cds.dynamic.client.registration.identity.mgt</module>
     </modules>
 
 

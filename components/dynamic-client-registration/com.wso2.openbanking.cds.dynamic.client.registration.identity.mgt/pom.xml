@@ -18,17 +18,27 @@
 
     <parent>
         <groupId>com.wso2.openbanking</groupId>
-        <artifactId>open-banking-toolkit-cds</artifactId>
+        <artifactId>dynamic-client-registration</artifactId>
         <version>3.0.0-M1-SNAPSHOT</version>
-        <relativePath>../../pom.xml</relativePath>
+        <relativePath>../pom.xml</relativePath>
     </parent>
 
-    <artifactId>auth-extensions</artifactId>
-    <packaging>pom</packaging>
-    <name>WSO2 Open Banking CDS Toolkit - Auth Extensions Module</name>
+    <artifactId>com.wso2.openbanking.cds.dynamic.client.registration.identity.mgt</artifactId>
+    <packaging>jar</packaging>
+    <name>WSO2 Open Banking CDS Toolkit - Dynamic Client Registration Identity Module</name>
 
-    <modules>
-        <module>com.wso2.openbanking.cds.request.object.validator</module>
-    </modules>
-
+    <dependencies>
+        <dependency>
+            <groupId>com.wso2.finance</groupId>
+            <artifactId>com.wso2.finance.openbanking.accelerator.identity</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>com.wso2.finance</groupId>
+            <artifactId>com.wso2.finance.openbanking.accelerator.common</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>net.minidev</groupId>
+            <artifactId>json-smart</artifactId>
+        </dependency>
+    </dependencies>
 </project>
