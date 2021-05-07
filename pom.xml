@@ -10,29 +10,42 @@
  ~ license, please see the license as well as any agreement you’ve entered into
  ~ with WSO2 governing the purchase of this software and any associated services.
 -->
-
-<project xmlns="http://maven.apache.org/POM/4.0.0"
-         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
          xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
     <modelVersion>4.0.0</modelVersion>
 
     <groupId>com.wso2.openbanking</groupId>
-    <artifactId>open-banking-toolkit-cds</artifactId>
+    <artifactId>ob-compliance-toolkit-cds</artifactId>
     <packaging>pom</packaging>
-    <version>3.0.0-M1-SNAPSHOT</version>
+    <version>1.0.0-M1</version>
     <parent>
         <groupId>org.wso2</groupId>
         <artifactId>wso2</artifactId>
         <version>5</version>
     </parent>
 
-    <name>WSO2 Open Banking - Parent</name>
-    <description>WSO2 Open Banking CDS Toolkit</description>
+    <name>WSO2 Open Banking Parent</name>
+    <description>WSO2 Open Banking Toolkit for CDS Specification</description>
 
-    <modules>
-        <module>components/dynamic-client-registration</module>
-        <module>components/auth-extensions</module>
-    </modules>
+    <profiles>
+        <profile>
+            <id>dev</id>
+            <activation>
+                <!-- this profile is active by default -->
+                <activeByDefault>true</activeByDefault>
+                <property>
+                    <name>profile</name>
+                    <value>dev</value>
+                </property>
+            </activation>
+            <modules>
+                <module>components</module>
+            </modules>
+            <properties>
+                <npm.executable>npm</npm.executable>
+            </properties>
+        </profile>
+    </profiles>
 
     <repositories>
         <repository>
@@ -86,18 +99,21 @@
         </pluginRepository>
     </pluginRepositories>
 
-    <!-- ask about the scm repository-->
-
-<!--    <scm>-->
-<!--        <url>https://github.com/wso2/financial-open-banking.git</url>-->
-<!--        <developerConnection>scm:git:https://github.com/wso2/financial-open-banking.git</developerConnection>-->
-<!--        <connection>scm:git:https://github.com/wso2/financial-open-banking.git</connection>-->
-<!--        <tag>HEAD</tag>-->
-<!--    </scm>-->
+    <scm>
+        <url>https://github.com/wso2-enterprise/ob-compliance-toolkit-cds.git</url>
+        <developerConnection>scm:git:https://github.com/wso2-enterprise/ob-compliance-toolkit-cds.git</developerConnection>
+        <connection>scm:git:https://github.com/wso2-enterprise/ob-compliance-toolkit-cds.git</connection>
+        <tag>HEAD</tag>
+    </scm>
 
     <build>
         <pluginManagement>
             <plugins>
+                <plugin>
+                    <groupId>org.apache.maven.plugins</groupId>
+                    <artifactId>maven-assembly-plugin</artifactId>
+                    <version>${maven.assembly.version}</version>
+                </plugin>
                 <plugin><!-- Overridden from parent pom to exclude generated sources -->
                     <groupId>org.codehaus.mojo</groupId>
                     <artifactId>findbugs-maven-plugin</artifactId>
@@ -106,8 +122,7 @@
                         <effort>Max</effort>
                         <threshold>Low</threshold>
                         <xmlOutput>true</xmlOutput>
-                        <findbugsXmlOutputDirectory>${project.build.directory}/findbugs
-                        </findbugsXmlOutputDirectory>
+                        <findbugsXmlOutputDirectory>${project.build.directory}/findbugs</findbugsXmlOutputDirectory>
                         <!--<excludeFilterFile>findbugs_exclude.xml</excludeFilterFile>-->
                         <!--Exclude generated sources-->
                     </configuration>
@@ -149,21 +164,26 @@
                     <artifactId>maven-surefire-plugin</artifactId>
                     <version>${maven.surefire.plugin.version}</version>
                 </plugin>
+                <plugin>
+                    <groupId>org.jacoco</groupId>
+                    <artifactId>jacoco-maven-plugin</artifactId>
+                    <version>${jacoco.version}</version>
+                </plugin>
             </plugins>
         </pluginManagement>
     </build>
 
     <dependencyManagement>
         <dependencies>
-            <!--Open banking components-->
+            <!--Open Banking Accelerator components-->
             <dependency>
-                <groupId>com.wso2.finance</groupId>
-                <artifactId>com.wso2.finance.openbanking.accelerator.common</artifactId>
+                <groupId>com.wso2</groupId>
+                <artifactId>com.wso2.openbanking.accelerator.common</artifactId>
                 <version>${accelerator.project.version}</version>
             </dependency>
-            <dependency>
-                <groupId>com.wso2.finance</groupId>
-                <artifactId>com.wso2.finance.openbanking.accelerator.identity</artifactId>
+             <dependency>
+                <groupId>com.wso2</groupId>
+                <artifactId>com.wso2.openbanking.accelerator.identity</artifactId>
                 <version>${accelerator.project.version}</version>
             </dependency>
             <!--General dependencies-->
@@ -176,7 +196,7 @@
     </dependencyManagement>
 
     <properties>
-        <accelerator.project.version>3.0.0-alpha-SNAPSHOT</accelerator.project.version>
+        <accelerator.project.version>3.0.0-beta</accelerator.project.version>
         <wso2.maven.compiler.source>1.8</wso2.maven.compiler.source>
         <wso2.maven.compiler.target>1.8</wso2.maven.compiler.target>
         <maven.bundle.plugin.version>3.2.0</maven.bundle.plugin.version>
@@ -185,6 +205,8 @@
         <maven.findbugsplugin.version>3.0.5</maven.findbugsplugin.version>
         <json-smart>2.3</json-smart>
         <org.json.version>3.0.0.wso2v1</org.json.version>
+        <jacoco.version>0.8.6</jacoco.version>
+        <maven.assembly.version>2.4</maven.assembly.version>
     </properties>
 
 </project>
