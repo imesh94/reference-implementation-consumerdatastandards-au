@@ -15,10 +15,14 @@ import com.wso2.openbanking.accelerator.identity.dcr.model.RegistrationRequest;
 import com.wso2.openbanking.accelerator.identity.dcr.model.SoftwareStatementBody;
 import com.wso2.openbanking.accelerator.identity.dcr.validation.DCRCommonConstants;
 import com.wso2.openbanking.accelerator.identity.dcr.validation.validationgroups.AttributeChecks;
+import com.wso2.openbanking.accelerator.identity.dcr.validation.validationgroups.MandatoryChecks;
+import com.wso2.openbanking.cds.identity.dcr.constants.CDSValidationConstants;
 import com.wso2.openbanking.cds.identity.dcr.validation.annotation.ValidateCallbackUris;
+import com.wso2.openbanking.cds.identity.dcr.validation.annotation.ValidateRedirectUriFormat;
+import com.wso2.openbanking.cds.identity.dcr.validation.annotation.ValidateUriConnection;
+import com.wso2.openbanking.cds.identity.dcr.validation.annotation.ValidateUriHostnames;
 
 import java.util.List;
-
 
 /**
  * Model class for CDS dcr registration request
@@ -26,6 +30,14 @@ import java.util.List;
 @ValidateCallbackUris(registrationRequestProperty = "registrationRequest", callbackUrisProperty = "redirectUris",
         ssa = "softwareStatement", message = "Invalid callback uris:" + DCRCommonConstants.INVALID_META_DATA,
         groups = AttributeChecks.class)
+@ValidateRedirectUriFormat(registrationRequestProperty = "registrationRequest", message = "Invalid redirect_uris " +
+        "found in the SSA:" + CDSValidationConstants.INVALID_REDIRECT_URI, groups = MandatoryChecks.class)
+@ValidateUriHostnames(registrationRequestProperty = "registrationRequest", ssa = "softwareStatement",
+        message = "Host names of logo_uri/tos_uri/policy_uri/client_uri does not match with the redirect_uris:"
+                + CDSValidationConstants.INVALID_REDIRECT_URI, groups = AttributeChecks.class)
+@ValidateUriConnection(registrationRequestProperty = "registrationRequest", ssa = "softwareStatement",
+        message = "Provided logo_uri/client_uri/policy_uri/tos_uri in the request does not resolve" +
+                " to a valid web page:" + CDSValidationConstants.INVALID_REDIRECT_URI, groups = AttributeChecks.class)
 public class CDSRegistrationRequest extends RegistrationRequest {
 
     private RegistrationRequest registrationRequest;

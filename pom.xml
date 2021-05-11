@@ -202,6 +202,12 @@
                 <artifactId>com.wso2.openbanking.accelerator.identity</artifactId>
                 <version>${accelerator.project.version}</version>
             </dependency>
+            <!--Dependencies from Toolkit -->
+            <dependency>
+                <groupId>com.wso2.openbanking</groupId>
+                <artifactId>com.wso2.openbanking.cds.common</artifactId>
+                <version>${project.version}</version>
+            </dependency>
             <!--General dependencies-->
             <dependency>
                 <groupId>net.minidev</groupId>

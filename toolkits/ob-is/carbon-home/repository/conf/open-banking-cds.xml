@@ -16,5 +16,7 @@
     <DCR>
         <!--if true validate the policy,client,terms of service,logo uris -->
         <EnableURIValidation>false</EnableURIValidation>
+        <!--if true validate the hostnames of policy,client,terms of service, logo uris match with the hostname of redirect uri-->
+        <EnableHostNameValidation>false</EnableHostNameValidation>
     </DCR>
 </Server>

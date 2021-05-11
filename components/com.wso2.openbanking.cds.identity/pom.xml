@@ -40,6 +40,10 @@
             <artifactId>json-smart</artifactId>
             <scope>provided</scope>
         </dependency>
+        <dependency>
+            <groupId>com.wso2.openbanking</groupId>
+            <artifactId>com.wso2.openbanking.cds.common</artifactId>
+        </dependency>
     </dependencies>
 
     <build>

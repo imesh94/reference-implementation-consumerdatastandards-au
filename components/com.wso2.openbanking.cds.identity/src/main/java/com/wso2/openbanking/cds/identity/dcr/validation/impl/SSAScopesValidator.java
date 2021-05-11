@@ -37,22 +37,28 @@ public class SSAScopesValidator implements ConstraintValidator<ValidateSSAScopes
     }
 
     /**
-     * validate the scopes of software statement with CDS specification allowed values
+     * Validate the scope requested by data recipient is allowed and checks if the scopes contain
+     * the mandatory 'cdr:register' scope.
      *
      * @param scopes    scopes included in the software statement
-     * @return true if the scopes are validated
      */
     private boolean validateScopes(Object scopes) {
 
         List<String> validScopes = new ArrayList<>(Arrays.asList(CDSValidationConstants.SSA_SCOPES.split(" ")));
+        boolean containsRegistrationScope = false;
+        boolean allScopesValid = true;
         if (scopes instanceof String) {
             String scopeString = (String) scopes;
             for (String scope : scopeString.split(" ")) {
+                if (CDSValidationConstants.CDR_REGISTER.equals(scope)) {
+                    containsRegistrationScope = true;
+                }
                 if (!validScopes.contains(scope)) {
-                    return false;
+                    allScopesValid = false;
+                    break;
                 }
             }
         }
-        return true;
+        return allScopesValid && containsRegistrationScope;
     }
 }
