@@ -10,28 +10,23 @@
  ~ license, please see the license as well as any agreement you’ve entered into
  ~ with WSO2 governing the purchase of this software and any associated services.
 -->
-<project xmlns="http://maven.apache.org/POM/4.0.0"
-         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+    <modelVersion>4.0.0</modelVersion>
+
     <parent>
-        <artifactId>ob-compliance-toolkit-cds</artifactId>
         <groupId>com.wso2.openbanking</groupId>
+        <artifactId>ob-compliance-toolkit-cds</artifactId>
         <version>1.0.0-M1</version>
         <relativePath>../pom.xml</relativePath>
     </parent>
 
-    <modelVersion>4.0.0</modelVersion>
-
-    <artifactId>ob-compliance-toolkit-cds-components</artifactId>
+    <artifactId>open-banking-toolkit-cds-modules</artifactId>
     <packaging>pom</packaging>
-    <version>1.0.0-M1</version>
-
-    <name>WSO2 Open Banking CDS Toolkit</name>
-    <description>WSO2 Open Banking Toolkit for CDS Specification</description>
+    <name>WSO2 Open Banking - CDS Toolkit Modules</name>
+    <url>http://wso2.org</url>
 
     <modules>
-        <module>com.wso2.openbanking.cds.identity</module>
-        <module>com.wso2.openbanking.cds.common</module>
+        <module>ob-is</module>
     </modules>
-
 </project>
