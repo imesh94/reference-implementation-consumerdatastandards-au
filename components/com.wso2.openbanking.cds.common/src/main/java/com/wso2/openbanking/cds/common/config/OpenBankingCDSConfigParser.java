@@ -298,7 +298,6 @@ public class OpenBankingCDSConfigParser {
                 consentMgtConfigs.put(parameterTypeName, parameterValues);
             }
         }
-
     }
 
     /**

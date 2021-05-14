@@ -393,7 +393,7 @@ display = "ob-identifier-first"
 allowed_values = ["authorization_code", "refresh_token", "client_credentials"]
 
 [open_banking.dcr.registration.audience]
-allowed_values = ["https://localhost:9446/oauth2/token"]
+allowed_values = ["https://IS_HOSTNAME:9446/oauth2/token"]
 
 [open_banking.dcr.registration.token_endpoint_authentication]
 allowed_values = ["private_key_jwt"]
