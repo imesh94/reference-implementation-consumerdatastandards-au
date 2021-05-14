@@ -27,6 +27,7 @@ public class CDSValidationConstants {
     public static final String SSA_SCOPES = "openid bank:accounts.basic:read bank:accounts.detail:read " +
             "bank:transactions:read bank:payees:read bank:regular_payments:read common:customer.basic:read " +
             "common:customer.detail:read cdr:registration";
+    public static final String CDR_REGISTRATION_SCOPE = "cdr:registration";
 
     //registration request params
     public static final String INVALID_REDIRECT_URI = "invalid_redirect_uri";

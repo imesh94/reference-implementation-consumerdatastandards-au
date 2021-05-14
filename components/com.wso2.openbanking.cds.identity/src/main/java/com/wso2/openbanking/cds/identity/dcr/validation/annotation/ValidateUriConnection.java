@@ -15,11 +15,11 @@ package com.wso2.openbanking.cds.identity.dcr.validation.annotation;
 
 import com.wso2.openbanking.cds.identity.dcr.validation.impl.UriConnectionValidator;
 
-import javax.validation.Constraint;
-import javax.validation.Payload;
 import java.lang.annotation.Documented;
 import java.lang.annotation.Retention;
 import java.lang.annotation.Target;
+import javax.validation.Constraint;
+import javax.validation.Payload;
 
 import static java.lang.annotation.ElementType.TYPE;
 import static java.lang.annotation.RetentionPolicy.RUNTIME;

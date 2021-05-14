@@ -30,8 +30,9 @@ import java.util.List;
 @ValidateCallbackUris(registrationRequestProperty = "registrationRequest", callbackUrisProperty = "redirectUris",
         ssa = "softwareStatement", message = "Invalid callback uris:" + DCRCommonConstants.INVALID_META_DATA,
         groups = AttributeChecks.class)
-@ValidateRedirectUriFormat(registrationRequestProperty = "registrationRequest", message = "Invalid redirect_uris " +
-        "found in the SSA:" + CDSValidationConstants.INVALID_REDIRECT_URI, groups = MandatoryChecks.class)
+@ValidateRedirectUriFormat(registrationRequestProperty = "registrationRequest", ssa = "softwareStatement",
+        message = "Invalid redirect_uris found in the SSA:" + CDSValidationConstants.INVALID_REDIRECT_URI,
+        groups = MandatoryChecks.class)
 @ValidateUriHostnames(registrationRequestProperty = "registrationRequest", ssa = "softwareStatement",
         message = "Host names of logo_uri/tos_uri/policy_uri/client_uri does not match with the redirect_uris:"
                 + CDSValidationConstants.INVALID_REDIRECT_URI, groups = AttributeChecks.class)

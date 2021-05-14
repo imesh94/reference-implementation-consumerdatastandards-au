@@ -50,7 +50,7 @@ public class SSAScopesValidator implements ConstraintValidator<ValidateSSAScopes
         if (scopes instanceof String) {
             String scopeString = (String) scopes;
             for (String scope : scopeString.split(" ")) {
-                if (CDSValidationConstants.CDR_REGISTER.equals(scope)) {
+                if (CDSValidationConstants.CDR_REGISTRATION_SCOPE.equals(scope)) {
                     containsRegistrationScope = true;
                 }
                 if (!validScopes.contains(scope)) {

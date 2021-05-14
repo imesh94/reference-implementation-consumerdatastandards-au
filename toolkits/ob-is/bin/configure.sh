@@ -79,7 +79,7 @@ sed -i -e 's|IS_HOSTNAME|'${IS_HOSTNAME}'|g' ${DEPLOYMENT_TOML_FILE}
 sed -i -e 's|APIM_HOSTNAME|'${APIM_HOSTNAME}'|g' ${DEPLOYMENT_TOML_FILE}
 sed -i -e 's|BI_HOSTNAME|'${BI_HOSTNAME}'|g' ${DEPLOYMENT_TOML_FILE}
 
-sed -i -e 's|APIM_HOSTNAME|'${APIM_HOSTNAME}'|g' ${OPENBANKING_UK_XML_FILE}
+sed -i -e 's|APIM_HOSTNAME|'${APIM_HOSTNAME}'|g' ${OPENBANKING_CDS_XML_FILE}
 
 echo -e "\nConfigure datasources \n"
 echo -e "================================================\n"

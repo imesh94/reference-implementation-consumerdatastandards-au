@@ -382,37 +382,43 @@ name = "cdr-register"
 #[[open_banking.signature_validation.allowed_algorithms.algorithms]]
 #algorithm = "PS256"
 
-#[open_banking.sca.primaryauth]
-#name = "IdentifierExecutor"
-#display = "ob-identifier-first"
+[open_banking.sca.primaryauth]
+name = "IdentifierExecutor"
+display = "ob-identifier-first"
 
 #[open_banking.sca.idp]
 #name = ""
 
-[open_banking.dcr.registration.callback_uris]
-required = true
+[open_banking.dcr.registration.grant_types]
+allowed_values = ["authorization_code", "refresh_token", "client_credentials"]
 
-[open_banking.dcr.registration.request_object_signing_algorithm]
-required = true
+[open_banking.dcr.registration.audience]
+allowed_values = ["https://localhost:9446/oauth2/token"]
 
 [open_banking.dcr.registration.token_endpoint_authentication]
-required = true
 allowed_values = ["private_key_jwt"]
+
+[open_banking.dcr.registration.response_types]
+required = true
+allowed_values = ["code id_token"]
+
+[open_banking.dcr.registration.callback_uris]
+allowed_values = ["https://www.google.com/redirects/redirect1",
+    "https://www.google.com/redirects/redirect2"]
+
+[open_banking.dcr.registration.application_type]
+allowed_values = ["web"]
+
+[open_banking.dcr.registration.id_token_encryption_response_alg]
+required = true
+allowed_values = ["RSA-OAEP", "RSA-OAEP-256"]
+
+[open_banking.dcr.registration.id_token_encryption_response_enc]
+required = true
+allowed_values = ["A256GCM", "A128CBC-HS256"]
 
 [open_banking.dcr.registration.token_endpoint_auth_signing_alg]
 required = true
-
-[open_banking.dcr.registration.grant_types]
-required = true
-allowed_values = ["authorization_code", "refresh_token", "client_credentials"]
-
-#[open_banking.dcr.registration.scope]
-#required = true
-#allowed_values = ["accounts", "payments"]
-
-[open_banking.dcr.registration.application_type]
-required = false
-allowed_values = ["web"]
 
 [open_banking.data_publishing]
 enable = false
