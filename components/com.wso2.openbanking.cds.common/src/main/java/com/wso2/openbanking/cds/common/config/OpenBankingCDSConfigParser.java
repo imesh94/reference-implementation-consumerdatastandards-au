@@ -35,7 +35,6 @@ import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Map;
 import java.util.Stack;
-import javax.xml.namespace.QName;
 import javax.xml.stream.XMLStreamException;
 
 /**
@@ -53,9 +52,6 @@ public class OpenBankingCDSConfigParser {
     private OMElement rootElement;
 
     private static final Map<String, Object> configuration = new HashMap<>();
-    private static final Map<Integer, String> revocationValidators = new HashMap<>();
-    private static final Map<String, Map<String, String>> dcrConfigs = new HashMap<>();
-    private static final Map<String, String> consentMgtConfigs = new HashMap<>();
 
     /**
      * Private Constructor of config parser.
@@ -127,8 +123,6 @@ public class OpenBankingCDSConfigParser {
             Stack<String> nameStack = new Stack<>();
             secretResolver = SecretResolverFactory.create(rootElement, true);
             readChildElements(rootElement, nameStack);
-            buildDCRConfigs();
-            buildConsentManagementConfigs();
         } catch (IOException | XMLStreamException | OMException e) {
             throw new OpenBankingRuntimeException("Error occurred while building configuration from open-banking.xml",
                     e);
@@ -253,73 +247,5 @@ public class OpenBankingCDSConfigParser {
             }
         }
         return textBuilder.toString();
-    }
-
-    private void buildDCRConfigs() {
-
-        OMElement dcrElement = rootElement.getFirstChildWithName(
-                new QName(CommonConstants.OB_CDS_CONFIG_QNAME, CommonConstants.DCR_CONFIG_TAG));
-        Map<String, String> dcrSubConfigValues = new HashMap<>();
-        if (dcrElement != null) {
-            //obtaining each parameter type element under DCR tag
-            Iterator parameterTypeElement = dcrElement.getChildElements();
-            while (parameterTypeElement.hasNext()) {
-                OMElement parameterType = (OMElement) parameterTypeElement.next();
-                String configName = parameterType.getLocalName();
-                //obtaining each step under each consent type
-                Iterator<OMElement> methodType = parameterType.getChildrenWithName(
-                        new QName(CommonConstants.OB_CDS_CONFIG_QNAME, CommonConstants.METHOD_CONFIG_TAG));
-                if (methodType != null) {
-                    while (methodType.hasNext()) {
-                        OMElement executorElement = methodType.next();
-                        String methodName = executorElement.getText();
-                        dcrSubConfigValues.put(methodName, methodName);
-                    }
-                }
-                dcrConfigs.put(configName, dcrSubConfigValues);
-            }
-        }
-
-    }
-
-    private void buildConsentManagementConfigs() {
-
-        OMElement consentMgtElement = rootElement.getFirstChildWithName(
-                new QName(CommonConstants.OB_CDS_CONFIG_QNAME, CommonConstants.CONSENT_MGT_CONFIG_TAG));
-
-        if (consentMgtElement != null) {
-            //obtaining each parameter type element under ConsentManagement tag
-            Iterator parameterTypeElement = consentMgtElement.getChildElements();
-            while (parameterTypeElement.hasNext()) {
-                OMElement parameterType = (OMElement) parameterTypeElement.next();
-                String parameterTypeName = parameterType.getLocalName();
-                String parameterValues = parameterType.getText();
-
-                consentMgtConfigs.put(parameterTypeName, parameterValues);
-            }
-        }
-    }
-
-    /**
-     * Returns the revocation validators map.
-     * <p>
-     * The revocation validator map contains revocation type (OCSP/CRL) and its executing priority.
-     * The default priority value has set as 1 for OCSP type, as OCSP validation is faster than the CRL validation
-     *
-     * @return certificate revocation validators map
-     */
-    public Map<Integer, String> getCertificateRevocationValidators() {
-
-        return revocationValidators;
-    }
-
-    public Map<String, Map<String, String>> getDcrConfigs() {
-
-        return dcrConfigs;
-    }
-
-    public Map<String, String> getConsentMgtConfigs() {
-
-        return consentMgtConfigs;
     }
 }

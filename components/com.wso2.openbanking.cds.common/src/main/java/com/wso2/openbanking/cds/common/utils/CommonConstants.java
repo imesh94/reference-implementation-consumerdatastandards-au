@@ -18,8 +18,4 @@ package com.wso2.openbanking.cds.common.utils;
 public class CommonConstants {
 
     public static final String OB_CONFIG_FILE = "open-banking-cds.xml";
-    public static final String OB_CDS_CONFIG_QNAME = "http://wso2.org/projects/carbon/open-banking-cds.xml";
-    public static final String DCR_CONFIG_TAG = "DCR";
-    public static final String CONSENT_MGT_CONFIG_TAG = "ConsentManagement";
-    public static final String METHOD_CONFIG_TAG = "Method";
 }
