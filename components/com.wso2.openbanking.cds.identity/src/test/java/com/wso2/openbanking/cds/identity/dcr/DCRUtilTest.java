@@ -49,6 +49,9 @@ import static org.powermock.api.mockito.PowerMockito.mock;
 import static org.powermock.api.mockito.PowerMockito.mockStatic;
 import static org.powermock.api.mockito.PowerMockito.when;
 
+/**
+ * Test class for DCR functionalities.
+ */
 @PowerMockIgnore({"javax.net.ssl.*"})
 @PrepareForTest({JWTUtils.class, OpenBankingCDSConfigParser.class})
 public class DCRUtilTest {

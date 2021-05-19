@@ -19,6 +19,9 @@ import org.wso2.carbon.identity.oauth.dto.OAuthConsumerAppDTO;
 import java.util.HashMap;
 import java.util.Map;
 
+/**
+ * Test class for Application Management Listener functionality.
+ */
 public class ApplicationManagementListenerTest {
 
     private Map<String, Object> spMetaData = new HashMap<>();

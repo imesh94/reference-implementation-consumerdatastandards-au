@@ -39,6 +39,9 @@ import static org.mockito.Mockito.mock;
 import static org.powermock.api.mockito.PowerMockito.mockStatic;
 import static org.powermock.api.mockito.PowerMockito.when;
 
+/**
+ * Test class for Request Object Validator functionality.
+ */
 @PrepareForTest({OpenBankingValidator.class})
 public class RequestObjectValidatorTest extends PowerMockTestCase {
 
