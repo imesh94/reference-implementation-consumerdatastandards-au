@@ -124,8 +124,8 @@ public class OpenBankingCDSConfigParser {
             secretResolver = SecretResolverFactory.create(rootElement, true);
             readChildElements(rootElement, nameStack);
         } catch (IOException | XMLStreamException | OMException e) {
-            throw new OpenBankingRuntimeException("Error occurred while building configuration from open-banking.xml",
-                    e);
+            throw new OpenBankingRuntimeException("Error occurred while building configuration from " +
+                    "open-banking-cds.xml", e);
         } finally {
             try {
                 if (inStream != null) {

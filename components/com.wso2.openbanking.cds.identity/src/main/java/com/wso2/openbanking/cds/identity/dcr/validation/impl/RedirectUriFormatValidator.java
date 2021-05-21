@@ -58,7 +58,7 @@ public class RedirectUriFormatValidator implements ConstraintValidator<ValidateR
         } catch (IllegalAccessException | InvocationTargetException | NoSuchMethodException e) {
             log.error("Error while resolving validation fields", e);
         } catch (ParseException e) {
-        log.error("Error while parsing the softwareStatement", e);
+            log.error("Error while parsing the softwareStatement", e);
     }
         return false;
     }

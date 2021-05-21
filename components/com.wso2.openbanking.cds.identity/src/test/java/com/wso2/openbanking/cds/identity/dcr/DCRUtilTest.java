@@ -219,7 +219,6 @@ public class DCRUtilTest {
             extendedValidator.validatePost(registrationRequest);
         } catch (DCRValidationException e) {
             Assert.assertTrue(e.getErrorDescription().contains("Invalid issuer"));
-
         }
     }
 
@@ -234,7 +233,6 @@ public class DCRUtilTest {
             extendedValidator.validateUpdate(registrationRequest);
         } catch (DCRValidationException e) {
             Assert.assertTrue(e.getErrorDescription().contains("Invalid issuer"));
-
         }
     }
 
