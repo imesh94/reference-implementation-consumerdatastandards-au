@@ -169,7 +169,11 @@ public class DCRUtilTest {
         }
         registrationValidator.setSoftwareStatementPayload(registrationRequest, decodedSSA);
         CDSRegistrationRequest cdsRegistrationRequest = new CDSRegistrationRequest(registrationRequest);
-        ValidationUtils.validateRequest(cdsRegistrationRequest);
+        try {
+            ValidationUtils.validateRequest(cdsRegistrationRequest);
+        } catch (DCRValidationException e) {
+            Assert.fail("should not throw exception");
+        }
     }
 
     @Test
