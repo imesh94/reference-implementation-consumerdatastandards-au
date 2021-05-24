@@ -9,3 +9,13 @@
  * please see the license as well as any agreement you’ve entered into with
  * WSO2 governing the purchase of this software and any associated services.
  */
+
+package com.wso2.openbanking.cds.common.utils;
+
+/**
+ * Common Constant Class
+ */
+public class CommonConstants {
+
+    public static final String OB_CONFIG_FILE = "open-banking-cds.xml";
+}
