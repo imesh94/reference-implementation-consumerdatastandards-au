@@ -25,6 +25,7 @@ hs_err_pid*
 
 # maven target directories
 target
+**/target
 
 
 # Ignore everything in this directory which are IDE specific
