@@ -32,6 +32,7 @@
     <modules>
         <module>com.wso2.openbanking.cds.identity</module>
         <module>com.wso2.openbanking.cds.common</module>
+        <module>com.wso2.openbanking.cds.consent.extensions</module>
     </modules>
 
 </project>
