@@ -16,7 +16,7 @@ import com.wso2.openbanking.accelerator.consent.extensions.authorize.model.Conse
 import com.wso2.openbanking.accelerator.consent.extensions.common.ConsentException;
 import com.wso2.openbanking.accelerator.consent.extensions.common.ResponseStatus;
 import com.wso2.openbanking.cds.common.config.OpenBankingCDSConfigParser;
-import com.wso2.openbanking.cds.consent.extensions.authorize.impl.utils.AUDataRetrievalUtil;
+import com.wso2.openbanking.cds.consent.extensions.authorize.impl.utils.CDSDataRetrievalUtil;
 import net.minidev.json.JSONArray;
 import net.minidev.json.JSONObject;
 import net.minidev.json.parser.JSONParser;
@@ -31,9 +31,9 @@ import java.util.Map;
 /**
  * Account List retrieval step CDS implementation.
  */
-public class AUAccountListRetrievalStep implements ConsentRetrievalStep {
+public class CDSAccountListRetrievalStep implements ConsentRetrievalStep {
 
-    private static final Log log = LogFactory.getLog(AUAccountListRetrievalStep.class);
+    private static final Log log = LogFactory.getLog(CDSAccountListRetrievalStep.class);
     private static final String USER_ID_KEY_NAME = "userID";
 
     @Override
@@ -46,7 +46,7 @@ public class AUAccountListRetrievalStep implements ConsentRetrievalStep {
 
             Map<String, String> parameters = new HashMap<>();
             parameters.put(USER_ID_KEY_NAME, consentData.getUserId());
-            String accountData = AUDataRetrievalUtil.getAccountsFromEndpoint(accountsURL, parameters, new HashMap<>());
+            String accountData = CDSDataRetrievalUtil.getAccountsFromEndpoint(accountsURL, parameters, new HashMap<>());
 
             if (accountData == null) {
                 log.error("Unable to load accounts data for the user: " + consentData.getUserId());

@@ -15,7 +15,7 @@ import com.wso2.openbanking.accelerator.consent.extensions.authorize.model.Conse
 import com.wso2.openbanking.accelerator.consent.extensions.authorize.model.ConsentRetrievalStep;
 import com.wso2.openbanking.accelerator.consent.extensions.common.ConsentException;
 import com.wso2.openbanking.accelerator.consent.extensions.common.ResponseStatus;
-import com.wso2.openbanking.cds.consent.extensions.authorize.impl.utils.AUDataRetrievalUtil;
+import com.wso2.openbanking.cds.consent.extensions.authorize.impl.utils.CDSDataRetrievalUtil;
 import net.minidev.json.JSONArray;
 import net.minidev.json.JSONObject;
 import net.minidev.json.parser.JSONParser;
@@ -34,19 +34,19 @@ import java.util.concurrent.TimeUnit;
 /**
  * Consent retrieval step CDS implementation.
  */
-public class AUConsentRetrievalStep implements ConsentRetrievalStep {
+public class CDSConsentRetrievalStep implements ConsentRetrievalStep {
 
-    private static final Log log = LogFactory.getLog(AUConsentRetrievalStep.class);
+    private static final Log log = LogFactory.getLog(CDSConsentRetrievalStep.class);
     private static final int secondsInYear = (int) TimeUnit.SECONDS.convert(365, TimeUnit.DAYS);
 
     @Override
     public void execute(ConsentData consentData, JSONObject jsonObject) throws ConsentException {
 
-        String requestObject = AUDataRetrievalUtil.extractRequestObject(consentData.getSpQueryParams());
+        String requestObject = CDSDataRetrievalUtil.extractRequestObject(consentData.getSpQueryParams());
         Map<String, Object> requiredData = validateRequestObjectAndExtractRequiredData(requestObject);
 
         JSONArray permissions = new JSONArray();
-        permissions.addAll(AUDataRetrievalUtil.getPermissionList(consentData.getScopeString()));
+        permissions.addAll(CDSDataRetrievalUtil.getPermissionList(consentData.getScopeString()));
         JSONArray consentDataJSON = new JSONArray();
 
         JSONObject jsonElementPermissions = new JSONObject();
@@ -65,14 +65,14 @@ public class AUConsentRetrievalStep implements ConsentRetrievalStep {
         consentDataJSON.add(jsonElementExpiry);
 
         jsonObject.appendField("consentData", consentDataJSON);
-        consentData.addData("permissions", AUDataRetrievalUtil.getPermissionList(consentData.getScopeString()));
+        consentData.addData("permissions", CDSDataRetrievalUtil.getPermissionList(consentData.getScopeString()));
         consentData.addData("expirationDatetime", requiredData.get("sharing_duration").toString());
         consentData.addData("sharing_duration_value", requiredData.get("sharing_duration_value").toString());
 
         consentData.setType("CDR_ACCOUNTS");
 
         // appending redirect URL for Identifier First UI change
-        jsonObject.appendField("redirectURL", AUDataRetrievalUtil
+        jsonObject.appendField("redirectURL", CDSDataRetrievalUtil
                 .getRedirectURL(consentData.getSpQueryParams()));
 
         // appending openid_scopes

@@ -23,7 +23,7 @@ import com.wso2.openbanking.accelerator.consent.mgt.dao.models.ConsentResource;
 import com.wso2.openbanking.accelerator.consent.mgt.dao.models.DetailedConsentResource;
 import com.wso2.openbanking.accelerator.consent.mgt.service.impl.ConsentCoreServiceImpl;
 import com.wso2.openbanking.cds.consent.extensions.authorize.impl.model.AccountConsentRequest;
-import com.wso2.openbanking.cds.consent.extensions.authorize.impl.utils.AUDataRetrievalUtil;
+import com.wso2.openbanking.cds.consent.extensions.authorize.impl.utils.CDSDataRetrievalUtil;
 import com.wso2.openbanking.cds.consent.extensions.authorize.impl.utils.PermissionsEnum;
 import net.minidev.json.JSONArray;
 import net.minidev.json.JSONObject;
@@ -39,9 +39,9 @@ import java.util.Map;
 /**
  * Consent persist step CDS implementation.
  */
-public class AUConsentPersistStep implements ConsentPersistStep {
+public class CDSConsentPersistStep implements ConsentPersistStep {
 
-    private static final Log log = LogFactory.getLog(AUConsentPersistStep.class);
+    private static final Log log = LogFactory.getLog(CDSConsentPersistStep.class);
     private static final ConsentCoreServiceImpl consentCoreService = new ConsentCoreServiceImpl();
     private static final String AUTHORISED_STATUS = "authorised";
     private static final String REJECTED_STATUS = "rejected";
@@ -53,7 +53,7 @@ public class AUConsentPersistStep implements ConsentPersistStep {
             ConsentData consentData = consentPersistData.getConsentData();
             JSONObject payloadData =  consentPersistData.getPayload();
             //get the consent object
-            AccountConsentRequest accountConsentRequest = AUDataRetrievalUtil.getAccountConsent(consentData,
+            AccountConsentRequest accountConsentRequest = CDSDataRetrievalUtil.getAccountConsent(consentData,
                             consentData.getMetaDataMap().get("expirationDatetime").toString(),
                     (List<PermissionsEnum>) consentData.getMetaDataMap().get("permissions"));
 

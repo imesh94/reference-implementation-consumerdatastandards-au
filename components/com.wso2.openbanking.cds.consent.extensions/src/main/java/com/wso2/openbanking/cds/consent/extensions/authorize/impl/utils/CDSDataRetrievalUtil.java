@@ -42,9 +42,9 @@ import java.util.stream.Stream;
 /**
  * Util class for Consent authorize CDS implementation.
  */
-public class AUDataRetrievalUtil {
+public class CDSDataRetrievalUtil {
 
-    private static final Log log = LogFactory.getLog(AUDataRetrievalUtil.class);
+    private static final Log log = LogFactory.getLog(CDSDataRetrievalUtil.class);
     public static final String ACCEPT_HEADER_NAME = "Accept";
     public static final String ACCEPT_HEADER_VALUE = "application/json";
     public static final String CHAR_SET = "UTF-8";
