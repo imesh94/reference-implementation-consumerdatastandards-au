@@ -11,37 +11,25 @@
  */
 package com.wso2.openbanking.cds.consent.extensions.authorize.impl.retrieval;
 
-import com.google.gson.Gson;
-import com.wso2.openbanking.accelerator.common.exception.ConsentManagementException;
 import com.wso2.openbanking.accelerator.consent.extensions.authorize.model.ConsentData;
 import com.wso2.openbanking.accelerator.consent.extensions.authorize.model.ConsentRetrievalStep;
 import com.wso2.openbanking.accelerator.consent.extensions.common.ConsentException;
 import com.wso2.openbanking.accelerator.consent.extensions.common.ResponseStatus;
-import com.wso2.openbanking.accelerator.consent.mgt.dao.models.ConsentResource;
-import com.wso2.openbanking.accelerator.consent.mgt.dao.models.DetailedConsentResource;
-import com.wso2.openbanking.accelerator.consent.mgt.service.impl.ConsentCoreServiceImpl;
-import com.wso2.openbanking.cds.consent.extensions.authorize.impl.model.AccountConsentRequest;
-import com.wso2.openbanking.cds.consent.extensions.authorize.impl.model.AccountData;
-import com.wso2.openbanking.cds.consent.extensions.authorize.impl.model.AccountRisk;
-import com.wso2.openbanking.cds.consent.extensions.authorize.impl.utils.PermissionsEnum;
+import com.wso2.openbanking.cds.consent.extensions.authorize.impl.utils.AUDataRetrievalUtil;
+import net.minidev.json.JSONArray;
 import net.minidev.json.JSONObject;
 import net.minidev.json.parser.JSONParser;
 import net.minidev.json.parser.ParseException;
-import org.apache.commons.lang.StringUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
 import java.nio.charset.StandardCharsets;
 import java.time.OffsetDateTime;
 import java.time.ZoneOffset;
-import java.util.ArrayList;
 import java.util.Base64;
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 import java.util.concurrent.TimeUnit;
-import java.util.stream.Collectors;
-import java.util.stream.Stream;
 
 /**
  * Consent retrieval step CDS implementation.
@@ -49,56 +37,63 @@ import java.util.stream.Stream;
 public class AUConsentRetrievalStep implements ConsentRetrievalStep {
 
     private static final Log log = LogFactory.getLog(AUConsentRetrievalStep.class);
-    private static final ConsentCoreServiceImpl consentCoreService = new ConsentCoreServiceImpl();
     private static final int secondsInYear = (int) TimeUnit.SECONDS.convert(365, TimeUnit.DAYS);
 
     @Override
     public void execute(ConsentData consentData, JSONObject jsonObject) throws ConsentException {
 
-        String requestObject = extractRequestObject(consentData.getSpQueryParams());
+        String requestObject = AUDataRetrievalUtil.extractRequestObject(consentData.getSpQueryParams());
         Map<String, Object> requiredData = validateRequestObjectAndExtractRequiredData(requestObject);
 
-        //get the consent object
-        AccountConsentRequest accountConsentRequest = getAccountConsent(consentData,
-                requiredData.get("sharing_duration").toString(), getPermissionList(consentData.getScopeString()));
+        JSONArray permissions = new JSONArray();
+        permissions.addAll(AUDataRetrievalUtil.getPermissionList(consentData.getScopeString()));
+        JSONArray consentDataJSON = new JSONArray();
 
-        Gson gson = new Gson();
-        String requestString = gson.toJson(accountConsentRequest);
+        JSONObject jsonElementPermissions = new JSONObject();
+        jsonElementPermissions.appendField("title", "Permissions");
+        jsonElementPermissions.appendField("data", permissions);
 
-        ConsentResource requestedConsent = new ConsentResource(requiredData.get("client_id").toString(),
-                requestString, "CDR_ACCOUNTS", "awaitingAuthorization");
+        consentDataJSON.add(jsonElementPermissions);
+        String expiry =  requiredData.get("sharing_duration").toString();
+        JSONArray expiryArray = new JSONArray();
+        expiryArray.add(expiry);
 
-        DetailedConsentResource createdConsent = null;
-        try {
-            createdConsent = consentCoreService.createAuthorizableConsent(requestedConsent,
-                    null, "created", "awaitingAuthorization", true);
-        } catch (ConsentManagementException e) {
-            log.error(e.getMessage());
-        }
-        consentData.setConsentId(createdConsent.getConsentID());
-    }
+        JSONObject jsonElementExpiry = new JSONObject();
+        jsonElementExpiry.appendField("title", "Expiration Date Time");
+        jsonElementExpiry.appendField("data", expiryArray);
 
-    /**
-     * Method to extract request object from query params
-     * @param spQueryParams
-     * @return
-     */
-    private String extractRequestObject(String spQueryParams) {
-        if (spQueryParams != null && !spQueryParams.trim().isEmpty()) {
-            String requestObject = null;
-            String[] spQueries = spQueryParams.split("&");
-            for (String param : spQueries) {
+        consentDataJSON.add(jsonElementExpiry);
 
-                if (param.contains("request=")) {
-                    requestObject = (param.substring("request=".length())).replaceAll(
-                            "\\r\\n|\\r|\\n|\\%20", "");
-                }
-            }
-            if (requestObject != null) {
-                return requestObject;
-            }
-        }
-        throw new ConsentException(ResponseStatus.INTERNAL_SERVER_ERROR, "Request object cannot be extracted");
+        jsonObject.appendField("consentData", consentDataJSON);
+        consentData.addData("permissions", AUDataRetrievalUtil.getPermissionList(consentData.getScopeString()));
+        consentData.addData("expirationDatetime", requiredData.get("sharing_duration").toString());
+        consentData.addData("sharing_duration_value", requiredData.get("sharing_duration_value").toString());
+
+        consentData.setType("CDR_ACCOUNTS");
+
+        // appending redirect URL for Identifier First UI change
+        jsonObject.appendField("redirectURL", AUDataRetrievalUtil
+                .getRedirectURL(consentData.getSpQueryParams()));
+
+        // appending openid_scopes
+        jsonObject.appendField("openid_scopes", permissions);
+
+        //Appending Dummy data for Account ID. Ideally should be separate step calling accounts service
+
+        JSONArray accountsJSON = new JSONArray();
+        JSONObject accountOne = new JSONObject();
+        accountOne.appendField("account_id", "12345");
+        accountOne.appendField("display_name", "Salary Saver Account");
+
+        accountsJSON.add(accountOne);
+
+        JSONObject accountTwo = new JSONObject();
+        accountTwo.appendField("account_id", "67890");
+        accountTwo.appendField("display_name", "Max Bonus Account");
+
+        accountsJSON.add(accountTwo);
+
+        jsonObject.appendField("accounts", accountsJSON);
     }
 
     /**
@@ -162,10 +157,10 @@ public class AUConsentRetrievalStep implements ConsentRetrievalStep {
                 }
                 // adding original sharing_duration_value to data map
                 dataMap.put("sharing_duration_value", sharingDuration);
-                if (claims.containsKey("cdr_arrangement_id")) {
-                    dataMap.put("cdr_arrangement_id",
-                            claims.get("cdr_arrangement_id").toString());
-                }
+//                if (claims.containsKey("cdr_arrangement_id")) {
+//                    dataMap.put("cdr_arrangement_id",
+//                            claims.get("cdr_arrangement_id").toString());
+//                }
             }
         } catch (ParseException e) {
             log.error("Error while parsing the request object", e);
@@ -185,47 +180,5 @@ public class AUConsentRetrievalStep implements ConsentRetrievalStep {
         }
         OffsetDateTime currentTime = OffsetDateTime.now(ZoneOffset.UTC);
         return currentTime.plusSeconds(sharingDuration).toString();
-    }
-
-    /**
-     * Maps data to AccountConsentRequest model.
-     *
-     * @param consentData consent data
-     * @param date expirationDate
-     * @param permissionsList permissions list
-     * @return an AccountConesntRequest model
-     */
-    public static AccountConsentRequest getAccountConsent(ConsentData consentData, String date,
-                                                          List<PermissionsEnum> permissionsList) {
-        AccountConsentRequest accountConsentRequest = new AccountConsentRequest();
-        AccountData accountData = new AccountData();
-        accountData.setPermissions(permissionsList);
-        accountData.setExpirationDateTime(date);
-        AccountRisk risk = new AccountRisk();
-        accountConsentRequest.setAccountData(accountData);
-        accountConsentRequest.setRequestId(consentData.getConsentId());
-        accountConsentRequest.setRisk(risk);
-        return accountConsentRequest;
-    }
-
-    /**
-     * convert the scope string to permission enum list.
-     *
-     * @param scopeString string containing the requested scopes
-     * @return list of permission enums to be stored
-     */
-    private List<PermissionsEnum> getPermissionList(String scopeString) {
-
-        ArrayList<PermissionsEnum> permissionList = new ArrayList<>();
-        if (StringUtils.isNotEmpty(scopeString)) {
-            // Remove "openid" from the scope list to display.
-            List<String> openIdScopes = Stream.of(scopeString.split(" "))
-                    .filter(x -> !StringUtils.equalsIgnoreCase(x, "openid")).collect(Collectors.toList());
-            for (String scope : openIdScopes) {
-                PermissionsEnum permissionsEnum = PermissionsEnum.fromValue(scope);
-                permissionList.add(permissionsEnum);
-            }
-        }
-        return permissionList;
     }
 }

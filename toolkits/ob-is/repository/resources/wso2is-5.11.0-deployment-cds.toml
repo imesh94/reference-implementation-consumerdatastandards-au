@@ -482,11 +482,11 @@ class = "com.wso2.openbanking.accelerator.consent.extensions.authorize.impl.NonR
 priority = 1
 
 [[open_banking.consent.authorize_steps.retrieve]]
-class = "com.wso2.openbanking.accelerator.consent.extensions.authorize.impl.DefaultConsentRetrievalStep"
+class = "com.wso2.openbanking.cds.consent.extensions.authorize.impl.retrieval.AUConsentRetrievalStep"
 priority = 2
 
 [[open_banking.consent.authorize_steps.persist]]
-class = "com.wso2.openbanking.accelerator.consent.extensions.authorize.impl.DefaultConsentPersistStep"
+class = "com.wso2.openbanking.cds.consent.extensions.authorize.impl.persist.AUConsentPersistStep"
 priority = 1
 
 [open_banking.consent.manage]
