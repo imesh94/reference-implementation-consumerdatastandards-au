@@ -485,6 +485,14 @@ priority = 1
 class = "com.wso2.openbanking.cds.consent.extensions.authorize.impl.retrieval.CDSConsentRetrievalStep"
 priority = 2
 
+[[open_banking.consent.authorize_steps.retrieve]]
+class = "com.wso2.openbanking.cds.consent.extensions.authorize.impl.retrieval.CDSDataClusterRetrievalStep"
+priority = 3
+
+[[open_banking.consent.authorize_steps.retrieve]]
+class = "com.wso2.openbanking.cds.consent.extensions.authorize.impl.retrieval.CDSAccountListRetrievalStep"
+priority = 4
+
 [[open_banking.consent.authorize_steps.persist]]
 class = "com.wso2.openbanking.cds.consent.extensions.authorize.impl.persist.CDSConsentPersistStep"
 priority = 1
