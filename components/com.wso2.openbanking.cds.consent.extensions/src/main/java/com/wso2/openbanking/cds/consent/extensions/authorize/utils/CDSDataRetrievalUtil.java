@@ -9,7 +9,7 @@
  * please see the license as well as any agreement you’ve entered into with
  * WSO2 governing the purchase of this software and any associated services.
  */
-package com.wso2.openbanking.cds.consent.extensions.authorize.impl.utils;
+package com.wso2.openbanking.cds.consent.extensions.authorize.utils;
 
 import com.wso2.openbanking.accelerator.common.exception.OpenBankingException;
 import com.wso2.openbanking.accelerator.consent.extensions.authorize.model.ConsentData;
@@ -59,9 +59,9 @@ public class CDSDataRetrievalUtil {
         } else {
             retrieveUrl = sharableAccountsRetrieveUrl;
         }
-        if (!parameters.isEmpty()) {
-            retrieveUrl = buildRequestURL(retrieveUrl, parameters);
-        }
+//        if (!parameters.isEmpty()) {
+//            retrieveUrl = buildRequestURL(retrieveUrl, parameters);
+//        }
 
         if (log.isDebugEnabled()) {
             log.debug("Sharable accounts retrieve endpoint : " + retrieveUrl);
@@ -116,7 +116,7 @@ public class CDSDataRetrievalUtil {
      * @param parameters map of parameters
      * @return the output URL
      */
-    private static String buildRequestURL(String baseURL, Map<String, String> parameters) {
+    public static String buildRequestURL(String baseURL, Map<String, String> parameters) {
 
         List<NameValuePair> pairs = new ArrayList<>();
 
@@ -141,7 +141,9 @@ public class CDSDataRetrievalUtil {
         if (StringUtils.isNotBlank(scopeString)) {
             // Remove "openid" from the scope list to display.
             List<String> openIdScopes = Stream.of(scopeString.split(" "))
-                    .filter(x -> !StringUtils.equalsIgnoreCase(x, "openid")).collect(Collectors.toList());
+                    .filter(x -> (!StringUtils.equalsIgnoreCase(x, "openid")
+                            && !StringUtils.equalsIgnoreCase(x, "profile")
+                            && !StringUtils.equalsIgnoreCase(x, "cdr:registration"))).collect(Collectors.toList());
             for (String scope : openIdScopes) {
                 PermissionsEnum permissionsEnum = PermissionsEnum.fromValue(scope);
                 permissionList.add(permissionsEnum);

@@ -15,7 +15,7 @@ import com.wso2.openbanking.accelerator.consent.extensions.authorize.model.Conse
 import com.wso2.openbanking.accelerator.consent.extensions.authorize.model.ConsentRetrievalStep;
 import com.wso2.openbanking.accelerator.consent.extensions.common.ConsentException;
 import com.wso2.openbanking.accelerator.consent.extensions.common.ResponseStatus;
-import com.wso2.openbanking.cds.consent.extensions.authorize.impl.utils.CDSDataRetrievalUtil;
+import com.wso2.openbanking.cds.consent.extensions.authorize.utils.CDSDataRetrievalUtil;
 import net.minidev.json.JSONArray;
 import net.minidev.json.JSONObject;
 import net.minidev.json.parser.JSONParser;
@@ -43,7 +43,7 @@ public class CDSConsentRetrievalStep implements ConsentRetrievalStep {
     public void execute(ConsentData consentData, JSONObject jsonObject) throws ConsentException {
 
         String requestObject = CDSDataRetrievalUtil.extractRequestObject(consentData.getSpQueryParams());
-        Map<String, Object> requiredData = validateRequestObjectAndExtractRequiredData(requestObject);
+        Map<String, Object> requiredData = extractRequiredDataFromRequestObject(requestObject);
 
         JSONArray permissions = new JSONArray();
         permissions.addAll(CDSDataRetrievalUtil.getPermissionList(consentData.getScopeString()));
@@ -54,7 +54,7 @@ public class CDSConsentRetrievalStep implements ConsentRetrievalStep {
         jsonElementPermissions.appendField("data", permissions);
 
         consentDataJSON.add(jsonElementPermissions);
-        String expiry =  requiredData.get("sharing_duration").toString();
+        String expiry =  requiredData.get("expirationDateTime").toString();
         JSONArray expiryArray = new JSONArray();
         expiryArray.add(expiry);
 
@@ -66,58 +66,38 @@ public class CDSConsentRetrievalStep implements ConsentRetrievalStep {
 
         jsonObject.appendField("consentData", consentDataJSON);
         consentData.addData("permissions", CDSDataRetrievalUtil.getPermissionList(consentData.getScopeString()));
-        consentData.addData("expirationDatetime", requiredData.get("sharing_duration").toString());
-        consentData.addData("sharing_duration_value", requiredData.get("sharing_duration_value").toString());
+        consentData.addData("expirationDateTime", requiredData.get("expirationDateTime"));
+        consentData.addData("sharing_duration_value", requiredData.get("sharing_duration_value"));
 
+        // consent type is hard coded since CDS only support accounts type for the moment
+        // scopes will be used to determine consent type if any other types required in future
         consentData.setType("CDR_ACCOUNTS");
 
-        // appending redirect URL for Identifier First UI change
+        // appending redirect URL
         jsonObject.appendField("redirectURL", CDSDataRetrievalUtil
                 .getRedirectURL(consentData.getSpQueryParams()));
 
-        // appending openid_scopes
+        // appending openid_scopes to be retrieved in authentication webapp
         jsonObject.appendField("openid_scopes", permissions);
-
-        //Appending Dummy data for Account ID. Ideally should be separate step calling accounts service
-
-        JSONArray accountsJSON = new JSONArray();
-        JSONObject accountOne = new JSONObject();
-        accountOne.appendField("account_id", "12345");
-        accountOne.appendField("display_name", "Salary Saver Account");
-
-        accountsJSON.add(accountOne);
-
-        JSONObject accountTwo = new JSONObject();
-        accountTwo.appendField("account_id", "67890");
-        accountTwo.appendField("display_name", "Max Bonus Account");
-
-        accountsJSON.add(accountTwo);
-
-        jsonObject.appendField("accounts", accountsJSON);
     }
 
     /**
-     * Method to validate the request object and extract required data
+     * Method to extract required data from request object
      *
      * @param requestObject
      * @return
      */
-    private Map<String, Object> validateRequestObjectAndExtractRequiredData(String requestObject) {
+    private Map<String, Object> extractRequiredDataFromRequestObject(String requestObject) {
 
         String clientID;
         Map<String, Object> dataMap = new HashMap<>();
         try {
 
-            // validate request object and get the payload
-            String requestObjectPayload;
+            // request object validation is carried out in request object validator
             String[] jwtTokenValues = requestObject.split("\\.");
-            if (jwtTokenValues.length == 3) {
-                requestObjectPayload = new String(Base64.getUrlDecoder().decode(jwtTokenValues[1]),
+            String requestObjectPayload = new String(Base64.getUrlDecoder().decode(jwtTokenValues[1]),
                         StandardCharsets.UTF_8);
-            } else {
-                log.error("request object is not signed JWT");
-                throw new ConsentException(ResponseStatus.BAD_REQUEST, "request object is not signed JWT");
-            }
+
             Object payload = new JSONParser(JSONParser.MODE_PERMISSIVE).parse(requestObjectPayload);
             if (!(payload instanceof JSONObject)) {
                 throw new ConsentException(ResponseStatus.BAD_REQUEST, "Payload is not a JSON object");
@@ -147,20 +127,20 @@ public class CDSConsentRetrievalStep implements ConsentRetrievalStep {
                                     + dataMap.get("client_id"));
                         }
                     }
-                    dataMap.put("sharing_duration", getConsentExpiryDateTime(sharingDuration, clientID));
+                    dataMap.put("expirationDateTime", getConsentExpiryDateTime(sharingDuration, clientID));
                 }
                 if (sharingDuration == 0) {
                     if (log.isDebugEnabled()) {
                         log.debug("sharing_duration not found in the request object of client: " + clientID);
                     }
-                    dataMap.put("sharing_duration", "0");
+                    dataMap.put("expirationDateTime", 0);
                 }
                 // adding original sharing_duration_value to data map
                 dataMap.put("sharing_duration_value", sharingDuration);
-//                if (claims.containsKey("cdr_arrangement_id")) {
-//                    dataMap.put("cdr_arrangement_id",
-//                            claims.get("cdr_arrangement_id").toString());
-//                }
+                if (claims.containsKey("cdr_arrangement_id")) {
+                    dataMap.put("cdr_arrangement_id",
+                            claims.get("cdr_arrangement_id").toString());
+                }
             }
         } catch (ParseException e) {
             log.error("Error while parsing the request object", e);
@@ -169,7 +149,7 @@ public class CDSConsentRetrievalStep implements ConsentRetrievalStep {
         return dataMap;
     }
 
-    private String getConsentExpiryDateTime(long sharingDuration, String clientId) {
+    private OffsetDateTime getConsentExpiryDateTime(long sharingDuration, String clientId) {
 
         if (sharingDuration > secondsInYear) {
             sharingDuration = secondsInYear;
@@ -179,6 +159,6 @@ public class CDSConsentRetrievalStep implements ConsentRetrievalStep {
             }
         }
         OffsetDateTime currentTime = OffsetDateTime.now(ZoneOffset.UTC);
-        return currentTime.plusSeconds(sharingDuration).toString();
+        return currentTime.plusSeconds(sharingDuration);
     }
 }

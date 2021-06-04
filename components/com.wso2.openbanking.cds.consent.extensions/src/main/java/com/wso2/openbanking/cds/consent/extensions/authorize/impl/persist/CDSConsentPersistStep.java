@@ -23,13 +23,14 @@ import com.wso2.openbanking.accelerator.consent.mgt.dao.models.ConsentResource;
 import com.wso2.openbanking.accelerator.consent.mgt.dao.models.DetailedConsentResource;
 import com.wso2.openbanking.accelerator.consent.mgt.service.impl.ConsentCoreServiceImpl;
 import com.wso2.openbanking.cds.consent.extensions.authorize.impl.model.AccountConsentRequest;
-import com.wso2.openbanking.cds.consent.extensions.authorize.impl.utils.CDSDataRetrievalUtil;
-import com.wso2.openbanking.cds.consent.extensions.authorize.impl.utils.PermissionsEnum;
+import com.wso2.openbanking.cds.consent.extensions.authorize.utils.CDSDataRetrievalUtil;
+import com.wso2.openbanking.cds.consent.extensions.authorize.utils.PermissionsEnum;
 import net.minidev.json.JSONArray;
 import net.minidev.json.JSONObject;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
+import java.time.OffsetDateTime;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -54,7 +55,7 @@ public class CDSConsentPersistStep implements ConsentPersistStep {
             JSONObject payloadData =  consentPersistData.getPayload();
             //get the consent object
             AccountConsentRequest accountConsentRequest = CDSDataRetrievalUtil.getAccountConsent(consentData,
-                            consentData.getMetaDataMap().get("expirationDatetime").toString(),
+                            consentData.getMetaDataMap().get("expirationDateTime").toString(),
                     (List<PermissionsEnum>) consentData.getMetaDataMap().get("permissions"));
 
             Gson gson = new Gson();
@@ -70,11 +71,15 @@ public class CDSConsentPersistStep implements ConsentPersistStep {
                 requestString, consentData.getType(), "awaitingAuthorization");
 
             requestedConsent.setConsentAttributes(consentAttributes);
+            requestedConsent
+                    .setRecurringIndicator((long) consentData.getMetaDataMap().get("sharing_duration_value") != 0);
+            requestedConsent.setValidityPeriod(((OffsetDateTime) consentData.getMetaDataMap().get("expirationDateTime"))
+                    .toEpochSecond());
 
             DetailedConsentResource createdConsent = null;
             try {
                 createdConsent = consentCoreService.createAuthorizableConsent(requestedConsent,
-                        null, "created", "awaitingAuthorization", true);
+                        consentData.getUserId(), "created", "awaitingAuthorization", true);
             } catch (ConsentManagementException e) {
                 log.error(e.getMessage());
             }
@@ -82,6 +87,7 @@ public class CDSConsentPersistStep implements ConsentPersistStep {
             consentData.setConsentId(consentId);
 
             ConsentResource consentResource = consentCoreService.getConsent(consentId, false);
+
             AuthorizationResource authorizationResource = consentCoreService.searchAuthorizations(consentId).get(0);
 
             if (!authorizationResource.getAuthorizationStatus().equals("created")) {
@@ -92,10 +98,8 @@ public class CDSConsentPersistStep implements ConsentPersistStep {
                 throw new ConsentException(ResponseStatus.BAD_REQUEST, "Authorization not in authorizable state");
             }
 
-//            consentData.setType(consentResource.getConsentType());
             consentData.setAuthResource(authorizationResource);
             consentData.setConsentResource(consentResource);
-
 
             if (consentData.getConsentId() == null && consentData.getConsentResource() == null) {
                 log.error("Consent ID not available in consent data");
@@ -139,6 +143,9 @@ public class CDSConsentPersistStep implements ConsentPersistStep {
 
             // TODO Joint Account Implementation
             // TODO Re-auth Scenario Implementation
+            // TODO Revoke existing arrangement
+            // TODO Data reporting
+
             consentCoreService.bindUserAccountsToConsent(consentResource, consentData.getUserId(),
                     consentData.getAuthResource().getAuthorizationID(), accountIdsString, authStatus, consentStatus);
         } catch (ConsentManagementException e) {

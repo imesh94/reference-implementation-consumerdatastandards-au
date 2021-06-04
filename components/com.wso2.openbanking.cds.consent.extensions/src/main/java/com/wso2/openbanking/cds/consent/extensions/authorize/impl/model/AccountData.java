@@ -11,7 +11,7 @@
  */
 package com.wso2.openbanking.cds.consent.extensions.authorize.impl.model;
 
-import com.wso2.openbanking.cds.consent.extensions.authorize.impl.utils.PermissionsEnum;
+import com.wso2.openbanking.cds.consent.extensions.authorize.utils.PermissionsEnum;
 
 import java.util.ArrayList;
 import java.util.List;
