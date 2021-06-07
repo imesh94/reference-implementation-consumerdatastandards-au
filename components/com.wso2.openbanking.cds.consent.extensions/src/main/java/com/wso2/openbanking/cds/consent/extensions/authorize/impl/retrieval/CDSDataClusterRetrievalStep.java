@@ -116,9 +116,8 @@ public class CDSDataClusterRetrievalStep implements ConsentRetrievalStep {
     }
 
     private static String getCustomerFromEndpoint(String customerDetailsUrl, String user) {
-//        user = user.substring(0, user.lastIndexOf("@"));
-//        String url = customerDetailsUrl.replace("{userId}", user);
-        String url = customerDetailsUrl;
+        user = user.substring(0, user.lastIndexOf("@"));
+        String url = customerDetailsUrl.replace("{userId}", user);
         if (log.isDebugEnabled()) {
             log.debug("Customer Details endpoint : " + url);
         }

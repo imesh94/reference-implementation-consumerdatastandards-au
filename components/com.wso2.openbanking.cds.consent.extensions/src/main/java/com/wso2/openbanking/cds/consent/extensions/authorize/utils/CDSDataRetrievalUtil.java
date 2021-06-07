@@ -56,9 +56,9 @@ public class CDSDataRetrievalUtil {
         } else {
             retrieveUrl = sharableAccountsRetrieveUrl;
         }
-//        if (!parameters.isEmpty()) {
-//            retrieveUrl = buildRequestURL(retrieveUrl, parameters);
-//        }
+        if (!parameters.isEmpty()) {
+            retrieveUrl = buildRequestURL(retrieveUrl, parameters);
+        }
 
         if (log.isDebugEnabled()) {
             log.debug("Sharable accounts retrieve endpoint : " + retrieveUrl);
