@@ -19,6 +19,7 @@ import com.wso2.openbanking.accelerator.identity.util.HTTPClientUtils;
 import com.wso2.openbanking.cds.consent.extensions.authorize.impl.model.AccountConsentRequest;
 import com.wso2.openbanking.cds.consent.extensions.authorize.impl.model.AccountData;
 import com.wso2.openbanking.cds.consent.extensions.authorize.impl.model.AccountRisk;
+import com.wso2.openbanking.cds.consent.extensions.common.CDSConsentExtensionConstants;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -45,17 +46,13 @@ import java.util.stream.Stream;
 public class CDSDataRetrievalUtil {
 
     private static final Log log = LogFactory.getLog(CDSDataRetrievalUtil.class);
-    public static final String ACCEPT_HEADER_NAME = "Accept";
-    public static final String ACCEPT_HEADER_VALUE = "application/json";
-    public static final String CHAR_SET = "UTF-8";
-    public static final String SERVICE_URL_SLASH = "/";
 
     public static String getAccountsFromEndpoint(String sharableAccountsRetrieveUrl, Map<String, String> parameters,
                                                  Map<String, String> headers) {
 
         String retrieveUrl = "";
-        if (!sharableAccountsRetrieveUrl.endsWith(SERVICE_URL_SLASH)) {
-            retrieveUrl = sharableAccountsRetrieveUrl + SERVICE_URL_SLASH;
+        if (!sharableAccountsRetrieveUrl.endsWith(CDSConsentExtensionConstants.SERVICE_URL_SLASH)) {
+            retrieveUrl = sharableAccountsRetrieveUrl + CDSConsentExtensionConstants.SERVICE_URL_SLASH;
         } else {
             retrieveUrl = sharableAccountsRetrieveUrl;
         }
@@ -70,7 +67,8 @@ public class CDSDataRetrievalUtil {
         BufferedReader reader = null;
         try (CloseableHttpClient client = HTTPClientUtils.getHttpsClient()) {
             HttpGet request = new HttpGet(retrieveUrl);
-            request.addHeader(ACCEPT_HEADER_NAME, ACCEPT_HEADER_VALUE);
+            request.addHeader(CDSConsentExtensionConstants.ACCEPT_HEADER_NAME,
+                    CDSConsentExtensionConstants.ACCEPT_HEADER_VALUE);
             if (!headers.isEmpty()) {
                 for (Map.Entry<String, String> key : headers.entrySet()) {
                     if (key.getKey() != null && key.getValue() != null) {
@@ -84,7 +82,8 @@ public class CDSDataRetrievalUtil {
                 log.error("Retrieving sharable accounts failed");
                 return null;
             } else {
-                reader = new BufferedReader(new InputStreamReader(response.getEntity().getContent(), CHAR_SET));
+                reader = new BufferedReader(new InputStreamReader(response.getEntity().getContent(),
+                        CDSConsentExtensionConstants.CHAR_SET));
                 String inputLine;
                 StringBuffer buffer = new StringBuffer();
                 while ((inputLine = reader.readLine()) != null) {
@@ -125,7 +124,7 @@ public class CDSDataRetrievalUtil {
                 pairs.add(new BasicNameValuePair(key.getKey(), key.getValue()));
             }
         }
-        String queries = URLEncodedUtils.format(pairs, "UTF-8");
+        String queries = URLEncodedUtils.format(pairs, CDSConsentExtensionConstants.CHAR_SET);
         return baseURL + "?" + queries;
     }
 
@@ -139,11 +138,12 @@ public class CDSDataRetrievalUtil {
 
         ArrayList<PermissionsEnum> permissionList = new ArrayList<>();
         if (StringUtils.isNotBlank(scopeString)) {
-            // Remove "openid" from the scope list to display.
+            // Remove "openid", "profile" and "cdr:registration" from the scope list to display.
             List<String> openIdScopes = Stream.of(scopeString.split(" "))
-                    .filter(x -> (!StringUtils.equalsIgnoreCase(x, "openid")
-                            && !StringUtils.equalsIgnoreCase(x, "profile")
-                            && !StringUtils.equalsIgnoreCase(x, "cdr:registration"))).collect(Collectors.toList());
+                    .filter(x -> (!StringUtils.equalsIgnoreCase(x, CDSConsentExtensionConstants.OPENID_SCOPE)
+                            && !StringUtils.equalsIgnoreCase(x, CDSConsentExtensionConstants.PROFILE_SCOPE)
+                            && !StringUtils.equalsIgnoreCase(x, CDSConsentExtensionConstants.CDR_REGISTRATION_SCOPE)))
+                    .collect(Collectors.toList());
             for (String scope : openIdScopes) {
                 PermissionsEnum permissionsEnum = PermissionsEnum.fromValue(scope);
                 permissionList.add(permissionsEnum);

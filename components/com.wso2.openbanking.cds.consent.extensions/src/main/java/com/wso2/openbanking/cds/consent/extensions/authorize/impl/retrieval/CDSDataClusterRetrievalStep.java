@@ -21,6 +21,7 @@ import com.wso2.openbanking.cds.consent.extensions.common.CDSConsentExtensionCon
 import net.minidev.json.JSONObject;
 import net.minidev.json.parser.JSONParser;
 import net.minidev.json.parser.ParseException;
+import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.apache.http.HttpResponse;
@@ -42,36 +43,34 @@ import java.util.Map;
 public class CDSDataClusterRetrievalStep implements ConsentRetrievalStep {
 
     private static final Log log = LogFactory.getLog(CDSDataClusterRetrievalStep.class);
-    private static final String CHAR_SET = "UTF-8";
-    private static final String CUSTOMER_TYPE = "customerUType";
-    private static final String ORGANISATION = "Organisation";
 
     @Override
     public void execute(ConsentData consentData, JSONObject jsonObject) throws ConsentException {
 
-        if (!consentData.getMetaDataMap().containsKey("permissions")) {
+        if (!consentData.getMetaDataMap().containsKey(CDSConsentExtensionConstants.PERMISSIONS)) {
             log.error("Error: Scopes are not found in consent data.");
             return;
         }
         JSONArray dataCluster = new JSONArray();
         JSONArray scopes = new JSONArray();
-        scopes.addAll((ArrayList) consentData.getMetaDataMap().get("permissions"));
+        scopes.addAll((ArrayList) consentData.getMetaDataMap().get(CDSConsentExtensionConstants.PERMISSIONS));
         String customerType = getCustomerType(consentData);
 
         for (Object scopeEnum: scopes) {
             JSONObject dataClusterItem = new JSONObject();
             String scope = scopeEnum.toString();
-            if ("common:customer.basic:read".equalsIgnoreCase(scope) &&
-                    scopes.contains("common:customer.detail:read")) {
+            if (CDSConsentExtensionConstants.COMMON_CUSTOMER_BASIC_READ_SCOPE.equalsIgnoreCase(scope) &&
+                    scopes.contains(CDSConsentExtensionConstants.COMMON_CUSTOMER_DETAIL_READ_SCOPE)) {
                 continue;
-            } else if ("bank:accounts.basic:read".equalsIgnoreCase(scope) &&
-                    scopes.contains("bank:accounts.detail:read")) {
+            } else if (CDSConsentExtensionConstants.COMMON_ACCOUNTS_BASIC_READ_SCOPE.equalsIgnoreCase(scope) &&
+                    scopes.contains(CDSConsentExtensionConstants.COMMON_ACCOUNTS_DETAIL_READ_SCOPE)) {
                 continue;
             }
             Map<String, List<String>> cluster;
-            if (scope.contains("common:") && ORGANISATION.equalsIgnoreCase(customerType)) {
+            if (scope.contains(CDSConsentExtensionConstants.COMMON_SUBSTRING) &&
+                    CDSConsentExtensionConstants.ORGANISATION.equalsIgnoreCase(customerType)) {
                 cluster = CDSConsentExtensionConstants.BUSINESS_CDS_DATA_CLUSTER.get(scope);
-            } else if (scope.contains("common:")) {
+            } else if (scope.contains(CDSConsentExtensionConstants.COMMON_SUBSTRING)) {
                 cluster = CDSConsentExtensionConstants.INDIVIDUAL_CDS_DATA_CLUSTER.get(scope);
             } else {
                 cluster = CDSConsentExtensionConstants.CDS_DATA_CLUSTER.get(scope);
@@ -93,27 +92,27 @@ public class CDSDataClusterRetrievalStep implements ConsentRetrievalStep {
 
     private static String getCustomerType(ConsentData consentData) {
 
-        if ("true".equalsIgnoreCase(OpenBankingCDSConfigParser.getInstance().getConfiguration()
-                .get("CustomerDetails.Enable").toString())) {
+        if (CDSConsentExtensionConstants.TRUE.equalsIgnoreCase(OpenBankingCDSConfigParser.getInstance()
+                .getConfiguration().get(CDSConsentExtensionConstants.ENABLE_CUSTOMER_DETAILS).toString())) {
 
             String customerEPURL = OpenBankingCDSConfigParser.getInstance().getConfiguration()
-                    .get("CustomerDetails.CustomerDetailsRetrieveEndpoint").toString();
+                    .get(CDSConsentExtensionConstants.CUSTOMER_DETAILS_RETRIEVE_ENDPOINT).toString();
 
-            if (customerEPURL != null) {
+            if (StringUtils.isNotBlank(customerEPURL)) {
                 String customerDetails = getCustomerFromEndpoint(customerEPURL, consentData.getUserId());
                 try {
                     JSONObject customerDetailsJson = (JSONObject) new JSONParser(JSONParser.MODE_PERMISSIVE)
                             .parse(customerDetails);
-                    return customerDetailsJson.get(CUSTOMER_TYPE).toString();
+                    return customerDetailsJson.get(CDSConsentExtensionConstants.CUSTOMER_TYPE).toString();
                 } catch (ParseException e) {
                     if (log.isDebugEnabled()) {
                         log.debug("Unable to load customer data for the customer: " + consentData.getUserId());
                     }
-                    return ORGANISATION;
+                    return CDSConsentExtensionConstants.ORGANISATION;
                 }
             }
         }
-        return ORGANISATION;
+        return CDSConsentExtensionConstants.ORGANISATION;
     }
 
     private static String getCustomerFromEndpoint(String customerDetailsUrl, String user) {
@@ -133,7 +132,8 @@ public class CDSDataClusterRetrievalStep implements ConsentRetrievalStep {
                 log.error("Retrieving customer details failed");
                 return null;
             } else {
-                reader = new BufferedReader(new InputStreamReader(response.getEntity().getContent(), CHAR_SET));
+                reader = new BufferedReader(new InputStreamReader(response.getEntity().getContent(),
+                        CDSConsentExtensionConstants.CHAR_SET));
                 String inputLine;
                 StringBuffer buffer = new StringBuffer();
                 while ((inputLine = reader.readLine()) != null) {

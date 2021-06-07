@@ -25,6 +25,7 @@ import com.wso2.openbanking.accelerator.consent.mgt.service.impl.ConsentCoreServ
 import com.wso2.openbanking.cds.consent.extensions.authorize.impl.model.AccountConsentRequest;
 import com.wso2.openbanking.cds.consent.extensions.authorize.utils.CDSDataRetrievalUtil;
 import com.wso2.openbanking.cds.consent.extensions.authorize.utils.PermissionsEnum;
+import com.wso2.openbanking.cds.consent.extensions.common.CDSConsentExtensionConstants;
 import net.minidev.json.JSONArray;
 import net.minidev.json.JSONObject;
 import org.apache.commons.logging.Log;
@@ -44,8 +45,6 @@ public class CDSConsentPersistStep implements ConsentPersistStep {
 
     private static final Log log = LogFactory.getLog(CDSConsentPersistStep.class);
     private static final ConsentCoreServiceImpl consentCoreService = new ConsentCoreServiceImpl();
-    private static final String AUTHORISED_STATUS = "authorised";
-    private static final String REJECTED_STATUS = "rejected";
 
     @Override
     public void execute(ConsentPersistData consentPersistData) throws ConsentException {
@@ -54,47 +53,59 @@ public class CDSConsentPersistStep implements ConsentPersistStep {
             ConsentData consentData = consentPersistData.getConsentData();
             JSONObject payloadData =  consentPersistData.getPayload();
             //get the consent object
-            AccountConsentRequest accountConsentRequest = CDSDataRetrievalUtil.getAccountConsent(consentData,
-                            consentData.getMetaDataMap().get("expirationDateTime").toString(),
-                    (List<PermissionsEnum>) consentData.getMetaDataMap().get("permissions"));
+            AccountConsentRequest accountConsentRequest = CDSDataRetrievalUtil
+                    .getAccountConsent(consentData, consentData.getMetaDataMap().
+                                    get(CDSConsentExtensionConstants.EXPIRATION_DATE_TIME).toString(),
+                    (List<PermissionsEnum>) consentData.getMetaDataMap().get(CDSConsentExtensionConstants.PERMISSIONS));
 
             Gson gson = new Gson();
             String requestString = gson.toJson(accountConsentRequest);
 
             Map<String, String> consentAttributes = new HashMap<>();
-            consentAttributes.put("commonAuthId", ((JSONObject) payloadData.get("metadata"))
-                    .getAsString("commonAuthId"));
-            consentAttributes.put("sharing_duration_value", consentData.getMetaDataMap().
-                    get("sharing_duration_value").toString());
+            consentAttributes.put(CDSConsentExtensionConstants.COMMON_AUTH_ID,
+                    ((JSONObject) payloadData.get(CDSConsentExtensionConstants.METADATA))
+                    .getAsString(CDSConsentExtensionConstants.COMMON_AUTH_ID));
+            consentAttributes.put(CDSConsentExtensionConstants.SHARING_DURATION_VALUE, consentData.getMetaDataMap().
+                    get(CDSConsentExtensionConstants.SHARING_DURATION_VALUE).toString());
 
             ConsentResource requestedConsent = new ConsentResource(consentData.getClientId(),
-                requestString, consentData.getType(), "awaitingAuthorization");
+                requestString, consentData.getType(), CDSConsentExtensionConstants.AWAITING_AUTH_STATUS);
 
             requestedConsent.setConsentAttributes(consentAttributes);
             requestedConsent
-                    .setRecurringIndicator((long) consentData.getMetaDataMap().get("sharing_duration_value") != 0);
-            requestedConsent.setValidityPeriod(((OffsetDateTime) consentData.getMetaDataMap().get("expirationDateTime"))
-                    .toEpochSecond());
+                    .setRecurringIndicator((long) consentData.getMetaDataMap()
+                            .get(CDSConsentExtensionConstants.SHARING_DURATION_VALUE) != 0);
+            requestedConsent.setValidityPeriod(((OffsetDateTime) consentData.getMetaDataMap()
+                    .get(CDSConsentExtensionConstants.EXPIRATION_DATE_TIME)).toEpochSecond());
 
             DetailedConsentResource createdConsent = null;
             try {
                 createdConsent = consentCoreService.createAuthorizableConsent(requestedConsent,
-                        consentData.getUserId(), "created", "awaitingAuthorization", true);
+                        consentData.getUserId(), CDSConsentExtensionConstants.CREATED_STATUS,
+                        CDSConsentExtensionConstants.AWAITING_AUTH_STATUS, true);
             } catch (ConsentManagementException e) {
                 log.error(e.getMessage());
+                throw new ConsentException(ResponseStatus.INTERNAL_SERVER_ERROR, "Error while creating the consent");
             }
             String consentId = createdConsent.getConsentID();
             consentData.setConsentId(consentId);
 
             ConsentResource consentResource = consentCoreService.getConsent(consentId, false);
 
-            AuthorizationResource authorizationResource = consentCoreService.searchAuthorizations(consentId).get(0);
+            ArrayList<AuthorizationResource> authorizationResources = consentCoreService
+                    .searchAuthorizations(consentId);
 
-            if (!authorizationResource.getAuthorizationStatus().equals("created")) {
+            AuthorizationResource authorizationResource = null;
+            long updatedTime = 0;
+            for (AuthorizationResource authorizationResourceValue: authorizationResources) {
+                if (authorizationResourceValue.getUpdatedTime() > updatedTime) {
+                    updatedTime = authorizationResourceValue.getUpdatedTime();
+                    authorizationResource = authorizationResourceValue;
+                }
+            }
+
+            if (!authorizationResource.getAuthorizationStatus().equals(CDSConsentExtensionConstants.CREATED_STATUS)) {
                 log.error("Authorization not in authorizable state");
-                //Currently throwing error as 400 response. Developer also have the option of appending a field IS_ERROR
-                // to the jsonObject and showing it to the user in the webapp. If so, the IS_ERROR have to be checked in
-                // any later steps.
                 throw new ConsentException(ResponseStatus.BAD_REQUEST, "Authorization not in authorizable state");
             }
 
@@ -119,7 +130,7 @@ public class CDSConsentPersistStep implements ConsentPersistStep {
                         "Account IDs not available in persist request");
             }
 
-            JSONArray accountIds = (JSONArray) payloadData.get("accountIds");
+            JSONArray accountIds = (JSONArray) payloadData.get(CDSConsentExtensionConstants.ACCOUNT_IDS);
             ArrayList<String> accountIdsString = new ArrayList<>();
             for (Object account : accountIds) {
                 if (!(account instanceof String)) {
@@ -134,17 +145,17 @@ public class CDSConsentPersistStep implements ConsentPersistStep {
             String authStatus;
 
             if (consentPersistData.getApproval()) {
-                consentStatus = AUTHORISED_STATUS;
-                authStatus = AUTHORISED_STATUS;
+                consentStatus = CDSConsentExtensionConstants.AUTHORIZED_STATUS;
+                authStatus = CDSConsentExtensionConstants.AUTHORIZED_STATUS;
             } else {
-                consentStatus = REJECTED_STATUS;
-                authStatus = REJECTED_STATUS;
+                consentStatus = CDSConsentExtensionConstants.REJECTED_STATUS;
+                authStatus = CDSConsentExtensionConstants.REJECTED_STATUS;
             }
 
-            // TODO Joint Account Implementation
-            // TODO Re-auth Scenario Implementation
-            // TODO Revoke existing arrangement
-            // TODO Data reporting
+            // TODO: Joint Account implementation
+            // TODO: Re-auth scenario implementation
+            // TODO: Revoke existing arrangement
+            // TODO: Data reporting
 
             consentCoreService.bindUserAccountsToConsent(consentResource, consentData.getUserId(),
                     consentData.getAuthResource().getAuthorizationID(), accountIdsString, authStatus, consentStatus);

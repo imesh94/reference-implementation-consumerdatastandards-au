@@ -16,10 +16,12 @@ import com.wso2.openbanking.accelerator.consent.extensions.authorize.model.Conse
 import com.wso2.openbanking.accelerator.consent.extensions.common.ConsentException;
 import com.wso2.openbanking.accelerator.consent.extensions.common.ResponseStatus;
 import com.wso2.openbanking.cds.consent.extensions.authorize.utils.CDSDataRetrievalUtil;
+import com.wso2.openbanking.cds.consent.extensions.common.CDSConsentExtensionConstants;
 import net.minidev.json.JSONArray;
 import net.minidev.json.JSONObject;
 import net.minidev.json.parser.JSONParser;
 import net.minidev.json.parser.ParseException;
+import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
@@ -50,35 +52,42 @@ public class CDSConsentRetrievalStep implements ConsentRetrievalStep {
         JSONArray consentDataJSON = new JSONArray();
 
         JSONObject jsonElementPermissions = new JSONObject();
-        jsonElementPermissions.appendField("title", "Permissions");
-        jsonElementPermissions.appendField("data", permissions);
+        jsonElementPermissions.appendField(CDSConsentExtensionConstants.TITLE,
+                CDSConsentExtensionConstants.PERMISSION_TITLE);
+        jsonElementPermissions.appendField(CDSConsentExtensionConstants.DATA, permissions);
 
         consentDataJSON.add(jsonElementPermissions);
-        String expiry =  requiredData.get("expirationDateTime").toString();
+        String expiry =  requiredData.get(CDSConsentExtensionConstants.EXPIRATION_DATE_TIME).toString();
         JSONArray expiryArray = new JSONArray();
         expiryArray.add(expiry);
 
         JSONObject jsonElementExpiry = new JSONObject();
-        jsonElementExpiry.appendField("title", "Expiration Date Time");
-        jsonElementExpiry.appendField("data", expiryArray);
+        jsonElementExpiry.appendField(CDSConsentExtensionConstants.TITLE,
+                CDSConsentExtensionConstants.EXPIRATION_DATE_TITLE);
+        jsonElementExpiry.appendField(CDSConsentExtensionConstants.DATA, expiryArray);
 
         consentDataJSON.add(jsonElementExpiry);
 
-        jsonObject.appendField("consentData", consentDataJSON);
-        consentData.addData("permissions", CDSDataRetrievalUtil.getPermissionList(consentData.getScopeString()));
-        consentData.addData("expirationDateTime", requiredData.get("expirationDateTime"));
-        consentData.addData("sharing_duration_value", requiredData.get("sharing_duration_value"));
+        jsonObject.appendField(CDSConsentExtensionConstants.CONSENT_DATA, consentDataJSON);
+        consentData.addData(CDSConsentExtensionConstants.PERMISSIONS,
+                CDSDataRetrievalUtil.getPermissionList(consentData.getScopeString()));
+        consentData.addData(CDSConsentExtensionConstants.EXPIRATION_DATE_TIME,
+                requiredData.get(CDSConsentExtensionConstants.EXPIRATION_DATE_TIME));
+        consentData.addData(CDSConsentExtensionConstants.SHARING_DURATION_VALUE,
+                requiredData.get(CDSConsentExtensionConstants.SHARING_DURATION_VALUE));
+        consentData.addData(CDSConsentExtensionConstants.CDR_ARRANGEMENT_ID,
+                requiredData.get(CDSConsentExtensionConstants.CDR_ARRANGEMENT_ID));
 
         // consent type is hard coded since CDS only support accounts type for the moment
         // scopes will be used to determine consent type if any other types required in future
-        consentData.setType("CDR_ACCOUNTS");
+        consentData.setType(CDSConsentExtensionConstants.CDR_ACCOUNTS);
 
         // appending redirect URL
-        jsonObject.appendField("redirectURL", CDSDataRetrievalUtil
+        jsonObject.appendField(CDSConsentExtensionConstants.REDIRECT_URL, CDSDataRetrievalUtil
                 .getRedirectURL(consentData.getSpQueryParams()));
 
         // appending openid_scopes to be retrieved in authentication webapp
-        jsonObject.appendField("openid_scopes", permissions);
+        jsonObject.appendField(CDSConsentExtensionConstants.OPENID_SCOPES, permissions);
     }
 
     /**
@@ -105,41 +114,43 @@ public class CDSConsentRetrievalStep implements ConsentRetrievalStep {
             JSONObject jsonObject = (JSONObject) payload;
 
             long sharingDuration = 0;
-            clientID = jsonObject.getAsString("client_id");
+            clientID = jsonObject.getAsString(CDSConsentExtensionConstants.CLIENT_ID);
 
-            if (clientID == null) {
+            if (StringUtils.isBlank(clientID)) {
                 log.error("client_id not found in request object");
-                dataMap.put("isError", "client_id not found in request object");
+                dataMap.put(CDSConsentExtensionConstants.IS_ERROR, "client_id not found in request object");
                 return dataMap;
             }
-            dataMap.put("client_id", clientID);
+            dataMap.put(CDSConsentExtensionConstants.CLIENT_ID, clientID);
 
-            if (jsonObject.containsKey("claims")) {
-                JSONObject claims = (JSONObject) jsonObject.get("claims");
-                if (claims.containsKey("sharing_duration")) {
-                    sharingDuration = Long.parseLong(claims.get("sharing_duration").toString());
+            if (jsonObject.containsKey(CDSConsentExtensionConstants.CLAIMS)) {
+                JSONObject claims = (JSONObject) jsonObject.get(CDSConsentExtensionConstants.CLAIMS);
+                if (claims.containsKey(CDSConsentExtensionConstants.SHARING_DURATION)) {
+                    sharingDuration = Long.parseLong(claims
+                            .get(CDSConsentExtensionConstants.SHARING_DURATION).toString());
 
                     if (sharingDuration > secondsInYear) {
                         sharingDuration = secondsInYear;
                         if (log.isDebugEnabled()) {
                             log.debug("Requested sharing_duration is greater than a year,therefore one year duration"
                                     + " is set as consent expiration for request object of client: "
-                                    + dataMap.get("client_id"));
+                                    + dataMap.get(CDSConsentExtensionConstants.CLIENT_ID));
                         }
                     }
-                    dataMap.put("expirationDateTime", getConsentExpiryDateTime(sharingDuration, clientID));
+                    dataMap.put(CDSConsentExtensionConstants.EXPIRATION_DATE_TIME,
+                            getConsentExpiryDateTime(sharingDuration, clientID));
                 }
                 if (sharingDuration == 0) {
                     if (log.isDebugEnabled()) {
                         log.debug("sharing_duration not found in the request object of client: " + clientID);
                     }
-                    dataMap.put("expirationDateTime", 0);
+                    dataMap.put(CDSConsentExtensionConstants.EXPIRATION_DATE_TIME, 0);
                 }
                 // adding original sharing_duration_value to data map
-                dataMap.put("sharing_duration_value", sharingDuration);
-                if (claims.containsKey("cdr_arrangement_id")) {
-                    dataMap.put("cdr_arrangement_id",
-                            claims.get("cdr_arrangement_id").toString());
+                dataMap.put(CDSConsentExtensionConstants.SHARING_DURATION_VALUE, sharingDuration);
+                if (claims.containsKey(CDSConsentExtensionConstants.CDR_ARRANGEMENT_ID)) {
+                    dataMap.put(CDSConsentExtensionConstants.CDR_ARRANGEMENT_ID,
+                            claims.get(CDSConsentExtensionConstants.CDR_ARRANGEMENT_ID).toString());
                 }
             }
         } catch (ParseException e) {

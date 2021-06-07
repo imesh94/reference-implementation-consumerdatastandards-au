@@ -17,6 +17,7 @@ import com.wso2.openbanking.accelerator.consent.extensions.common.ConsentExcepti
 import com.wso2.openbanking.accelerator.consent.extensions.common.ResponseStatus;
 import com.wso2.openbanking.cds.common.config.OpenBankingCDSConfigParser;
 import com.wso2.openbanking.cds.consent.extensions.authorize.utils.CDSDataRetrievalUtil;
+import com.wso2.openbanking.cds.consent.extensions.common.CDSConsentExtensionConstants;
 import net.minidev.json.JSONArray;
 import net.minidev.json.JSONObject;
 import net.minidev.json.parser.JSONParser;
@@ -40,7 +41,7 @@ public class CDSAccountListRetrievalStep implements ConsentRetrievalStep {
     public void execute(ConsentData consentData, JSONObject jsonObject) throws ConsentException {
 
         String accountsURL = (String) OpenBankingCDSConfigParser.getInstance().getConfiguration()
-                .get("ConsentManagement.SharableAccountsRetrieveEndpoint");
+                .get(CDSConsentExtensionConstants.SHARABLE_ACCOUNTS_ENDPOINT);
 
         if (StringUtils.isNotBlank(accountsURL)) {
 
@@ -48,7 +49,7 @@ public class CDSAccountListRetrievalStep implements ConsentRetrievalStep {
             parameters.put(USER_ID_KEY_NAME, consentData.getUserId());
             String accountData = CDSDataRetrievalUtil.getAccountsFromEndpoint(accountsURL, parameters, new HashMap<>());
 
-            if (accountData == null) {
+            if (StringUtils.isBlank(accountData)) {
                 log.error("Unable to load accounts data for the user: " + consentData.getUserId());
                 throw new ConsentException(ResponseStatus.INTERNAL_SERVER_ERROR,
                         "Exception occurred while getting accounts data");
@@ -56,8 +57,8 @@ public class CDSAccountListRetrievalStep implements ConsentRetrievalStep {
             JSONParser parser = new JSONParser(JSONParser.MODE_PERMISSIVE);
             try {
                 JSONObject jsonAccountData = (JSONObject) parser.parse(accountData);
-                JSONArray accountsJSON = (JSONArray) jsonAccountData.get("data");
-                jsonObject.appendField("accounts", accountsJSON);
+                JSONArray accountsJSON = (JSONArray) jsonAccountData.get(CDSConsentExtensionConstants.DATA);
+                jsonObject.appendField(CDSConsentExtensionConstants.ACCOUNTS, accountsJSON);
             } catch (ParseException e) {
                 throw new ConsentException(ResponseStatus.INTERNAL_SERVER_ERROR,
                         "Exception occurred while getting accounts data");
