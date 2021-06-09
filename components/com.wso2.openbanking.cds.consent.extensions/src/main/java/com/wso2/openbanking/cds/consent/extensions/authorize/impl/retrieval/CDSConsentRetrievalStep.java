@@ -138,7 +138,7 @@ public class CDSConsentRetrievalStep implements ConsentRetrievalStep {
                         }
                     }
                     dataMap.put(CDSConsentExtensionConstants.EXPIRATION_DATE_TIME,
-                            getConsentExpiryDateTime(sharingDuration, clientID));
+                            getConsentExpiryDateTime(sharingDuration));
                 }
                 if (sharingDuration == 0) {
                     if (log.isDebugEnabled()) {
@@ -160,15 +160,8 @@ public class CDSConsentRetrievalStep implements ConsentRetrievalStep {
         return dataMap;
     }
 
-    private OffsetDateTime getConsentExpiryDateTime(long sharingDuration, String clientId) {
+    private OffsetDateTime getConsentExpiryDateTime(long sharingDuration) {
 
-        if (sharingDuration > secondsInYear) {
-            sharingDuration = secondsInYear;
-            if (log.isDebugEnabled()) {
-                log.debug("Requested sharing_duration is greater than a year, therefore one year duration is" +
-                        " set as consent expiration for request object of client: " + clientId);
-            }
-        }
         OffsetDateTime currentTime = OffsetDateTime.now(ZoneOffset.UTC);
         return currentTime.plusSeconds(sharingDuration);
     }
