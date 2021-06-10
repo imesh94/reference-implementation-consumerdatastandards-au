@@ -21,6 +21,7 @@ import com.wso2.openbanking.cds.consent.extensions.common.CDSConsentExtensionCon
 import net.minidev.json.JSONObject;
 import net.minidev.json.parser.JSONParser;
 import net.minidev.json.parser.ParseException;
+import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -29,10 +30,10 @@ import org.apache.http.client.methods.HttpGet;
 import org.apache.http.impl.client.CloseableHttpClient;
 import org.json.simple.JSONArray;
 
-import java.io.BufferedReader;
 import java.io.IOException;
-import java.io.InputStreamReader;
+import java.io.InputStream;
 import java.net.HttpURLConnection;
+import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
@@ -100,15 +101,17 @@ public class CDSDataClusterRetrievalStep implements ConsentRetrievalStep {
 
             if (StringUtils.isNotBlank(customerEPURL)) {
                 String customerDetails = getCustomerFromEndpoint(customerEPURL, consentData.getUserId());
-                try {
-                    JSONObject customerDetailsJson = (JSONObject) new JSONParser(JSONParser.MODE_PERMISSIVE)
-                            .parse(customerDetails);
-                    return customerDetailsJson.get(CDSConsentExtensionConstants.CUSTOMER_TYPE).toString();
-                } catch (ParseException e) {
-                    if (log.isDebugEnabled()) {
-                        log.debug("Unable to load customer data for the customer: " + consentData.getUserId());
+                if (StringUtils.isNotBlank(customerDetails)) {
+                    try {
+                        JSONObject customerDetailsJson = (JSONObject) new JSONParser(JSONParser.MODE_PERMISSIVE)
+                                .parse(customerDetails);
+                        return customerDetailsJson.get(CDSConsentExtensionConstants.CUSTOMER_TYPE).toString();
+                    } catch (ParseException e) {
+                        if (log.isDebugEnabled()) {
+                            log.debug("Unable to load customer data for the customer: " + consentData.getUserId());
+                        }
+                        return CDSConsentExtensionConstants.ORGANISATION;
                     }
-                    return CDSConsentExtensionConstants.ORGANISATION;
                 }
             }
         }
@@ -122,7 +125,6 @@ public class CDSDataClusterRetrievalStep implements ConsentRetrievalStep {
             log.debug("Customer Details endpoint : " + url);
         }
 
-        BufferedReader reader = null;
         try (CloseableHttpClient client = HTTPClientUtils.getHttpsClient()) {
             HttpGet request = new HttpGet(url);
             HttpResponse response = client.execute(request);
@@ -131,28 +133,11 @@ public class CDSDataClusterRetrievalStep implements ConsentRetrievalStep {
                 log.error("Retrieving customer details failed");
                 return null;
             } else {
-                reader = new BufferedReader(new InputStreamReader(response.getEntity().getContent(),
-                        CDSConsentExtensionConstants.CHAR_SET));
-                String inputLine;
-                StringBuffer buffer = new StringBuffer();
-                while ((inputLine = reader.readLine()) != null) {
-                    buffer.append(inputLine);
-                }
-                if (log.isDebugEnabled()) {
-                    log.debug("Sharable accounts endpoints returned : " + buffer.toString());
-                }
-                return buffer.toString();
+                InputStream in = response.getEntity().getContent();
+                return IOUtils.toString(in, String.valueOf(StandardCharsets.UTF_8));
             }
         } catch (IOException | OpenBankingException e) {
             log.error("Exception occurred while retrieving sharable accounts", e);
-        } finally {
-            if (reader != null) {
-                try {
-                    reader.close();
-                } catch (IOException e) {
-                    log.error("Error while closing buffered reader");
-                }
-            }
         }
         return null;
     }

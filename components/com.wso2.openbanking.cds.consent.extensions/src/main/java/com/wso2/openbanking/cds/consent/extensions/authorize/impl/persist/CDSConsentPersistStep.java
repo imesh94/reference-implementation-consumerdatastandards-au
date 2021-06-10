@@ -54,7 +54,7 @@ public class CDSConsentPersistStep implements ConsentPersistStep {
             try {
                 ConsentData consentData = consentPersistData.getConsentData();
                 JSONObject payloadData =  consentPersistData.getPayload();
-                //get the consent object
+                // get the consent model to be created
                 AccountConsentRequest accountConsentRequest = CDSDataRetrievalUtil
                         .getAccountConsent(consentData, consentData.getMetaDataMap().
                                         get(CDSConsentExtensionConstants.EXPIRATION_DATE_TIME).toString(),
@@ -64,6 +64,7 @@ public class CDSConsentPersistStep implements ConsentPersistStep {
                 Gson gson = new Gson();
                 String requestString = gson.toJson(accountConsentRequest);
 
+                // add commonAuthId and sharing_duration_value to consent attributes
                 Map<String, String> consentAttributes = new HashMap<>();
                 consentAttributes.put(CDSConsentExtensionConstants.COMMON_AUTH_ID,
                         ((JSONObject) payloadData.get(CDSConsentExtensionConstants.METADATA))
@@ -71,32 +72,34 @@ public class CDSConsentPersistStep implements ConsentPersistStep {
                 consentAttributes.put(CDSConsentExtensionConstants.SHARING_DURATION_VALUE, consentData.getMetaDataMap()
                         .get(CDSConsentExtensionConstants.SHARING_DURATION_VALUE).toString());
 
-                ConsentResource requestedConsent = new ConsentResource(consentData.getClientId(),
+                // create new consent resource and set attributes to be stored when consent is created
+                ConsentResource consentResource = new ConsentResource(consentData.getClientId(),
                         requestString, consentData.getType(), CDSConsentExtensionConstants.AWAITING_AUTH_STATUS);
 
-                requestedConsent.setConsentAttributes(consentAttributes);
-                requestedConsent
+                consentResource.setConsentAttributes(consentAttributes);
+                consentResource
                         .setRecurringIndicator((long) consentData.getMetaDataMap()
                                 .get(CDSConsentExtensionConstants.SHARING_DURATION_VALUE) != 0);
-                requestedConsent.setValidityPeriod(((OffsetDateTime) consentData.getMetaDataMap()
+                consentResource.setValidityPeriod(((OffsetDateTime) consentData.getMetaDataMap()
                         .get(CDSConsentExtensionConstants.EXPIRATION_DATE_TIME)).toEpochSecond());
 
+                // create authorizable consent using the consent resource above
                 DetailedConsentResource createdConsent = null;
                 try {
-                    createdConsent = createConsent(consentCoreService, requestedConsent, consentData);
+                    createdConsent = createConsent(consentCoreService, consentResource, consentData);
                 } catch (ConsentManagementException e) {
                     log.error(e.getMessage());
                     throw new ConsentException(ResponseStatus.INTERNAL_SERVER_ERROR,
                             "Error while creating the consent");
                 }
+                // set consentId for the consentData from obtained from detailed consent resource
                 String consentId = createdConsent.getConsentID();
                 consentData.setConsentId(consentId);
 
-                ConsentResource consentResource = getConsent(consentCoreService, consentId);
+                // get authorization resources from created consent
+                ArrayList<AuthorizationResource> authorizationResources = createdConsent.getAuthorizationResources();
 
-                ArrayList<AuthorizationResource> authorizationResources = getAuthorizationResources(consentCoreService,
-                        consentId);
-
+                // get the latest authorization resource from updated time parameter
                 AuthorizationResource authorizationResource = null;
                 long updatedTime = 0;
                 for (AuthorizationResource authorizationResourceValue: authorizationResources) {
@@ -134,6 +137,7 @@ public class CDSConsentPersistStep implements ConsentPersistStep {
                             "Account IDs not available in persist request");
                 }
 
+                // get user consented accounts list to bind them with the consent
                 JSONArray accountIds = (JSONArray) payloadData.get(CDSConsentExtensionConstants.ACCOUNT_IDS);
                 ArrayList<String> accountIdsString = new ArrayList<>();
                 for (Object account : accountIds) {
@@ -150,6 +154,7 @@ public class CDSConsentPersistStep implements ConsentPersistStep {
                 // TODO: Revoke existing arrangement
                 // TODO: Data reporting
 
+                // bind user consented accounts with the create consent
                 bindUserAccountsToConsent(consentCoreService, consentResource, consentData, accountIdsString);
             } catch (ConsentManagementException e) {
                 throw new ConsentException(ResponseStatus.INTERNAL_SERVER_ERROR,
@@ -166,22 +171,6 @@ public class CDSConsentPersistStep implements ConsentPersistStep {
         return consentCoreService.createAuthorizableConsent(requestedConsent, consentData.getUserId(),
                 CDSConsentExtensionConstants.CREATED_STATUS, CDSConsentExtensionConstants.AWAITING_AUTH_STATUS,
                 true);
-    }
-
-    @Generated(message = "Excluding from code coverage since it requires a service call")
-    protected ConsentResource getConsent(ConsentCoreServiceImpl consentCoreService, String consentId)
-            throws ConsentManagementException {
-
-        return consentCoreService.getConsent(consentId, false);
-
-    }
-
-    @Generated(message = "Excluding from code coverage since it requires a service call")
-    protected ArrayList<AuthorizationResource> getAuthorizationResources(ConsentCoreServiceImpl consentCoreService,
-                                                                         String consentId)
-            throws ConsentManagementException {
-
-        return consentCoreService.searchAuthorizations(consentId);
     }
 
     @Generated(message = "Excluding from code coverage since it requires a service call")
