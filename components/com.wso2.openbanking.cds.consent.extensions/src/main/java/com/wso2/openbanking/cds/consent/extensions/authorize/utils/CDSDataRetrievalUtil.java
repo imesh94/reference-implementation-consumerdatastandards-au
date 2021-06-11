@@ -18,7 +18,6 @@ import com.wso2.openbanking.accelerator.consent.extensions.common.ResponseStatus
 import com.wso2.openbanking.accelerator.identity.util.HTTPClientUtils;
 import com.wso2.openbanking.cds.consent.extensions.authorize.impl.model.AccountConsentRequest;
 import com.wso2.openbanking.cds.consent.extensions.authorize.impl.model.AccountData;
-import com.wso2.openbanking.cds.consent.extensions.authorize.impl.model.AccountRisk;
 import com.wso2.openbanking.cds.consent.extensions.common.CDSConsentExtensionConstants;
 import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang3.StringUtils;
@@ -193,10 +192,8 @@ public class CDSDataRetrievalUtil {
         AccountData accountData = new AccountData();
         accountData.setPermissions(permissionsList);
         accountData.setExpirationDateTime(date);
-        AccountRisk risk = new AccountRisk();
         accountConsentRequest.setAccountData(accountData);
         accountConsentRequest.setRequestId(consentData.getConsentId());
-        accountConsentRequest.setRisk(risk);
         return accountConsentRequest;
     }
 }

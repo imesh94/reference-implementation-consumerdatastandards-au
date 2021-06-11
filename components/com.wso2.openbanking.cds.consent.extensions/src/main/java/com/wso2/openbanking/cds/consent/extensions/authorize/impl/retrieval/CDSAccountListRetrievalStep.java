@@ -61,8 +61,12 @@ public class CDSAccountListRetrievalStep implements ConsentRetrievalStep {
                 jsonObject.appendField(CDSConsentExtensionConstants.ACCOUNTS, accountsJSON);
             } catch (ParseException e) {
                 throw new ConsentException(ResponseStatus.INTERNAL_SERVER_ERROR,
-                        "Exception occurred while getting accounts data");
+                        "Exception occurred while parsing accounts data");
             }
+        } else {
+            log.error("Sharable accounts endpoint is not configured properly");
+            throw new ConsentException(ResponseStatus.INTERNAL_SERVER_ERROR,
+                    "Sharable accounts endpoint is not configured properly");
         }
     }
 }

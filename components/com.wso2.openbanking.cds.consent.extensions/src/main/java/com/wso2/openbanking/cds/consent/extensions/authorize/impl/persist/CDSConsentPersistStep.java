@@ -65,30 +65,18 @@ public class CDSConsentPersistStep implements ConsentPersistStep {
                 String requestString = gson.toJson(accountConsentRequest);
 
                 // add commonAuthId and sharing_duration_value to consent attributes
-                Map<String, String> consentAttributes = new HashMap<>();
-                consentAttributes.put(CDSConsentExtensionConstants.COMMON_AUTH_ID,
-                        ((JSONObject) payloadData.get(CDSConsentExtensionConstants.METADATA))
-                                .getAsString(CDSConsentExtensionConstants.COMMON_AUTH_ID));
-                consentAttributes.put(CDSConsentExtensionConstants.SHARING_DURATION_VALUE, consentData.getMetaDataMap()
-                        .get(CDSConsentExtensionConstants.SHARING_DURATION_VALUE).toString());
+                Map<String, String> consentAttributes = addMetaDataToConsentAttributes(consentData, payloadData);
 
                 // create new consent resource and set attributes to be stored when consent is created
-                ConsentResource consentResource = new ConsentResource(consentData.getClientId(),
-                        requestString, consentData.getType(), CDSConsentExtensionConstants.AWAITING_AUTH_STATUS);
-
-                consentResource.setConsentAttributes(consentAttributes);
-                consentResource
-                        .setRecurringIndicator((long) consentData.getMetaDataMap()
-                                .get(CDSConsentExtensionConstants.SHARING_DURATION_VALUE) != 0);
-                consentResource.setValidityPeriod(((OffsetDateTime) consentData.getMetaDataMap()
-                        .get(CDSConsentExtensionConstants.EXPIRATION_DATE_TIME)).toEpochSecond());
+                ConsentResource consentResource = createConsentAndSetAttributes(consentData, requestString,
+                        consentAttributes);
 
                 // create authorizable consent using the consent resource above
                 DetailedConsentResource createdConsent = null;
                 try {
                     createdConsent = createConsent(consentCoreService, consentResource, consentData);
                 } catch (ConsentManagementException e) {
-                    log.error(e.getMessage());
+                    log.error("Error while creating the consent");
                     throw new ConsentException(ResponseStatus.INTERNAL_SERVER_ERROR,
                             "Error while creating the consent");
                 }
@@ -96,24 +84,8 @@ public class CDSConsentPersistStep implements ConsentPersistStep {
                 String consentId = createdConsent.getConsentID();
                 consentData.setConsentId(consentId);
 
-                // get authorization resources from created consent
-                ArrayList<AuthorizationResource> authorizationResources = createdConsent.getAuthorizationResources();
-
                 // get the latest authorization resource from updated time parameter
-                AuthorizationResource authorizationResource = null;
-                long updatedTime = 0;
-                for (AuthorizationResource authorizationResourceValue: authorizationResources) {
-                    if (authorizationResourceValue.getUpdatedTime() > updatedTime) {
-                        updatedTime = authorizationResourceValue.getUpdatedTime();
-                        authorizationResource = authorizationResourceValue;
-                    }
-                }
-
-                if (!authorizationResource.getAuthorizationStatus()
-                        .equals(CDSConsentExtensionConstants.CREATED_STATUS)) {
-                    log.error("Authorization not in authorizable state");
-                    throw new ConsentException(ResponseStatus.BAD_REQUEST, "Authorization not in authorizable state");
-                }
+                AuthorizationResource authorizationResource = getLatestAuthResource(createdConsent);
 
                 consentData.setAuthResource(authorizationResource);
                 consentData.setConsentResource(consentResource);
@@ -124,30 +96,8 @@ public class CDSConsentPersistStep implements ConsentPersistStep {
                             "Consent ID not available in consent data");
                 }
 
-                if (consentData.getAuthResource() == null) {
-                    log.error("Auth resource not available in consent data");
-                    throw new ConsentException(ResponseStatus.INTERNAL_SERVER_ERROR,
-                            "Auth resource not available in consent data");
-                }
-
-                if (payloadData.get(CDSConsentExtensionConstants.ACCOUNT_IDS) == null
-                        || !(payloadData.get(CDSConsentExtensionConstants.ACCOUNT_IDS) instanceof JSONArray)) {
-                    log.error("Account IDs not available in persist request");
-                    throw new ConsentException(ResponseStatus.BAD_REQUEST,
-                            "Account IDs not available in persist request");
-                }
-
                 // get user consented accounts list to bind them with the consent
-                JSONArray accountIds = (JSONArray) payloadData.get(CDSConsentExtensionConstants.ACCOUNT_IDS);
-                ArrayList<String> accountIdsString = new ArrayList<>();
-                for (Object account : accountIds) {
-                    if (!(account instanceof String)) {
-                        log.error("Account IDs format error in persist request");
-                        throw new ConsentException(ResponseStatus.BAD_REQUEST,
-                                "Account IDs format error in persist request");
-                    }
-                    accountIdsString.add((String) account);
-                }
+                ArrayList<String> accountIdList = getAccountIdList(payloadData);
 
                 // TODO: Joint Account implementation
                 // TODO: Re-auth scenario implementation
@@ -155,7 +105,7 @@ public class CDSConsentPersistStep implements ConsentPersistStep {
                 // TODO: Data reporting
 
                 // bind user consented accounts with the create consent
-                bindUserAccountsToConsent(consentCoreService, consentResource, consentData, accountIdsString);
+                bindUserAccountsToConsent(consentCoreService, consentResource, consentData, accountIdList);
             } catch (ConsentManagementException e) {
                 throw new ConsentException(ResponseStatus.INTERNAL_SERVER_ERROR,
                         "Exception occurred while persisting consent");
@@ -182,5 +132,112 @@ public class CDSConsentPersistStep implements ConsentPersistStep {
         return consentCoreService.bindUserAccountsToConsent(consentResource, consentData.getUserId(),
                 consentData.getAuthResource().getAuthorizationID(), accountIdsString,
                 CDSConsentExtensionConstants.AUTHORIZED_STATUS, CDSConsentExtensionConstants.AUTHORIZED_STATUS);
+    }
+
+    /**
+     * Create consent resource to the given parameters
+     *
+     * @param consentData consent data
+     * @param requestString request string of consent resource
+     * @param consentAttributes map of consent attributes
+     * @return consentResource
+     */
+    private ConsentResource createConsentAndSetAttributes(ConsentData consentData, String requestString, Map<String,
+            String> consentAttributes) {
+
+        ConsentResource consentResource = new ConsentResource(consentData.getClientId(),
+                requestString, consentData.getType(), CDSConsentExtensionConstants.AWAITING_AUTH_STATUS);
+
+        consentResource.setConsentAttributes(consentAttributes);
+        consentResource
+                .setRecurringIndicator((long) consentData.getMetaDataMap()
+                        .get(CDSConsentExtensionConstants.SHARING_DURATION_VALUE) != 0);
+        consentResource.setValidityPeriod(((OffsetDateTime) consentData.getMetaDataMap()
+                .get(CDSConsentExtensionConstants.EXPIRATION_DATE_TIME)).toEpochSecond());
+
+        return consentResource;
+    }
+
+    /**
+     * Add meta data retrieved from web app to consent attributes
+     *
+     * @param consentData consent data
+     * @param payloadData payload data of retrieved from persist data
+     * @return Map of consentAttributes to be stored with consent resource
+     */
+    private Map<String, String> addMetaDataToConsentAttributes(ConsentData consentData, JSONObject payloadData) {
+
+        Map<String, String> consentAttributes = new HashMap<>();
+
+        consentAttributes.put(CDSConsentExtensionConstants.COMMON_AUTH_ID,
+                ((JSONObject) payloadData.get(CDSConsentExtensionConstants.METADATA))
+                        .getAsString(CDSConsentExtensionConstants.COMMON_AUTH_ID));
+        consentAttributes.put(CDSConsentExtensionConstants.SHARING_DURATION_VALUE, consentData.getMetaDataMap()
+                .get(CDSConsentExtensionConstants.SHARING_DURATION_VALUE).toString());
+
+        return consentAttributes;
+    }
+
+    /**
+     * Get latest authorization using updated time and check whether its null or in proper state
+     *
+     * @param createdConsent consent created
+     * @return Latest authorization resource
+     */
+    private AuthorizationResource getLatestAuthResource(DetailedConsentResource createdConsent)
+            throws ConsentException {
+
+        // get authorization resources from created consent
+        ArrayList<AuthorizationResource> authorizationResources = createdConsent.getAuthorizationResources();
+
+        long updatedTime = 0;
+        AuthorizationResource authorizationResource = null;
+        if (!authorizationResources.isEmpty()) {
+            for (AuthorizationResource authorizationResourceValue: authorizationResources) {
+                if (authorizationResourceValue.getUpdatedTime() > updatedTime) {
+                    updatedTime = authorizationResourceValue.getUpdatedTime();
+                    authorizationResource = authorizationResourceValue;
+                }
+            }
+        }
+        if (authorizationResource == null) {
+            log.error("Auth resource not available in consent data");
+            throw new ConsentException(ResponseStatus.INTERNAL_SERVER_ERROR,
+                    "Auth resource not available in consent data");
+        }
+        if (!authorizationResource.getAuthorizationStatus()
+                .equals(CDSConsentExtensionConstants.CREATED_STATUS)) {
+            log.error("Authorization not in authorizable state");
+            throw new ConsentException(ResponseStatus.BAD_REQUEST, "Authorization not in authorizable state");
+        }
+        return authorizationResource;
+    }
+
+    /**
+     * Get account list from payload data and check for validity
+     *
+     * @param payloadData payload data of retrieved from persist data
+     * @return List of user consented accounts
+     */
+    private ArrayList<String> getAccountIdList(JSONObject payloadData) throws ConsentException {
+
+        if (payloadData.get(CDSConsentExtensionConstants.ACCOUNT_IDS) == null
+                || !(payloadData.get(CDSConsentExtensionConstants.ACCOUNT_IDS) instanceof JSONArray)) {
+            log.error("Account IDs not available in persist request");
+            throw new ConsentException(ResponseStatus.BAD_REQUEST,
+                    "Account IDs not available in persist request");
+        }
+
+        JSONArray accountIds = (JSONArray) payloadData.get(CDSConsentExtensionConstants.ACCOUNT_IDS);
+        ArrayList<String> accountIdsList = new ArrayList<>();
+        for (Object account : accountIds) {
+            if (!(account instanceof String)) {
+                log.error("Account IDs format error in persist request");
+                throw new ConsentException(ResponseStatus.BAD_REQUEST,
+                        "Account IDs format error in persist request");
+            }
+            accountIdsList.add((String) account);
+        }
+        return accountIdsList;
     }
 }
