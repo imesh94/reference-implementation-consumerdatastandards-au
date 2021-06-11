@@ -28,5 +28,6 @@
 
     <modules>
         <module>ob-is</module>
+        <module>ob-apim</module>
     </modules>
 </project>
