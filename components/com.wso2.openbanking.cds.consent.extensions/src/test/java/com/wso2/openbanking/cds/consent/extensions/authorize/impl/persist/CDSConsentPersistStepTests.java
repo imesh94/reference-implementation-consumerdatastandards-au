@@ -71,6 +71,8 @@ public class CDSConsentPersistStepTests extends PowerMockTestCase {
     @Test
     public void testConsentPersistWithApproval() throws Exception {
 
+        ArrayList<AuthorizationResource>  authorizationResources = new ArrayList<>();
+        authorizationResources.add(authorizationResourceMock);
         doReturn(consentDataMock).when(consentPersistDataMock).getConsentData();
         doReturn(consentDataMap).when(consentDataMock).getMetaDataMap();
         doReturn(consentResourceMock).when(consentDataMock).getConsentResource();
@@ -173,28 +175,10 @@ class MockCDSConsentPersistSuccess extends CDSConsentPersistStep {
     }
 
     @Override
-    protected ConsentResource getConsent(ConsentCoreServiceImpl consentCoreService, String consentId)
-            throws ConsentManagementException {
-
-        return new ConsentResource();
-
-    }
-
-    @Override
-    protected ArrayList<AuthorizationResource> getAuthorizationResources(ConsentCoreServiceImpl consentCoreService,
-                                                                         String consentId)
-            throws ConsentManagementException{
-
-        ArrayList<AuthorizationResource> authorizationResources = new ArrayList<>();
-        authorizationResources.add(CDSConsentAuthorizeTestConstants.getAuthorizationResource());
-        return authorizationResources;
-    }
-
-    @Override
     protected boolean bindUserAccountsToConsent(ConsentCoreServiceImpl consentCoreService,
                                                 ConsentResource consentResource, ConsentData consentData,
                                                 ArrayList<String> accountIdsString)
-            throws ConsentManagementException{
+            throws ConsentManagementException {
 
         return true;
     }
@@ -208,13 +192,5 @@ class MockCDSConsentPersistError extends CDSConsentPersistStep {
             throws ConsentManagementException {
 
         return CDSConsentAuthorizeTestConstants.getDetailedConsentResource();
-    }
-
-    @Override
-    protected ConsentResource getConsent(ConsentCoreServiceImpl consentCoreService, String consentId)
-            throws ConsentManagementException {
-
-        throw new ConsentManagementException("Exception occurred while retrieving consent");
-
     }
 }

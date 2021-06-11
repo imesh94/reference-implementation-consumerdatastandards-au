@@ -14,7 +14,6 @@ package com.wso2.openbanking.cds.consent.extensions.authorize.impl.retrieval;
 import com.wso2.openbanking.accelerator.consent.extensions.authorize.model.ConsentData;
 import com.wso2.openbanking.accelerator.consent.extensions.common.ConsentException;
 import com.wso2.openbanking.accelerator.consent.mgt.dao.models.ConsentResource;
-import com.wso2.openbanking.cds.consent.extensions.authorize.impl.retrieval.CDSConsentRetrievalStep;
 import com.wso2.openbanking.cds.consent.extensions.util.CDSConsentAuthorizeTestConstants;
 import net.minidev.json.JSONObject;
 import org.testng.Assert;

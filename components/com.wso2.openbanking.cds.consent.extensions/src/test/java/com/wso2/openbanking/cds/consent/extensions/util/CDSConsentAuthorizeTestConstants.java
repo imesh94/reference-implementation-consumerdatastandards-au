@@ -14,6 +14,8 @@ package com.wso2.openbanking.cds.consent.extensions.util;
 import com.wso2.openbanking.accelerator.consent.mgt.dao.models.AuthorizationResource;
 import com.wso2.openbanking.accelerator.consent.mgt.dao.models.DetailedConsentResource;
 
+import java.util.ArrayList;
+
 /**
  * Constant class for cds consent authorize tests
  */
@@ -91,6 +93,9 @@ public class CDSConsentAuthorizeTestConstants {
         detailedConsentResource.setCurrentStatus("awaitingAuthorization");
         detailedConsentResource.setCreatedTime(System.currentTimeMillis() / 1000);
         detailedConsentResource.setUpdatedTime(System.currentTimeMillis() / 1000);
+        ArrayList<AuthorizationResource> authorizationResources = new ArrayList<>();
+        authorizationResources.add(CDSConsentAuthorizeTestConstants.getAuthorizationResource());
+        detailedConsentResource.setAuthorizationResources(authorizationResources);
 
         return detailedConsentResource;
     }
