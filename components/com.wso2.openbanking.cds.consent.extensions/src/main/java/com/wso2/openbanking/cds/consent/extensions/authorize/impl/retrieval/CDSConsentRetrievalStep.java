@@ -96,7 +96,7 @@ public class CDSConsentRetrievalStep implements ConsentRetrievalStep {
      * @param requestObject
      * @return
      */
-    private Map<String, Object> extractRequiredDataFromRequestObject(String requestObject) {
+    private Map<String, Object> extractRequiredDataFromRequestObject(String requestObject) throws ConsentException {
 
         String clientID;
         Map<String, Object> dataMap = new HashMap<>();

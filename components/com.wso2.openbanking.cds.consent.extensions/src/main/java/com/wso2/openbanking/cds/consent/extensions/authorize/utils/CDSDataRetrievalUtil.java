@@ -139,7 +139,7 @@ public class CDSDataRetrievalUtil {
      * @param spQueryParams
      * @return
      */
-    public static String extractRequestObject(String spQueryParams) {
+    public static String extractRequestObject(String spQueryParams) throws ConsentException {
         if (spQueryParams != null && !spQueryParams.trim().isEmpty()) {
             String requestObject = null;
             String[] spQueries = spQueryParams.split("&");
@@ -162,7 +162,7 @@ public class CDSDataRetrievalUtil {
      * @param spQueryParams
      * @return
      */
-    public static String getRedirectURL(String spQueryParams) {
+    public static String getRedirectURL(String spQueryParams) throws ConsentException {
         if (spQueryParams != null && !spQueryParams.trim().isEmpty()) {
             String redirectURL = null;
             String[] spQueryParamList = spQueryParams.split("&");
