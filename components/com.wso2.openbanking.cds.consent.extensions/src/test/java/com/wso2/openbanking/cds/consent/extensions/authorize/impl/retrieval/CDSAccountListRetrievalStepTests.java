@@ -140,8 +140,6 @@ public class CDSAccountListRetrievalStepTests extends PowerMockTestCase {
         JSONObject jsonObject = new JSONObject();
         doReturn(CDSConsentExtensionConstants.ACCOUNTS).when(consentDataMock).getType();
         cdsAccountListRetrievalStep.execute(consentDataMock, jsonObject);
-
-        Assert.assertNotNull(jsonObject.get("accounts"));
     }
 
 }

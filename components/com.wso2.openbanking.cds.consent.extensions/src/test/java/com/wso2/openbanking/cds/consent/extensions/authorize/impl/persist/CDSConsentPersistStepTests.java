@@ -123,7 +123,6 @@ public class CDSConsentPersistStepTests extends PowerMockTestCase {
 
         MockCDSConsentPersistSuccess mockCDSConsentPersist = new MockCDSConsentPersistSuccess();
         mockCDSConsentPersist.execute(consentPersistDataMock);
-
     }
 
     @Test(expectedExceptions = ConsentException.class)
@@ -141,7 +140,6 @@ public class CDSConsentPersistStepTests extends PowerMockTestCase {
 
         MockCDSConsentPersistSuccess mockCDSConsentPersist = new MockCDSConsentPersistSuccess();
         mockCDSConsentPersist.execute(consentPersistDataMock);
-
     }
 
     @Test(expectedExceptions = ConsentException.class)
@@ -159,7 +157,6 @@ public class CDSConsentPersistStepTests extends PowerMockTestCase {
 
         MockCDSConsentPersistError mockCDSConsentPersistError = new MockCDSConsentPersistError();
         mockCDSConsentPersistError.execute(consentPersistDataMock);
-
     }
 
 }
