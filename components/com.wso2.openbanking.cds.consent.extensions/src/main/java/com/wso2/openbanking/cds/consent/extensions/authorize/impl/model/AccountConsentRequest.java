@@ -20,8 +20,6 @@ public class AccountConsentRequest {
 
     private AccountData accountData;
 
-    private AccountRisk risk;
-
     public AccountData getAccountData() {
 
         return accountData;
@@ -30,16 +28,6 @@ public class AccountConsentRequest {
     public void setAccountData(AccountData accountData) {
 
         this.accountData = accountData;
-    }
-
-    public AccountRisk getRisk() {
-
-        return risk;
-    }
-
-    public void setRisk(AccountRisk risk) {
-
-        this.risk = risk;
     }
 
     public String getRequestId() {

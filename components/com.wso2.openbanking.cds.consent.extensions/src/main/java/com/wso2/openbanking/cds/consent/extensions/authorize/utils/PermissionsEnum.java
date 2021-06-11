@@ -44,9 +44,9 @@ public enum PermissionsEnum {
 
     public static PermissionsEnum fromValue(String text) {
 
-        for (PermissionsEnum b : PermissionsEnum.values()) {
-            if (String.valueOf(b.value).equals(text)) {
-                return b;
+        for (PermissionsEnum enumValue : PermissionsEnum.values()) {
+            if (String.valueOf(enumValue.value).equals(text)) {
+                return enumValue;
             }
         }
         return null;

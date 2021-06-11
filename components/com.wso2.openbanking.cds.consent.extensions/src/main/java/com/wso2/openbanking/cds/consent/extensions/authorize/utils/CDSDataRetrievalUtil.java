@@ -18,8 +18,8 @@ import com.wso2.openbanking.accelerator.consent.extensions.common.ResponseStatus
 import com.wso2.openbanking.accelerator.identity.util.HTTPClientUtils;
 import com.wso2.openbanking.cds.consent.extensions.authorize.impl.model.AccountConsentRequest;
 import com.wso2.openbanking.cds.consent.extensions.authorize.impl.model.AccountData;
-import com.wso2.openbanking.cds.consent.extensions.authorize.impl.model.AccountRisk;
 import com.wso2.openbanking.cds.consent.extensions.common.CDSConsentExtensionConstants;
+import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -30,10 +30,10 @@ import org.apache.http.client.utils.URLEncodedUtils;
 import org.apache.http.impl.client.CloseableHttpClient;
 import org.apache.http.message.BasicNameValuePair;
 
-import java.io.BufferedReader;
 import java.io.IOException;
-import java.io.InputStreamReader;
+import java.io.InputStream;
 import java.net.HttpURLConnection;
+import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
@@ -64,7 +64,6 @@ public class CDSDataRetrievalUtil {
             log.debug("Sharable accounts retrieve endpoint : " + retrieveUrl);
         }
 
-        BufferedReader reader = null;
         try (CloseableHttpClient client = HTTPClientUtils.getHttpsClient()) {
             HttpGet request = new HttpGet(retrieveUrl);
             request.addHeader(CDSConsentExtensionConstants.ACCEPT_HEADER_NAME,
@@ -82,28 +81,11 @@ public class CDSDataRetrievalUtil {
                 log.error("Retrieving sharable accounts failed");
                 return null;
             } else {
-                reader = new BufferedReader(new InputStreamReader(response.getEntity().getContent(),
-                        CDSConsentExtensionConstants.CHAR_SET));
-                String inputLine;
-                StringBuffer buffer = new StringBuffer();
-                while ((inputLine = reader.readLine()) != null) {
-                    buffer.append(inputLine);
-                }
-                if (log.isDebugEnabled()) {
-                    log.debug("Sharable accounts endpoints returned : " + buffer.toString());
-                }
-                return buffer.toString();
+                InputStream in = response.getEntity().getContent();
+                return IOUtils.toString(in, String.valueOf(StandardCharsets.UTF_8));
             }
         } catch (IOException | OpenBankingException e) {
             log.error("Exception occurred while retrieving sharable accounts", e);
-        } finally {
-            if (reader != null) {
-                try {
-                    reader.close();
-                } catch (IOException e) {
-                    log.error("Error while closing buffered reader");
-                }
-            }
         }
         return null;
     }
@@ -157,7 +139,7 @@ public class CDSDataRetrievalUtil {
      * @param spQueryParams
      * @return
      */
-    public static String extractRequestObject(String spQueryParams) {
+    public static String extractRequestObject(String spQueryParams) throws ConsentException {
         if (spQueryParams != null && !spQueryParams.trim().isEmpty()) {
             String requestObject = null;
             String[] spQueries = spQueryParams.split("&");
@@ -180,7 +162,7 @@ public class CDSDataRetrievalUtil {
      * @param spQueryParams
      * @return
      */
-    public static String getRedirectURL(String spQueryParams) {
+    public static String getRedirectURL(String spQueryParams) throws ConsentException {
         if (spQueryParams != null && !spQueryParams.trim().isEmpty()) {
             String redirectURL = null;
             String[] spQueryParamList = spQueryParams.split("&");
@@ -210,10 +192,8 @@ public class CDSDataRetrievalUtil {
         AccountData accountData = new AccountData();
         accountData.setPermissions(permissionsList);
         accountData.setExpirationDateTime(date);
-        AccountRisk risk = new AccountRisk();
         accountConsentRequest.setAccountData(accountData);
         accountConsentRequest.setRequestId(consentData.getConsentId());
-        accountConsentRequest.setRisk(risk);
         return accountConsentRequest;
     }
 }
