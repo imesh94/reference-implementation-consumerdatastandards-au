@@ -482,11 +482,19 @@ class = "com.wso2.openbanking.accelerator.consent.extensions.authorize.impl.NonR
 priority = 1
 
 [[open_banking.consent.authorize_steps.retrieve]]
-class = "com.wso2.openbanking.accelerator.consent.extensions.authorize.impl.DefaultConsentRetrievalStep"
+class = "com.wso2.openbanking.cds.consent.extensions.authorize.impl.retrieval.CDSConsentRetrievalStep"
 priority = 2
 
+[[open_banking.consent.authorize_steps.retrieve]]
+class = "com.wso2.openbanking.cds.consent.extensions.authorize.impl.retrieval.CDSDataClusterRetrievalStep"
+priority = 3
+
+[[open_banking.consent.authorize_steps.retrieve]]
+class = "com.wso2.openbanking.cds.consent.extensions.authorize.impl.retrieval.CDSAccountListRetrievalStep"
+priority = 4
+
 [[open_banking.consent.authorize_steps.persist]]
-class = "com.wso2.openbanking.accelerator.consent.extensions.authorize.impl.DefaultConsentPersistStep"
+class = "com.wso2.openbanking.cds.consent.extensions.authorize.impl.persist.CDSConsentPersistStep"
 priority = 1
 
 [open_banking.consent.manage]
@@ -503,3 +511,16 @@ handler="com.wso2.openbanking.accelerator.consent.extensions.admin.impl.DefaultC
 
 [open_banking.identity.extensions]
 request_object_validator="com.wso2.openbanking.cds.identity.auth.extensions.request.validator.CDSRequestObjectValidator"
+
+#=======================configs related to open-banking-cds.xml=====================
+
+#[open_banking_cds.dcr]
+#enable_uri_validation=true
+#enable_hostname_validation=true
+
+#[open_banking_cds.consent_management]
+#sharable_accounts_retrieve_endpoint="https://run.mocky.io/v3/49ea6f7b-a7d7-44db-956a-c9de2a072e41"
+
+#[open_banking_cds.customer_details]
+#enable=false
+#customer_details_retrieval_endpoint="https://run.mocky.io/v3/602f170e-55ff-49cb-8d6a-e0c3a8d7a5cc"

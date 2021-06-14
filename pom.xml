@@ -202,6 +202,21 @@
                 <artifactId>com.wso2.openbanking.accelerator.identity</artifactId>
                 <version>${accelerator.project.version}</version>
             </dependency>
+            <dependency>
+                <groupId>com.wso2</groupId>
+                <artifactId>com.wso2.openbanking.accelerator.consent.service</artifactId>
+                <version>${accelerator.project.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>com.wso2</groupId>
+                <artifactId>com.wso2.openbanking.accelerator.consent.dao</artifactId>
+                <version>${accelerator.project.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>com.wso2</groupId>
+                <artifactId>com.wso2.openbanking.accelerator.consent.extensions</artifactId>
+                <version>${accelerator.project.version}</version>
+            </dependency>
             <!--Dependencies from Toolkit -->
             <dependency>
                 <groupId>com.wso2.openbanking</groupId>
