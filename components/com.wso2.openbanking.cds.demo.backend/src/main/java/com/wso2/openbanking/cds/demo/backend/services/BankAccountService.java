@@ -31,8 +31,6 @@ public class BankAccountService {
     private static final String accountList = "{\n" +
             "    \"data\": [\n" +
             "        {\n" +
-            "            \"account_id\": \"30080012343456\",\n" +
-            "            \"display_name\": \"account_1\",\n" +
             "            \"accountId\": \"30080012343456\",\n" +
             "            \"accountName\": \"account_1\",\n" +
             "            \"authorizationMethod\": \"single\",\n" +
@@ -44,8 +42,6 @@ public class BankAccountService {
             "            \"jointAccountConsentElectionStatus\": false\n" +
             "        },\n" +
             "        {\n" +
-            "            \"account_id\": \"30080098763459\",\n" +
-            "            \"display_name\": \"account_2\",\n" +
             "            \"accountId\": \"30080098763459\",\n" +
             "            \"accountName\": \"account_2\",\n" +
             "            \"authorizationMethod\": \"single\",\n" +
@@ -57,8 +53,6 @@ public class BankAccountService {
             "            \"jointAccountConsentElectionStatus\": false\n" +
             "        },\n" +
             "        {\n" +
-            "            \"account_id\": \"30080098971337\",\n" +
-            "            \"display_name\": \"multi_auth_account\",\n" +
             "            \"accountId\": \"30080098971337\",\n" +
             "            \"accountName\": \"multi_auth_account\",\n" +
             "            \"authorizationMethod\": \"multiple\",\n" +
@@ -80,8 +74,6 @@ public class BankAccountService {
             "            ]\n" +
             "        },\n" +
             "        {\n" +
-            "            \"account_id\": \"650-000 N1232\",\n" +
-            "            \"display_name\": \"Extra Account\",\n" +
             "            \"accountId\": \"650-000 N1232\",\n" +
             "            \"accountName\": \"Extra Account\",\n" +
             "            \"authorizationMethod\": \"single\",\n" +
