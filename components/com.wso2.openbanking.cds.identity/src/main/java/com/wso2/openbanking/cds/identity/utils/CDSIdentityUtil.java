@@ -9,7 +9,8 @@
  * please see the license as well as any agreement you’ve entered into with
  * WSO2 governing the purchase of this software and any associated services.
  */
-package com.wso2.openbanking.cds.identity.auth.extensions.response.handler.utils;
+
+package com.wso2.openbanking.cds.identity.utils;
 
 import com.wso2.openbanking.accelerator.common.exception.ConsentManagementException;
 import com.wso2.openbanking.accelerator.consent.mgt.dao.models.ConsentResource;
@@ -22,19 +23,20 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.wso2.carbon.identity.oauth2.authz.OAuthAuthzReqMessageContext;
 
-import javax.servlet.http.Cookie;
 import java.time.OffsetDateTime;
 import java.time.ZoneOffset;
 import java.time.temporal.ChronoUnit;
 import java.util.ArrayList;
 import java.util.Arrays;
 
+import javax.servlet.http.Cookie;
+
 /**
  * Util class to provide services identity module
  */
-public class CDSResponseTypeHandlerUtils {
+public class CDSIdentityUtil {
 
-    private static Log log = LogFactory.getLog(CDSResponseTypeHandlerUtils.class);
+    private static Log log = LogFactory.getLog(CDSIdentityUtil.class);
     private static final String COMMON_AUTH_ID = "commonAuthId";
     private static final String EXPIRATION_DATE_TIME = "expirationDateTime";
     private static final String ZERO_SHARING_DURATION = "0";
@@ -48,7 +50,7 @@ public class CDSResponseTypeHandlerUtils {
     public static String getCommonAuthId(OAuthAuthzReqMessageContext oAuthAuthzReqMessageContext) {
 
         Cookie[] cookies = oAuthAuthzReqMessageContext.getAuthorizationReqDTO().getCookie();
-        String commonAuthId = "";
+        String commonAuthId = StringUtils.EMPTY;
         ArrayList<Cookie> cookieList = new ArrayList<>(Arrays.asList(cookies));
         for (Cookie cookie : cookieList) {
             if (COMMON_AUTH_ID.equals(cookie.getName())) {
@@ -62,12 +64,12 @@ public class CDSResponseTypeHandlerUtils {
     /**
      * method to get the refresh token validity period.
      *
-     * @param consentCoreService consent core service to get consent details
      * @param consentId consent Id
      * @return validity period for the refresh token
      */
-    public static long getRefreshTokenValidityPeriod(ConsentCoreServiceImpl consentCoreService, String consentId) {
+    public static long getRefreshTokenValidityPeriod(String consentId) {
 
+        ConsentCoreServiceImpl consentCoreService = new ConsentCoreServiceImpl();
         long sharingDuration = 0;
         if (StringUtils.isNotBlank(consentId)) {
             try {
