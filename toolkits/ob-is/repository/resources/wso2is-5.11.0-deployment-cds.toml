@@ -347,6 +347,7 @@ grant_handler="com.wso2.openbanking.accelerator.identity.grant.type.handlers.OBC
 [oauth.oidc.extensions]
 claim_callback_handler="com.wso2.openbanking.accelerator.identity.claims.OBDefaultOIDCClaimsCallbackHandler"
 request_object_validator = "com.wso2.openbanking.accelerator.identity.auth.extensions.request.validator.OBRequestObjectValidationExtension"
+id_token_builder = "com.wso2.openbanking.accelerator.identity.idtoken.OBIDTokenBuilder"
 
 #================configs related to identity-event.properties=============
 
