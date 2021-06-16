@@ -62,10 +62,12 @@ public class CDSClaimProviderUtils {
         messageDigest.update(value.getBytes(Charsets.UTF_8));
         byte[] digest = messageDigest.digest();
         int leftHalfBytes = 16;
-        byte[] leftmost = new byte[leftHalfBytes];
-        if (log.isDebugEnabled()) {
-            log.debug("Leftmost 16 bytes :" + new String(leftmost, Charsets.UTF_8));
+        if ("SHA-384".equals(digestAlgorithm)) {
+            leftHalfBytes = 24;
+        } else if ("SHA-512".equals(digestAlgorithm)) {
+            leftHalfBytes = 32;
         }
+        byte[] leftmost = new byte[leftHalfBytes];
         System.arraycopy(digest, 0, leftmost, 0, leftHalfBytes);
         return new String(Base64.encodeBase64Chunked(leftmost), Charsets.UTF_8);
     }
