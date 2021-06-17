@@ -24,7 +24,7 @@ public class CDSValidationConstants {
     public static final String SSA_TOS_URI = "tos_uri";
     public static final String SSA_CLIENT_URI = "client_uri";
     public static final String DATA_RECIPIENT_SOFTWARE_PRODUCT = "data-recipient-software-product";
-    public static final String SSA_SCOPES = "openid bank:accounts.basic:read bank:accounts.detail:read " +
+    public static final String SSA_SCOPES = "openid profile bank:accounts.basic:read bank:accounts.detail:read " +
             "bank:transactions:read bank:payees:read bank:regular_payments:read common:customer.basic:read " +
             "common:customer.detail:read cdr:registration";
     public static final String CDR_REGISTRATION_SCOPE = "cdr:registration";
