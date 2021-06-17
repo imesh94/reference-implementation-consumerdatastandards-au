@@ -41,6 +41,7 @@ public class CDSIdentityUtil {
     private static Log log = LogFactory.getLog(CDSIdentityUtil.class);
     private static final String COMMON_AUTH_ID = "commonAuthId";
     private static final String EXPIRATION_DATE_TIME = "expirationDateTime";
+    private static final String ACCOUNT_DATA = "accountData";
     private static final String ZERO_SHARING_DURATION = "0";
     private static final String OB_CONSENT_ID_PREFIX = "OB_CONSENT_ID_";
 
@@ -80,7 +81,7 @@ public class CDSIdentityUtil {
                 String receiptString = consentResource.getReceipt();
                 Object receiptJSON = new JSONParser(JSONParser.MODE_PERMISSIVE).parse(receiptString);
                 JSONObject receipt = (JSONObject) receiptJSON;
-                String expiryTime = receipt.getAsString(EXPIRATION_DATE_TIME);
+                String expiryTime = ((JSONObject) receipt.get(ACCOUNT_DATA)).getAsString(EXPIRATION_DATE_TIME);
 
                 if (!ZERO_SHARING_DURATION.equals(expiryTime) && StringUtils.isNotBlank(expiryTime)) {
                     sharingDuration = getSharingDuration(expiryTime);
