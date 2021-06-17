@@ -29,13 +29,15 @@ import java.util.Map;
 public class CDSClaimProvider extends OBClaimProvider {
 
     private static Log log = LogFactory.getLog(CDSClaimProvider.class);
-    private static final String S_HASH = "s_hash";
-    private static final String SHARING_EXPIRES_AT = "sharing_expires_at";
-    private static final String REFRESH_TOKEN_EXPIRES_AT = "refresh_token_expires_at";
+    private static final String S_HASH_CLAIM = "s_hash";
+    private static final String SHARING_EXPIRES_AT_CLAIM = "sharing_expires_at";
+    private static final String REFRESH_TOKEN_EXPIRES_AT_CLAIM = "refresh_token_expires_at";
     private static final String CDR_ARRANGEMENT_ID = "cdr_arrangement_id";
+    private static final String NBF_CLAIM = "nbf";
+    private static final String AUTH_TIME_CLAIM = "auth_time";
 
     /**
-     * Method to add AU Specific claims for Authorization response
+     * Method to add CDS Specific claims for Authorization response
      *
      * @param authAuthzReqMessageContext Authorization Request message context
      * @param authorizeRespDTO      Authorization Response
@@ -48,39 +50,31 @@ public class CDSClaimProvider extends OBClaimProvider {
             throws IdentityOAuth2Exception {
 
 
-        HashMap<String, Object> auClaims = new HashMap<>();
+        Map<String, Object> cdsClaims = new HashMap<>();
         String sessionDataKey = authAuthzReqMessageContext.getAuthorizationReqDTO().getSessionDataKey();
         String stateValue = SessionDataCache.getInstance().getValueFromCache(new SessionDataCacheKey(sessionDataKey))
                 .getoAuth2Parameters().getState();
 
         if (stateValue != null) {
-            auClaims.put(S_HASH, CDSClaimProviderUtils.getHashValue(stateValue, null));
+            cdsClaims.put(S_HASH_CLAIM, CDSClaimProviderUtils.getHashValue(stateValue, null));
             if (log.isDebugEnabled()) {
                 log.debug("S_HASH value created using given algorithm for state value:" + stateValue);
             }
         }
 
         //auth_time claim indicates the time when authentication occurs
-        auClaims.put("auth_time", authAuthzReqMessageContext.getCodeIssuedTime());
+        cdsClaims.put(AUTH_TIME_CLAIM, authAuthzReqMessageContext.getCodeIssuedTime());
         //nbf claim indicates the time when access token validity starts
-        auClaims.put("nbf", authAuthzReqMessageContext.getAccessTokenIssuedTime());
+        cdsClaims.put(NBF_CLAIM, authAuthzReqMessageContext.getAccessTokenIssuedTime());
 
         long sharingDuration = authAuthzReqMessageContext.getRefreshTokenvalidityPeriod() / 1000;
-
-        if (sharingDuration == 0) {
-            auClaims.put(REFRESH_TOKEN_EXPIRES_AT, 0);
-            auClaims.put(SHARING_EXPIRES_AT, 0);
-        } else {
-            sharingDuration = CDSClaimProviderUtils.getEpochDateTime(sharingDuration);
-            auClaims.put(REFRESH_TOKEN_EXPIRES_AT, sharingDuration);
-            auClaims.put(SHARING_EXPIRES_AT, sharingDuration);
-        }
-
-        return auClaims;
+        // set claims related to sharing duration
+        setSharingDurationRelatedClaims(sharingDuration, cdsClaims);
+        return cdsClaims;
     }
 
     /**
-     * Method to add AU Specific claims for Token response
+     * Method to add CDS Specific claims for Token response
      *
      * @param oAuthTokenReqMessageContext token Request message context
      * @param oAuth2AccessTokenRespDTO    token Response DTO
@@ -92,22 +86,33 @@ public class CDSClaimProvider extends OBClaimProvider {
                                                    OAuth2AccessTokenRespDTO oAuth2AccessTokenRespDTO)
             throws IdentityOAuth2Exception {
 
-        HashMap<String, Object> auClaims = new HashMap<>();
+        Map<String, Object> cdsClaims = new HashMap<>();
 
         long sharingDuration = oAuthTokenReqMessageContext.getRefreshTokenvalidityPeriod() / 1000;
-
-        if (sharingDuration == 0) {
-            auClaims.put(REFRESH_TOKEN_EXPIRES_AT, 0);
-            auClaims.put(SHARING_EXPIRES_AT, 0);
-        } else {
-            sharingDuration = CDSClaimProviderUtils.getEpochDateTime(sharingDuration);
-            auClaims.put(REFRESH_TOKEN_EXPIRES_AT, sharingDuration);
-            auClaims.put(SHARING_EXPIRES_AT, sharingDuration);
-        }
+        // set claims related to sharing duration
+        setSharingDurationRelatedClaims(sharingDuration, cdsClaims);
 
         String consentId = oAuth2AccessTokenRespDTO.getParameter(CDR_ARRANGEMENT_ID);
-        auClaims.put(CDR_ARRANGEMENT_ID, consentId);
+        cdsClaims.put(CDR_ARRANGEMENT_ID, consentId);
+        return cdsClaims;
+    }
 
-        return auClaims;
+    /**
+     * Method to add CDS Specific claims for Token response
+     *
+     * @param sharingDuration sharing duration value
+     * @param cdsClaims cds related claims
+     */
+    private void setSharingDurationRelatedClaims(long sharingDuration,
+                                                 Map<String, Object> cdsClaims) {
+
+        if (sharingDuration == 0) {
+            cdsClaims.put(REFRESH_TOKEN_EXPIRES_AT_CLAIM, 0);
+            cdsClaims.put(SHARING_EXPIRES_AT_CLAIM, 0);
+        } else {
+            sharingDuration = CDSClaimProviderUtils.getEpochDateTime(sharingDuration);
+            cdsClaims.put(REFRESH_TOKEN_EXPIRES_AT_CLAIM, sharingDuration);
+            cdsClaims.put(SHARING_EXPIRES_AT_CLAIM, sharingDuration);
+        }
     }
 }
