@@ -13,6 +13,7 @@
 package com.wso2.openbanking.cds.identity.grant.type.handlers;
 
 import com.wso2.openbanking.accelerator.common.exception.OpenBankingException;
+import com.wso2.openbanking.accelerator.common.util.Generated;
 import com.wso2.openbanking.accelerator.identity.grant.type.handlers.OBAuthorizationCodeGrantHandler;
 import com.wso2.openbanking.accelerator.identity.util.IdentityCommonUtil;
 import com.wso2.openbanking.cds.identity.grant.type.handlers.utils.CDSGrantHandlerUtil;
@@ -67,23 +68,36 @@ public class CDSAuthorizationCodeGrantHandler extends OBAuthorizationCodeGrantHa
     @Override
     public boolean issueRefreshToken() throws IdentityOAuth2Exception {
 
-        OAuthTokenReqMessageContext tokenReqMessageContext = OAuth2Util.getTokenRequestContext();
+        OAuthTokenReqMessageContext tokenReqMessageContext = getTokenMessageContext();
+
+        if (isRegulatory(tokenReqMessageContext)) {
+            long sharingDuration;
+            String[] scopes = tokenReqMessageContext.getScope();
+            String consentId = CDSIdentityUtil.getConsentId(scopes);
+            sharingDuration = CDSIdentityUtil.getRefreshTokenValidityPeriod(consentId);
+            // do not issue refresh token if sharing duration value equals to zero
+            if (sharingDuration == 0) {
+                return false;
+            }
+        }
+        return true;
+    }
+
+    @Generated(message = "Excluding from code coverage since it requires a service call")
+    protected OAuthTokenReqMessageContext getTokenMessageContext() {
+
+        return OAuth2Util.getTokenRequestContext();
+    }
+
+    @Generated(message = "Excluding from code coverage since it requires a service call")
+    protected boolean isRegulatory(OAuthTokenReqMessageContext tokenReqMessageContext) throws IdentityOAuth2Exception {
 
         try {
-            if (IdentityCommonUtil.getRegulatoryFromSPMetaData(tokenReqMessageContext.getOauth2AccessTokenReqDTO()
-                    .getClientId())) {
-                long sharingDuration;
-                String[] scopes = tokenReqMessageContext.getScope();
-                String consentId = CDSIdentityUtil.getConsentId(scopes);
-                sharingDuration = CDSIdentityUtil.getRefreshTokenValidityPeriod(consentId);
-                // do not issue refresh token if sharing duration value equals to zero
-                if (sharingDuration == 0) {
-                    return false;
-                }
-            }
+            return IdentityCommonUtil.getRegulatoryFromSPMetaData(tokenReqMessageContext.getOauth2AccessTokenReqDTO()
+                    .getClientId());
         } catch (OpenBankingException e) {
             throw new IdentityOAuth2Exception("Error occurred while getting sp property from sp meta data");
         }
-        return true;
+
     }
 }
