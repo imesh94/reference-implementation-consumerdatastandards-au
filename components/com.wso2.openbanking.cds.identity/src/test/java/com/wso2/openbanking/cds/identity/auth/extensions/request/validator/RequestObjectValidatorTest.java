@@ -47,7 +47,7 @@ public class RequestObjectValidatorTest extends PowerMockTestCase {
 
     private CDSRequestObjectValidator cdsRequestObjectValidator = new CDSRequestObjectValidator();
     private Map<String, Object> scopeData = new HashMap<>();
-    private static final String scopeString = "openid bank:accounts.basic:read bank:accounts.detail:read " +
+    private static final String scopeString = "openid profile bank:accounts.basic:read bank:accounts.detail:read " +
             "bank:transactions:read bank:payees:read bank:regular_payments:read common:customer.basic:read " +
             "common:customer.detail:read cdr:registration";
     @BeforeClass
