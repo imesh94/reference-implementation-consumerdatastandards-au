@@ -13,6 +13,7 @@
 package com.wso2.openbanking.cds.identity.utils;
 
 import com.wso2.openbanking.accelerator.common.exception.ConsentManagementException;
+import com.wso2.openbanking.accelerator.common.util.Generated;
 import com.wso2.openbanking.accelerator.consent.mgt.dao.models.ConsentResource;
 import com.wso2.openbanking.accelerator.consent.mgt.service.impl.ConsentCoreServiceImpl;
 import net.minidev.json.JSONObject;
@@ -54,7 +55,7 @@ public class CDSIdentityUtil {
     public static String getCommonAuthId(OAuthAuthzReqMessageContext oAuthAuthzReqMessageContext) {
 
         Cookie[] cookies = oAuthAuthzReqMessageContext.getAuthorizationReqDTO().getCookie();
-        String commonAuthId = org.apache.commons.lang.StringUtils.EMPTY;
+        String commonAuthId = StringUtils.EMPTY;
         ArrayList<Cookie> cookieList = new ArrayList<>(Arrays.asList(cookies));
         for (Cookie cookie : cookieList) {
             if (COMMON_AUTH_ID.equals(cookie.getName())) {
@@ -71,13 +72,13 @@ public class CDSIdentityUtil {
      * @param consentId consent Id
      * @return validity period for the refresh token
      */
+    @Generated(message = "Excluding from code coverage since it requires a service call")
     public static long getRefreshTokenValidityPeriod(String consentId) {
 
-        ConsentCoreServiceImpl consentCoreService = new ConsentCoreServiceImpl();
         long sharingDuration = 0;
         if (org.apache.commons.lang.StringUtils.isNotBlank(consentId)) {
             try {
-                ConsentResource consentResource = consentCoreService.getConsent(consentId, false);
+                ConsentResource consentResource = new ConsentCoreServiceImpl().getConsent(consentId, false);
                 String receiptString = consentResource.getReceipt();
                 Object receiptJSON = new JSONParser(JSONParser.MODE_PERMISSIVE).parse(receiptString);
                 JSONObject receipt = (JSONObject) receiptJSON;
