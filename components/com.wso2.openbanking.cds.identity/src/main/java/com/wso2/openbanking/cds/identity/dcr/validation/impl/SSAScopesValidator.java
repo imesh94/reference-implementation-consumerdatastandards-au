@@ -16,9 +16,6 @@ import com.wso2.openbanking.cds.identity.dcr.validation.annotation.ValidateSSASc
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
 import javax.validation.ConstraintValidator;
 import javax.validation.ConstraintValidatorContext;
 
@@ -44,7 +41,6 @@ public class SSAScopesValidator implements ConstraintValidator<ValidateSSAScopes
      */
     private boolean validateScopes(Object scopes) {
 
-        List<String> validScopes = new ArrayList<>(Arrays.asList(CDSValidationConstants.SSA_SCOPES.split(" ")));
         boolean containsRegistrationScope = false;
         boolean allScopesValid = true;
         if (scopes instanceof String) {
@@ -53,7 +49,7 @@ public class SSAScopesValidator implements ConstraintValidator<ValidateSSAScopes
                 if (CDSValidationConstants.CDR_REGISTRATION_SCOPE.equals(scope)) {
                     containsRegistrationScope = true;
                 }
-                if (!validScopes.contains(scope)) {
+                if (!CDSValidationConstants.VALID_SSA_SCOPES.contains(scope)) {
                     allScopesValid = false;
                     break;
                 }
