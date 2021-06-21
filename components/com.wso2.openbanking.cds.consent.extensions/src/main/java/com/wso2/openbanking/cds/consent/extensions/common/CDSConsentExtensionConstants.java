@@ -26,6 +26,7 @@ public class CDSConsentExtensionConstants {
     public static final String TITLE = "title";
     public static final String DATA = "data";
     public static final String CONSENT_DATA = "consentData";
+    public static final String ACCOUNT_DATA = "accountData";
     public static final String REDIRECT_URL = "redirectURL";
     public static final String EXPIRATION_DATE_TITLE = "Expiration Date Time";
     public static final String PERMISSION_TITLE = "Permissions";
@@ -75,6 +76,20 @@ public class CDSConsentExtensionConstants {
     public static final String PROFILE_SCOPE = "profile";
     public static final String CDR_REGISTRATION_SCOPE = "cdr:registration";
 
+    public static final String ACCOUNT_REGEX = "/accounts";
+    public static final String BULK_BALANCES_REGEX = "/accounts/balances";
+    public static final String ACCOUNT_BALANCE_REGEX = "/accounts/[^/?]*/balance";
+    public static final String ACCOUNT_DETAIL_REGEX = "/accounts/[^/?]*";
+    public static final String TRANSACTIONS_FOR_ACCOUNT_REGEX = "/accounts/[^/?]*/transactions";
+    public static final String TRANSACTIONS_DETAIL_REGEX = "/accounts/[^/?]*/transactions/[^/?]*";
+    public static final String DIRECT_DEBIT_FOR_ACCOUNT_REGEX = "/accounts/[^/?]*/direct-debits";
+    public static final String BULK_DIRECT_DEBIT_REGEX = "/accounts/direct-debits";
+    public static final String SCHEDULED_PAYMENT_FOR_ACCOUNT_REGEX = "/accounts/[^/?]*/payments/scheduled";
+    public static final String BULK_SCHEDULED_PAYMENT_REGEX = "/payments/scheduled";
+    public static final String PAYEES_REGEX = "/payees";
+    public static final String PAYEE_DETAIL_REGEX = "/payees/[^/?]*";
+    public static final String PRODUCTS_REGEX = "/products";
+    public static final String PRODUCT_DETAIL_REGEX = "/products/[^/?]*";
 
     static {
         Map<String, Map<String, List<String>>> dataCluster = new HashMap<>();
