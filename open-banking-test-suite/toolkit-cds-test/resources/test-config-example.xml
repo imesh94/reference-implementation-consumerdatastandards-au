@@ -1,0 +1,155 @@
+<?xml version="1.0" encoding="ISO-8859-1"?>
+<!--
+ ~ Copyright (c) 2021, WSO2 Inc. (http://www.wso2.com). All Rights Reserved.
+ ~
+ ~ This software is the property of WSO2 Inc. and its suppliers, if any.
+ ~ Dissemination of any information or reproduction of any material contained
+ ~ herein is strictly forbidden, unless permitted by WSO2 in accordance with
+ ~ the WSO2 Software License available at https://wso2.com/licenses/eula/3.1.
+ ~ For specific language governing the permissions and limitations under this
+ ~ license, please see the license as well as any agreement you?ve entered into
+ ~ with WSO2 governing the purchase of this software and any associated services.
+-->
+
+<Configurations>
+  <SolutionVersion>Solution.Version</SolutionVersion>
+  <!--OBSpec accepts values AU-->
+  <OBSpec>OB.Spec</OBSpec>
+  <ApiVersion>Api.Version</ApiVersion>
+  <!-- Provisioning Info -->
+  <Provisioning>
+    <Enabled>Provisioning.Enabled</Enabled>
+    <ProvisionFilePath>Provisioning.ProvisionFilePath</ProvisionFilePath>
+  </Provisioning>
+  <!-- Server Info -->
+  <Server>
+    <BaseURL>Server.BaseURL</BaseURL>
+    <GatewayURL>Server.GatewayURL</GatewayURL>
+    <AuthorisationServerURL>Server.AuthorisationServerURL</AuthorisationServerURL>
+
+    <!--Micro Gateway Specific Server Urls.
+    In MG the ports should be the corresponding port of the docker image.-->
+    <MicroGateway>
+      <MicroGatewayEnabled>MicroGateway.MicroGatewayEnabled</MicroGatewayEnabled>
+
+      <!--Configure the Urls only for Micro Gateway Testing-->
+      <AU>
+        <DcrURL>Server.MicroGateway.AU.DcrURL</DcrURL>
+        <CdsAuAccountsURL>Server.MicroGateway.AU.CdsAuAccountsURL</CdsAuAccountsURL>
+        <CdsAuBalancesURL>Server.MicroGateway.AU.CdsAuBalancesURL</CdsAuBalancesURL>
+        <CdsAuTransactionURL>Server.MicroGateway.AU.CdsAuTransactionURL</CdsAuTransactionURL>
+        <CdsAuDirectDebitURL>Server.MicroGateway.AU.CdsAuDirectDebitURL</CdsAuDirectDebitURL>
+        <CdsAuSchedulePaymentURL>Server.MicroGateway.AU.CdsAuSchedulePaymentURL</CdsAuSchedulePaymentURL>
+        <CdsAuPayeeURL>Server.MicroGateway.AU.CdsAuPayeeURL</CdsAuPayeeURL>
+        <CdsAuProductURL>Server.MicroGateway.AU.CdsAuProductURL</CdsAuProductURL>
+        <CdsCustomerURL>Server.MicroGateway.AU.CdsCustomerURL</CdsCustomerURL>
+        <CdsDiscoveryURL>Server.MicroGateway.AU.CdsDiscoveryURL</CdsDiscoveryURL>
+        <CdrArrangementURL>Server.MicroGateway.AU.CdrArrangementURL</CdrArrangementURL>
+        <CdsAdminURL>Server.MicroGateway.AU.CdsAdminURL</CdsAdminURL>
+      </AU>
+    </MicroGateway>
+  </Server>
+  <!-- Application Keystore -->
+  <Application.KeyStore>
+    <!--Absolute path + file name of JKS keystore file-->
+    <Location>Application.KeyStore.Location</Location>
+    <Alias>Application.KeyStore.Alias</Alias>
+    <Password>Application.KeyStore.Password</Password>
+    <DomainName>https://wso2.com</DomainName>
+  </Application.KeyStore>
+
+  <!-- Client Key Id-->
+  <Application.Certificate>
+    <KID>Application.Certificate.KID</KID>
+  </Application.Certificate>
+
+  <!-- Transport Keystore and Truststore -->
+  <!--This Keystore and the Truststore will be used during the SSL handshake-->
+  <Transport>
+    <MTLSEnabled>Transport.MTLSEnabled</MTLSEnabled>
+    <!--A keystore and a truststore needs to be configured in the following section if MTLSEnabled is set to
+    true-->
+    <KeyStore>
+      <!--Absolute path + file name of keystore file.
+      (e.g. <location>/home/kasun/Downloads/Certs/keystore.jks</location>)-->
+      <Location>Transport.KeyStore.Location</Location>
+      <Type>jks</Type>
+      <Password>Transport.KeyStore.Password</Password>
+    </KeyStore>
+    <Truststore>
+      <!--Absolute path + file name of truststore file. We can point the product client-truststore.jks here.
+      (e.g. <location>/home/kasun/wso2-obam-1.3.0/repository/resources/security/client-truststore.jks</location>)
+      -->
+      <Location>Transport.Truststore.Location</Location>
+      <Type>jks</Type>
+      <Password>Transport.Truststore.Password</Password>
+    </Truststore>
+  </Transport>
+  <!-- Application Info -->
+  <Application>
+    <ClientID>Application.ClientID</ClientID>
+    <ClientSecret>Application.ClientSecret</ClientSecret>
+    <RedirectURL>https://www.google.com</RedirectURL>
+  </Application>
+  <!-- Non Regulatory Application Info -->
+  <NonRegulatoryApplication>
+    <ClientID>NonRegulatoryApplication.ClientID</ClientID>
+    <ClientSecret>NonRegulatoryApplication.ClientSecret</ClientSecret>
+    <RedirectURL>https://www.google.com</RedirectURL>
+  </NonRegulatoryApplication>
+  <!-- PSU Info -->
+  <PSUInfo>
+    <Psu>admin@wso2.com</Psu>
+    <PsuPassword>wso2123</PsuPassword>
+  </PSUInfo>
+  <!-- Publisher Info -->
+  <PublisherInfo>
+    <Publisher>admin@wso2.com</Publisher>
+    <PublisherPassword>wso2123</PublisherPassword>
+  </PublisherInfo>
+  <!-- PSU Info -->
+  <TPPInfo>
+    <Tpp>admin@wso2.com</Tpp>
+    <TppPassword>wso2123</TppPassword>
+  </TPPInfo>
+  <!-- Customer Care Info -->
+  <CustomerCareInfo>
+    <CustomerCareUser>ann@gold.com</CustomerCareUser>
+    <CustomerCareUserPassword>wso2123</CustomerCareUserPassword>
+  </CustomerCareInfo>
+  <!-- Browser Automation -->
+  <BrowserAutomation>
+    <HeadlessEnabled>BrowserAutomation.HeadlessEnabled</HeadlessEnabled>
+    <FirefoxDriverLocation>BrowserAutomation.FirefoxDriverLocation</FirefoxDriverLocation>
+  </BrowserAutomation>
+  <!-- Common Configurations -->
+  <Common>
+    <!--Access token expire time in seconds-->
+    <AccessTokenExpireTime>30</AccessTokenExpireTime>
+    <TenantDomain>carbon.super</TenantDomain>
+    <SigningAlgorithm>Common.SigningAlgorithm</SigningAlgorithm>
+    <KeyManager.Admin>
+      <Username>admin@wso2.com</Username>
+      <Password>wso2123</Password>
+    </KeyManager.Admin>
+  </Common>
+  <!-- DCR Configurations -->
+  <DCR>
+    <SSAPath>SSA.File.Path</SSAPath>
+    <!-- SSA Redirect Uri -->
+    <RedirectUri>Redirect.Uri</RedirectUri>
+    <!-- SSA Alternate Redirect Uri (AU)-->
+    <AlternateRedirectUri>https://www.google.com/redirects/redirect2</AlternateRedirectUri>
+  </DCR>
+  <ConsentApi>
+    <AudienceValue>ConsentApi.AudienceValue</AudienceValue>
+  </ConsentApi>
+  <InternalApiContext>
+    <Consent-Mgt>/consent</Consent-Mgt> <!-- if 2.0.0 /api/openbanking/consent-mgt -->
+    <Multi-Auth>/multi-auth-api/1.0.0</Multi-Auth> <!-- if 2.0.0 /api/openbanking/multi-auth-api/1.0.0 -->
+  </InternalApiContext>
+  <!-- Id Permanence Encryption/Decryption Key (AU)-->
+  <IdPermanence>
+    <SecretKey>wso2</SecretKey>
+  </IdPermanence>
+</Configurations>
