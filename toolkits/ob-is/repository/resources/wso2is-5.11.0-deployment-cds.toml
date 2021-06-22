@@ -167,7 +167,7 @@ parameters.authRequestURL = "https://IS_HOSTNAME:9446/api/identity/auth/v1.1/dat
 skip_db_schema_creation = true
 
 [oauth]
-allowed_scopes = ["OB.*"]
+allowed_scopes = ["OB.*", "profile"]
 
 [oauth.token_renewal]
 renew_refresh_token = false
