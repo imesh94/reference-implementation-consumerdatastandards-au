@@ -18,6 +18,8 @@ import com.wso2.openbanking.accelerator.identity.grant.type.handlers.OBAuthoriza
 import com.wso2.openbanking.accelerator.identity.util.IdentityCommonUtil;
 import com.wso2.openbanking.cds.identity.grant.type.handlers.utils.CDSGrantHandlerUtil;
 import com.wso2.openbanking.cds.identity.utils.CDSIdentityUtil;
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 import org.wso2.carbon.identity.oauth2.IdentityOAuth2Exception;
 import org.wso2.carbon.identity.oauth2.dto.OAuth2AccessTokenRespDTO;
 import org.wso2.carbon.identity.oauth2.token.OAuthTokenReqMessageContext;
@@ -27,6 +29,8 @@ import org.wso2.carbon.identity.oauth2.util.OAuth2Util;
  * CDS specific authorization code grant handler
  */
 public class CDSAuthorizationCodeGrantHandler extends OBAuthorizationCodeGrantHandler {
+
+    private static Log log = LogFactory.getLog(CDSAuthorizationCodeGrantHandler.class);
 
     /**
      * Set refresh token validity period and add cdr_arrangement_id
@@ -38,12 +42,6 @@ public class CDSAuthorizationCodeGrantHandler extends OBAuthorizationCodeGrantHa
     public void executeInitialStep(OAuth2AccessTokenRespDTO oAuth2AccessTokenRespDTO,
                                    OAuthTokenReqMessageContext tokReqMsgCtx) throws IdentityOAuth2Exception {
 
-        long sharingDuration;
-        String[] scopes = tokReqMsgCtx.getScope();
-        String consentId = CDSIdentityUtil.getConsentId(scopes);
-        sharingDuration = CDSIdentityUtil.getRefreshTokenValidityPeriod(consentId);
-        // set refresh token validity period for token request message context
-        tokReqMsgCtx.setRefreshTokenvalidityPeriod(sharingDuration);
         // add cdr_arrangement_id to the token response dto
         CDSGrantHandlerUtil.populateCDRArrangementID(oAuth2AccessTokenRespDTO, tokReqMsgCtx.getScope());
     }
@@ -75,6 +73,11 @@ public class CDSAuthorizationCodeGrantHandler extends OBAuthorizationCodeGrantHa
             String[] scopes = tokenReqMessageContext.getScope();
             String consentId = CDSIdentityUtil.getConsentId(scopes);
             sharingDuration = CDSIdentityUtil.getRefreshTokenValidityPeriod(consentId);
+            // set refresh token validity period for token request message context
+            tokenReqMessageContext.setRefreshTokenvalidityPeriod(sharingDuration);
+            if (log.isDebugEnabled()) {
+                log.debug("Refresh token validity period is set to: " + sharingDuration);
+            }
             // do not issue refresh token if sharing duration value equals to zero
             if (sharingDuration == 0) {
                 return false;
