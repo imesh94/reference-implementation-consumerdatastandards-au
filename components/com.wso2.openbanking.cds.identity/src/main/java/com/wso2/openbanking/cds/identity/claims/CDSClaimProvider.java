@@ -12,7 +12,7 @@
 package com.wso2.openbanking.cds.identity.claims;
 
 import com.wso2.openbanking.accelerator.identity.claims.OBClaimProvider;
-import com.wso2.openbanking.cds.identity.claims.utils.CDSClaimProviderUtils;
+import com.wso2.openbanking.cds.identity.claims.utils.CDSClaimProviderUtil;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.wso2.carbon.identity.oauth.cache.SessionDataCache;
@@ -59,7 +59,7 @@ public class CDSClaimProvider extends OBClaimProvider {
                 .getoAuth2Parameters().getState();
 
         if (stateValue != null) {
-            cdsClaims.put(S_HASH_CLAIM, CDSClaimProviderUtils.getHashValue(stateValue, null));
+            cdsClaims.put(S_HASH_CLAIM, CDSClaimProviderUtil.getHashValue(stateValue, null));
             if (log.isDebugEnabled()) {
                 log.debug("S_HASH value created using given algorithm for state value:" + stateValue);
             }
@@ -112,7 +112,7 @@ public class CDSClaimProvider extends OBClaimProvider {
             cdsClaims.put(REFRESH_TOKEN_EXPIRES_AT_CLAIM, 0);
             cdsClaims.put(SHARING_EXPIRES_AT_CLAIM, 0);
         } else {
-            sharingDuration = CDSClaimProviderUtils.getEpochDateTime(sharingDuration);
+            sharingDuration = CDSClaimProviderUtil.getEpochDateTime(sharingDuration);
             cdsClaims.put(REFRESH_TOKEN_EXPIRES_AT_CLAIM, sharingDuration);
             cdsClaims.put(SHARING_EXPIRES_AT_CLAIM, sharingDuration);
         }

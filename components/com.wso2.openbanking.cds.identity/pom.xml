@@ -101,6 +101,7 @@
                         <exclude>**/*CDSSoftwareStatementBody.class</exclude>
                         <exclude>**/*CDSRequestObject.class</exclude>
                         <exclude>**/*CDSIdentityUtil.class</exclude>
+                        <exclude>**/*CDSClaimProviderUtil.class</exclude>
                     </excludes>
                 </configuration>
                 <executions>

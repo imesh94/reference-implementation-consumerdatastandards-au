@@ -29,9 +29,9 @@ import java.time.ZoneOffset;
 /**
  * Utility methods used for CDS Claim Provider service
  */
-public class CDSClaimProviderUtils {
+public class CDSClaimProviderUtil {
 
-    private static Log log = LogFactory.getLog(CDSClaimProviderUtils.class);
+    private static Log log = LogFactory.getLog(CDSClaimProviderUtil.class);
 
     /**
      * Method to obtain Hash Value for a given String
