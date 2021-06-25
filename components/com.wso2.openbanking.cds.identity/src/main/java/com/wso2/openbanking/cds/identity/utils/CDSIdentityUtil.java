@@ -13,21 +13,17 @@
 package com.wso2.openbanking.cds.identity.utils;
 
 import com.wso2.openbanking.accelerator.common.exception.ConsentManagementException;
-import com.wso2.openbanking.accelerator.consent.mgt.dao.models.ConsentResource;
+import com.wso2.openbanking.accelerator.common.util.Generated;
 import com.wso2.openbanking.accelerator.consent.mgt.service.impl.ConsentCoreServiceImpl;
-import net.minidev.json.JSONObject;
-import net.minidev.json.parser.JSONParser;
-import net.minidev.json.parser.ParseException;
-import org.apache.commons.lang.StringUtils;
+import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.wso2.carbon.identity.oauth2.authz.OAuthAuthzReqMessageContext;
 
-import java.time.OffsetDateTime;
-import java.time.ZoneOffset;
-import java.time.temporal.ChronoUnit;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.LinkedList;
+import java.util.List;
 
 import javax.servlet.http.Cookie;
 
@@ -38,8 +34,9 @@ public class CDSIdentityUtil {
 
     private static Log log = LogFactory.getLog(CDSIdentityUtil.class);
     private static final String COMMON_AUTH_ID = "commonAuthId";
-    private static final String EXPIRATION_DATE_TIME = "expirationDateTime";
+    private static final String SHARING_DURATION_VALUE = "sharing_duration_value";
     private static final String ZERO_SHARING_DURATION = "0";
+    private static final String OB_CONSENT_ID_PREFIX = "OB_CONSENT_ID_";
 
     /**
      * method to retrieve the commonAuthId from the oauth message context.
@@ -67,22 +64,20 @@ public class CDSIdentityUtil {
      * @param consentId consent Id
      * @return validity period for the refresh token
      */
+    @Generated(message = "Excluding from code coverage since it requires a service call")
     public static long getRefreshTokenValidityPeriod(String consentId) {
 
-        ConsentCoreServiceImpl consentCoreService = new ConsentCoreServiceImpl();
         long sharingDuration = 0;
-        if (StringUtils.isNotBlank(consentId)) {
+        if (org.apache.commons.lang.StringUtils.isNotBlank(consentId)) {
             try {
-                ConsentResource consentResource = consentCoreService.getConsent(consentId, false);
-                String receiptString = consentResource.getReceipt();
-                Object receiptJSON = new JSONParser(JSONParser.MODE_PERMISSIVE).parse(receiptString);
-                JSONObject receipt = (JSONObject) receiptJSON;
-                String expiryTime = receipt.getAsString(EXPIRATION_DATE_TIME);
+                String sharingDurationValue = new ConsentCoreServiceImpl().getConsentAttributes(consentId)
+                        .getConsentAttributes().get(SHARING_DURATION_VALUE);
 
-                if (!ZERO_SHARING_DURATION.equals(expiryTime)) {
-                    sharingDuration = getSharingDuration(expiryTime);
+                if (!ZERO_SHARING_DURATION.equals(sharingDurationValue)
+                        && StringUtils.isNotBlank(sharingDurationValue)) {
+                    sharingDuration = Long.parseLong(sharingDurationValue);
                 }
-            } catch (ConsentManagementException | ParseException e) {
+            } catch (ConsentManagementException e) {
                 log.error("Error while retrieving sharing duration. ", e);
             }
         }
@@ -90,16 +85,21 @@ public class CDSIdentityUtil {
     }
 
     /**
-     * get the validity period in seconds.
+     * retrieve the consent id from the scopes.
      *
-     * @param consentExpiryDateTime time till the consent is valid
-     * @return duration in seconds till the expiry time
+     * @param scopes array of scopes bound to the token
+     * @return consent Id
      */
-    public static long getSharingDuration(String consentExpiryDateTime) {
+    public static String getConsentId(String[] scopes) {
 
-        OffsetDateTime expiryDateTime = OffsetDateTime.parse(consentExpiryDateTime);
-        OffsetDateTime currentTime = OffsetDateTime.now(ZoneOffset.UTC);
-
-        return currentTime.until(expiryDateTime, ChronoUnit.SECONDS);
+        if (scopes != null && scopes.length > 0) {
+            List<String> scopesList = new LinkedList<>(Arrays.asList(scopes));
+            for (String scope : scopesList) {
+                if (scope.startsWith(OB_CONSENT_ID_PREFIX)) {
+                    return scope.split(OB_CONSENT_ID_PREFIX)[1];
+                }
+            }
+        }
+        return StringUtils.EMPTY;
     }
 }

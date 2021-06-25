@@ -26,6 +26,9 @@ import org.wso2.carbon.identity.oauth2.token.OAuthTokenReqMessageContext;
 import java.util.HashMap;
 import java.util.Map;
 
+/**
+ * CDS specific claim provider
+ */
 public class CDSClaimProvider extends OBClaimProvider {
 
     private static Log log = LogFactory.getLog(CDSClaimProvider.class);
@@ -103,8 +106,7 @@ public class CDSClaimProvider extends OBClaimProvider {
      * @param sharingDuration sharing duration value
      * @param cdsClaims cds related claims
      */
-    private void setSharingDurationRelatedClaims(long sharingDuration,
-                                                 Map<String, Object> cdsClaims) {
+    private void setSharingDurationRelatedClaims(long sharingDuration, Map<String, Object> cdsClaims) {
 
         if (sharingDuration == 0) {
             cdsClaims.put(REFRESH_TOKEN_EXPIRES_AT_CLAIM, 0);
