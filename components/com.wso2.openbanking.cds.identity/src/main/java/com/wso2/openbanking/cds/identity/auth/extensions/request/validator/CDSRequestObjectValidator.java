@@ -39,17 +39,22 @@ public class CDSRequestObjectValidator extends OBRequestObjectValidator {
     @Override
     public ValidationResponse validateOBConstraints(OBRequestObject obRequestObject, Map<String, Object> dataMap) {
 
-        CDSRequestObject cdsRequestObject = new CDSRequestObject(obRequestObject);
+        ValidationResponse superValidationResponse = super.validateOBConstraints(obRequestObject, dataMap);
 
-        String violation = validateScope(obRequestObject, dataMap);
+        if (superValidationResponse.isValid()) {
+            CDSRequestObject cdsRequestObject = new CDSRequestObject(obRequestObject);
+            String violation = validateScope(obRequestObject, dataMap);
 
-        violation = StringUtils.isEmpty(violation) ? OpenBankingValidator.getInstance()
-                .getFirstViolation(cdsRequestObject) : violation;
+            violation = StringUtils.isEmpty(violation) ? OpenBankingValidator.getInstance()
+                    .getFirstViolation(cdsRequestObject) : violation;
 
-        if (StringUtils.isEmpty(violation)) {
-            return new ValidationResponse(true);
+            if (StringUtils.isEmpty(violation)) {
+                return new ValidationResponse(true);
+            } else {
+                return new ValidationResponse(false, violation);
+            }
         } else {
-            return new ValidationResponse(false, violation);
+            return superValidationResponse;
         }
     }
 

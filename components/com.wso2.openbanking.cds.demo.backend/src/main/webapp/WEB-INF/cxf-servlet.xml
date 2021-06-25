@@ -1,0 +1,60 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+ ~ Copyright (c) 2021, WSO2 Inc. (http://www.wso2.com). All Rights Reserved.
+ ~
+ ~ This software is the property of WSO2 Inc. and its suppliers, if any.
+ ~ Dissemination of any information or reproduction of any material contained
+ ~ herein is strictly forbidden, unless permitted by WSO2 in accordance with
+ ~ the WSO2 Software License available at https://wso2.com/licenses/eula/3.1.
+ ~ For specific language governing the permissions and limitations under this
+ ~ license, please see the license as well as any agreement you’ve entered into
+ ~ with WSO2 governing the purchase of this software and any associated services.
+-->
+<beans xmlns="http://www.springframework.org/schema/beans"
+       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+       xmlns:jaxrs="http://cxf.apache.org/jaxrs"
+       xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-2.0.xsd
+         http://cxf.apache.org/jaxrs http://cxf.apache.org/schemas/jaxrs.xsd">
+
+    <bean class="org.springframework.context.support.PropertySourcesPlaceholderConfigurer"/>
+    <bean class="org.springframework.beans.factory.config.PreferencesPlaceholderConfigurer"/>
+
+    <jaxrs:server id="accountservice" address="/banking">
+        <jaxrs:serviceBeans>
+            <ref bean="accServiceBean"/>
+        </jaxrs:serviceBeans>
+    </jaxrs:server>
+
+    <jaxrs:server id="commonservice" address="/common">
+        <jaxrs:serviceBeans>
+            <ref bean="commServiceBean"/>
+        </jaxrs:serviceBeans>
+    </jaxrs:server>
+
+    <jaxrs:server id="discservice" address="/discovery">
+        <jaxrs:serviceBeans>
+            <ref bean="discServiceBean"/>
+        </jaxrs:serviceBeans>
+    </jaxrs:server>
+
+    <jaxrs:server id="customerdetails" address="/customerdetails">
+        <jaxrs:serviceBeans>
+            <ref bean="customerDetails"/>
+        </jaxrs:serviceBeans>
+    </jaxrs:server>
+
+    <jaxrs:server id="bankaccountservice" address="/bankaccounts">
+        <jaxrs:serviceBeans>
+            <ref bean="bankAccountServiceBean"/>
+        </jaxrs:serviceBeans>
+    </jaxrs:server>
+
+    <bean id="accServiceBean" class="com.wso2.openbanking.cds.demo.backend.services.BankingService"/>
+    <bean id="commServiceBean" class="com.wso2.openbanking.cds.demo.backend.services.CommonService"/>
+    <bean id="discServiceBean" class="com.wso2.openbanking.cds.demo.backend.services.DiscoveryService"/>
+    <!--For Customer Type-->
+    <bean id="customerDetails" class="com.wso2.openbanking.cds.demo.backend.services.CustomerDetails"/>
+    <bean id="bankAccountServiceBean" class="com.wso2.openbanking.cds.demo.backend.services.BankAccountService"/>
+
+</beans>
+
