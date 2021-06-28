@@ -11,11 +11,13 @@
  */
 package com.wso2.openbanking.cds.identity.auth.extensions.response.handler;
 
+import com.wso2.openbanking.accelerator.common.exception.OpenBankingException;
 import com.wso2.openbanking.accelerator.identity.auth.extensions.response.handler.OBResponseTypeHandler;
+import com.wso2.openbanking.accelerator.identity.util.IdentityCommonUtil;
 import com.wso2.openbanking.cds.common.utils.CommonConstants;
 import com.wso2.openbanking.cds.identity.utils.CDSIdentityUtil;
 import org.apache.commons.lang.ArrayUtils;
-import org.apache.commons.lang.StringUtils;
+import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.wso2.carbon.identity.oauth2.authz.OAuthAuthzReqMessageContext;
@@ -34,9 +36,18 @@ public class CDSResponseTypeHandlerImpl implements OBResponseTypeHandler {
 
         if (oAuthAuthzReqMessageContext != null && oAuthAuthzReqMessageContext.getAuthorizationReqDTO() != null) {
 
+            boolean regulatory = false;
             String[] scopes = oAuthAuthzReqMessageContext.getApprovedScope();
             String commonAuthId = CDSIdentityUtil.getCommonAuthId(oAuthAuthzReqMessageContext);
-            if (!Arrays.asList(scopes).contains("consentmgt") && StringUtils.isNotBlank(commonAuthId)) {
+            try {
+                if (StringUtils.isNotBlank(oAuthAuthzReqMessageContext.getAuthorizationReqDTO().getConsumerKey())) {
+                    regulatory = IdentityCommonUtil.getRegulatoryFromSPMetaData(oAuthAuthzReqMessageContext
+                            .getAuthorizationReqDTO().getConsumerKey());
+                }
+            } catch (OpenBankingException e) {
+                log.error("Regulatory property is null");
+            }
+            if (regulatory && StringUtils.isNotBlank(commonAuthId)) {
 
                 String consentId = "DummyConsentId";
                 String consentScope = CommonConstants.OB_CONSENT_ID_PREFIX + consentId;

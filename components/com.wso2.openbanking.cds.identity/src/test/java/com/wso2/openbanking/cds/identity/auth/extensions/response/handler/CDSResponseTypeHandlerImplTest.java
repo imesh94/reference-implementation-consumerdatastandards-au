@@ -11,6 +11,8 @@
  */
 package com.wso2.openbanking.cds.identity.auth.extensions.response.handler;
 
+import com.wso2.openbanking.accelerator.common.exception.OpenBankingException;
+import com.wso2.openbanking.accelerator.identity.util.IdentityCommonUtil;
 import com.wso2.openbanking.cds.identity.utils.CDSIdentityUtil;
 import org.mockito.Mockito;
 import org.powermock.core.classloader.annotations.PrepareForTest;
@@ -26,7 +28,7 @@ import java.util.Arrays;
 import static org.powermock.api.mockito.PowerMockito.mockStatic;
 import static org.powermock.api.mockito.PowerMockito.when;
 
-@PrepareForTest({CDSIdentityUtil.class})
+@PrepareForTest({CDSIdentityUtil.class, IdentityCommonUtil.class})
 public class CDSResponseTypeHandlerImplTest extends PowerMockTestCase {
 
     private CDSResponseTypeHandlerImpl cdsResponseTypeHandler;
@@ -38,9 +40,10 @@ public class CDSResponseTypeHandlerImplTest extends PowerMockTestCase {
     }
 
     @Test
-    public void updateApprovedScopesSuccess() {
+    public void updateApprovedScopesSuccess() throws Exception {
 
         OAuth2AuthorizeReqDTO oAuth2AuthorizeReqDTO = new OAuth2AuthorizeReqDTO();
+        oAuth2AuthorizeReqDTO.setConsumerKey("DummyClientId");
         OAuthAuthzReqMessageContext oAuthAuthzReqMessageContext =
                 new OAuthAuthzReqMessageContext(oAuth2AuthorizeReqDTO);
         String[] scopeArray = {"openid", "profile", "bank:accounts.basic:read", "bank:accounts.detail:read"};
@@ -48,6 +51,8 @@ public class CDSResponseTypeHandlerImplTest extends PowerMockTestCase {
 
         mockStatic(CDSIdentityUtil.class);
         when(CDSIdentityUtil.getCommonAuthId(Mockito.anyObject())).thenReturn("DummyCommonAuthId");
+        mockStatic(IdentityCommonUtil.class);
+        when(IdentityCommonUtil.getRegulatoryFromSPMetaData(Mockito.anyString())).thenReturn(true);
 
         String[] updatedScopes = cdsResponseTypeHandler.updateApprovedScopes(oAuthAuthzReqMessageContext);
 
@@ -64,9 +69,10 @@ public class CDSResponseTypeHandlerImplTest extends PowerMockTestCase {
     }
 
     @Test
-    public void updateApprovedScopesNonRegFlow() {
+    public void updateApprovedScopesNonRegFlow() throws Exception {
 
         OAuth2AuthorizeReqDTO oAuth2AuthorizeReqDTO = new OAuth2AuthorizeReqDTO();
+        oAuth2AuthorizeReqDTO.setConsumerKey("DummyClientId");
         OAuthAuthzReqMessageContext oAuthAuthzReqMessageContext =
                 new OAuthAuthzReqMessageContext(oAuth2AuthorizeReqDTO);
         String[] scopeArray = {"openid", "consentmgt", "bank:accounts.basic:read", "bank:accounts.detail:read"};
@@ -74,6 +80,8 @@ public class CDSResponseTypeHandlerImplTest extends PowerMockTestCase {
 
         mockStatic(CDSIdentityUtil.class);
         when(CDSIdentityUtil.getCommonAuthId(Mockito.anyObject())).thenReturn("DummyCommonAuthId");
+        mockStatic(IdentityCommonUtil.class);
+        when(IdentityCommonUtil.getRegulatoryFromSPMetaData(Mockito.anyString())).thenThrow(OpenBankingException.class);
 
         String[] updatedScopes = cdsResponseTypeHandler.updateApprovedScopes(oAuthAuthzReqMessageContext);
         Assert.assertTrue(!Arrays.asList(updatedScopes).contains("OB_CONSENT_ID_DummyConsentId"));
