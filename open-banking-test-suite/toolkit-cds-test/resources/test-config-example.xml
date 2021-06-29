@@ -16,11 +16,6 @@
   <!--OBSpec accepts values AU-->
   <OBSpec>OB.Spec</OBSpec>
   <ApiVersion>Api.Version</ApiVersion>
-  <!-- Provisioning Info -->
-  <Provisioning>
-    <Enabled>Provisioning.Enabled</Enabled>
-    <ProvisionFilePath>Provisioning.ProvisionFilePath</ProvisionFilePath>
-  </Provisioning>
   <!-- Server Info -->
   <Server>
     <BaseURL>Server.BaseURL</BaseURL>

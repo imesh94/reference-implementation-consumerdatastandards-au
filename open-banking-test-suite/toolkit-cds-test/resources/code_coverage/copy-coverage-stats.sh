@@ -118,6 +118,7 @@ else
     unzip -d jacoco_iam jacoco_iam.zip
 
 #--------------Copy Coverage Dump from AM Server-----------------#
+
     echo "Stop AM Servers"
     ssh_to_server "${AMSERVER_IP}" "sudo JAVA_HOME=${JAVA_HOME} ${AMSERVER_SETUP_PATH}/bin/wso2server.sh stop"
 

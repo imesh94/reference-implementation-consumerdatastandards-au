@@ -12,46 +12,40 @@
 
 package com.wso2.openbanking.test.framework.automation;
 
-import com.wso2.openbanking.test.framework.util.ConfigParser;
-import com.wso2.openbanking.test.framework.util.TestConstants;
-import org.openqa.selenium.By;
-import org.openqa.selenium.WebElement;
 import org.openqa.selenium.remote.RemoteWebDriver;
 
 import java.util.concurrent.TimeUnit;
 
 /**
- * CCPortal Automation.
+ * Basic Authentication Automation.
  */
-public class CCProtalWithdrawalAutomationStep implements BrowserAutomationStep {
+public class BasicAuthErrorStep implements BrowserAutomationStep {
 
-    public String CCPortalUrl;
+    public String authorizeUrl;
 
-    public CCProtalWithdrawalAutomationStep(String CCPortalUrl) {
 
-        this.CCPortalUrl = CCPortalUrl;
+    /**
+     * Initialize Basic Auth Flow.
+     *
+     * @param authorizeUrl authorise URL.
+     */
+    public BasicAuthErrorStep(String authorizeUrl) {
 
+        this.authorizeUrl = authorizeUrl;
     }
+
     /**
      * Execute automation using driver
      *
      * @param webDriver driver object.
      * @param context   automation context.
      */
+    @Override
     public void execute(RemoteWebDriver webDriver, BrowserAutomation.AutomationContext context) {
 
-        webDriver.navigate().to(CCPortalUrl);
+        webDriver.navigate().to(authorizeUrl);
 
-        WebElement username = webDriver.findElement(By.id(TestConstants.USERNAME_FIELD_ID));
-        username.clear();
-        username.sendKeys(ConfigParser.getInstance().getCCPortal());
-
-        WebElement password = webDriver.findElement(By.id(TestConstants.PASSWORD_FIELD_ID));
-        password.clear();
-        password.sendKeys(ConfigParser.getInstance().getCCPortalPassword());
-
-        webDriver.findElement(By.xpath(TestConstants.CCPORTAL_SIGNIN_XPATH)).submit();
-
-        webDriver.manage().timeouts().implicitlyWait(100, TimeUnit.SECONDS);
+        webDriver.manage().timeouts().implicitlyWait(10, TimeUnit.SECONDS);
     }
+
 }

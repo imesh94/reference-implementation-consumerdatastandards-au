@@ -19,7 +19,6 @@
     </test>
     <test name="Accounts Integration Tests" parallel="false" enabled="false">
         <classes>
-            <!--<class name="com.wso2.finance.open.banking.au.integration.testss.accounts.AccountsRetrieval100Test"/>-->
             <class name="com.wso2.openbanking.toolkit.cds.integration.tests.accounts.AccountsRetrievalTest"/>
             <class name="com.wso2.openbanking.toolkit.cds.integration.tests.accounts.AccountsRetrievalRequestHeaderValidationTest"/>
             <class name="com.wso2.openbanking.toolkit.cds.integration.tests.accounts.DuplicateCommonAuthIdTest"/>
