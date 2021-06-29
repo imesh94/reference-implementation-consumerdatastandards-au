@@ -30,7 +30,3 @@ if (output != null){
 	request.setAttribute("callbackURL",callbackURL);
 }
 %>
-
-
-
-

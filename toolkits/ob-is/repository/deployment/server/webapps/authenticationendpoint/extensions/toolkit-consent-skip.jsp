@@ -16,4 +16,3 @@
 %>
 <p style="color:black"> Unless you confirm your authorisation, we won't be able to share your data with
 "<%=spDetails%>". <br> <br> Are you sure you would like to cancel this process? </p>
-

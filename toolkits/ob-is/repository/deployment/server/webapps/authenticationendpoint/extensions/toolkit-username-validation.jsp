@@ -12,4 +12,3 @@
 <div class="field disclaimer" style="font-size:small">
 	Forgot Customer ID? Go to the WSO2 Open Banking website to retrieve it.
 </div>
-
