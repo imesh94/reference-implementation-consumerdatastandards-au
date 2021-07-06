@@ -81,7 +81,9 @@
                <jsp:include page="extensions/toolkit-error.jsp"/>
 		
 	    <% } else {
-               error = "Maximum retry limit reached. Please wait for a while until next attempt. In case of an incorrect Customer ID, please visit Internet Banking to retrieve your Customer ID or contact the bank.";
+               error = "Maximum retry limit reached. Please wait for a while until next attempt. " +
+                       "In case of an incorrect Customer ID, please visit Internet Banking to " +
+                       "retrieve your Customer ID or contact the bank.";
                disableInput = true;
                callbackURL = "retry.do";
                response.sendRedirect(callbackURL + "?status=Access Denied&statusMsg=" + error);
