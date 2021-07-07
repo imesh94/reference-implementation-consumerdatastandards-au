@@ -512,6 +512,8 @@ handler="com.wso2.openbanking.accelerator.consent.extensions.admin.impl.DefaultC
 
 [open_banking.identity.extensions]
 request_object_validator="com.wso2.openbanking.cds.identity.auth.extensions.request.validator.CDSRequestObjectValidator"
+response_type_handler="com.wso2.openbanking.cds.identity.auth.extensions.response.handler.CDSResponseTypeHandlerImpl"
+claim_provider="com.wso2.openbanking.cds.identity.claims.CDSClaimProvider"
 
 #=======================configs related to open-banking-cds.xml=====================
 
