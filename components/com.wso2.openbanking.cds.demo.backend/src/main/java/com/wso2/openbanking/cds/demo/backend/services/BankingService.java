@@ -17,12 +17,14 @@ import com.google.gson.GsonBuilder;
 import com.google.gson.JsonArray;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
-import com.wso2.openbanking.cds.demo.backend.model.AccountInfo;
 import com.wso2.openbanking.cds.demo.backend.model.RequestAccountIds;
-import org.apache.commons.codec.binary.Base64;
+import net.minidev.json.JSONArray;
+import net.minidev.json.JSONObject;
+import net.minidev.json.parser.JSONParser;
+import net.minidev.json.parser.ParseException;
 
 import java.nio.charset.StandardCharsets;
-import java.util.Arrays;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Random;
 import javax.ws.rs.GET;
@@ -41,7 +43,7 @@ public class BankingService {
 
     private static final String XV_HEADER = "x-v";
     private static final String INTERACTION_ID_HEADER = "x-fapi-interaction-id";
-    private static final String ACCOUNT_INFO_HEADER = "x-wso2-account-information";
+    private static final String ACCOUNT_INFO_HEADER = "Account-Request-Information";
     private static JsonParser jsonParser = new JsonParser();
 
     @GET
@@ -49,17 +51,17 @@ public class BankingService {
     @Produces("application/json")
     public Response getAccounts(@HeaderParam(INTERACTION_ID_HEADER) String xFapiInteractionId,
                                 @HeaderParam(XV_HEADER) String apiVersion,
-                                @HeaderParam(ACCOUNT_INFO_HEADER) String accountRequestInfo) {
+                                @HeaderParam(ACCOUNT_INFO_HEADER) String accountRequestInfo) throws ParseException {
 
-        List<AccountInfo> accountInfo = fromJSON(accountRequestInfo);
+        JSONObject accountRequestInformation = getRequest(accountRequestInfo);
+        List<String> accountRequestIds = getAccountIds(accountRequestInformation);
         JsonObject data = new JsonObject();
         JsonArray accounts = new JsonArray();
 
-        for (AccountInfo aiId : accountInfo) {
-            for (String accountId: aiId.getAccountIds()) {
-                accounts.add(getSampleAccount(accountId));
-            }
+        for (String accountId: accountRequestIds) {
+            accounts.add(getSampleAccount(accountId));
         }
+
         data.add("accounts", accounts);
         String response = getResponse(data, getSampleLinksPaginated("/accounts"), getSampleMetaPaginated());
 
@@ -72,17 +74,18 @@ public class BankingService {
     @Produces("application/json")
     public Response getBulkBalances(@HeaderParam(INTERACTION_ID_HEADER) String xFapiInteractionId,
                                     @HeaderParam(XV_HEADER) String apiVersion,
-                                    @HeaderParam(ACCOUNT_INFO_HEADER) String accountRequestInfo) {
+                                    @HeaderParam(ACCOUNT_INFO_HEADER) String accountRequestInfo) throws ParseException {
 
-        List<AccountInfo> accountInfo = fromJSON(accountRequestInfo);
+        JSONObject accountRequestInformation = getRequest(accountRequestInfo);
+        List<String> accountRequestIds = getAccountIds(accountRequestInformation);
         JsonObject data = new JsonObject();
         JsonArray balances = new JsonArray();
 
-        for (AccountInfo aiId : accountInfo) {
-            for (String accountId: aiId.getAccountIds()) {
-                balances.add(getSampleBalance(accountId));
-            }
+
+        for (String accountId: accountRequestIds) {
+            balances.add(getSampleBalance(accountId));
         }
+
         data.add("balances", balances);
         String response = getResponse(data, getSampleLinksPaginated("/accounts/balances"),
                 getSampleMetaPaginated());
@@ -209,17 +212,18 @@ public class BankingService {
     @Produces("application/json")
     public Response getBulkDirectDebits(@HeaderParam(INTERACTION_ID_HEADER) String xFapiInteractionId,
                                         @HeaderParam(XV_HEADER) String apiVersion,
-                                        @HeaderParam(ACCOUNT_INFO_HEADER) String accountRequestInfo) {
+                                        @HeaderParam(ACCOUNT_INFO_HEADER) String accountRequestInfo)
+            throws ParseException {
 
-        List<AccountInfo> accountInfo = fromJSON(accountRequestInfo);
+        JSONObject accountRequestInformation = getRequest(accountRequestInfo);
+        List<String> accountRequestIds = getAccountIds(accountRequestInformation);
         JsonObject data = new JsonObject();
         JsonArray directDebits = new JsonArray();
 
-        for (AccountInfo aiId : accountInfo) {
-            for (String accountId: aiId.getAccountIds()) {
-                directDebits.add(getSampleDirectDebit(accountId));
-            }
+        for (String accountId: accountRequestIds) {
+            directDebits.add(getSampleDirectDebit(accountId));
         }
+
         data.add("directDebitAuthorisations", directDebits);
         String response = getResponse(data,
                 getSampleLinksPaginated("/accounts/direct-debits"), getSampleMetaPaginated());
@@ -934,13 +938,23 @@ public class BankingService {
         return errorResponse;
     }
 
-    private static List<AccountInfo> fromJSON(String json) {
+    private static JSONObject getRequest(String json) throws ParseException {
         String[] splitString = json.split("\\.");
         String base64EncodedBody = splitString[1];
-        Base64 base64 = new Base64();
-        String decodedString = new String(base64.decode(base64EncodedBody.getBytes(StandardCharsets.UTF_8)),
-                StandardCharsets.UTF_8);
-        Gson gson = new Gson();
-        return Arrays.asList(gson.fromJson("[" + decodedString + "]", AccountInfo[].class));
+        String decodedString = new String(java.util.Base64.getDecoder()
+                .decode(base64EncodedBody.getBytes(StandardCharsets.UTF_8)), StandardCharsets.UTF_8);
+        JSONParser parser = new JSONParser(JSONParser.MODE_PERMISSIVE);
+        JSONObject jsonObject = (JSONObject) parser.parse(decodedString);
+        return jsonObject;
+    }
+
+    private static List<String> getAccountIds(JSONObject json) {
+        List<String> accountIds = new ArrayList<>();
+        JSONArray mappingResources = (JSONArray) json.get("consentMappingResources");
+        for (int i = 0; i < mappingResources.size(); i++) {
+            JSONObject resource = (JSONObject) mappingResources.get(i);
+            accountIds.add((String) resource.get("accountId"));
+        }
+        return accountIds;
     }
 }
