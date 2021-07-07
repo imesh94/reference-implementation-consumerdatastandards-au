@@ -49,16 +49,19 @@ public class CDSResponseTypeHandlerImpl implements OBResponseTypeHandler {
             }
             if (regulatory && StringUtils.isNotBlank(commonAuthId)) {
 
-                String consentId = "DummyConsentId";
+                String consentId = CDSIdentityUtil.getConsentIdWithCommonAuthId(commonAuthId);
+                if (consentId.isEmpty()) {
+                    log.error("Consent id retrieved using common auth id is empty");
+                    return null;
+                }
                 String consentScope = CommonConstants.OB_CONSENT_ID_PREFIX + consentId;
                 String[] updatedScopes = (String[]) ArrayUtils.addAll(scopes, new String[]{consentScope});
-
                 if (log.isDebugEnabled()) {
                     log.debug("Updated scopes: " + Arrays.toString(updatedScopes));
                 }
                 return updatedScopes;
             }
-            if (StringUtils.isEmpty(commonAuthId)) {
+            if (StringUtils.isBlank(commonAuthId)) {
                 log.error("Failed to update scopes.");
             }
         } else {
@@ -72,11 +75,18 @@ public class CDSResponseTypeHandlerImpl implements OBResponseTypeHandler {
 
         String commonAuthId = CDSIdentityUtil.getCommonAuthId(oAuthAuthzReqMessageContext);
         if (StringUtils.isNotBlank(commonAuthId)) {
-            String consentId = "DummyConsentId";
+            String consentId = CDSIdentityUtil.getConsentIdWithCommonAuthId(commonAuthId);
+            if (consentId.isEmpty()) {
+                log.error("Consent id retrieved using common auth id is empty");
+                return oAuthAuthzReqMessageContext.getRefreshTokenvalidityPeriod();
+            }
             long sharingDuration = CDSIdentityUtil.getRefreshTokenValidityPeriod(consentId);
             if (sharingDuration != 0) {
                 return sharingDuration;
             }
+        } else {
+            log.error("Failed to get refresh token validity period due to empty common auth id");
+            return oAuthAuthzReqMessageContext.getRefreshTokenvalidityPeriod();
         }
         return oAuthAuthzReqMessageContext.getRefreshTokenvalidityPeriod();
     }

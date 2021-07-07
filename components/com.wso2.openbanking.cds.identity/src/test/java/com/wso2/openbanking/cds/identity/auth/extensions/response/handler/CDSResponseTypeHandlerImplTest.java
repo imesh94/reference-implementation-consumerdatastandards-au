@@ -51,6 +51,7 @@ public class CDSResponseTypeHandlerImplTest extends PowerMockTestCase {
 
         mockStatic(CDSIdentityUtil.class);
         when(CDSIdentityUtil.getCommonAuthId(Mockito.anyObject())).thenReturn("DummyCommonAuthId");
+        when(CDSIdentityUtil.getConsentIdWithCommonAuthId(Mockito.anyString())).thenReturn("DummyConsentId");
         mockStatic(IdentityCommonUtil.class);
         when(IdentityCommonUtil.getRegulatoryFromSPMetaData(Mockito.anyString())).thenReturn(true);
 
@@ -97,6 +98,7 @@ public class CDSResponseTypeHandlerImplTest extends PowerMockTestCase {
         mockStatic(CDSIdentityUtil.class);
         when(CDSIdentityUtil.getCommonAuthId(Mockito.anyObject())).thenReturn("DummyCommonAuthId");
         when(CDSIdentityUtil.getRefreshTokenValidityPeriod(Mockito.anyString())).thenReturn((long) 7776000);
+        when(CDSIdentityUtil.getConsentIdWithCommonAuthId(Mockito.anyString())).thenReturn("DummyConsentId");
 
         long refreshTokenValidityPeriod = cdsResponseTypeHandler
                 .updateRefreshTokenValidityPeriod(oAuthAuthzReqMessageContext);
@@ -113,6 +115,7 @@ public class CDSResponseTypeHandlerImplTest extends PowerMockTestCase {
         mockStatic(CDSIdentityUtil.class);
         when(CDSIdentityUtil.getCommonAuthId(Mockito.anyObject())).thenReturn("DummyCommonAuthId");
         when(CDSIdentityUtil.getRefreshTokenValidityPeriod(Mockito.anyString())).thenReturn((long) 0);
+        when(CDSIdentityUtil.getConsentIdWithCommonAuthId(Mockito.anyString())).thenReturn("DummyConsentId");
 
         long refreshTokenValidityPeriod = cdsResponseTypeHandler
                 .updateRefreshTokenValidityPeriod(oAuthAuthzReqMessageContext);
