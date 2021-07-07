@@ -45,7 +45,7 @@ public class CDSResponseTypeHandlerImpl implements OBResponseTypeHandler {
                             .getAuthorizationReqDTO().getConsumerKey());
                 }
             } catch (OpenBankingException e) {
-                log.error("Regulatory property is null");
+                log.error("Regulatory property is null", e);
             }
             if (regulatory && StringUtils.isNotBlank(commonAuthId)) {
 
@@ -63,6 +63,7 @@ public class CDSResponseTypeHandlerImpl implements OBResponseTypeHandler {
             }
             if (StringUtils.isBlank(commonAuthId)) {
                 log.error("Failed to update scopes.");
+                return null;
             }
         } else {
             return new String[0];
