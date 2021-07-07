@@ -56,7 +56,7 @@ public class TestConstants {
 	public static final String INVALID_KEYSTORE_ALIAS = "tpp3-invalid";
 
 	//Endpoints
-	public static final String TOKEN_ENDPOINT = "/token";
+	public static final String TOKEN_ENDPOINT = "/oauth2/token";
 	public static final String AUTHORIZE_ENDPOINT = "/authorize/?";
 	public static final String INTROSPECTION_ENDPOINT = "/oauth2/introspect";
 

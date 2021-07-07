@@ -44,7 +44,9 @@ class AbstractAUTests {
     public String userAccessToken
     public String consentedAccount
     public String secondConsentedAccount
+    public String transactionId
     public String productId
+    public String payeeId
     public Response parResponse
 
     @BeforeClass (alwaysRun = true)

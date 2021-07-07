@@ -844,4 +844,8 @@ public class ConfigParser {
 
     return String.valueOf(ConfigParser.getInstance().getConfiguration().get("CustomerCareInfo.CustomerCareUserPassword"));
   }
+
+  public String getApiVersion() {
+    return String.valueOf(ConfigParser.getInstance().getConfiguration().get("ApiVersion"));
+  }
 }
