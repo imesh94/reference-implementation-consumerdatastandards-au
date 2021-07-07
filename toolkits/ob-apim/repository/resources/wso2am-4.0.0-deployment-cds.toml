@@ -448,6 +448,9 @@ priority = 4
 [[open_banking.gateway.openbanking_gateway_executors.type.executors]]
 name = "com.wso2.openbanking.accelerator.gateway.executor.impl.common.reporting.data.executor.CommonReportingDataExecutor"
 priority = 5
+[[open_banking.gateway.openbanking_gateway_executors.type.executors]]
+name = "com.wso2.openbanking.cds.gateway.executors.error.handler.CDSErrorHandler"
+priority = 1000
 
 [[open_banking.gateway.openbanking_gateway_executors.type]]
 name = "DCR"
@@ -460,6 +463,9 @@ priority = 2
 [[open_banking.gateway.openbanking_gateway_executors.type.executors]]
 name = "com.wso2.openbanking.accelerator.gateway.executor.dcr.DCRExecutor"
 priority = 3
+[[open_banking.gateway.openbanking_gateway_executors.type.executors]]
+name = "com.wso2.openbanking.cds.gateway.executors.error.handler.CDSErrorHandler"
+priority = 1000
 
 [open_banking.apim.analytics]
 enable=false
