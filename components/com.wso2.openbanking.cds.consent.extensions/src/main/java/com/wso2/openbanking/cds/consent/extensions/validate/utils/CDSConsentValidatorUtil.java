@@ -71,7 +71,11 @@ public class CDSConsentValidatorUtil {
                 CDSConsentExtensionConstants.PAYEES_REGEX,
                 CDSConsentExtensionConstants.PAYEE_DETAIL_REGEX,
                 CDSConsentExtensionConstants.PRODUCTS_REGEX,
-                CDSConsentExtensionConstants.PRODUCT_DETAIL_REGEX);
+                CDSConsentExtensionConstants.PRODUCT_DETAIL_REGEX,
+                CDSConsentExtensionConstants.COMMON_CUSTOMER_REGEX,
+                CDSConsentExtensionConstants.COMMON_CUSTOMER_DETAIL_REGEX,
+                CDSConsentExtensionConstants.DISCOVERY_STATUS_REGEX,
+                CDSConsentExtensionConstants.DISCOVERY_OUTAGES_REGEX);
 
         return requestUrls;
     }

@@ -17,7 +17,7 @@ import com.wso2.openbanking.cds.identity.auth.extensions.request.validator.annot
 /**
  * Model class for CDS request object
  */
-@ValidateSharingDuration(message = "Invalid sharing duration provided")
+@ValidateSharingDuration(message = "Negative sharing_duration")
 public class CDSRequestObject extends OBRequestObject {
 
     private static final long serialVersionUID = -8397385780422294126L;

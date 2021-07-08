@@ -48,6 +48,7 @@ public class CDSConsentExtensionConstants {
     public static final String COMMON_AUTH_ID = "commonAuthId";
     public static final String METADATA = "metadata";
     public static final String ACCOUNT_IDS = "accountIds";
+    public static final String ZERO = "0";
 
     public static final String CHAR_SET = "UTF-8";
     public static final String CUSTOMER_TYPE = "customerUType";
@@ -90,6 +91,10 @@ public class CDSConsentExtensionConstants {
     public static final String PAYEE_DETAIL_REGEX = "/banking/payees/[^/?]*";
     public static final String PRODUCTS_REGEX = "/banking/products";
     public static final String PRODUCT_DETAIL_REGEX = "/banking/products/[^/?]*";
+    public static final String COMMON_CUSTOMER_REGEX = "/common/customer";
+    public static final String COMMON_CUSTOMER_DETAIL_REGEX = "/common/customer/detail";
+    public static final String DISCOVERY_STATUS_REGEX = "/discovery/status";
+    public static final String DISCOVERY_OUTAGES_REGEX = "/discovery/outages";
 
     static {
         Map<String, Map<String, List<String>>> dataCluster = new HashMap<>();
