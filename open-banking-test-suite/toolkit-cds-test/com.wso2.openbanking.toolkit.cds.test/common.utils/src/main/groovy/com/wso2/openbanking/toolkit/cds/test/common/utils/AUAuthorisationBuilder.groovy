@@ -48,7 +48,7 @@ class AUAuthorisationBuilder {
     private AuthorizationRequest request
 
     private params = [
-            endpoint     : new URI("${ConfigParser.instance.baseUrl}/authorize/"),
+            endpoint     : new URI("${ConfigParser.instance.getAuthorisationServerUrl()}/oauth2/authorize/"),
             response_type: new ResponseType("code id_token"),
             client_id    : new ClientID(ConfigParser.getInstance().getClientId()),
             redirect_uri : new URI(ConfigParser.getInstance().getRedirectUrl()),
@@ -123,7 +123,8 @@ class AUAuthorisationBuilder {
      * @return a signed JWT
      */
     static JWT getSignedRequestObject(String scopeString, Long sharingDuration, Boolean sendSharingDuration,
-                                      String cdrArrangementId, String redirect_uri = ConfigParser.instance.redirectURL,
+                                      String cdrArrangementId,
+                                      String redirect_uri = ConfigParser.instance.getRedirectUrl(),
                                       String clientId = ConfigParser.instance.clientId) {
 
         KeyStore keyStore = TestUtil.getApplicationKeyStore()
@@ -143,6 +144,7 @@ class AUAuthorisationBuilder {
               "response_type": "code id_token",
               "exp": ${expiryDate.getEpochSecond().toLong()},
               "client_id": "${clientId}",
+              "iss": "${clientId}",
               "redirect_uri": "${redirect_uri}",
               "scope": "${scopeString}",
               "state": "suite",
@@ -169,6 +171,7 @@ class AUAuthorisationBuilder {
               "response_type": "code id_token",
               "exp": ${expiryDate.getEpochSecond().toLong()},
               "client_id": "${clientId}",
+              "iss": "${clientId}",
               "redirect_uri": "${redirect_uri}",
               "scope": "${scopeString}",
               "state": "suite",

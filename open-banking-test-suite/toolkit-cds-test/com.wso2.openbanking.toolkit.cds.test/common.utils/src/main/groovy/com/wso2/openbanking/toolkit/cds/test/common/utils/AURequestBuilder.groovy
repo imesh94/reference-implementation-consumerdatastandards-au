@@ -86,7 +86,7 @@ class AURequestBuilder {
 
         ClientAuthentication clientAuth = new PrivateKeyJWT(SignedJWT.parse(assertionString))
 
-        URI tokenEndpoint = new URI("${config.getBaseUrl()}${TestConstants.TOKEN_ENDPOINT}")
+        URI tokenEndpoint = new URI("${config.getAuthorisationServerUrl()}${TestConstants.TOKEN_ENDPOINT}")
 
         TokenRequest request = new TokenRequest(tokenEndpoint, clientAuth, codeGrant)
 

@@ -522,7 +522,7 @@ class AccountsRetrievalTest extends AbstractAUTests {
         SoftAssert softAssertion= new SoftAssert()
         softAssertion.assertEquals(response.statusCode(), AUConstants.STATUS_CODE_403)
         softAssertion.assertEquals(response.getHeader(AUConstants.X_V_HEADER).toInteger(), AUConstants.X_V_HEADER_ACCOUNTS)
-        softAssertion.assertEquals(TestUtil.parseResponseBody(response, "fault.message"),
+        softAssertion.assertEquals(TestUtil.parseResponseBody(response, "message"),
                 "The access token does not allow you to access the requested resource")
         softAssertion.assertAll()
     }
@@ -548,7 +548,7 @@ class AccountsRetrievalTest extends AbstractAUTests {
         SoftAssert softAssertion= new SoftAssert()
         softAssertion.assertEquals(response.statusCode(), AUConstants.STATUS_CODE_403)
         softAssertion.assertEquals(response.getHeader(AUConstants.X_V_HEADER).toInteger(), AUConstants.X_V_HEADER_ACCOUNTS)
-        softAssertion.assertEquals(TestUtil.parseResponseBody(response, "fault.message"),
+        softAssertion.assertEquals(TestUtil.parseResponseBody(response, "message"),
                 "The access token does not allow you to access the requested resource")
         softAssertion.assertAll()
     }
@@ -574,7 +574,7 @@ class AccountsRetrievalTest extends AbstractAUTests {
         SoftAssert softAssertion= new SoftAssert()
         softAssertion.assertEquals(response.statusCode(), AUConstants.STATUS_CODE_403)
         softAssertion.assertEquals(response.getHeader(AUConstants.X_V_HEADER).toInteger(), AUConstants.X_V_HEADER_ACCOUNTS)
-        softAssertion.assertEquals(TestUtil.parseResponseBody(response, "fault.message"),
+        softAssertion.assertEquals(TestUtil.parseResponseBody(response, "message"),
                 "The access token does not allow you to access the requested resource")
         softAssertion.assertAll()
     }
