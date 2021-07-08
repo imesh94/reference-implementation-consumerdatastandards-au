@@ -18,4 +18,5 @@ package com.wso2.openbanking.cds.common.utils;
 public class CommonConstants {
 
     public static final String OB_CONFIG_FILE = "open-banking-cds.xml";
+    public static final String OB_CONSENT_ID_PREFIX = "OB_CONSENT_ID_";
 }

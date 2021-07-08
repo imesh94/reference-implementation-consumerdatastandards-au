@@ -51,11 +51,14 @@ public class CDSConsentPersistStepTests extends PowerMockTestCase {
     private static AuthorizationResource authorizationResourceMock;
     private static ConsentCoreServiceImpl consentCoreServiceMock;
     private static Map<String, Object> consentDataMap;
+    private static Map<String, String> browserCookies;
 
     @BeforeClass
     public void initTest() {
 
         consentDataMap = new HashMap<>();
+        browserCookies = new HashMap<>();
+        browserCookies.put("commonAuthId", "DummyCommonAuthId");
         consentDataMap.put("permissions",
                 new ArrayList<>(Arrays.asList(CDSConsentAuthorizeTestConstants.PERMISSION_SCOPES.split(" "))));
         consentDataMap.put("expirationDateTime",  OffsetDateTime.now(ZoneOffset.UTC));
@@ -81,6 +84,7 @@ public class CDSConsentPersistStepTests extends PowerMockTestCase {
         JSONObject payload = (JSONObject) parser
                 .parse(CDSConsentAuthorizeTestConstants.PAYLOAD);
         doReturn(payload).when(consentPersistDataMock).getPayload();
+        doReturn(browserCookies).when(consentPersistDataMock).getBrowserCookies();
         doReturn(true).when(consentPersistDataMock).getApproval();
 
         MockCDSConsentPersistSuccess mockCDSConsentPersist = new MockCDSConsentPersistSuccess();
@@ -103,6 +107,7 @@ public class CDSConsentPersistStepTests extends PowerMockTestCase {
         JSONObject payload = (JSONObject) parser
                 .parse(CDSConsentAuthorizeTestConstants.PAYLOAD);
         doReturn(payload).when(consentPersistDataMock).getPayload();
+        doReturn(browserCookies).when(consentPersistDataMock).getBrowserCookies();
         doReturn(true).when(consentPersistDataMock).getApproval();
 
         cdsConsentPersistStep.execute(consentPersistDataMock);

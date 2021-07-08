@@ -65,7 +65,7 @@ public class CDSConsentPersistStep implements ConsentPersistStep {
                 String requestString = gson.toJson(accountConsentRequest);
 
                 // add commonAuthId and sharing_duration_value to consent attributes
-                Map<String, String> consentAttributes = addMetaDataToConsentAttributes(consentData, payloadData);
+                Map<String, String> consentAttributes = addMetaDataToConsentAttributes(consentData, consentPersistData);
 
                 // create new consent resource and set attributes to be stored when consent is created
                 ConsentResource consentResource = createConsentAndSetAttributes(consentData, requestString,
@@ -162,16 +162,16 @@ public class CDSConsentPersistStep implements ConsentPersistStep {
      * Add meta data retrieved from web app to consent attributes
      *
      * @param consentData consent data
-     * @param payloadData payload data of retrieved from persist data
+     * @param consentPersistData consent persist data
      * @return Map of consentAttributes to be stored with consent resource
      */
-    private Map<String, String> addMetaDataToConsentAttributes(ConsentData consentData, JSONObject payloadData) {
+    private Map<String, String> addMetaDataToConsentAttributes(ConsentData consentData,
+                                                               ConsentPersistData consentPersistData) {
 
         Map<String, String> consentAttributes = new HashMap<>();
 
         consentAttributes.put(CDSConsentExtensionConstants.COMMON_AUTH_ID,
-                ((JSONObject) payloadData.get(CDSConsentExtensionConstants.METADATA))
-                        .getAsString(CDSConsentExtensionConstants.COMMON_AUTH_ID));
+                consentPersistData.getBrowserCookies().get(CDSConsentExtensionConstants.COMMON_AUTH_ID));
         consentAttributes.put(CDSConsentExtensionConstants.SHARING_DURATION_VALUE, consentData.getMetaDataMap()
                 .get(CDSConsentExtensionConstants.SHARING_DURATION_VALUE).toString());
 
