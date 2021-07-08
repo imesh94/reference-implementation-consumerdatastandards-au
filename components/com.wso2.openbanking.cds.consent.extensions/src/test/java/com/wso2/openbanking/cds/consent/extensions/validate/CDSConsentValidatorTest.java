@@ -106,65 +106,6 @@ public class CDSConsentValidatorTest extends PowerMockTestCase {
     }
 
     @Test
-    public void testValidateAccountRetrievalWithForValidPOSTRequests() throws ParseException {
-
-        doReturn(detailedConsentResourceMock).when(consentValidateDataMock).getComprehensiveConsent();
-        doReturn(CDSConsentValidateTestConstants
-                .getDetailedConsentResource(CDSConsentValidateTestConstants.VALID_RECEIPT, "123456")
-                .getReceipt()).when(detailedConsentResourceMock).getReceipt();
-        doReturn(CDSConsentValidateTestConstants
-                .getDetailedConsentResource(CDSConsentValidateTestConstants.VALID_RECEIPT, "123456")
-                .getConsentMappingResources()).when(detailedConsentResourceMock).getConsentMappingResources();
-        JSONParser parser = new JSONParser(JSONParser.MODE_PERMISSIVE);
-        JSONObject payload = (JSONObject) parser
-                .parse(CDSConsentValidateTestConstants.PAYLOAD);
-        doReturn(payload).when(consentValidateDataMock).getPayload();
-        doReturn(CDSConsentExtensionConstants.AUTHORIZED_STATUS).when(detailedConsentResourceMock).getCurrentStatus();
-        doReturn(CDSConsentValidateTestConstants.ACCOUNT_PATH)
-                .when(consentValidateDataMock).getRequestPath();
-        PowerMockito.mockStatic(OpenBankingCDSConfigParser.class);
-        when(OpenBankingCDSConfigParser.getInstance()).thenReturn(openBankingCDSConfigParserMock);
-        when(openBankingCDSConfigParserMock.getConfiguration()).thenReturn(configs);
-        doReturn(resourceParams).when(consentValidateDataMock).getResourceParams();
-
-        ConsentValidationResult consentValidationResult = new ConsentValidationResult();
-        cdsConsentValidator.validate(consentValidateDataMock, consentValidationResult);
-
-        Assert.assertTrue(consentValidationResult.isValid());
-    }
-
-    @Test
-    public void testValidateAccountRetrievalWithForInvalidPOSTRequests() throws ParseException {
-
-        doReturn(detailedConsentResourceMock).when(consentValidateDataMock).getComprehensiveConsent();
-        doReturn(CDSConsentValidateTestConstants
-                .getDetailedConsentResource(CDSConsentValidateTestConstants.VALID_RECEIPT, "1234567")
-                .getReceipt()).when(detailedConsentResourceMock).getReceipt();
-        doReturn(CDSConsentValidateTestConstants
-                .getDetailedConsentResource(CDSConsentValidateTestConstants.VALID_RECEIPT, "1234567")
-                .getConsentMappingResources()).when(detailedConsentResourceMock).getConsentMappingResources();
-        JSONParser parser = new JSONParser(JSONParser.MODE_PERMISSIVE);
-        JSONObject payload = (JSONObject) parser
-                .parse(CDSConsentValidateTestConstants.PAYLOAD);
-        doReturn(payload).when(consentValidateDataMock).getPayload();
-        doReturn(CDSConsentExtensionConstants.AUTHORIZED_STATUS).when(detailedConsentResourceMock).getCurrentStatus();
-        doReturn(CDSConsentValidateTestConstants.ACCOUNT_PATH)
-                .when(consentValidateDataMock).getRequestPath();
-        PowerMockito.mockStatic(OpenBankingCDSConfigParser.class);
-        when(OpenBankingCDSConfigParser.getInstance()).thenReturn(openBankingCDSConfigParserMock);
-        when(openBankingCDSConfigParserMock.getConfiguration()).thenReturn(configs);
-        doReturn(resourceParams).when(consentValidateDataMock).getResourceParams();
-
-        ConsentValidationResult consentValidationResult = new ConsentValidationResult();
-        cdsConsentValidator.validate(consentValidateDataMock, consentValidationResult);
-
-        Assert.assertFalse(consentValidationResult.isValid());
-        Assert.assertEquals(consentValidationResult.getErrorMessage(), "ID of the account not found or invalid");
-        Assert.assertEquals(consentValidationResult.getErrorCode(), "AU.CDR.Resource.InvalidBankingAccount");
-        Assert.assertEquals(consentValidationResult.getHttpCode(), 422);
-    }
-
-    @Test
     public void testValidateAccountRetrievalWithInvalidAccountId() {
 
         doReturn(detailedConsentResourceMock).when(consentValidateDataMock).getComprehensiveConsent();
@@ -186,45 +127,6 @@ public class CDSConsentValidatorTest extends PowerMockTestCase {
         cdsConsentValidator.validate(consentValidateDataMock, consentValidationResult);
 
         Assert.assertFalse(consentValidationResult.isValid());
-    }
-
-    @Test
-    public void testValidateAccountRetrievalWithNullUri() {
-
-        doReturn(detailedConsentResourceMock).when(consentValidateDataMock).getComprehensiveConsent();
-        doReturn(CDSConsentValidateTestConstants
-                .getDetailedConsentResource(CDSConsentValidateTestConstants.VALID_RECEIPT, "123456")
-                .getReceipt()).when(detailedConsentResourceMock).getReceipt();
-        doReturn(CDSConsentExtensionConstants.AUTHORIZED_STATUS).when(detailedConsentResourceMock).getCurrentStatus();
-
-        ConsentValidationResult consentValidationResult = new ConsentValidationResult();
-        cdsConsentValidator.validate(consentValidateDataMock, consentValidationResult);
-
-        Assert.assertFalse(consentValidationResult.isValid());
-        Assert.assertEquals(consentValidationResult.getErrorMessage(), "The requested resource identifier is invalid");;
-        Assert.assertEquals(consentValidationResult.getErrorCode(), "AU.CDR.Resource.Invalid");
-        Assert.assertEquals(consentValidationResult.getHttpCode(), 404);
-    }
-
-
-
-    @Test
-    public void testValidateAccountRetrievalWithInvalidUri() {
-
-        doReturn(detailedConsentResourceMock).when(consentValidateDataMock).getComprehensiveConsent();
-        doReturn(CDSConsentValidateTestConstants
-                .getDetailedConsentResource(CDSConsentValidateTestConstants.VALID_RECEIPT, "123456")
-                .getReceipt()).when(detailedConsentResourceMock).getReceipt();
-        doReturn(CDSConsentExtensionConstants.AUTHORIZED_STATUS).when(detailedConsentResourceMock).getCurrentStatus();
-        doReturn(CDSConsentValidateTestConstants.INVALID_ACCOUNT_PATH).when(consentValidateDataMock).getRequestPath();
-
-        ConsentValidationResult consentValidationResult = new ConsentValidationResult();
-        cdsConsentValidator.validate(consentValidateDataMock, consentValidationResult);
-
-        Assert.assertFalse(consentValidationResult.isValid());
-        Assert.assertEquals(consentValidationResult.getErrorMessage(), "The requested resource identifier is invalid");;
-        Assert.assertEquals(consentValidationResult.getErrorCode(), "AU.CDR.Resource.Invalid");
-        Assert.assertEquals(consentValidationResult.getHttpCode(), 404);
     }
 
     @Test
@@ -267,8 +169,64 @@ public class CDSConsentValidatorTest extends PowerMockTestCase {
         Assert.assertEquals(consentValidationResult.getHttpCode(), 403);
     }
 
+    @Test(priority = 1)
+    public void testValidateAccountRetrievalWithForValidPOSTRequests() throws ParseException {
 
+        doReturn(detailedConsentResourceMock).when(consentValidateDataMock).getComprehensiveConsent();
+        doReturn(CDSConsentValidateTestConstants
+                .getDetailedConsentResource(CDSConsentValidateTestConstants.VALID_RECEIPT, "123456")
+                .getReceipt()).when(detailedConsentResourceMock).getReceipt();
+        doReturn(CDSConsentValidateTestConstants
+                .getDetailedConsentResource(CDSConsentValidateTestConstants.VALID_RECEIPT, "123456")
+                .getConsentMappingResources()).when(detailedConsentResourceMock).getConsentMappingResources();
+        JSONParser parser = new JSONParser(JSONParser.MODE_PERMISSIVE);
+        JSONObject payload = (JSONObject) parser
+                .parse(CDSConsentValidateTestConstants.PAYLOAD);
+        doReturn(payload).when(consentValidateDataMock).getPayload();
+        doReturn(CDSConsentExtensionConstants.AUTHORIZED_STATUS).when(detailedConsentResourceMock).getCurrentStatus();
+        doReturn(CDSConsentValidateTestConstants.ACCOUNT_PATH)
+                .when(consentValidateDataMock).getRequestPath();
+        PowerMockito.mockStatic(OpenBankingCDSConfigParser.class);
+        when(OpenBankingCDSConfigParser.getInstance()).thenReturn(openBankingCDSConfigParserMock);
+        when(openBankingCDSConfigParserMock.getConfiguration()).thenReturn(configs);
+        resourceParams.put("HttpMethod", "POST");
+        doReturn(resourceParams).when(consentValidateDataMock).getResourceParams();
 
+        ConsentValidationResult consentValidationResult = new ConsentValidationResult();
+        cdsConsentValidator.validate(consentValidateDataMock, consentValidationResult);
 
+        Assert.assertTrue(consentValidationResult.isValid());
+    }
+
+    @Test(dependsOnMethods = "testValidateAccountRetrievalWithForValidPOSTRequests", priority = 1)
+    public void testValidateAccountRetrievalWithForInvalidPOSTRequests() throws ParseException {
+
+        doReturn(detailedConsentResourceMock).when(consentValidateDataMock).getComprehensiveConsent();
+        doReturn(CDSConsentValidateTestConstants
+                .getDetailedConsentResource(CDSConsentValidateTestConstants.VALID_RECEIPT, "1234567")
+                .getReceipt()).when(detailedConsentResourceMock).getReceipt();
+        doReturn(CDSConsentValidateTestConstants
+                .getDetailedConsentResource(CDSConsentValidateTestConstants.VALID_RECEIPT, "1234567")
+                .getConsentMappingResources()).when(detailedConsentResourceMock).getConsentMappingResources();
+        JSONParser parser = new JSONParser(JSONParser.MODE_PERMISSIVE);
+        JSONObject payload = (JSONObject) parser
+                .parse(CDSConsentValidateTestConstants.PAYLOAD);
+        doReturn(payload).when(consentValidateDataMock).getPayload();
+        doReturn(CDSConsentExtensionConstants.AUTHORIZED_STATUS).when(detailedConsentResourceMock).getCurrentStatus();
+        doReturn(CDSConsentValidateTestConstants.ACCOUNT_PATH)
+                .when(consentValidateDataMock).getRequestPath();
+        PowerMockito.mockStatic(OpenBankingCDSConfigParser.class);
+        when(OpenBankingCDSConfigParser.getInstance()).thenReturn(openBankingCDSConfigParserMock);
+        when(openBankingCDSConfigParserMock.getConfiguration()).thenReturn(configs);
+        doReturn(resourceParams).when(consentValidateDataMock).getResourceParams();
+
+        ConsentValidationResult consentValidationResult = new ConsentValidationResult();
+        cdsConsentValidator.validate(consentValidateDataMock, consentValidationResult);
+
+        Assert.assertFalse(consentValidationResult.isValid());
+        Assert.assertEquals(consentValidationResult.getErrorMessage(), "ID of the account not found or invalid");
+        Assert.assertEquals(consentValidationResult.getErrorCode(), "AU.CDR.Resource.InvalidBankingAccount");
+        Assert.assertEquals(consentValidationResult.getHttpCode(), 422);
+    }
 
 }

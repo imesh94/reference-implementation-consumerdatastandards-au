@@ -24,7 +24,6 @@ import com.wso2.openbanking.cds.consent.extensions.validate.utils.CDSConsentVali
 import net.minidev.json.JSONObject;
 import net.minidev.json.parser.JSONParser;
 import net.minidev.json.parser.ParseException;
-import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.apache.http.HttpStatus;
@@ -49,16 +48,8 @@ public class CDSConsentValidator implements ConsentValidator {
                     "Error occurred while parsing consent data");
         }
 
-        // perform URI validation.
-        String uri = consentValidateData.getRequestPath();
-        if (StringUtils.isBlank(uri) || !CDSConsentValidatorUtil.isAccountURIValid(uri)) {
-            consentValidationResult.setErrorMessage("The requested resource identifier is invalid");
-            consentValidationResult.setErrorCode(ErrorConstants.RESOURCE_INVALID);
-            consentValidationResult.setHttpCode(HttpStatus.SC_NOT_FOUND);
-            return;
-        }
-
         // consent status validation
+        // need to consent re-auth and other scenarios when setting error
         if (!CDSConsentExtensionConstants.AUTHORIZED_STATUS
                 .equalsIgnoreCase(consentValidateData.getComprehensiveConsent().getCurrentStatus())) {
             consentValidationResult.setErrorMessage("The consumer's consent is revoked");
@@ -78,9 +69,9 @@ public class CDSConsentValidator implements ConsentValidator {
             return;
         }
 
-        //Account ID Validation
+        // account ID Validation
         String isAccountIdValidationEnabled = OpenBankingCDSConfigParser.getInstance().getConfiguration()
-                .get("ConsentManagement.ValidateAccountIdOnRetrieval").toString();
+                .get(CDSConsentExtensionConstants.ENABLE_ACCOUNT_ID_VALIDATION_ON_RETRIEVAL).toString();
 
         if (Boolean.parseBoolean(isAccountIdValidationEnabled) &&
                 !CDSConsentValidatorUtil.isAccountIdValid(consentValidateData)) {
@@ -91,7 +82,8 @@ public class CDSConsentValidator implements ConsentValidator {
         }
 
         // validate requested account ids for POST calls
-        if (consentValidateData.getPayload() != null) {
+        String httpMethod = consentValidateData.getResourceParams().get(CDSConsentExtensionConstants.HTTP_METHOD);
+        if (CDSConsentExtensionConstants.POST_METHOD.equals(httpMethod)) {
 
             if (!CDSConsentValidatorUtil.validAccountIdsInPostRequest(consentValidateData)) {
                 consentValidationResult.setErrorMessage("ID of the account not found or invalid");

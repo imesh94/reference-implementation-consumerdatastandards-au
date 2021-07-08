@@ -76,25 +76,10 @@ public class CDSConsentExtensionConstants {
     public static final String OPENID_SCOPE = "openid";
     public static final String PROFILE_SCOPE = "profile";
     public static final String CDR_REGISTRATION_SCOPE = "cdr:registration";
-
-    public static final String ACCOUNT_REGEX = "/banking/accounts";
-    public static final String BULK_BALANCES_REGEX = "/banking/accounts/balances";
-    public static final String ACCOUNT_BALANCE_REGEX = "/banking/accounts/[^/?]*/balance";
-    public static final String ACCOUNT_DETAIL_REGEX = "/banking/accounts/[^/?]*";
-    public static final String TRANSACTIONS_FOR_ACCOUNT_REGEX = "/banking/accounts/[^/?]*/transactions";
-    public static final String TRANSACTIONS_DETAIL_REGEX = "/banking/accounts/[^/?]*/transactions/[^/?]*";
-    public static final String DIRECT_DEBIT_FOR_ACCOUNT_REGEX = "/banking/accounts/[^/?]*/direct-debits";
-    public static final String BULK_DIRECT_DEBIT_REGEX = "/banking/accounts/direct-debits";
-    public static final String SCHEDULED_PAYMENT_FOR_ACCOUNT_REGEX = "/banking/accounts/[^/?]*/payments/scheduled";
-    public static final String BULK_SCHEDULED_PAYMENT_REGEX = "/banking/payments/scheduled";
-    public static final String PAYEES_REGEX = "/banking/payees";
-    public static final String PAYEE_DETAIL_REGEX = "/banking/payees/[^/?]*";
-    public static final String PRODUCTS_REGEX = "/banking/products";
-    public static final String PRODUCT_DETAIL_REGEX = "/banking/products/[^/?]*";
-    public static final String COMMON_CUSTOMER_REGEX = "/common/customer";
-    public static final String COMMON_CUSTOMER_DETAIL_REGEX = "/common/customer/detail";
-    public static final String DISCOVERY_STATUS_REGEX = "/discovery/status";
-    public static final String DISCOVERY_OUTAGES_REGEX = "/discovery/outages";
+    public static final String HTTP_METHOD = "HttpMethod";
+    public static final String POST_METHOD = "POST";
+    public static final String ENABLE_ACCOUNT_ID_VALIDATION_ON_RETRIEVAL = "ConsentManagement.Validate" +
+            "AccountIdOnRetrieval";
 
     static {
         Map<String, Map<String, List<String>>> dataCluster = new HashMap<>();

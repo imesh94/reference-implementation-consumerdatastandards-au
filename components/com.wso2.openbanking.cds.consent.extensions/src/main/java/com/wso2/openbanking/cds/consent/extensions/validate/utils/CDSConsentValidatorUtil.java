@@ -24,7 +24,6 @@ import org.apache.commons.logging.LogFactory;
 import java.time.OffsetDateTime;
 import java.time.format.DateTimeParseException;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
 
 /**
@@ -33,52 +32,6 @@ import java.util.List;
 public class CDSConsentValidatorUtil {
 
     private static final Log log = LogFactory.getLog(CDSConsentValidatorUtil.class);
-
-    /**
-     * Util method to validate the Account request URI
-     * @param uri
-     * @return
-     */
-    public static Boolean isAccountURIValid(String uri) {
-        List<String> accountPaths = getAccountAPIPathRegexArray();
-
-        for (String entry : accountPaths) {
-            if (uri.matches(entry)) {
-                return true;
-            }
-        }
-
-        return false;
-    }
-
-    /**
-     * Method provides API resource paths applicable for UK Account API.
-     *
-     * @return map of API Resources.
-     */
-    public static List<String> getAccountAPIPathRegexArray() {
-
-        List<String> requestUrls = Arrays.asList(CDSConsentExtensionConstants.ACCOUNT_REGEX,
-                CDSConsentExtensionConstants.BULK_BALANCES_REGEX,
-                CDSConsentExtensionConstants.ACCOUNT_BALANCE_REGEX,
-                CDSConsentExtensionConstants.ACCOUNT_DETAIL_REGEX,
-                CDSConsentExtensionConstants.TRANSACTIONS_FOR_ACCOUNT_REGEX,
-                CDSConsentExtensionConstants.TRANSACTIONS_DETAIL_REGEX,
-                CDSConsentExtensionConstants.DIRECT_DEBIT_FOR_ACCOUNT_REGEX,
-                CDSConsentExtensionConstants.BULK_DIRECT_DEBIT_REGEX,
-                CDSConsentExtensionConstants.SCHEDULED_PAYMENT_FOR_ACCOUNT_REGEX,
-                CDSConsentExtensionConstants.BULK_SCHEDULED_PAYMENT_REGEX,
-                CDSConsentExtensionConstants.PAYEES_REGEX,
-                CDSConsentExtensionConstants.PAYEE_DETAIL_REGEX,
-                CDSConsentExtensionConstants.PRODUCTS_REGEX,
-                CDSConsentExtensionConstants.PRODUCT_DETAIL_REGEX,
-                CDSConsentExtensionConstants.COMMON_CUSTOMER_REGEX,
-                CDSConsentExtensionConstants.COMMON_CUSTOMER_DETAIL_REGEX,
-                CDSConsentExtensionConstants.DISCOVERY_STATUS_REGEX,
-                CDSConsentExtensionConstants.DISCOVERY_OUTAGES_REGEX);
-
-        return requestUrls;
-    }
 
     /**
      * Validate whether consent is expired
