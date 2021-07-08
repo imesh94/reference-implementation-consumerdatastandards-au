@@ -46,4 +46,10 @@ public class ErrorConstants {
     public static final String CONFLICT_CODE = "409 Conflict";
     public static final String UNSUPPORTED_MEDIA_TYPE_CODE = "415 Unsupported Media Type";
 
+    //Low level textual error code
+    public static final String RESOURCE_INVALID_BANKING_ACCOUNT = "AU.CDR.Resource.InvalidBankingAccount";
+    public static final String RESOURCE_INVALID = "AU.CDR.Resource.Invalid";
+    public static final String INVALID_CONSENT_STATUS = "AU.CDR.Entitlements.InvalidConsentStatus";
+    public static final String REVOKED_CONSENT_STATUS = "AU.CDR.Entitlements.ConsentIsRevoked";
+
 }

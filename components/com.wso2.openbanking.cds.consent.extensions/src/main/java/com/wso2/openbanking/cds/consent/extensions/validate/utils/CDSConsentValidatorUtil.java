@@ -14,12 +14,16 @@ package com.wso2.openbanking.cds.consent.extensions.validate.utils;
 
 import com.wso2.openbanking.accelerator.consent.extensions.common.ConsentException;
 import com.wso2.openbanking.accelerator.consent.extensions.common.ResponseStatus;
+import com.wso2.openbanking.accelerator.consent.extensions.validate.model.ConsentValidateData;
+import com.wso2.openbanking.accelerator.consent.mgt.dao.models.ConsentMappingResource;
 import com.wso2.openbanking.cds.consent.extensions.common.CDSConsentExtensionConstants;
+import net.minidev.json.JSONObject;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
 import java.time.OffsetDateTime;
 import java.time.format.DateTimeParseException;
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
@@ -35,7 +39,7 @@ public class CDSConsentValidatorUtil {
      * @param uri
      * @return
      */
-    public static boolean isAccountURIValid(String uri) {
+    public static Boolean isAccountURIValid(String uri) {
         List<String> accountPaths = getAccountAPIPathRegexArray();
 
         for (String entry : accountPaths) {
@@ -78,7 +82,7 @@ public class CDSConsentValidatorUtil {
      * @return
      * @throws ConsentException
      */
-    public static boolean isConsentExpired(String expDateVal) throws ConsentException {
+    public static Boolean isConsentExpired(String expDateVal) throws ConsentException {
 
         if (expDateVal != null && !expDateVal.isEmpty()) {
             try {
@@ -93,5 +97,54 @@ public class CDSConsentValidatorUtil {
             return false;
         }
 
+    }
+
+    /**
+     * Method to validate account ids in post request body
+     * @param consentValidateData
+     * @return
+     */
+    public static Boolean validAccountIdsInPostRequest(ConsentValidateData consentValidateData) {
+
+        List<String> requestedAccountsList = new ArrayList<>();
+        for (Object element: (ArrayList) ((JSONObject) consentValidateData.getPayload()
+                .get(CDSConsentExtensionConstants.DATA)).get(CDSConsentExtensionConstants.ACCOUNT_IDS)) {
+            if (element != null) {
+                requestedAccountsList.add(element.toString());
+            } else {
+                return false;
+            }
+        }
+        if (!requestedAccountsList.isEmpty()) {
+            List<String> consentedAccountsList = new ArrayList<>();
+
+            for (ConsentMappingResource resource : consentValidateData.getComprehensiveConsent()
+                    .getConsentMappingResources()) {
+                consentedAccountsList.add(resource.getAccountID());
+            }
+            return consentedAccountsList.containsAll(requestedAccountsList);
+        }
+        return false;
+    }
+
+    /**
+     * Method to validate whether account id is valid
+     * @param consentValidateData
+     * @return
+     */
+    public static Boolean isAccountIdValid(ConsentValidateData consentValidateData) {
+
+        if (!consentValidateData.getRequestPath().contains("{accountId}")) {
+            return true;
+        }
+        String resourcePath = consentValidateData.getResourceParams().get("ResourcePath");
+
+        for (ConsentMappingResource resource : consentValidateData.getComprehensiveConsent()
+                .getConsentMappingResources()) {
+            if (resourcePath.contains(resource.getAccountID())) {
+                return true;
+            }
+        }
+        return false;
     }
 }

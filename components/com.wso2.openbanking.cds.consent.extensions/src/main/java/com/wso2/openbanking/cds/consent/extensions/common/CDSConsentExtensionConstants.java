@@ -76,20 +76,20 @@ public class CDSConsentExtensionConstants {
     public static final String PROFILE_SCOPE = "profile";
     public static final String CDR_REGISTRATION_SCOPE = "cdr:registration";
 
-    public static final String ACCOUNT_REGEX = "/accounts";
-    public static final String BULK_BALANCES_REGEX = "/accounts/balances";
-    public static final String ACCOUNT_BALANCE_REGEX = "/accounts/[^/?]*/balance";
-    public static final String ACCOUNT_DETAIL_REGEX = "/accounts/[^/?]*";
-    public static final String TRANSACTIONS_FOR_ACCOUNT_REGEX = "/accounts/[^/?]*/transactions";
-    public static final String TRANSACTIONS_DETAIL_REGEX = "/accounts/[^/?]*/transactions/[^/?]*";
-    public static final String DIRECT_DEBIT_FOR_ACCOUNT_REGEX = "/accounts/[^/?]*/direct-debits";
-    public static final String BULK_DIRECT_DEBIT_REGEX = "/accounts/direct-debits";
-    public static final String SCHEDULED_PAYMENT_FOR_ACCOUNT_REGEX = "/accounts/[^/?]*/payments/scheduled";
-    public static final String BULK_SCHEDULED_PAYMENT_REGEX = "/payments/scheduled";
-    public static final String PAYEES_REGEX = "/payees";
-    public static final String PAYEE_DETAIL_REGEX = "/payees/[^/?]*";
-    public static final String PRODUCTS_REGEX = "/products";
-    public static final String PRODUCT_DETAIL_REGEX = "/products/[^/?]*";
+    public static final String ACCOUNT_REGEX = "/banking/accounts";
+    public static final String BULK_BALANCES_REGEX = "/banking/accounts/balances";
+    public static final String ACCOUNT_BALANCE_REGEX = "/banking/accounts/[^/?]*/balance";
+    public static final String ACCOUNT_DETAIL_REGEX = "/banking/accounts/[^/?]*";
+    public static final String TRANSACTIONS_FOR_ACCOUNT_REGEX = "/banking/accounts/[^/?]*/transactions";
+    public static final String TRANSACTIONS_DETAIL_REGEX = "/banking/accounts/[^/?]*/transactions/[^/?]*";
+    public static final String DIRECT_DEBIT_FOR_ACCOUNT_REGEX = "/banking/accounts/[^/?]*/direct-debits";
+    public static final String BULK_DIRECT_DEBIT_REGEX = "/banking/accounts/direct-debits";
+    public static final String SCHEDULED_PAYMENT_FOR_ACCOUNT_REGEX = "/banking/accounts/[^/?]*/payments/scheduled";
+    public static final String BULK_SCHEDULED_PAYMENT_REGEX = "/banking/payments/scheduled";
+    public static final String PAYEES_REGEX = "/banking/payees";
+    public static final String PAYEE_DETAIL_REGEX = "/banking/payees/[^/?]*";
+    public static final String PRODUCTS_REGEX = "/banking/products";
+    public static final String PRODUCT_DETAIL_REGEX = "/banking/products/[^/?]*";
 
     static {
         Map<String, Map<String, List<String>>> dataCluster = new HashMap<>();

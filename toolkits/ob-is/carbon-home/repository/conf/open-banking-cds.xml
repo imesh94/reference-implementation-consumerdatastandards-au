@@ -22,6 +22,8 @@
     <ConsentManagement>
         <PayableAccountsRetrieveEndpoint>http://APIM_HOSTNAME:9763/api/openbanking/cds/backend/services/services/bankaccounts/bankaccountservice/payable-accounts</PayableAccountsRetrieveEndpoint>
         <SharableAccountsRetrieveEndpoint>http://APIM_HOSTNAME:9763/api/openbanking/cds/backend/services/bankaccounts/bankaccountservice/sharable-accounts</SharableAccountsRetrieveEndpoint>
+        <!-- Validate AccountID with consented accountID in account retrieval-->
+        <ValidateAccountIdOnRetrieval>false</ValidateAccountIdOnRetrieval>
     </ConsentManagement>
     <CustomerDetails>
         <Enable>false</Enable>
