@@ -17,11 +17,10 @@ import com.wso2.openbanking.accelerator.consent.extensions.common.ResponseStatus
 import com.wso2.openbanking.accelerator.consent.extensions.validate.model.ConsentValidateData;
 import com.wso2.openbanking.accelerator.consent.extensions.validate.model.ConsentValidationResult;
 import com.wso2.openbanking.accelerator.consent.extensions.validate.model.ConsentValidator;
-import com.wso2.openbanking.accelerator.consent.mgt.dao.models.ConsentMappingResource;
+import com.wso2.openbanking.cds.common.config.OpenBankingCDSConfigParser;
+import com.wso2.openbanking.cds.common.utils.ErrorConstants;
 import com.wso2.openbanking.cds.consent.extensions.common.CDSConsentExtensionConstants;
 import com.wso2.openbanking.cds.consent.extensions.validate.utils.CDSConsentValidatorUtil;
-import edu.emory.mathcs.backport.java.util.Arrays;
-import net.minidev.json.JSONArray;
 import net.minidev.json.JSONObject;
 import net.minidev.json.parser.JSONParser;
 import net.minidev.json.parser.ParseException;
@@ -29,9 +28,6 @@ import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.apache.http.HttpStatus;
-
-import java.util.ArrayList;
-import java.util.List;
 
 /**
  * Consent validator CDS implementation.
@@ -55,19 +51,19 @@ public class CDSConsentValidator implements ConsentValidator {
 
         // perform URI validation.
         String uri = consentValidateData.getRequestPath();
-        if (StringUtils.isBlank(uri) && !CDSConsentValidatorUtil.isAccountURIValid(uri)) {
-            consentValidationResult.setErrorMessage("Path requested is invalid.");
-            consentValidationResult.setErrorCode("0013");
-            consentValidationResult.setHttpCode(HttpStatus.SC_UNAUTHORIZED);
+        if (StringUtils.isBlank(uri) || !CDSConsentValidatorUtil.isAccountURIValid(uri)) {
+            consentValidationResult.setErrorMessage("The requested resource identifier is invalid");
+            consentValidationResult.setErrorCode(ErrorConstants.RESOURCE_INVALID);
+            consentValidationResult.setHttpCode(HttpStatus.SC_NOT_FOUND);
             return;
         }
 
         // consent status validation
-        if (CDSConsentExtensionConstants.AUTHORIZED_STATUS
+        if (!CDSConsentExtensionConstants.AUTHORIZED_STATUS
                 .equalsIgnoreCase(consentValidateData.getComprehensiveConsent().getCurrentStatus())) {
-            consentValidationResult.setErrorMessage("Account validation failed due to invalid consent state.");
-            consentValidationResult.setErrorCode("00012");
-            consentValidationResult.setHttpCode(HttpStatus.SC_UNAUTHORIZED);
+            consentValidationResult.setErrorMessage("The consumer's consent is revoked");
+            consentValidationResult.setErrorCode(ErrorConstants.REVOKED_CONSENT_STATUS);
+            consentValidationResult.setHttpCode(HttpStatus.SC_FORBIDDEN);
             return;
         }
 
@@ -75,32 +71,33 @@ public class CDSConsentValidator implements ConsentValidator {
         if (CDSConsentValidatorUtil
                 .isConsentExpired(((JSONObject) receiptJSON.get(CDSConsentExtensionConstants.ACCOUNT_DATA))
                         .getAsString(CDSConsentExtensionConstants.EXPIRATION_DATE_TIME))) {
-            consentValidationResult.setErrorMessage("Account validation failed due to expired consent.");
-            consentValidationResult.setErrorCode("00011");
-            consentValidationResult.setHttpCode(HttpStatus.SC_BAD_REQUEST);
+            consentValidationResult.setErrorMessage("The resource’s associated consent is not in a status that would" +
+                    " allow the resource to be executed");
+            consentValidationResult.setErrorCode(ErrorConstants.INVALID_CONSENT_STATUS);
+            consentValidationResult.setHttpCode(HttpStatus.SC_FORBIDDEN);
+            return;
+        }
+
+        //Account ID Validation
+        String isAccountIdValidationEnabled = OpenBankingCDSConfigParser.getInstance().getConfiguration()
+                .get("ConsentManagement.ValidateAccountIdOnRetrieval").toString();
+
+        if (Boolean.parseBoolean(isAccountIdValidationEnabled) &&
+                !CDSConsentValidatorUtil.isAccountIdValid(consentValidateData)) {
+            consentValidationResult.setErrorMessage("Invalid Banking Account");
+            consentValidationResult.setErrorCode(ErrorConstants.RESOURCE_INVALID_BANKING_ACCOUNT);
+            consentValidationResult.setHttpCode(HttpStatus.SC_NOT_FOUND);
             return;
         }
 
         // validate requested account ids for POST calls
         if (consentValidateData.getPayload() != null) {
 
-            List<String> requestedAccountsList = Arrays.asList(((JSONArray)(((JSONObject) consentValidateData
-                    .getPayload().get("data"))).get("accountIds")).toArray());
-
-            if (!requestedAccountsList.isEmpty()) {
-                List<String> consentedAccountsList = new ArrayList<>();
-                List<ConsentMappingResource> consentMappingResources = consentValidateData
-                        .getComprehensiveConsent().getConsentMappingResources();
-
-                for (ConsentMappingResource resource : consentMappingResources) {
-                    consentedAccountsList.add(resource.getAccountID());
-                }
-                if (!consentedAccountsList.containsAll(requestedAccountsList)) {
-                    consentValidationResult.setErrorMessage("Invalid Banking Account");
-                    consentValidationResult.setErrorCode("AU.CDR.Resource.InvalidBankingAccount");
-                    consentValidationResult.setHttpCode(422);
-                    return;
-                }
+            if (!CDSConsentValidatorUtil.validAccountIdsInPostRequest(consentValidateData)) {
+                consentValidationResult.setErrorMessage("ID of the account not found or invalid");
+                consentValidationResult.setErrorCode(ErrorConstants.RESOURCE_INVALID_BANKING_ACCOUNT);
+                consentValidationResult.setHttpCode(HttpStatus.SC_UNPROCESSABLE_ENTITY);
+                return;
             }
         }
         consentValidationResult.setValid(true);
