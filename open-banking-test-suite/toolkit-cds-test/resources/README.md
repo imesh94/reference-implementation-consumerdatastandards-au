@@ -11,13 +11,6 @@ before start the test suite execution.
     - `<OBSpec>` = The specific OB Specification (Eg: OBSpec accepts values AU)
     - `<ApiVersion>` = Version of the API
 
-    - `<Provisioning><Enabled>` = true (if true; The test suite executes the "API publish and subscribe test" in
-      com.wso2.finance.open.banking.common.integration.test package)
-    - `<Provisioning><ProvisionFilePath>` = Path to the corresponding provisioning yaml file which resides in the
-      resources' directory in com.wso2.finance.open.banking.common.integration.test package. This should be configured if
-      Provisioning.Enabled=true
-      (Eg: For UK 3.1.1 APIs - <<Path.To.Directory>>/uk-test-config-provisioning.yaml)
-
     - `<Server>`
         - `<BaseURL>` = https://<<am_host>>:8243 [AU with Micro Gateway: the port should be the 9095]
         - `<GatewayURL>` = https://<<am_host>>:9443

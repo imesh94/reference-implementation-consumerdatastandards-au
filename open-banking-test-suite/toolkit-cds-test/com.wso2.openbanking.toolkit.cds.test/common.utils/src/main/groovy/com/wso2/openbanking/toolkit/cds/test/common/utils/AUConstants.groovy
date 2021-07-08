@@ -124,7 +124,7 @@ class AUConstants {
     static final String ACCOUNTS_CONSENT_PATH = "/au100/accounts-validation"
     static final String CDR_ARRANGEMENT_ENDPOINT = "/arrangements/1.0.0"
     static final String INTROSPECTION_ENDPOINT = "/oauth2/introspect"
-    public static final String PUSHED_AUTHORISATION_BASE_PATH = config.authorisationServerURL + "/push-authorization"
+    public static final String PUSHED_AUTHORISATION_BASE_PATH = config.getAuthorisationServerUrl() + "/push-authorization"
     static final String PAR_ENDPOINT = "/par"
 
     static final LBL_PERMISSION_HEADER = "//*[@class='padding']//b"

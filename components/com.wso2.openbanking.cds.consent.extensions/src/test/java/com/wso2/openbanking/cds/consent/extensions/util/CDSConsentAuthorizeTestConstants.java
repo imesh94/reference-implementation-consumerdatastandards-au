@@ -28,20 +28,20 @@ public class CDSConsentAuthorizeTestConstants {
     public static final String PAYLOAD = "{\n" +
             "  \"accountIds\": [\"1234\", \"2345\"],\n" +
             "  \"metadata\": {\n" +
-            "          \"commonAuthId\": \"DummyCommonAuthId\",\n" +
+            "          \"authorisationId\": \"DummyAuthId\",\n" +
             "        }\n" +
             "}";
 
     public static final String PAYLOAD_WITHOUT_ACCOUNT_DATA = "{\n" +
             "  \"metadata\": {\n" +
-            "          \"commonAuthId\": \"DummyCommonAuthId\",\n" +
+            "          \"authorisationId\": \"DummyAuthId\",\n" +
             "        }\n" +
             "}";
 
     public static final String PAYLOAD_NON_STRING_ACCOUNT_DATA = "{\n" +
             "  \"accountIds\": [1234, 2345],\n" +
             "  \"metadata\": {\n" +
-            "          \"commonAuthId\": \"DummyCommonAuthId\",\n" +
+            "          \"authorisationId\": \"DummyAuthId\",\n" +
             "        }\n" +
             "}";
 

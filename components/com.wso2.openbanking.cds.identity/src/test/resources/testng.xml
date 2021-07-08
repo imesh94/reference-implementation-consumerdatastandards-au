@@ -22,6 +22,7 @@
     <test name="auth-extensions-test">
         <classes>
             <class name="com.wso2.openbanking.cds.identity.auth.extensions.request.validator.RequestObjectValidatorTest"/>
+            <class name="com.wso2.openbanking.cds.identity.auth.extensions.response.handler.CDSResponseTypeHandlerImplTest"/>
         </classes>
     </test>
     <test name="application-listener">
@@ -33,6 +34,11 @@
         <classes>
             <class name="com.wso2.openbanking.cds.identity.grant.type.handlers.CDSAuthorizationCodeGrantHandlerTest"/>
             <class name="com.wso2.openbanking.cds.identity.grant.type.handlers.CDSRefreshGrantHandlerTest"/>
+        </classes>
+    </test>
+    <test name="claims">
+        <classes>
+            <class name="com.wso2.openbanking.cds.identity.claims.CDSClaimProviderTest"/>
         </classes>
     </test>
 </suite>

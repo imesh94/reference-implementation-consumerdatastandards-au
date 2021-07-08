@@ -68,7 +68,7 @@ public class CDSIdentityUtil {
     public static long getRefreshTokenValidityPeriod(String consentId) {
 
         long sharingDuration = 0;
-        if (org.apache.commons.lang.StringUtils.isNotBlank(consentId)) {
+        if (StringUtils.isNotBlank(consentId)) {
             try {
                 String sharingDurationValue = new ConsentCoreServiceImpl().getConsentAttributes(consentId)
                         .getConsentAttributes().get(SHARING_DURATION_VALUE);
@@ -101,5 +101,17 @@ public class CDSIdentityUtil {
             }
         }
         return StringUtils.EMPTY;
+    }
+
+    public static String getConsentIdWithCommonAuthId(String commonAuthId) {
+        String consentId;
+        try {
+            consentId = new ConsentCoreServiceImpl()
+                    .getConsentIdByConsentAttributeNameAndValue(COMMON_AUTH_ID, commonAuthId).get(0);
+        } catch (ConsentManagementException e) {
+            log.error("Error occurred while retrieving consent id");
+            return StringUtils.EMPTY;
+        }
+        return consentId;
     }
 }
