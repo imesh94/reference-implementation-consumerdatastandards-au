@@ -13,10 +13,11 @@
 
 <!DOCTYPE suite SYSTEM "https://testng.org/testng-1.0.dtd" >
 
-<suite name="identity-base-test-suite">
-    <test name="identity-base-test-all">
+<suite name="common-base-test-suite">
+    <test name="common-base-test-all">
         <classes>
             <class name="com.wso2.openbanking.cds.common.OpenBankingCDSConfigParserTest"/>
+            <class name="com.wso2.openbanking.cds.common.ErrorUtilTest"/>
         </classes>
     </test>
 </suite>

@@ -36,6 +36,11 @@
         {% else %}
         <SharableAccountsRetrieveEndpoint>http://APIM_HOSTNAME:9763/api/openbanking/backend-uk/services/bankaccounts/bankaccountservice/sharable-accounts</SharableAccountsRetrieveEndpoint>
         {% endif %}
+        {% if open_banking_cds.consent_management.validate_account_id_on_retrieval is defined %}
+        <ValidateAccountIdOnRetrieval>{{open_banking_cds.consent_management.validate_account_id_on_retrieval}}</ValidateAccountIdOnRetrieval>
+        {% else %}
+        <ValidateAccountIdOnRetrieval>false</ValidateAccountIdOnRetrieval>
+        {% endif %}
      </ConsentManagement>
      <CustomerDetails>
         {% if open_banking_cds.customer_details.enable is defined %}

@@ -152,9 +152,13 @@ public class CDSConsentPersistStep implements ConsentPersistStep {
         consentResource
                 .setRecurringIndicator((long) consentData.getMetaDataMap()
                         .get(CDSConsentExtensionConstants.SHARING_DURATION_VALUE) != 0);
-        consentResource.setValidityPeriod(((OffsetDateTime) consentData.getMetaDataMap()
-                .get(CDSConsentExtensionConstants.EXPIRATION_DATE_TIME)).toEpochSecond());
-
+        if (!CDSConsentExtensionConstants.ZERO.equalsIgnoreCase(consentData.getMetaDataMap()
+                .get(CDSConsentExtensionConstants.EXPIRATION_DATE_TIME).toString())) {
+            consentResource.setValidityPeriod(((OffsetDateTime) consentData.getMetaDataMap()
+                    .get(CDSConsentExtensionConstants.EXPIRATION_DATE_TIME)).toEpochSecond());
+        } else {
+            consentResource.setValidityPeriod(0);
+        }
         return consentResource;
     }
 

@@ -26,6 +26,7 @@ public class CDSConsentExtensionConstants {
     public static final String TITLE = "title";
     public static final String DATA = "data";
     public static final String CONSENT_DATA = "consentData";
+    public static final String ACCOUNT_DATA = "accountData";
     public static final String REDIRECT_URL = "redirectURL";
     public static final String EXPIRATION_DATE_TITLE = "Expiration Date Time";
     public static final String PERMISSION_TITLE = "Permissions";
@@ -47,6 +48,7 @@ public class CDSConsentExtensionConstants {
     public static final String COMMON_AUTH_ID = "commonAuthId";
     public static final String METADATA = "metadata";
     public static final String ACCOUNT_IDS = "accountIds";
+    public static final String ZERO = "0";
 
     public static final String CHAR_SET = "UTF-8";
     public static final String CUSTOMER_TYPE = "customerUType";
@@ -74,7 +76,10 @@ public class CDSConsentExtensionConstants {
     public static final String OPENID_SCOPE = "openid";
     public static final String PROFILE_SCOPE = "profile";
     public static final String CDR_REGISTRATION_SCOPE = "cdr:registration";
-
+    public static final String HTTP_METHOD = "HttpMethod";
+    public static final String POST_METHOD = "POST";
+    public static final String ENABLE_ACCOUNT_ID_VALIDATION_ON_RETRIEVAL = "ConsentManagement.Validate" +
+            "AccountIdOnRetrieval";
 
     static {
         Map<String, Map<String, List<String>>> dataCluster = new HashMap<>();

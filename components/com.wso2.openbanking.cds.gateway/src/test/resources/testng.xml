@@ -13,14 +13,10 @@
 
 <!DOCTYPE suite SYSTEM "https://testng.org/testng-1.0.dtd" >
 
-<suite name="consent-extension-test-suite">
-    <test name="consent-extension-test-all">
+<suite name="gateway-base-test-suite">
+    <test name="gateway-base-test-all">
         <classes>
-            <class name="com.wso2.openbanking.cds.consent.extensions.authorize.impl.retrieval.CDSConsentRetrievalStepTests"/>
-            <class name="com.wso2.openbanking.cds.consent.extensions.authorize.impl.retrieval.CDSAccountListRetrievalStepTests"/>
-            <class name="com.wso2.openbanking.cds.consent.extensions.authorize.impl.retrieval.CDSDataClusterRetrievalStepTests"/>
-            <class name="com.wso2.openbanking.cds.consent.extensions.authorize.impl.persist.CDSConsentPersistStepTests"/>
-            <class name="com.wso2.openbanking.cds.consent.extensions.validate.CDSConsentValidatorTest"/>
+            <class name="com.wso2.openbanking.cds.gateway.executors.error.handler.CDSErrorHandlerTest"></class>
         </classes>
     </test>
 </suite>
