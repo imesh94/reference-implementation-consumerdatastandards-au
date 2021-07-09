@@ -46,7 +46,7 @@ public class CDSConsentValidatorUtil {
                 OffsetDateTime expDate = OffsetDateTime.parse(expDateVal);
                 return OffsetDateTime.now().isAfter(expDate);
             } catch (DateTimeParseException e) {
-                log.error("Error occurred while parsing the expiration date" + " : " + expDateVal);
+                log.error("Error occurred while parsing the expiration date" + " : " + expDateVal, e);
                 throw new ConsentException(ResponseStatus.INTERNAL_SERVER_ERROR,
                         "Error occurred while parsing the expiration date");
             }

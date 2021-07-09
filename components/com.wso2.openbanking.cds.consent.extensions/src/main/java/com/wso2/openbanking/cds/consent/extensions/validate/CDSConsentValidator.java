@@ -49,7 +49,7 @@ public class CDSConsentValidator implements ConsentValidator {
         }
 
         // consent status validation
-        // need to consent re-auth and other scenarios when setting error
+        // TODO need to consider re-auth and other scenarios when setting error
         if (!CDSConsentExtensionConstants.AUTHORIZED_STATUS
                 .equalsIgnoreCase(consentValidateData.getComprehensiveConsent().getCurrentStatus())) {
             consentValidationResult.setErrorMessage("The consumer's consent is revoked");

@@ -56,7 +56,7 @@ public class CDSClaimProviderUtil {
             messageDigest = MessageDigest.getInstance(digestAlgorithm);
         } catch (NoSuchAlgorithmException e) {
             throw new IdentityOAuth2Exception("Error creating the hash value. Invalid Digest Algorithm: " +
-                    digestAlgorithm);
+                    digestAlgorithm, e);
         }
 
         messageDigest.update(value.getBytes(Charsets.UTF_8));
