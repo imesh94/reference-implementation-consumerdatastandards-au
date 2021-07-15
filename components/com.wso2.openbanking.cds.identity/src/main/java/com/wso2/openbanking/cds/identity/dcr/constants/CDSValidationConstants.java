@@ -18,8 +18,9 @@ import java.util.ArrayList;
  */
 public class CDSValidationConstants {
 
-    //ssa claims
+    // ssa claims
     public static final String SSA_REDIRECT_URIS = "redirect_uris";
+    public static final String SSA_SECTOR_IDENTIFIER_URI = "sector_identifier_uri";
     public static final String CDR_REGISTER = "cdr-register";
     public static final String SSA_LOGO_URI = "logo_uri";
     public static final String SSA_POLICY_URI = "policy_uri";
@@ -42,8 +43,14 @@ public class CDSValidationConstants {
     };
     public static final String CDR_REGISTRATION_SCOPE = "cdr:registration";
 
-    //registration request params
+    // registration request params
     public static final String INVALID_REDIRECT_URI = "invalid_redirect_uri";
     public static final String ID_TOKEN_ENCRYPTION_RESPONSE_ALG = "id_token_encrypted_response_alg";
     public static final String ID_TOKEN_ENCRYPTION_RESPONSE_ENC = "id_token_encrypted_response_enc";
+
+    // dcr config constants
+    public static final String TRUE = "true";
+    public static final String DCR_VALIDATE_REDIRECT_URI = "DCR.EnableURIValidation";
+    public static final String DCR_VALIDATE_URI_HOSTNAME = "DCR.EnableHostNameValidation";
+    public static final String DCR_VALIDATE_SECTOR_IDENTIFIER_URI = "DCR.EnableSectorIdentifierUriValidation";
 }

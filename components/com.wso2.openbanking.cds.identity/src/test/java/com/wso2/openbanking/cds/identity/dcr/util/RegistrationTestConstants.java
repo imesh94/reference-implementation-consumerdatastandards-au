@@ -56,6 +56,7 @@ public class RegistrationTestConstants {
             "    \"https://www.google.com/redirects/redirect2\"\n" +
             "  ],\n" +
             "  \"software_roles\": \"data-recipient-software-product\",\n" +
+            "  \"sector_identifier_uri\": \"https://run.mocky.io/v3/01638249-eede-49f3-a255-da6cb8a18ee7\",\n" +
             "  \"scope\": \"openid bank:accounts.basic:read bank:accounts.detail:read bank:transactions:read " +
             "bank:payees:read bank:regular_payments:read common:customer.basic:read common:customer.detail:read " +
             "cdr:registration\",\n" +

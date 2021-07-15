@@ -19,6 +19,7 @@ import com.wso2.openbanking.accelerator.identity.dcr.validation.validationgroups
 import com.wso2.openbanking.cds.identity.dcr.validation.annotation.ValidateSSACallbackUris;
 import com.wso2.openbanking.cds.identity.dcr.validation.annotation.ValidateSSAIssuer;
 import com.wso2.openbanking.cds.identity.dcr.validation.annotation.ValidateSSAScopes;
+import com.wso2.openbanking.cds.identity.dcr.validation.annotation.ValidateSSASectorIdentifierUri;
 import com.wso2.openbanking.cds.identity.dcr.validation.annotation.ValidateSSASoftwareRoles;
 
 import java.util.List;
@@ -29,6 +30,8 @@ import javax.validation.constraints.NotEmpty;
 /**
  * CDSSoftwareStatementBody class.
  */
+@ValidateSSASectorIdentifierUri(message = "redirect_uris do not match with " +
+        "the elements in sector identifier uri:" + DCRCommonConstants.INVALID_META_DATA, groups = AttributeChecks.class)
 public class CDSSoftwareStatementBody extends SoftwareStatementBody {
 
     @SerializedName("logo_uri")
