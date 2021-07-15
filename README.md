@@ -48,8 +48,8 @@ Please refer the following READ.ME files to run the products.
 
 |  Product | Instructions Path |
 | :--- |:--- |
-| ```Identity Server``` | `/wso2ob-apim-toolkit-cds-1.0.0-M1/READ.ME` |
-| ```API Manager``` | `/wso2ob-is-toolkit-cds-1.0.0-M1/READ.ME` |
+| ```Identity Server``` | `/wso2ob-apim-toolkit-cds-1.0.0-M2-SNAPSHOT/READ.ME` |
+| ```API Manager``` | `/wso2ob-is-toolkit-cds-1.0.0-M2-SNAPSHOT/READ.ME` |
 
 
 ### Reporting Issues
