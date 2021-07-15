@@ -19,6 +19,7 @@ import com.wso2.openbanking.accelerator.identity.dcr.model.RegistrationRequest;
 import com.wso2.openbanking.accelerator.identity.dcr.validation.DCRCommonConstants;
 import com.wso2.openbanking.accelerator.identity.dcr.validation.RegistrationValidator;
 import com.wso2.openbanking.accelerator.identity.internal.IdentityExtensionsDataHolder;
+import com.wso2.openbanking.accelerator.identity.util.HTTPClientUtils;
 import com.wso2.openbanking.cds.common.config.OpenBankingCDSConfigParser;
 import com.wso2.openbanking.cds.identity.dcr.model.CDSRegistrationRequest;
 import com.wso2.openbanking.cds.identity.dcr.util.RegistrationTestConstants;
@@ -26,10 +27,18 @@ import com.wso2.openbanking.cds.identity.dcr.utils.ValidationUtils;
 import com.wso2.openbanking.cds.identity.dcr.validation.CDSRegistrationValidatorImpl;
 import net.minidev.json.JSONObject;
 import net.minidev.json.parser.JSONParser;
+import org.apache.commons.io.FileUtils;
 import org.apache.commons.lang.StringUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.apache.http.HttpEntity;
+import org.apache.http.HttpStatus;
+import org.apache.http.StatusLine;
+import org.apache.http.client.methods.CloseableHttpResponse;
+import org.apache.http.client.methods.HttpGet;
+import org.apache.http.impl.client.CloseableHttpClient;
 import org.mockito.Mockito;
+import org.powermock.api.mockito.PowerMockito;
 import org.powermock.core.classloader.annotations.PowerMockIgnore;
 import org.powermock.core.classloader.annotations.PrepareForTest;
 import org.testng.Assert;
@@ -38,6 +47,10 @@ import org.testng.annotations.BeforeClass;
 import org.testng.annotations.ObjectFactory;
 import org.testng.annotations.Test;
 
+import java.io.ByteArrayInputStream;
+import java.io.File;
+import java.io.InputStream;
+import java.nio.charset.StandardCharsets;
 import java.text.ParseException;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -53,7 +66,7 @@ import static org.powermock.api.mockito.PowerMockito.when;
  * Test class for DCR functionalities.
  */
 @PowerMockIgnore({"javax.net.ssl.*"})
-@PrepareForTest({JWTUtils.class, OpenBankingCDSConfigParser.class})
+@PrepareForTest({JWTUtils.class, OpenBankingCDSConfigParser.class, HTTPClientUtils.class})
 public class DCRUtilTest {
 
     private static final Log log = LogFactory.getLog(DCRUtilTest.class);
@@ -82,6 +95,7 @@ public class DCRUtilTest {
                 "https://keystore.openbankingtest.org.uk/0015800001HQQrZAAX/9b5usDpbNtmxDcTzs7GzKp.jwks");
         cdsConfigMap.put("DCR.EnableHostNameValidation", "false");
         cdsConfigMap.put("DCR.EnableURIValidation", "false");
+        cdsConfigMap.put("DCR.EnableSectorIdentifierUriValidation", "false");
         List<String> validAlgorithms = new ArrayList<>();
         validAlgorithms.add("PS256");
         validAlgorithms.add("ES256");
@@ -209,6 +223,66 @@ public class DCRUtilTest {
             ValidationUtils.validateRequest(cdsRegistrationRequest);
         } catch (DCRValidationException e) {
             Assert.assertTrue(e.getErrorDescription().contains("Redirect URIs do not contain the same hostname"));
+        }
+    }
+
+    @Test
+    public void testSectorIdentifierUriErrorScenario() throws Exception {
+
+        cdsConfigMap.put("DCR.EnableHostNameValidation", "false");
+        cdsConfigMap.put("DCR.EnableURIValidation", "false");
+        cdsConfigMap.put("DCR.EnableSectorIdentifierUriValidation", "true");
+
+        mockStatic(JWTUtils.class);
+        when(JWTUtils.validateJWTSignature(Mockito.anyString(), Mockito.anyString(), Mockito.anyString()))
+                .thenReturn(true);
+        mockStatic(OpenBankingCDSConfigParser.class);
+        openBankingCDSConfigParser = mock(OpenBankingCDSConfigParser.class);
+        when(OpenBankingCDSConfigParser.getInstance()).thenReturn(openBankingCDSConfigParser);
+        when(openBankingCDSConfigParser.getConfiguration()).thenReturn(cdsConfigMap);
+
+        JSONParser parser = new JSONParser();
+        JSONObject json = (JSONObject) parser
+                .parse(RegistrationTestConstants.ssaBodyJson);
+
+        when(JWTUtils.decodeRequestJWT(Mockito.anyString(), Mockito.anyString())).thenReturn(json);
+
+        String decodedSSA = null;
+        try {
+            decodedSSA = JWTUtils
+                    .decodeRequestJWT(registrationRequest.getSoftwareStatement(), "body").toJSONString();
+        } catch (ParseException e) {
+            log.error("Error while parsing the SSA", e);
+        }
+        registrationValidator.setSoftwareStatementPayload(registrationRequest, decodedSSA);
+        CDSRegistrationRequest cdsRegistrationRequest = new CDSRegistrationRequest(registrationRequest);
+
+        StatusLine statusLineMock = Mockito.mock(StatusLine.class);
+        Mockito.doReturn(HttpStatus.SC_OK).when(statusLineMock).getStatusCode();
+
+        File file = new File("src/test/resources/test-sector-identifier-uri.json");
+        byte[] crlBytes = FileUtils.readFileToString(file, String.valueOf(StandardCharsets.UTF_8))
+                .getBytes(StandardCharsets.UTF_8);
+        InputStream inStream = new ByteArrayInputStream(crlBytes);
+
+        HttpEntity httpEntityMock = Mockito.mock(HttpEntity.class);
+        Mockito.doReturn(inStream).when(httpEntityMock).getContent();
+
+        CloseableHttpResponse httpResponseMock = Mockito.mock(CloseableHttpResponse.class);
+        Mockito.doReturn(statusLineMock).when(httpResponseMock).getStatusLine();
+        Mockito.doReturn(httpEntityMock).when(httpResponseMock).getEntity();
+
+        CloseableHttpClient closeableHttpClientMock = Mockito.mock(CloseableHttpClient.class);
+        Mockito.doReturn(httpResponseMock).when(closeableHttpClientMock).execute(Mockito.any(HttpGet.class));
+
+        PowerMockito.mockStatic(HTTPClientUtils.class);
+        Mockito.when(HTTPClientUtils.getHttpsClient()).thenReturn(closeableHttpClientMock);
+        try {
+            ValidationUtils.validateRequest(cdsRegistrationRequest);
+        } catch (DCRValidationException e) {
+            Assert.assertTrue(e.getErrorDescription().contains("redirect_uris do not match with" +
+                    " the elements in sector identifier uri"));
+            cdsConfigMap.put("DCR.EnableSectorIdentifierUriValidation", "false");
         }
     }
 
