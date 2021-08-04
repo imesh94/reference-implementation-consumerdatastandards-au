@@ -15,6 +15,8 @@ import com.wso2.openbanking.accelerator.common.exception.OpenBankingException;
 import com.wso2.openbanking.accelerator.consent.extensions.authorize.model.ConsentData;
 import com.wso2.openbanking.accelerator.consent.extensions.common.ConsentException;
 import com.wso2.openbanking.accelerator.consent.extensions.common.ResponseStatus;
+import com.wso2.openbanking.accelerator.identity.push.auth.extension.request.validator.exception.PushAuthRequestValidatorException;
+import com.wso2.openbanking.accelerator.identity.push.auth.extension.request.validator.utils.PushAuthRequestValidatorUtils;
 import com.wso2.openbanking.accelerator.identity.util.HTTPClientUtils;
 import com.wso2.openbanking.cds.consent.extensions.authorize.impl.model.AccountConsentRequest;
 import com.wso2.openbanking.cds.consent.extensions.authorize.impl.model.AccountData;
@@ -29,6 +31,9 @@ import org.apache.http.client.methods.HttpGet;
 import org.apache.http.client.utils.URLEncodedUtils;
 import org.apache.http.impl.client.CloseableHttpClient;
 import org.apache.http.message.BasicNameValuePair;
+import org.wso2.carbon.identity.oauth.cache.SessionDataCache;
+import org.wso2.carbon.identity.oauth.cache.SessionDataCacheEntry;
+import org.wso2.carbon.identity.oauth.cache.SessionDataCacheKey;
 
 import java.io.IOException;
 import java.io.InputStream;
@@ -46,6 +51,8 @@ import java.util.stream.Stream;
 public class CDSDataRetrievalUtil {
 
     private static final Log log = LogFactory.getLog(CDSDataRetrievalUtil.class);
+    private static final String JWT_PART_DELIMITER = "\\.";
+    private static final int NUMBER_OF_PARTS_IN_JWE = 5;
 
     public static String getAccountsFromEndpoint(String sharableAccountsRetrieveUrl, Map<String, String> parameters,
                                                  Map<String, String> headers) {
@@ -143,11 +150,47 @@ public class CDSDataRetrievalUtil {
         if (spQueryParams != null && !spQueryParams.trim().isEmpty()) {
             String requestObject = null;
             String[] spQueries = spQueryParams.split("&");
+            String clientId = null;
             for (String param : spQueries) {
 
+                if (param.contains("client_id=")) {
+                    clientId = param.split("client_id=")[1];
+                }
                 if (param.contains("request=")) {
                     requestObject = (param.substring("request=".length())).replaceAll(
                             "\\r\\n|\\r|\\n|\\%20", "");
+                } else if (param.contains("request_uri=")) {
+                    log.debug("Resolving request URI during Steps execution");
+                    String[] requestUri = (param.substring("request_uri=".length())).replaceAll(
+                            "\\%3A", ":").split(":");
+
+                    String sessionKey = requestUri[(requestUri.length - 1)];
+                    SessionDataCacheKey cacheKey = new SessionDataCacheKey(sessionKey);
+                    SessionDataCacheEntry sessionDataCacheEntry = SessionDataCache.
+                            getInstance().getValueFromCache(cacheKey);
+                    if (sessionDataCacheEntry != null) {
+                        String requestObjectFromCache = sessionDataCacheEntry.getoAuth2Parameters().
+                                getEssentialClaims().split(":")[0];
+                        // check whether request object is encrypted
+                        if (requestObjectFromCache.split(JWT_PART_DELIMITER).length == NUMBER_OF_PARTS_IN_JWE) {
+                            try {
+                                // decrypt request object assuming it was signed before encrypting therefore,
+                                // return value is a singed JWT
+                                requestObject = PushAuthRequestValidatorUtils.decrypt(requestObjectFromCache, clientId);
+                            } catch (PushAuthRequestValidatorException e) {
+                                log.error("Error occurred while decrypting", e);
+                                throw new ConsentException(ResponseStatus.INTERNAL_SERVER_ERROR,
+                                        "Request object cannot be extracted");
+                            }
+                        } else {
+                            // cached request object should be a signed JWT in this scenario
+                            requestObject = requestObjectFromCache;
+                        }
+                        log.debug("Removing request_URI entry from cache");
+                        SessionDataCache.getInstance().clearCacheEntry(cacheKey);
+                    } else {
+                        log.error("Could not find cache entry with request URI");
+                    }
                 }
             }
             if (requestObject != null) {
