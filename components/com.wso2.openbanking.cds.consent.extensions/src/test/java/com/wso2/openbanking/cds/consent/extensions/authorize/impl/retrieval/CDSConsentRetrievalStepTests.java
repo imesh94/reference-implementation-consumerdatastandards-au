@@ -12,25 +12,33 @@
 package com.wso2.openbanking.cds.consent.extensions.authorize.impl.retrieval;
 
 import com.wso2.openbanking.accelerator.consent.extensions.authorize.model.ConsentData;
-import com.wso2.openbanking.accelerator.consent.extensions.common.ConsentException;
 import com.wso2.openbanking.accelerator.consent.mgt.dao.models.ConsentResource;
+import com.wso2.openbanking.accelerator.identity.push.auth.extension.request.validator.util.PushAuthRequestValidatorUtils;
 import com.wso2.openbanking.cds.consent.extensions.util.CDSConsentAuthorizeTestConstants;
 import net.minidev.json.JSONObject;
+import org.mockito.Mockito;
+import org.powermock.core.classloader.annotations.PrepareForTest;
+import org.powermock.modules.testng.PowerMockTestCase;
 import org.testng.Assert;
 import org.testng.annotations.BeforeClass;
 import org.testng.annotations.Test;
+import org.wso2.carbon.identity.oauth.cache.SessionDataCache;
+import org.wso2.carbon.identity.oauth.cache.SessionDataCacheEntry;
+import org.wso2.carbon.identity.oauth2.model.OAuth2Parameters;
 
-import static org.mockito.Mockito.doReturn;
-import static org.mockito.Mockito.mock;
+import static org.powermock.api.mockito.PowerMockito.mock;
+import static org.powermock.api.mockito.PowerMockito.mockStatic;
+import static org.powermock.api.mockito.PowerMockito.when;
 
 /**
  * Test class for CDS Consent Retrieval
  */
-public class CDSConsentRetrievalStepTests {
+@PrepareForTest({SessionDataCacheEntry.class, SessionDataCache.class, PushAuthRequestValidatorUtils.class})
+public class CDSConsentRetrievalStepTests extends PowerMockTestCase {
 
-    private static CDSConsentRetrievalStep cdsConsentRetrievalStep;
-    private static ConsentData consentDataMock;
-    private static ConsentResource consentResourceMock;
+    private CDSConsentRetrievalStep cdsConsentRetrievalStep;
+    private ConsentData consentDataMock;
+    private ConsentResource consentResourceMock;
 
 
     @BeforeClass
@@ -41,22 +49,16 @@ public class CDSConsentRetrievalStepTests {
         consentResourceMock = mock(ConsentResource.class);
     }
 
-    @Test(expectedExceptions = ConsentException.class)
-    public void testConsentRetrievalWithEmptyConsentData() {
-
-        cdsConsentRetrievalStep.execute(consentDataMock, new JSONObject());
-    }
-
     @Test
     public void testConsentRetrievalWithValidRequestObject() {
 
         JSONObject jsonObject = new JSONObject();
-        String reqeust = "request=" + CDSConsentAuthorizeTestConstants.VALID_REQUEST_OBJECT;
+        String request = "request=" + CDSConsentAuthorizeTestConstants.VALID_REQUEST_OBJECT;
         String redirectUri = "redirect_uri=https://www.google.com/redirects/redirect1&";
         String scopeString = "common:customer.basic:read common:customer.detail:read openid profile";
-        String sampleQueryParams =  redirectUri + reqeust;
-        doReturn(sampleQueryParams).when(consentDataMock).getSpQueryParams();
-        doReturn(scopeString).when(consentDataMock).getScopeString();
+        String sampleQueryParams =  redirectUri + request;
+        when(consentDataMock.getSpQueryParams()).thenReturn(sampleQueryParams);
+        when(consentDataMock.getScopeString()).thenReturn(scopeString);
         cdsConsentRetrievalStep.execute(consentDataMock, jsonObject);
         Assert.assertTrue(!jsonObject.isEmpty());
     }
@@ -65,12 +67,12 @@ public class CDSConsentRetrievalStepTests {
     public void testConsentRetrievalWithMoreThanOneYearSharingDuration() {
 
         JSONObject jsonObject = new JSONObject();
-        String reqeust = "request=" + CDSConsentAuthorizeTestConstants.VALID_REQUEST_OBJECT_DIFF;
+        String request = "request=" + CDSConsentAuthorizeTestConstants.VALID_REQUEST_OBJECT_DIFF;
         String redirectUri = "redirect_uri=https://www.google.com/redirects/redirect1&";
         String scopeString = "common:customer.basic:read common:customer.detail:read openid profile";
-        String sampleQueryParams =  redirectUri + reqeust;
-        doReturn(sampleQueryParams).when(consentDataMock).getSpQueryParams();
-        doReturn(scopeString).when(consentDataMock).getScopeString();
+        String sampleQueryParams =  redirectUri + request;
+        when(consentDataMock.getSpQueryParams()).thenReturn(sampleQueryParams);
+        when(consentDataMock.getScopeString()).thenReturn(scopeString);
         cdsConsentRetrievalStep.execute(consentDataMock, jsonObject);
         Assert.assertTrue(!jsonObject.isEmpty());
     }
@@ -79,12 +81,71 @@ public class CDSConsentRetrievalStepTests {
     public void testConsentRetrievalWithNoSharingDurationValueInRequestObject() {
 
         JSONObject jsonObject = new JSONObject();
-        String reqeust = "request=" + CDSConsentAuthorizeTestConstants.REQUEST_OBJECT_WITHOUT_SHARING_VAL;
+        String request = "request=" + CDSConsentAuthorizeTestConstants.REQUEST_OBJECT_WITHOUT_SHARING_VAL;
         String redirectUri = "redirect_uri=https://www.google.com/redirects/redirect1&";
         String scopeString = "common:customer.basic:read common:customer.detail:read openid profile";
-        String sampleQueryParams =  redirectUri + reqeust;
-        doReturn(sampleQueryParams).when(consentDataMock).getSpQueryParams();
-        doReturn(scopeString).when(consentDataMock).getScopeString();
+        String sampleQueryParams =  redirectUri + request;
+        when(consentDataMock.getSpQueryParams()).thenReturn(sampleQueryParams);
+        when(consentDataMock.getScopeString()).thenReturn(scopeString);
+        cdsConsentRetrievalStep.execute(consentDataMock, jsonObject);
+        Assert.assertTrue(!jsonObject.isEmpty());
+    }
+
+    @Test
+    public void testRequestUriFlow() {
+
+        JSONObject jsonObject = new JSONObject();
+        String request = "request_uri=" + "urn:ietf:params:oauth:request_uri:XKnDFSbXJWjuf0AY6gOT1EIuvdP8BQLo";
+        String redirectUri = "redirect_uri=https://www.google.com/redirects/redirect1&";
+        String scopeString = "common:customer.basic:read common:customer.detail:read openid profile";
+        String sampleQueryParams =  redirectUri + request;
+        when(consentDataMock.getSpQueryParams()).thenReturn(sampleQueryParams);
+        when(consentDataMock.getScopeString()).thenReturn(scopeString);
+
+        String requestObjectString = CDSConsentAuthorizeTestConstants.VALID_REQUEST_OBJECT;
+        OAuth2Parameters oAuth2Parameters = new OAuth2Parameters();
+        oAuth2Parameters.setEssentialClaims(requestObjectString + ":" + "3600666666");
+
+        SessionDataCache sessionDataCacheMock = mock(SessionDataCache.class);
+        SessionDataCacheEntry sessionDataCacheEntry = new SessionDataCacheEntry();
+        mockStatic(SessionDataCacheEntry.class);
+        mockStatic(SessionDataCache.class);
+        when(SessionDataCache.getInstance()).thenReturn(sessionDataCacheMock);
+        when(sessionDataCacheMock.getValueFromCache(Mockito.anyObject())).thenReturn(sessionDataCacheEntry);
+
+        sessionDataCacheEntry.setoAuth2Parameters(oAuth2Parameters);
+
+        cdsConsentRetrievalStep.execute(consentDataMock, jsonObject);
+        Assert.assertTrue(!jsonObject.isEmpty());
+    }
+
+    @Test
+    public void testRequestUriFlowWithEncryptedReqObj() throws Exception {
+
+        JSONObject jsonObject = new JSONObject();
+        String request = "request_uri=" + "urn:ietf:params:oauth:request_uri:XKnDFSbXJWjuf0AY6gOT1EIuvdP8BQLo";
+        String redirectUri = "redirect_uri=https://www.google.com/redirects/redirect1&";
+        String scopeString = "common:customer.basic:read common:customer.detail:read openid profile";
+        String sampleQueryParams =  redirectUri + request;
+        when(consentDataMock.getSpQueryParams()).thenReturn(sampleQueryParams);
+        when(consentDataMock.getScopeString()).thenReturn(scopeString);
+
+        String requestObjectString = CDSConsentAuthorizeTestConstants.ENCRYPTED_JWT;
+        OAuth2Parameters oAuth2Parameters = new OAuth2Parameters();
+        oAuth2Parameters.setEssentialClaims(requestObjectString + ":" + "3600666666");
+
+        SessionDataCache sessionDataCacheMock = mock(SessionDataCache.class);
+        SessionDataCacheEntry sessionDataCacheEntry = new SessionDataCacheEntry();
+        mockStatic(SessionDataCacheEntry.class);
+        mockStatic(SessionDataCache.class);
+        mockStatic(PushAuthRequestValidatorUtils.class);
+        when(SessionDataCache.getInstance()).thenReturn(sessionDataCacheMock);
+        when(sessionDataCacheMock.getValueFromCache(Mockito.anyObject())).thenReturn(sessionDataCacheEntry);
+        when(PushAuthRequestValidatorUtils.decrypt(Mockito.anyString(), Mockito.anyString()))
+                .thenReturn(CDSConsentAuthorizeTestConstants.VALID_REQUEST_OBJECT);
+
+        sessionDataCacheEntry.setoAuth2Parameters(oAuth2Parameters);
+
         cdsConsentRetrievalStep.execute(consentDataMock, jsonObject);
         Assert.assertTrue(!jsonObject.isEmpty());
     }
