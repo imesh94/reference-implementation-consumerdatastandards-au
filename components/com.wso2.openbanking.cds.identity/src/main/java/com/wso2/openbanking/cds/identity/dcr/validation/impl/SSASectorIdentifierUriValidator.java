@@ -47,14 +47,18 @@ public class SSASectorIdentifierUriValidator implements ConstraintValidator<Vali
     @Override
     public boolean isValid(Object cdsSoftwareStatementBody, ConstraintValidatorContext constraintValidatorContext) {
 
-        if (CDSValidationConstants.TRUE.equalsIgnoreCase(OpenBankingCDSConfigParser.getInstance().getConfiguration()
-                .get(CDSValidationConstants.DCR_VALIDATE_SECTOR_IDENTIFIER_URI).toString())) {
+        if (Boolean.parseBoolean(OpenBankingCDSConfigParser.getInstance().getConfiguration()
+                .get(CDSValidationConstants.DCR_VALIDATE_SECTOR_IDENTIFIER_URI).toString().toLowerCase())) {
 
-            CDSSoftwareStatementBody cdsSoftwareStatementBodyObject = (CDSSoftwareStatementBody)
-                    cdsSoftwareStatementBody;
+            CDSSoftwareStatementBody cdsSoftwareStatementBodyObject;
+            if (cdsSoftwareStatementBody instanceof CDSSoftwareStatementBody) {
+                cdsSoftwareStatementBodyObject = (CDSSoftwareStatementBody) cdsSoftwareStatementBody;
+            } else {
+                return false;
+            }
+
             String ssaSectorIdentifierUri = cdsSoftwareStatementBodyObject.getSectorIdentifierUri();
             List<String> ssaCallBackUris = cdsSoftwareStatementBodyObject.getCallbackUris();
-
             return validateSectorIdentifierURI(ssaSectorIdentifierUri, ssaCallBackUris);
         } else {
             return true;
@@ -77,7 +81,9 @@ public class SSASectorIdentifierUriValidator implements ConstraintValidator<Vali
 
             String data;
             if (dataResponse.getStatusLine().getStatusCode() != HttpURLConnection.HTTP_OK) {
-                log.error("Calling sector identifier uri failed");
+                log.error("Calling sector identifier uri failed with status code: " +
+                        dataResponse.getStatusLine().getStatusCode() + ", due to " + dataResponse.getStatusLine()
+                        .getReasonPhrase());
                 return false;
             } else {
                 InputStream in = dataResponse.getEntity().getContent();

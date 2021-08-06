@@ -38,8 +38,8 @@ If you want to build WSO2 OB Compliance Toolkit CDS from the source code:
 
 |  Product | Toolkit Path |
       | :--- |:--- |
-| ```Identity Server``` | `/ob-compliance-toolkit-cds/toolkits/ob-apim/target` |
-| ```API Manager``` | `/ob-compliance-toolkit-cds/toolkits/ob-is/target` |
+| ```Identity Server``` | `/ob-compliance-toolkit-cds/toolkits/ob-is/target` |
+| ```API Manager``` | `/ob-compliance-toolkit-cds/toolkits/ob-apim/target` |
 
 
 ### Running the products
@@ -48,8 +48,8 @@ Please refer the following READ.ME files to run the products.
 
 |  Product | Instructions Path |
 | :--- |:--- |
-| ```Identity Server``` | `/wso2ob-apim-toolkit-cds-1.0.0-M2-SNAPSHOT/READ.ME` |
-| ```API Manager``` | `/wso2ob-is-toolkit-cds-1.0.0-M2-SNAPSHOT/READ.ME` |
+| ```Identity Server``` | `/wso2ob-is-toolkit-cds-1.0.0-M2-SNAPSHOT/README.md` |
+| ```API Manager``` | `/wso2ob-apim-toolkit-cds-1.0.0-M2-SNAPSHOT/README.md` |
 
 
 ### Reporting Issues
