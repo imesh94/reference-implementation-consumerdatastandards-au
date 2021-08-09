@@ -99,7 +99,7 @@ public class UriHostnameValidator implements ConstraintValidator<ValidateUriHost
             //check whether the hostnames of policy,logo,client and terms of service uris match with redirect uri
             //hostname if the validation is set to true
             String isHostNameValidationEnabled = (String) OpenBankingCDSConfigParser.getInstance().getConfiguration()
-                    .get("DCR.EnableHostNameValidation");
+                    .get(CDSValidationConstants.DCR_VALIDATE_URI_HOSTNAME);
             if (Boolean.parseBoolean(isHostNameValidationEnabled)) {
                 for (String redirectURI : redirectURIs) {
                     //check whether the redirect uris and other given uris have same host name
