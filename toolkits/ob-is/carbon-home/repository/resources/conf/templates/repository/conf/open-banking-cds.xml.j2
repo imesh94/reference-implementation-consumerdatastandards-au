@@ -24,6 +24,11 @@
         {% else %}
         <EnableHostNameValidation>false</EnableHostNameValidation>
         {% endif %}
+        {% if open_banking_cds.dcr.enable_sector_identifier_uri_validation is defined %}
+        <EnableSectorIdentifierUriValidation>{{open_banking_cds.dcr.enable_sector_identifier_uri_validation}}</EnableSectorIdentifierUriValidation>
+        {% else %}
+        <EnableSectorIdentifierUriValidation>false</EnableSectorIdentifierUriValidation>
+        {% endif %}
      </DCR>
      <ConsentManagement>
         {% if open_banking_cds.consent_management.payable_accounts_retrieve_endpoint is defined %}
