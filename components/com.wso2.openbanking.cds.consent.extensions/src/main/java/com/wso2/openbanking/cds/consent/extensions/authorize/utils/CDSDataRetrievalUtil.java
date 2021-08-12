@@ -163,12 +163,14 @@ public class CDSDataRetrievalUtil {
                     log.debug("Resolving request URI during Steps execution");
                     String[] requestUri = (param.substring("request_uri=".length())).replaceAll(
                             "\\%3A", ":").split(":");
-
+                    // session key will be obtained splitting the request uri with ":" and getting the last index
+                    // sample request_uri - urn:<substring>:<sessionKey>
                     String sessionKey = requestUri[(requestUri.length - 1)];
                     SessionDataCacheKey cacheKey = new SessionDataCacheKey(sessionKey);
                     SessionDataCacheEntry sessionDataCacheEntry = SessionDataCache.
                             getInstance().getValueFromCache(cacheKey);
                     if (sessionDataCacheEntry != null) {
+                        // essential claims - <request object JWT>:<request object JWT expiry time>
                         String requestObjectFromCache = sessionDataCacheEntry.getoAuth2Parameters().
                                 getEssentialClaims().split(":")[0];
                         // check whether request object is encrypted
@@ -190,6 +192,8 @@ public class CDSDataRetrievalUtil {
                         SessionDataCache.getInstance().clearCacheEntry(cacheKey);
                     } else {
                         log.error("Could not find cache entry with request URI");
+                        throw new ConsentException(ResponseStatus.INTERNAL_SERVER_ERROR,
+                                "Request object cannot be extracted");
                     }
                 }
             }
