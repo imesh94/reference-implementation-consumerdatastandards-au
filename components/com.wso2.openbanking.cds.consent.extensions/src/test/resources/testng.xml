@@ -21,6 +21,7 @@
             <class name="com.wso2.openbanking.cds.consent.extensions.authorize.impl.retrieval.CDSDataClusterRetrievalStepTests"/>
             <class name="com.wso2.openbanking.cds.consent.extensions.authorize.impl.persist.CDSConsentPersistStepTests"/>
             <class name="com.wso2.openbanking.cds.consent.extensions.validate.CDSConsentValidatorTest"/>
+            <class name="com.wso2.openbanking.cds.consent.extensions.authservlet.impl.OBCDSAuthServletImplTests"/>
         </classes>
     </test>
 </suite>
