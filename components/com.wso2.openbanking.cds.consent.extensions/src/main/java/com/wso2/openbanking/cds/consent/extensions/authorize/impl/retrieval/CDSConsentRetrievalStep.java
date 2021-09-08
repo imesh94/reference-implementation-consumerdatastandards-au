@@ -11,6 +11,7 @@
  */
 package com.wso2.openbanking.cds.consent.extensions.authorize.impl.retrieval;
 
+import com.wso2.openbanking.accelerator.common.exception.OpenBankingException;
 import com.wso2.openbanking.accelerator.consent.extensions.authorize.model.ConsentData;
 import com.wso2.openbanking.accelerator.consent.extensions.authorize.model.ConsentRetrievalStep;
 import com.wso2.openbanking.accelerator.consent.extensions.common.ConsentException;
@@ -88,6 +89,24 @@ public class CDSConsentRetrievalStep implements ConsentRetrievalStep {
 
         // appending openid_scopes to be retrieved in authentication webapp
         jsonObject.appendField(CDSConsentExtensionConstants.OPENID_SCOPES, permissions);
+
+        // append consent expirey date
+        jsonObject.appendField(CDSConsentExtensionConstants.CONSENT_EXPIRY, expiry);
+
+        // append service provider full name
+        if (StringUtils.isNotBlank(consentData.getClientId())) {
+            try {
+                jsonObject.appendField(CDSConsentExtensionConstants.SP_FULL_NAME,
+                        CDSDataRetrievalUtil.getServiceProviderFullName(consentData.getClientId()));
+            } catch (OpenBankingException e) {
+                log.error(String.format("Error occurred while building service provider full name. %s",
+                        e.getMessage()));
+                throw new ConsentException(ResponseStatus.INTERNAL_SERVER_ERROR,
+                        "Error occurred while building service provider full name");
+            }
+        } else {
+            log.warn("Client-id is not found in consent data. This might cause complications in the flow.");
+        }
     }
 
     /**

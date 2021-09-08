@@ -37,6 +37,7 @@ public class CDSConsentExtensionConstants {
     public static final String CDR_ACCOUNTS = "CDR_ACCOUNTS";
     public static final String OPENID_SCOPES = "openid_scopes";
     public static final String CLIENT_ID = "client_id";
+    public static final String SP_FULL_NAME = "sp_full_name";
     public static final String CLAIMS = "claims";
     public static final String IS_ERROR = "isError";
     public static final String SHARING_DURATION = "sharing_duration";
@@ -49,6 +50,7 @@ public class CDSConsentExtensionConstants {
     public static final String METADATA = "metadata";
     public static final String ACCOUNT_IDS = "accountIds";
     public static final String ZERO = "0";
+    public static final String CONSENT_EXPIRY = "consent_expiration";
 
     public static final String CHAR_SET = "UTF-8";
     public static final String CUSTOMER_TYPE = "customerUType";
