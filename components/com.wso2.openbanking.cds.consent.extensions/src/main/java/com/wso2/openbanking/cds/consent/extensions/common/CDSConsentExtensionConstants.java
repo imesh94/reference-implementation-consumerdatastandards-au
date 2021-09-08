@@ -27,6 +27,9 @@ public class CDSConsentExtensionConstants {
     public static final String DATA = "data";
     public static final String CONSENT_DATA = "consentData";
     public static final String ACCOUNT_DATA = "accountData";
+    public static final String ACCOUNTS_DATA = "accounts_data";
+    public static final String ACCOUNT_ID = "account_id";
+    public static final String DISPLAY_NAME = "display_name";
     public static final String REDIRECT_URL = "redirectURL";
     public static final String EXPIRATION_DATE_TITLE = "Expiration Date Time";
     public static final String PERMISSION_TITLE = "Permissions";

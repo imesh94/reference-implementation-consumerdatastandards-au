@@ -14,6 +14,7 @@ import java.util.ResourceBundle;
 import javax.servlet.http.HttpServletRequest;
 
 
+
 /**
  * The CDS implementation of servlet extension that handles CDS scenarios
  */
@@ -26,7 +27,7 @@ public class OBCDSAuthServletImpl implements OBAuthServletInterface {
         Map<String, Object> returnMaps = new HashMap<>();
 
         //Sets "data_requested" that contains the human-readable scope-requested information
-        JSONArray dataRequestedJsonArray = dataSet.getJSONArray("data_requested");
+        JSONArray dataRequestedJsonArray = dataSet.getJSONArray(CDSConsentExtensionConstants.DATA_REQUESTED);
         Map<String, List<String>> dataRequested = new LinkedHashMap<>();
 
         for (int requestedDataIndex = 0; requestedDataIndex < dataRequestedJsonArray.length(); requestedDataIndex++) {
@@ -40,21 +41,21 @@ public class OBCDSAuthServletImpl implements OBAuthServletInterface {
             }
             dataRequested.put(title, listData);
         }
-        returnMaps.put("data_requested", dataRequested);
+        returnMaps.put(CDSConsentExtensionConstants.DATA_REQUESTED, dataRequested);
 
         // add accounts list
-        List<Map<String, String>> accountData = new ArrayList<>();
-        JSONArray accountsArray = dataSet.getJSONArray("accounts");
+        List<Map<String, String>> accountsData = new ArrayList<>();
+        JSONArray accountsArray = dataSet.getJSONArray(CDSConsentExtensionConstants.ACCOUNTS);
         for (int accountIndex = 0; accountIndex < accountsArray.length(); accountIndex++) {
             JSONObject object = accountsArray.getJSONObject(accountIndex);
-            String accountId = object.getString("account_id");
-            String displayName = object.getString("display_name");
+            String accountId = object.getString(CDSConsentExtensionConstants.ACCOUNT_ID);
+            String displayName = object.getString(CDSConsentExtensionConstants.DISPLAY_NAME);
             Map<String, String> data = new HashMap<>();
-            data.put("account_id", accountId);
-            data.put("display_name", displayName);
-            accountData.add(data);
+            data.put(CDSConsentExtensionConstants.ACCOUNT_ID, accountId);
+            data.put(CDSConsentExtensionConstants.DISPLAY_NAME, displayName);
+            accountsData.add(data);
         }
-        httpServletRequest.setAttribute("account_data", accountData);
+        httpServletRequest.setAttribute(CDSConsentExtensionConstants.ACCOUNTS_DATA, accountsData);
         httpServletRequest.setAttribute(CDSConsentExtensionConstants.SP_FULL_NAME,
                 dataSet.getString(CDSConsentExtensionConstants.SP_FULL_NAME));
         httpServletRequest.setAttribute(CDSConsentExtensionConstants.CONSENT_EXPIRY,
