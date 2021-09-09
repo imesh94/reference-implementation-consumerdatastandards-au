@@ -69,6 +69,37 @@ public class OBCDSAuthServletImplTests {
     }
 
     @Test
+    public void testUpdateRequestAttributeWithValidDatasetWithElements() {
+
+        JSONArray dataRequested = new JSONArray();
+        JSONArray accounts = new JSONArray();
+        JSONObject dataSet = new JSONObject();
+        JSONArray testArray = new JSONArray();
+        JSONObject dataReqJsonElement = new JSONObject();
+        JSONObject accJsonElement = new JSONObject();
+
+        // add data to 'data_requested' section
+        dataReqJsonElement.put(CDSConsentExtensionConstants.TITLE, "testTitle");
+        dataReqJsonElement.put(CDSConsentExtensionConstants.DATA, testArray);
+        dataRequested.put(dataReqJsonElement);
+
+        // add accounts data
+        accJsonElement.put(CDSConsentExtensionConstants.ACCOUNT_ID, "1234");
+        accJsonElement.put(CDSConsentExtensionConstants.DISPLAY_NAME, "test-account");
+        accounts.put(accJsonElement);
+
+        dataSet.put(CDSConsentExtensionConstants.DATA_REQUESTED, dataRequested);
+        dataSet.put(CDSConsentExtensionConstants.ACCOUNTS, accounts);
+        dataSet.put(CDSConsentExtensionConstants.SP_FULL_NAME, "TestServiceProvider");
+        dataSet.put(CDSConsentExtensionConstants.CONSENT_EXPIRY, "ConsentExpiryDate");
+
+        Map<String, Object> returnMap = obCdsAuthServlet.updateRequestAttribute(
+                httpServletRequest, dataSet, resourceBundle);
+
+        Assert.assertTrue(!returnMap.isEmpty());
+    }
+
+    @Test
     public void testUpdateSessionAttribute() {
         Map<String, Object> returnMap = obCdsAuthServlet.updateSessionAttribute(
                 httpServletRequest, new JSONObject(), resourceBundle);
