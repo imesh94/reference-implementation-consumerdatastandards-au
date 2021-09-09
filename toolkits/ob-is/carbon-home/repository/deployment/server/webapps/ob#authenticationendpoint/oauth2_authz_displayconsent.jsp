@@ -31,6 +31,7 @@
     String[] accountIdList = accounts.split(":");
     String consentExpiryDateTime = request.getParameter("consent-expiry-date");
     String consentExpiryDate = consentExpiryDateTime.split("T")[0];
+    String accountMaskingEnabled = request.getParameter("accountMaskingEnabled");
     DateTimeFormatter dtf = DateTimeFormatter.ofPattern("yyyy-MM-dd");
     LocalDateTime now = LocalDateTime.now();
     String currentDate = dtf.format(now);
@@ -58,7 +59,9 @@
                                 %>
                                     <li>
                                         <strong><% out.println(accountList[i]); %></strong><br>
-                                        <small><% out.println(accountIdList[i]); %></small>
+                                        <span class ="accountIdClass" id="<% out.println(accountIdList[i]);%>">
+                                            <small><% out.println(accountIdList[i]);%></small>
+                                        </span>
                                     </li><br>
                                 <%
                                 }
@@ -169,6 +172,25 @@
 </div>
 
 <script>
+    $(document).ready(function(){
+        var accountMaskinEnabled="<%=accountMaskingEnabled%>";
+
+        function maskAccountId(accountId) {
+            var start = accountId.substring(0,4);
+            var end = accountId.slice(accountId.length - 4); 
+            var mask = "*".repeat(accountId.length - 8);
+            var maskedAccId = start + mask + end; 
+            return maskedAccId;
+        }
+
+        if (accountMaskinEnabled == "true") {
+            var accountElements = document.getElementsByClassName("accountIdClass");
+            for (var i = 0; i < accountElements.length; i++) {
+                var elementId = accountElements.item(i).id;
+                document.getElementById(elementId).textContent=maskAccountId(elementId);
+            }
+        }
+    });
 
     var coll = document.getElementsByClassName("collapsible");
     var i;

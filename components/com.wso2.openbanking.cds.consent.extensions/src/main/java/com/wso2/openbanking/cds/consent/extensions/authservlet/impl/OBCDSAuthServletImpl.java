@@ -1,6 +1,7 @@
 package com.wso2.openbanking.cds.consent.extensions.authservlet.impl;
 
 import com.wso2.openbanking.accelerator.consent.extensions.authservlet.model.OBAuthServletInterface;
+import com.wso2.openbanking.cds.common.config.OpenBankingCDSConfigParser;
 import com.wso2.openbanking.cds.consent.extensions.common.CDSConsentExtensionConstants;
 import org.json.JSONArray;
 import org.json.JSONObject;
@@ -60,6 +61,8 @@ public class OBCDSAuthServletImpl implements OBAuthServletInterface {
                 dataSet.getString(CDSConsentExtensionConstants.SP_FULL_NAME));
         httpServletRequest.setAttribute(CDSConsentExtensionConstants.CONSENT_EXPIRY,
                 dataSet.getString(CDSConsentExtensionConstants.CONSENT_EXPIRY));
+        httpServletRequest.setAttribute(CDSConsentExtensionConstants.ACCOUNT_MASKING_ENABLED,
+                OpenBankingCDSConfigParser.getInstance().isAccountMaskingEnabled());
 
         return returnMaps;
     }

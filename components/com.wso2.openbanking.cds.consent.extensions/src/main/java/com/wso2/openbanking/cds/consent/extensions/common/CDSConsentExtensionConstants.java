@@ -54,6 +54,7 @@ public class CDSConsentExtensionConstants {
     public static final String ACCOUNT_IDS = "accountIds";
     public static final String ZERO = "0";
     public static final String CONSENT_EXPIRY = "consent_expiration";
+    public static final String ACCOUNT_MASKING_ENABLED = "account_masking_enabled";
 
     public static final String CHAR_SET = "UTF-8";
     public static final String CUSTOMER_TYPE = "customerUType";

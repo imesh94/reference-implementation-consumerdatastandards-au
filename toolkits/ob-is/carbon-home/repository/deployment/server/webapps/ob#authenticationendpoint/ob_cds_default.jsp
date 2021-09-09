@@ -26,7 +26,7 @@
             <div class="form-group ui form">
                 <div class="col-md-12 ui box">
                     <h3 class="ui header"><strong>${sp_full_name}
-                    </strong> requests account details on your account - ob_default.jsp.
+                    </strong> requests account details on your account. ${account_masking_enabled}
                     </h3>
                 </div>
             </div>
@@ -40,9 +40,11 @@
                         <c:forEach items="${accounts_data}" var="record">
                             <label for="${record['display_name']}">
                                 <input type="checkbox" id="${record['display_name']}" name="chkAccounts"
-                                       value="${record['account_id']}" onclick="updateAcc()"
-                                />
-                                    ${record['display_name']} </br> <small>${record['account_id']}</small>
+                                       value="${record['account_id']}" onclick="updateAcc()"/>
+                                    ${record['display_name']} </br> 
+                                    <span class="accountIdClass" id="${record['account_id']}">
+                                        <small>${record['account_id']}</small>
+                                    </span>
                             </label>
                             <br>
                         </c:forEach>
@@ -58,10 +60,12 @@
                     <input type="hidden" name="sessionDataKeyConsent" value="${sessionDataKeyConsent}"/>
                     <input type="hidden" name="consent" id="consent" value="deny"/>
                     <input type="hidden" name="app" id="app" value="${app}"/>
+                    <input type="hidden" name="spFullName" id="app" value="${sp_full_name}"/>
                     <input type="hidden" name="accountsArry[]" id="account" value=""/>
                     <input type="hidden" name="accNames" id="accountName" value=""/>
                     <input type="hidden" name="type" id="type" value="accounts"/>
-                    <input type="hidden" name="consent-expiry-date" id="consentExp" value="${data_requested}"/>
+                    <input type="hidden" name="consent-expiry-date" id="consentExp" value="${consent_expiration}"/>
+                    <input type="hidden" name="accountMaskingEnabled" id="accountMaskingEnabled" value="${account_masking_enabled}";/>
                 </div>
             </div>
 
@@ -80,4 +84,27 @@
         </div>
     </form>
 </div>
+
+<script>
+    $(document).ready(function(){
+        var accountMaskingEnabled="${account_masking_enabled}";
+
+        function maskAccountId(accountId) {
+            var start = accountId.substring(0,4);
+            var end = accountId.slice(accountId.length - 3); 
+            var mask = "*".repeat(accountId.length - 7); // 4+3
+            var maskedAccId = start + mask + end; 
+            return maskedAccId;
+        }
+
+        if (accountMaskingEnabled == "true") {
+            var accountElements = document.getElementsByClassName("accountIdClass");
+            for (var i = 0; i < accountElements.length; i++) {
+                var elementId = accountElements.item(i).id;
+                document.getElementById(elementId).textContent=maskAccountId(elementId);
+            }
+        }
+    });
+</script>
+
 <jsp:include page="includes/consent_bottom.jsp"/>
