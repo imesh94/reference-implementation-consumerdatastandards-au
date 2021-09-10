@@ -90,7 +90,7 @@ public class CDSConsentRetrievalStep implements ConsentRetrievalStep {
         // appending openid_scopes to be retrieved in authentication webapp
         jsonObject.appendField(CDSConsentExtensionConstants.OPENID_SCOPES, permissions);
 
-        // append consent expirey date
+        // append consent expiry date
         jsonObject.appendField(CDSConsentExtensionConstants.CONSENT_EXPIRY, expiry);
 
         // append service provider full name

@@ -26,7 +26,7 @@
             <div class="form-group ui form">
                 <div class="col-md-12 ui box">
                     <h3 class="ui header"><strong>${sp_full_name}
-                    </strong> requests account details on your account. ${account_masking_enabled}
+                    </strong> requests account details on your account.
                     </h3>
                 </div>
             </div>

@@ -14,8 +14,6 @@ import java.util.Map;
 import java.util.ResourceBundle;
 import javax.servlet.http.HttpServletRequest;
 
-
-
 /**
  * The CDS implementation of servlet extension that handles CDS scenarios
  */
@@ -27,14 +25,15 @@ public class OBCDSAuthServletImpl implements OBAuthServletInterface {
 
         Map<String, Object> returnMaps = new HashMap<>();
 
-        //Sets "data_requested" that contains the human-readable scope-requested information
+        // Sets "data_requested" that contains the human-readable scope-requested information
         JSONArray dataRequestedJsonArray = dataSet.getJSONArray(CDSConsentExtensionConstants.DATA_REQUESTED);
         Map<String, List<String>> dataRequested = new LinkedHashMap<>();
 
+        // Add requested data to an array list
         for (int requestedDataIndex = 0; requestedDataIndex < dataRequestedJsonArray.length(); requestedDataIndex++) {
             JSONObject dataObj = dataRequestedJsonArray.getJSONObject(requestedDataIndex);
-            String title = dataObj.getString("title");
-            JSONArray dataArray = dataObj.getJSONArray("data");
+            String title = dataObj.getString(CDSConsentExtensionConstants.TITLE);
+            JSONArray dataArray = dataObj.getJSONArray(CDSConsentExtensionConstants.DATA);
 
             ArrayList<String> listData = new ArrayList<>();
             for (int dataIndex = 0; dataIndex < dataArray.length(); dataIndex++) {
@@ -57,6 +56,8 @@ public class OBCDSAuthServletImpl implements OBAuthServletInterface {
             accountsData.add(data);
         }
         httpServletRequest.setAttribute(CDSConsentExtensionConstants.ACCOUNTS_DATA, accountsData);
+
+        // Add additional attributes to be displayed
         httpServletRequest.setAttribute(CDSConsentExtensionConstants.SP_FULL_NAME,
                 dataSet.getString(CDSConsentExtensionConstants.SP_FULL_NAME));
         httpServletRequest.setAttribute(CDSConsentExtensionConstants.CONSENT_EXPIRY,
@@ -91,7 +92,6 @@ public class OBCDSAuthServletImpl implements OBAuthServletInterface {
 
     @Override
     public String getJSPPath() {
-
         return "/ob_cds_default.jsp";
     }
 }
