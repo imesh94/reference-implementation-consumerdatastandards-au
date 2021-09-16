@@ -48,10 +48,12 @@ public class CDSErrorHandlerTest {
     ArrayList<OpenBankingExecutorError> errors = new ArrayList<>();
     ArrayList<OpenBankingExecutorError> emptyErrors = new ArrayList<>();
     ArrayList<OpenBankingExecutorError> dcrErrors = new ArrayList<>();
+    ArrayList<OpenBankingExecutorError> accountErrors = new ArrayList<>();
     Map<String, String> addedHeaders = new HashMap<>();
     private static final Boolean TRUE = true;
     private static final Boolean FALSE = false;
     private static final String DCR_PATH = "/register";
+    private static final String ACCOUNTS_PATH = "/banking/accounts/";
 
     @BeforeClass
     public void initClass() {
@@ -66,6 +68,10 @@ public class CDSErrorHandlerTest {
         dcrErrors.add(new OpenBankingExecutorError("invalid_software_statement", "invalid_software_statement",
                 "Duplicate registrations for a given software_id are not valid",
                 ErrorConstants.BAD_REQUEST_CODE));
+
+        accountErrors.add(new OpenBankingExecutorError("AU.CDR.Resource.InvalidBankingAccount",
+                "Invalid Banking Account", "ID of the account not found or invalid",
+                ErrorConstants.NOT_FOUND_CODE));
     }
 
     @Test
@@ -97,7 +103,7 @@ public class CDSErrorHandlerTest {
     }
 
     @Test
-    public void testPreProcessRequestErrorScenario() {
+    public void testDCRPreProcessRequestErrorScenario() {
         Mockito.doReturn(TRUE).when(obApiRequestContextMock).isError();
         Mockito.doReturn(errors).when(obApiRequestContextMock).getErrors();
         Mockito.doReturn(msgInfoDTOMock).when(obApiRequestContextMock).getMsgInfo();
@@ -111,7 +117,21 @@ public class CDSErrorHandlerTest {
     }
 
     @Test
-    public void testPostProcessRequestErrorScenario() {
+    public void testAccountsPreProcessRequestErrorScenario() {
+        Mockito.doReturn(TRUE).when(obApiRequestContextMock).isError();
+        Mockito.doReturn(accountErrors).when(obApiRequestContextMock).getErrors();
+        Mockito.doReturn(msgInfoDTOMock).when(obApiRequestContextMock).getMsgInfo();
+        Mockito.doReturn(ACCOUNTS_PATH).when(msgInfoDTOMock).getResource();
+        Mockito.doReturn(addedHeaders).when(obApiRequestContextMock).getAddedHeaders();
+
+        cdsErrorHandler.preProcessRequest(obApiRequestContextMock);
+        Assert.assertNotNull(obApiRequestContextMock.getAddedHeaders());
+        Assert.assertEquals(obApiRequestContextMock.getAddedHeaders().get(GatewayConstants.CONTENT_TYPE_TAG),
+                GatewayConstants.JSON_CONTENT_TYPE);
+    }
+
+    @Test
+    public void testDCRPostProcessRequestErrorScenario() {
         Mockito.doReturn(TRUE).when(obApiRequestContextMock).isError();
         Mockito.doReturn(errors).when(obApiRequestContextMock).getErrors();
         Mockito.doReturn(msgInfoDTOMock).when(obApiRequestContextMock).getMsgInfo();
@@ -125,7 +145,21 @@ public class CDSErrorHandlerTest {
     }
 
     @Test
-    public void testPreProcessResponseErrorScenario() {
+    public void testAccountsPostProcessRequestErrorScenario() {
+        Mockito.doReturn(TRUE).when(obApiRequestContextMock).isError();
+        Mockito.doReturn(accountErrors).when(obApiRequestContextMock).getErrors();
+        Mockito.doReturn(msgInfoDTOMock).when(obApiRequestContextMock).getMsgInfo();
+        Mockito.doReturn(ACCOUNTS_PATH).when(msgInfoDTOMock).getResource();
+        Mockito.doReturn(addedHeaders).when(obApiRequestContextMock).getAddedHeaders();
+
+        cdsErrorHandler.postProcessRequest(obApiRequestContextMock);
+        Assert.assertNotNull(obApiRequestContextMock.getAddedHeaders());
+        Assert.assertEquals(obApiRequestContextMock.getAddedHeaders().get(GatewayConstants.CONTENT_TYPE_TAG),
+                GatewayConstants.JSON_CONTENT_TYPE);
+    }
+
+    @Test
+    public void testDCRPreProcessResponseErrorScenario() {
         Mockito.doReturn(TRUE).when(obApiResponseContextMock).isError();
         Mockito.doReturn(errors).when(obApiResponseContextMock).getErrors();
         Mockito.doReturn(msgInfoDTOMock).when(obApiResponseContextMock).getMsgInfo();
@@ -140,11 +174,41 @@ public class CDSErrorHandlerTest {
     }
 
     @Test
-    public void testPostProcessResponseErrorScenario() {
+    public void testAccountsPreProcessResponseErrorScenario() {
+        Mockito.doReturn(TRUE).when(obApiResponseContextMock).isError();
+        Mockito.doReturn(accountErrors).when(obApiResponseContextMock).getErrors();
+        Mockito.doReturn(msgInfoDTOMock).when(obApiResponseContextMock).getMsgInfo();
+        Mockito.doReturn(ACCOUNTS_PATH).when(msgInfoDTOMock).getResource();
+        Mockito.doReturn(addedHeaders).when(obApiResponseContextMock).getAddedHeaders();
+
+        cdsErrorHandler.preProcessResponse(obApiResponseContextMock);
+        Assert.assertNotNull(obApiRequestContextMock.getAddedHeaders());
+        Assert.assertEquals(obApiRequestContextMock.getAddedHeaders().get(GatewayConstants.CONTENT_TYPE_TAG),
+                GatewayConstants.JSON_CONTENT_TYPE);
+        Assert.assertNotNull(obApiRequestContextMock.getAnalyticsData());
+    }
+
+    @Test
+    public void testDCRPostProcessResponseErrorScenario() {
         Mockito.doReturn(TRUE).when(obApiResponseContextMock).isError();
         Mockito.doReturn(errors).when(obApiResponseContextMock).getErrors();
         Mockito.doReturn(msgInfoDTOMock).when(obApiResponseContextMock).getMsgInfo();
         Mockito.doReturn(DCR_PATH).when(msgInfoDTOMock).getResource();
+        Mockito.doReturn(addedHeaders).when(obApiResponseContextMock).getAddedHeaders();
+
+        cdsErrorHandler.postProcessResponse(obApiResponseContextMock);
+        Assert.assertNotNull(obApiRequestContextMock.getAddedHeaders());
+        Assert.assertEquals(obApiRequestContextMock.getAddedHeaders().get(GatewayConstants.CONTENT_TYPE_TAG),
+                GatewayConstants.JSON_CONTENT_TYPE);
+        Assert.assertNotNull(obApiRequestContextMock.getAnalyticsData());
+    }
+
+    @Test
+    public void testAccountsPostProcessResponseErrorScenario() {
+        Mockito.doReturn(TRUE).when(obApiResponseContextMock).isError();
+        Mockito.doReturn(accountErrors).when(obApiResponseContextMock).getErrors();
+        Mockito.doReturn(msgInfoDTOMock).when(obApiResponseContextMock).getMsgInfo();
+        Mockito.doReturn(ACCOUNTS_PATH).when(msgInfoDTOMock).getResource();
         Mockito.doReturn(addedHeaders).when(obApiResponseContextMock).getAddedHeaders();
 
         cdsErrorHandler.postProcessResponse(obApiResponseContextMock);

@@ -12,6 +12,8 @@
 
 package com.wso2.openbanking.cds.gateway.executors.error.handler;
 
+import com.google.gson.JsonArray;
+import com.google.gson.JsonObject;
 import com.wso2.openbanking.accelerator.gateway.executor.core.OpenBankingGatewayExecutor;
 import com.wso2.openbanking.accelerator.gateway.executor.model.OBAPIRequestContext;
 import com.wso2.openbanking.accelerator.gateway.executor.model.OBAPIResponseContext;
@@ -98,6 +100,9 @@ public class CDSErrorHandler implements OpenBankingGatewayExecutor {
         if (obapiRequestContext.getMsgInfo().getResource().contains("/register")) {
             JSONArray dcrErrorPayload = getDCRErrorJSON(errors);
             obapiRequestContext.setModifiedPayload(dcrErrorPayload.toString());
+        } else {
+            JsonObject errorPayload = getErrorJson(errors);
+            obapiRequestContext.setModifiedPayload(errorPayload.toString());
         }
         Map<String, String> addedHeaders = obapiRequestContext.getAddedHeaders();
         addedHeaders.put(GatewayConstants.CONTENT_TYPE_TAG, GatewayConstants.JSON_CONTENT_TYPE);
@@ -108,7 +113,7 @@ public class CDSErrorHandler implements OpenBankingGatewayExecutor {
             statusCode = ErrorUtil.getHTTPErrorCode(statusCodes);
         } else {
             if (obapiRequestContext.getContextProperty(GatewayConstants.ERROR_STATUS_PROP) != null) {
-                statusCode =  Integer.parseInt(obapiRequestContext
+                statusCode = Integer.parseInt(obapiRequestContext
                         .getContextProperty(GatewayConstants.ERROR_STATUS_PROP));
             } else {
                 statusCode = HttpStatus.SC_INTERNAL_SERVER_ERROR;
@@ -133,6 +138,9 @@ public class CDSErrorHandler implements OpenBankingGatewayExecutor {
         if (obapiResponseContext.getMsgInfo().getResource().contains("/register")) {
             JSONArray dcrErrorPayload = getDCRErrorJSON(errors);
             obapiResponseContext.setModifiedPayload(dcrErrorPayload.toString());
+        } else {
+            JsonObject errorPayload = getErrorJson(errors);
+            obapiResponseContext.setModifiedPayload(errorPayload.toString());
         }
         Map<String, String> addedHeaders = obapiResponseContext.getAddedHeaders();
         addedHeaders.put(GatewayConstants.CONTENT_TYPE_TAG, GatewayConstants.JSON_CONTENT_TYPE);
@@ -143,7 +151,7 @@ public class CDSErrorHandler implements OpenBankingGatewayExecutor {
             statusCode = ErrorUtil.getHTTPErrorCode(statusCodes);
         } else {
             if (obapiResponseContext.getContextProperty(GatewayConstants.ERROR_STATUS_PROP) != null) {
-                statusCode =  Integer.parseInt(obapiResponseContext
+                statusCode = Integer.parseInt(obapiResponseContext
                         .getContextProperty(GatewayConstants.ERROR_STATUS_PROP));
             } else {
                 statusCode = HttpStatus.SC_INTERNAL_SERVER_ERROR;
@@ -164,5 +172,21 @@ public class CDSErrorHandler implements OpenBankingGatewayExecutor {
             errorList.add(errorObj);
         }
         return errorList;
+    }
+
+    public static JsonObject getErrorJson(ArrayList<OpenBankingExecutorError> errors) {
+
+        JsonArray errorList = new JsonArray();
+        JsonObject parentObject = new JsonObject();
+
+        for (OpenBankingExecutorError error : errors) {
+            JsonObject errorObj = new JsonObject();
+            errorObj.addProperty(ErrorConstants.CODE, error.getCode());
+            errorObj.addProperty(ErrorConstants.TITLE, error.getTitle());
+            errorObj.addProperty(ErrorConstants.DETAIL, error.getMessage());
+            errorList.add(errorObj);
+        }
+        parentObject.add(ErrorConstants.ERRORS, errorList);
+        return parentObject;
     }
 }
