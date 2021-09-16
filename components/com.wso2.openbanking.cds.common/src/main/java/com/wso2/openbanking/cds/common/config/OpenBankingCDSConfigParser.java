@@ -253,4 +253,9 @@ public class OpenBankingCDSConfigParser {
     public boolean isAccountMaskingEnabled() {
         return Boolean.parseBoolean((String) configuration.get(CommonConstants.ACCOUNT_MASKING));
     }
+
+    public String getIdPermanenceSecretKey() {
+        String value = (String) configuration.get(CommonConstants.ID_PERMANENCE_SECRET_KEY);
+        return value == null ? "" : value;
+    }
 }
