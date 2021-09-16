@@ -406,7 +406,7 @@ class AccountsRetrievalRequestHeaderValidationTest extends AbstractAUTests {
 
     @Test
     //Validate X_FAPI_INTERACTION_ID,X_FAPI_AUTH_DATE,X_FAPI_CUSTOMER_IP_ADDRESS & X_CDS_CLIENT_HEADER optional headers
-    void "TC0304011_Retrieve banking products with optional-headers"() {
+    void "TC0304011_Retrieve banking products with optional-headers"(){
         def cdsClient = "${ConfigParser.instance.clientId}:${ConfigParser.instance.clientSecret}"
         def clientHeader = "${Base64.encoder.encodeToString(cdsClient.getBytes(Charset.defaultCharset()))}"
         def response = TestSuite.buildRequest()
@@ -544,11 +544,20 @@ class AccountsRetrievalRequestHeaderValidationTest extends AbstractAUTests {
                 .get("${CDS_PATH}${AUConstants.BULK_ACCOUNT_PATH}")
 
         Assert.assertEquals(response.statusCode(), AUConstants.STATUS_CODE_401)
-        Assert.assertTrue(TestUtil.parseResponseBody(response, "description").contains(
-                "Invalid Credentials. Make sure you have given the correct access token") ||
-                TestUtil.parseResponseBody(response, "description").contains(
-                        "Invalid Credentials. Make sure you have provided the correct security credentials")
-        )
+        if (TestConstants.SOLUTION_VERSION_200.equalsIgnoreCase(AUTestUtil.solutionVersion)) {
+            Assert.assertEquals(TestUtil.parseResponseBody(response, AUConstants.ERROR_CODE),
+                    AUConstants.ERROR_CODE_UNAUTHORIZED)
+            Assert.assertEquals(TestUtil.parseResponseBody(response, AUConstants.ERROR_SOURCE_PARAMETER), AUConstants
+                    .PARAM_AUTHORIZATION)
+            Assert.assertEquals(TestUtil.parseResponseBody(response, AUConstants.ERROR_TITLE), AUConstants
+                    .INVALID_AUTHORISATION)
+        } else {
+            Assert.assertTrue(TestUtil.parseResponseBody(response, "fault.description").contains(
+                    "Invalid Credentials. Make sure you have given the correct access token") ||
+                    TestUtil.parseResponseBody(response, "fault.description").contains(
+                            "Invalid Credentials. Make sure you have provided the correct security credentials")
+            )
+        }
     }
 
     @Test
@@ -561,10 +570,19 @@ class AccountsRetrievalRequestHeaderValidationTest extends AbstractAUTests {
                 .get("${CDS_PATH}${AUConstants.BULK_ACCOUNT_PATH}")
 
         Assert.assertEquals(response.statusCode(), AUConstants.STATUS_CODE_401)
-        Assert.assertTrue(TestUtil.parseResponseBody(response, "description").contains(
-                "Missing Credentials. Make sure your API request provides required credentials") ||
-                TestUtil.parseResponseBody(response, "description").contains(
-                        "Invalid Credentials. Make sure your API invocation call has a header: 'Authorization : Bearer " +
-                                "ACCESS_TOKEN' or 'Authorization : Basic ACCESS_TOKEN' or 'apikey: API_KEY"))
+        if (TestConstants.SOLUTION_VERSION_200.equalsIgnoreCase(AUTestUtil.solutionVersion)) {
+            Assert.assertEquals(TestUtil.parseResponseBody(response, AUConstants.ERROR_CODE),
+                    AUConstants.ERROR_CODE_UNAUTHORIZED)
+            Assert.assertEquals(TestUtil.parseResponseBody(response, AUConstants.ERROR_SOURCE_PARAMETER), AUConstants
+                    .PARAM_AUTHORIZATION)
+            Assert.assertEquals(TestUtil.parseResponseBody(response, AUConstants.ERROR_TITLE), AUConstants
+                    .INVALID_AUTHORISATION)
+        } else {
+            Assert.assertTrue(TestUtil.parseResponseBody(response, "fault.description").contains(
+                    "Missing Credentials. Make sure your API request provides required credentials") ||
+                    TestUtil.parseResponseBody(response, "fault.description").contains(
+                            "Invalid Credentials. Make sure your API invocation call has a header: 'Authorization : Bearer " +
+                                    "ACCESS_TOKEN' or 'Authorization : Basic ACCESS_TOKEN' or 'apikey: API_KEY"))
+        }
     }
 }

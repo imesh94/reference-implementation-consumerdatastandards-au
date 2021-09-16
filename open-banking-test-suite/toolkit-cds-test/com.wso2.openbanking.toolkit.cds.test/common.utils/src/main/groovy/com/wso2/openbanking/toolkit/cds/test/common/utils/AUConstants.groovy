@@ -26,13 +26,21 @@ class AUConstants {
     static final CONSENT_DENY_XPATH = "//*[@value='Deny']"
     static final CONSENT_CANCEL_XPATH = "//*[@value='Cancel']"
     static final CONFIRM_CONSENT_DENY_XPATH = "//*[@value='Yes cancel']"
+    static final ADR_NAME_HEADER_XPATH = "//h3[@class='ui header']"
     static final SINGLE_ACCOUNT_XPATH = "//option[contains(text(),'account_1')]"
     static final SINGLE_ACCOUNT_XPATH_200 = "//input[@id='account_1']"
     static final ALT_SINGLE_ACCOUNT_XPATH = "//option[contains(text(),'account_2')]"
     static final ALT_SINGLE_ACCOUNT_XPATH_200 = "//input[@id='account_2']"
+    static final LBL_WHERE_TO_MANAGE_INSTRUCTION_XPATH = "//div[contains(text(),'Where to manage this arrangement')]//h5"
+    static final LBL_NEW_PAYEES_INDICATOR_XPATH = "//b[contains(text(),'Saved payees')]/following-sibling::span[contains(text(),'New')]"
+    static final LBL_NEW_SHARING_DURATION_XPATH = "//span[@id='consent-expiry-date']/following-sibling::span[contains(text(),'New')]"
+    static final LBL_ACCOUNT_1_ID_XPATH = "//input[@id='account_1']//following::small[1]"
+    static final LBL_ACCOUNT_2_ID_XPATH = "//input[@id='account_2']//following::small[1]"
+    static final LBL_SELECT_THE_ACCOUNTS_XPATH = "//h5[contains(text(),'Select the accounts you wish to authorise')]"
     public static final String X_V_HEADER = "x-v"
     public static final String X_MIN_HEADER = "x-min-v"
     static final int CDR_ENDPOINT_VERSION = 1
+    static final String CDS_100_PATH = "/cds-au/v1"
     static final String CDS_PATH = "/cds-au/v1"
     static final String ACCEPT = "application/json"
     public static final String X_FAPI_INTERACTION_ID = "x-fapi-interaction-id"
@@ -51,24 +59,26 @@ class AUConstants {
     static final String STATUS1 = "OPEN"
     static final String GET_ACCOUNTS = "/banking/accounts"
     static final String GET_BALANCES = "/banking/accounts/balances"
-    static final String GET_TRANSACTIONS = "/banking/accounts/"+ accountID + "/transactions"
+    static final String GET_TRANSACTIONS = "/banking/accounts/" + accountID + "/transactions"
     static final String GET_PRODUCTS = "/banking/products"
     static final String TOKEN = "d94c5b2e-b615-366e-862b-374b429e4d5e"
     static final String accountID = "30080012343456"
     static final String GET_META = "/admin/register/metadata"
     static final String GET_STAT = "/admin/metrics"
     static final String X_FAPI_FINANCIAL_ID = "x-fapi-financial-id"
-    public static final int X_V_HEADER_ACCOUNTS= 1
-    public static final int X_V_HEADER_METRICS= 1
-    public static final int X_V_HEADER_CUSTOMER= 1
-    public static final int X_V_HEADER_PRODUCTS= getProductEndpointVersion()
+    public static final int X_V_HEADER_ACCOUNTS = 1
+    public static final int X_V_HEADER_METRICS = 1
+    public static final int X_V_HEADER_CUSTOMER = 1
+    public static final int X_V_HEADER_PRODUCTS = getProductEndpointVersion()
     static final String USERNAME = "admin@wso2.com"
     static final String PASSWORD = "wso2123"
     static final String ACCESS_TOKEN = "token"
     static final String CONTENT = "application/x-www-form-urlencoded"
-    static final String CONSENT_CONFIRM_XPATH= "//input[@value='Confirm']"
+    static final String CONSENT_CONFIRM_XPATH = "//input[@value='Confirm']"
+    static final String CONSENT_AUTHORIZE_FLOW_BACK_XPATH = "//input[@id='back']"
     static final String CODE = "code"
     static final String ERROR_DESCRIPTION = "error_description"
+    static final String ERROR_INVALID_SOFTWARE_PRODUCT = "Invalid Software Product"
 
     static final CONSENT_EXPIRY_XPATH = "//span[@id='consent-expiry-date']"
     static final NEGATIVE_SHARING_DURATION_ERROR_PATH = "//td[contains(text(),'Negative sharing_duration')]"
@@ -76,6 +86,8 @@ class AUConstants {
     static final long SINGLE_ACCESS_CONSENT = 0
     static final long ONE_YEAR_DURATION = 31536200
     static final long NEGATIVE_DURATION = -3000
+    static final long AMENDED_SHARING_DURATION = 90000
+    static final long SHORT_SHARING_DURATION = 20
 
     enum SCOPES {
         BANK_ACCOUNT_BASIC_READ("bank:accounts.basic:read"),
@@ -85,6 +97,10 @@ class AUConstants {
         BANK_REGULAR_PAYMENTS_READ("bank:regular_payments:read"),
         BANK_CUSTOMER_BASIC_READ("common:customer.basic:read"),
         BANK_CUSTOMER_DETAIL_READ("common:customer.detail:read"),
+        CDR_REGISTRATION("cdr:registration"),
+        ADMIN_METRICS_BASIC_READ("admin:metrics.basic:read"),
+        ADMIN_METADATA_UPDATE("admin:metadata:update"),
+        PROFILE("profile"),
 
         private final String value
 
@@ -103,15 +119,17 @@ class AUConstants {
     static final int STATUS_CODE_400 = 400
     static final int STATUS_CODE_401 = 401
     static final int STATUS_CODE_404 = 404
+    static final int STATUS_CODE_405 = 405
     static final int STATUS_CODE_406 = 406
     static final int STATUS_CODE_422 = 422
     static final int STATUS_CODE_409 = 409
     static final int STATUS_CODE_204 = 204
     static final int STATUS_CODE_403 = 403
-    static final int NOCONTENT=204
+    static final int NOCONTENT = 204
     static final int STATUS_CODE_500 = 500
 
     static final String BULK_ACCOUNT_PATH = "/banking/accounts"
+    static final String SINGLE_ACCOUNT_PATH = "/banking/accounts/" + accountID
     static final String BANKING_PRODUCT_PATH = "/banking/products"
     static final String BULK_BALANCES_PATH = "/banking/accounts/balances"
     static final String BULK_DIRECT_DEBITS_PATH = "/banking/accounts/direct-debits"
@@ -123,9 +141,12 @@ class AUConstants {
     static final String DISCOVERY_OUTAGES = "/discovery/outages"
     static final String ACCOUNTS_CONSENT_PATH = "/au100/accounts-validation"
     static final String CDR_ARRANGEMENT_ENDPOINT = "/arrangements/1.0.0"
-    static final String INTROSPECTION_ENDPOINT = "/oauth2/introspect"
+    static final String INTROSPECTION_ENDPOINT = "/token/introspect"
+    static final String CONSENT_STATUS_ENDPOINT = "/api/openbanking/consent-mgt/uk300"
     public static final String PUSHED_AUTHORISATION_BASE_PATH = config.getAuthorisationServerUrl() + "/push-authorization"
     static final String PAR_ENDPOINT = "/par"
+    static final String REVOKE_PATH = "/revoke"
+    static final String STATUS_PATH = "/account-confirmation"
 
     static final LBL_PERMISSION_HEADER = "//*[@class='padding']//b"
     static final LBL_PERMISSION_LIST_ITEM_1 = "//ul[@class='scopes-list padding']//li[1]"
@@ -178,7 +199,9 @@ class AUConstants {
     static final LBL_DIRECT_DEBITS = "Direct debits"
     static final LBL_SCHEDULE_PAYMENTS = "Scheduled payments"
     static final LBL_DETAILS_OF_SAVED_ACCOUNTS = "Names and details of accounts you have saved; " +
-    "(e.g. their BSB and Account Number, BPay CRN and Biller code, or NPP PayID)†"
+            "(e.g. their BSB and Account Number, BPay CRN and Biller code, or NPP PayID)†"
+    static final LBL_WHERE_TO_MANAGE_INSTRUCTION = "You can review and manage this arrangement on the Data Sharing dashboard by " +
+            "going to Settings>Data Sharing on the Mock Company Inc.,Mock Software website or app."
 
     static final String SOLUTION_VERSION_150 = "1.5.0"
     static final String SOLUTION_VERSION_200 = "2.0.0"
@@ -194,9 +217,9 @@ class AUConstants {
     public static LBL_TEXT_AREA_OF_REVOKE_REASON = "//textarea[@id='revokeReason']"
     public static LBL_REVOKE_BUTTON = "//button[@id='denyConfirmBtn']"
     public static LBL_CONSENT_GRANTED_DATE = "//div[@id='heading0acc']//h6[2]"
-    public static LBL_CONSENT_GAVE="//div[@id='accordion0acc']//h5"
-    public static LBL_CONSENT_EXPIRE="//div[@id='accordion0acc']//h5[2]"
-    public static LBL_OF_SHARING_PERIOD ="//div[@id='accordion0acc']//h5[3]"
+    public static LBL_CONSENT_GAVE = "//div[@id='accordion0acc']//h5"
+    public static LBL_CONSENT_EXPIRE = "//div[@id='accordion0acc']//h5[2]"
+    public static LBL_OF_SHARING_PERIOD = "//div[@id='accordion0acc']//h5[3]"
     public static LBL_CONSENT_GAVE_DATE = "//div[@id='accordion0acc']//div[@id='Directdebitsandscheduledpayments']" +
             "/following-sibling::div/h5[text()='When you gave consent']/following-sibling::ul[1]/li"
     public static LBL_CONSENT_EXPIRE_DATE = "//div[@id='accordion0acc']//div[@id='Directdebitsandscheduledpayments']" +
@@ -228,7 +251,7 @@ class AUConstants {
     public static LBL_PHONE_PATH = "//div[@id='accordion0acc']//div[@id='Contactdetails']//li[1]"
     public static LBL_EMAIL_ADDRESS_PATH = "//div[@id='accordion0acc']//div[@id='Contactdetails']//li[2]"
     public static LBL_MAIL_ADDRESS_PATH = "//div[@id='accordion0acc']//div[@id='Contactdetails']//li[3]"
-    public static LBL_RESIDENTIAL_ADDRESS_PATH ="//div[@id='accordion0acc']//div[@id='Contactdetails']//li[4]"
+    public static LBL_RESIDENTIAL_ADDRESS_PATH = "//div[@id='accordion0acc']//div[@id='Contactdetails']//li[4]"
     public static LBL_ORGANISATION_ADDRESS_PATH = "//div[@id='accordion0acc']//div[@id='Organisationcontactdetails']//li[1]"
     public static LBL_ORGANISATION_MAIL_ADDRESS_PATH = "//div[@id='accordion0acc']//div[@id='Organisationcontactdetails']//li[2]"
     public static LBL_PHONE_NUMBER_PATH = "//div[@id='accordion0acc']//div[@id='Organisationcontactdetails']//li[3]"
@@ -250,9 +273,9 @@ class AUConstants {
     static final LBL_STOP_SHARING = 'Stop sharing'
     static final LBL_CONSENT_GRANTED = 'Consent granted: '
     static final LBL_CREATED_ON = "Created on: "
-    static final LBL_WHEN_YOU_GAVE_CONSENT='When you gave consent'
-    static final LBL_WHEN_YOUR_CONSENT_EXPIRE='When your consent will expire'
-    static final LBL_SHARING_PERIOD='Sharing period'
+    static final LBL_WHEN_YOU_GAVE_CONSENT = 'When you gave consent'
+    static final LBL_WHEN_YOUR_CONSENT_EXPIRE = 'When your consent will expire'
+    static final LBL_SHARING_PERIOD = 'Sharing period'
     static final LBL_RATES_FEES_DISCOUNT = "Interest rates, Fees, Discounts"
     static final LBL_AMOUNTS_AND_DATES = "Amounts, Dates"
     static final LBL_PHONE = "Phone"
@@ -261,9 +284,9 @@ class AUConstants {
     static final LBL_NAME = "Name"
     static final LBL_OCCUPATION = "Occupation"
 
-    static final CONSENT_MANAGER_URL = ConfigParser.getInstance().getAuthorisationServerUrl()+"/consentmgt"
-    static final OAUTH2_INTROSPECT_URL = ConfigParser.getInstance().getAuthorisationServerUrl()+"/oauth2/introspect"
-    static final CCPORTAL_URL = ConfigParser.getInstance().getAuthorisationServerUrl()+"/ccportal"
+    static final CONSENT_MANAGER_URL = ConfigParser.getInstance().getAuthorisationServerUrl() + "/consentmgt"
+    static final OAUTH2_INTROSPECT_URL = ConfigParser.getInstance().getAuthorisationServerUrl() + "/oauth2/introspect"
+    static final CCPORTAL_URL = ConfigParser.getInstance().getAuthorisationServerUrl() + "/ccportal"
 
     static final ERROR_DETAIL = "errors[0].detail"
     static final ERROR_SOURCE_PARAMETER = "errors[0].source.parameter"
@@ -287,6 +310,12 @@ class AUConstants {
     static final ACCOUNT_ID_NOT_FOUND = "ID of the account not found or invalid"
     static final INVALID_CLIENT_METADATA = "invalid_client_metadata"
     static final INVALID_RESOURCE = "Invalid Resource Identifier"
+    static final INVALID_AUTHORISATION = "Invalid Authorisation Header"
+    static final RESOURCE_FORBIDDEN = "Resource Is Forbidden"
+    static final INVALID_REDIRECT_URI = "invalid_redirect_uri"
+    static final UNAPPROVED_SOFTWARE_STATEMENT = "unapproved_software_statement"
+    static final RESOURCE_NOT_FOUND = "Resource Not Found"
+    static final MESSAGE_THROTTLED_OUT = "Message throttled out"
 
 
     static final ERROR_CODE_MISSING_HEADER = "AU.CDR.Missing.Header"
@@ -297,6 +326,14 @@ class AUConstants {
     static final ERROR_CODE_INVALID_BANK_ACC = "AU.CDR.Resource.InvalidBankingAccount"
     static final ERROR_CODE_INVALID_RESOURCE = "AU.CDR.Resource.Invalid"
     static final ERROR_CODE_PAGE_SIZE_TOO_LARGE = "AU.CDR.Invalid.PageSizeTooLarge"
+    static final ERROR_CODE_UNAUTHORIZED = "AU.CDR.Unauthorized"
+    static final ERROR_CODE_RESOURCE_FORBIDDEN = "AU.CDR.Entitlements.Forbidden"
+    static final ERROR_CODE_RESOURCE_NOTFOUND = "AU.CDR.Resource.NotFound"
+    static final ERROR_CODE_TOO_MANY_REQUESTS = "AU.CDR.TooManyRequests"
+    static final ERROR_CODE_INVALID_SP_STATUS = "AU.CDR.Entitlements.InvalidAdrSoftwareProductStatus"
+    static final ERROR_TITLE_INVALID_SP_STATUS = "ADR Software Product Status Is Invalid"
+    static final ERROR_CODE_INVALID_ADR_STATUS = "AU.CDR.Entitlements.InvalidAdrStatus"
+    static final ERROR_TITLE_INVALID_ADR_STATUS = "ADR Status Is Invalid"
 
     static final PARAM_X_V = "x-v"
     static final PARAM_X_MIN_V = "x-min-v"
@@ -307,6 +344,7 @@ class AUConstants {
     static final String PARAM_FAPI_AUTH_DATE = "x-fapi-auth-date"
     static final PARAM_ACCOUNT_ID = "accountId"
     static final PARAM_PAGE_SIZE = "page-size"
+    static final PARAM_AUTHORIZATION = "Authorization"
 
     static final LBL_USER_ID = "admin@wso2.com"
     static final LBL_CARBON = "@carbon.super"
@@ -336,14 +374,14 @@ class AUConstants {
     public static LBL_BANK_CUSTOMER_BASIC_READ_INDIVIDUAL_PATH = "//div[@id='accordion0']//div[@id='headingContactdetails']//h4"
     public static LBL_BANK_CUSTOMER_DETAIL_READ_PATH = "//div[@id='accordion0']//div[@id='headingOrganisationcontactdetails']//h4"
     public static LBL_BANK_CUSTOMER_DETAIL_READ_INDIVIDUAL_PATH = "//div[@id='accordion0']//div[@id='headingNameandoccupation']//h4"
-    public static LBL_BANK_CUSTOMER_BASIC_READ_PATH ="//div[@id='accordion0']//div[@id='headingOrganisationprofile']//h4"
+    public static LBL_BANK_CUSTOMER_BASIC_READ_PATH = "//div[@id='accordion0']//div[@id='headingOrganisationprofile']//h4"
     public static LBL_BANK_REGULAR_PAYMENTS_READ_PATH = "//div[@id='accordion0']//div[@id='headingDirectdebitsandscheduledpayments']//h4"
 
     public static LBL_CCPORTAL_ACCOUNT_NAME_TYPE_TAB = "//div[@id='accordion0']//div[@id='Accountnametypeandbalance']//li"
     public static LBL_CCPORTAL_ACCOUNT_NUMBER_AND_FEATURES_TAB = "//div[@id='accordion0']//div[@id='Accountnumbersandfeatures']//li"
     public static LBL_CCPORTAL_SAVED_PAYEES_TAB = "//div[@id='accordion0']//div[@id='Savedpayees']//li"
     public static LBL_CCPORTAL_TRANSACTIONS_DETAIL_TAB = "//div[@id='accordion0']//div[@id='Transactiondetails']//li"
-    public static LBL_CCPORTAL_CONTACT_DETAILS_TAB =  "//div[@id='accordion0']//div[@id='Contactdetails']//li"
+    public static LBL_CCPORTAL_CONTACT_DETAILS_TAB = "//div[@id='accordion0']//div[@id='Contactdetails']//li"
     public static LBL_CCPORTAL_ORGANISATION_CONTACT_DETAILS_TAB = "//div[@id='accordion0']//div[@id='Organisationcontactdetails']//li"
     public static LBL_CCPORTAL_NAME_AND_OCCUPATION_TAB = "//div[@id='accordion0']//div[@id='Nameandoccupation']//li"
     public static LBL_CCPORTAL_ORGANISATION_PROFILE_TAB = "//div[@id='accordion0']//div[@id='Organisationprofile']//li"

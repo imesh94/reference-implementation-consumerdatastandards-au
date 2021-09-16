@@ -17,6 +17,7 @@
             <class name="com.wso2.openbanking.toolkit.cds.keymanager.tests.AuthorisationFlowTest" />
             <class name="com.wso2.openbanking.toolkit.cds.keymanager.tests.SharingDurationValidationTest" />
             <class name="com.wso2.openbanking.toolkit.cds.keymanager.tests.PushedAuthorisationFlowTest"/>
+            <class name="com.wso2.openbanking.toolkit.cds.keymanager.tests.ConsentAmendmentFlowTest"/>
         </classes>
     </test>
 </suite>

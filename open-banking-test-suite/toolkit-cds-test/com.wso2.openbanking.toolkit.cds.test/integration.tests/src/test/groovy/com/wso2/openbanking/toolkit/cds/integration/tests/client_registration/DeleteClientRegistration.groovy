@@ -26,7 +26,8 @@ class DeleteClientRegistration{
     private List<String> scopes = [
             AUConstants.SCOPES.BANK_ACCOUNT_BASIC_READ.getScopeString(),
             AUConstants.SCOPES.BANK_TRANSACTION_READ.getScopeString(),
-            AUConstants.SCOPES.BANK_CUSTOMER_DETAIL_READ.getScopeString()
+            AUConstants.SCOPES.BANK_CUSTOMER_DETAIL_READ.getScopeString(),
+            AUConstants.SCOPES.CDR_REGISTRATION.getScopeString()
     ]
 
     private String accessToken

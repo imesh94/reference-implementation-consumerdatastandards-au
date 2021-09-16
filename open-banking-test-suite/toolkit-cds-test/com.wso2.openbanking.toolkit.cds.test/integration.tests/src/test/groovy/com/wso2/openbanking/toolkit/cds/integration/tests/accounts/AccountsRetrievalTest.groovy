@@ -20,6 +20,7 @@ import com.wso2.openbanking.toolkit.cds.test.common.utils.AUTestUtil
 import com.wso2.openbanking.toolkit.cds.test.common.utils.AbstractAUTests
 import io.restassured.http.ContentType
 import io.restassured.response.Response
+import org.testng.Assert
 import org.testng.annotations.BeforeClass
 import org.testng.annotations.Test
 import org.testng.asserts.SoftAssert
@@ -31,7 +32,7 @@ class AccountsRetrievalTest extends AbstractAUTests {
 
     static final String CDS_PATH = AUConstants.CDS_PATH
 
-    @BeforeClass (alwaysRun = true)
+    @BeforeClass(alwaysRun = true)
     void "Get User Access Token"() {
         doConsentAuthorisation()
         generateUserAccessToken()
@@ -45,7 +46,7 @@ class AccountsRetrievalTest extends AbstractAUTests {
                 .baseUri(AUTestUtil.getBaseUrl(AUConstants.BASE_PATH_TYPE_ACCOUNT))
                 .get("${CDS_PATH}${AUConstants.BULK_ACCOUNT_PATH}")
 
-        SoftAssert softAssertion= new SoftAssert()
+        SoftAssert softAssertion = new SoftAssert()
         softAssertion.assertEquals(response.statusCode(), AUConstants.STATUS_CODE_200)
         softAssertion.assertEquals(response.getHeader(AUConstants.X_V_HEADER).toInteger(), AUConstants.X_V_HEADER_ACCOUNTS)
         softAssertion.assertTrue(response.getHeader(AUConstants.CONTENT_TYPE).contains(AUConstants.ACCEPT))
@@ -69,7 +70,7 @@ class AccountsRetrievalTest extends AbstractAUTests {
                 .baseUri(AUTestUtil.getBaseUrl(AUConstants.BASE_PATH_TYPE_ACCOUNT))
                 .get("${CDS_PATH}${AUConstants.BULK_ACCOUNT_PATH}/${consentedAccount}")
 
-        SoftAssert softAssertion= new SoftAssert()
+        SoftAssert softAssertion = new SoftAssert()
         softAssertion.assertEquals(response.statusCode(), AUConstants.STATUS_CODE_200)
         softAssertion.assertEquals(response.getHeader(AUConstants.X_V_HEADER).toInteger(), AUConstants.X_V_HEADER_ACCOUNTS)
 
@@ -89,7 +90,7 @@ class AccountsRetrievalTest extends AbstractAUTests {
                 .baseUri(AUTestUtil.getBaseUrl(AUConstants.BASE_PATH_TYPE_ACCOUNT))
                 .get("${CDS_PATH}${AUConstants.BULK_ACCOUNT_PATH}/11059970")
 
-        SoftAssert softAssertion= new SoftAssert()
+        SoftAssert softAssertion = new SoftAssert()
         softAssertion.assertEquals(response.statusCode(), AUConstants.STATUS_CODE_404)
         softAssertion.assertNotNull(response.getHeader(AUConstants.X_V_HEADER))
         softAssertion.assertNotNull(response.getHeader(AUConstants.X_FAPI_INTERACTION_ID))
@@ -118,7 +119,7 @@ class AccountsRetrievalTest extends AbstractAUTests {
                 .baseUri(AUTestUtil.getBaseUrl(AUConstants.BASE_PATH_TYPE_BALANCES))
                 .post("${CDS_PATH}${AUConstants.BULK_BALANCES_PATH}")
 
-        SoftAssert softAssertion= new SoftAssert()
+        SoftAssert softAssertion = new SoftAssert()
         softAssertion.assertEquals(response.statusCode(), AUConstants.STATUS_CODE_200)
         softAssertion.assertEquals(response.getHeader(AUConstants.X_V_HEADER).toInteger(), AUConstants.X_V_HEADER_ACCOUNTS)
 
@@ -154,7 +155,7 @@ class AccountsRetrievalTest extends AbstractAUTests {
                 .baseUri(AUTestUtil.getBaseUrl(AUConstants.BASE_PATH_TYPE_BALANCES))
                 .post("${CDS_PATH}${AUConstants.BULK_BALANCES_PATH}")
 
-        SoftAssert softAssertion= new SoftAssert()
+        SoftAssert softAssertion = new SoftAssert()
         softAssertion.assertEquals(response.statusCode(), AUConstants.STATUS_CODE_422)
         softAssertion.assertNotNull(response.getHeader(AUConstants.X_V_HEADER))
 
@@ -174,7 +175,7 @@ class AccountsRetrievalTest extends AbstractAUTests {
         softAssertion.assertAll()
     }
 
-    @Test (groups = "SmokeTest")
+    @Test(groups = "SmokeTest")
     void "TC0302003_Get bulk balances"() {
 
         def response = AURequestBuilder
@@ -182,7 +183,7 @@ class AccountsRetrievalTest extends AbstractAUTests {
                 .baseUri(AUTestUtil.getBaseUrl(AUConstants.BASE_PATH_TYPE_BALANCES))
                 .get("${CDS_PATH}${AUConstants.BULK_BALANCES_PATH}")
 
-        SoftAssert softAssertion= new SoftAssert()
+        SoftAssert softAssertion = new SoftAssert()
         softAssertion.assertEquals(response.statusCode(), AUConstants.STATUS_CODE_200)
         softAssertion.assertEquals(response.getHeader(AUConstants.X_V_HEADER).toInteger(), AUConstants.X_V_HEADER_ACCOUNTS)
 
@@ -205,7 +206,7 @@ class AccountsRetrievalTest extends AbstractAUTests {
                 .baseUri(AUTestUtil.getBaseUrl(AUConstants.BASE_PATH_TYPE_BALANCES))
                 .get("${CDS_PATH}${AUConstants.BULK_ACCOUNT_PATH}/${consentedAccount}/balance")
 
-        SoftAssert softAssertion= new SoftAssert()
+        SoftAssert softAssertion = new SoftAssert()
         softAssertion.assertEquals(response.statusCode(), AUConstants.STATUS_CODE_200)
         softAssertion.assertEquals(response.getHeader(AUConstants.X_V_HEADER).toInteger(), AUConstants.X_V_HEADER_ACCOUNTS)
 
@@ -215,7 +216,7 @@ class AccountsRetrievalTest extends AbstractAUTests {
         softAssertion.assertAll()
     }
 
-    @Test (groups = "SmokeTest", priority = 1)
+    @Test(groups = "SmokeTest", priority = 1)
     void "TC0303001_Retrieve transaction for specific account"() {
 
         Response response = AURequestBuilder
@@ -225,7 +226,7 @@ class AccountsRetrievalTest extends AbstractAUTests {
 
         transactionId = TestUtil.parseResponseBody(response, "data.transactions.transactionId[0]")
 
-        SoftAssert softAssertion= new SoftAssert()
+        SoftAssert softAssertion = new SoftAssert()
         softAssertion.assertEquals(response.statusCode(), AUConstants.STATUS_CODE_200)
         softAssertion.assertEquals(response.getHeader(AUConstants.X_V_HEADER).toInteger(), AUConstants.X_V_HEADER_ACCOUNTS)
 
@@ -239,7 +240,7 @@ class AccountsRetrievalTest extends AbstractAUTests {
         softAssertion.assertAll()
     }
 
-    @Test (dependsOnMethods = "TC0303001_Retrieve transaction for specific account", priority = 1)
+    @Test(dependsOnMethods = "TC0303001_Retrieve transaction for specific account", priority = 1)
     void "TC0303002_Retrieve transaction details for specific account"() {
 
         Response response = AURequestBuilder
@@ -247,7 +248,7 @@ class AccountsRetrievalTest extends AbstractAUTests {
                 .baseUri(AUTestUtil.getBaseUrl(AUConstants.BASE_PATH_TYPE_TRANSACTIONS))
                 .get("${CDS_PATH}${AUConstants.BULK_ACCOUNT_PATH}/${consentedAccount}/transactions/$transactionId")
 
-        SoftAssert softAssertion= new SoftAssert()
+        SoftAssert softAssertion = new SoftAssert()
         softAssertion.assertEquals(response.statusCode(), AUConstants.STATUS_CODE_200)
         softAssertion.assertEquals(response.getHeader(AUConstants.X_V_HEADER).toInteger(), AUConstants.X_V_HEADER_ACCOUNTS)
 
@@ -278,7 +279,7 @@ class AccountsRetrievalTest extends AbstractAUTests {
                 .baseUri(AUTestUtil.getBaseUrl(AUConstants.BASE_PATH_TYPE_DIRECT_DEBIT))
                 .post("${CDS_PATH}${AUConstants.BULK_DIRECT_DEBITS_PATH}")
 
-        SoftAssert softAssertion= new SoftAssert()
+        SoftAssert softAssertion = new SoftAssert()
         softAssertion.assertEquals(response.statusCode(), AUConstants.STATUS_CODE_200)
         softAssertion.assertEquals(response.getHeader(AUConstants.X_V_HEADER).toInteger(), AUConstants.X_V_HEADER_ACCOUNTS)
 
@@ -295,7 +296,7 @@ class AccountsRetrievalTest extends AbstractAUTests {
         softAssertion.assertAll()
     }
 
-    @Test (groups = "SmokeTest")
+    @Test(groups = "SmokeTest")
     void "TC0401002_Retrieve bulk direct debits"() {
 
         Response response = AURequestBuilder
@@ -303,7 +304,7 @@ class AccountsRetrievalTest extends AbstractAUTests {
                 .baseUri(AUTestUtil.getBaseUrl(AUConstants.BASE_PATH_TYPE_DIRECT_DEBIT))
                 .get("${CDS_PATH}${AUConstants.BULK_DIRECT_DEBITS_PATH}")
 
-        SoftAssert softAssertion= new SoftAssert()
+        SoftAssert softAssertion = new SoftAssert()
         softAssertion.assertEquals(response.statusCode(), AUConstants.STATUS_CODE_200)
         softAssertion.assertEquals(response.getHeader(AUConstants.X_V_HEADER).toInteger(), AUConstants.X_V_HEADER_ACCOUNTS)
 
@@ -332,7 +333,7 @@ class AccountsRetrievalTest extends AbstractAUTests {
                 .baseUri(AUTestUtil.getBaseUrl(AUConstants.BASE_PATH_TYPE_DIRECT_DEBIT))
                 .get("${CDS_PATH}${AUConstants.BULK_ACCOUNT_PATH}/${consentedAccount}/direct-debits")
 
-        SoftAssert softAssertion= new SoftAssert()
+        SoftAssert softAssertion = new SoftAssert()
         softAssertion.assertEquals(response.statusCode(), AUConstants.STATUS_CODE_200)
         softAssertion.assertEquals(response.getHeader(AUConstants.X_V_HEADER).toInteger(), AUConstants.X_V_HEADER_ACCOUNTS)
 
@@ -370,7 +371,7 @@ class AccountsRetrievalTest extends AbstractAUTests {
                 .baseUri(AUTestUtil.getBaseUrl(AUConstants.BASE_PATH_TYPE_SCHEDULED_PAYMENT))
                 .post("${CDS_PATH}${AUConstants.BULK_SCHEDULE_PAYMENTS_PATH}")
 
-        SoftAssert softAssertion= new SoftAssert()
+        SoftAssert softAssertion = new SoftAssert()
         softAssertion.assertEquals(response.statusCode(), AUConstants.STATUS_CODE_200)
         softAssertion.assertEquals(response.getHeader(AUConstants.X_V_HEADER).toInteger(), AUConstants.X_V_HEADER_ACCOUNTS)
 
@@ -388,7 +389,7 @@ class AccountsRetrievalTest extends AbstractAUTests {
         softAssertion.assertAll()
     }
 
-    @Test (groups = "SmokeTest")
+    @Test(groups = "SmokeTest")
     void "TC0402002_Retrieve bulk Scheduled Payments"() {
 
         Response response = AURequestBuilder
@@ -396,7 +397,7 @@ class AccountsRetrievalTest extends AbstractAUTests {
                 .baseUri(AUTestUtil.getBaseUrl(AUConstants.BASE_PATH_TYPE_SCHEDULED_PAYMENT))
                 .get("${CDS_PATH}${AUConstants.BULK_SCHEDULE_PAYMENTS_PATH}")
 
-        SoftAssert softAssertion= new SoftAssert()
+        SoftAssert softAssertion = new SoftAssert()
         softAssertion.assertEquals(response.statusCode(), AUConstants.STATUS_CODE_200)
         softAssertion.assertEquals(response.getHeader(AUConstants.X_V_HEADER).toInteger(), AUConstants.X_V_HEADER_ACCOUNTS)
 
@@ -429,7 +430,7 @@ class AccountsRetrievalTest extends AbstractAUTests {
                 .baseUri(AUTestUtil.getBaseUrl(AUConstants.BASE_PATH_TYPE_SCHEDULED_PAYMENT))
                 .get("${CDS_PATH}${AUConstants.BULK_ACCOUNT_PATH}/${consentedAccount}/payments/scheduled")
 
-        SoftAssert softAssertion= new SoftAssert()
+        SoftAssert softAssertion = new SoftAssert()
         softAssertion.assertEquals(response.statusCode(), AUConstants.STATUS_CODE_200)
         softAssertion.assertEquals(response.getHeader(AUConstants.X_V_HEADER).toInteger(), AUConstants.X_V_HEADER_ACCOUNTS)
 
@@ -449,7 +450,7 @@ class AccountsRetrievalTest extends AbstractAUTests {
         softAssertion.assertAll()
     }
 
-    @Test (groups = "SmokeTest", priority = 2)
+    @Test(groups = "SmokeTest", priority = 2)
     void "TC0503001_Get Payees"() {
 
         Response response = AURequestBuilder
@@ -459,7 +460,7 @@ class AccountsRetrievalTest extends AbstractAUTests {
 
         payeeId = TestUtil.parseResponseBody(response, "data.payees.payeeId[0]")
 
-        SoftAssert softAssertion= new SoftAssert()
+        SoftAssert softAssertion = new SoftAssert()
         softAssertion.assertEquals(response.statusCode(), AUConstants.STATUS_CODE_200)
         softAssertion.assertEquals(response.getHeader(AUConstants.X_V_HEADER).toInteger(), AUConstants.X_V_HEADER_ACCOUNTS)
 
@@ -477,7 +478,7 @@ class AccountsRetrievalTest extends AbstractAUTests {
         softAssertion.assertAll()
     }
 
-    @Test (dependsOnMethods = "TC0503001_Get Payees", priority = 2)
+    @Test(dependsOnMethods = "TC0503001_Get Payees", priority = 2)
     void "TC0503002_Get Payee Detail"() {
 
         Response response = AURequestBuilder
@@ -485,7 +486,7 @@ class AccountsRetrievalTest extends AbstractAUTests {
                 .baseUri(AUTestUtil.getBaseUrl(AUConstants.BASE_PATH_TYPE_PAYEES))
                 .get("${CDS_PATH}${AUConstants.BULK_PAYEES}/${payeeId}")
 
-        SoftAssert softAssertion= new SoftAssert()
+        SoftAssert softAssertion = new SoftAssert()
         softAssertion.assertEquals(response.statusCode(), AUConstants.STATUS_CODE_200)
         softAssertion.assertEquals(response.getHeader(AUConstants.X_V_HEADER).toInteger(), AUConstants.X_V_HEADER_ACCOUNTS)
 
@@ -501,8 +502,154 @@ class AccountsRetrievalTest extends AbstractAUTests {
         softAssertion.assertAll()
     }
 
-    @Test (priority = 3)
-    void "TC0401004_Get Direct Debits without regular_payments_read permissions"() {
+    @Test(priority = 3)
+    void "OB-1146_Get basic accounts data without bank:accounts.basic:read permissions"() {
+
+        scopes = [
+                AUConstants.SCOPES.BANK_ACCOUNT_DETAIL_READ,
+                AUConstants.SCOPES.BANK_TRANSACTION_READ,
+                AUConstants.SCOPES.BANK_PAYEES_READ,
+                AUConstants.SCOPES.BANK_REGULAR_PAYMENTS_READ,
+                AUConstants.SCOPES.BANK_CUSTOMER_BASIC_READ,
+                AUConstants.SCOPES.BANK_CUSTOMER_DETAIL_READ
+        ]
+        doConsentAuthorisation()
+        generateUserAccessToken()
+
+        Response response = AURequestBuilder
+                .buildBasicRequest(userAccessToken, AUConstants.X_V_HEADER_ACCOUNTS)
+                .baseUri(AUTestUtil.getBaseUrl(AUConstants.BULK_ACCOUNT_PATH))
+                .get("${CDS_PATH}${AUConstants.BULK_ACCOUNT_PATH}")
+
+        SoftAssert softAssertion = new SoftAssert()
+        softAssertion.assertEquals(response.statusCode(), AUConstants.STATUS_CODE_403)
+        softAssertion.assertEquals(response.getHeader(AUConstants.X_V_HEADER).toInteger(), AUConstants.X_V_HEADER_ACCOUNTS)
+
+        if (TestConstants.SOLUTION_VERSION_200.equalsIgnoreCase(AUTestUtil.solutionVersion)) {
+            Assert.assertEquals(TestUtil.parseResponseBody(response, AUConstants.ERROR_CODE),
+                    AUConstants.ERROR_CODE_RESOURCE_FORBIDDEN)
+            Assert.assertEquals(TestUtil.parseResponseBody(response, AUConstants.ERROR_SOURCE_POINTER), AUConstants
+                    .BULK_ACCOUNT_PATH)
+            Assert.assertEquals(TestUtil.parseResponseBody(response, AUConstants.ERROR_TITLE), AUConstants
+                    .RESOURCE_FORBIDDEN)
+        } else {
+            softAssertion.assertEquals(TestUtil.parseResponseBody(response, "fault.message"),
+                    "The access token does not allow you to access the requested resource")
+        }
+        softAssertion.assertAll()
+    }
+
+    @Test(priority = 3)
+    void "OB-1147_Get detailed account data without bank:accounts.detail:read permissions"() {
+
+        scopes = [
+                AUConstants.SCOPES.BANK_ACCOUNT_BASIC_READ,
+                AUConstants.SCOPES.BANK_TRANSACTION_READ,
+                AUConstants.SCOPES.BANK_PAYEES_READ,
+                AUConstants.SCOPES.BANK_REGULAR_PAYMENTS_READ,
+                AUConstants.SCOPES.BANK_CUSTOMER_BASIC_READ,
+                AUConstants.SCOPES.BANK_CUSTOMER_DETAIL_READ
+        ]
+        doConsentAuthorisation()
+        generateUserAccessToken()
+
+        Response response = AURequestBuilder
+                .buildBasicRequest(userAccessToken, AUConstants.X_V_HEADER_ACCOUNTS)
+                .baseUri(AUTestUtil.getBaseUrl(AUConstants.SINGLE_ACCOUNT_PATH))
+                .get("${CDS_PATH}${AUConstants.SINGLE_ACCOUNT_PATH}")
+
+        SoftAssert softAssertion = new SoftAssert()
+        softAssertion.assertEquals(response.statusCode(), AUConstants.STATUS_CODE_403)
+        softAssertion.assertEquals(response.getHeader(AUConstants.X_V_HEADER).toInteger(), AUConstants.X_V_HEADER_ACCOUNTS)
+
+        if (TestConstants.SOLUTION_VERSION_200.equalsIgnoreCase(AUTestUtil.solutionVersion)) {
+            Assert.assertEquals(TestUtil.parseResponseBody(response, AUConstants.ERROR_CODE),
+                    AUConstants.ERROR_CODE_RESOURCE_FORBIDDEN)
+            Assert.assertEquals(TestUtil.parseResponseBody(response, AUConstants.ERROR_SOURCE_POINTER), AUConstants
+                    .SINGLE_ACCOUNT_PATH)
+            Assert.assertEquals(TestUtil.parseResponseBody(response, AUConstants.ERROR_TITLE), AUConstants
+                    .RESOURCE_FORBIDDEN)
+        } else {
+            softAssertion.assertEquals(TestUtil.parseResponseBody(response, "fault.message"),
+                    "The access token does not allow you to access the requested resource")
+        }
+        softAssertion.assertAll()
+    }
+
+    @Test(priority = 3)
+    void "OB-1148_Get transactions data without bank:transactions:read permission"() {
+
+        scopes = [
+                AUConstants.SCOPES.BANK_ACCOUNT_BASIC_READ,
+                AUConstants.SCOPES.BANK_ACCOUNT_DETAIL_READ,
+                AUConstants.SCOPES.BANK_PAYEES_READ,
+                AUConstants.SCOPES.BANK_REGULAR_PAYMENTS_READ,
+                AUConstants.SCOPES.BANK_CUSTOMER_BASIC_READ,
+                AUConstants.SCOPES.BANK_CUSTOMER_DETAIL_READ
+        ]
+
+        doConsentAuthorisation()
+        generateUserAccessToken()
+
+        Response response = AURequestBuilder
+                .buildBasicRequest(userAccessToken, AUConstants.X_V_HEADER_ACCOUNTS)
+                .baseUri(AUTestUtil.getBaseUrl(AUConstants.SINGLE_ACCOUNT_PATH))
+                .get("${CDS_PATH}${AUConstants.GET_TRANSACTIONS}")
+
+        SoftAssert softAssertion = new SoftAssert()
+        softAssertion.assertEquals(response.statusCode(), AUConstants.STATUS_CODE_403)
+        softAssertion.assertEquals(response.getHeader(AUConstants.X_V_HEADER).toInteger(), AUConstants.X_V_HEADER_ACCOUNTS)
+        if (TestConstants.SOLUTION_VERSION_200.equalsIgnoreCase(AUTestUtil.solutionVersion)) {
+            Assert.assertEquals(TestUtil.parseResponseBody(response, AUConstants.ERROR_CODE),
+                    AUConstants.ERROR_CODE_RESOURCE_FORBIDDEN)
+            Assert.assertEquals(TestUtil.parseResponseBody(response, AUConstants.ERROR_SOURCE_POINTER), AUConstants
+                    .GET_TRANSACTIONS)
+            Assert.assertEquals(TestUtil.parseResponseBody(response, AUConstants.ERROR_TITLE), AUConstants
+                    .RESOURCE_FORBIDDEN)
+        } else {
+            softAssertion.assertEquals(TestUtil.parseResponseBody(response, "fault.message"),
+                    "The access token does not allow you to access the requested resource")
+        }
+        softAssertion.assertAll()
+    }
+
+    @Test(priority = 3)
+    void "OB-1149_Get transactions data with bank:transactions:read and without bank:accounts.basic:read permission"() {
+
+        scopes = [
+                AUConstants.SCOPES.BANK_ACCOUNT_DETAIL_READ,
+                AUConstants.SCOPES.BANK_TRANSACTION_READ,
+                AUConstants.SCOPES.BANK_PAYEES_READ,
+                AUConstants.SCOPES.BANK_REGULAR_PAYMENTS_READ,
+                AUConstants.SCOPES.BANK_CUSTOMER_BASIC_READ,
+                AUConstants.SCOPES.BANK_CUSTOMER_DETAIL_READ
+        ]
+
+        doConsentAuthorisation()
+        generateUserAccessToken()
+
+        Response response = AURequestBuilder
+                .buildBasicRequest(userAccessToken, AUConstants.X_V_HEADER_ACCOUNTS)
+                .baseUri(AUTestUtil.getBaseUrl(AUConstants.SINGLE_ACCOUNT_PATH))
+                .get("${CDS_PATH}${AUConstants.GET_TRANSACTIONS}")
+
+        SoftAssert softAssertion = new SoftAssert()
+        softAssertion.assertEquals(response.statusCode(), AUConstants.STATUS_CODE_200)
+        softAssertion.assertEquals(response.getHeader(AUConstants.X_V_HEADER).toInteger(), AUConstants.X_V_HEADER_ACCOUNTS)
+        softAssertion.assertTrue(response.getHeader(AUConstants.CONTENT_TYPE).contains(AUConstants.ACCEPT))
+
+        softAssertion.assertNotNull(response.getHeader(AUConstants.X_FAPI_INTERACTION_ID))
+        softAssertion.assertNotNull(TestUtil.parseResponseBody(response, "data.transactions.accountId"))
+        softAssertion.assertNotNull(TestUtil.parseResponseBody(response, "links.self"))
+        softAssertion.assertNotNull(TestUtil.parseResponseBody(response, "links.first"))
+        softAssertion.assertNotNull(TestUtil.parseResponseBody(response, "links.prev"))
+        softAssertion.assertNotNull(TestUtil.parseResponseBody(response, "links.next"))
+        softAssertion.assertNotNull(TestUtil.parseResponseBody(response, "links.last"))
+        softAssertion.assertAll()
+    }
+
+    @Test(priority = 3)
+    void "TC0401004_Get Direct Debits without regular_payments:read permissions"() {
 
         scopes = [
                 AUConstants.SCOPES.BANK_ACCOUNT_BASIC_READ,
@@ -511,7 +658,6 @@ class AccountsRetrievalTest extends AbstractAUTests {
         ]
 
         doConsentAuthorisation()
-
         generateUserAccessToken()
 
         Response response = AURequestBuilder
@@ -519,16 +665,26 @@ class AccountsRetrievalTest extends AbstractAUTests {
                 .baseUri(AUTestUtil.getBaseUrl(AUConstants.BASE_PATH_TYPE_DIRECT_DEBIT))
                 .get("${CDS_PATH}${AUConstants.BULK_DIRECT_DEBITS_PATH}")
 
-        SoftAssert softAssertion= new SoftAssert()
+        SoftAssert softAssertion = new SoftAssert()
         softAssertion.assertEquals(response.statusCode(), AUConstants.STATUS_CODE_403)
         softAssertion.assertEquals(response.getHeader(AUConstants.X_V_HEADER).toInteger(), AUConstants.X_V_HEADER_ACCOUNTS)
-        softAssertion.assertEquals(TestUtil.parseResponseBody(response, "message"),
-                "The access token does not allow you to access the requested resource")
+
+        if (TestConstants.SOLUTION_VERSION_200.equalsIgnoreCase(AUTestUtil.solutionVersion)) {
+            Assert.assertEquals(TestUtil.parseResponseBody(response, AUConstants.ERROR_CODE),
+                    AUConstants.ERROR_CODE_RESOURCE_FORBIDDEN)
+            Assert.assertEquals(TestUtil.parseResponseBody(response, AUConstants.ERROR_SOURCE_POINTER), AUConstants
+                    .BULK_DIRECT_DEBITS_PATH)
+            Assert.assertEquals(TestUtil.parseResponseBody(response, AUConstants.ERROR_TITLE), AUConstants
+                    .RESOURCE_FORBIDDEN)
+        } else {
+            softAssertion.assertEquals(TestUtil.parseResponseBody(response, "fault.message"),
+                    "The access token does not allow you to access the requested resource")
+        }
         softAssertion.assertAll()
     }
 
-    @Test (priority = 3)
-    void "TC0402004_Get Scheduled Payments without regular_payments_read permissions"() {
+    @Test(priority = 3)
+    void "TC0402004_Get Scheduled Payments without regular_payments:read permissions"() {
 
         scopes = [
                 AUConstants.SCOPES.BANK_ACCOUNT_BASIC_READ,
@@ -537,7 +693,6 @@ class AccountsRetrievalTest extends AbstractAUTests {
         ]
 
         doConsentAuthorisation()
-
         generateUserAccessToken()
 
         Response response = AURequestBuilder
@@ -545,16 +700,26 @@ class AccountsRetrievalTest extends AbstractAUTests {
                 .baseUri(AUTestUtil.getBaseUrl(AUConstants.BASE_PATH_TYPE_SCHEDULED_PAYMENT))
                 .get("${CDS_PATH}${AUConstants.BULK_SCHEDULE_PAYMENTS_PATH}")
 
-        SoftAssert softAssertion= new SoftAssert()
+        SoftAssert softAssertion = new SoftAssert()
         softAssertion.assertEquals(response.statusCode(), AUConstants.STATUS_CODE_403)
         softAssertion.assertEquals(response.getHeader(AUConstants.X_V_HEADER).toInteger(), AUConstants.X_V_HEADER_ACCOUNTS)
-        softAssertion.assertEquals(TestUtil.parseResponseBody(response, "message"),
-                "The access token does not allow you to access the requested resource")
-        softAssertion.assertAll()
+
+        if (TestConstants.SOLUTION_VERSION_200.equalsIgnoreCase(AUTestUtil.solutionVersion)) {
+            Assert.assertEquals(TestUtil.parseResponseBody(response, AUConstants.ERROR_CODE),
+                    AUConstants.ERROR_CODE_RESOURCE_FORBIDDEN)
+            Assert.assertEquals(TestUtil.parseResponseBody(response, AUConstants.ERROR_SOURCE_POINTER), AUConstants
+                    .BULK_SCHEDULE_PAYMENTS_PATH)
+            Assert.assertEquals(TestUtil.parseResponseBody(response, AUConstants.ERROR_TITLE), AUConstants
+                    .RESOURCE_FORBIDDEN)
+        } else {
+            softAssertion.assertEquals(TestUtil.parseResponseBody(response, "fault.message"),
+                    "The access token does not allow you to access the requested resource")
+            softAssertion.assertAll()
+        }
     }
 
-    @Test (priority = 3)
-    void "TC0503003_Get Payee without payees_read permissions"() {
+    @Test(priority = 3)
+    void "TC0503003_Get Payee without payees:read permissions"() {
 
         scopes = [
                 AUConstants.SCOPES.BANK_ACCOUNT_BASIC_READ,
@@ -571,11 +736,20 @@ class AccountsRetrievalTest extends AbstractAUTests {
                 .baseUri(AUTestUtil.getBaseUrl(AUConstants.BASE_PATH_TYPE_PAYEES))
                 .get("${CDS_PATH}${AUConstants.BULK_PAYEES}")
 
-        SoftAssert softAssertion= new SoftAssert()
+        SoftAssert softAssertion = new SoftAssert()
         softAssertion.assertEquals(response.statusCode(), AUConstants.STATUS_CODE_403)
         softAssertion.assertEquals(response.getHeader(AUConstants.X_V_HEADER).toInteger(), AUConstants.X_V_HEADER_ACCOUNTS)
-        softAssertion.assertEquals(TestUtil.parseResponseBody(response, "message"),
-                "The access token does not allow you to access the requested resource")
+        if (TestConstants.SOLUTION_VERSION_200.equalsIgnoreCase(AUTestUtil.solutionVersion)) {
+            Assert.assertEquals(TestUtil.parseResponseBody(response, AUConstants.ERROR_CODE),
+                    AUConstants.ERROR_CODE_RESOURCE_FORBIDDEN)
+            Assert.assertEquals(TestUtil.parseResponseBody(response, AUConstants.ERROR_SOURCE_POINTER), AUConstants
+                    .BULK_PAYEES)
+            Assert.assertEquals(TestUtil.parseResponseBody(response, AUConstants.ERROR_TITLE), AUConstants
+                    .RESOURCE_FORBIDDEN)
+        } else {
+            softAssertion.assertEquals(TestUtil.parseResponseBody(response, "fault.message"),
+                    "The access token does not allow you to access the requested resource")
+        }
         softAssertion.assertAll()
     }
 }

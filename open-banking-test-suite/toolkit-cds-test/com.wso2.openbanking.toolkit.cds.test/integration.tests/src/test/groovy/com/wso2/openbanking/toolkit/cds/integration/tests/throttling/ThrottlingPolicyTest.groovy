@@ -13,10 +13,12 @@
 package com.wso2.openbanking.toolkit.cds.integration.tests.throttling
 
 import com.wso2.openbanking.test.framework.util.ConfigParser
+import com.wso2.openbanking.test.framework.util.TestConstants
 import com.wso2.openbanking.toolkit.cds.test.common.utils.AUConstants
 import com.wso2.openbanking.toolkit.cds.test.common.utils.AURequestBuilder
 import com.wso2.openbanking.toolkit.cds.test.common.utils.AUTestUtil
 import com.wso2.openbanking.toolkit.cds.test.common.utils.AbstractAUTests
+import com.wso2.openbanking.test.framework.util.TestUtil
 import org.testng.Assert
 import org.testng.annotations.BeforeClass
 import org.testng.annotations.Test
@@ -63,6 +65,15 @@ class ThrottlingPolicyTest extends AbstractAUTests {
 
         if(currentCount > 500) {
             Assert.assertEquals(response.statusCode(), 429)
+            if (TestConstants.SOLUTION_VERSION_200.equalsIgnoreCase(AUTestUtil.solutionVersion)) {
+                Assert.assertEquals(TestUtil.parseResponseBody(response, AUConstants.ERROR_CODE),
+                        AUConstants.ERROR_CODE_TOO_MANY_REQUESTS)
+                Assert.assertEquals(TestUtil.parseResponseBody(response, AUConstants.ERROR_TITLE), AUConstants
+                        .MESSAGE_THROTTLED_OUT)
+            } else {
+                Assert.assertTrue(TestUtil.parseResponseBody(response, "fault.description").contains(
+                        "You have exceeded your quota"))
+            }
         } else {
             Assert.assertEquals(response.statusCode(), 200)
 
@@ -84,6 +95,16 @@ class ThrottlingPolicyTest extends AbstractAUTests {
 
         if(currentCount > 500) {
             Assert.assertEquals(response.statusCode(), 429)
+            Assert.assertEquals(response.statusCode(), 429)
+            if (TestConstants.SOLUTION_VERSION_200.equalsIgnoreCase(AUTestUtil.solutionVersion)) {
+                Assert.assertEquals(TestUtil.parseResponseBody(response, AUConstants.ERROR_CODE),
+                        AUConstants.ERROR_CODE_TOO_MANY_REQUESTS)
+                Assert.assertEquals(TestUtil.parseResponseBody(response, AUConstants.ERROR_TITLE), AUConstants
+                        .MESSAGE_THROTTLED_OUT)
+            } else {
+                Assert.assertTrue(TestUtil.parseResponseBody(response, "fault.description").contains(
+                        "You have exceeded your quota"))
+            }
         } else {
             Assert.assertEquals(response.statusCode(), 200)
         }
@@ -100,6 +121,16 @@ class ThrottlingPolicyTest extends AbstractAUTests {
 
         if(currentCount > 40) {
             Assert.assertEquals(response.statusCode(), 429)
+            Assert.assertEquals(response.statusCode(), 429)
+            if (TestConstants.SOLUTION_VERSION_200.equalsIgnoreCase(AUTestUtil.solutionVersion)) {
+                Assert.assertEquals(TestUtil.parseResponseBody(response, AUConstants.ERROR_CODE),
+                        AUConstants.ERROR_CODE_TOO_MANY_REQUESTS)
+                Assert.assertEquals(TestUtil.parseResponseBody(response, AUConstants.ERROR_TITLE), AUConstants
+                        .MESSAGE_THROTTLED_OUT)
+            } else {
+                Assert.assertTrue(TestUtil.parseResponseBody(response, "fault.description").contains(
+                        "You have exceeded your quota"))
+            }
         } else {
             Assert.assertEquals(response.statusCode(), 200)
         }
@@ -117,6 +148,16 @@ class ThrottlingPolicyTest extends AbstractAUTests {
 
         if(currentCount > 150) {
             Assert.assertEquals(response.statusCode(), 429)
+            Assert.assertEquals(response.statusCode(), 429)
+            if (TestConstants.SOLUTION_VERSION_200.equalsIgnoreCase(AUTestUtil.solutionVersion)) {
+                Assert.assertEquals(TestUtil.parseResponseBody(response, AUConstants.ERROR_CODE),
+                        AUConstants.ERROR_CODE_TOO_MANY_REQUESTS)
+                Assert.assertEquals(TestUtil.parseResponseBody(response, AUConstants.ERROR_TITLE), AUConstants
+                        .MESSAGE_THROTTLED_OUT)
+            } else {
+                Assert.assertTrue(TestUtil.parseResponseBody(response, "fault.description").contains(
+                        "You have exceeded your quota"))
+            }
         } else {
             Assert.assertEquals(response.statusCode(), 200)
         }
@@ -132,6 +173,16 @@ class ThrottlingPolicyTest extends AbstractAUTests {
         int currentCount =  sequence.addAndGet(1)
         if(currentCount > 150) {
             Assert.assertEquals(response.statusCode(), 429)
+            Assert.assertEquals(response.statusCode(), 429)
+            if (TestConstants.SOLUTION_VERSION_200.equalsIgnoreCase(AUTestUtil.solutionVersion)) {
+                Assert.assertEquals(TestUtil.parseResponseBody(response, AUConstants.ERROR_CODE),
+                        AUConstants.ERROR_CODE_TOO_MANY_REQUESTS)
+                Assert.assertEquals(TestUtil.parseResponseBody(response, AUConstants.ERROR_TITLE), AUConstants
+                        .MESSAGE_THROTTLED_OUT)
+            } else {
+                Assert.assertTrue(TestUtil.parseResponseBody(response, "fault.description").contains(
+                        "You have exceeded your quota"))
+            }
         } else {
             Assert.assertEquals(response.statusCode(), 200)
         }
@@ -149,6 +200,16 @@ class ThrottlingPolicyTest extends AbstractAUTests {
 
         if(currentCount > 150) {
             Assert.assertEquals(response.statusCode(), 429)
+            Assert.assertEquals(response.statusCode(), 429)
+            if (TestConstants.SOLUTION_VERSION_200.equalsIgnoreCase(AUTestUtil.solutionVersion)) {
+                Assert.assertEquals(TestUtil.parseResponseBody(response, AUConstants.ERROR_CODE),
+                        AUConstants.ERROR_CODE_TOO_MANY_REQUESTS)
+                Assert.assertEquals(TestUtil.parseResponseBody(response, AUConstants.ERROR_TITLE), AUConstants
+                        .MESSAGE_THROTTLED_OUT)
+            } else {
+                Assert.assertTrue(TestUtil.parseResponseBody(response, "fault.description").contains(
+                        "You have exceeded your quota"))
+            }
         } else {
             Assert.assertEquals(response.statusCode(), 200)
         }
@@ -161,6 +222,16 @@ class ThrottlingPolicyTest extends AbstractAUTests {
         int currentCount =  sequence.addAndGet(1)
         if(currentCount > 30) {
             Assert.assertEquals(response.statusCode(), 429)
+            Assert.assertEquals(response.statusCode(), 429)
+            if (TestConstants.SOLUTION_VERSION_200.equalsIgnoreCase(AUTestUtil.solutionVersion)) {
+                Assert.assertEquals(TestUtil.parseResponseBody(response, AUConstants.ERROR_CODE),
+                        AUConstants.ERROR_CODE_TOO_MANY_REQUESTS)
+                Assert.assertEquals(TestUtil.parseResponseBody(response, AUConstants.ERROR_TITLE), AUConstants
+                        .MESSAGE_THROTTLED_OUT)
+            } else {
+                Assert.assertTrue(TestUtil.parseResponseBody(response, "fault.description").contains(
+                        "You have exceeded your quota"))
+            }
         } else {
             Assert.assertEquals(response.statusCode(), 200)
         }
@@ -178,6 +249,16 @@ class ThrottlingPolicyTest extends AbstractAUTests {
 
         if(currentCount > 40) {
             Assert.assertEquals(response.statusCode(), 429)
+            Assert.assertEquals(response.statusCode(), 429)
+            if (TestConstants.SOLUTION_VERSION_200.equalsIgnoreCase(AUTestUtil.solutionVersion)) {
+                Assert.assertEquals(TestUtil.parseResponseBody(response, AUConstants.ERROR_CODE),
+                        AUConstants.ERROR_CODE_TOO_MANY_REQUESTS)
+                Assert.assertEquals(TestUtil.parseResponseBody(response, AUConstants.ERROR_TITLE), AUConstants
+                        .MESSAGE_THROTTLED_OUT)
+            } else {
+                Assert.assertTrue(TestUtil.parseResponseBody(response, "fault.description").contains(
+                        "You have exceeded your quota"))
+            }
         }else {
             Assert.assertEquals(response.statusCode(), 200)
         }

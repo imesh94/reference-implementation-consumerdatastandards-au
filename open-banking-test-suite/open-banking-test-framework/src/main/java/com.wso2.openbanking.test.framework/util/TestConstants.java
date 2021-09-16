@@ -59,6 +59,12 @@ public class TestConstants {
 	public static final String TOKEN_ENDPOINT = "/oauth2/token";
 	public static final String AUTHORIZE_ENDPOINT = "/authorize/?";
 	public static final String INTROSPECTION_ENDPOINT = "/oauth2/introspect";
+	public static final String OAUTH2_TOKEN_ENDPOINT = "/oauth2/token";
+	public static final String REGISTER_SCOPE_ENDPOINT = "/api/identity/oauth2/v1.0/scopes";
+	public static final String OAUTH2_REVOKE_ENDPOINT = "/oauth2/revoke";
+	public static final String REST_API_CLIENT_REGISTRATION_ENDPOINT = "/client-registration/v0.16/register";
+	public static final String REST_API_PUBLISHER_ENDPOINT = "/api/am/publisher/v1.1/apis/";
+	public static final String REST_API_STORE_ENDPOINT = "/api/am/store/v1/";
 
 	//JWT Claim keys
 	public static final String ISSUER_KEY = "iss";
@@ -82,6 +88,28 @@ public class TestConstants {
 	public static final String USER_NAME = "username";
 	public static final String PASSWORD = "password";
 	public static final String TLS_AUTH_METHOD = "tls_client_auth";
+	public static final String PERMISSIONS_KEY = "Permissions";
+	public static final String EXPIRATION_DATE_KEY = "ExpirationDateTime";
+	public static final String TRANSACTION_FROM_DATE_KEY = "TransactionFromDateTime";
+	public static final String TRANSACTION_TO_DATE_KEY = "TransactionToDateTime";
+	public static final String DATA_KEY = "Data";
+	public static final String RISK_KEY = "Risk";
+	public static final String REQUEST_KEY = "request";
+	public static final String RESPONSE_TYPE_KEY = "response_type";
+	public static final String CLIENT_ID_KEY = "client_id";
+	public static final String STATE_KEY = "state";
+	public static final String PROMPT_KEY = "prompt";
+	public static final String NONCE_KEY = "nonce";
+	public static final String VALUES_KEY = "values";
+	public static final String VALUE_KEY = "value";
+	public static final String OB_INTENT_ID_KEY = "openbanking_intent_id";
+	public static final String ESSENTIAL_KEY = "essential";
+	public static final String ACR_KEY = "acr";
+	public static final String ID_TOKEN_KEY = "id_token";
+	public static final String USER_INFO_KEY = "userinfo";
+	public static final String CLAIMS_KEY = "claims";
+	public static final String MAX_AGE_KEY = "maxAge";
+	public static final String INSTRUCTED_AMOUNT = "InstructedAmount";
 
 	//Selenium constants
 	public static final String USERNAME_FIELD_ID = "usernameUserInput";
@@ -102,6 +130,8 @@ public class TestConstants {
 	public static final String TAB_APPLICATIONS = "//span[contains(text(),'Applications')]";
 	public static final String TBL_ROWS = "//tbody/tr";
 	public static final String TAB_SUBSCRIPTIONS = "//p[text()='Subscriptions']";
+	public static final String ERROR = "error";
+	public static final String ERROR_DESCRIPTION = "error_description";
 
 	public static final String X_REQUEST_ID = "X-Request-ID";
 	public static final String PSU_IP_ADDRESS = "PSU-IP-Address";

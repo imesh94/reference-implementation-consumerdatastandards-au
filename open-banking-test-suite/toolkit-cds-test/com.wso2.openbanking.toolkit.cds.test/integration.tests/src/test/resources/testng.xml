@@ -80,4 +80,18 @@
             <class name="com.wso2.openbanking.toolkit.cds.integration.tests.client_registration.DeleteClientRegistration" />
         </classes>
     </test>
+    <test name="Metadata Update Tests" parallel="false" enabled="false">
+        <classes>
+            <class name="com.wso2.openbanking.toolkit.cds.integration.tests.metadata_update.MetaDataAccountRetrieval" />
+            <class name="com.wso2.openbanking.toolkit.cds.integration.tests.metadata_update.MetaDataConsentAmendment" />
+            <class name="com.wso2.openbanking.toolkit.cds.integration.tests.metadata_update.MetaDataConsentAuthorization" />
+            <class name="com.wso2.openbanking.toolkit.cds.integration.tests.metadata_update.MetaDataConsentWithdrawal" />
+            <class name="com.wso2.openbanking.toolkit.cds.integration.tests.metadata_update.MetaDataUpdateBatchTaskTests" />
+        </classes>
+    </test>
+    <test name="Consent Amendment Flow Tests" parallel="false" enabled="true">
+        <classes>
+            <class name="com.wso2.openbanking.toolkit.cds.integration.tests.cx.consent_amendment.ConsentAmendmentFlowUIValidationTest" />
+        </classes>
+    </test>
 </suite>

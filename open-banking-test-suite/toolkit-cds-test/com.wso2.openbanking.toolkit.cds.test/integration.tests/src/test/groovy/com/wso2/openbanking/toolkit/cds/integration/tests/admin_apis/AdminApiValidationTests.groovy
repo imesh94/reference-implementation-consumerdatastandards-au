@@ -15,6 +15,7 @@ package com.wso2.openbanking.toolkit.cds.integration.tests.admin_apis
 import com.wso2.openbanking.test.framework.TestSuite
 import com.wso2.openbanking.test.framework.model.AccessTokenJwtDto
 import com.wso2.openbanking.test.framework.util.ConfigParser
+import com.wso2.openbanking.test.framework.util.TestUtil
 import com.wso2.openbanking.test.framework.util.TestConstants
 import com.wso2.openbanking.toolkit.cds.test.common.utils.AUConstants
 import com.wso2.openbanking.toolkit.cds.test.common.utils.AUTestUtil
@@ -39,9 +40,9 @@ class AdminApiValidationTests extends AbstractAUTests {
             AUConstants.SCOPES.BANK_CUSTOMER_DETAIL_READ.getScopeString()
     ]
 
-    @BeforeClass (alwaysRun = true)
+    @BeforeClass(alwaysRun = true)
     void "Generate Access Token"() {
-        clientId= ConfigParser.getInstance().getClientId()
+        clientId = ConfigParser.getInstance().getClientId()
     }
 
     //TODO: Git Issue: https://github.com/wso2-enterprise/financial-open-banking/issues/5565
@@ -88,7 +89,7 @@ class AdminApiValidationTests extends AbstractAUTests {
     }
 
     //TODO: Enable the tests case after implementing the feature
-    @Test (enabled = false)
+    @Test(enabled = false)
     void "Meta Data"() {
 
         accessToken = accessTokenJWTDTO.getJWT(AUConstants.ADMIN_API_ISSUER, AUConstants.ADMIN_API_AUDIENCE)
@@ -114,7 +115,7 @@ class AdminApiValidationTests extends AbstractAUTests {
     }
 
     //TODO: Enable the tests case after implementing the feature
-    @Test (enabled = false)
+    @Test(enabled = false)
     void "Meta Data Update with authorisation code type access token"() {
 
         doConsentAuthorisation()
@@ -224,7 +225,7 @@ class AdminApiValidationTests extends AbstractAUTests {
         }
     }
 
-    @Test (groups = "SmokeTest")
+    @Test(groups = "SmokeTest")
     void "TC1002004_Metrics Data All"() {
 
         accessToken = accessTokenJWTDTO.getJWT(AUConstants.ADMIN_API_ISSUER, AUConstants.ADMIN_API_AUDIENCE)
