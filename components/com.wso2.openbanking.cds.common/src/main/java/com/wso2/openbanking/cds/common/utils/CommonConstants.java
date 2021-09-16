@@ -17,7 +17,16 @@ package com.wso2.openbanking.cds.common.utils;
  */
 public class CommonConstants {
 
-    public static final String OB_CONFIG_FILE = "open-banking-cds.xml";
     public static final String OB_CONSENT_ID_PREFIX = "OB_CONSENT_ID_";
     public static final String ACCOUNT_MASKING = "ConsentManagement.EnableAccountMasking";
+    public static final String CDS_API_CONTEXT_PREFIX = "cds-au";
+
+    // Config related constants
+    public static final String OB_CONFIG_FILE = "open-banking-cds.xml";
+    public static final String ACCOUNT_MASKING = "ConsentManagement.EnableAccountMasking";
+    public static final String ID_PERMANENCE_SECRET_KEY = "IdPermanence.SecretKey";
+
+    // Http related constants
+    public static final String POST_METHOD = "POST";
+
 }
