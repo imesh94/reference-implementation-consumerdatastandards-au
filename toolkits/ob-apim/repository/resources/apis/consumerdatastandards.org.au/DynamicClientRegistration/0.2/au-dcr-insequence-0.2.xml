@@ -10,7 +10,7 @@
  ~ with WSO2 governing the purchase of this software and any associated services.
 -->
 
-<sequence xmlns="http://ws.apache.org/ns/synapse" name="au-dcr-dynamic-endpoint-insequence-0.1">
+<sequence xmlns="http://ws.apache.org/ns/synapse" name="au-dcr-dynamic-endpoint-insequence-0.2">
     <!-- Set UUID if header is not present-->
     <header name="x-wso2-client-id" expression="get-property('api.ut.consumerKey')" scope="transport"/>
 

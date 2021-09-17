@@ -27,7 +27,6 @@ public class ErrorConstants {
     public static final String TITLE = "title";
     public static final String DETAIL = "detail";
 
-
     // HTTP Error Codes
     public static final String HTTP_BAD_REQUEST = "400";
     public static final String HTTP_UNAUTHORIZED = "401";
@@ -60,10 +59,8 @@ public class ErrorConstants {
     public static final String REVOKED_CONSENT_STATUS = "AU.CDR.Entitlements.ConsentIsRevoked";
 
     // Error object references
-    public static final String ERROR_ENUM  = "auErrorEnum";
+    public static final String ERROR_ENUM = "auErrorEnum";
     public static final String SOURCE = "source";
-
-
 
     /**
      * AU Error enumerations.
@@ -73,7 +70,7 @@ public class ErrorConstants {
 
         /**
          * Error enumerations defined in the specification
-         *
+         * <p>
          * Custom values in the enum will be in the following order
          * (HTTP Status Code, Error Code, Error Code Title, Error Message)
          */
@@ -169,14 +166,13 @@ public class ErrorConstants {
 
         /**
          * Error enumerations defined by the WSO2
-         *
+         * <p>
          * Custom values in the enum will be in the following order
          * (HTTP Status Code, Error Code, Error Code Title, Error Message)
          */
         //Data Validation Error
         VALIDATION_ERROR(400, "WSO2.Data.ValidationError", "Error has occurred while validating account consent",
                 "Error has occurred while validating account consent");
-
 
         private final int httpCode;
         private final String code;
@@ -186,10 +182,10 @@ public class ErrorConstants {
         /**
          * Initialize AU Error Object.
          *
-         * @param httpCode   http code.
-         * @param code       error code.
-         * @param title      error title.
-         * @param detail     error detail.
+         * @param httpCode http code.
+         * @param code     error code.
+         * @param title    error title.
+         * @param detail   error detail.
          */
         @Generated(message = "Excluding constants from code coverage")
         AUErrorEnum(int httpCode, String code, String title, String detail) {
