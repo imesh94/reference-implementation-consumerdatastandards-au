@@ -46,6 +46,11 @@
         {% else %}
         <ValidateAccountIdOnRetrieval>false</ValidateAccountIdOnRetrieval>
         {% endif %}
+        {% if open_banking_cds.consent_management.enable_account_masking is defined %}
+        <EnableAccountMasking>{{open_banking_cds.consent_management.enable_account_masking}}</EnableAccountMasking>
+        {% else %}
+        <EnableAccountMasking>false</EnableAccountMasking>
+        {% endif %}
      </ConsentManagement>
      <CustomerDetails>
         {% if open_banking_cds.customer_details.enable is defined %}

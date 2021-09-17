@@ -53,6 +53,12 @@
             }
         }
     }
+    File extensionFile = new File(getServletContext().getRealPath("extensions/toolkit-data-extension.jsp"));
+    if (extensionFile.exists()) {
+    %>
+        <jsp:include page="extensions/toolkit-data-extension.jsp"/>
+    <%
+    }
 %>
 
 <html>
