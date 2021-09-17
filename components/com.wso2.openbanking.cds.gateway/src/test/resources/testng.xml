@@ -19,6 +19,7 @@
             <class name="com.wso2.openbanking.cds.gateway.executors.error.handler.CDSErrorHandlerTest"></class>
             <class name="com.wso2.openbanking.cds.gateway.executors.idpermanence.utils.IDPermanenceUtilsTest"></class>
             <class name="com.wso2.openbanking.cds.gateway.executors.idpermanence.IDPermanenceExecutorTest"></class>
+            <class name="com.wso2.openbanking.cds.gateway.executors.core.CDSAPIRequestRouterTest"></class>
         </classes>
     </test>
 </suite>

@@ -45,45 +45,41 @@ public class IDPermanenceExecutor implements OpenBankingGatewayExecutor {
     @Override
     public void postProcessRequest(OBAPIRequestContext obApiRequestContext) {
 
-        // Engage IDPermanence if config is enabled and cds api request
-        if (OpenBankingCDSConfigParser.getInstance().isIdPermanenceEnabled() && obApiRequestContext.
-                getApiRequestInfo().getContext().contains(CommonConstants.CDS_API_CONTEXT_PREFIX)) {
-            log.debug("IDPermanence Engaged.");
-            String uriTemplate = obApiRequestContext.getMsgInfo().getElectedResource();
-            String requestedUrl = obApiRequestContext.getMsgInfo().getResource();
+        log.debug("IDPermanence Engaged.");
+        String uriTemplate = obApiRequestContext.getMsgInfo().getElectedResource();
+        String requestedUrl = obApiRequestContext.getMsgInfo().getResource();
 
-            // Handle requests with a body
-            if (CommonConstants.POST_METHOD.equals(obApiRequestContext.getMsgInfo().getHttpMethod())) {
-                Gson gson = new Gson();
-                JsonObject payloadJson = gson.fromJson(obApiRequestContext.getRequestPayload(), JsonObject.class);
-                IdPermanenceValidationResponse idPermanenceValidationResponse =
-                        IdPermanenceUtils.unmaskRequestBodyAccountIDs(payloadJson, SECRET_KEY);
-                if (!idPermanenceValidationResponse.isValid()) {
-                    handleError(obApiRequestContext, idPermanenceValidationResponse);
-                    return;
-                }
-                // set decrypted resource ids to the request body
-                obApiRequestContext.setModifiedPayload(gson.toJson(idPermanenceValidationResponse.
-                        getDecryptedResourceIds()));
+        // Handle requests with a body
+        if (CommonConstants.POST_METHOD.equals(obApiRequestContext.getMsgInfo().getHttpMethod())) {
+            Gson gson = new Gson();
+            JsonObject payloadJson = gson.fromJson(obApiRequestContext.getRequestPayload(), JsonObject.class);
+            IdPermanenceValidationResponse idPermanenceValidationResponse =
+                    IdPermanenceUtils.unmaskRequestBodyAccountIDs(payloadJson, SECRET_KEY);
+            if (!idPermanenceValidationResponse.isValid()) {
+                handleError(obApiRequestContext, idPermanenceValidationResponse);
+                return;
             }
+            // set decrypted resource ids to the request body
+            obApiRequestContext.setModifiedPayload(gson.toJson(idPermanenceValidationResponse.
+                    getDecryptedResourceIds()));
+        }
 
-            // handle requests with path params
-            if (IdPermanenceConstants.REQUEST_URLS_WITH_PATH_PARAMS.contains(uriTemplate)) {
-                JsonObject idSet = IdPermanenceUtils.extractUrlParams(uriTemplate, requestedUrl);
-                IdPermanenceValidationResponse idPermanenceValidationResponse =
-                        IdPermanenceUtils.unmaskRequestPathIDs(idSet, SECRET_KEY);
-                if (!idPermanenceValidationResponse.isValid()) {
-                    handleError(obApiRequestContext, idPermanenceValidationResponse);
-                    return;
-                }
-                // Set decrypted resource ids to uri
-                JsonObject decryptedIdSet = idPermanenceValidationResponse.getDecryptedResourceIds();
-                String decryptedSubRequestPath = IdPermanenceUtils.processNewUri(
-                        uriTemplate, requestedUrl, decryptedIdSet);
-                obApiRequestContext.getMsgInfo().setResource(decryptedSubRequestPath);
-                obApiRequestContext.getMsgInfo().getHeaders().put(
-                        IdPermanenceConstants.DECRYPTED_SUB_REQUEST_PATH, decryptedSubRequestPath);
+        // handle requests with path params
+        if (IdPermanenceConstants.REQUEST_URLS_WITH_PATH_PARAMS.contains(uriTemplate)) {
+            JsonObject idSet = IdPermanenceUtils.extractUrlParams(uriTemplate, requestedUrl);
+            IdPermanenceValidationResponse idPermanenceValidationResponse =
+                    IdPermanenceUtils.unmaskRequestPathIDs(idSet, SECRET_KEY);
+            if (!idPermanenceValidationResponse.isValid()) {
+                handleError(obApiRequestContext, idPermanenceValidationResponse);
+                return;
             }
+            // Set decrypted resource ids to uri
+            JsonObject decryptedIdSet = idPermanenceValidationResponse.getDecryptedResourceIds();
+            String decryptedSubRequestPath = IdPermanenceUtils.processNewUri(
+                    uriTemplate, requestedUrl, decryptedIdSet);
+            obApiRequestContext.getMsgInfo().setResource(decryptedSubRequestPath);
+            obApiRequestContext.getMsgInfo().getHeaders().put(
+                    IdPermanenceConstants.DECRYPTED_SUB_REQUEST_PATH, decryptedSubRequestPath);
         }
 
     }
@@ -95,23 +91,18 @@ public class IDPermanenceExecutor implements OpenBankingGatewayExecutor {
     @Override
     public void postProcessResponse(OBAPIResponseContext obApiResponseContext) {
 
-        // Engage IDPermanence if config is enabled and cds api request
-        if (OpenBankingCDSConfigParser.getInstance().isIdPermanenceEnabled() && obApiResponseContext.
-                getApiRequestInfo().getContext().contains(CommonConstants.CDS_API_CONTEXT_PREFIX)) {
+        // execute if success response
+        if (obApiResponseContext.getStatusCode() == HttpStatus.SC_OK) {
+            String electedResource = obApiResponseContext.getMsgInfo().getElectedResource();
+            String memberId = obApiResponseContext.getApiRequestInfo().getUsername();
+            String appId = obApiResponseContext.getApiRequestInfo().getConsumerKey();
 
-            // execute if success response
-            if (obApiResponseContext.getStatusCode() == HttpStatus.SC_OK) {
-                String electedResource = obApiResponseContext.getMsgInfo().getElectedResource();
-                String memberId = obApiResponseContext.getApiRequestInfo().getUsername();
-                String appId = obApiResponseContext.getApiRequestInfo().getConsumerKey();
-
-                // set encrypted resource ids to the response
-                JsonObject payloadJson = new JsonParser().parse(
-                        obApiResponseContext.getResponsePayload()).getAsJsonObject();
-                JsonObject modifiedPayloadJson = IdPermanenceUtils.maskResponseIDs(
-                        payloadJson, electedResource, memberId, appId, SECRET_KEY);
-                obApiResponseContext.setModifiedPayload(new Gson().toJson(modifiedPayloadJson));
-            }
+            // set encrypted resource ids to the response
+            JsonObject payloadJson = new JsonParser().parse(
+                    obApiResponseContext.getResponsePayload()).getAsJsonObject();
+            JsonObject modifiedPayloadJson = IdPermanenceUtils.maskResponseIDs(
+                    payloadJson, electedResource, memberId, appId, SECRET_KEY);
+            obApiResponseContext.setModifiedPayload(new Gson().toJson(modifiedPayloadJson));
         }
     }
 

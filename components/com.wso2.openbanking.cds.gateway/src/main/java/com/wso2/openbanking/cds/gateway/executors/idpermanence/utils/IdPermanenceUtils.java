@@ -219,9 +219,9 @@ public class IdPermanenceUtils {
             decryptedResourceIdSet.addProperty(resourceKey, realResourceId);
         }
 
-        removeEmptyStrings(decryptedResourceIdSet);
+        JsonObject sanitizedDecryptedResourceIdSet = removeEmptyStrings(decryptedResourceIdSet);
         idPermanenceValidationResponse.setValid(true);
-        idPermanenceValidationResponse.setDecryptedResourceIds(decryptedResourceIdSet);
+        idPermanenceValidationResponse.setDecryptedResourceIds(sanitizedDecryptedResourceIdSet);
         return idPermanenceValidationResponse;
     }
 
@@ -275,8 +275,8 @@ public class IdPermanenceUtils {
 
         data.add(IdPermanenceConstants.ACCOUNT_IDS, decryptedAccountIdList);
         idPermanenceValidationResponse.setValid(true);
-        removeEmptyStrings(requestJsonPayload);
-        idPermanenceValidationResponse.setDecryptedResourceIds(requestJsonPayload);
+        JsonObject sanitizedRequestJsonPayload = removeEmptyStrings(requestJsonPayload);
+        idPermanenceValidationResponse.setDecryptedResourceIds(sanitizedRequestJsonPayload);
         return idPermanenceValidationResponse;
 
     }
