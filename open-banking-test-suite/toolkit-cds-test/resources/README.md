@@ -66,6 +66,8 @@ before start the test suite execution.
     - `<TPPInfo>` = TPP Credentials
 
     - `<BrowserAutomation>`
+        - `<BrowserPreference>` = Preferred browser to run the tests. (Eg: firefox/chrome. Using firefox if not
+          specified)
         - `<HeadlessEnabled>` = true (Execute UI automated tests in Headless mode)
         - `<FirefoxDriverLocation>` = Path to the geckodriver - geckodriver version should be compatible with the
           version of the firefox driver installed in your computer.

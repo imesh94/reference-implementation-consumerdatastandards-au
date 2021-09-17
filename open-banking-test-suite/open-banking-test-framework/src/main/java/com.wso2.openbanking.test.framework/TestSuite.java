@@ -13,6 +13,7 @@
 package com.wso2.openbanking.test.framework;
 
 import com.wso2.openbanking.test.framework.exception.TestFrameworkException;
+import com.wso2.openbanking.test.framework.util.AppConfigReader;
 import com.wso2.openbanking.test.framework.util.ConfigParser;
 import com.wso2.openbanking.test.framework.util.TestConstants;
 import com.wso2.openbanking.test.framework.util.TestUtil;
@@ -61,7 +62,7 @@ public class TestSuite {
      */
     public static RequestSpecification buildRequest() throws TestFrameworkException {
 
-        if (ConfigParser.getInstance().isMtlsEnabled()) {
+        if (AppConfigReader.isMTLSEnabled()) {
             RestAssuredConfig config = null;
             SSLSocketFactory sslSocketFactory = TestUtil.getSslSocketFactory();
             if (sslSocketFactory != null) {

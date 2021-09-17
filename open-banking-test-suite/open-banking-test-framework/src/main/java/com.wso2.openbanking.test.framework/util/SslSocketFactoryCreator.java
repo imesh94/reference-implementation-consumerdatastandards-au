@@ -35,24 +35,21 @@ public class SslSocketFactoryCreator {
      */
     public SSLSocketFactory create() throws TestFrameworkException {
         try (FileInputStream keystoreLocation =
-                     new FileInputStream(new File(ConfigParser.getInstance()
-                             .getTransportKeystoreLocation()));
+                     new FileInputStream(new File(AppConfigReader.getTransportKeystoreLocation()));
              FileInputStream truststoreLocation =
                      new FileInputStream(new File(ConfigParser.getInstance()
                              .getTransportTruststoreLocation()))) {
 
-            KeyStore keyStore = KeyStore.getInstance(ConfigParser.getInstance()
-                    .getTransportKeystoreType());
-            keyStore.load(keystoreLocation, ConfigParser.getInstance()
-                    .getTransportKeystorePassword().toCharArray());
+            KeyStore keyStore = KeyStore.getInstance(AppConfigReader.getTransportKeystoreType());
+            keyStore.load(keystoreLocation, AppConfigReader.getTransportKeystorePassword().toCharArray());
             KeyStore trustStore = KeyStore.getInstance(ConfigParser.getInstance()
                     .getTransportTruststoreType());
             trustStore.load(truststoreLocation, ConfigParser.getInstance()
                     .getTransportTruststorePassword().toCharArray());
 
             // Manually create a new socketfactory and pass in the required values.
-            return new org.apache.http.conn.ssl.SSLSocketFactory(keyStore, ConfigParser.getInstance()
-                    .getTransportKeystorePassword(), trustStore);
+            return new org.apache.http.conn.ssl.SSLSocketFactory(keyStore, AppConfigReader.getTransportKeystorePassword(),
+                    trustStore);
         } catch (KeyStoreException | NoSuchAlgorithmException | CertificateException
                 | KeyManagementException | UnrecoverableKeyException | IOException e) {
             throw new TestFrameworkException("Unable to load the transport keystore and truststore", e);
@@ -74,8 +71,7 @@ public class SslSocketFactoryCreator {
                      new FileInputStream(new File(ConfigParser.getInstance()
                              .getTransportTruststoreLocation()))) {
 
-            KeyStore keyStore = KeyStore.getInstance(ConfigParser.getInstance()
-                    .getTransportKeystoreType());
+            KeyStore keyStore = KeyStore.getInstance(AppConfigReader.getTransportKeystoreType());
             keyStore.load(keystoreLocation, keystorePassword.toCharArray());
             KeyStore trustStore = KeyStore.getInstance(ConfigParser.getInstance()
                     .getTransportTruststoreType());

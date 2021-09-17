@@ -19,6 +19,7 @@ import com.wso2.openbanking.test.framework.automation.WaitForRedirectAutomationS
 import com.wso2.openbanking.test.framework.util.TestUtil
 import com.wso2.openbanking.test.framework.util.TestConstants
 import com.wso2.openbanking.test.framework.util.ConfigParser
+import com.wso2.openbanking.test.framework.util.AppConfigReader
 import com.wso2.openbanking.test.framework.TestSuite
 import com.wso2.openbanking.toolkit.cds.test.common.utils.AUAuthorisationBuilder
 import com.wso2.openbanking.toolkit.cds.test.common.utils.AUConstants
@@ -85,7 +86,7 @@ class TokenEndpointTest {
         Assert.assertNotNull(authorisationCode)
 
         def errorObject = AURequestBuilder.getUserTokenErrorResponse(authorisationCode,
-                ConfigParser.getInstance().getRedirectUrl(), false)
+                AppConfigReader.getRedirectURL(), false)
         Assert.assertEquals(errorObject.toJSONObject().get("error_description"), "Client Authentication failed.")
     }
 
@@ -96,7 +97,7 @@ class TokenEndpointTest {
         Assert.assertNotNull(authorisationCode)
 
         def errorObject = AURequestBuilder.getUserTokenErrorResponse(authorisationCode,
-                ConfigParser.instance.getRedirectUrl(), true, false)
+                AppConfigReader.getRedirectURL(), true, false)
         Assert.assertEquals(errorObject.toJSONObject().get("error_description"), "Certificate not found in the request")
     }
 
@@ -106,7 +107,7 @@ class TokenEndpointTest {
         authorisationCode = doConsentAuthorization(scopes)
         Assert.assertNotNull(authorisationCode)
 
-        def errorObject = AURequestBuilder.getUserTokenErrorResponse(authorisationCode, ConfigParser.getInstance().getAlternateRedirectUri())
+        def errorObject = AURequestBuilder.getUserTokenErrorResponse(authorisationCode, AppConfigReader.getAlternateRedirectUri())
         Assert.assertEquals(errorObject.toJSONObject().get("error_description"), "Callback url mismatch")
 
     }
@@ -117,7 +118,7 @@ class TokenEndpointTest {
         authorisationCode = doConsentAuthorization(scopes)
         Assert.assertNotNull(authorisationCode)
 
-        def errorObject = AURequestBuilder.getUserTokenErrorResponse(authorisationCode, ConfigParser.getInstance().getRedirectUrl(),
+        def errorObject = AURequestBuilder.getUserTokenErrorResponse(authorisationCode, AppConfigReader.getRedirectURL(),
                 true, true, "RS256")
         Assert.assertEquals(errorObject.toJSONObject().get("error_description"), "Signature Algorithm not supported : RS256")
 
@@ -129,7 +130,7 @@ class TokenEndpointTest {
         authorisationCode = doConsentAuthorization(scopes)
         Assert.assertNotNull(authorisationCode)
 
-        def errorObject = AURequestBuilder.getUserTokenErrorResponse(authorisationCode, ConfigParser.getInstance().getRedirectUrl(),
+        def errorObject = AURequestBuilder.getUserTokenErrorResponse(authorisationCode, AppConfigReader.getRedirectURL(),
                 true, true, "PS512")
         Assert.assertEquals(errorObject.toJSONObject().get("error_description"), "Signature Algorithm not supported : PS512")
 

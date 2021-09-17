@@ -12,139 +12,250 @@
 -->
 
 <Configurations>
-  <SolutionVersion>Solution.Version</SolutionVersion>
-  <!--OBSpec accepts values AU-->
-  <OBSpec>OB.Spec</OBSpec>
-  <ApiVersion>Api.Version</ApiVersion>
-  <!-- Server Info -->
-  <Server>
-    <BaseURL>Server.BaseURL</BaseURL>
-    <GatewayURL>Server.GatewayURL</GatewayURL>
-    <AuthorisationServerURL>Server.AuthorisationServerURL</AuthorisationServerURL>
+    <SolutionVersion>Solution.Version</SolutionVersion>
+    <!--OBSpec accepts values AU-->
+    <OBSpec>OB.Spec</OBSpec>
+    <ApiVersion>Api.Version</ApiVersion>
+    <!-- Provisioning Info -->
+    <Provisioning>
+        <Enabled>Provisioning.Enabled</Enabled>
+        <ProvisionFilePath>Provisioning.ProvisionFilePath</ProvisionFilePath>
+    </Provisioning>
+    <!-- Server Info -->
+    <Server>
+        <BaseURL>Server.BaseURL</BaseURL>
+        <GatewayURL>Server.GatewayURL</GatewayURL>
+        <AuthorisationServerURL>Server.AuthorisationServerURL</AuthorisationServerURL>
 
-    <!--Micro Gateway Specific Server Urls.
-    In MG the ports should be the corresponding port of the docker image.-->
-    <MicroGateway>
-      <MicroGatewayEnabled>MicroGateway.MicroGatewayEnabled</MicroGatewayEnabled>
+        <!--Micro Gateway Specific Server Urls.
+        In MG the ports should be the corresponding port of the docker image.-->
+        <MicroGateway>
+            <MicroGatewayEnabled>MicroGateway.MicroGatewayEnabled</MicroGatewayEnabled>
 
-      <!--Configure the Urls only for Micro Gateway Testing-->
-      <AU>
-        <DcrURL>Server.MicroGateway.AU.DcrURL</DcrURL>
-        <CdsAuAccountsURL>Server.MicroGateway.AU.CdsAuAccountsURL</CdsAuAccountsURL>
-        <CdsAuBalancesURL>Server.MicroGateway.AU.CdsAuBalancesURL</CdsAuBalancesURL>
-        <CdsAuTransactionURL>Server.MicroGateway.AU.CdsAuTransactionURL</CdsAuTransactionURL>
-        <CdsAuDirectDebitURL>Server.MicroGateway.AU.CdsAuDirectDebitURL</CdsAuDirectDebitURL>
-        <CdsAuSchedulePaymentURL>Server.MicroGateway.AU.CdsAuSchedulePaymentURL</CdsAuSchedulePaymentURL>
-        <CdsAuPayeeURL>Server.MicroGateway.AU.CdsAuPayeeURL</CdsAuPayeeURL>
-        <CdsAuProductURL>Server.MicroGateway.AU.CdsAuProductURL</CdsAuProductURL>
-        <CdsCustomerURL>Server.MicroGateway.AU.CdsCustomerURL</CdsCustomerURL>
-        <CdsDiscoveryURL>Server.MicroGateway.AU.CdsDiscoveryURL</CdsDiscoveryURL>
-        <CdrArrangementURL>Server.MicroGateway.AU.CdrArrangementURL</CdrArrangementURL>
-        <CdsAdminURL>Server.MicroGateway.AU.CdsAdminURL</CdsAdminURL>
-      </AU>
-    </MicroGateway>
-  </Server>
-  <!-- Application Keystore -->
-  <Application.KeyStore>
-    <!--Absolute path + file name of JKS keystore file-->
-    <Location>Application.KeyStore.Location</Location>
-    <Alias>Application.KeyStore.Alias</Alias>
-    <Password>Application.KeyStore.Password</Password>
-    <DomainName>https://wso2.com</DomainName>
-  </Application.KeyStore>
+            <!--Configure the Urls only for Micro Gateway Testing-->
+            <AU>
+                <DcrURL>Server.MicroGateway.AU.DcrURL</DcrURL>
+                <CdsAuAccountsURL>Server.MicroGateway.AU.CdsAuAccountsURL</CdsAuAccountsURL>
+                <CdsAuBalancesURL>Server.MicroGateway.AU.CdsAuBalancesURL</CdsAuBalancesURL>
+                <CdsAuTransactionURL>Server.MicroGateway.AU.CdsAuTransactionURL</CdsAuTransactionURL>
+                <CdsAuDirectDebitURL>Server.MicroGateway.AU.CdsAuDirectDebitURL</CdsAuDirectDebitURL>
+                <CdsAuSchedulePaymentURL>Server.MicroGateway.AU.CdsAuSchedulePaymentURL</CdsAuSchedulePaymentURL>
+                <CdsAuPayeeURL>Server.MicroGateway.AU.CdsAuPayeeURL</CdsAuPayeeURL>
+                <CdsAuProductURL>Server.MicroGateway.AU.CdsAuProductURL</CdsAuProductURL>
+                <CdsCustomerURL>Server.MicroGateway.AU.CdsCustomerURL</CdsCustomerURL>
+                <CdsDiscoveryURL>Server.MicroGateway.AU.CdsDiscoveryURL</CdsDiscoveryURL>
+                <CdrArrangementURL>Server.MicroGateway.AU.CdrArrangementURL</CdrArrangementURL>
+                <CdsAdminURL>Server.MicroGateway.AU.CdsAdminURL</CdsAdminURL>
+            </AU>
+        </MicroGateway>
+    </Server>
 
-  <!-- Client Key Id-->
-  <Application.Certificate>
-    <KID>Application.Certificate.KID</KID>
-  </Application.Certificate>
+    <!-- Application List -->
+    <ApplicationConfigList>
+        <!-- Application 1 Details -->
+        <AppConfig>
+            <!-- Application Keystore -->
+            <Application.KeyStore>
+                <!--Absolute path + file name of JKS keystore file-->
+                <Location>AppConfig.Application.KeyStore.Location</Location>
+                <Alias>AppConfig.Application.KeyStore.Alias</Alias>
+                <Password>AppConfig.Application.KeyStore.Password</Password>
+                <DomainName>https://wso2.com</DomainName>
+                <SigningKid>AppConfig.Application.KeyStore.SigningKid</SigningKid>
+            </Application.KeyStore>
 
-  <!-- Transport Keystore and Truststore -->
-  <!--This Keystore and the Truststore will be used during the SSL handshake-->
-  <Transport>
-    <MTLSEnabled>Transport.MTLSEnabled</MTLSEnabled>
-    <!--A keystore and a truststore needs to be configured in the following section if MTLSEnabled is set to
-    true-->
-    <KeyStore>
-      <!--Absolute path + file name of keystore file.
-      (e.g. <location>/home/kasun/Downloads/Certs/keystore.jks</location>)-->
-      <Location>Transport.KeyStore.Location</Location>
-      <Type>jks</Type>
-      <Password>Transport.KeyStore.Password</Password>
-    </KeyStore>
-    <Truststore>
-      <!--Absolute path + file name of truststore file. We can point the product client-truststore.jks here.
-      (e.g. <location>/home/kasun/wso2-obam-1.3.0/repository/resources/security/client-truststore.jks</location>)
-      -->
-      <Location>Transport.Truststore.Location</Location>
-      <Type>jks</Type>
-      <Password>Transport.Truststore.Password</Password>
-    </Truststore>
-  </Transport>
-  <!-- Application Info -->
-  <Application>
-    <ClientID>Application.ClientID</ClientID>
-    <ClientSecret>Application.ClientSecret</ClientSecret>
-    <RedirectURL>https://www.google.com</RedirectURL>
-  </Application>
-  <!-- Non Regulatory Application Info -->
-  <NonRegulatoryApplication>
-    <ClientID>NonRegulatoryApplication.ClientID</ClientID>
-    <ClientSecret>NonRegulatoryApplication.ClientSecret</ClientSecret>
-    <RedirectURL>https://www.google.com</RedirectURL>
-  </NonRegulatoryApplication>
-  <!-- PSU Info -->
-  <PSUInfo>
-    <Psu>admin@wso2.com</Psu>
-    <PsuPassword>wso2123</PsuPassword>
-  </PSUInfo>
-  <!-- Publisher Info -->
-  <PublisherInfo>
-    <Publisher>admin@wso2.com</Publisher>
-    <PublisherPassword>wso2123</PublisherPassword>
-  </PublisherInfo>
-  <!-- PSU Info -->
-  <TPPInfo>
-    <Tpp>admin@wso2.com</Tpp>
-    <TppPassword>wso2123</TppPassword>
-  </TPPInfo>
-  <!-- Customer Care Info -->
-  <CustomerCareInfo>
-    <CustomerCareUser>ann@gold.com</CustomerCareUser>
-    <CustomerCareUserPassword>wso2123</CustomerCareUserPassword>
-  </CustomerCareInfo>
-  <!-- Browser Automation -->
-  <BrowserAutomation>
-    <HeadlessEnabled>BrowserAutomation.HeadlessEnabled</HeadlessEnabled>
-    <FirefoxDriverLocation>BrowserAutomation.FirefoxDriverLocation</FirefoxDriverLocation>
-  </BrowserAutomation>
-  <!-- Common Configurations -->
-  <Common>
-    <!--Access token expire time in seconds-->
-    <AccessTokenExpireTime>30</AccessTokenExpireTime>
-    <TenantDomain>carbon.super</TenantDomain>
-    <SigningAlgorithm>Common.SigningAlgorithm</SigningAlgorithm>
-    <KeyManager.Admin>
-      <Username>admin@wso2.com</Username>
-      <Password>wso2123</Password>
-    </KeyManager.Admin>
-  </Common>
-  <!-- DCR Configurations -->
-  <DCR>
-    <SSAPath>SSA.File.Path</SSAPath>
-    <!-- SSA Redirect Uri -->
-    <RedirectUri>Redirect.Uri</RedirectUri>
-    <!-- SSA Alternate Redirect Uri (AU)-->
-    <AlternateRedirectUri>https://www.google.com/redirects/redirect2</AlternateRedirectUri>
-  </DCR>
-  <ConsentApi>
-    <AudienceValue>ConsentApi.AudienceValue</AudienceValue>
-  </ConsentApi>
-  <InternalApiContext>
-    <Consent-Mgt>/consent</Consent-Mgt> <!-- if 2.0.0 /api/openbanking/consent-mgt -->
-    <Multi-Auth>/multi-auth-api/1.0.0</Multi-Auth> <!-- if 2.0.0 /api/openbanking/multi-auth-api/1.0.0 -->
-  </InternalApiContext>
-  <!-- Id Permanence Encryption/Decryption Key (AU)-->
-  <IdPermanence>
-    <SecretKey>wso2</SecretKey>
-  </IdPermanence>
+            <!-- Transport Keystore and Truststore -->
+            <!--This Keystore and the Truststore will be used during the SSL handshake-->
+            <Transport>
+                <MTLSEnabled>AppConfig.Transport.MTLSEnabled</MTLSEnabled>
+                <!--A keystore and a truststore needs to be configured in the following section if MTLSEnabled is set to
+                true-->
+                <KeyStore>
+                    <!--Absolute path + file name of keystore file.
+                    (e.g. <location>/home/kasun/Downloads/Certs/keystore.jks</location>)-->
+                    <Location>AppConfig.Transport.KeyStore.Location</Location>
+                    <Type>jks</Type>
+                    <Password>AppConfig.Transport.KeyStore.Password</Password>
+                </KeyStore>
+            </Transport>
+
+            <!-- DCR Configurations -->
+            <DCR>
+                <SSAPath>AppConfig.DCR.SSAPath</SSAPath>
+                <!-- Self signed SSA for negative tests (UK)-->
+                <SelfSignedSSAPath>AppConfig.DCR.SelfSignedSSAPath</SelfSignedSSAPath>
+                <!-- SSA SoftwareId (UK)-->
+                <SoftwareId>AppConfig.DCR.SoftwareId</SoftwareId>
+                <!-- SSA Redirect Uri -->
+                <RedirectUri>AppConfig.DCR.RedirectUri</RedirectUri>
+                <!-- SSA Alternate Redirect Uri (AU)-->
+                <AlternateRedirectUri>AppConfig.DCR.AlternateRedirectUri</AlternateRedirectUri>
+                <!-- Version of DCR API (UK)
+                (e.g. 3.2 for DCR v3.2, 3.3.0 for DCR v3.3.0)
+                -->
+                <DCRAPIVersion>AppConfig.DCR.DCRAPIVersion</DCRAPIVersion>
+            </DCR>
+
+            <!-- Application Info -->
+            <Application>
+                <ClientID>AppConfig.Application.ClientID</ClientID>
+                <ClientSecret>AppConfig.Application.ClientSecret</ClientSecret>
+                <RedirectURL>AppConfig.Application.RedirectURL</RedirectURL>
+            </Application>
+        </AppConfig>
+
+        <!-- Application 2 Details -->
+        <AppConfig>
+            <!-- Application Keystore -->
+            <Application.KeyStore>
+                <!--Absolute path + file name of JKS keystore file-->
+                <Location>AppConfig2.Application.KeyStore.Location</Location>
+                <Alias>AppConfig2.Application.KeyStore.Alias</Alias>
+                <Password>AppConfig2.Application.KeyStore.Password</Password>
+                <DomainName>https://wso2.com</DomainName>
+                <SigningKid>AppConfig2.Application.KeyStore.SigningKid</SigningKid>
+            </Application.KeyStore>
+
+            <!-- Transport Keystore and Truststore -->
+            <!--This Keystore and the Truststore will be used during the SSL handshake-->
+            <Transport>
+                <MTLSEnabled>AppConfig2.Transport.MTLSEnabled</MTLSEnabled>
+                <!--A keystore and a truststore needs to be configured in the following section if MTLSEnabled is set to
+                true-->
+                <KeyStore>
+                    <!--Absolute path + file name of keystore file.
+                    (e.g. <location>/home/kasun/Downloads/Certs/keystore.jks</location>)-->
+                    <Location>AppConfig2.Transport.KeyStore.Location</Location>
+                    <Type>jks</Type>
+                    <Password>AppConfig2.Transport.KeyStore.Password</Password>
+                </KeyStore>
+            </Transport>
+
+            <!-- DCR Configurations -->
+            <DCR>
+                <SSAPath>AppConfig2.DCR.SSAPath</SSAPath>
+                <!-- SSA SoftwareId (UK)-->
+                <SoftwareId>AppConfig2.DCR.SoftwareId</SoftwareId>
+                <!-- SSA Redirect Uri -->
+                <RedirectUri>AppConfig2.DCR.RedirectUri</RedirectUri>
+                <!-- SSA Alternate Redirect Uri (AU)-->
+                <AlternateRedirectUri>AppConfig2.DCR.AlternateRedirectUri</AlternateRedirectUri>
+                <!-- Version of DCR API (UK)
+                (e.g. 3.2 for DCR v3.2, 3.3.0 for DCR v3.3.0)
+                -->
+                <DCRAPIVersion>AppConfig2.DCR.DCRAPIVersion</DCRAPIVersion>
+            </DCR>
+
+            <!-- Application Info -->
+            <Application>
+                <ClientID>AppConfig2.Application.ClientID</ClientID>
+                <ClientSecret>AppConfig2.Application.ClientSecret</ClientSecret>
+                <RedirectURL>AppConfig2.Application.RedirectURL</RedirectURL>
+            </Application>
+        </AppConfig>
+    </ApplicationConfigList>
+
+    <Transport>
+        <Truststore>
+            <!--Absolute path + file name of truststore file. We can point the product client-truststore.jks here.
+            (e.g. <location>/home/kasun/wso2-obam-1.3.0/repository/resources/security/client-truststore.jks</location>)
+            -->
+            <Location>Transport.Truststore.Location</Location>
+            <Type>jks</Type>
+            <Password>Transport.Truststore.Password</Password>
+        </Truststore>
+    </Transport>
+    <!-- Non Regulatory Application Info -->
+    <NonRegulatoryApplication>
+        <ClientID>NonRegulatoryApplication.ClientID</ClientID>
+        <ClientSecret>NonRegulatoryApplication.ClientSecret</ClientSecret>
+        <RedirectURL>https://www.google.com</RedirectURL>
+    </NonRegulatoryApplication>
+    <!-- PSU Info -->
+    <PSUInfo>
+        <Psu>admin@wso2.com</Psu>
+        <PsuPassword>wso2123</PsuPassword>
+    </PSUInfo>
+    <!-- Publisher Info -->
+    <PublisherInfo>
+        <Publisher>admin@wso2.com</Publisher>
+        <PublisherPassword>wso2123</PublisherPassword>
+    </PublisherInfo>
+    <!-- PSU Info -->
+    <TPPInfo>
+        <Tpp>admin@wso2.com</Tpp>
+        <TppPassword>wso2123</TppPassword>
+    </TPPInfo>
+    <!-- Customer Care Info -->
+    <CustomerCareInfo>
+        <CustomerCareUser>ann@gold.com</CustomerCareUser>
+        <CustomerCareUserPassword>wso2123</CustomerCareUserPassword>
+    </CustomerCareInfo>
+    <!-- Basic Auth Info -->
+    <BasicAuthInfo>
+        <BasicAuthUser>admin@wso2.com</BasicAuthUser>
+        <BasicAuthUserPassword>wso2123</BasicAuthUserPassword>
+    </BasicAuthInfo>
+    <!-- Browser Automation -->
+    <BrowserAutomation>
+        <!--Eg: chrome/firefox-->
+        <BrowserPreference>BrowserAutomation.BrowserPreference</BrowserPreference>
+        <HeadlessEnabled>BrowserAutomation.HeadlessEnabled</HeadlessEnabled>
+        <WebDriverLocation>BrowserAutomation.WebDriverLocation</WebDriverLocation>
+    </BrowserAutomation>
+    <!-- Common Configurations -->
+    <Common>
+        <!--Access token expire time in seconds-->
+        <AccessTokenExpireTime>30</AccessTokenExpireTime>
+        <TenantDomain>carbon.super</TenantDomain>
+        <SigningAlgorithm>Common.SigningAlgorithm</SigningAlgorithm>
+        <KeyManager.Admin>
+            <Username>admin@wso2.com</Username>
+            <Password>wso2123</Password>
+        </KeyManager.Admin>
+    </Common>
+    <RESTApi>
+        <DCRAccessToken>RESTApi.DCRAccessToken</DCRAccessToken>
+        <ApiId>RESTApi.ApiId</ApiId>
+    </RESTApi>
+    <ConsentApi>
+        <AudienceValue>ConsentApi.AudienceValue</AudienceValue>
+        <RevocationAudienceValue>ConsentApi.RevocationAudienceValue</RevocationAudienceValue>
+    </ConsentApi>
+    <InternalApiContext>
+        <Consent-Mgt>/consent</Consent-Mgt> <!-- if 2.0.0 /api/openbanking/consent-mgt -->
+        <Multi-Auth>/multi-auth-api/1.0.0</Multi-Auth> <!-- if 2.0.0 /api/openbanking/multi-auth-api/1.0.0 -->
+    </InternalApiContext>
+    <!-- Id Permanence Encryption/Decryption Key (AU)-->
+    <IdPermanence>
+        <SecretKey>wso2</SecretKey>
+    </IdPermanence>
+
+    <!-- Applies only for AU -->
+    <!-- Refer MockCDRRegister/README.md for instructions to proceed with Mock CDR Register Integration -->
+    <AUMockCDRRegister>
+        <Enabled>AUMockCDRRegister.Enabled</Enabled>
+        <!-- eg: localhost-->
+        <HostName>Host running the Mock Register docker image</HostName>
+        <MetaDataFileLocation>AUMockCDRRegister.MetaDataFileLocation</MetaDataFileLocation>
+        <Transport>
+            <KeyStore>
+                <Location>Absolute file path to 'client.pfx' file</Location>
+                <Type>pkcs12</Type>
+                <Password>#M0ckDataRecipient#</Password>
+            </KeyStore>
+            <Truststore>
+                <Location>Absolute file path to 'ca.pfx' file</Location>
+                <Type>pkcs12</Type>
+                <Password>#M0ckCDRCA#</Password>
+            </Truststore>
+        </Transport>
+        <Application>
+            <KeyStore>
+                <Location>Absolute file path to 'signingkeystore.jks' file</Location>
+                <Alias>adr-sig</Alias>
+                <Password>wso2carbon</Password>
+            </KeyStore>
+        </Application>
+    </AUMockCDRRegister>
 </Configurations>

@@ -18,7 +18,7 @@ import com.wso2.openbanking.test.framework.automation.AUBasicAuthAutomationStep
 import com.wso2.openbanking.test.framework.automation.BasicAuthErrorStep
 import com.wso2.openbanking.test.framework.automation.BrowserAutomation
 import com.wso2.openbanking.test.framework.automation.WaitForRedirectAutomationStep
-import com.wso2.openbanking.test.framework.util.ConfigParser
+import com.wso2.openbanking.test.framework.util.AppConfigReader
 import com.wso2.openbanking.test.framework.util.TestConstants
 import com.wso2.openbanking.test.framework.util.TestUtil
 import com.wso2.openbanking.toolkit.cds.test.common.utils.AUAuthorisationBuilder
@@ -48,7 +48,7 @@ class PushedAuthorisationFlowTest extends AbstractAUTests {
             AUConstants.SCOPES.BANK_CUSTOMER_DETAIL_READ
     ]
     private String scopeString = "openid ${String.join(" ", scopes.collect({ it.scopeString }))}"
-    private String clientId = ConfigParser.getInstance().getClientId()
+    private String clientId = AppConfigReader.getClientId()
 
     private AccessTokenResponse userAccessToken
     private String requestUri

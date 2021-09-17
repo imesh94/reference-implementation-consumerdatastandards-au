@@ -18,6 +18,7 @@ import com.wso2.openbanking.test.framework.automation.BrowserAutomation
 import com.wso2.openbanking.test.framework.automation.WaitForRedirectAutomationStep
 import com.wso2.openbanking.test.framework.model.AccessTokenJwtDto
 import com.wso2.openbanking.test.framework.util.ConfigParser
+import com.wso2.openbanking.test.framework.util.AppConfigReader
 import com.wso2.openbanking.test.framework.util.TestConstants
 import com.wso2.openbanking.test.framework.util.TestUtil
 import org.openqa.selenium.By
@@ -129,14 +130,14 @@ class AbstractAUTests {
 
     Response doPushAuthorisationRequest(List<AUConstants.SCOPES> scopes, long sharingDuration,
                                         boolean sendSharingDuration, String cdrArrangementId,
-                                        String clientId = ConfigParser.instance.clientId) {
+                                        String clientId = AppConfigReader.getClientId()) {
 
         String scopeString = "openid ${String.join(" ", scopes.collect({ it.scopeString }))}"
 
         parResponse = TestSuite.buildRequest()
                 .contentType(TestConstants.ACCESS_TOKEN_CONTENT_TYPE)
                 .formParams(TestConstants.REQUEST_KEY, AUAuthorisationBuilder.getSignedRequestObject(scopeString,
-                        sharingDuration, sendSharingDuration, cdrArrangementId, ConfigParser.instance.redirectUrl, clientId).serialize())
+                        sharingDuration, sendSharingDuration, cdrArrangementId, AppConfigReader.getRedirectURL(), clientId).serialize())
                 .baseUri(AUConstants.PUSHED_AUTHORISATION_BASE_PATH)
                 .post(AUConstants.PAR_ENDPOINT)
 

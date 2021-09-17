@@ -12,7 +12,7 @@
 
 package com.wso2.openbanking.toolkit.cds.integration.tests.throttling
 
-import com.wso2.openbanking.test.framework.util.ConfigParser
+import com.wso2.openbanking.test.framework.util.AppConfigReader
 import com.wso2.openbanking.test.framework.util.TestConstants
 import com.wso2.openbanking.toolkit.cds.test.common.utils.AUConstants
 import com.wso2.openbanking.toolkit.cds.test.common.utils.AURequestBuilder
@@ -34,7 +34,7 @@ import java.util.concurrent.atomic.AtomicInteger
 class ThrottlingPolicyTest extends AbstractAUTests {
 
     static final String CDS_PATH = AUConstants.CDS_PATH
-    static final String clientId = ConfigParser.getInstance().getClientId()
+    static final String clientId = AppConfigReader.getClientId()
     AtomicInteger sequence = new AtomicInteger(0)
     private List<String> scopes = [
             AUConstants.SCOPES.BANK_ACCOUNT_BASIC_READ.getScopeString(),

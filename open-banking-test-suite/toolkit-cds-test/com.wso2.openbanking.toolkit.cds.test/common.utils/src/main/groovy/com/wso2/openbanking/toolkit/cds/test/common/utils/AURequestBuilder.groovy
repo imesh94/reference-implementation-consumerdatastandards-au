@@ -30,6 +30,7 @@ import com.wso2.openbanking.test.framework.TestSuite
 import com.wso2.openbanking.test.framework.model.AccessTokenJwtDto
 import com.wso2.openbanking.test.framework.model.ApplicationAccessTokenDto
 import com.wso2.openbanking.test.framework.request.AccessToken
+import com.wso2.openbanking.test.framework.util.AppConfigReader
 import com.wso2.openbanking.test.framework.util.ConfigParser
 import com.wso2.openbanking.test.framework.util.TestConstants
 import com.wso2.openbanking.test.framework.util.TestUtil
@@ -83,7 +84,7 @@ class AURequestBuilder {
         def config = ConfigParser.getInstance()
 
         AuthorizationCode grant = new AuthorizationCode(code)
-        URI callbackUri = new URI(config.getRedirectUrl())
+        URI callbackUri = new URI(AppConfigReader.getRedirectURL())
         AuthorizationGrant codeGrant = new AuthorizationCodeGrant(grant, callbackUri)
 
         String assertionString = new AccessTokenJwtDto().getJwt(clientId)
@@ -121,7 +122,7 @@ class AURequestBuilder {
         def config = ConfigParser.getInstance()
 
         AuthorizationCode grant = new AuthorizationCode(code)
-        URI callbackUri = new URI(config.getRedirectUrl())
+        URI callbackUri = new URI(AppConfigReader.getRedirectURL())
         AuthorizationGrant codeGrant = new AuthorizationCodeGrant(grant, callbackUri)
 
         Scope scope = new Scope("openid")
@@ -162,7 +163,7 @@ class AURequestBuilder {
      * @return token error response
      */
     static TokenErrorResponse getUserTokenErrorResponse(String code,
-                                                        String redirectUrl = configParser.getRedirectUrl(), Boolean clientAuthRequired = true,
+                                                        String redirectUrl = AppConfigReader.getRedirectURL(), Boolean clientAuthRequired = true,
                                                         Boolean mtlsRequired = true, String signingAlg = configParser.getSigningAlgorithm()) {
 
         AuthorizationCode grant = new AuthorizationCode(code)
@@ -173,7 +174,7 @@ class AURequestBuilder {
 
         TokenRequest request;
         if (!clientAuthRequired) {
-            ClientID clientId = new ClientID(configParser.getClientId())
+            ClientID clientId = new ClientID(AppConfigReader.getClientId())
             request = new TokenRequest(tokenEndpoint, clientId, codeGrant)
         } else {
             AccessTokenJwtDto accessTokenJWTDTO = new AccessTokenJwtDto()
@@ -246,7 +247,7 @@ class AURequestBuilder {
      * @return basic authorization header value
      */
     static String getBasicAuthorizationHeader() {
-        String headerString = ConfigParser.instance.clientId + ":" + ConfigParser.instance.clientSecret
+        String headerString = AppConfigReader.getClientId() + ":" + AppConfigReader.getClientSecret()
         return Base64.encoder.encodeToString(headerString.getBytes(Charset.forName("UTF-8")))
     }
 

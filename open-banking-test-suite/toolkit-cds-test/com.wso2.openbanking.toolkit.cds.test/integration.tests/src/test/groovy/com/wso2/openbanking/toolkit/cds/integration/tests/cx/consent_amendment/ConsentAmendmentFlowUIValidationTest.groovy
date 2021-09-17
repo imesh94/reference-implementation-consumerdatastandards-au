@@ -14,7 +14,7 @@ package com.wso2.openbanking.toolkit.cds.integration.tests.cx.consent_amendment
 
 import com.nimbusds.oauth2.sdk.AccessTokenResponse
 import com.wso2.openbanking.test.framework.util.TestUtil
-import com.wso2.openbanking.test.framework.util.ConfigParser
+import com.wso2.openbanking.test.framework.util.AppConfigReader
 import com.wso2.openbanking.test.framework.util.TestConstants
 import com.wso2.openbanking.test.framework.TestSuite
 import com.wso2.openbanking.test.framework.automation.AUBasicAuthAutomationStep
@@ -94,9 +94,9 @@ class ConsentAmendmentFlowUIValidationTest extends AbstractAUTests{
         // Data recipient name extracted from DCR GET call
         def registrationResponse = AURegistrationRequestBuilder.buildBasicRequest(
                 AURequestBuilder.getApplicationToken(scopes.collect({ it.scopeString }),
-                        ConfigParser.getInstance().getClientId()))
+                        AppConfigReader.getClientId()))
                 .when()
-                .get(AUDCRConstants.REGISTRATION_ENDPOINT + ConfigParser.getInstance().getClientId())
+                .get(AUDCRConstants.REGISTRATION_ENDPOINT + AppConfigReader.getClientId())
 
         Assert.assertNotNull(registrationResponse)
         String adrName = registrationResponse.jsonPath().get("org_name") + "," + registrationResponse.jsonPath().get("client_name")

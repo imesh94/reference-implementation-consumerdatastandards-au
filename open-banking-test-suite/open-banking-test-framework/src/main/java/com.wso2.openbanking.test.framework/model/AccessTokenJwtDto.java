@@ -21,6 +21,7 @@ import com.nimbusds.jose.JWSSigner;
 import com.nimbusds.jose.Payload;
 import com.nimbusds.jose.crypto.RSASSASigner;
 import com.wso2.openbanking.test.framework.exception.TestFrameworkException;
+import com.wso2.openbanking.test.framework.util.AppConfigReader;
 import com.wso2.openbanking.test.framework.util.ConfigParser;
 import com.wso2.openbanking.test.framework.util.TestConstants;
 import com.wso2.openbanking.test.framework.util.TestUtil;
@@ -165,13 +166,13 @@ public class AccessTokenJwtDto {
             } else {
                 keyStore = TestUtil.getApplicationKeyStore();
                 KeyStore.PrivateKeyEntry pkEntry = (KeyStore.PrivateKeyEntry) keyStore.getEntry(
-                        ConfigParser.getInstance().getApplicationKeystoreAlias(), new KeyStore.PasswordProtection(
-                                ConfigParser.getInstance().getApplicationKeystorePassword().toCharArray()));
+                        AppConfigReader.getApplicationKeystoreAlias(), new KeyStore.PasswordProtection(
+                                AppConfigReader.getApplicationKeystorePassword().toCharArray()));
 
                 Certificate certificate = pkEntry.getCertificate();
                 thumbprint = TestUtil.getJwkThumbPrint(certificate);
-                signingKey = keyStore.getKey(ConfigParser.getInstance().getApplicationKeystoreAlias(),
-                        ConfigParser.getInstance().getApplicationKeystorePassword().toCharArray());
+                signingKey = keyStore.getKey(AppConfigReader.getApplicationKeystoreAlias(),
+                        AppConfigReader.getApplicationKeystorePassword().toCharArray());
             }
 
             long currentTimeInMilliseconds = System.currentTimeMillis();
@@ -189,10 +190,10 @@ public class AccessTokenJwtDto {
             }
             if (clientId == null) {
                 if (sub == null) {
-                    sub = ConfigParser.getInstance().getClientId();
+                    sub = AppConfigReader.getClientId();
                 }
                 if (iss == null) {
-                    iss = ConfigParser.getInstance().getClientId();
+                    iss = AppConfigReader.getClientId();
                 }
             } else {
                 sub = clientId;
@@ -250,8 +251,8 @@ public class AccessTokenJwtDto {
         try {
             keyStore = TestUtil.getApplicationKeyStore();
             KeyStore.PrivateKeyEntry pkEntry = (KeyStore.PrivateKeyEntry) keyStore.getEntry(
-                    ConfigParser.getInstance().getApplicationKeystoreAlias(), new KeyStore.PasswordProtection(
-                            ConfigParser.getInstance().getApplicationKeystorePassword().toCharArray()));
+                    AppConfigReader.getApplicationKeystoreAlias(), new KeyStore.PasswordProtection(
+                            AppConfigReader.getApplicationKeystorePassword().toCharArray()));
             Certificate certificate = pkEntry.getCertificate();
             long currentTimeInMilliseconds = System.currentTimeMillis();
             long currentTimeInSeconds = System.currentTimeMillis() / 1000;
@@ -264,10 +265,10 @@ public class AccessTokenJwtDto {
 
             if (issuer == null) {
                 if (sub == null) {
-                    sub = ConfigParser.getInstance().getClientId();
+                    sub = AppConfigReader.getClientId();
                 }
                 if (iss == null) {
-                    iss = ConfigParser.getInstance().getClientId();
+                    iss = AppConfigReader.getClientId();
                 }
             } else {
                 sub = issuer;
@@ -292,8 +293,8 @@ public class AccessTokenJwtDto {
 
             Key signingKey;
 
-            signingKey = keyStore.getKey(ConfigParser.getInstance().getApplicationKeystoreAlias(),
-                    ConfigParser.getInstance().getApplicationKeystorePassword().toCharArray());
+            signingKey = keyStore.getKey(AppConfigReader.getApplicationKeystoreAlias(),
+                    AppConfigReader.getApplicationKeystorePassword().toCharArray());
 
             JWSSigner signer = new RSASSASigner((PrivateKey) signingKey);
 
@@ -320,10 +321,10 @@ public class AccessTokenJwtDto {
 
         if (issuer == null) {
             if (sub == null) {
-                sub = ConfigParser.getInstance().getClientId();
+                sub = AppConfigReader.getClientId();
             }
             if (iss == null) {
-                iss = ConfigParser.getInstance().getClientId();
+                iss = AppConfigReader.getClientId();
             }
         } else {
             sub = issuer;

@@ -18,6 +18,7 @@ import com.wso2.openbanking.test.framework.automation.AUBasicAuthAutomationStep
 import com.wso2.openbanking.test.framework.automation.BrowserAutomation
 import com.wso2.openbanking.test.framework.automation.WaitForRedirectAutomationStep
 import com.wso2.openbanking.test.framework.util.ConfigParser
+import com.wso2.openbanking.test.framework.util.AppConfigReader
 import com.wso2.openbanking.test.framework.util.TestConstants
 import com.wso2.openbanking.toolkit.cds.test.common.utils.AUAuthorisationBuilder
 import com.wso2.openbanking.toolkit.cds.test.common.utils.AURequestBuilder
@@ -189,10 +190,10 @@ class ConsentAmendmentFlowTest extends AbstractAUTests{
     void "TC009_Verify a revoked consent cannot be amended"() {
 
         //Revoke the Consent
-        String assertionString = new AccessTokenJwtDto().getJwt(ConfigParser.getInstance().getClientId(),
+        String assertionString = new AccessTokenJwtDto().getJwt(AppConfigReader.getClientId(),
                 ConfigParser.getInstance().getRevocationAudienceValue())
 
-        def bodyContent = [(TestConstants.CLIENT_ID_KEY)            : (ConfigParser.getInstance().getClientId()),
+        def bodyContent = [(TestConstants.CLIENT_ID_KEY)            : (AppConfigReader.getClientId()),
                            (TestConstants.CLIENT_ASSERTION_TYPE_KEY): (TestConstants.CLIENT_ASSERTION_TYPE),
                            (TestConstants.CLIENT_ASSERTION_KEY)     : assertionString,
                            "cdr_arrangement_id"                     : cdrArrangementId]

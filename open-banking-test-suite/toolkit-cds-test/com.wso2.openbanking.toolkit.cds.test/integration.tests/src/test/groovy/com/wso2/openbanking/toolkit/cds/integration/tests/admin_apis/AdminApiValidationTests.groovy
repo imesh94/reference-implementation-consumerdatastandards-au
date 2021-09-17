@@ -14,7 +14,7 @@ package com.wso2.openbanking.toolkit.cds.integration.tests.admin_apis
 
 import com.wso2.openbanking.test.framework.TestSuite
 import com.wso2.openbanking.test.framework.model.AccessTokenJwtDto
-import com.wso2.openbanking.test.framework.util.ConfigParser
+import com.wso2.openbanking.test.framework.util.AppConfigReader
 import com.wso2.openbanking.test.framework.util.TestUtil
 import com.wso2.openbanking.test.framework.util.TestConstants
 import com.wso2.openbanking.toolkit.cds.test.common.utils.AUConstants
@@ -42,7 +42,7 @@ class AdminApiValidationTests extends AbstractAUTests {
 
     @BeforeClass(alwaysRun = true)
     void "Generate Access Token"() {
-        clientId = ConfigParser.getInstance().getClientId()
+        clientId = AppConfigReader.getClientId()
     }
 
     //TODO: Git Issue: https://github.com/wso2-enterprise/financial-open-banking/issues/5565

@@ -12,6 +12,7 @@
 
 package com.wso2.openbanking.toolkit.cds.test.common.utils
 
+import com.wso2.openbanking.test.framework.util.AppConfigReader
 import com.wso2.openbanking.test.framework.util.ConfigParser
 
 /**
@@ -21,8 +22,8 @@ class AUDCRConstants {
 
     static final String REGISTRATION_ENDPOINT = "/open-banking/0.2/register/"
 
-    static final String SSA = new File(ConfigParser.getInstance().getSsaFilePath()).text
-    static final String SOFTWARE_PRODUCT_ID = ConfigParser.getInstance().getSoftwareId()
+    static final String SSA = new File(AppConfigReader.getSSAFilePath()).text
+    static final String SOFTWARE_PRODUCT_ID = AppConfigReader.getSoftwareId()
     static final String REDIRECT_URI = ConfigParser.getInstance().getRedirectUri()
     static final String ALTERNATE_REDIRECT_URI = ConfigParser.getInstance().getRedirectUri()
 

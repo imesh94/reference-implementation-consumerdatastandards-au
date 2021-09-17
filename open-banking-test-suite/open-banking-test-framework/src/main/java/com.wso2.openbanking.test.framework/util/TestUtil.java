@@ -30,7 +30,6 @@ import org.apache.http.conn.ssl.SSLSocketFactory;
 import org.bouncycastle.jce.provider.BouncyCastleProvider;
 import org.jose4j.jws.JsonWebSignature;
 import org.jose4j.lang.JoseException;
-import org.json.JSONObject;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 import org.w3c.dom.NodeList;
@@ -84,7 +83,7 @@ public class TestUtil {
 
         SslSocketFactoryCreator sslSocketFactoryCreator = new SslSocketFactoryCreator();
 
-        if (ConfigParser.getInstance().isMtlsEnabled()) {
+        if (AppConfigReader.isMTLSEnabled()) {
             try {
                 sslSocketFactory = sslSocketFactoryCreator.create();
 
@@ -240,9 +239,8 @@ public class TestUtil {
         try {
             Signature rsa = Signature.getInstance(signatureAlgorithm);
             KeyStore keyStore = getApplicationKeyStore();
-            PrivateKey privateKey = (PrivateKey) keyStore.getKey(ConfigParser.getInstance()
-                    .getApplicationKeystoreAlias(), ConfigParser.getInstance()
-                    .getApplicationKeystorePassword().toCharArray());
+            PrivateKey privateKey = (PrivateKey) keyStore.getKey(AppConfigReader.getApplicationKeystoreAlias(),
+                    AppConfigReader.getApplicationKeystorePassword().toCharArray());
             rsa.initSign(privateKey);
 
             StringBuilder signatureHeader = new StringBuilder();
@@ -297,10 +295,10 @@ public class TestUtil {
      */
     public static KeyStore getApplicationKeyStore() throws TestFrameworkException {
 
-        try (InputStream inputStream = new FileInputStream(ConfigParser.getInstance().getApplicationKeystoreLocation())) {
+        try (InputStream inputStream = new FileInputStream(AppConfigReader.getApplicationKeystoreLocation())) {
 
             KeyStore keyStore = KeyStore.getInstance("JKS");
-            keyStore.load(inputStream, ConfigParser.getInstance().getApplicationKeystorePassword().toCharArray());
+            keyStore.load(inputStream, AppConfigReader.getApplicationKeystorePassword().toCharArray());
             return keyStore;
         } catch (IOException e) {
             throw new TestFrameworkException("Failed to load Keystore file from the location", e);
@@ -443,9 +441,8 @@ public class TestUtil {
      */
     public static String generateXjwsSignature(String header, String requestBody) {
 
-        char[] keyStorePassword = ConfigParser.getInstance()
-                .getApplicationKeystorePassword().toCharArray();
-        String keyStoreName = ConfigParser.getInstance().getApplicationKeystoreAlias();
+        char[] keyStorePassword = AppConfigReader.getApplicationKeystorePassword().toCharArray();
+        String keyStoreName = AppConfigReader.getApplicationKeystoreAlias();
 
         try {
 
@@ -601,9 +598,8 @@ public class TestUtil {
         try {
             KeyStore keyStore = TestUtil.getApplicationKeyStore();
             KeyStore.PrivateKeyEntry pkEntry = (KeyStore.PrivateKeyEntry)
-                    keyStore.getEntry(ConfigParser.getInstance().getApplicationKeystoreAlias(),
-                            new KeyStore.PasswordProtection(ConfigParser.getInstance()
-                                    .getApplicationKeystorePassword().toCharArray()));
+                    keyStore.getEntry(AppConfigReader.getApplicationKeystoreAlias(),
+                            new KeyStore.PasswordProtection(AppConfigReader.getApplicationKeystorePassword().toCharArray()));
             Certificate certificate = pkEntry.getCertificate();
             return certificate;
         } catch (TestFrameworkException e) {
@@ -830,11 +826,10 @@ public class TestUtil {
      */
     public static String getPublicKeyFromTransportKeyStore() throws TestFrameworkException {
 
-        try (InputStream inputStream = new FileInputStream(
-                ConfigParser.getInstance().getTransportKeystoreLocation())) {
+        try (InputStream inputStream = new FileInputStream(AppConfigReader.getTransportKeystoreLocation())) {
             KeyStore keyStore = KeyStore.getInstance("JKS");
 
-            String keystorePassword = ConfigParser.getInstance().getTransportKeystorePassword();
+            String keystorePassword = AppConfigReader.getTransportKeystorePassword();
             keyStore.load(inputStream, keystorePassword.toCharArray());
 
             String keystoreAlias = ConfigParser.getInstance().getTransportKeystoreAlias();
@@ -870,8 +865,8 @@ public class TestUtil {
             Payload payload = new Payload(claims);
 
             Key signingKey;
-            signingKey = keyStore.getKey(ConfigParser.getInstance().getApplicationKeystoreAlias(),
-                    ConfigParser.getInstance().getApplicationKeystorePassword().toCharArray());
+            signingKey = keyStore.getKey(AppConfigReader.getApplicationKeystoreAlias(),
+                    AppConfigReader.getApplicationKeystorePassword().toCharArray());
             JWSSigner signer = new RSASSASigner((PrivateKey) signingKey);
 
             Security.addProvider(new BouncyCastleProvider());

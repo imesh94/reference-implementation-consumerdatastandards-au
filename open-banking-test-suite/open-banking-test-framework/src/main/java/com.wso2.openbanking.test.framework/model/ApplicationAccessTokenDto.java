@@ -15,6 +15,7 @@ package com.wso2.openbanking.test.framework.model;
 
 
 import com.wso2.openbanking.test.framework.exception.TestFrameworkException;
+import com.wso2.openbanking.test.framework.util.AppConfigReader;
 import com.wso2.openbanking.test.framework.util.ConfigParser;
 import com.wso2.openbanking.test.framework.util.TestConstants;
 import com.wso2.openbanking.test.framework.util.TestUtil;
@@ -154,7 +155,7 @@ public class ApplicationAccessTokenDto {
     }
 
     if (redirectUri == null) {
-      setRedirectUri(ConfigParser.getInstance().getRedirectUrl());
+      setRedirectUri(AppConfigReader.getRedirectURL());
     }
 
     if (scopes == null) {
@@ -203,7 +204,7 @@ public class ApplicationAccessTokenDto {
     }
 
     if (redirectUri == null) {
-      setRedirectUri(ConfigParser.getInstance().getRedirectUrl());
+      setRedirectUri(AppConfigReader.getRedirectURL());
     }
 
     if (scopes == null) {
@@ -263,7 +264,7 @@ public class ApplicationAccessTokenDto {
     }
 
     if (redirectUri == null) {
-      setRedirectUri(ConfigParser.getInstance().getRedirectUrl());
+      setRedirectUri(AppConfigReader.getRedirectURL());
     }
 
     if (scopes == null) {
@@ -275,15 +276,15 @@ public class ApplicationAccessTokenDto {
     }
 
     if (appKeystoreLocation == null) {
-      setApplicationKeystoreLocation(ConfigParser.getInstance().getApplicationKeystoreLocation());
+      setApplicationKeystoreLocation(AppConfigReader.getApplicationKeystoreLocation());
     }
 
     if (appKeystorePassword == null) {
-      setApplicationKeystorePassword(ConfigParser.getInstance().getApplicationKeystorePassword());
+      setApplicationKeystorePassword(AppConfigReader.getApplicationKeystorePassword());
     }
 
     if (appKeystoreAlias == null) {
-      setApplicationKeystoreAlias(ConfigParser.getInstance().getApplicationKeystoreAlias());
+      setApplicationKeystoreAlias(AppConfigReader.getApplicationKeystoreAlias());
     }
     setExp(exp);
 
@@ -326,7 +327,7 @@ public class ApplicationAccessTokenDto {
     }
 
     if (redirectUri == null) {
-      setRedirectUri(ConfigParser.getInstance().getRedirectUrl());
+      setRedirectUri(AppConfigReader.getRedirectURL());
     }
 
     if (scopes == null) {
@@ -383,7 +384,7 @@ public class ApplicationAccessTokenDto {
     }
 
     if (redirectUri == null) {
-      setRedirectUri(ConfigParser.getInstance().getRedirectUrl());
+      setRedirectUri(AppConfigReader.getRedirectURL());
     }
 
     if (scopes == null) {
@@ -430,7 +431,7 @@ public class ApplicationAccessTokenDto {
     }
 
     if (redirectUri == null) {
-      setRedirectUri(ConfigParser.getInstance().getRedirectUrl());
+      setRedirectUri(AppConfigReader.getRedirectURL());
     }
 
     if (scopes == null) {
@@ -465,7 +466,7 @@ public class ApplicationAccessTokenDto {
     }
 
     if (redirectUri == null) {
-      setRedirectUri(ConfigParser.getInstance().getRedirectUrl());
+      setRedirectUri(AppConfigReader.getRedirectURL());
     }
 
     if (scopes == null) {
@@ -506,7 +507,7 @@ public class ApplicationAccessTokenDto {
     }
 
     if (redirectUri == null) {
-      setRedirectUri(ConfigParser.getInstance().getRedirectUrl());
+      setRedirectUri(AppConfigReader.getRedirectURL());
     }
 
     if (scopes == null) {

@@ -13,6 +13,7 @@
 package com.wso2.openbanking.test.framework.model;
 
 import com.wso2.openbanking.test.framework.exception.TestFrameworkException;
+import com.wso2.openbanking.test.framework.util.AppConfigReader;
 import com.wso2.openbanking.test.framework.util.ConfigParser;
 import com.wso2.openbanking.test.framework.util.TestConstants;
 import com.wso2.openbanking.test.framework.util.TestUtil;
@@ -133,7 +134,7 @@ public class RefreshTokenDto {
 		}
 
 		if (redirectUrl == null) {
-			setRedirectUrl(ConfigParser.getInstance().getRedirectUrl());
+			setRedirectUrl(AppConfigReader.getRedirectURL());
 		}
 
 		if (scopes == null) {
@@ -147,7 +148,7 @@ public class RefreshTokenDto {
 		}
 
 		if (clientId == null) {
-			setClientId(ConfigParser.getInstance().getClientId());
+			setClientId(AppConfigReader.getClientId());
 		}
 
 		String payload = "";
@@ -198,7 +199,7 @@ public class RefreshTokenDto {
 		}
 
 		if (redirectUrl == null) {
-			setRedirectUrl(ConfigParser.getInstance().getRedirectUrl());
+			setRedirectUrl(AppConfigReader.getRedirectURL());
 		}
 
 		if (scopes == null) {
@@ -212,7 +213,7 @@ public class RefreshTokenDto {
 		}
 
 		if (clientId == null) {
-			setClientId(ConfigParser.getInstance().getClientId());
+			setClientId(AppConfigReader.getClientId());
 		}
 
 		String payload = "";

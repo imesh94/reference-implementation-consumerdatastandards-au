@@ -217,10 +217,10 @@ public class ConfigParser {
      *
      * @return clientId
      */
-    public String getClientId() {
+    public Object getClientId() {
 
-        return String.valueOf(ConfigParser.getInstance().getConfiguration()
-                .get("Application.ClientID"));
+        return ConfigParser.getInstance().getConfiguration()
+                .get("ApplicationConfigList.AppConfig.Application.ClientID");
     }
 
     /**
@@ -228,10 +228,10 @@ public class ConfigParser {
      *
      * @return client Secret
      */
-    public String getClientSecret() {
+    public Object getClientSecret() {
 
-        return String.valueOf(ConfigParser.getInstance().getConfiguration()
-                .get("Application.ClientSecret"));
+        return ConfigParser.getInstance().getConfiguration()
+                .get("ApplicationConfigList.AppConfig.Application.ClientSecret");
     }
 
     /**
@@ -291,10 +291,10 @@ public class ConfigParser {
      *
      * @return redirect url
      */
-    public String getRedirectUrl() {
+    public Object getRedirectURL() {
 
-        return String.valueOf(ConfigParser.getInstance().getConfiguration()
-                .get("Application.RedirectURL"));
+        return ConfigParser.getInstance().getConfiguration()
+                .get("ApplicationConfigList.AppConfig.Application.RedirectURL");
     }
 
     /**
@@ -313,10 +313,10 @@ public class ConfigParser {
      *
      * @return application keystore location
      */
-    public String getApplicationKeystoreLocation() {
+    public Object getApplicationKeystoreLocation() {
 
-        return String.valueOf(ConfigParser.getInstance().getConfiguration()
-                .get("Application.KeyStore.Location"));
+        return ConfigParser.getInstance().getConfiguration()
+                .get("ApplicationConfigList.AppConfig.Application.KeyStore.Location");
     }
 
     /**
@@ -324,10 +324,10 @@ public class ConfigParser {
      *
      * @return alias
      */
-    public String getApplicationKeystoreAlias() {
+    public Object getApplicationKeystoreAlias() {
 
-        return String.valueOf(ConfigParser.getInstance().getConfiguration()
-                .get("Application.KeyStore.Alias"));
+        return ConfigParser.getInstance().getConfiguration()
+                .get("ApplicationConfigList.AppConfig.Application.KeyStore.Alias");
     }
 
     /**
@@ -335,10 +335,10 @@ public class ConfigParser {
      *
      * @return keystore password
      */
-    public String getApplicationKeystorePassword() {
+    public Object getApplicationKeystorePassword() {
 
-        return String.valueOf(ConfigParser.getInstance().getConfiguration()
-                .get("Application.KeyStore.Password"));
+        return ConfigParser.getInstance().getConfiguration()
+                .get("ApplicationConfigList.AppConfig.Application.KeyStore.Password");
     }
 
     /**
@@ -357,10 +357,10 @@ public class ConfigParser {
      *
      * @return boolean
      */
-    public Boolean isMtlsEnabled() {
+    public Object isMTLSEnabled() {
 
-        return Boolean.parseBoolean(String.valueOf(ConfigParser.getInstance().getConfiguration()
-                .get("Transport.MTLSEnabled")));
+        return ConfigParser.getInstance().getConfiguration()
+                .get("ApplicationConfigList.AppConfig.Transport.MTLSEnabled");
     }
 
     /**
@@ -368,10 +368,10 @@ public class ConfigParser {
      *
      * @return transport keystore location
      */
-    public String getTransportKeystoreLocation() {
+    public Object getTransportKeystoreLocation() {
 
-        return String.valueOf(ConfigParser.getInstance().getConfiguration()
-                .get("Transport.KeyStore.Location"));
+        return ConfigParser.getInstance().getConfiguration()
+                .get("ApplicationConfigList.AppConfig.Transport.KeyStore.Location");
     }
 
     /**
@@ -379,10 +379,10 @@ public class ConfigParser {
      *
      * @return keystore password
      */
-    public String getTransportKeystorePassword() {
+    public Object getTransportKeystorePassword() {
 
-        return String.valueOf(ConfigParser.getInstance().getConfiguration()
-                .get("Transport.KeyStore.Password"));
+        return ConfigParser.getInstance().getConfiguration()
+                .get("ApplicationConfigList.AppConfig.Transport.KeyStore.Password");
     }
 
     /**
@@ -401,10 +401,10 @@ public class ConfigParser {
      *
      * @return keystore type
      */
-    public String getTransportKeystoreType() {
+    public Object getTransportKeystoreType() {
 
-        return String.valueOf(ConfigParser.getInstance().getConfiguration()
-                .get("Transport.KeyStore.Type"));
+        return ConfigParser.getInstance().getConfiguration()
+                .get("ApplicationConfigList.AppConfig.Transport.KeyStore.Type");
     }
 
     /**
@@ -467,9 +467,9 @@ public class ConfigParser {
      *
      * @return Keystore Domain
      */
-    public String getApplicationKeystoreDomain() {
-        return String.valueOf(ConfigParser.getInstance().getConfiguration()
-                .get("Application.KeyStore.DomainName"));
+    public Object getApplicationKeystoreDomain() {
+        return ConfigParser.getInstance().getConfiguration()
+                .get("ApplicationConfigList.AppConfig.Application.KeyStore.DomainName");
     }
 
     /**
@@ -586,10 +586,10 @@ public class ConfigParser {
      *
      * @return ssa file path
      */
-    public String getSsaFilePath() {
+    public Object getSSAFilePath() {
 
-        return String.valueOf(ConfigParser.getInstance().getConfiguration()
-                .get("DCR.SSAPath"));
+        return ConfigParser.getInstance().getConfiguration()
+                .get("ApplicationConfigList.AppConfig.DCR.SSAPath");
     }
 
     /**
@@ -597,10 +597,10 @@ public class ConfigParser {
      *
      * @return file path
      */
-    public String getSelfSignedSsaFilePath() {
+    public Object getSelfSignedSSAFilePath() {
 
-        return String.valueOf(ConfigParser.getInstance().getConfiguration()
-                .get("DCR.SelfSignedSSAPath"));
+        return ConfigParser.getInstance().getConfiguration()
+                .get("ApplicationConfigList.AppConfig.DCR.SelfSignedSSAPath");
     }
 
     /**
@@ -618,10 +618,10 @@ public class ConfigParser {
      *
      * @return software id
      */
-    public String getSoftwareId() {
+    public Object getSoftwareId() {
 
-        return String.valueOf(ConfigParser.getInstance().getConfiguration()
-                .get("DCR.SoftwareId"));
+        return ConfigParser.getInstance().getConfiguration()
+                .get("ApplicationConfigList.AppConfig.DCR.SoftwareId");
     }
 
     /**
@@ -640,10 +640,10 @@ public class ConfigParser {
      *
      * @return alternate redirect url
      */
-    public String getAlternateRedirectUri() {
+    public Object getAlternateRedirectUri() {
 
-        return String.valueOf(ConfigParser.getInstance().getConfiguration()
-                .get("DCR.AlternateRedirectUri"));
+        return ConfigParser.getInstance().getConfiguration()
+                .get("ApplicationConfigList.AppConfig.DCR.AlternateRedirectUri");
     }
 
     /**
@@ -952,6 +952,16 @@ public class ConfigParser {
 
     public String getMockCDRRegisterHostName() {
         return String.valueOf(ConfigParser.getInstance().getConfiguration().get("AUMockCDRRegister.HostName"));
+    }
+
+    public String browserPreference() {
+        return String.valueOf(ConfigParser.getInstance().getConfiguration().get("BrowserAutomation.BrowserPreference"));
+    }
+
+    public String getDriverLocation() {
+
+        return String.valueOf(ConfigParser.getInstance().getConfiguration()
+                .get("BrowserAutomation.WebDriverLocation"));
     }
 
 }

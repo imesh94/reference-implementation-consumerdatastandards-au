@@ -19,6 +19,7 @@ import com.nimbusds.jose.JWSSigner
 import com.nimbusds.jose.Payload
 import com.nimbusds.jose.crypto.RSASSASigner
 import com.wso2.openbanking.test.framework.TestSuite
+import com.wso2.openbanking.test.framework.util.AppConfigReader
 import com.wso2.openbanking.test.framework.util.ConfigParser
 import com.wso2.openbanking.test.framework.util.TestConstants
 import com.wso2.openbanking.test.framework.util.TestUtil
@@ -117,8 +118,8 @@ class AURegistrationRequestBuilder {
             header = new JWSHeader.Builder(JWSAlgorithm.parse(ConfigParser.instance.signingAlgorithm)).
                     keyID(TestUtil.getJwkThumbPrint(certificate)).build()
 
-            signingKey = keyStore.getKey(ConfigParser.getInstance().getApplicationKeystoreAlias(),
-                    ConfigParser.getInstance().getApplicationKeystorePassword().toCharArray())
+            signingKey = keyStore.getKey(AppConfigReader.getApplicationKeystoreAlias(),
+                    AppConfigReader.getApplicationKeystorePassword().toCharArray())
         }
 
         JWSSigner signer = new RSASSASigner((PrivateKey) signingKey)

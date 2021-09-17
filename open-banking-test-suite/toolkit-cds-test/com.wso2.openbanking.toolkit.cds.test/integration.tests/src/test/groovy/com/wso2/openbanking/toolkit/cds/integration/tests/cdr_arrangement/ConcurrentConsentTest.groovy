@@ -18,6 +18,7 @@ import com.wso2.openbanking.test.framework.automation.AUBasicAuthAutomationStep
 import com.wso2.openbanking.test.framework.automation.BrowserAutomation
 import com.wso2.openbanking.test.framework.automation.WaitForRedirectAutomationStep
 import com.wso2.openbanking.test.framework.util.ConfigParser
+import com.wso2.openbanking.test.framework.util.AppConfigReader
 import com.wso2.openbanking.test.framework.util.TestConstants
 import com.wso2.openbanking.test.framework.util.TestUtil
 import com.wso2.openbanking.toolkit.cds.test.common.utils.AUAuthorisationBuilder
@@ -159,7 +160,7 @@ class ConcurrentConsentTest extends AbstractAUTests {
 
         //obtain application access token to invoke cdr management endpoint
         List<String> scopes = ["openid"]
-        String applicationToken = AURequestBuilder.getApplicationToken(scopes, ConfigParser.getInstance().getClientId())
+        String applicationToken = AURequestBuilder.getApplicationToken(scopes, AppConfigReader.getClientId())
 
         Assert.assertNotNull(applicationToken)
 
@@ -215,7 +216,7 @@ class ConcurrentConsentTest extends AbstractAUTests {
 
         //obtain application access token to invoke cdr arrangement endpoint
         List<String> scopes = ["openid"]
-        String applicationToken = AURequestBuilder.getApplicationToken(scopes, ConfigParser.getInstance().getClientId())
+        String applicationToken = AURequestBuilder.getApplicationToken(scopes, AppConfigReader.getClientId())
 
         Assert.assertNotNull(applicationToken)
 
