@@ -105,7 +105,10 @@ public class CDSConsentRetrievalStep implements ConsentRetrievalStep {
                         "Error occurred while building service provider full name");
             }
         } else {
-            log.warn("Client-id is not found in consent data. This might cause complications in the flow.");
+            log.error("Error occurred while building service provider full name. Client-id is not found in " +
+                    "consent data.");
+            throw new ConsentException(ResponseStatus.INTERNAL_SERVER_ERROR,
+                    "Error occurred while building service provider full name. Client-id not found.");
         }
     }
 

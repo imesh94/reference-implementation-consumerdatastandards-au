@@ -52,6 +52,7 @@ public class CDSConsentExtensionConstants {
     public static final String COMMON_AUTH_ID = "commonAuthId";
     public static final String METADATA = "metadata";
     public static final String ACCOUNT_IDS = "accountIds";
+    public static final String ACCOUNTS_ARRAY = "accounts[]";
     public static final String ZERO = "0";
     public static final String CONSENT_EXPIRY = "consent_expiration";
     public static final String ACCOUNT_MASKING_ENABLED = "account_masking_enabled";
