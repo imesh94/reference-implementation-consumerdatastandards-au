@@ -73,12 +73,9 @@ public class IdPermanenceUtils {
     public static JsonObject maskResourceIDsInData(JsonObject data, String url,
                                                    String memberId, String appId, String key) {
         if (isResourceListResponse(url)) {
-
             // handle responses with a resource list
-
             List<String> keys = getJsonObjectMembers(data);
             JsonArray resourceList = (JsonArray) data.get(keys.get(0));
-
             int resourceArrayLength = resourceList.size();
 
             if (resourceArrayLength > 0) {
@@ -90,14 +87,11 @@ public class IdPermanenceUtils {
                     encryptResourceIdsInJsonObject(availableResourceIdKeys, resourceNew, memberId, appId, key);
                 }
             }
-
         } else if (isSingleResourceResponse(url)) {
-
             // handle response with a single resource
             List<String> availableResourceIdKeys =
                     getListOfAvailableResourceIdKeysInResponse(data);
             encryptResourceIdsInJsonObject(availableResourceIdKeys, data, memberId, appId, key);
-
         } else if (isSchedulePaymentListResponse(url)) {
             // handle scheduled payment list retrieval requests
             JsonArray resourceList = (JsonArray) data.get(IdPermanenceConstants.SCHEDULED_PAYMENTS);
