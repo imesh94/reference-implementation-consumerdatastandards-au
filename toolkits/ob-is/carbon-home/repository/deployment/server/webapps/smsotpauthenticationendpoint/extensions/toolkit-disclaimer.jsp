@@ -10,6 +10,6 @@
   ~ with WSO2 governing the purchase of this software and any associated services.
   --%>
 <div class="form-actions disclaimer" style="font-size:small">
-	Your Customer ID will not be shared with "<%=request.getAttribute("spDetails").toString()%>". One time passwords are used
+	Your Customer ID will not be shared with "<%=request.getAttribute("spFullName").toString()%>". One time passwords are used
 	to share banking data. You will never be asked to provide your real password to share banking data.
 </div>

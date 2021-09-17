@@ -12,10 +12,12 @@
 package com.wso2.openbanking.cds.consent.extensions.authorize.utils;
 
 import com.wso2.openbanking.accelerator.common.exception.OpenBankingException;
+import com.wso2.openbanking.accelerator.common.util.Generated;
 import com.wso2.openbanking.accelerator.consent.extensions.authorize.model.ConsentData;
 import com.wso2.openbanking.accelerator.consent.extensions.common.ConsentException;
 import com.wso2.openbanking.accelerator.consent.extensions.common.ResponseStatus;
 import com.wso2.openbanking.accelerator.identity.util.HTTPClientUtils;
+import com.wso2.openbanking.accelerator.identity.util.IdentityCommonHelper;
 import com.wso2.openbanking.cds.consent.extensions.authorize.impl.model.AccountConsentRequest;
 import com.wso2.openbanking.cds.consent.extensions.authorize.impl.model.AccountData;
 import com.wso2.openbanking.cds.consent.extensions.common.CDSConsentExtensionConstants;
@@ -196,4 +198,19 @@ public class CDSDataRetrievalUtil {
         accountConsentRequest.setRequestId(consentData.getConsentId());
         return accountConsentRequest;
     }
+
+    /**
+     * Get service provider full name
+     *
+     * @param clientId clientId
+     * @return service provider full name
+     */
+    @Generated(message = "Excluding from code coverage since it requires a service call")
+    public static String getServiceProviderFullName(String clientId) throws OpenBankingException {
+        IdentityCommonHelper identityCommonHelper = new IdentityCommonHelper();
+        String spOrgName = identityCommonHelper.getAppPropertyFromSPMetaData(clientId, "org_name");
+        String spClientName = identityCommonHelper.getAppPropertyFromSPMetaData(clientId, "client_name");
+        return String.format("%s, %s", spOrgName, spClientName);
+    }
+
 }
