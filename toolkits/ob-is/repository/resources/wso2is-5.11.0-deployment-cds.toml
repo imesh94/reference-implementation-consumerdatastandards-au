@@ -518,16 +518,16 @@ push_auth_request_validator="com.wso2.openbanking.cds.identity.push.auth.extensi
 
 #=======================configs related to open-banking-cds.xml=====================
 
-#[open_banking_cds.dcr]
-#enable_uri_validation=true
-#enable_hostname_validation=true
-#enable_sector_identifier_uri_validation=true
+[open_banking_cds.dcr]
+enable_uri_validation=true
+enable_hostname_validation=true
+enable_sector_identifier_uri_validation=true
 
-#[open_banking_cds.consent_management]
-#sharable_accounts_retrieve_endpoint="https://run.mocky.io/v3/49ea6f7b-a7d7-44db-956a-c9de2a072e41"
-#validate_account_id_on_retrieval=true
+[open_banking_cds.consent_management]
+sharable_accounts_retrieve_endpoint="http://localhost:9763/api/openbanking/cds/backend/services/bankaccounts/bankaccountservice/sharable-accounts"
+validate_account_id_on_retrieval=true
+enable_account_masking=true
 
-
-#[open_banking_cds.customer_details]
-#enable=false
-#customer_details_retrieval_endpoint="https://run.mocky.io/v3/602f170e-55ff-49cb-8d6a-e0c3a8d7a5cc"
+[open_banking_cds.customer_details]
+enable=true
+customer_details_retrieval_endpoint="http://localhost:9763/api/openbanking/cds/backend/services/customerdetails/details/{userId}"

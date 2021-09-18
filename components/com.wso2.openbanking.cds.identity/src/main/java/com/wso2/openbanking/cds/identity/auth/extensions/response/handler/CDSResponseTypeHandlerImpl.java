@@ -11,10 +11,11 @@
  */
 package com.wso2.openbanking.cds.identity.auth.extensions.response.handler;
 
+import com.wso2.openbanking.accelerator.common.config.OpenBankingConfigParser;
 import com.wso2.openbanking.accelerator.common.exception.OpenBankingException;
 import com.wso2.openbanking.accelerator.identity.auth.extensions.response.handler.OBResponseTypeHandler;
+import com.wso2.openbanking.accelerator.identity.util.IdentityCommonConstants;
 import com.wso2.openbanking.accelerator.identity.util.IdentityCommonUtil;
-import com.wso2.openbanking.cds.common.utils.CommonConstants;
 import com.wso2.openbanking.cds.identity.utils.CDSIdentityUtil;
 import org.apache.commons.lang.ArrayUtils;
 import org.apache.commons.lang3.StringUtils;
@@ -54,7 +55,10 @@ public class CDSResponseTypeHandlerImpl implements OBResponseTypeHandler {
                     log.error("Consent id retrieved using common auth id is empty");
                     return null;
                 }
-                String consentScope = CommonConstants.OB_CONSENT_ID_PREFIX + consentId;
+                // Add consent id to scopes
+                String consentIdClaimName = OpenBankingConfigParser.getInstance().getConfiguration().get(
+                        IdentityCommonConstants.CONSENT_ID_CLAIM_NAME).toString();
+                String consentScope = consentIdClaimName + consentId;
                 String[] updatedScopes = (String[]) ArrayUtils.addAll(scopes, new String[]{consentScope});
                 if (log.isDebugEnabled()) {
                     log.debug("Updated scopes: " + Arrays.toString(updatedScopes));

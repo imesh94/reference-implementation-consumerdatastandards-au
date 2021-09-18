@@ -248,4 +248,9 @@ public class OpenBankingCDSConfigParser {
         }
         return textBuilder.toString();
     }
+
+    //check account masking is enabled
+    public boolean isAccountMaskingEnabled() {
+        return Boolean.parseBoolean((String) configuration.get(CommonConstants.ACCOUNT_MASKING));
+    }
 }

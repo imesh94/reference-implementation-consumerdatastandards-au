@@ -14,6 +14,7 @@ package com.wso2.openbanking.cds.consent.extensions.authorize.impl.retrieval;
 import com.wso2.openbanking.accelerator.consent.extensions.authorize.model.ConsentData;
 import com.wso2.openbanking.accelerator.consent.mgt.dao.models.ConsentResource;
 import com.wso2.openbanking.accelerator.identity.push.auth.extension.request.validator.util.PushAuthRequestValidatorUtils;
+import com.wso2.openbanking.cds.consent.extensions.common.CDSConsentExtensionConstants;
 import com.wso2.openbanking.cds.consent.extensions.util.CDSConsentAuthorizeTestConstants;
 import net.minidev.json.JSONObject;
 import org.mockito.Mockito;
@@ -148,5 +149,19 @@ public class CDSConsentRetrievalStepTests extends PowerMockTestCase {
 
         cdsConsentRetrievalStep.execute(consentDataMock, jsonObject);
         Assert.assertTrue(!jsonObject.isEmpty());
+    }
+
+    @Test
+    public void testConsentRetrievalWithoutClientId() {
+
+        JSONObject jsonObject = new JSONObject();
+        String reqeust = "request=" + CDSConsentAuthorizeTestConstants.VALID_REQUEST_OBJECT;
+        String redirectUri = "redirect_uri=https://www.google.com/redirects/redirect1&";
+        String scopeString = "common:customer.basic:read common:customer.detail:read openid profile";
+        String sampleQueryParams =  redirectUri + reqeust;
+        doReturn(sampleQueryParams).when(consentDataMock).getSpQueryParams();
+        doReturn(scopeString).when(consentDataMock).getScopeString();
+        cdsConsentRetrievalStep.execute(consentDataMock, jsonObject);
+        Assert.assertTrue(!jsonObject.containsKey(CDSConsentExtensionConstants.SP_FULL_NAME));
     }
 }

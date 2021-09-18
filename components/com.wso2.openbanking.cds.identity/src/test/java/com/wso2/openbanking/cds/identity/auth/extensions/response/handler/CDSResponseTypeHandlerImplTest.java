@@ -11,10 +11,13 @@
  */
 package com.wso2.openbanking.cds.identity.auth.extensions.response.handler;
 
+import com.wso2.openbanking.accelerator.common.config.OpenBankingConfigParser;
 import com.wso2.openbanking.accelerator.common.exception.OpenBankingException;
+import com.wso2.openbanking.accelerator.identity.util.IdentityCommonConstants;
 import com.wso2.openbanking.accelerator.identity.util.IdentityCommonUtil;
 import com.wso2.openbanking.cds.identity.utils.CDSIdentityUtil;
 import org.mockito.Mockito;
+import org.powermock.api.mockito.PowerMockito;
 import org.powermock.core.classloader.annotations.PrepareForTest;
 import org.powermock.modules.testng.PowerMockTestCase;
 import org.testng.Assert;
@@ -24,14 +27,19 @@ import org.wso2.carbon.identity.oauth2.authz.OAuthAuthzReqMessageContext;
 import org.wso2.carbon.identity.oauth2.dto.OAuth2AuthorizeReqDTO;
 
 import java.util.Arrays;
+import java.util.HashMap;
+import java.util.Map;
 
+import static org.mockito.Mockito.doReturn;
+import static org.mockito.Mockito.mock;
 import static org.powermock.api.mockito.PowerMockito.mockStatic;
 import static org.powermock.api.mockito.PowerMockito.when;
 
-@PrepareForTest({CDSIdentityUtil.class, IdentityCommonUtil.class})
+@PrepareForTest({CDSIdentityUtil.class, IdentityCommonUtil.class, OpenBankingConfigParser.class})
 public class CDSResponseTypeHandlerImplTest extends PowerMockTestCase {
 
     private CDSResponseTypeHandlerImpl cdsResponseTypeHandler;
+    private static OpenBankingConfigParser openBankingConfigParserMock;
 
     @BeforeClass
     public void beforeClass() {
@@ -41,6 +49,14 @@ public class CDSResponseTypeHandlerImplTest extends PowerMockTestCase {
 
     @Test
     public void updateApprovedScopesSuccess() throws Exception {
+
+        Map<String, Object> configMap = new HashMap<>();
+        configMap.put(IdentityCommonConstants.CONSENT_ID_CLAIM_NAME, "consent_id");
+
+        PowerMockito.mockStatic(OpenBankingConfigParser.class);
+        openBankingConfigParserMock = mock(OpenBankingConfigParser.class);
+        PowerMockito.when(OpenBankingConfigParser.getInstance()).thenReturn(openBankingConfigParserMock);
+        doReturn(configMap).when(openBankingConfigParserMock).getConfiguration();
 
         OAuth2AuthorizeReqDTO oAuth2AuthorizeReqDTO = new OAuth2AuthorizeReqDTO();
         oAuth2AuthorizeReqDTO.setConsumerKey("DummyClientId");
@@ -57,7 +73,7 @@ public class CDSResponseTypeHandlerImplTest extends PowerMockTestCase {
 
         String[] updatedScopes = cdsResponseTypeHandler.updateApprovedScopes(oAuthAuthzReqMessageContext);
 
-        Assert.assertTrue(Arrays.asList(updatedScopes).contains("OB_CONSENT_ID_DummyConsentId"));
+        Assert.assertTrue(Arrays.asList(updatedScopes).contains("consent_idDummyConsentId"));
     }
 
     @Test
