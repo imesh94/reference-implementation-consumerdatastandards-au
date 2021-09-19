@@ -46,6 +46,10 @@
             <artifactId>com.wso2.openbanking.accelerator.common</artifactId>
         </dependency>
         <dependency>
+            <groupId>com.wso2</groupId>
+            <artifactId>com.wso2.openbanking.accelerator.identity</artifactId>
+        </dependency>
+        <dependency>
             <groupId>com.wso2.openbanking</groupId>
             <artifactId>com.wso2.openbanking.cds.common</artifactId>
             <scope>provided</scope>

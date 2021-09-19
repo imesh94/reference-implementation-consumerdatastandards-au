@@ -90,6 +90,9 @@ public class CDSResponseTypeHandlerImpl implements OBResponseTypeHandler {
                 return sharingDuration;
             }
         } else {
+            // In case of an error (in this case due to common auth id being null or empty),
+            // we do not set or update a value. We just pass the value already set to the authorization
+            // context using the getter method.
             log.error("Failed to get refresh token validity period due to empty common auth id");
             return oAuthAuthzReqMessageContext.getRefreshTokenvalidityPeriod();
         }

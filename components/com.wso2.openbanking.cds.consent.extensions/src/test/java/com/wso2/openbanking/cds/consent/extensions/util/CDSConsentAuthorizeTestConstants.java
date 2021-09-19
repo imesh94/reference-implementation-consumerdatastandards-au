@@ -87,6 +87,31 @@ public class CDSConsentAuthorizeTestConstants {
             "zu5sQTRR3GakfVMzajhSsMmhZ67sgyMv0ZdgVktiP3qtymEUPKN_IKVdy2Ece1dElb_AGX2tRWzr-YIFuvdaNh-0Dy_duPSdlv8WwGr" +
             "ldUMBPzmUX2hPkwUA";
 
+    public static final String ENCRYPTED_JWT = "eyJlbmMiOiJBMTI4R0NNIiwiYWxnIjoiUlNBLU9BRVAtMjU2In0.QZFDDUFzdGy" +
+            "w2inAq45QEUGyKt7-GpRJJ9SqRSyvRKLEJLcg2jbKLBBKDCNdru9ZqAZpw21ERkIikQxnt-baxSuFbRS5F6XEEMfDI2zkZSrF7" +
+            "dAjOjy2w_Ai54QH2ghFOMqaOFuP1BPWy2K0P8ehg-yaAnPMsrUnqWJpnvBNagGLYJRh7wa96KUCvH_-hFZiKwrRVLmQqI5vFsS" +
+            "wHGCAPxlQzJ_7aD55j7gFbYh6RZ_Psn_Es9zlbo3ae0mEKl38Hn2mtpt2XME17h64sbq3ajHZ68fOa13_mM0NZFr66C67DAfnI" +
+            "5IyYDWVoGhAdBNo41IkYMPSG7wuGkCSCEDPXg.xveN6xYKl7hkB2im.p2THY1Y7dDVKzsMEeKtPbbcf1lrsB4yomPIifwk0jc2" +
+            "y3Y5LM8bi_jHIM4RdYy4kOb9hpXZDX5hvPX3Xbuh6Zx0s4jWNMjhXReWtmg4KyUuUpLm48vM81SEjU64utynBf2YgD1pGJmdRG" +
+            "tSJphotPtrcSloPCW51kR5DTujx31yR2P26-6_Pe3ddQnv1ie0M-9sOPojYnv5c_-p8xJfNTtjfycmNh7EMraaH86NpNuAW9h2" +
+            "6ZazKfe1xxESEHqg-qfVNt-jZzxCgyrwNn2utPtNiCHyuf-wwvNjU8kFHky4DNPJ5WJlU923e-yYbPtMNNm8eAe8nUG7AUnWkv" +
+            "-fq1EqyP6BObP7W_OZB6x1uAFZ5d_tyYMqoUxyLljtRCfJ33_l8KOEmAmSwXulKVvi4gHZy7vPBpCNNwA6U6C_JeGFVCg4IzNT" +
+            "6RdiKKVF8sEsqSYkkSk2uTsu9_y75xgDc0Ebx5F0xIzYteFeUTbM-Vs0g25q0RMIUnBK35pQoZokn0-aNOfAn_CL9R4XKlagZ4" +
+            "BG_sQ6HyOjf5Ui9Y9AOQ99GjANSUygmk0ivFHawx0u8XLFVaKwOe1Mbh5McNHuMV3dECX2VdyM_QS2hOavM4KAJ9Fnp3YHme_n" +
+            "qRKbuvnvDGAeAoSv-WF8LY_GDidUEkZOyPxQrFOyhseC2jcaiU7mES6diPaueQ3yeB6TnNX3JNGfNT5Reir6z2Mi5Gv3_jWEzC" +
+            "VZouyHSd0IFWoZJqIRiXyAm63IwmMsuP4VFL1dFizL0LColZic7Vdwkr4W-QozyrUmbSyWy2ntZcw21eK-lTKDZBkxVJWXe9Zb" +
+            "4sx3J5pilPFlLTtj8egLwkVu354wGu8e1XmyEeQH2tEyro4lfvT7WzSJoYEOYWulaSP3UWRU40LTT_V6AWA2IWlsixr9GuJDfY" +
+            "und5FEyrunqm7ojfmVxgM52-0exwPuN-T49Gw2kai7Y31DRpT1ZqJROL5UJk4mi6Vb7bWMhb0PC-e9enWlDBYGtX7ulNIhBR9V" +
+            "K87ZB5l659kynAMZ8CrwPrasv-dsDOsaK_PEWdeUbx0GGm80JbOzpAeYEnrHzedfoNIdQs9ecK5QrUui9rYiUiC3f-w24EGl32" +
+            "0-g8GayH0PGMpq9zHFB0SfaPjuR-oxa9kn1x-lfeqlHGm0R21BIaJIiN2Bp7B8NWMPv7OB_jFEyWWhqNZUEDQ0evkMRI-evvDA" +
+            "2U3gW9GtQ_ap-7Zb-78G29mdgL9tfxyJSf8xbYvLbGfWiI0cacCA-1WubwBrX6RTLiibMJZcn8JPC27ZXRC3FIcBo85s7JJ3qj" +
+            "L-8gjhLNaUnDHDX5ieZYb8sFGUUIRFMuIkZDHB1u_-FZETiQcLXxMoiQS6-sXH8DVVVmMaahtz763Pfnh3ilSmZPZ8XUkvn4Qb" +
+            "m25RbWU3FISjlOYk_1Cm7K0Z6rL1kNGEcb1O8jFjHuhWa7989jCnuuT73yxyduyfU1yBoprBCzWy-7zL6meSuTqcbj7Bb-g9LB" +
+            "oVVQ8e4XmZMXQPnmyFPzQoveDrIriLg3IHVmqsDwrIF63YWmWxzHvoczMt8CV5yYiX--BXSXteTa8fua1rqh82xFLFcmFv4S8P" +
+            "yV1hFUhVTD3i8WqHTCT6PfHb-KwWS2sIPqARi8ILAXx5HHDyCrwaBJq2e78GSQhH785aGutcwSDlBrhmSplsNmkQghJf2bhRB4" +
+            "Oi6-BRxJAgOXr2J8NjyD-jXo52TTWKU5kPlRsZyoDBpjZ9RQP2ssxdc_TQsKQdzHeSNdIoD6rpwY7qWkhnbv69Re0oIPTpPvAJ" +
+            "_7_UW7NvUDFu56xN3.U1nq0A6rc8mdTdb1iL2s3w";
+
     public static DetailedConsentResource getDetailedConsentResource() {
         DetailedConsentResource detailedConsentResource = new DetailedConsentResource();
         detailedConsentResource.setConsentID("1234");
