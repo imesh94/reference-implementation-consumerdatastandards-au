@@ -71,7 +71,6 @@ public class IDPermanenceExecutorTest extends PowerMockTestCase {
         PowerMockito.mockStatic(OpenBankingCDSConfigParser.class);
         PowerMockito.when(OpenBankingCDSConfigParser.getInstance()).thenReturn(openBankingCDSConfigParserMock);
         doReturn(ENCRYPTION_KEY).when(openBankingCDSConfigParserMock).getIdPermanenceSecretKey();
-        doReturn(true).when(openBankingCDSConfigParserMock).isIdPermanenceEnabled();
 
         IDPermanenceExecutor idPermanenceExecutor = Mockito.spy(IDPermanenceExecutor.class);
         OBAPIRequestContext obapiRequestContext = Mockito.mock(OBAPIRequestContext.class);
@@ -98,7 +97,6 @@ public class IDPermanenceExecutorTest extends PowerMockTestCase {
         PowerMockito.mockStatic(OpenBankingCDSConfigParser.class);
         PowerMockito.when(OpenBankingCDSConfigParser.getInstance()).thenReturn(openBankingCDSConfigParserMock);
         doReturn(ENCRYPTION_KEY).when(openBankingCDSConfigParserMock).getIdPermanenceSecretKey();
-        doReturn(true).when(openBankingCDSConfigParserMock).isIdPermanenceEnabled();
 
         IDPermanenceExecutor idPermanenceExecutor = Mockito.spy(IDPermanenceExecutor.class);
         OBAPIResponseContext obapiResponseContext = Mockito.mock(OBAPIResponseContext.class);
