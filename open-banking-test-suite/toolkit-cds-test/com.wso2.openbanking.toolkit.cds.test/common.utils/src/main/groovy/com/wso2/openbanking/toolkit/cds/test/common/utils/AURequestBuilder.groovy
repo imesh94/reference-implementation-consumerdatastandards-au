@@ -17,6 +17,7 @@ import com.nimbusds.oauth2.sdk.AccessTokenResponse
 import com.nimbusds.oauth2.sdk.AuthorizationCode
 import com.nimbusds.oauth2.sdk.AuthorizationCodeGrant
 import com.nimbusds.oauth2.sdk.AuthorizationGrant
+import com.nimbusds.oauth2.sdk.Scope
 import com.nimbusds.oauth2.sdk.TokenErrorResponse
 import com.nimbusds.oauth2.sdk.TokenRequest
 import com.nimbusds.oauth2.sdk.TokenResponse
@@ -24,10 +25,12 @@ import com.nimbusds.oauth2.sdk.auth.ClientAuthentication
 import com.nimbusds.oauth2.sdk.auth.PrivateKeyJWT
 import com.nimbusds.oauth2.sdk.http.HTTPRequest
 import com.nimbusds.oauth2.sdk.http.HTTPResponse
+import com.nimbusds.oauth2.sdk.id.ClientID
 import com.wso2.openbanking.test.framework.TestSuite
 import com.wso2.openbanking.test.framework.model.AccessTokenJwtDto
 import com.wso2.openbanking.test.framework.model.ApplicationAccessTokenDto
 import com.wso2.openbanking.test.framework.request.AccessToken
+import com.wso2.openbanking.test.framework.util.AppConfigReader
 import com.wso2.openbanking.test.framework.util.ConfigParser
 import com.wso2.openbanking.test.framework.util.TestConstants
 import com.wso2.openbanking.test.framework.util.TestUtil
@@ -44,6 +47,7 @@ import java.util.logging.Logger
 class AURequestBuilder {
     static log = Logger.getLogger(AURequestBuilder.class.toString())
     private AccessTokenJwtDto accessTokenJWTDTO
+    private static ConfigParser configParser = ConfigParser.getInstance()
 
     static RequestSpecification buildBasicRequest(String userAccessToken, int version) {
 
@@ -57,7 +61,7 @@ class AURequestBuilder {
 
         return TestSuite.buildRequest()
                 .header(AUConstants.X_V_HEADER, version)
-                .header(AUConstants.X_FAPI_CUSTOMER_IP_ADDRESS , AUConstants.IP)
+                .header(AUConstants.X_FAPI_CUSTOMER_IP_ADDRESS, AUConstants.IP)
                 .header(TestConstants.AUTHORIZATION_HEADER_KEY, "Bearer ${userAccessToken}")
                 .baseUri(AUTestUtil.getBaseUrl(AUConstants.BASE_PATH_TYPE_ACCOUNT))
     }
@@ -72,17 +76,18 @@ class AURequestBuilder {
      * Get User Access Token From Authorization Code.
      *
      * @param code authorisation code
+     * @param client_id
      * @return token response
      */
-    static AccessTokenResponse getUserToken(String code) {
+    static AccessTokenResponse getUserToken(String code, String clientId = null) {
 
         def config = ConfigParser.getInstance()
 
         AuthorizationCode grant = new AuthorizationCode(code)
-        URI callbackUri = new URI(config.getRedirectUrl())
+        URI callbackUri = new URI(AppConfigReader.getRedirectURL())
         AuthorizationGrant codeGrant = new AuthorizationCodeGrant(grant, callbackUri)
 
-        String assertionString = new AccessTokenJwtDto().getJwt()
+        String assertionString = new AccessTokenJwtDto().getJwt(clientId)
 
         ClientAuthentication clientAuth = new PrivateKeyJWT(SignedJWT.parse(assertionString))
 
@@ -106,26 +111,31 @@ class AURequestBuilder {
     }
 
     /**
-     * Get User Access Token Error Response From Inactive Authorization Code.
+     * Get User Access Token From Authorization Code and optional scopes list.
      *
      * @param code authorisation code
-     * @return token error response
+     * @param scopesList requsted scope list
+     * @return token response
      */
-    static TokenErrorResponse getUserTokenErrorResponse(String code) {
+    static AccessTokenResponse getUserToken(String code, List<AUConstants.SCOPES> scopesList) {
 
         def config = ConfigParser.getInstance()
 
         AuthorizationCode grant = new AuthorizationCode(code)
-        URI callbackUri = new URI(config.getRedirectUrl())
+        URI callbackUri = new URI(AppConfigReader.getRedirectURL())
         AuthorizationGrant codeGrant = new AuthorizationCodeGrant(grant, callbackUri)
+
+        Scope scope = new Scope("openid")
+        for (scopeValue in scopesList) {
+            scope.add(scopeValue.toString())
+        }
 
         String assertionString = new AccessTokenJwtDto().getJwt()
 
         ClientAuthentication clientAuth = new PrivateKeyJWT(SignedJWT.parse(assertionString))
 
         URI tokenEndpoint = new URI("${config.getBaseUrl()}${TestConstants.TOKEN_ENDPOINT}")
-
-        TokenRequest request = new TokenRequest(tokenEndpoint, clientAuth, codeGrant)
+        TokenRequest request = new TokenRequest(tokenEndpoint, clientAuth, codeGrant, scope)
 
         HTTPRequest httpRequest = request.toHTTPRequest()
 
@@ -133,6 +143,62 @@ class AURequestBuilder {
                 .contentType(TestConstants.ACCESS_TOKEN_CONTENT_TYPE)
                 .body(httpRequest.query)
                 .post(tokenEndpoint)
+
+        HTTPResponse httpResponse = new HTTPResponse(response.statusCode())
+        httpResponse.setContentType(response.contentType())
+        httpResponse.setContent(response.getBody().print())
+
+        return TokenResponse.parse(httpResponse).toSuccessResponse()
+
+    }
+
+    /**
+     * Get User Access Token Error Response for error scenarios
+     *
+     * @param code authorisation code
+     * @param redirectUrl redirect URL
+     * @param clientAuthRequired indicates whether privateKeyJWT client auth is required
+     * @param mtlsRequired indicates whether mlts is required
+     * @param signingAlg client assertion signing algorithm
+     * @return token error response
+     */
+    static TokenErrorResponse getUserTokenErrorResponse(String code,
+                                                        String redirectUrl = AppConfigReader.getRedirectURL(), Boolean clientAuthRequired = true,
+                                                        Boolean mtlsRequired = true, String signingAlg = configParser.getSigningAlgorithm()) {
+
+        AuthorizationCode grant = new AuthorizationCode(code)
+        URI callbackUri = new URI(redirectUrl)
+        AuthorizationGrant codeGrant = new AuthorizationCodeGrant(grant, callbackUri)
+
+        URI tokenEndpoint = new URI("${configParser.authorisationServerUrl()}${TestConstants.TOKEN_ENDPOINT}")
+
+        TokenRequest request;
+        if (!clientAuthRequired) {
+            ClientID clientId = new ClientID(AppConfigReader.getClientId())
+            request = new TokenRequest(tokenEndpoint, clientId, codeGrant)
+        } else {
+            AccessTokenJwtDto accessTokenJWTDTO = new AccessTokenJwtDto()
+            accessTokenJWTDTO.setSigningAlg(signingAlg)
+            String assertionString = accessTokenJWTDTO.getJwt()
+            ClientAuthentication clientAuth = new PrivateKeyJWT(SignedJWT.parse(assertionString))
+            request = new TokenRequest(tokenEndpoint, clientAuth, codeGrant)
+        }
+
+        HTTPRequest httpRequest = request.toHTTPRequest()
+        def response
+
+        if (mtlsRequired) {
+            response = TestSuite.buildRequest()
+                    .contentType(TestConstants.ACCESS_TOKEN_CONTENT_TYPE)
+                    .body(httpRequest.query)
+                    .post(tokenEndpoint)
+
+        } else {
+            response = TestSuite.buildBasicRequest()
+                    .contentType(TestConstants.ACCESS_TOKEN_CONTENT_TYPE)
+                    .body(httpRequest.query)
+                    .post(tokenEndpoint)
+        }
 
         HTTPResponse httpResponse = new HTTPResponse(response.statusCode())
         httpResponse.setContentType(response.contentType())
@@ -181,7 +247,7 @@ class AURequestBuilder {
      * @return basic authorization header value
      */
     static String getBasicAuthorizationHeader() {
-        String headerString = ConfigParser.instance.clientId + ":" + ConfigParser.instance.clientSecret
+        String headerString = AppConfigReader.getClientId() + ":" + AppConfigReader.getClientSecret()
         return Base64.encoder.encodeToString(headerString.getBytes(Charset.forName("UTF-8")))
     }
 

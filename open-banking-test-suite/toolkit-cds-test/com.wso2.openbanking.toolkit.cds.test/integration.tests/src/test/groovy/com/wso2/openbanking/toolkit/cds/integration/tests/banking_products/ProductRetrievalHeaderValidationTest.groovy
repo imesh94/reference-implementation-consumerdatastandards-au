@@ -14,6 +14,7 @@ package com.wso2.openbanking.toolkit.cds.integration.tests.banking_products
 
 import com.wso2.openbanking.test.framework.TestSuite
 import com.wso2.openbanking.test.framework.util.ConfigParser
+import com.wso2.openbanking.test.framework.util.AppConfigReader
 import com.wso2.openbanking.test.framework.util.TestConstants
 import com.wso2.openbanking.test.framework.util.TestUtil
 import com.wso2.openbanking.toolkit.cds.test.common.utils.AUConstants
@@ -108,7 +109,7 @@ class ProductRetrievalHeaderValidationTest extends AbstractAUTests {
     //Validate X_FAPI_INTERACTION_ID,X_FAPI_AUTH_DATE,X_FAPI_CUSTOMER_IP_ADDRESS & X_CDS_CLIENT_HEADER optional headers
     void "TC0701026_Retrieve banking products with optional-headers"(){
 
-        def cdsClient = "${ConfigParser.instance.clientId}:${ConfigParser.instance.clientSecret}"
+        def cdsClient = "${AppConfigReader.getClientId()}:${AppConfigReader.getClientSecret()}"
         def clientHeader = "${Base64.encoder.encodeToString(cdsClient.getBytes(Charset.defaultCharset()))}"
         def response = TestSuite.buildRequest()
                 .accept(AUConstants.ACCEPT)

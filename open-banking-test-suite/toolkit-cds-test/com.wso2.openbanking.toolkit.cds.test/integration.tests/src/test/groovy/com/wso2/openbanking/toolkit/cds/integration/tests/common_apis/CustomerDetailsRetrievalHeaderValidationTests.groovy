@@ -18,6 +18,8 @@ import com.wso2.openbanking.test.framework.util.TestUtil
 import com.wso2.openbanking.toolkit.cds.test.common.utils.AUConstants
 import com.wso2.openbanking.toolkit.cds.test.common.utils.AUTestUtil
 import com.wso2.openbanking.toolkit.cds.test.common.utils.AbstractAUTests
+import com.wso2.openbanking.test.framework.util.AppConfigReader
+import com.wso2.openbanking.test.framework.util.ConfigParser
 import io.restassured.response.Response
 import org.testng.Assert
 import org.testng.annotations.BeforeClass
@@ -326,7 +328,7 @@ class CustomerDetailsRetrievalHeaderValidationTests extends AbstractAUTests {
     @Test
     void "TC0601016_Retrieve Customer info with optional headers"() {
 
-        def cdsClient = "${ConfigParser.instance.clientId}:${ConfigParser.instance.clientSecret}"
+        def cdsClient = "${AppConfigReader.getClientId()}:${AppConfigReader.getClientSecret()}"
         def clientHeader = "${Base64.encoder.encodeToString(cdsClient.getBytes(Charset.defaultCharset()))}"
 
         def response = TestSuite.buildRequest()
@@ -422,7 +424,7 @@ class CustomerDetailsRetrievalHeaderValidationTests extends AbstractAUTests {
     @Test
     void "TC0601020_Retrieve Customer info with invalid x-cds-client-headers"() {
 
-        def cdsClient = "${ConfigParser.instance.clientId}:${ConfigParser.instance.clientSecret}"
+        def cdsClient = "${AppConfigReader.getClientId()}:${AppConfigReader.getClientSecret()}"
 
         def response = TestSuite.buildRequest()
                 .accept(AUConstants.ACCEPT)

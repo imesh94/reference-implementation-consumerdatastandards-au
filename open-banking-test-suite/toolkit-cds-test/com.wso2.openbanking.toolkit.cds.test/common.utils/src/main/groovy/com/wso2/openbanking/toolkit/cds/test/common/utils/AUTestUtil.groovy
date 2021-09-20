@@ -13,6 +13,20 @@
 package com.wso2.openbanking.toolkit.cds.test.common.utils
 
 import com.fasterxml.uuid.Generators
+import com.nimbusds.jwt.SignedJWT
+import com.nimbusds.oauth2.sdk.AccessTokenResponse
+import com.nimbusds.oauth2.sdk.AuthorizationGrant
+import com.nimbusds.oauth2.sdk.RefreshTokenGrant
+import com.nimbusds.oauth2.sdk.TokenErrorResponse
+import com.nimbusds.oauth2.sdk.TokenRequest
+import com.nimbusds.oauth2.sdk.TokenResponse
+import com.nimbusds.oauth2.sdk.auth.ClientAuthentication
+import com.nimbusds.oauth2.sdk.auth.PrivateKeyJWT
+import com.nimbusds.oauth2.sdk.http.HTTPRequest
+import com.nimbusds.oauth2.sdk.http.HTTPResponse
+import com.nimbusds.oauth2.sdk.token.RefreshToken
+import com.wso2.openbanking.test.framework.TestSuite
+import com.wso2.openbanking.test.framework.model.AccessTokenJwtDto
 import com.wso2.openbanking.test.framework.util.ConfigParser
 import com.wso2.openbanking.test.framework.util.TestConstants
 
@@ -141,5 +155,74 @@ class AUTestUtil {
         }
 
         return baseUrl
+    }
+
+    /**
+     * Get User Access Token From refresh token.
+     *
+     * @param @param refresh_token
+     * @return token response
+     */
+    static AccessTokenResponse getUserTokenFromRefreshToken(RefreshToken refresh_token) {
+
+        def config = ConfigParser.getInstance()
+
+        AuthorizationGrant refreshTokenGrant = new RefreshTokenGrant(refresh_token)
+
+        String assertionString = new AccessTokenJwtDto().getJwt()
+
+        ClientAuthentication clientAuth = new PrivateKeyJWT(SignedJWT.parse(assertionString))
+
+        URI tokenEndpoint = new URI("${config.getBaseURL()}${TestConstants.TOKEN_ENDPOINT}")
+
+        TokenRequest request = new TokenRequest(tokenEndpoint, clientAuth, refreshTokenGrant)
+
+        HTTPRequest httpRequest = request.toHTTPRequest()
+
+        def response = TestSuite.buildRequest()
+                .contentType(TestConstants.ACCESS_TOKEN_CONTENT_TYPE)
+                .body(httpRequest.query)
+                .post(tokenEndpoint)
+
+        HTTPResponse httpResponse = new HTTPResponse(response.statusCode())
+        httpResponse.setContentType(response.contentType())
+        httpResponse.setContent(response.getBody().print())
+
+        return TokenResponse.parse(httpResponse).toSuccessResponse()
+    }
+
+
+    /**
+     * Get User Access Token Error Response From Inactive refresh token.
+     *
+     * @param @param refresh_token
+     * @return token error response
+     */
+    static TokenErrorResponse getUserTokenFromRefreshTokenErrorResponse(RefreshToken refresh_token) {
+
+        def config = ConfigParser.getInstance()
+
+        AuthorizationGrant refreshTokenGrant = new RefreshTokenGrant(refresh_token)
+
+        String assertionString = new AccessTokenJwtDto().getJwt()
+
+        ClientAuthentication clientAuth = new PrivateKeyJWT(SignedJWT.parse(assertionString))
+
+        URI tokenEndpoint = new URI("${config.getBaseUrl()}${TestConstants.TOKEN_ENDPOINT}")
+
+        TokenRequest request = new TokenRequest(tokenEndpoint, clientAuth, refreshTokenGrant)
+
+        HTTPRequest httpRequest = request.toHTTPRequest()
+
+        def response = TestSuite.buildRequest()
+                .contentType(TestConstants.ACCESS_TOKEN_CONTENT_TYPE)
+                .body(httpRequest.query)
+                .post(tokenEndpoint)
+
+        HTTPResponse httpResponse = new HTTPResponse(response.statusCode())
+        httpResponse.setContentType(response.contentType())
+        httpResponse.setContent(response.getBody().print())
+
+        return TokenResponse.parse(httpResponse).toErrorResponse()
     }
 }

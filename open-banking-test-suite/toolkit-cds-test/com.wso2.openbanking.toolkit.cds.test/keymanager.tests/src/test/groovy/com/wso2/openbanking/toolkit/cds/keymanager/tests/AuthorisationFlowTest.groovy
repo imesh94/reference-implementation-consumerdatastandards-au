@@ -19,6 +19,7 @@ import com.wso2.openbanking.test.framework.automation.WaitForRedirectAutomationS
 import com.wso2.openbanking.test.framework.util.ConfigParser
 import com.wso2.openbanking.test.framework.util.TestConstants
 import com.wso2.openbanking.test.framework.util.TestUtil
+import com.wso2.openbanking.test.framework.TestSuite
 import com.wso2.openbanking.toolkit.cds.test.common.utils.AUAuthorisationBuilder
 import com.wso2.openbanking.toolkit.cds.test.common.utils.AUConstants
 import com.wso2.openbanking.toolkit.cds.test.common.utils.AURequestBuilder
@@ -91,6 +92,29 @@ class AuthorisationFlowTest {
                 .post(AUConstants.INTROSPECTION_ENDPOINT)
 
         Assert.assertTrue(response.jsonPath().get("active").equals(true))
+    }
+
+    @Test (priority = 1)
+    void "OB-1141_Initiate authorisation consent flow with cdr_arrangement_id claim in request object"() {
+
+        AUAuthorisationBuilder authorisationBuilder = new AUAuthorisationBuilder(
+                scopes, AUConstants.DEFAULT_SHARING_DURATION, true, AUConstants.UUID
+        )
+        String errorMessage = "cdr_arrangement_id can only be sent through PAR request"
+
+        def automation = new BrowserAutomation(BrowserAutomation.DEFAULT_DELAY)
+                .addStep { driver, context -> driver.navigate().to(authorisationBuilder.authoriseUrl)}.execute()
+
+        String url = automation.currentUrl.get()
+        String errorUrl
+
+        if (AUConstants.SOLUTION_VERSION_150.equalsIgnoreCase(AUTestUtil.solutionVersion)) {
+            errorUrl = url.split("oauthErrorMsg=")[1].split("&")[0].replaceAll("\\+", " ")
+        } else {
+            errorUrl = url.split("error_description=")[1].split("&")[0].replaceAll("\\+"," ")
+        }
+        Assert.assertEquals(errorUrl, errorMessage)
+
     }
 
     @Test (priority = 1)
@@ -229,5 +253,117 @@ class AuthorisationFlowTest {
                 .post(AUConstants.INTROSPECTION_ENDPOINT)
 
         Assert.assertTrue(response2.jsonPath().get("active").equals(false))
+    }
+
+    @Test (priority = 2)
+    void "OB-1142_Initiate authorisation consent flow only with scopes that require account selection"() {
+
+        scopes = [
+                AUConstants.SCOPES.BANK_ACCOUNT_BASIC_READ,
+                AUConstants.SCOPES.BANK_ACCOUNT_DETAIL_READ,
+                AUConstants.SCOPES.BANK_TRANSACTION_READ,
+                AUConstants.SCOPES.BANK_REGULAR_PAYMENTS_READ
+        ]
+
+        AUAuthorisationBuilder authorisationBuilder = new AUAuthorisationBuilder(
+                scopes, AUConstants.DEFAULT_SHARING_DURATION, true
+        )
+
+        def automation = new BrowserAutomation(BrowserAutomation.DEFAULT_DELAY)
+                .addStep(new AUBasicAuthAutomationStep(authorisationBuilder.authoriseUrl))
+                .addStep { driver, context ->
+                    driver.findElement(By.xpath(AUTestUtil.getSingleAccountXPath())).click()
+                    driver.findElement(By.xpath(AUConstants.CONSENT_SUBMIT_XPATH)).click()
+                    driver.findElement(By.xpath(AUConstants.CONSENT_CONFIRM_XPATH)).click()
+                }
+                .addStep(new WaitForRedirectAutomationStep())
+                .execute()
+
+        // Get Code From URL
+        authorisationCode = TestUtil.getHybridCodeFromUrl(automation.currentUrl.get())
+
+        Assert.assertNotNull(authorisationCode)
+
+    }
+
+    @Test (priority = 2)
+    void "OB-1143_Initiate authorisation consent flow only with scopes that do not require account selection"() {
+
+        scopes = [
+                AUConstants.SCOPES.BANK_PAYEES_READ,
+                AUConstants.SCOPES.BANK_CUSTOMER_BASIC_READ,
+                AUConstants.SCOPES.BANK_CUSTOMER_DETAIL_READ
+        ]
+
+        AUAuthorisationBuilder authorisationBuilder = new AUAuthorisationBuilder(
+                scopes, AUConstants.DEFAULT_SHARING_DURATION, true
+        )
+
+        def automation = new BrowserAutomation(BrowserAutomation.DEFAULT_DELAY)
+                .addStep(new AUBasicAuthAutomationStep(authorisationBuilder.authoriseUrl))
+                .addStep { driver, context ->
+                    driver.findElement(By.xpath(AUConstants.CONSENT_SUBMIT_XPATH)).click()
+                }
+                .addStep(new WaitForRedirectAutomationStep())
+                .execute()
+
+        // Get Code From URL
+        authorisationCode = TestUtil.getHybridCodeFromUrl(automation.currentUrl.get())
+
+        Assert.assertNotNull(authorisationCode)
+
+    }
+
+    @Test (priority = 2)
+    void "OB-1144_Initiate authorisation consent flow only with openid scope"() {
+
+        scopes = []
+
+        AUAuthorisationBuilder authorisationBuilder = new AUAuthorisationBuilder(
+                scopes, AUConstants.DEFAULT_SHARING_DURATION, true
+        )
+        String errorMessage = "No valid scopes found in the request"
+
+        def automation = new BrowserAutomation(BrowserAutomation.DEFAULT_DELAY)
+                .addStep { driver, context -> driver.navigate().to(authorisationBuilder.authoriseUrl)}.execute()
+
+        String url = automation.currentUrl.get()
+        String errorUrl
+
+        if (AUConstants.SOLUTION_VERSION_150.equalsIgnoreCase(AUTestUtil.solutionVersion)) {
+            errorUrl = url.split("oauthErrorMsg=")[1].split("&")[0].replaceAll("\\+", " ")
+        } else {
+            errorUrl = url.split("error_description=")[1].split("&")[0].replaceAll("\\+"," ")
+        }
+        Assert.assertEquals(errorUrl, errorMessage)
+
+    }
+
+    @Test (priority = 2)
+    void "OB-1145_Initiate authorisation consent flow only with openid + scopes not applicable to CDR Data Retrieval"() {
+
+        scopes = [
+                AUConstants.SCOPES.ADMIN_METRICS_BASIC_READ,
+                AUConstants.SCOPES.ADMIN_METADATA_UPDATE
+        ]
+
+        AUAuthorisationBuilder authorisationBuilder = new AUAuthorisationBuilder(
+                scopes, AUConstants.DEFAULT_SHARING_DURATION, true
+        )
+        String errorMessage = "No valid scopes found in the request"
+
+        def automation = new BrowserAutomation(BrowserAutomation.DEFAULT_DELAY)
+                .addStep { driver, context -> driver.navigate().to(authorisationBuilder.authoriseUrl)}.execute()
+
+        String url = automation.currentUrl.get()
+        String errorUrl
+
+        if (AUConstants.SOLUTION_VERSION_150.equalsIgnoreCase(AUTestUtil.solutionVersion)) {
+            errorUrl = url.split("oauthErrorMsg=")[1].split("&")[0].replaceAll("\\+", " ")
+        } else {
+            errorUrl = url.split("error_description=")[1].split("&")[0].replaceAll("\\+"," ")
+        }
+        Assert.assertEquals(errorUrl, errorMessage)
+
     }
 }

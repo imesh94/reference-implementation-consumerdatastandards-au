@@ -62,7 +62,7 @@ class SharingDurationValidationTest {
                 .execute()
 
         // Get Code From URL
-        authorisationCode = TestUtil.getHybridCodeFromURL(automation.currentUrl.get())
+        authorisationCode = TestUtil.getHybridCodeFromUrl(automation.currentUrl.get())
         return authorisationCode
     }
 

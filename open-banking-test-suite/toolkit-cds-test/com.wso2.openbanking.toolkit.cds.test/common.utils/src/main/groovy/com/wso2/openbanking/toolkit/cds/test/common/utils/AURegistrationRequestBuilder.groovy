@@ -19,6 +19,7 @@ import com.nimbusds.jose.JWSSigner
 import com.nimbusds.jose.Payload
 import com.nimbusds.jose.crypto.RSASSASigner
 import com.wso2.openbanking.test.framework.TestSuite
+import com.wso2.openbanking.test.framework.util.AppConfigReader
 import com.wso2.openbanking.test.framework.util.ConfigParser
 import com.wso2.openbanking.test.framework.util.TestConstants
 import com.wso2.openbanking.test.framework.util.TestUtil
@@ -35,6 +36,23 @@ import java.security.Security
 import java.security.cert.Certificate
 
 class AURegistrationRequestBuilder {
+
+    static String SSA
+    static String softwareProductId
+
+    static retrieveADRInfo() {
+
+        if (ConfigParser.getInstance().mockCDRRegisterEnabled) {
+            def ADRBandId = MockRegisterConstants.ADR_BRAND_ID_1
+            softwareProductId = MockRegisterConstants.ADR_BRAND_ID_1_SOFTWARE_PRODUCT_1
+
+            SSA = AUMockCDRIntegrationUtil.getSSAFromMockCDRRegister(ADRBandId, softwareProductId)
+
+        } else {
+            softwareProductId = AUDCRConstants.SOFTWARE_PRODUCT_ID
+            SSA = AUDCRConstants.SSA
+        }
+    }
 
     /**
      * Get a basic request.
@@ -53,7 +71,7 @@ class AURegistrationRequestBuilder {
                 .sslConfig(RestAssured.config().getSSLConfig().sslSocketFactory(TestUtil.getSslSocketFactory()))
                 .encoderConfig(new EncoderConfig().encodeContentTypeAs(
                 "application/jwt", ContentType.TEXT)))
-                .baseUri(AUTestUtil.getBaseUrl(AUConstants.BASE_PATH_TYPE_DCR))
+                .baseUri(AUTestUtil.getBaseUrl(AUDCRConstants.BASE_PATH_TYPE_DCR))
     }
 
     /**
@@ -72,7 +90,7 @@ class AURegistrationRequestBuilder {
                 .sslConfig(RestAssured.config().getSSLConfig().sslSocketFactory(TestUtil.getSslSocketFactory()))
                 .encoderConfig(new EncoderConfig().encodeContentTypeAs(
                 "application/jwt", ContentType.TEXT)))
-                .baseUri(AUTestUtil.getBaseUrl(AUConstants.BASE_PATH_TYPE_DCR))
+                .baseUri(AUTestUtil.getBaseUrl(AUDCRConstants.BASE_PATH_TYPE_DCR))
     }
 
     /**
@@ -81,15 +99,29 @@ class AURegistrationRequestBuilder {
      */
     static String getSignedRequestObject(String claims) {
 
-        KeyStore keyStore = TestUtil.getApplicationKeyStore()
-        Certificate certificate = TestUtil.getCertificateFromKeyStore()
-        JWSHeader header = new JWSHeader.Builder(JWSAlgorithm.parse(ConfigParser.instance.signingAlgorithm)).
-                keyID(TestUtil.getJwkThumbPrint(certificate)).build()
         Payload payload = new Payload(claims)
-
         Key signingKey
-        signingKey = keyStore.getKey(ConfigParser.getInstance().getApplicationKeystoreAlias(),
-                ConfigParser.getInstance().getApplicationKeystorePassword().toCharArray())
+        JWSHeader header
+
+        if (ConfigParser.instance.mockCDRRegisterEnabled) {
+            KeyStore keyStore = TestUtil.getMockADRApplicationKeyStore()
+            Certificate certificate = TestUtil.getCertificateFromMockADRKeyStore()
+            header = new JWSHeader.Builder(JWSAlgorithm.parse(ConfigParser.instance.signingAlgorithm)).
+                    keyID(TestUtil.getJwkThumbPrintForSHA256(certificate)).build()
+
+            signingKey = keyStore.getKey(ConfigParser.getInstance().getMockADRSigningKeystoreAlias(),
+                    ConfigParser.getInstance().getMockADRSigningKeystorePassword().toCharArray())
+        }
+        else {
+            KeyStore keyStore = TestUtil.getApplicationKeyStore()
+            Certificate certificate = TestUtil.getCertificateFromKeyStore()
+            header = new JWSHeader.Builder(JWSAlgorithm.parse(ConfigParser.instance.signingAlgorithm)).
+                    keyID(TestUtil.getJwkThumbPrint(certificate)).build()
+
+            signingKey = keyStore.getKey(AppConfigReader.getApplicationKeystoreAlias(),
+                    AppConfigReader.getApplicationKeystorePassword().toCharArray())
+        }
+
         JWSSigner signer = new RSASSASigner((PrivateKey) signingKey)
 
         Security.addProvider(new BouncyCastleProvider())
@@ -104,7 +136,7 @@ class AURegistrationRequestBuilder {
         long currentTimeInSeconds = currentTimeInMillis / 1000
         return """
             {
-                "iss": "740C368F-ECF9-4D29-A2EA-0514A66B0CDN",
+                "iss": "${softwareProductId}",
                 "iat": ${currentTimeInSeconds},
                 "exp": ${currentTimeInSeconds + 3600},
                 "jti": "${currentTimeInMillis}",
@@ -116,9 +148,9 @@ class AURegistrationRequestBuilder {
                 "token_endpoint_auth_signing_alg": "PS256",
                 "token_endpoint_auth_method": "private_key_jwt",
                 "grant_types": [
+                    "client_credentials",
                     "authorization_code",
-                    "refresh_token",
-                    "urn:ietf:params:oauth:grant-type:jwt-bearer"
+                    "refresh_token"
                     ],
                 "response_types": [
                     "code id_token"
@@ -128,7 +160,76 @@ class AURegistrationRequestBuilder {
                 "id_token_encrypted_response_alg": "RSA-OAEP",
                 "id_token_encrypted_response_enc": "A256GCM",
                 "request_object_signing_alg": "PS256",
-                "software_statement": "${AUDCRConstants.SSA}"
+                "software_statement": "${SSA}"
+            }
+        """
+    }
+
+    static String getRegularClaims(String softwareProductId, String SSA) {
+
+        long currentTimeInMillis = System.currentTimeMillis()
+        long currentTimeInSeconds = currentTimeInMillis / 1000
+        return """
+            {
+                "iss": "${softwareProductId}",
+                "iat": ${currentTimeInSeconds},
+                "exp": ${currentTimeInSeconds + 3600},
+                "jti": "${currentTimeInMillis}",
+                "aud": "https://www.infosec.cdr.gov.au/token",
+                "redirect_uris": [
+                    "${AUDCRConstants.REDIRECT_URI}",
+                    "${AUDCRConstants.ALTERNATE_REDIRECT_URI}"
+                    ],
+                "token_endpoint_auth_signing_alg": "PS256",
+                "token_endpoint_auth_method": "private_key_jwt",
+                "grant_types": [
+                    "client_credentials",
+                    "authorization_code",
+                    "refresh_token"
+                    ],
+                "response_types": [
+                    "code id_token"
+                    ],
+                "application_type": "web",
+                "id_token_signed_response_alg": "PS256",
+                "id_token_encrypted_response_alg": "RSA-OAEP",
+                "id_token_encrypted_response_enc": "A256GCM",
+                "request_object_signing_alg": "PS256",
+                "software_statement": "${SSA}"
+            }
+        """
+    }
+
+    static String getRegularClaims(String softwareProductId, String SSA, String redirectUri) {
+
+        long currentTimeInMillis = System.currentTimeMillis()
+        long currentTimeInSeconds = currentTimeInMillis / 1000
+        return """
+            {
+                "iss": "${softwareProductId}",
+                "iat": ${currentTimeInSeconds},
+                "exp": ${currentTimeInSeconds + 3600},
+                "jti": "${currentTimeInMillis}",
+                "aud": "https://www.infosec.cdr.gov.au/token",
+                "redirect_uris": [
+                    "${redirectUri}"
+                    ],
+                "token_endpoint_auth_signing_alg": "PS256",
+                "token_endpoint_auth_method": "private_key_jwt",
+                "grant_types": [
+                    "client_credentials",
+                    "authorization_code",
+                    "refresh_token"
+                    ],
+                "response_types": [
+                    "code id_token"
+                    ],
+                "application_type": "web",
+                "id_token_signed_response_alg": "PS256",
+                "id_token_encrypted_response_alg": "RSA-OAEP",
+                "id_token_encrypted_response_enc": "A256GCM",
+                "request_object_signing_alg": "PS256",
+                 "software_statement": "${SSA}"
             }
         """
     }
@@ -139,7 +240,7 @@ class AURegistrationRequestBuilder {
         long currentTimeInSeconds = currentTimeInMillis / 1000
         return """
             {
-                "iss": "740C368F-ECF9-4D29-A2EA-0514A66B0CDN",
+                "iss": "${softwareProductId}",
                 "iat": ${currentTimeInSeconds},
                 "exp": ${currentTimeInSeconds + 3600},
                 "jti": "${currentTimeInMillis}",
@@ -149,9 +250,9 @@ class AURegistrationRequestBuilder {
                 "token_endpoint_auth_signing_alg": "PS256",
                 "token_endpoint_auth_method": "private_key_jwt",
                 "grant_types": [
+                    "client_credentials",
                     "authorization_code",
-                    "refresh_token",
-                    "urn:ietf:params:oauth:grant-type:jwt-bearer"
+                    "refresh_token"
                     ],
                 "response_types": [
                     "code id_token"
@@ -161,7 +262,7 @@ class AURegistrationRequestBuilder {
                 "id_token_encrypted_response_alg": "RSA-OAEP",
                 "id_token_encrypted_response_enc": "A256GCM",                
                 "request_object_signing_alg": "PS256",
-                "software_statement": "${AUDCRConstants.SSA}"
+                "software_statement": "${SSA}"
             }
         """
     }
@@ -172,7 +273,7 @@ class AURegistrationRequestBuilder {
         long currentTimeInSeconds = currentTimeInMillis / 1000
         return """
             {
-                "iss": "740C368F-ECF9-4D29-A2EA-0514A66B0CDN",
+                "iss": "${softwareProductId}",
                 "iat": ${currentTimeInSeconds},
                 "exp": ${currentTimeInSeconds + 3600},
                 "jti": "${currentTimeInMillis}",
@@ -183,9 +284,9 @@ class AURegistrationRequestBuilder {
                 "token_endpoint_auth_signing_alg": "PS256",
                 "token_endpoint_auth_method": "private_key_jwt",
                 "grant_types": [
+                    "client_credentials",
                     "authorization_code",
-                    "refresh_token",
-                    "urn:ietf:params:oauth:grant-type:jwt-bearer"
+                    "refresh_token"
                     ],
                 "response_types": [
                     "code id_token"
@@ -195,7 +296,7 @@ class AURegistrationRequestBuilder {
                 "id_token_encrypted_response_alg": "RSA-OAEP",
                 "id_token_encrypted_response_enc": "A256GCM",
                 "request_object_signing_alg": "PS256",
-                "software_statement": "${AUDCRConstants.SSA}"
+                "software_statement": "${SSA}"
             }
         """
     }
@@ -206,7 +307,7 @@ class AURegistrationRequestBuilder {
         long currentTimeInSeconds = currentTimeInMillis / 1000
         return """
             {
-                "iss": "740C368F-ECF9-4D29-A2EA-0514A66B0CDN",
+                "iss": "${softwareProductId}",
                 "iat": ${currentTimeInSeconds},
                 "exp": ${currentTimeInSeconds + 3600},
                 "jti": "${currentTimeInMillis}",
@@ -217,9 +318,9 @@ class AURegistrationRequestBuilder {
                 "token_endpoint_auth_signing_alg": "PS256",
                 "token_endpoint_auth_method": "private_key_jwt",
                 "grant_types": [
+                    "client_credentials",
                     "authorization_code",
-                    "refresh_token",
-                    "urn:ietf:params:oauth:grant-type:jwt-bearer"
+                    "refresh_token"
                     ],
                 "response_types": [
                     "code id_token"
@@ -229,7 +330,7 @@ class AURegistrationRequestBuilder {
                 "id_token_encrypted_response_alg": "RSA-OAEP",
                 "id_token_encrypted_response_enc": "A256GCM",
                 "request_object_signing_alg": "PS256",
-                "software_statement": "${AUDCRConstants.SSA}"
+                "software_statement": "${SSA}"
             }
         """
     }
@@ -240,7 +341,7 @@ class AURegistrationRequestBuilder {
         long currentTimeInSeconds = currentTimeInMillis / 1000
         return """
             {
-                "iss": "740C368F-ECF9-4D29-A2EA-0514A66B0CDN",
+                "iss": "${softwareProductId}",
                 "iat": ${currentTimeInSeconds},
                 "exp": ${currentTimeInSeconds + 3600},
                 "jti": "${currentTimeInMillis}",
@@ -250,9 +351,9 @@ class AURegistrationRequestBuilder {
                     ],
                 "token_endpoint_auth_method": "private_key_jwt",
                 "grant_types": [
+                    "client_credentials",
                     "authorization_code",
-                    "refresh_token",
-                    "urn:ietf:params:oauth:grant-type:jwt-bearer"
+                    "refresh_token"
                     ],
                 "response_types": [
                     "code id_token"
@@ -262,7 +363,7 @@ class AURegistrationRequestBuilder {
                 "id_token_encrypted_response_alg": "RSA-OAEP",
                 "id_token_encrypted_response_enc": "A256GCM",
                 "request_object_signing_alg": "PS256",
-                "software_statement": "${AUDCRConstants.SSA}"
+                "software_statement": "${SSA}"
             }
         """
     }
@@ -273,7 +374,7 @@ class AURegistrationRequestBuilder {
         long currentTimeInSeconds = currentTimeInMillis / 1000
         return """
             {
-                "iss": "740C368F-ECF9-4D29-A2EA-0514A66B0CDN",
+                "iss": "${softwareProductId}",
                 "iat": ${currentTimeInSeconds},
                 "exp": ${currentTimeInSeconds + 3600},
                 "jti": "${currentTimeInMillis}",
@@ -283,9 +384,9 @@ class AURegistrationRequestBuilder {
                     ],
                 "token_endpoint_auth_signing_alg": "PS256",
                 "grant_types": [
+                    "client_credentials",
                     "authorization_code",
-                    "refresh_token",
-                    "urn:ietf:params:oauth:grant-type:jwt-bearer"
+                    "refresh_token"
                     ],
                 "response_types": [
                     "code id_token"
@@ -295,7 +396,7 @@ class AURegistrationRequestBuilder {
                 "id_token_encrypted_response_alg": "RSA-OAEP",
                 "id_token_encrypted_response_enc": "A256GCM",
                 "request_object_signing_alg": "PS256",
-                "software_statement": "${AUDCRConstants.SSA}"
+                "software_statement": "${SSA}"
             }
         """
     }
@@ -306,7 +407,7 @@ class AURegistrationRequestBuilder {
         long currentTimeInSeconds = currentTimeInMillis / 1000
         return """
             {
-                "iss": "740C368F-ECF9-4D29-A2EA-0514A66B0CDN",
+                "iss": "${softwareProductId}",
                 "iat": ${currentTimeInSeconds},
                 "exp": ${currentTimeInSeconds + 3600},
                 "jti": "${currentTimeInMillis}",
@@ -324,7 +425,7 @@ class AURegistrationRequestBuilder {
                 "id_token_encrypted_response_alg": "RSA-OAEP",
                 "id_token_encrypted_response_enc": "A256GCM",
                 "request_object_signing_alg": "PS256",
-                "software_statement": "${AUDCRConstants.SSA}"
+                "software_statement": "${SSA}"
             }
         """
     }
@@ -335,7 +436,7 @@ class AURegistrationRequestBuilder {
         long currentTimeInSeconds = currentTimeInMillis / 1000
         return """
             {
-                "iss": "740C368F-ECF9-4D29-A2EA-0514A66B0CDN",
+                "iss": "${softwareProductId}",
                 "iat": ${currentTimeInSeconds},
                 "exp": ${currentTimeInSeconds + 3600},
                 "jti": "${currentTimeInMillis}",
@@ -346,16 +447,16 @@ class AURegistrationRequestBuilder {
                 "token_endpoint_auth_signing_alg": "PS256",
                 "token_endpoint_auth_method": "private_key_jwt",
                 "grant_types": [
+                    "client_credentials",
                     "authorization_code",
-                    "refresh_token",
-                    "urn:ietf:params:oauth:grant-type:jwt-bearer"
+                    "refresh_token"
                     ],
                 "application_type": "web",
                 "id_token_signed_response_alg": "PS256",
                 "id_token_encrypted_response_alg": "RSA-OAEP",
                 "id_token_encrypted_response_enc": "A256GCM",
                 "request_object_signing_alg": "PS256",
-                "software_statement": "${AUDCRConstants.SSA}"
+                "software_statement": "${SSA}"
             }
         """
     }
@@ -366,7 +467,7 @@ class AURegistrationRequestBuilder {
         long currentTimeInSeconds = currentTimeInMillis / 1000
         return """
             {
-                "iss": "740C368F-ECF9-4D29-A2EA-0514A66B0CDN",
+                "iss": "${softwareProductId}",
                 "iat": ${currentTimeInSeconds},
                 "exp": ${currentTimeInSeconds + 3600},
                 "jti": "${currentTimeInMillis}",
@@ -377,9 +478,9 @@ class AURegistrationRequestBuilder {
                 "token_endpoint_auth_signing_alg": "PS256",
                 "token_endpoint_auth_method": "private_key_jwt",
                 "grant_types": [
+                    "client_credentials",
                     "authorization_code",
-                    "refresh_token",
-                    "urn:ietf:params:oauth:grant-type:jwt-bearer"
+                    "refresh_token"
                     ],
                 "response_types": [
                     "code id_token"
@@ -388,7 +489,7 @@ class AURegistrationRequestBuilder {
                 "id_token_signed_response_alg": "PS256",
                 "id_token_encrypted_response_alg": "RSA-OAEP",
                 "id_token_encrypted_response_enc": "A256GCM",
-                "request_object_signing_alg": "PS256",
+                "request_object_signing_alg": "PS256"
             }
         """
     }
@@ -399,7 +500,7 @@ class AURegistrationRequestBuilder {
         long currentTimeInSeconds = currentTimeInMillis / 1000
         return """
             {
-                "iss": "740C368F-ECF9-4D29-A2EA-0514A66B0CDN",
+                "iss": "${softwareProductId}",
                 "iat": ${currentTimeInSeconds},
                 "exp": ${currentTimeInSeconds + 3600},
                 "jti": "${currentTimeInMillis}",
@@ -411,9 +512,9 @@ class AURegistrationRequestBuilder {
                 "token_endpoint_auth_signing_alg": "PS256",
                 "token_endpoint_auth_method": "private_key_jwt",
                 "grant_types": [
+                    "client_credentials",
                     "authorization_code",
-                    "refresh_token",
-                    "urn:ietf:params:oauth:grant-type:jwt-bearer"
+                    "refresh_token"
                     ],
                 "response_types": [
                     "code id_token"
@@ -422,7 +523,7 @@ class AURegistrationRequestBuilder {
                 "id_token_signed_response_alg": "PS256",
                 "id_token_encrypted_response_enc": "A256GCM",
                 "request_object_signing_alg": "PS256",
-                "software_statement": "${AUDCRConstants.SSA}"
+                "software_statement": "${SSA}"
             }
         """
     }
@@ -433,7 +534,7 @@ class AURegistrationRequestBuilder {
         long currentTimeInSeconds = currentTimeInMillis / 1000
         return """
             {
-                "iss": "740C368F-ECF9-4D29-A2EA-0514A66B0CDN",
+                "iss": "${softwareProductId}",
                 "iat": ${currentTimeInSeconds},
                 "exp": ${currentTimeInSeconds + 3600},
                 "jti": "${currentTimeInMillis}",
@@ -445,9 +546,9 @@ class AURegistrationRequestBuilder {
                 "token_endpoint_auth_signing_alg": "PS256",
                 "token_endpoint_auth_method": "private_key_jwt",
                 "grant_types": [
+                    "client_credentials",
                     "authorization_code",
-                    "refresh_token",
-                    "urn:ietf:params:oauth:grant-type:jwt-bearer"
+                    "refresh_token"
                     ],
                 "response_types": [
                     "code id_token"
@@ -456,7 +557,7 @@ class AURegistrationRequestBuilder {
                 "id_token_signed_response_alg": "PS256",
                 "id_token_encrypted_response_alg": "RSA-OAEP",
                 "request_object_signing_alg": "PS256",
-                "software_statement": "${AUDCRConstants.SSA}"
+                "software_statement": "${SSA}"
             }
         """
     }
@@ -467,7 +568,7 @@ class AURegistrationRequestBuilder {
         long currentTimeInSeconds = currentTimeInMillis / 1000
         return """
             {
-                "iss": "740C368F-ECF9-4D29-A2EA-0514A66B0CDN",
+                "iss": "${softwareProductId}",
                 "iat": ${currentTimeInSeconds},
                 "exp": ${currentTimeInSeconds + 3600},
                 "jti": "${currentTimeInMillis}",
@@ -479,9 +580,9 @@ class AURegistrationRequestBuilder {
                 "token_endpoint_auth_signing_alg": "PS256",
                 "token_endpoint_auth_method": "private_key_jwt",
                 "grant_types": [
+                    "client_credentials",
                     "authorization_code",
-                    "refresh_token",
-                    "urn:ietf:params:oauth:grant-type:jwt-bearer"
+                    "refresh_token"
                     ],
                 "response_types": [
                     "code id_token"
@@ -491,7 +592,7 @@ class AURegistrationRequestBuilder {
                 "id_token_encrypted_response_alg": "RSA-OAEP-X",
                 "id_token_encrypted_response_enc": "A256GCM",
                 "request_object_signing_alg": "PS256",
-                "software_statement": "${AUDCRConstants.SSA}"
+                "software_statement": "${SSA}"
             }
         """
     }
@@ -502,7 +603,7 @@ class AURegistrationRequestBuilder {
         long currentTimeInSeconds = currentTimeInMillis / 1000
         return """
             {
-                "iss": "740C368F-ECF9-4D29-A2EA-0514A66B0CDN",
+                "iss": "${softwareProductId}",
                 "iat": ${currentTimeInSeconds},
                 "exp": ${currentTimeInSeconds + 3600},
                 "jti": "${currentTimeInMillis}",
@@ -514,9 +615,9 @@ class AURegistrationRequestBuilder {
                 "token_endpoint_auth_signing_alg": "PS256",
                 "token_endpoint_auth_method": "private_key_jwt",
                 "grant_types": [
+                    "client_credentials",
                     "authorization_code",
-                    "refresh_token",
-                    "urn:ietf:params:oauth:grant-type:jwt-bearer"
+                    "refresh_token"
                     ],
                 "response_types": [
                     "code id_token"
@@ -526,7 +627,7 @@ class AURegistrationRequestBuilder {
                 "id_token_encrypted_response_alg": "RSA-OAEP",
                 "id_token_encrypted_response_enc": "A128GCM",
                 "request_object_signing_alg": "PS256",
-                "software_statement": "${AUDCRConstants.SSA}"
+                "software_statement": "${SSA}"
             }
         """
     }
@@ -549,9 +650,9 @@ class AURegistrationRequestBuilder {
                 "token_endpoint_auth_signing_alg": "PS256",
                 "token_endpoint_auth_method": "private_key_jwt",
                 "grant_types": [
+                    "client_credentials",
                     "authorization_code",
-                    "refresh_token",
-                    "urn:ietf:params:oauth:grant-type:jwt-bearer"
+                    "refresh_token"
                     ],
                 "response_types": [
                     "code id_token"
@@ -561,7 +662,7 @@ class AURegistrationRequestBuilder {
                 "id_token_encrypted_response_alg": "RSA-OAEP",
                 "id_token_encrypted_response_enc": "A256GCM",
                 "request_object_signing_alg": "PS256",
-                "software_statement": "${AUDCRConstants.SSA}"
+                "software_statement": "${SSA}"
             }
         """
     }
@@ -571,7 +672,7 @@ class AURegistrationRequestBuilder {
         long currentTimeInSeconds = System.currentTimeMillis() / 1000
         return """
             {
-                "iss": "740C368F-ECF9-4D29-A2EA-0514A66B0CDN",
+                "iss": "${softwareProductId}",
                 "iat": ${currentTimeInSeconds},
                 "exp": ${currentTimeInSeconds + 3600},
                 "jti": "${jti}",
@@ -583,8 +684,76 @@ class AURegistrationRequestBuilder {
                 "token_endpoint_auth_signing_alg": "PS256",
                 "token_endpoint_auth_method": "private_key_jwt",
                 "grant_types": [
+                    "client_credentials",
                     "authorization_code",
-                    "refresh_token",
+                    "refresh_token"
+                    ],
+                "response_types": [
+                    "code id_token"
+                    ],
+                "application_type": "web",
+                "id_token_signed_response_alg": "PS256",
+                "id_token_encrypted_response_alg": "RSA-OAEP",
+                "id_token_encrypted_response_enc": "A256GCM",
+                "request_object_signing_alg": "PS256",
+                "software_statement": "${SSA}"
+            }
+        """
+    }
+
+    static String getClaimsWithUnsupportedTokenEndpointAuthMethod() {
+
+        long currentTimeInMillis = System.currentTimeMillis()
+        long currentTimeInSeconds = currentTimeInMillis / 1000
+        return """
+            {
+                "iss": "${softwareProductId}",
+                "iat": ${currentTimeInSeconds},
+                "exp": ${currentTimeInSeconds + 3600},
+                "jti": "${currentTimeInMillis}",
+                "aud": "https://www.infosec.cdr.gov.au/token",
+                "redirect_uris": [
+                    "${AUDCRConstants.REDIRECT_URI}",
+                    "${AUDCRConstants.ALTERNATE_REDIRECT_URI}"
+                    ],
+                "token_endpoint_auth_signing_alg": "PS256",
+                "token_endpoint_auth_method": "mutual_tls",
+                "grant_types": [
+                    "client_credentials",
+                    "authorization_code",
+                    "refresh_token"
+                    ],
+                "response_types": [
+                    "code id_token"
+                    ],
+                "application_type": "web",
+                "id_token_signed_response_alg": "PS256",
+                "id_token_encrypted_response_alg": "RSA-OAEP",
+                "id_token_encrypted_response_enc": "A256GCM",
+                "request_object_signing_alg": "PS256",
+                "software_statement": "${SSA}"
+            }
+        """
+    }
+
+    static String getRegularClaimsWithInvalidGrantTypes() {
+
+        long currentTimeInMillis = System.currentTimeMillis()
+        long currentTimeInSeconds = currentTimeInMillis / 1000
+        return """
+            {
+                "iss": "${softwareProductId}",
+                "iat": ${currentTimeInSeconds},
+                "exp": ${currentTimeInSeconds + 3600},
+                "jti": "${currentTimeInMillis}",
+                "aud": "https://www.infosec.cdr.gov.au/token",
+                "redirect_uris": [
+                    "${AUDCRConstants.REDIRECT_URI}",
+                    "${AUDCRConstants.ALTERNATE_REDIRECT_URI}"
+                    ],
+                "token_endpoint_auth_signing_alg": "PS256",
+                "token_endpoint_auth_method": "private_key_jwt",
+                "grant_types": [
                     "urn:ietf:params:oauth:grant-type:jwt-bearer"
                     ],
                 "response_types": [
@@ -595,6 +764,212 @@ class AURegistrationRequestBuilder {
                 "id_token_encrypted_response_alg": "RSA-OAEP",
                 "id_token_encrypted_response_enc": "A256GCM",
                 "request_object_signing_alg": "PS256",
+                "software_statement": "${SSA}"
+            }
+        """
+    }
+
+    static String getRegularClaimsWithInvalidResponseTypes() {
+
+        long currentTimeInMillis = System.currentTimeMillis()
+        long currentTimeInSeconds = currentTimeInMillis / 1000
+        return """
+            {
+                "iss": "${softwareProductId}",
+                "iat": ${currentTimeInSeconds},
+                "exp": ${currentTimeInSeconds + 3600},
+                "jti": "${currentTimeInMillis}",
+                "aud": "https://www.infosec.cdr.gov.au/token",
+                "redirect_uris": [
+                    "${AUDCRConstants.REDIRECT_URI}",
+                    "${AUDCRConstants.ALTERNATE_REDIRECT_URI}"
+                    ],
+                "token_endpoint_auth_signing_alg": "PS256",
+                "token_endpoint_auth_method": "private_key_jwt",
+                "grant_types": [
+                    "client_credentials",
+                    "authorization_code",
+                    "refresh_token"
+                    ],
+                "response_types": [
+                    "code"
+                    ],
+                "application_type": "web",
+                "id_token_signed_response_alg": "PS256",
+                "id_token_encrypted_response_alg": "RSA-OAEP",
+                "id_token_encrypted_response_enc": "A256GCM",
+                "request_object_signing_alg": "PS256",
+                "software_statement": "${SSA}"
+            }
+        """
+    }
+
+    static String getRegularClaimsWithUnsupportedApplicationType() {
+
+        long currentTimeInMillis = System.currentTimeMillis()
+        long currentTimeInSeconds = currentTimeInMillis / 1000
+        return """
+            {
+                "iss": "${softwareProductId}",
+                "iat": ${currentTimeInSeconds},
+                "exp": ${currentTimeInSeconds + 3600},
+                "jti": "${currentTimeInMillis}",
+                "aud": "https://www.infosec.cdr.gov.au/token",
+                "redirect_uris": [
+                    "${AUDCRConstants.REDIRECT_URI}",
+                    "${AUDCRConstants.ALTERNATE_REDIRECT_URI}"
+                    ],
+                "token_endpoint_auth_signing_alg": "PS256",
+                "token_endpoint_auth_method": "private_key_jwt",
+                "grant_types": [
+                    "client_credentials",
+                    "authorization_code",
+                    "refresh_token"
+                    ],
+                "response_types": [
+                    "code id_token"
+                    ],
+                "application_type": "mobile",
+                "id_token_signed_response_alg": "PS256",
+                "id_token_encrypted_response_alg": "RSA-OAEP",
+                "id_token_encrypted_response_enc": "A256GCM",
+                "request_object_signing_alg": "PS256",
+                "software_statement": "${SSA}"
+            }
+        """
+    }
+
+    static String getRegularClaimsWithoutRequestObjectSigningAlg() {
+
+        long currentTimeInMillis = System.currentTimeMillis()
+        long currentTimeInSeconds = currentTimeInMillis / 1000
+        return """
+            {
+                "iss": "${softwareProductId}",
+                "iat": ${currentTimeInSeconds},
+                "exp": ${currentTimeInSeconds + 3600},
+                "jti": "${currentTimeInMillis}",
+                "aud": "https://www.infosec.cdr.gov.au/token",
+                "redirect_uris": [
+                    "${AUDCRConstants.REDIRECT_URI}",
+                    "${AUDCRConstants.ALTERNATE_REDIRECT_URI}"
+                    ],
+                "token_endpoint_auth_signing_alg": "PS256",
+                "token_endpoint_auth_method": "private_key_jwt",
+                "grant_types": [
+                    "client_credentials",
+                    "authorization_code",
+                    "refresh_token"
+                    ],
+                "response_types": [
+                    "code id_token"
+                    ],
+                "application_type": "web",
+                "id_token_signed_response_alg": "PS256",
+                "id_token_encrypted_response_alg": "RSA-OAEP",
+                "id_token_encrypted_response_enc": "A256GCM",
+                "software_statement": "${SSA}"
+            }
+        """
+    }
+
+    static String getRegularClaimsWithMalformedSSA() {
+
+        long currentTimeInMillis = System.currentTimeMillis()
+        long currentTimeInSeconds = currentTimeInMillis / 1000
+        return """
+            {
+                "iss": "${softwareProductId}",
+                "iat": ${currentTimeInSeconds},
+                "exp": ${currentTimeInSeconds + 3600},
+                "jti": "${currentTimeInMillis}",
+                "aud": "https://www.infosec.cdr.gov.au/token",
+                "redirect_uris": [
+                    "${AUDCRConstants.REDIRECT_URI}",
+                    "${AUDCRConstants.ALTERNATE_REDIRECT_URI}"
+                    ],
+                "token_endpoint_auth_signing_alg": "PS256",
+                "token_endpoint_auth_method": "private_key_jwt",
+                "grant_types": [
+                    "client_credentials",
+                    "authorization_code",
+                    "refresh_token"
+                    ],
+                "response_types": [
+                    "code id_token"
+                    ],
+                "application_type": "web",
+                "id_token_signed_response_alg": "PS256",
+                "id_token_encrypted_response_alg": "RSA-OAEP",
+                "id_token_encrypted_response_enc": "A256GCM",
+                "request_object_signing_alg": "PS256",
+                "software_statement": "ertyertywewrtreuytueteiueuiy"
+            }
+        """
+    }
+
+    static String getRegularClaimsWithoutRedirectUris() {
+
+        long currentTimeInMillis = System.currentTimeMillis()
+        long currentTimeInSeconds = currentTimeInMillis / 1000
+        return """
+            {
+                "iss": "${softwareProductId}",
+                "iat": ${currentTimeInSeconds},
+                "exp": ${currentTimeInSeconds + 3600},
+                "jti": "${currentTimeInMillis}",
+                "aud": "https://www.infosec.cdr.gov.au/token",
+                "token_endpoint_auth_signing_alg": "PS256",
+                "token_endpoint_auth_method": "private_key_jwt",
+                "grant_types": [
+                    "client_credentials",
+                    "authorization_code",
+                    "refresh_token"
+                    ],
+                "response_types": [
+                    "code id_token"
+                    ],
+                "application_type": "web",
+                "id_token_signed_response_alg": "PS256",
+                "id_token_encrypted_response_alg": "RSA-OAEP",
+                "id_token_encrypted_response_enc": "A256GCM",
+                "request_object_signing_alg": "PS256",
+                "software_statement": "${SSA}"
+            }
+        """
+    }
+
+    static String getRegularClaimsWithFieldsNotSupported() {
+
+        long currentTimeInMillis = System.currentTimeMillis()
+        long currentTimeInSeconds = currentTimeInMillis / 1000
+        return """
+            {
+                "iss": "${softwareProductId}",
+                "iat": ${currentTimeInSeconds},
+                "exp": ${currentTimeInSeconds + 3600},
+                "jti": "${currentTimeInMillis}",
+                "aud": "https://www.infosec.cdr.gov.au/token",
+                "redirect_uris": [
+                    "${AUDCRConstants.REDIRECT_URI}",
+                    "${AUDCRConstants.ALTERNATE_REDIRECT_URI}"
+                    ],
+                "token_endpoint_auth_signing_alg": "PS256",
+                "token_endpoint_auth_method": "private_key_jwt",
+                "grant_types": [
+                    "client_credentials",
+                    "authorization_code",
+                    "refresh_token"
+                    ],
+                "response_types": [
+                    "code id_token"
+                    ],
+                "application_type": "web",
+                "id_token_signed_response_alg": "PS256",
+                "id_token_encrypted_response_alg": "RSA-OAEP",
+                "id_token_encrypted_response_enc": "A256GCM",
+                "request_object_signing_alg": "PS256",
+                "adr_name": "ADR",
                 "software_statement": "${AUDCRConstants.SSA}"
             }
         """

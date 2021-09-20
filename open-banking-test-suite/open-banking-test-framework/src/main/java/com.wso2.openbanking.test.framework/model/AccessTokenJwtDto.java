@@ -21,10 +21,12 @@ import com.nimbusds.jose.JWSSigner;
 import com.nimbusds.jose.Payload;
 import com.nimbusds.jose.crypto.RSASSASigner;
 import com.wso2.openbanking.test.framework.exception.TestFrameworkException;
+import com.wso2.openbanking.test.framework.util.AppConfigReader;
 import com.wso2.openbanking.test.framework.util.ConfigParser;
 import com.wso2.openbanking.test.framework.util.TestConstants;
 import com.wso2.openbanking.test.framework.util.TestUtil;
 import org.json.JSONObject;
+
 import java.security.Key;
 import java.security.KeyStore;
 import java.security.KeyStoreException;
@@ -39,294 +41,317 @@ import java.security.cert.Certificate;
  */
 public class AccessTokenJwtDto {
 
-  private JWSHeader jwsHeader;
-  private String sub;
-  private String aud;
-  private String iss;
-  private long exp;
-  private long iat;
-  private String jti;
+    private String signingAlg;
+    private JWSHeader jwsHeader;
+    private String sub;
+    private String aud;
+    private String iss;
+    private long exp;
+    private long iat;
+    private String jti;
 
-  public String getSub() {
+    public String getSub() {
 
-    return sub;
-  }
+        return sub;
+    }
 
-  public void setSub(String sub) {
+    public void setSub(String sub) {
 
-    this.sub = sub;
-  }
+        this.sub = sub;
+    }
 
-  public String getAud() {
+    public String getAud() {
 
-    return aud;
-  }
+        return aud;
+    }
 
-  public void setAud(String aud) {
+    public void setAud(String aud) {
 
-    this.aud = aud;
-  }
+        this.aud = aud;
+    }
 
-  public String getIss() {
+    public String getIss() {
 
-    return iss;
-  }
+        return iss;
+    }
 
-  public void setIss(String iss) {
+    public void setIss(String iss) {
 
-    this.iss = iss;
-  }
+        this.iss = iss;
+    }
 
-  public long getExp() {
+    public long getExp() {
 
-    return exp;
-  }
+        return exp;
+    }
 
-  public void setExp(long exp) {
+    public void setExp(long exp) {
 
-    this.exp = exp;
-  }
+        this.exp = exp;
+    }
 
-  public long getIat() {
+    public long getIat() {
 
-    return iat;
-  }
+        return iat;
+    }
 
-  public void setIat(long iat) {
+    public void setIat(long iat) {
 
-    this.iat = iat;
-  }
+        this.iat = iat;
+    }
 
-  public String getJti() {
+    public String getJti() {
 
-    return jti;
-  }
+        return jti;
+    }
 
-  public void setJti(String jti) {
+    public void setJti(String jti) {
 
-    this.jti = jti;
-  }
+        this.jti = jti;
+    }
 
-  public JWSHeader getJwsHeader() {
+    public JWSHeader getJwsHeader() {
 
-    return jwsHeader;
-  }
+        return jwsHeader;
+    }
 
-  public void setJwsHeader(JWSHeader jwsHeader) {
+    public void setJwsHeader(JWSHeader jwsHeader) {
 
-    this.jwsHeader = jwsHeader;
-  }
+        this.jwsHeader = jwsHeader;
+    }
 
-  /**
-   * Method to generate a JWT token with provided attributes in the DTO.
-   *
-   * @return String of JWT token
-   * @throws TestFrameworkException When failed to generate the JWT using the certificate
-   */
-  public String getJwt() throws TestFrameworkException {
-    return getJwt(null);
-  }
+    public String getSigningAlg() {
+        return signingAlg;
+    }
 
-  /**
-   * Method to generate a JWT token with provided attributes in the DTO.
-   * If the client Id is given, it will be used as sub, iss.
-   *
-   * @param clientId - Client id
-   * @return String of JWT token
-   * @throws TestFrameworkException When failed to generate the JWT using the certificate
-   */
-  public String getJwt(String clientId) throws TestFrameworkException {
+    public void setSigningAlg(String signingAlg) {
+        this.signingAlg = signingAlg;
+    }
 
-    KeyStore keyStore;
-    try {
-      keyStore = TestUtil.getApplicationKeyStore();
-      long currentTimeInMilliseconds = System.currentTimeMillis();
-      long currentTimeInSeconds = System.currentTimeMillis() / 1000;
-      //expire time is read from configs and converted to milli seconds
-      long expireTime = currentTimeInSeconds + (long)
-              (ConfigParser.getInstance().getAccessTokenExpireTime() * 1000);
+    /**
+     * Method to generate a JWT token with provided attributes in the DTO.
+     *
+     * @return String of JWT token
+     * @throws TestFrameworkException When failed to generate the JWT using the certificate
+     */
+    public String getJwt() throws TestFrameworkException {
+        return getJwt(null);
+    }
 
-      if (clientId == null) {
-        if (sub == null) {
-          sub = ConfigParser.getInstance().getClientId();
+    /**
+     * Method to generate a JWT token with provided attributes in the DTO.
+     * If the client Id is given, it will be used as sub, iss.
+     *
+     * @param clientId - Client id
+     * @return String of JWT token
+     * @throws TestFrameworkException When failed to generate the JWT using the certificate
+     */
+    public String getJwt(String clientId) throws TestFrameworkException {
+
+        KeyStore keyStore;
+        String thumbprint;
+        Key signingKey;
+        try {
+            if (ConfigParser.getInstance().getMockCDRRegisterEnabled()) {
+                keyStore = TestUtil.getMockADRApplicationKeyStore();
+                KeyStore.PrivateKeyEntry pkEntry = (KeyStore.PrivateKeyEntry) keyStore.getEntry(
+                        ConfigParser.getInstance().getMockADRSigningKeystoreAlias(), new KeyStore.PasswordProtection(
+                                ConfigParser.getInstance().getMockADRSigningKeystorePassword().toCharArray()));
+
+                Certificate certificate = pkEntry.getCertificate();
+                thumbprint = TestUtil.getJwkThumbPrintForSHA256(certificate);
+                signingKey = keyStore.getKey(ConfigParser.getInstance().getMockADRSigningKeystoreAlias(),
+                        ConfigParser.getInstance().getMockADRSigningKeystorePassword().toCharArray());
+
+            } else {
+                keyStore = TestUtil.getApplicationKeyStore();
+                KeyStore.PrivateKeyEntry pkEntry = (KeyStore.PrivateKeyEntry) keyStore.getEntry(
+                        AppConfigReader.getApplicationKeystoreAlias(), new KeyStore.PasswordProtection(
+                                AppConfigReader.getApplicationKeystorePassword().toCharArray()));
+
+                Certificate certificate = pkEntry.getCertificate();
+                thumbprint = TestUtil.getJwkThumbPrint(certificate);
+                signingKey = keyStore.getKey(AppConfigReader.getApplicationKeystoreAlias(),
+                        AppConfigReader.getApplicationKeystorePassword().toCharArray());
+            }
+
+            long currentTimeInMilliseconds = System.currentTimeMillis();
+            long currentTimeInSeconds = System.currentTimeMillis() / 1000;
+            //expire time is read from configs and converted to milli seconds
+            long expireTime = currentTimeInSeconds + (long)
+                    (ConfigParser.getInstance().getAccessTokenExpireTime() * 1000);
+            JWSHeader header;
+            if (signingAlg == null) {
+                header = new JWSHeader.Builder(JWSAlgorithm.parse(ConfigParser.getInstance().getSigningAlgorithm()))
+                        .keyID(thumbprint).build();
+            } else {
+                header = new JWSHeader.Builder(JWSAlgorithm.parse(signingAlg))
+                        .keyID(thumbprint).build();
+            }
+            if (clientId == null) {
+                if (sub == null) {
+                    sub = AppConfigReader.getClientId();
+                }
+                if (iss == null) {
+                    iss = AppConfigReader.getClientId();
+                }
+            } else {
+                sub = clientId;
+                iss = clientId;
+            }
+            if (aud == null) {
+                aud = ConfigParser.getInstance().getAudienceValue();
+            }
+            exp = expireTime;
+            iat = currentTimeInSeconds;
+            if (jti == null) {
+                jti = String.valueOf(currentTimeInMilliseconds);
+            }
+
+            JSONObject payload = new JSONObject();
+            payload.put(TestConstants.ISSUER_KEY, iss);
+            payload.put(TestConstants.SUBJECT_KEY, sub);
+            payload.put(TestConstants.AUDIENCE_KEY, aud);
+            payload.put(TestConstants.EXPIRE_DATE_KEY, exp);
+            payload.put(TestConstants.ISSUED_AT_KEY, iat);
+            payload.put(TestConstants.JTI_KEY, jti);
+
+            JWSSigner signer = new RSASSASigner((PrivateKey) signingKey);
+
+            JWSObject jwsObject = new JWSObject(header, new Payload(payload.toString()));
+            jwsObject.sign(signer);
+
+            return jwsObject.serialize();
+        } catch (JOSEException e) {
+            throw new TestFrameworkException("Failed to sign the object ", e);
+        } catch (NoSuchAlgorithmException e) {
+            throw new TestFrameworkException("Failed to identify the Algorithm ", e);
+        } catch (KeyStoreException e) {
+            throw new TestFrameworkException("Failed to initialize the Keystore ", e);
+        } catch (UnrecoverableKeyException e) {
+            throw new TestFrameworkException("Failed to recover the Key", e);
+        } catch (UnrecoverableEntryException e) {
+            throw new TestFrameworkException("Failed to recover the Entry", e);
         }
-        if (iss == null) {
-          iss = ConfigParser.getInstance().getClientId();
+    }
+
+    /**
+     * Method to generate a JWT token with provided issuer and audience attributes in the DTO.
+     * If the issuer is given, it will be used as sub, iss.
+     * If the audience is given, it will be used as aud.
+     *
+     * @param issuer   - issuer
+     * @param audience - audience
+     * @return jwt
+     * @throws TestFrameworkException exception
+     */
+    public String getJwt(String issuer, String audience) throws TestFrameworkException {
+
+        KeyStore keyStore;
+        try {
+            keyStore = TestUtil.getApplicationKeyStore();
+            KeyStore.PrivateKeyEntry pkEntry = (KeyStore.PrivateKeyEntry) keyStore.getEntry(
+                    AppConfigReader.getApplicationKeystoreAlias(), new KeyStore.PasswordProtection(
+                            AppConfigReader.getApplicationKeystorePassword().toCharArray()));
+            Certificate certificate = pkEntry.getCertificate();
+            long currentTimeInMilliseconds = System.currentTimeMillis();
+            long currentTimeInSeconds = System.currentTimeMillis() / 1000;
+            //expire time is read from configs and converted to milli seconds
+            long expireTime = currentTimeInSeconds + (long)
+                    (ConfigParser.getInstance().getAccessTokenExpireTime() * 1000);
+            String thumbprint = TestUtil.getJwkThumbPrint(certificate);
+            JWSHeader header = new JWSHeader.Builder(JWSAlgorithm.parse(ConfigParser.getInstance().getSigningAlgorithm()))
+                    .keyID(thumbprint).type(JOSEObjectType.JWT).build();
+
+            if (issuer == null) {
+                if (sub == null) {
+                    sub = AppConfigReader.getClientId();
+                }
+                if (iss == null) {
+                    iss = AppConfigReader.getClientId();
+                }
+            } else {
+                sub = issuer;
+                iss = issuer;
+            }
+            if (audience == null) {
+                aud = ConfigParser.getInstance().getAudienceValue();
+            } else {
+                aud = audience;
+            }
+            exp = expireTime;
+            iat = currentTimeInSeconds;
+            jti = String.valueOf(currentTimeInMilliseconds);
+
+            JSONObject payload = new JSONObject();
+            payload.put(TestConstants.ISSUER_KEY, iss);
+            payload.put(TestConstants.SUBJECT_KEY, sub);
+            payload.put(TestConstants.AUDIENCE_KEY, aud);
+            payload.put(TestConstants.EXPIRE_DATE_KEY, exp);
+            payload.put(TestConstants.ISSUED_AT_KEY, iat);
+            payload.put(TestConstants.JTI_KEY, jti);
+
+            Key signingKey;
+
+            signingKey = keyStore.getKey(AppConfigReader.getApplicationKeystoreAlias(),
+                    AppConfigReader.getApplicationKeystorePassword().toCharArray());
+
+            JWSSigner signer = new RSASSASigner((PrivateKey) signingKey);
+
+            JWSObject jwsObject = new JWSObject(header, new Payload(payload.toString()));
+            jwsObject.sign(signer);
+
+            return jwsObject.serialize();
+        } catch (JOSEException e) {
+            throw new TestFrameworkException("Failed to sign the object ", e);
+        } catch (NoSuchAlgorithmException e) {
+            throw new TestFrameworkException("Failed to identify the Algorithm ", e);
+        } catch (KeyStoreException e) {
+            throw new TestFrameworkException("Failed to initialize the Keystore ", e);
+        } catch (UnrecoverableKeyException e) {
+            throw new TestFrameworkException("Failed to recover the Key", e);
+        } catch (UnrecoverableEntryException e) {
+            throw new TestFrameworkException("Failed to recover the Entry", e);
         }
-      } else {
-        sub = clientId;
-        iss = clientId;
-      }
-      if (aud == null) {
-        aud = ConfigParser.getInstance().getAudienceValue();
-      }
-      if (exp == 0) {
-        exp = expireTime;
-      }
-      iat = currentTimeInSeconds;
-      if (jti == null) {
+    }
+
+    public String getJwt(String issuer, long expireTime) {
+
+        long currentTimeInSeconds = System.currentTimeMillis() / 1000;
+
+        if (issuer == null) {
+            if (sub == null) {
+                sub = AppConfigReader.getClientId();
+            }
+            if (iss == null) {
+                iss = AppConfigReader.getClientId();
+            }
+        } else {
+            sub = issuer;
+            iss = issuer;
+        }
+        if (aud == null) {
+            aud = ConfigParser.getInstance().getAudienceValue();
+        }
+        if (expireTime == 0) {
+            exp = currentTimeInSeconds + (long)
+                    (ConfigParser.getInstance().getAccessTokenExpireTime() * 1000);
+        } else {
+            exp = expireTime;
+        }
+
+        iat = currentTimeInSeconds;
+        long currentTimeInMilliseconds = System.currentTimeMillis();
         jti = String.valueOf(currentTimeInMilliseconds);
-      }
 
-      JSONObject payload = new JSONObject();
-      payload.put(TestConstants.ISSUER_KEY, iss);
-      payload.put(TestConstants.SUBJECT_KEY, sub);
-      payload.put(TestConstants.AUDIENCE_KEY, aud);
-      payload.put(TestConstants.EXPIRE_DATE_KEY, exp);
-      payload.put(TestConstants.ISSUED_AT_KEY, iat);
-      payload.put(TestConstants.JTI_KEY, jti);
+        JSONObject payload = new JSONObject();
+        payload.put(TestConstants.ISSUER_KEY, iss);
+        payload.put(TestConstants.SUBJECT_KEY, sub);
+        payload.put(TestConstants.AUDIENCE_KEY, aud);
+        payload.put(TestConstants.EXPIRE_DATE_KEY, exp);
+        payload.put(TestConstants.ISSUED_AT_KEY, iat);
+        payload.put(TestConstants.JTI_KEY, jti);
 
-      Key signingKey;
-
-      signingKey = keyStore.getKey(ConfigParser.getInstance().getApplicationKeystoreAlias(),
-              ConfigParser.getInstance().getApplicationKeystorePassword().toCharArray());
-
-      JWSSigner signer = new RSASSASigner((PrivateKey) signingKey);
-      KeyStore.PrivateKeyEntry pkEntry = (KeyStore.PrivateKeyEntry) keyStore.getEntry(
-              ConfigParser.getInstance().getApplicationKeystoreAlias(),
-              new KeyStore.PasswordProtection(ConfigParser.getInstance()
-                      .getApplicationKeystorePassword().toCharArray()));
-      Certificate certificate = pkEntry.getCertificate();
-      String thumbprint = TestUtil.getJwkThumbPrint(certificate);
-      JWSHeader header = new JWSHeader.Builder(JWSAlgorithm.parse(ConfigParser.getInstance()
-              .getSigningAlgorithm())).keyID(thumbprint).build();
-      JWSObject jwsObject = new JWSObject(header, new Payload(payload.toString()));
-      jwsObject.sign(signer);
-
-      return jwsObject.serialize();
-    } catch (JOSEException e) {
-      throw new TestFrameworkException("Failed to sign the object ", e);
-    } catch (NoSuchAlgorithmException e) {
-      throw new TestFrameworkException("Failed to identify the Algorithm ", e);
-    } catch (KeyStoreException e) {
-      throw new TestFrameworkException("Failed to initialize the Keystore ", e);
-    } catch (UnrecoverableKeyException e) {
-      throw new TestFrameworkException("Failed to recover the Key", e);
-    } catch (UnrecoverableEntryException e) {
-      throw new TestFrameworkException("Failed to recover the Entry", e);
+        return payload.toString();
     }
-  }
-
-  /**
-   * Method to generate a JWT token with provided issuer and audience attributes in the DTO.
-   * If the issuer is given, it will be used as sub, iss.
-   * If the audience is given, it will be used as aud.
-   *
-   * @param issuer   - issuer
-   * @param audience - audience
-   * @return jwt
-   * @throws TestFrameworkException exception
-   */
-  public String getJwt(String issuer, String audience) throws TestFrameworkException {
-
-    KeyStore keyStore;
-    try {
-      keyStore = TestUtil.getApplicationKeyStore();
-      long currentTimeInSeconds = System.currentTimeMillis() / 1000;
-      //expire time is read from configs and converted to milli seconds
-      long expireTime = currentTimeInSeconds + (long)
-              (ConfigParser.getInstance().getAccessTokenExpireTime() * 1000);
-
-      if (issuer == null) {
-        if (sub == null) {
-          sub = ConfigParser.getInstance().getClientId();
-        }
-        if (iss == null) {
-          iss = ConfigParser.getInstance().getClientId();
-        }
-      } else {
-        sub = issuer;
-        iss = issuer;
-      }
-      if (audience == null) {
-        aud = ConfigParser.getInstance().getAudienceValue();
-      } else {
-        aud = audience;
-      }
-      if (exp == 0) {
-        exp = expireTime;
-      }
-      iat = currentTimeInSeconds;
-      long currentTimeInMilliseconds = System.currentTimeMillis();
-      jti = String.valueOf(currentTimeInMilliseconds);
-
-      JSONObject payload = new JSONObject();
-      payload.put(TestConstants.ISSUER_KEY, iss);
-      payload.put(TestConstants.SUBJECT_KEY, sub);
-      payload.put(TestConstants.AUDIENCE_KEY, aud);
-      payload.put(TestConstants.EXPIRE_DATE_KEY, exp);
-      payload.put(TestConstants.ISSUED_AT_KEY, iat);
-      payload.put(TestConstants.JTI_KEY, jti);
-
-      Key signingKey;
-
-      signingKey = keyStore.getKey(ConfigParser.getInstance().getApplicationKeystoreAlias(),
-              ConfigParser.getInstance().getApplicationKeystorePassword().toCharArray());
-
-      JWSSigner signer = new RSASSASigner((PrivateKey) signingKey);
-      KeyStore.PrivateKeyEntry pkEntry = (KeyStore.PrivateKeyEntry) keyStore.getEntry(
-              ConfigParser.getInstance().getApplicationKeystoreAlias(),
-              new KeyStore.PasswordProtection(ConfigParser.getInstance()
-                      .getApplicationKeystorePassword().toCharArray()));
-      Certificate certificate = pkEntry.getCertificate();
-      String thumbprint = TestUtil.getJwkThumbPrint(certificate);
-      JWSHeader header = new JWSHeader.Builder(JWSAlgorithm.parse(ConfigParser.getInstance()
-              .getSigningAlgorithm()))
-              .keyID(thumbprint).type(JOSEObjectType.JWT).build();
-      JWSObject jwsObject = new JWSObject(header, new Payload(payload.toString()));
-      jwsObject.sign(signer);
-
-      return jwsObject.serialize();
-    } catch (JOSEException e) {
-      throw new TestFrameworkException("Failed to sign the object ", e);
-    } catch (NoSuchAlgorithmException e) {
-      throw new TestFrameworkException("Failed to identify the Algorithm ", e);
-    } catch (KeyStoreException e) {
-      throw new TestFrameworkException("Failed to initialize the Keystore ", e);
-    } catch (UnrecoverableKeyException e) {
-      throw new TestFrameworkException("Failed to recover the Key", e);
-    } catch (UnrecoverableEntryException e) {
-      throw new TestFrameworkException("Failed to recover the Entry", e);
-    }
-  }
-
-  public String getJwt(String issuer, long expireTime) {
-
-    long currentTimeInSeconds = System.currentTimeMillis() / 1000;
-
-    if (issuer == null) {
-      if (sub == null) {
-        sub = ConfigParser.getInstance().getClientId();
-      }
-      if (iss == null) {
-        iss = ConfigParser.getInstance().getClientId();
-      }
-    } else {
-      sub = issuer;
-      iss = issuer;
-    }
-    if (aud == null) {
-      aud = ConfigParser.getInstance().getAudienceValue();
-    }
-    if (expireTime == 0) {
-      exp = currentTimeInSeconds + (long)
-              (ConfigParser.getInstance().getAccessTokenExpireTime() * 1000);
-    } else {
-      exp = expireTime;
-    }
-
-    iat = currentTimeInSeconds;
-    long currentTimeInMilliseconds = System.currentTimeMillis();
-    jti = String.valueOf(currentTimeInMilliseconds);
-
-    JSONObject payload = new JSONObject();
-    payload.put(TestConstants.ISSUER_KEY, iss);
-    payload.put(TestConstants.SUBJECT_KEY, sub);
-    payload.put(TestConstants.AUDIENCE_KEY, aud);
-    payload.put(TestConstants.EXPIRE_DATE_KEY, exp);
-    payload.put(TestConstants.ISSUED_AT_KEY, iat);
-    payload.put(TestConstants.JTI_KEY, jti);
-
-    return payload.toString();
-  }
 }

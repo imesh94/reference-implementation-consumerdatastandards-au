@@ -13,6 +13,7 @@
 package com.wso2.openbanking.test.framework;
 
 import com.wso2.openbanking.test.framework.exception.TestFrameworkException;
+import com.wso2.openbanking.test.framework.util.AppConfigReader;
 import com.wso2.openbanking.test.framework.util.ConfigParser;
 import com.wso2.openbanking.test.framework.util.TestConstants;
 import com.wso2.openbanking.test.framework.util.TestUtil;
@@ -39,83 +40,90 @@ import java.util.List;
  */
 public class TestSuite {
 
-  private static final Log log = LogFactory.getLog(TestSuite.class);
+    private static Log log = LogFactory.getLog(TestSuite.class);
 
-  /**
-   * Initialize Test Framework.
-   */
-  public static void init() {
+    /**
+     * Initialize Test Framework.
+     */
+    public static void init() {
 
-    List<Filter> filterList = new ArrayList<>();
-    filterList.add(new RequestLoggingFilter(System.out));
-    filterList.add(new ResponseLoggingFilter(System.out));
-    Security.addProvider(new BouncyCastleProvider());
+        List<Filter> filterList = new ArrayList<>();
+        filterList.add(new RequestLoggingFilter(System.out));
+        filterList.add(new ResponseLoggingFilter(System.out));
+        Security.addProvider(new BouncyCastleProvider());
 
-    RestAssured.filters(filterList);
-  }
-
-  /**
-   * Get Base Request Specification.
-   *
-   * @return request specification.
-   */
-  public static RequestSpecification buildRequest() throws TestFrameworkException {
-
-    if (ConfigParser.getInstance().isMtlsEnabled()) {
-      RestAssuredConfig config = null;
-      SSLSocketFactory sslSocketFactory = TestUtil.getSslSocketFactory();
-      if (sslSocketFactory != null) {
-        config = RestAssuredConfig.newConfig().sslConfig(RestAssured.config()
-                .getSSLConfig()
-                .sslSocketFactory(TestUtil.getSslSocketFactory()));
-      } else {
-        throw new TestFrameworkException("Unable to retrieve the SSL socket factory");
-      }
-      return RestAssured.given()
-              .config(config.encoderConfig(EncoderConfig.encoderConfig()
-                      .encodeContentTypeAs(TestConstants.CONTENT_TYPE_APPLICATION_JWT, ContentType.TEXT)))
-              .urlEncodingEnabled(true);
-    } else {
-      // Use relaxed HTTPS validation if MTLS is disabled.
-      return RestAssured.given()
-              .relaxedHTTPSValidation()
-              .urlEncodingEnabled(true);
+        RestAssured.filters(filterList);
     }
-  }
 
-  /**
-   * Get Base Request specification without MTLS.
-   *
-   * @return request specification.
-   */
-  public static RequestSpecification buildBasicRequestWithoutTlsContext() {
-    return RestAssured.given()
-            .relaxedHTTPSValidation()
-            .urlEncodingEnabled(true);
-  }
+    /**
+     * Get Base Request Specification.
+     *
+     * @return request specification.
+     */
+    public static RequestSpecification buildRequest() throws TestFrameworkException {
 
-  /**
-   * Get Base Request Specification with defined keystore.
-   * @param keystoreLocation keystore file path.
-   * @param keystorePassword keystore password.
-   * @return request specification.
-   * @throws TestFrameworkException exception.
-   */
-  public static RequestSpecification buildRequest(String keystoreLocation, String keystorePassword)
-          throws TestFrameworkException {
-
-    RestAssuredConfig config = null;
-    SSLSocketFactory sslSocketFactory = TestUtil.getSslSocketFactory(keystoreLocation, keystorePassword);
-    if (sslSocketFactory != null) {
-      config = RestAssuredConfig.newConfig().sslConfig(RestAssured.config()
-              .getSSLConfig()
-              .sslSocketFactory(TestUtil.getSslSocketFactory(keystoreLocation, keystorePassword)));
-    } else {
-      throw new TestFrameworkException("Unable to retrieve the SSL socket factory");
+        if (AppConfigReader.isMTLSEnabled()) {
+            RestAssuredConfig config = null;
+            SSLSocketFactory sslSocketFactory = TestUtil.getSslSocketFactory();
+            if (sslSocketFactory != null) {
+                config = RestAssuredConfig.newConfig().sslConfig(RestAssured.config()
+                        .getSSLConfig()
+                        .sslSocketFactory(TestUtil.getSslSocketFactory()));
+            } else {
+                throw new TestFrameworkException("Unable to retrieve the SSL socket factory");
+            }
+            return RestAssured.given()
+                    .config(config.encoderConfig(EncoderConfig.encoderConfig()
+                            .encodeContentTypeAs(TestConstants.CONTENT_TYPE_APPLICATION_JWT, ContentType.TEXT)))
+                    .urlEncodingEnabled(true);
+        } else {
+            // Use relaxed HTTPS validation if MTLS is disabled.
+            return RestAssured.given()
+                    .relaxedHTTPSValidation()
+                    .urlEncodingEnabled(true);
+        }
     }
-    return RestAssured.given()
-            .config(config.encoderConfig(EncoderConfig.encoderConfig()
-                    .encodeContentTypeAs(TestConstants.CONTENT_TYPE_APPLICATION_JWT, ContentType.TEXT)))
-            .urlEncodingEnabled(true);
-  }
+
+    /**
+     * Get Base Request specification without MTLS
+     *
+     * @return request specification.
+     */
+    public static RequestSpecification buildBasicRequest() {
+        return RestAssured.given()
+                .relaxedHTTPSValidation()
+                .urlEncodingEnabled(true);
+    }
+
+    /**
+     * Get Base Request Specification to invoke mock CDR register.
+     *
+     * @return request specification.
+     */
+    public static RequestSpecification buildRequestToMockCDRRegister(boolean isMTLSRequired) throws TestFrameworkException {
+
+        if (isMTLSRequired) {
+            RestAssuredConfig config = null;
+            SSLSocketFactory sslSocketFactory = TestUtil.getSslSocketFactoryForMockCDRRegister();
+
+            if (sslSocketFactory != null) {
+
+                config = RestAssuredConfig.newConfig().sslConfig(RestAssured.config()
+                        .getSSLConfig()
+                        .sslSocketFactory(TestUtil.getSslSocketFactoryForMockCDRRegister()));
+            } else {
+                throw new TestFrameworkException("Unable to retrieve the SSL socket factory");
+            }
+            return RestAssured.given()
+                    .config(config.encoderConfig(EncoderConfig.encoderConfig()
+                            .encodeContentTypeAs(TestConstants.CONTENT_TYPE_APPLICATION_JWT, ContentType.TEXT)))
+                    .urlEncodingEnabled(true);
+
+        } else {
+            // Use relaxed HTTPS validation if MTLS is disabled.
+            return RestAssured.given()
+                    .relaxedHTTPSValidation()
+                    .urlEncodingEnabled(true);
+        }
+    }
 }

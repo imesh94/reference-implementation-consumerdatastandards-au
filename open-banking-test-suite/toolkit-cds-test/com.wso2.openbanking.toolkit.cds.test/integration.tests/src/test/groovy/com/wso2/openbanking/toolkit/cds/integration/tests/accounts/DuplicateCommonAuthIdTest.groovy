@@ -45,7 +45,7 @@ class DuplicateCommonAuthIdTest {
     public String consentedAccount
     public String secondConsentedAccount
 
-    @BeforeTest (alwaysRun = true)
+    @BeforeTest(alwaysRun = true)
     void "Initialize Test Suite"() {
 
         TestSuite.init()
@@ -55,29 +55,29 @@ class DuplicateCommonAuthIdTest {
     void "TC0202006_Initiate two authorisation consent flows on same browser session"() {
 
         AUAuthorisationBuilder authorisationBuilder = new AUAuthorisationBuilder(
-                scopes, AUConstants.DEFAULT_SHARING_DURATION,true
+                scopes, AUConstants.DEFAULT_SHARING_DURATION, true
         )
 
         def automation = new BrowserAutomation(BrowserAutomation.DEFAULT_DELAY, false)
                 .addStep(new AUBasicAuthAutomationStep(authorisationBuilder.authoriseUrl))
                 .addStep { driver, context ->
-            // Consent First Account
-            WebElement accElement = driver.findElement(By.xpath(AUTestUtil.getSingleAccountXPath()))
-            consentedAccount = accElement.getAttribute("value")
-            accElement.click()
-            // Consent Second Account
-            accElement = driver.findElement(By.xpath(AUTestUtil.getAltSingleAccountXPath()))
-            secondConsentedAccount = accElement.getAttribute("value")
-            accElement.click()
-            // Submit consent
-            driver.findElement(By.xpath(AUConstants.CONSENT_SUBMIT_XPATH)).click()
+                    // Consent First Account
+                    WebElement accElement = driver.findElement(By.xpath(AUTestUtil.getSingleAccountXPath()))
+                    consentedAccount = accElement.getAttribute("value")
+                    accElement.click()
+                    // Consent Second Account
+                    accElement = driver.findElement(By.xpath(AUTestUtil.getAltSingleAccountXPath()))
+                    secondConsentedAccount = accElement.getAttribute("value")
+                    accElement.click()
+                    // Submit consent
+                    driver.findElement(By.xpath(AUConstants.CONSENT_SUBMIT_XPATH)).click()
 
-            // Extra step for OB-2.0 AU Authentication flow.
-            if (TestConstants.SOLUTION_VERSION_200.equals(ConfigParser.getInstance().getSolutionVersion())) {
-                driver.findElement(By.xpath(AUConstants.CONSENT_SUBMIT_XPATH)).click()
-            }
-        }
-        .addStep(new WaitForRedirectAutomationStep())
+                    // Extra step for OB-2.0 AU Authentication flow.
+                    if (TestConstants.SOLUTION_VERSION_200.equals(ConfigParser.getInstance().getSolutionVersion())) {
+                        driver.findElement(By.xpath(AUConstants.CONSENT_SUBMIT_XPATH)).click()
+                    }
+                }
+                .addStep(new WaitForRedirectAutomationStep())
                 .execute(false)
 
         // Get Code From URL
@@ -88,23 +88,23 @@ class DuplicateCommonAuthIdTest {
         def secondAuthorisation = new BrowserAutomation(BrowserAutomation.DEFAULT_DELAY, true)
                 .addStep(new AUBasicAuthAutomationStep(authorisationBuilder.authoriseUrl))
                 .addStep { driver, context ->
-            // Consent First Account
-            WebElement accElement = driver.findElement(By.xpath(AUTestUtil.getSingleAccountXPath()))
-            consentedAccount = accElement.getAttribute("value")
-            accElement.click()
-            // Consent Second Account
-            accElement = driver.findElement(By.xpath(AUTestUtil.getAltSingleAccountXPath()))
-            secondConsentedAccount = accElement.getAttribute("value")
-            accElement.click()
-            // Submit consent
-            driver.findElement(By.xpath(AUConstants.CONSENT_SUBMIT_XPATH)).click()
+                    // Consent First Account
+                    WebElement accElement = driver.findElement(By.xpath(AUTestUtil.getSingleAccountXPath()))
+                    consentedAccount = accElement.getAttribute("value")
+                    accElement.click()
+                    // Consent Second Account
+                    accElement = driver.findElement(By.xpath(AUTestUtil.getAltSingleAccountXPath()))
+                    secondConsentedAccount = accElement.getAttribute("value")
+                    accElement.click()
+                    // Submit consent
+                    driver.findElement(By.xpath(AUConstants.CONSENT_SUBMIT_XPATH)).click()
 
-            // Extra step for OB-2.0 AU Authentication flow.
-            if (TestConstants.SOLUTION_VERSION_200.equals(ConfigParser.getInstance().getSolutionVersion())) {
-                driver.findElement(By.xpath(AUConstants.CONSENT_SUBMIT_XPATH)).click()
-            }
-        }
-        .addStep(new WaitForRedirectAutomationStep())
+                    // Extra step for OB-2.0 AU Authentication flow.
+                    if (TestConstants.SOLUTION_VERSION_200.equals(ConfigParser.getInstance().getSolutionVersion())) {
+                        driver.findElement(By.xpath(AUConstants.CONSENT_SUBMIT_XPATH)).click()
+                    }
+                }
+                .addStep(new WaitForRedirectAutomationStep())
                 .execute(true)
 
         // Get Code From URL

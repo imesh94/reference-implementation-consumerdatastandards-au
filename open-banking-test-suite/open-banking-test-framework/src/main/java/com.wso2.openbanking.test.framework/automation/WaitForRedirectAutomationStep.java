@@ -12,6 +12,7 @@
 
 package com.wso2.openbanking.test.framework.automation;
 
+import com.wso2.openbanking.test.framework.util.AppConfigReader;
 import com.wso2.openbanking.test.framework.util.ConfigParser;
 import org.openqa.selenium.remote.RemoteWebDriver;
 import org.openqa.selenium.support.ui.ExpectedConditions;
@@ -32,6 +33,6 @@ public class WaitForRedirectAutomationStep implements BrowserAutomationStep {
   public void execute(RemoteWebDriver webDriver, BrowserAutomation.AutomationContext context) {
 
     WebDriverWait wait = new WebDriverWait(webDriver, 10);
-    wait.until(ExpectedConditions.urlContains(ConfigParser.getInstance().getRedirectUrl()));
+    wait.until(ExpectedConditions.urlContains(AppConfigReader.getRedirectURL()));
   }
 }

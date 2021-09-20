@@ -1,0 +1,198 @@
+{
+  "LegalEntities": [
+    {
+      "LegalEntityId": "20c0864b-ceef-4de0-8944-eb0962f825eb",
+      "LegalEntityName": "FintechX",
+      "LogoUri": "https://fintechx/logo.png",
+      "Abn": "98765987654",
+      "Acn": "987659876",
+      "AccreditationNumber": "ADRBNK001001",
+      "Participations": [
+        {
+          "ParticipationId": "4d6ae0ce-9ed6-412f-955d-eee48fdd0f46",
+          "LegalEntityId": "20c0864b-ceef-4de0-8944-eb0962f825eb",
+          "ParticipationTypeId": 2,
+          "IndustryId": 1,
+          "StatusId": 1,
+          "Brands": [
+            {
+              "BrandId": "20c0864b-ceef-4de0-8944-eb0962f825eb",
+              "BrandName": "Finance X",
+              "LogoUri": "https://fintechx/logo.png",
+              "BrandStatusId": 1,
+              "ParticipationId": "4d6ae0ce-9ed6-412f-955d-eee48fdd0f46",
+              "LastUpdated": "2021-04-06T11:58:00",
+              "SoftwareProducts": [
+                {
+                  "SoftwareProductId": "63bc22ac-6fd2-4e85-a979-c2fc7c4db9da",
+                  "SoftwareProductName": "TestProductCert",
+                  "SoftwareProductDescription": "Application to allow you to track your expenses",
+                  "LogoUri": "https://fintechx/products/trackxpense/logo.png",
+                  "ClientUri": "https://fintechx/products/trackxpense",
+                  "RecipientBaseUri": "https://fintechx/products/trackxpense",
+                  "RevocationUri": "https://fintechx/products/trackxpense/revoke",
+                  "RedirectUris": "https://www.google.com/redirects/redirect1 https://www.google.com/redirects/redirect2",
+                  "JwksUri": "https://localhost:7006/loopback/MockDataRecipientJwks",
+                  "Scope": "openid profile bank:accounts.basic:read bank:accounts.detail:read bank:transactions:read bank:payees:read bank:regular_payments:read common:customer.basic:read common:customer.detail:read cdr:registration",
+                  "StatusId": 1,
+                  "BrandId": "20c0864b-ceef-4de0-8944-eb0962f825eb",
+                  "Certificates": [
+                    {
+                      "SoftwareProductCertificateId": "8b595374-e83b-41dc-b7e5-b4d9d1ad64b6",
+                      "SoftwareProductId": "63bc22ac-6fd2-4e85-a979-c2fc7c4db9da",
+                      "CommonName": "MockDataRecipient",
+                      "Thumbprint": "58D76F7A61CD726DA1C54F6898E8E69EA4C88060"
+                    }
+                  ]
+                },
+                {
+                  "SoftwareProductId": "86ecb655-9eba-409c-9be3-59e7adf7080d",
+                  "SoftwareProductName": "MockDataRecepient",
+                  "SoftwareProductDescription": "Mock Data Recepient",
+                  "LogoUri": "https://fintechx/products/trackxpense/logo.png",
+                  "ClientUri": "https://fintechx/products/trackxpense",
+                  "TosUri": "https://fintechx/products/trackxpense/tos",
+                  "PolicyUri": "https://fintechx/products/trackxpense/policy",
+                  "RecipientBaseUri": "https://fintechx/products/trackxpense",
+                  "RevocationUri": "https://fintechx/products/trackxpense/revoke",
+                  "RedirectUris": "https://www.google.com/redirects/redirect1 https://www.google.com/redirects/redirect2",
+                  "JwksUri": "https://localhost:7006/loopback/MockDataRecipientJwks",
+                  "Scope": "openid profile bank:accounts.basic:read bank:accounts.detail:read bank:transactions:read bank:payees:read bank:regular_payments:read common:customer.basic:read common:customer.detail:read cdr:registration",
+                  "StatusId": 1,
+                  "BrandId": "20c0864b-ceef-4de0-8944-eb0962f825eb",
+                  "Certificates": [
+                    {
+                      "SoftwareProductCertificateId": "ac0a68db-63c6-45fc-ab5b-cbf9e1467c84",
+                      "SoftwareProductId": "86ecb655-9eba-409c-9be3-59e7adf7080d",
+                      "CommonName": "MockDataRecipient",
+                      "Thumbprint": "58D76F7A61CD726DA1C54F6898E8E69EA4C88060"
+                    }
+                  ]
+                },
+                {
+                  "SoftwareProductId": "9381dad2-6b68-4879-b496-c1319d7dfbc9",
+                  "SoftwareProductName": "Track Xpense",
+                  "SoftwareProductDescription": "Application to allow you to track your expenses",
+                  "LogoUri": "https://fintechx/products/trackxpense/logo.png",
+                  "ClientUri": "https://fintechx/products/trackxpense",
+                  "RecipientBaseUri": "https://fintechx/products/trackxpense",
+                  "RevocationUri": "https://fintechx/products/trackxpense/revoke",
+                  "RedirectUris": "https://www.google.com/redirects/redirect1 https://www.google.com/redirects/redirect2",
+                  "JwksUri": "https://localhost:7006/loopback/MockDataRecipientJwks",
+                  "Scope": "openid profile bank:accounts.basic:read bank:accounts.detail:read bank:transactions:read bank:payees:read bank:regular_payments:read common:customer.basic:read common:customer.detail:read cdr:registration",
+                  "StatusId": 1,
+                  "BrandId": "20c0864b-ceef-4de0-8944-eb0962f825eb",
+                  "Certificates": [
+                    {
+                      "SoftwareProductCertificateId": "a3c4d0e0-5ba5-40bf-863d-dc313083ae30",
+                      "SoftwareProductId": "9381dad2-6b68-4879-b496-c1319d7dfbc9",
+                      "CommonName": "MockDataRecipient",
+                      "Thumbprint": "58D76F7A61CD726DA1C54F6898E8E69EA4C88060"
+                    }
+                  ]
+                },
+                {
+                  "SoftwareProductId": "d3c44426-e003-4604-aa45-4137e45dfbc4",
+                  "SoftwareProductName": "Loan Calculator X",
+                  "SoftwareProductDescription": "Loan affordability application",
+                  "LogoUri": "https://fintechx/products/loancalculator/logo.png",
+                  "ClientUri": "https://fintechx/products/loancalculator",
+                  "RecipientBaseUri": "https://fintechx/products/loancalculator",
+                  "RevocationUri": "https://fintechx/products/loancalculator/revocation",
+                  "RedirectUris": "https://www.google.com/redirects/redirect1 https://www.google.com/redirects/redirect2",
+                  "JwksUri": "https://localhost:7006/loopback/MockDataRecipientJwks",
+                  "Scope": "openid profile bank:accounts.basic:read bank:accounts.detail:read bank:transactions:read bank:payees:read bank:regular_payments:read common:customer.basic:read common:customer.detail:read cdr:registration",
+                  "StatusId": 1,
+                  "BrandId": "20c0864b-ceef-4de0-8944-eb0962f825eb",
+                  "Certificates": [
+                    {
+                      "SoftwareProductCertificateId": "8ec37dd6-e3a6-418d-b733-5b728ad909c2",
+                      "SoftwareProductId": "d3c44426-e003-4604-aa45-4137e45dfbc4",
+                      "CommonName": "MockDataRecipient",
+                      "Thumbprint": "58D76F7A61CD726DA1C54F6898E8E69EA4C88060"
+                    }
+                  ]
+                }
+              ],
+              "AuthDetails": []
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "LegalEntityId": "ebbcc2f2-817e-42b8-8a28-cd45902159e0",
+      "LegalEntityName": "ZeroFintech",
+      "LogoUri": "https://zerofintech/logo.png",
+      "Abn": "98765987654",
+      "Acn": "987659876",
+      "AccreditationNumber": "ADRBNK001004",
+      "Participations": [
+        {
+          "ParticipationId": "3b80733d-d0c1-4aa4-bed3-476ddfd906b3",
+          "LegalEntityId": "ebbcc2f2-817e-42b8-8a28-cd45902159e0",
+          "ParticipationTypeId": 2,
+          "IndustryId": 1,
+          "StatusId": 1,
+          "Brands": [
+            {
+              "BrandId": "ebbcc2f2-817e-42b8-8a28-cd45902159e0",
+              "BrandName": "ZeroFintech",
+              "LogoUri": "https://zerofintech/logo.png",
+              "BrandStatusId": 1,
+              "ParticipationId": "3b80733d-d0c1-4aa4-bed3-476ddfd906b3",
+              "LastUpdated": "2021-04-05T11:58:00",
+              "SoftwareProducts": [
+                {
+                  "SoftwareProductId": "5d03d1a6-b83b-4176-a2f4-d0074a205695",
+                  "SoftwareProductName": "Mortgage",
+                  "SoftwareProductDescription": "calculate the mortgage value",
+                  "LogoUri": "https://zerofintech/products/mortgage/logo.png",
+                  "ClientUri": "https://zerofintech/products/mortgage",
+                  "RecipientBaseUri": "https://zerofintech/products/mortgage",
+                  "RevocationUri": "https://zerofintech/products/mortgage/revocation",
+                  "RedirectUris": "https://www.google.com/redirects/redirect1 https://www.google.com/redirects/redirect2",
+                  "JwksUri": "https://localhost:7006/loopback/MockDataRecipientJwks",
+                  "Scope": "openid profile bank:accounts.basic:read bank:accounts.detail:read bank:transactions:read bank:payees:read bank:regular_payments:read common:customer.basic:read common:customer.detail:read cdr:registration",
+                  "StatusId": 1,
+                  "BrandId": "ebbcc2f2-817e-42b8-8a28-cd45902159e0",
+                  "Certificates": [
+                    {
+                      "SoftwareProductCertificateId": "4f69371f-9e31-4242-90ef-fa87b4af846e",
+                      "SoftwareProductId": "5d03d1a6-b83b-4176-a2f4-d0074a205695",
+                      "CommonName": "MockDataRecipient",
+                      "Thumbprint": "58D76F7A61CD726DA1C54F6898E8E69EA4C88060"
+                    }
+                  ]
+                },
+                {
+                  "SoftwareProductId": "dafa09db-4433-4203-907a-bdf797c8cd21",
+                  "SoftwareProductName": "Reward program",
+                  "SoftwareProductDescription": "Application to allow you to track your expenses",
+                  "LogoUri": "https://zerofintech//products/rewards/logo.png",
+                  "ClientUri": "https://zerofintech/products/rewards",
+                  "RecipientBaseUri": "https://zerofintech/products/rewards",
+                  "RevocationUri": "https://hotfintech/products/rewards/revoke",
+                  "RedirectUris": "https://www.google.com/redirects/redirect1 https://www.google.com/redirects/redirect2 https://www.google.com/redirects/redirect3",
+                  "JwksUri": "https://localhost:7006/loopback/MockDataRecipientJwks",
+                  "Scope": "openid profile bank:accounts.basic:read bank:accounts.detail:read bank:transactions:read bank:payees:read bank:regular_payments:read common:customer.basic:read common:customer.detail:read cdr:registration",
+                  "StatusId": 1,
+                  "BrandId": "ebbcc2f2-817e-42b8-8a28-cd45902159e0",
+                  "Certificates": [
+                    {
+                      "SoftwareProductCertificateId": "465e6327-314d-4569-bffb-01b2f9bf16ea",
+                      "SoftwareProductId": "dafa09db-4433-4203-907a-bdf797c8cd21",
+                      "CommonName": "MockDataRecipient",
+                      "Thumbprint": "58D76F7A61CD726DA1C54F6898E8E69EA4C88060"
+                    }
+                  ]
+                }
+              ],
+              "AuthDetails": []
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}

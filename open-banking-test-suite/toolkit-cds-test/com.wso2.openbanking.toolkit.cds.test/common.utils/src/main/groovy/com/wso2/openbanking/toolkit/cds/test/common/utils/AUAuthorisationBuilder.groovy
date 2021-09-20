@@ -25,6 +25,7 @@ import com.nimbusds.oauth2.sdk.ResponseType
 import com.nimbusds.oauth2.sdk.Scope
 import com.nimbusds.oauth2.sdk.id.ClientID
 import com.nimbusds.oauth2.sdk.id.State
+import com.wso2.openbanking.test.framework.util.AppConfigReader
 import com.wso2.openbanking.test.framework.util.ConfigParser
 import com.wso2.openbanking.test.framework.util.TestUtil
 import org.apache.commons.lang3.StringUtils
@@ -47,11 +48,11 @@ class AUAuthorisationBuilder {
 
     private AuthorizationRequest request
 
-    private params = [
+    private static params = [
             endpoint     : new URI("${ConfigParser.instance.getAuthorisationServerUrl()}/oauth2/authorize/"),
             response_type: new ResponseType("code id_token"),
-            client_id    : new ClientID(ConfigParser.getInstance().getClientId()),
-            redirect_uri : new URI(ConfigParser.getInstance().getRedirectUrl()),
+            client_id    : new ClientID(AppConfigReader.getClientId()),
+            redirect_uri : new URI(AppConfigReader.getRedirectURL()),
             state        : new State(UUID.randomUUID().toString())
     ]
 
@@ -61,20 +62,22 @@ class AUAuthorisationBuilder {
      * @param sharingDuration
      * @param sendSharingDuration
      * @param cdrArrangementId
+     * @param client_id
      */
     AUAuthorisationBuilder(List<AUConstants.SCOPES> scopes, Long sharingDuration, Boolean sendSharingDuration,
-                           String cdrArrangementId = "") {
+                           String cdrArrangementId = "", String client_id = params.client_id) {
 
         String scopeString = "openid ${String.join(" ", scopes.collect({ it.scopeString }))}"
 
-        request = new AuthorizationRequest.Builder(params.response_type, params.client_id)
+        request = new AuthorizationRequest.Builder(params.response_type, new ClientID(client_id))
                 .responseType(ResponseType.parse("code id_token"))
                 .endpointURI(params.endpoint)
                 .redirectionURI(params.redirect_uri)
-                .requestObject(getSignedRequestObject(scopeString, sharingDuration, sendSharingDuration, cdrArrangementId))
+                .requestObject(getSignedRequestObject(scopeString, sharingDuration, sendSharingDuration, cdrArrangementId,
+                        params.redirect_uri.toString(), client_id))
                 .scope(new Scope(scopeString))
                 .state(params.state)
-                .customParameter("prompt","login")
+                .customParameter("prompt", "login")
                 .build()
     }
 
@@ -82,18 +85,19 @@ class AUAuthorisationBuilder {
      * AU Authorisation Builder for Pushed Authorisation Flow
      * @param scopes
      * @param requestUri
+     * @param client_id
      */
-    AUAuthorisationBuilder(List<AUConstants.SCOPES> scopes, URI requestUri) {
+    AUAuthorisationBuilder(List<AUConstants.SCOPES> scopes, URI requestUri, String client_id = params.client_id) {
 
         String scopeString = "openid ${String.join(" ", scopes.collect({ it.scopeString }))}"
 
-        request = new AuthorizationRequest.Builder(params.response_type, params.client_id)
+        request = new AuthorizationRequest.Builder(params.response_type, new ClientID(client_id))
                 .responseType(ResponseType.parse("code id_token"))
                 .scope(new Scope(scopeString))
                 .requestURI(requestUri)
                 .redirectionURI(params.redirect_uri)
                 .endpointURI(params.endpoint)
-                .customParameter("prompt","login")
+                .customParameter("prompt", "login")
                 .build()
     }
 
@@ -114,7 +118,7 @@ class AUAuthorisationBuilder {
                 .requestURI(requestUri)
                 .redirectionURI(redirect_uri.toURI())
                 .endpointURI(params.endpoint)
-                .customParameter("prompt","login")
+                .customParameter("prompt", "login")
                 .build()
     }
 
@@ -124,15 +128,30 @@ class AUAuthorisationBuilder {
      */
     static JWT getSignedRequestObject(String scopeString, Long sharingDuration, Boolean sendSharingDuration,
                                       String cdrArrangementId,
-                                      String redirect_uri = ConfigParser.instance.getRedirectUrl(),
-                                      String clientId = ConfigParser.instance.clientId) {
+                                      String redirect_uri = AppConfigReader.getRedirectURL(),
+                                      String clientId = AppConfigReader.getClientId()) {
 
-        KeyStore keyStore = TestUtil.getApplicationKeyStore()
-        Certificate certificate = TestUtil.getCertificateFromKeyStore()
+        Key signingKey
+        JWSHeader header
+        if (ConfigParser.getInstance().mockCDRRegisterEnabled) {
+            KeyStore keyStore = TestUtil.getMockADRApplicationKeyStore()
+            Certificate certificate = TestUtil.getCertificateFromMockADRKeyStore()
+            header = new JWSHeader.Builder(JWSAlgorithm.parse(ConfigParser.instance.signingAlgorithm)).
+                    keyID(TestUtil.getJwkThumbPrintForSHA256(certificate)).build()
+
+            signingKey = keyStore.getKey(ConfigParser.getInstance().getMockADRSigningKeystoreAlias(),
+                    ConfigParser.getInstance().getMockADRSigningKeystorePassword().toCharArray())
+        } else {
+            KeyStore keyStore = TestUtil.getApplicationKeyStore()
+            Certificate certificate = TestUtil.getCertificateFromKeyStore()
+            header = new JWSHeader.Builder(JWSAlgorithm.parse(ConfigParser.instance.signingAlgorithm)).
+                    keyID(TestUtil.getJwkThumbPrint(certificate)).build()
+
+            signingKey = keyStore.getKey(AppConfigReader.getApplicationKeystoreAlias(),
+                    AppConfigReader.getApplicationKeystorePassword().toCharArray())
+        }
+
         String claims
-
-        JWSHeader header = new JWSHeader.Builder(JWSAlgorithm.parse(ConfigParser.instance.signingAlgorithm)).
-                keyID(TestUtil.getJwkThumbPrint(certificate)).build()
 
         def expiryDate = Instant.now().plus(1, ChronoUnit.DAYS)
 
@@ -194,7 +213,7 @@ class AUAuthorisationBuilder {
         }
 
         Payload tempPayload = new Payload(claims)
-        JSONObject jsonPayload  = tempPayload.toJSONObject()
+        JSONObject jsonPayload = tempPayload.toJSONObject()
 
         if (!StringUtils.isEmpty(cdrArrangementId)) {
             JSONObject claimObj = jsonPayload.get("claims")
@@ -202,10 +221,6 @@ class AUAuthorisationBuilder {
         }
 
         Payload payload = new Payload(jsonPayload.toString())
-
-        Key signingKey
-        signingKey = keyStore.getKey(ConfigParser.getInstance().getApplicationKeystoreAlias(),
-                ConfigParser.getInstance().getApplicationKeystorePassword().toCharArray())
         JWSSigner signer = new RSASSASigner((PrivateKey) signingKey)
 
         Security.addProvider(new BouncyCastleProvider())
