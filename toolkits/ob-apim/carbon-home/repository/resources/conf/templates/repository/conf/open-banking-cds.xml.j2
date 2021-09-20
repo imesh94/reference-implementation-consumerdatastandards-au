@@ -12,5 +12,16 @@
 -->
 
 <Server xmlns="http://wso2.org/projects/carbon/open-banking-cds.xml">
-
+    <IdPermanence>
+        {% if open_banking_cds.id_permanence.enabled is defined %}
+        <Enabled>{{open_banking_cds.id_permanence.enabled}}</Enabled>
+        {% else %}
+        <Enabled>true</Enabled>
+        {% endif %}
+        {% if open_banking_cds.id_permanence.secret_key is defined %}
+        <SecretKey>{{open_banking_cds.id_permanence.secret_key}}</SecretKey>
+        {% else %}
+        <SecretKey>wso2</SecretKey>
+        {% endif %}
+    </IdPermanence>
 </Server>

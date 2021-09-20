@@ -41,4 +41,9 @@
             <class name="com.wso2.openbanking.cds.identity.claims.CDSClaimProviderTest"/>
         </classes>
     </test>
+    <test name="push-auth-validator">
+        <classes>
+            <class name="com.wso2.openbanking.cds.identity.push.auth.extension.request.validator.CDSPushAuthRequestValidatorTest"/>
+        </classes>
+    </test>
 </suite>
