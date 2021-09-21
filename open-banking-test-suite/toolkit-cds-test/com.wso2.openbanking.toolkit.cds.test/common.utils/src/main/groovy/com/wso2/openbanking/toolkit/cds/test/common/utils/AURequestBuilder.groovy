@@ -163,8 +163,11 @@ class AURequestBuilder {
      * @return token error response
      */
     static TokenErrorResponse getUserTokenErrorResponse(String code,
-                                                        String redirectUrl = AppConfigReader.getRedirectURL(), Boolean clientAuthRequired = true,
-                                                        Boolean mtlsRequired = true, String signingAlg = configParser.getSigningAlgorithm()) {
+                                                        String redirectUrl = AppConfigReader.getRedirectURL(),
+                                                        String client_id = AppConfigReader.getClientId(),
+                                                        Boolean clientAuthRequired = true,
+                                                        Boolean mtlsRequired = true,
+                                                        String signingAlg = configParser.getSigningAlgorithm()) {
 
         AuthorizationCode grant = new AuthorizationCode(code)
         URI callbackUri = new URI(redirectUrl)
@@ -174,12 +177,12 @@ class AURequestBuilder {
 
         TokenRequest request;
         if (!clientAuthRequired) {
-            ClientID clientId = new ClientID(AppConfigReader.getClientId())
+            ClientID clientId = new ClientID(client_id)
             request = new TokenRequest(tokenEndpoint, clientId, codeGrant)
         } else {
             AccessTokenJwtDto accessTokenJWTDTO = new AccessTokenJwtDto()
             accessTokenJWTDTO.setSigningAlg(signingAlg)
-            String assertionString = accessTokenJWTDTO.getJwt()
+            String assertionString = accessTokenJWTDTO.getJwt(client_id)
             ClientAuthentication clientAuth = new PrivateKeyJWT(SignedJWT.parse(assertionString))
             request = new TokenRequest(tokenEndpoint, clientAuth, codeGrant)
         }
