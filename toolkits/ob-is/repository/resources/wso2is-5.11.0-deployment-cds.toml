@@ -289,6 +289,13 @@ secure="false"
 http_method="GET"
 
 [[resource.access_control]]
+context = "(.*)/api/openbanking/push-authorization/(.*)"
+secure="true"
+http_method="all"
+permissions=["/permission/admin"]
+allowed_auth_handlers = ["BasicAuthentication"]
+
+[[resource.access_control]]
 context = "(.*)/api/openbanking/application/(.*)"
 secure="false"
 http_method="GET"
@@ -301,6 +308,10 @@ custom_webapps = ["/keymanager-operations/"]
 
 [oauth.mutualtls]
 client_certificate_header = "x-wso2-mutual-auth-cert"
+
+[[oauth.oidc.custom_request_object_builder]]
+type = "request_uri_param_value_builder"
+class = "com.wso2.openbanking.accelerator.identity.builders.DefaultOBRequestUriRequestObjectBuilder"
 
 [event.default_listener.mutual_tls_authenticator]
 enable = false
