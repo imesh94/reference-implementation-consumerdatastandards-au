@@ -65,7 +65,7 @@ class AUAuthorisationBuilder {
      * @param client_id
      */
     AUAuthorisationBuilder(List<AUConstants.SCOPES> scopes, Long sharingDuration, Boolean sendSharingDuration,
-                           String cdrArrangementId = "", String client_id = params.client_id) {
+                           String cdrArrangementId = "", String client_id = AppConfigReader.getClientId()) {
 
         String scopeString = "openid ${String.join(" ", scopes.collect({ it.scopeString }))}"
 
