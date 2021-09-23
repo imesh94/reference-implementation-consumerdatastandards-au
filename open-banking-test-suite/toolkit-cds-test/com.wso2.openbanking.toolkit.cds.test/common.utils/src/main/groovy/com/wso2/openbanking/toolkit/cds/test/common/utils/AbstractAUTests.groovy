@@ -246,7 +246,7 @@ class AbstractAUTests {
    * @param clientId
    * @return
    */
-  Response doPushAuthorisationRequestwithPkjwt(List<AUConstants.SCOPES> scopes, long sharingDuration,
+  Response doPushAuthorisationRequestWithPkjwt(List<AUConstants.SCOPES> scopes, long sharingDuration,
                                                boolean sendSharingDuration, String cdrArrangementId,
                                                String clientId = AppConfigReader.getClientId()) {
 

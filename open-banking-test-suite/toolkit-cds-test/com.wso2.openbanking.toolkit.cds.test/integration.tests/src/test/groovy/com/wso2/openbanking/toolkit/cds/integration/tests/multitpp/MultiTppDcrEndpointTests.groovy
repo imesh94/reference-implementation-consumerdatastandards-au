@@ -66,7 +66,7 @@ class MultiTppDcrEndpointTests {
 		clientId = TestUtil.parseResponseBody(registrationResponse, "client_id")
 		Assert.assertEquals(registrationResponse.statusCode(), TestConstants.CREATED)
 
-		//Write Client Id and Client Secret of TTP2 to config file.
+		//Write Client Id of TPP2 to config file.
 		TestUtil.writeXMLContent(xmlFile.toString(), "Application", "ClientID", clientId,
 						appConfigReader.tppNumber)
 
@@ -131,7 +131,7 @@ class MultiTppDcrEndpointTests {
 
 		Assert.assertEquals(registrationResponse.statusCode(), AUConstants.STATUS_CODE_204)
 
-		//Write Client Id and Client Secret of TTP2 to config file.
+		//Write Client Id of TPP2 to config file.
 		TestUtil.writeXMLContent(xmlFile.toString(), "Application", "ClientID", "",
 						appConfigReader.tppNumber)
 	}

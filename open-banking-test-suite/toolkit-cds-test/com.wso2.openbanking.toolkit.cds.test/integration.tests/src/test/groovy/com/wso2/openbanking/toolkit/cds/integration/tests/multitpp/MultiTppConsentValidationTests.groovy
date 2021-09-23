@@ -62,7 +62,7 @@ class MultiTppConsentValidationTests extends AbstractAUTests {
 		clientId = TestUtil.parseResponseBody(registrationResponse, "client_id")
 		Assert.assertEquals(registrationResponse.statusCode(), TestConstants.CREATED)
 
-		//Write Client Id and Client Secret of TTP2 to config file.
+		//Write Client Id of TPP2 to config file.
 		TestUtil.writeXMLContent(xmlFile.toString(), "Application", "ClientID", clientId,
 						appConfigReader.tppNumber)
 	}
@@ -104,7 +104,7 @@ class MultiTppConsentValidationTests extends AbstractAUTests {
 	}
 
 	@Test
-	void "OB-1311_Validate consent authorisation with request_uri bound to different user"() {
+	void "OB-1311_Validate consent authorisation with request_uri bound to different tpp"() {
 		appConfigReader.setTppNumber(0)
 
 		//authorise sharing arrangement
@@ -121,7 +121,7 @@ class MultiTppConsentValidationTests extends AbstractAUTests {
 		Assert.assertEquals(response.statusCode(), AUConstants.STATUS_CODE_200)
 
 		//Send PAR request.
-		def parResponse = doPushAuthorisationRequestwithPkjwt(scopes, AUConstants.DEFAULT_SHARING_DURATION,
+		def parResponse = doPushAuthorisationRequestWithPkjwt(scopes, AUConstants.DEFAULT_SHARING_DURATION,
 						true, cdrArrangementId)
 
 		def requestUri = TestUtil.parseResponseBody(parResponse, "request_uri").toURI()
@@ -155,7 +155,7 @@ class MultiTppConsentValidationTests extends AbstractAUTests {
 
 		appConfigReader.setTppNumber(1)
 		//Send PAR request.
-		def parResponse = doPushAuthorisationRequestwithPkjwt(scopes, AUConstants.DEFAULT_SHARING_DURATION,
+		def parResponse = doPushAuthorisationRequestWithPkjwt(scopes, AUConstants.DEFAULT_SHARING_DURATION,
 						true, cdrArrangementId, clientId)
 
 		Assert.assertEquals(parResponse.statusCode(), AUConstants.STATUS_CODE_400)
@@ -173,7 +173,7 @@ class MultiTppConsentValidationTests extends AbstractAUTests {
 
 		Assert.assertEquals(registrationResponse.statusCode(), AUConstants.STATUS_CODE_204)
 
-		//Write Client Id and Client Secret of TTP2 to config file.
+		//Write Client Id of TPP2 to config file.
 		TestUtil.writeXMLContent(xmlFile.toString(), "Application", "ClientID", "",
 						appConfigReader.tppNumber)
 	}
