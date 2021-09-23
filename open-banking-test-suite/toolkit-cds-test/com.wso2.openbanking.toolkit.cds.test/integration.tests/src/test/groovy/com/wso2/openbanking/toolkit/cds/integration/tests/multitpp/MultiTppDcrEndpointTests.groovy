@@ -76,7 +76,7 @@ class MultiTppDcrEndpointTests {
 	}
 
 	@Test
-	void "Retrieve registration details with access token bound to a different client"() {
+	void "OB-1308_Retrieve registration details with access token bound to a different client"() {
 
 		def registrationResponse = AURegistrationRequestBuilder.buildBasicRequest(accessToken)
 						.when()
@@ -90,7 +90,7 @@ class MultiTppDcrEndpointTests {
 	}
 
 	@Test
-	void "Update Application with access token bound to a different client"() {
+	void "OB-1309_Update Application with access token bound to a different client"() {
 
 		def registrationResponse = AURegistrationRequestBuilder.buildBasicRequest(accessToken)
 						.body(AURegistrationRequestBuilder.getSignedRequestObject(AURegistrationRequestBuilder
@@ -106,7 +106,7 @@ class MultiTppDcrEndpointTests {
 	}
 
 	@Test
-	void "Delete application with access token bound to a different client"() {
+	void "OB-1310_Delete application with access token bound to a different client"() {
 
 		def registrationResponse = AURegistrationRequestBuilder.buildBasicRequest(accessToken)
 						.when()

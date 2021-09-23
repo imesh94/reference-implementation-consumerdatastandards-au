@@ -68,7 +68,7 @@ class MultiTppConsentValidationTests extends AbstractAUTests {
 	}
 
 	@Test
-	void "Revoke sharing arrangement bound to different Tpp"() {
+	void "OB-1313_Revoke sharing arrangement bound to different Tpp"() {
 
 		appConfigReader.setTppNumber(0)
 
@@ -90,7 +90,7 @@ class MultiTppConsentValidationTests extends AbstractAUTests {
 
 		Assert.assertEquals(response.statusCode(), AUConstants.STATUS_CODE_200)
 
-		//Get application access token for TPP1
+		//Get application access token for TPP2
 		appConfigReader.setTppNumber(1)
 		List<String> scopes = ["openid"]
 		def applicationAccessToken = AURequestBuilder.getApplicationToken(scopes, clientId)
@@ -100,11 +100,11 @@ class MultiTppConsentValidationTests extends AbstractAUTests {
 		//revoke sharing arrangement using token of TPP2 and cdrArrangementId of TPP1
 		doArrangementRevocationWithPkjwt(applicationAccessToken, cdrArrangementId, AppConfigReader.getClientId())
 
-		Assert.assertEquals(revocationResponse.statusCode(), AUConstants.RESOURCE_FORBIDDEN)
+		Assert.assertEquals(revocationResponse.statusCode(), AUConstants.STATUS_CODE_403)
 	}
 
 	@Test
-	void "Validate consent authorisation with request_uri bound to different user"() {
+	void "OB-1311_Validate consent authorisation with request_uri bound to different user"() {
 		appConfigReader.setTppNumber(0)
 
 		//authorise sharing arrangement
@@ -141,7 +141,7 @@ class MultiTppConsentValidationTests extends AbstractAUTests {
 	}
 
 	@Test
-	void "Validate PAR request with cdr_arrangemet_id belongs to different TPP"() {
+	void "OB-1312_Validate PAR request with cdr_arrangemet_id belongs to different TPP"() {
 		appConfigReader.setTppNumber(0)
 
 		//authorise sharing arrangement

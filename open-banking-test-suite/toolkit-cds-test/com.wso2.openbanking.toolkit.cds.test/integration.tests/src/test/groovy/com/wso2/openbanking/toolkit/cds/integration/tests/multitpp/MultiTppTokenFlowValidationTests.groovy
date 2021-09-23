@@ -65,7 +65,7 @@ class MultiTppTokenFlowValidationTests extends AbstractAUTests {
 	}
 
 	@Test
-	void "Get user access token from authorisation code bound to different Tpp" () {
+	void "OB-1314_Get user access token from authorisation code bound to different Tpp" () {
 
 		appConfigReader.setTppNumber(0)
 		def userToken = AURequestBuilder.getUserTokenErrorResponse(authorisationCode, AppConfigReader.getRedirectURL(),
@@ -77,7 +77,7 @@ class MultiTppTokenFlowValidationTests extends AbstractAUTests {
 	}
 
 	@Test
-	void "Get user access token with client_assertion does not bound to the requested client" () {
+	void "OB-1315_Get user access token with client_assertion does not bound to the requested client" () {
 
 		appConfigReader.setTppNumber(0)
 		doConsentAuthorisation(AppConfigReader.getClientId())
