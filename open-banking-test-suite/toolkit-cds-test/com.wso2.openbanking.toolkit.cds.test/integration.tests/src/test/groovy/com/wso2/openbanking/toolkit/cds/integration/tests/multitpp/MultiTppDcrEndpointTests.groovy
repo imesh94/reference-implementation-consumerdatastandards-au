@@ -21,6 +21,7 @@ import com.wso2.openbanking.toolkit.cds.test.common.utils.AUDCRConstants
 import com.wso2.openbanking.toolkit.cds.test.common.utils.AUMockCDRIntegrationUtil
 import com.wso2.openbanking.toolkit.cds.test.common.utils.AURegistrationRequestBuilder
 import com.wso2.openbanking.toolkit.cds.test.common.utils.AURequestBuilder
+import com.wso2.openbanking.toolkit.cds.test.common.utils.AbstractAUTests
 import org.testng.Assert
 import org.testng.annotations.AfterClass
 import org.testng.annotations.BeforeClass
@@ -58,10 +59,7 @@ class MultiTppDcrEndpointTests {
 		//Register Second TPP.
 		registrationPath = AUDCRConstants.REGISTRATION_ENDPOINT
 
-		def registrationResponse = AURegistrationRequestBuilder
-						.buildRegistrationRequest(AURegistrationRequestBuilder.getRegularClaims())
-						.when()
-						.post(registrationPath)
+		def registrationResponse = AbstractAUTests.tppRegistration()
 
 		clientId = TestUtil.parseResponseBody(registrationResponse, "client_id")
 		Assert.assertEquals(registrationResponse.statusCode(), TestConstants.CREATED)
@@ -125,13 +123,11 @@ class MultiTppDcrEndpointTests {
 		appConfigReader.setTppNumber(1)
 		accessToken = AURequestBuilder.getApplicationToken(scopes, clientId)
 
-		def registrationResponse = AURegistrationRequestBuilder.buildBasicRequest(accessToken)
-						.when()
-						.delete(registrationPath + clientId)
+		def registrationResponse = AbstractAUTests.tppDeletion(clientId, accessToken)
 
 		Assert.assertEquals(registrationResponse.statusCode(), AUConstants.STATUS_CODE_204)
 
-		//Write Client Id of TPP2 to config file.
+		//Remove Client Id of TPP2 from config file.
 		TestUtil.writeXMLContent(xmlFile.toString(), "Application", "ClientID", "",
 						appConfigReader.tppNumber)
 	}

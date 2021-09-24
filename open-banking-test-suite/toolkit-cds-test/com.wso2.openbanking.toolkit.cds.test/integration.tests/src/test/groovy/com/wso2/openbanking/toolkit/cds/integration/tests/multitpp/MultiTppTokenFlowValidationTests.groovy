@@ -34,8 +34,6 @@ class MultiTppTokenFlowValidationTests extends AbstractAUTests {
 	private String clientId
 	File xmlFile = new File(System.getProperty("user.dir").toString()
 					.concat("/../../../resources/test-config.xml"))
-	private String registrationPath
-	static final String CDS_PATH = AUConstants.CDS_PATH
 	def appConfigReader = new AppConfigReader()
 
 	@BeforeClass(alwaysRun = true)
@@ -47,12 +45,7 @@ class MultiTppTokenFlowValidationTests extends AbstractAUTests {
 		AURegistrationRequestBuilder.retrieveADRInfo()
 
 		//Register Second TPP.
-		registrationPath = AUDCRConstants.REGISTRATION_ENDPOINT
-
-		def registrationResponse = AURegistrationRequestBuilder
-						.buildRegistrationRequest(AURegistrationRequestBuilder.getRegularClaims())
-						.when()
-						.post(registrationPath)
+		def registrationResponse = tppRegistration()
 
 		clientId = TestUtil.parseResponseBody(registrationResponse, "client_id")
 		Assert.assertEquals(registrationResponse.statusCode(), TestConstants.CREATED)
@@ -93,16 +86,16 @@ class MultiTppTokenFlowValidationTests extends AbstractAUTests {
 	@AfterClass (alwaysRun = true)
 	void tearDown() {
 
-		appConfigReader.setTppNumber(1)
-		accessToken = AURequestBuilder.getApplicationToken(scopes, clientId)
+		List<String> scopes = [AUConstants.SCOPES.CDR_REGISTRATION.getScopeString()]
 
-		def registrationResponse = AURegistrationRequestBuilder.buildBasicRequest(accessToken)
-						.when()
-						.delete(registrationPath + clientId)
+		appConfigReader.setTppNumber(1)
+		def accessToken = AURequestBuilder.getApplicationToken(scopes, clientId)
+
+		def registrationResponse = tppDeletion(clientId, accessToken)
 
 		Assert.assertEquals(registrationResponse.statusCode(), AUConstants.STATUS_CODE_204)
 
-		//Write Client Id of TPP2 to config file.
+		//Remove Client Id of TPP2 from config file.
 		TestUtil.writeXMLContent(xmlFile.toString(), "Application", "ClientID", "",
 						appConfigReader.tppNumber)
 	}

@@ -299,4 +299,33 @@ class AbstractAUTests {
 
     return revocationResponse
   }
+
+  /**
+   * Basic TPP Registration Method.
+   * @return response.
+   */
+  static Response tppRegistration() {
+
+    def registrationResponse = AURegistrationRequestBuilder
+            .buildRegistrationRequest(AURegistrationRequestBuilder.getRegularClaims())
+            .when()
+            .post(AUDCRConstants.REGISTRATION_ENDPOINT)
+
+    return registrationResponse
+  }
+
+  /**
+   * Basic TPP Deletion Method.
+   * @param clientId
+   * @param accessToken
+   * @return response.
+   */
+  static Response tppDeletion(String clientId, String accessToken) {
+
+    def registrationResponse = AURegistrationRequestBuilder.buildBasicRequest(accessToken)
+            .when()
+            .delete(AUDCRConstants.REGISTRATION_ENDPOINT + clientId)
+
+    return registrationResponse
+  }
 }
