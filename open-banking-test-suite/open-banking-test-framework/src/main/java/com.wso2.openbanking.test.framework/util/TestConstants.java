@@ -110,6 +110,7 @@ public class TestConstants {
     public static final String DATA_KEY = "Data";
     public static final String RISK_KEY = "Risk";
     public static final String REQUEST_KEY = "request";
+    public static final String REQUEST_URI_KEY = "request_uri";
     public static final String RESPONSE_TYPE_KEY = "response_type";
     public static final String CLIENT_ID_KEY = "client_id";
     public static final String STATE_KEY = "state";

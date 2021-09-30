@@ -128,7 +128,7 @@ class AbstractAUTests {
         Assert.assertNotNull(userAccessToken)
     }
 
-    Response doPushAuthorisationRequest(List<AUConstants.SCOPES> scopes, long sharingDuration,
+    Response doPushAuthorisationRequest(String headerString, List<AUConstants.SCOPES> scopes, long sharingDuration,
                                         boolean sendSharingDuration, String cdrArrangementId,
                                         String clientId = AppConfigReader.getClientId()) {
 
@@ -136,6 +136,8 @@ class AbstractAUTests {
 
         parResponse = TestSuite.buildRequest()
                 .contentType(TestConstants.ACCESS_TOKEN_CONTENT_TYPE)
+                .header(TestConstants.AUTHORIZATION_HEADER_KEY, "Basic " + Base64.encoder.encodeToString(
+                        headerString.getBytes(Charset.forName("UTF-8"))))
                 .formParams(TestConstants.REQUEST_KEY, AUAuthorisationBuilder.getSignedRequestObject(scopeString,
                         sharingDuration, sendSharingDuration, cdrArrangementId, AppConfigReader.getRedirectURL(), clientId).serialize())
                 .baseUri(AUConstants.PUSHED_AUTHORISATION_BASE_PATH)
@@ -162,7 +164,7 @@ class AbstractAUTests {
         authorisationCode = TestUtil.getHybridCodeFromUrl(automation.currentUrl.get())
     }
 
-    void verifyScopes(String scopesString) {
+    void verifyScopes(String scopesString, List<AUConstants.SCOPES> scopes) {
         for (AUConstants.SCOPES scope : scopes) {
             Assert.assertTrue(scopesString.contains(scope.getScopeString()))
         }

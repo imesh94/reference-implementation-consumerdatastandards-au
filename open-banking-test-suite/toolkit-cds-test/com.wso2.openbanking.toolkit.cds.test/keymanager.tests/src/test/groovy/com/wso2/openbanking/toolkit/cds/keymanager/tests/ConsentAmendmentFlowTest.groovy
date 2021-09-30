@@ -51,6 +51,7 @@ class ConsentAmendmentFlowTest extends AbstractAUTests{
     private Response parResponse
     private String requestUri
     private String account1Id, account2Id
+    private String headerString = ConfigParser.instance.getBasicAuthUser() + ":" + ConfigParser.instance.getBasicAuthUserPassword()
 
     @BeforeClass(alwaysRun = true)
     void "Initialize Test Suite"() {
@@ -74,8 +75,8 @@ class ConsentAmendmentFlowTest extends AbstractAUTests{
         scopes.add(AUConstants.SCOPES.BANK_PAYEES_READ)
 
         //Retrieve and assert the request URI from Push Authorization request
-        requestUri = TestUtil.parseResponseBody(doPushAuthorisationRequest(scopes, AUConstants.AMENDED_SHARING_DURATION,
-                true, cdrArrangementId), "request_uri")
+        requestUri = TestUtil.parseResponseBody(doPushAuthorisationRequest(headerString, scopes, AUConstants.AMENDED_SHARING_DURATION,
+                true, cdrArrangementId), "requestUri")
         Assert.assertNotNull(requestUri)
 
         //Retrieve the second authorization code
@@ -84,7 +85,7 @@ class ConsentAmendmentFlowTest extends AbstractAUTests{
 
         //Retrieve the second user access token and assert the CDR arrangement ID is the same.
         secondUserAccessToken = AURequestBuilder.getUserToken(secondAuthorisationCode)
-        verifyScopes(secondUserAccessToken.toJSONObject().get("scope").toString())
+        verifyScopes(secondUserAccessToken.toJSONObject().get("scope").toString(), scopes)
         Assert.assertEquals(cdrArrangementId, secondUserAccessToken.getCustomParameters().get("cdr_arrangement_id"),
                 "Amended CDR id is not original CDR id ")
     }
@@ -151,7 +152,7 @@ class ConsentAmendmentFlowTest extends AbstractAUTests{
         AccessTokenResponse userAccessToken = AUTestUtil.getUserTokenFromRefreshToken(
                 secondUserAccessToken.tokens.refreshToken)
         Assert.assertNotNull(userAccessToken.tokens.accessToken)
-        verifyScopes(userAccessToken.toJSONObject().get("scope").toString())
+        verifyScopes(userAccessToken.toJSONObject().get("scope").toString(), scopes)
     }
 
     @Test(dependsOnMethods = "TC001_Verify Consent Amendment flow when both sharing duration and scope has been amended")
@@ -171,8 +172,8 @@ class ConsentAmendmentFlowTest extends AbstractAUTests{
         scopes.remove(AUConstants.SCOPES.BANK_PAYEES_READ)
         scopes.add(AUConstants.SCOPES.BANK_CUSTOMER_DETAIL_READ)
 
-        requestUri = TestUtil.parseResponseBody(doPushAuthorisationRequest(scopes, 20000,
-                true, cdrArrangementId), "request_uri")
+        requestUri = TestUtil.parseResponseBody(doPushAuthorisationRequest(headerString, scopes, 20000,
+                true, cdrArrangementId), "requestUri")
         Assert.assertNotNull(requestUri)
 
         //Retrieve the auth code by sending request URI
@@ -180,7 +181,7 @@ class ConsentAmendmentFlowTest extends AbstractAUTests{
         Assert.assertNotNull(authorisationCode)
 
         AccessTokenResponse userAccessToken = AURequestBuilder.getUserToken(authorisationCode)
-        verifyScopes(userAccessToken.toJSONObject().get("scope").toString())
+        verifyScopes(userAccessToken.toJSONObject().get("scope").toString(), scopes)
         Assert.assertEquals(cdrArrangementId, userAccessToken.getCustomParameters().get("cdr_arrangement_id"),
                 "Amended CDR id is not original CDR id ")
     }
@@ -207,8 +208,8 @@ class ConsentAmendmentFlowTest extends AbstractAUTests{
         //Assert the consent revoke status code
         Assert.assertEquals(response.statusCode(), AUConstants.STATUS_CODE_204)
 
-        requestUri = TestUtil.parseResponseBody(doPushAuthorisationRequest(scopes, AUConstants.AMENDED_SHARING_DURATION,
-                true, cdrArrangementId), "request_uri")
+        requestUri = TestUtil.parseResponseBody(doPushAuthorisationRequest(headerString, scopes, AUConstants.AMENDED_SHARING_DURATION,
+                true, cdrArrangementId), "requestUri")
         Assert.assertNotNull(requestUri)
 
         AUAuthorisationBuilder authorisationBuilder = new AUAuthorisationBuilder(scopes, requestUri.toURI())
@@ -233,8 +234,8 @@ class ConsentAmendmentFlowTest extends AbstractAUTests{
         scopes.remove(AUConstants.SCOPES.BANK_TRANSACTION_READ)
         scopes.add(AUConstants.SCOPES.BANK_PAYEES_READ)
 
-        requestUri = TestUtil.parseResponseBody(doPushAuthorisationRequest(scopes, AUConstants.SHORT_SHARING_DURATION,
-                true, cdrArrangementId), "request_uri")
+        requestUri = TestUtil.parseResponseBody(doPushAuthorisationRequest(headerString, scopes, AUConstants.SHORT_SHARING_DURATION,
+                true, cdrArrangementId), "requestUri")
         Assert.assertNotNull(requestUri)
 
         secondAuthorisationCode = doConsentAmendmentAuthorisationViaRequestUri(scopes, requestUri.toURI(), true)
@@ -264,8 +265,8 @@ class ConsentAmendmentFlowTest extends AbstractAUTests{
         scopes.add(AUConstants.SCOPES.BANK_PAYEES_READ)
 
         //Retrieve and assert the request URI from Push Authorization request
-        requestUri = TestUtil.parseResponseBody(doPushAuthorisationRequest(scopes, AUConstants.AMENDED_SHARING_DURATION,
-                true, cdrArrangementId), "request_uri")
+        requestUri = TestUtil.parseResponseBody(doPushAuthorisationRequest(headerString, scopes, AUConstants.AMENDED_SHARING_DURATION,
+                true, cdrArrangementId), "requestUri")
         Assert.assertNotNull(requestUri)
         sleep(25000)
 
@@ -288,8 +289,8 @@ class ConsentAmendmentFlowTest extends AbstractAUTests{
         scopes.add(AUConstants.SCOPES.BANK_PAYEES_READ)
 
         //Retrieve and assert the request URI from Push Authorization request
-        requestUri = TestUtil.parseResponseBody(doPushAuthorisationRequest(scopes, AUConstants.AMENDED_SHARING_DURATION,
-                true, invalidCDRArrangementID), "request_uri")
+        requestUri = TestUtil.parseResponseBody(doPushAuthorisationRequest(headerString, scopes, AUConstants.AMENDED_SHARING_DURATION,
+                true, invalidCDRArrangementID), "requestUri")
         Assert.assertNotNull(requestUri)
 
 
