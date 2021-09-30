@@ -16,7 +16,7 @@
     <parent>
         <artifactId>ob-compliance-toolkit-cds-components</artifactId>
         <groupId>com.wso2.openbanking</groupId>
-        <version>1.0.0-M2-SNAPSHOT</version>
+        <version>1.0.0-M2</version>
         <relativePath>../pom.xml</relativePath>
     </parent>
     <modelVersion>4.0.0</modelVersion>
@@ -25,10 +25,6 @@
     <name>WSO2 Open Banking CDS Toolkit - Consent Extensions Module</name>
 
     <dependencies>
-        <dependency>
-            <groupId>org.apache.commons</groupId>
-            <artifactId>commons-lang3</artifactId>
-        </dependency>
         <dependency>
             <groupId>com.wso2</groupId>
             <artifactId>com.wso2.openbanking.accelerator.consent.extensions</artifactId>
@@ -44,10 +40,6 @@
         <dependency>
             <groupId>com.wso2</groupId>
             <artifactId>com.wso2.openbanking.accelerator.common</artifactId>
-        </dependency>
-        <dependency>
-            <groupId>com.wso2</groupId>
-            <artifactId>com.wso2.openbanking.accelerator.identity</artifactId>
         </dependency>
         <dependency>
             <groupId>com.wso2.openbanking</groupId>

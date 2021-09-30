@@ -289,6 +289,13 @@ secure="false"
 http_method="GET"
 
 [[resource.access_control]]
+context = "(.*)/api/openbanking/push-authorization/(.*)"
+secure="true"
+http_method="all"
+permissions=["/permission/admin"]
+allowed_auth_handlers = ["BasicAuthentication"]
+
+[[resource.access_control]]
 context = "(.*)/api/openbanking/application/(.*)"
 secure="false"
 http_method="GET"
@@ -301,6 +308,10 @@ custom_webapps = ["/keymanager-operations/"]
 
 [oauth.mutualtls]
 client_certificate_header = "x-wso2-mutual-auth-cert"
+
+[[oauth.oidc.custom_request_object_builder]]
+type = "request_uri_param_value_builder"
+class = "com.wso2.openbanking.accelerator.identity.builders.DefaultOBRequestUriRequestObjectBuilder"
 
 [event.default_listener.mutual_tls_authenticator]
 enable = false
@@ -365,9 +376,13 @@ password="$ref{super_admin.password}"
 data_source.name = "WSO2OB_DB"
 connection_verification_timeout=1
 
+[open_banking.identity.authentication_webapp]
+servlet_extension = "com.wso2.openbanking.cds.consent.extensions.authservlet.impl.OBCDSAuthServletImpl"
+
 #=======================dcr configs======================
 [open_banking.dcr]
 validator = "com.wso2.openbanking.cds.identity.dcr.validation.CDSRegistrationValidatorImpl"
+jwks_endpoint_name = "jwks_uri"
 jwks_url_sandbox = "https://keystore.openbankingtest.org.uk/0015800001HQQrZAAX/9b5usDpbNtmxDcTzs7GzKp.jwks"
 jwks_url_production = "https://keystore.openbankingtest.org.uk/0015800001HQQrZAAX/9b5usDpbNtmxDcTzs7GzKp.jwks"
 applicationupdater = "com.wso2.openbanking.cds.identity.listener.application.CDSApplicationUpdaterImpl"
