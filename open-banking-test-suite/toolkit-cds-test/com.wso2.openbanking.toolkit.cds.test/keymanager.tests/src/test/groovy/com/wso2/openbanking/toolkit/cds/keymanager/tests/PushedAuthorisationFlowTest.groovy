@@ -256,6 +256,7 @@ class PushedAuthorisationFlowTest extends AbstractAUTests {
     }
 
     //TODO: Enable test after fixing: https://github.com/wso2-enterprise/financial-open-banking/issues/6779
+    //TODO: PKJWT Test Fix https://github.com/wso2-enterprise/financial-open-banking/issues/6781
     @Test(enabled = false)
     void "TC0205007_Reject consent authorisation flow when the cdr_arrangement_id define is not related to the authenticated user "() {
 
