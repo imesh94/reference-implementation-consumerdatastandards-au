@@ -489,5 +489,7 @@ class PushedAuthorisationFlowTest extends AbstractAUTests {
                 .post(AUConstants.PAR_ENDPOINT)
 
         Assert.assertEquals(parResponse.statusCode(), AUConstants.STATUS_CODE_400)
+        Assert.assertEquals(TestUtil.parseResponseBody(parResponse, "error_description"),
+                "Request does not allow request_uri parameter")
     }
 }
