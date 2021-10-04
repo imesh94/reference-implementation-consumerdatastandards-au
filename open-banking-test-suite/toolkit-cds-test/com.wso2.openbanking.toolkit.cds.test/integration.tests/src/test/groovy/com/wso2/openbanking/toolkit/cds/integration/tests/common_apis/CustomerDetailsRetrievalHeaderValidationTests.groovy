@@ -18,8 +18,8 @@ import com.wso2.openbanking.test.framework.util.TestUtil
 import com.wso2.openbanking.toolkit.cds.test.common.utils.AUConstants
 import com.wso2.openbanking.toolkit.cds.test.common.utils.AUTestUtil
 import com.wso2.openbanking.toolkit.cds.test.common.utils.AbstractAUTests
+import com.wso2.openbanking.toolkit.cds.test.common.utils.AURequestBuilder
 import com.wso2.openbanking.test.framework.util.AppConfigReader
-import com.wso2.openbanking.test.framework.util.ConfigParser
 import io.restassured.response.Response
 import org.testng.Assert
 import org.testng.annotations.BeforeClass

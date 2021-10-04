@@ -74,7 +74,7 @@ class AUConstants {
     static final String PASSWORD = "wso2123"
     static final String ACCESS_TOKEN = "token"
     static final String CONTENT = "application/x-www-form-urlencoded"
-    static final String CONSENT_CONFIRM_XPATH = "//input[@value='Confirm']"
+    static final String CONSENT_CONFIRM_XPATH = "//input[@id='approve']"
     static final String CONSENT_AUTHORIZE_FLOW_BACK_XPATH = "//input[@id='back']"
     static final String CODE = "code"
     static final String ERROR_DESCRIPTION = "error_description"
@@ -143,7 +143,8 @@ class AUConstants {
     static final String CDR_ARRANGEMENT_ENDPOINT = "/arrangements/1.0.0"
     static final String INTROSPECTION_ENDPOINT = "/token/introspect"
     static final String CONSENT_STATUS_ENDPOINT = "/api/openbanking/consent-mgt/uk300"
-    public static final String PUSHED_AUTHORISATION_BASE_PATH = config.getAuthorisationServerUrl() + "/push-authorization"
+    public static final String PUSHED_AUTHORISATION_BASE_PATH = config.getAuthorisationServerUrl() +
+            "/api/openbanking/push-authorization"
     static final String PAR_ENDPOINT = "/par"
     static final String REVOKE_PATH = "/revoke"
     static final String STATUS_PATH = "/account-confirmation"

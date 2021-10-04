@@ -15,6 +15,7 @@ import com.nimbusds.oauth2.sdk.AccessTokenResponse
 import com.wso2.openbanking.test.framework.automation.AUBasicAuthAutomationStep
 import com.wso2.openbanking.test.framework.automation.BrowserAutomation
 import com.wso2.openbanking.test.framework.automation.WaitForRedirectAutomationStep
+import com.wso2.openbanking.test.framework.util.ConfigParser
 import com.wso2.openbanking.test.framework.util.TestUtil
 import com.wso2.openbanking.toolkit.cds.test.common.utils.AUConstants
 import com.wso2.openbanking.toolkit.cds.test.common.utils.AbstractAUTests
@@ -42,6 +43,14 @@ class MetaDataConsentAmendment extends AbstractAUTests {
     private String cdrArrangementId = ""
     private String requestUri
     private String registrationPath = AUDCRConstants.REGISTRATION_ENDPOINT
+    private String headerString = ConfigParser.instance.getBasicAuthUser() + ":" + ConfigParser.instance.getBasicAuthUserPassword()
+
+    private List<AUConstants.SCOPES> scopes = [
+            AUConstants.SCOPES.BANK_ACCOUNT_BASIC_READ,
+            AUConstants.SCOPES.BANK_PAYEES_READ,
+            AUConstants.SCOPES.BANK_TRANSACTION_READ,
+            AUConstants.SCOPES.BANK_CUSTOMER_DETAIL_READ
+    ]
 
     @BeforeClass(alwaysRun = true)
     void "Setup"() {
@@ -82,7 +91,7 @@ class MetaDataConsentAmendment extends AbstractAUTests {
         scopes.add(AUConstants.SCOPES.BANK_PAYEES_READ)
 
         //Retrieve and assert the request URI from Push Authorization request
-        requestUri = TestUtil.parseResponseBody(doPushAuthorisationRequest(scopes, AUConstants.AMENDED_SHARING_DURATION,
+        requestUri = TestUtil.parseResponseBody(doPushAuthorisationRequest(headerString, scopes, AUConstants.AMENDED_SHARING_DURATION,
                 true, cdrArrangementId, clientId), "request_uri")
         Assert.assertNotNull(requestUri)
 
@@ -105,7 +114,7 @@ class MetaDataConsentAmendment extends AbstractAUTests {
 
         //Retrieve the second user access token and assert the CDR arrangement ID is the same.
         secondUserAccessToken = AURequestBuilder.getUserToken(secondAuthorisationCode, clientId)
-        verifyScopes(secondUserAccessToken.toJSONObject().get("scope").toString())
+        verifyScopes(secondUserAccessToken.toJSONObject().get("scope").toString(), scopes)
         Assert.assertEquals(cdrArrangementId, secondUserAccessToken.getCustomParameters().get("cdr_arrangement_id"),
                 "Amended CDR id is not original CDR id ")
     }

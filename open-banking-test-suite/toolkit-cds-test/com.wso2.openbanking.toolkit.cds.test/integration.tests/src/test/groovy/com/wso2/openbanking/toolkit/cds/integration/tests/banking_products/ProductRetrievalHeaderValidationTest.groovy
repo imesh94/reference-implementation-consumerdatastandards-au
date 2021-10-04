@@ -38,7 +38,7 @@ class ProductRetrievalHeaderValidationTest extends AbstractAUTests {
     void "TC1101004_Retrieve banking products with unsupported x-v header"() {
 
         Response response = TestSuite.buildRequest()
-                .header(AUConstants.X_V_HEADER, 1)
+                .header(AUConstants.X_V_HEADER, 3)
                 .baseUri(AUTestUtil.getBaseUrl(AUConstants.BASE_PATH_TYPE_PRODUCTS))
                 .get("${CDS_PATH}${AUConstants.BANKING_PRODUCT_PATH}")
 

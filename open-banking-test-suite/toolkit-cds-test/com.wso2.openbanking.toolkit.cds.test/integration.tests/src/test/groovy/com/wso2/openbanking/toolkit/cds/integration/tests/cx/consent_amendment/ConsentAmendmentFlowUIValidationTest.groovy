@@ -13,6 +13,7 @@
 package com.wso2.openbanking.toolkit.cds.integration.tests.cx.consent_amendment
 
 import com.nimbusds.oauth2.sdk.AccessTokenResponse
+import com.wso2.openbanking.test.framework.util.ConfigParser
 import com.wso2.openbanking.test.framework.util.TestUtil
 import com.wso2.openbanking.test.framework.util.AppConfigReader
 import com.wso2.openbanking.test.framework.util.TestConstants
@@ -53,6 +54,7 @@ class ConsentAmendmentFlowUIValidationTest extends AbstractAUTests{
     private String cdrArrangementId = ""
     private String requestUri
     private String account1Id, account2Id
+    private String headerString = ConfigParser.instance.getBasicAuthUser() + ":" + ConfigParser.instance.getBasicAuthUserPassword()
 
     @BeforeClass(alwaysRun = true)
     void "Initialize Test Suite"() {
@@ -73,7 +75,7 @@ class ConsentAmendmentFlowUIValidationTest extends AbstractAUTests{
     void "TC001 Verify the account selection page should show the pre selected account"() {
 
         //Retrieve Request URI via Push request
-        requestUri = TestUtil.parseResponseBody(doPushAuthorisationRequest(scopes, AUConstants.AMENDED_SHARING_DURATION,
+        requestUri = TestUtil.parseResponseBody(doPushAuthorisationRequest(headerString, scopes, AUConstants.AMENDED_SHARING_DURATION,
                 true, cdrArrangementId), "request_uri")
         Assert.assertNotNull(requestUri)
 
@@ -102,7 +104,7 @@ class ConsentAmendmentFlowUIValidationTest extends AbstractAUTests{
         String adrName = registrationResponse.jsonPath().get("org_name") + "," + registrationResponse.jsonPath().get("client_name")
 
         //Retrieve Request URI via Push request
-        requestUri = TestUtil.parseResponseBody(doPushAuthorisationRequest(scopes, AUConstants.AMENDED_SHARING_DURATION,
+        requestUri = TestUtil.parseResponseBody(doPushAuthorisationRequest(headerString, scopes, AUConstants.AMENDED_SHARING_DURATION,
                 true, cdrArrangementId), "request_uri")
         Assert.assertNotNull(requestUri)
 
@@ -121,7 +123,7 @@ class ConsentAmendmentFlowUIValidationTest extends AbstractAUTests{
     void "TC003 Verify the System should display the review page to reflect the amended attributes"() {
 
 
-        requestUri = TestUtil.parseResponseBody(doPushAuthorisationRequest(scopes, AUConstants.AMENDED_SHARING_DURATION,
+        requestUri = TestUtil.parseResponseBody(doPushAuthorisationRequest(headerString, scopes, AUConstants.AMENDED_SHARING_DURATION,
                 true, cdrArrangementId), "request_uri")
         Assert.assertNotNull(requestUri)
 
@@ -145,7 +147,7 @@ class ConsentAmendmentFlowUIValidationTest extends AbstractAUTests{
     @Test(dependsOnMethods = "TC003 Verify the System should display the review page to reflect the amended attributes")
     void "TC004 Verify the consent amendment of multiple accounts"() {
 
-        requestUri = TestUtil.parseResponseBody(doPushAuthorisationRequest(scopes, AUConstants.AMENDED_SHARING_DURATION,
+        requestUri = TestUtil.parseResponseBody(doPushAuthorisationRequest(headerString, scopes, AUConstants.AMENDED_SHARING_DURATION,
                 true, cdrArrangementId), "request_uri")
         Assert.assertNotNull(requestUri)
 
@@ -178,7 +180,7 @@ class ConsentAmendmentFlowUIValidationTest extends AbstractAUTests{
     @Test(dependsOnMethods = "TC003 Verify the System should display the review page to reflect the amended attributes")
     void "TC005 Verify the instruction on how to manage the data-sharing agreements"() {
 
-        requestUri = TestUtil.parseResponseBody(doPushAuthorisationRequest(scopes, AUConstants.AMENDED_SHARING_DURATION,
+        requestUri = TestUtil.parseResponseBody(doPushAuthorisationRequest(headerString, scopes, AUConstants.AMENDED_SHARING_DURATION,
                 true, cdrArrangementId), "request_uri")
         Assert.assertNotNull(requestUri)
 
@@ -197,7 +199,7 @@ class ConsentAmendmentFlowUIValidationTest extends AbstractAUTests{
     @Test(priority = 1)
     void "TC006 Verify back button on the CDR policy page at consent amendment"() {
 
-        requestUri = TestUtil.parseResponseBody(doPushAuthorisationRequest(scopes, AUConstants.AMENDED_SHARING_DURATION,
+        requestUri = TestUtil.parseResponseBody(doPushAuthorisationRequest(headerString, scopes, AUConstants.AMENDED_SHARING_DURATION,
                 true, cdrArrangementId), "request_uri")
         Assert.assertNotNull(requestUri)
 
@@ -217,7 +219,7 @@ class ConsentAmendmentFlowUIValidationTest extends AbstractAUTests{
     @Test(priority = 1)
     void "TC007 Verify deny flow for consent amendment  at consent amendment"() {
 
-        requestUri = TestUtil.parseResponseBody(doPushAuthorisationRequest(scopes, AUConstants.AMENDED_SHARING_DURATION,
+        requestUri = TestUtil.parseResponseBody(doPushAuthorisationRequest(headerString, scopes, AUConstants.AMENDED_SHARING_DURATION,
                 true, cdrArrangementId), "request_uri")
         Assert.assertNotNull(requestUri)
 
@@ -238,7 +240,7 @@ class ConsentAmendmentFlowUIValidationTest extends AbstractAUTests{
     @Test(priority = 1)
     void "TC008 Verify an initiate Authorization request for consent Amendment with a expired request_uri from PAR"() {
 
-        requestUri = TestUtil.parseResponseBody(doPushAuthorisationRequest(scopes, AUConstants.AMENDED_SHARING_DURATION,
+        requestUri = TestUtil.parseResponseBody(doPushAuthorisationRequest(headerString, scopes, AUConstants.AMENDED_SHARING_DURATION,
                 true, cdrArrangementId), "request_uri")
         Assert.assertNotNull(requestUri)
         sleep(65000)
