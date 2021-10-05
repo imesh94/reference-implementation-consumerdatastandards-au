@@ -14,6 +14,7 @@ package com.wso2.openbanking.cds.common;
 import com.wso2.openbanking.accelerator.common.exception.OpenBankingRuntimeException;
 import com.wso2.openbanking.accelerator.common.util.CarbonUtils;
 import com.wso2.openbanking.cds.common.config.OpenBankingCDSConfigParser;
+import org.apache.commons.lang3.StringUtils;
 import org.testng.Assert;
 import org.testng.annotations.BeforeClass;
 import org.testng.annotations.Test;
@@ -91,6 +92,69 @@ public class OpenBankingCDSConfigParserTest {
         String carbonConfigDirPath = CarbonUtils.getCarbonConfigDirPath();
         System.setProperty("carbon.config.dir.path", carbonConfigDirPath);
         Assert.assertEquals(CarbonUtils.getCarbonConfigDirPath(), carbonConfigDirPath);
+    }
+
+    @Test(priority = 7)
+    public void testIsMetadataCacheEnabled() {
+        String dummyConfigFile = absolutePathForTestResources + "/open-banking-cds.xml";
+        OpenBankingCDSConfigParser openBankingCDSConfigParser = OpenBankingCDSConfigParser.getInstance(dummyConfigFile);
+        Assert.assertTrue(openBankingCDSConfigParser.isMetadataCacheEnabled());
+    }
+
+    @Test(priority = 7)
+    public void testGetMetaDataCacheUpdatePeriodInMinutes() {
+        String dummyConfigFile = absolutePathForTestResources + "/open-banking-cds.xml";
+        OpenBankingCDSConfigParser openBankingCDSConfigParser = OpenBankingCDSConfigParser.getInstance(dummyConfigFile);
+        Assert.assertEquals(openBankingCDSConfigParser.getMetaDataCacheUpdatePeriodInMinutes(), 2);
+    }
+
+    @Test(priority = 7)
+    public void testGetDataRecipientsDiscoveryUrl() {
+        String dummyConfigFile = absolutePathForTestResources + "/open-banking-cds.xml";
+        OpenBankingCDSConfigParser openBankingCDSConfigParser = OpenBankingCDSConfigParser.getInstance(dummyConfigFile);
+        Assert.assertEquals(openBankingCDSConfigParser.getDataRecipientsDiscoveryUrl(), "https://test-discovery/");
+    }
+
+    @Test(priority = 7)
+    public void testGetDcrInternalUrl() {
+        String dummyConfigFile = absolutePathForTestResources + "/open-banking-cds.xml";
+        OpenBankingCDSConfigParser openBankingCDSConfigParser = OpenBankingCDSConfigParser.getInstance(dummyConfigFile);
+        Assert.assertTrue(StringUtils.isNotBlank(openBankingCDSConfigParser.getDcrInternalUrl()));
+    }
+
+    @Test(priority = 7)
+    public void testGetApimApplicationsSearchUrl() {
+        String dummyConfigFile = absolutePathForTestResources + "/open-banking-cds.xml";
+        OpenBankingCDSConfigParser openBankingCDSConfigParser = OpenBankingCDSConfigParser.getInstance(dummyConfigFile);
+        Assert.assertTrue(StringUtils.isNotBlank(openBankingCDSConfigParser.getApimApplicationsSearchUrl()));
+    }
+
+    @Test(priority = 7)
+    public void testGetRetryCount() {
+        String dummyConfigFile = absolutePathForTestResources + "/open-banking-cds.xml";
+        OpenBankingCDSConfigParser openBankingCDSConfigParser = OpenBankingCDSConfigParser.getInstance(dummyConfigFile);
+        Assert.assertEquals(openBankingCDSConfigParser.getRetryCount(), 3);
+    }
+
+    @Test(priority = 7)
+    public void testGetCacheExpiryInMinutes() {
+        String dummyConfigFile = absolutePathForTestResources + "/open-banking-cds.xml";
+        OpenBankingCDSConfigParser openBankingCDSConfigParser = OpenBankingCDSConfigParser.getInstance(dummyConfigFile);
+        Assert.assertEquals(openBankingCDSConfigParser.getCacheExpiryInMinutes(), 120);
+    }
+
+    @Test(priority = 7)
+    public void testIsBulkOperation() {
+        String dummyConfigFile = absolutePathForTestResources + "/open-banking-cds.xml";
+        OpenBankingCDSConfigParser openBankingCDSConfigParser = OpenBankingCDSConfigParser.getInstance(dummyConfigFile);
+        Assert.assertFalse(openBankingCDSConfigParser.isBulkOperation());
+    }
+
+    @Test(priority = 7)
+    public void testGetBulkExecutionHour() {
+        String dummyConfigFile = absolutePathForTestResources + "/open-banking-cds.xml";
+        OpenBankingCDSConfigParser openBankingCDSConfigParser = OpenBankingCDSConfigParser.getInstance(dummyConfigFile);
+        Assert.assertEquals(openBankingCDSConfigParser.getBulkExecutionHour(), 12);
     }
 
     private void injectEnvironmentVariable(String key, String value)

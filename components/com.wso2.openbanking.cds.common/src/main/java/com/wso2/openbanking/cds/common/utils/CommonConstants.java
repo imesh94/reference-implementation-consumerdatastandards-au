@@ -17,6 +17,9 @@ package com.wso2.openbanking.cds.common.utils;
  */
 public class CommonConstants {
 
+
+    private CommonConstants() {}
+
     public static final String OB_CONSENT_ID_PREFIX = "OB_CONSENT_ID_";
     public static final String CDS_API_CONTEXT_PREFIX = "cds-au";
 
@@ -28,4 +31,17 @@ public class CommonConstants {
     // Http related constants
     public static final String POST_METHOD = "POST";
 
+    // metadata config constants
+    public static final String METADATA_CACHE = "MetaDataCache";
+    public static final String METADATA_CACHE_ENABLED = METADATA_CACHE + ".EnableMetaDataCache";
+    public static final String METADATA_CACHE_UPDATE_TIME = METADATA_CACHE + ".MetaDataCacheUpdatePeriod";
+    public static final String METADATA_CACHE_DATA_RECIPIENTS_URL = METADATA_CACHE + ".DataRecipientsDiscoveryURL";
+    public static final String METADATA_CACHE_DCR_INTERNAL_URL = METADATA_CACHE + ".DCRInternalURL";
+    public static final String METADATA_CACHE_APPLICATION_SEARCH_URL = METADATA_CACHE + ".APIMApplicationSearchURL";
+    public static final String METADATA_CACHE_RETRY_COUNT = METADATA_CACHE + ".RetryCount";
+    public static final String METADATA_CACHE_EXPIRY = METADATA_CACHE + ".Expiry";
+    public static final String METADATA_CACHE_BULK_EXECUTE = METADATA_CACHE +
+            ".DataHolderResponsibilities.BulkExecution";
+    public static final String METADATA_CACHE_BULK_EXECUTE_HOUR = METADATA_CACHE +
+            ".DataHolderResponsibilities.BulkExecutionHour";
 }

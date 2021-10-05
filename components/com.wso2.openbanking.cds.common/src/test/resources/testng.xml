@@ -19,6 +19,7 @@
             <class name="com.wso2.openbanking.cds.common.OpenBankingCDSConfigParserTest"/>
             <class name="com.wso2.openbanking.cds.common.ErrorUtilTest"/>
             <class name="com.wso2.openbanking.cds.common.idpermanence.IdEncryptorDecryptorTest"/>
+            <class name="com.wso2.openbanking.cds.common.metadata.status.validator.service.MetadataServiceTest"/>
         </classes>
     </test>
 </suite>

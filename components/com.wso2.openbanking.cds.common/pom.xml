@@ -98,6 +98,10 @@
                     <excludes>
                         <!--Excluding them in coverage reports-->
                         <exclude>**/*Constants.class</exclude>
+                        <exclude>**/*Enum.class</exclude>
+                        <exclude>**/MetadataHolder.class</exclude>
+                        <exclude>**/MetadataCache.class</exclude>
+                        <exclude>**/MetadataCacheKey.class</exclude>
                     </excludes>
                 </configuration>
                 <executions>

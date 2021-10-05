@@ -258,4 +258,133 @@ public class OpenBankingCDSConfigParser {
         String value = (String) configuration.get(CommonConstants.ID_PERMANENCE_SECRET_KEY);
         return value == null ? "" : value;
     }
+
+    /**
+     * Returns the element with the provided key
+     *
+     * @param key local part name
+     * @return Corresponding value for key
+     */
+    protected Object getConfigElementFromKey(String key) {
+
+        return configuration.get(key);
+    }
+
+    public boolean isMetadataCacheEnabled() {
+        Object config = getConfigElementFromKey(CommonConstants.METADATA_CACHE_ENABLED);
+        if (config != null) {
+            return Boolean.parseBoolean((String) config);
+        } else {
+            return true;
+        }
+    }
+
+    /**
+     * Read metadata cache update period in minutes from config
+     *
+     * @return configured time in minutes, default value is 5
+     */
+    public int getMetaDataCacheUpdatePeriodInMinutes() {
+        Object config = getConfigElementFromKey(CommonConstants.METADATA_CACHE_UPDATE_TIME);
+        if (config != null && 0 < Integer.parseInt((String) config)) {
+            // configured value is a positive number
+            return Integer.parseInt((String) config);
+        }
+        return 5;
+    }
+
+    /**
+     * Read data recipients discovery url from config
+     *
+     * @return configured url, default value is "https://api.cdr.gov.au/cdr-register/v1/banking/data-recipients"
+     */
+    public String getDataRecipientsDiscoveryUrl() {
+
+        Object config = getConfigElementFromKey(CommonConstants.METADATA_CACHE_DATA_RECIPIENTS_URL);
+        if (config != null) {
+            return (String) config;
+        }
+        return "https://api.cdr.gov.au/cdr-register/v1/banking/data-recipients";
+    }
+
+    /**
+     * Read APIM DCR register url from config
+     * @return configured url
+     */
+    public String getDcrInternalUrl() {
+
+        Object config = getConfigElementFromKey(CommonConstants.METADATA_CACHE_DCR_INTERNAL_URL);
+        return (config != null) ? (String) config : "";
+    }
+
+    /**
+     * Read APIM application search url from config
+     *
+     * @return configured url
+     * @see <a href="https://apim.docs.wso2.com/en/latest/reference/product-apis/admin-apis/admin-v2/admin-v2/
+     * #tag/Applications/paths/~1applications/get">APIM Search Applications Doc</a>
+     */
+    public String getApimApplicationsSearchUrl() {
+
+        Object config = getConfigElementFromKey(CommonConstants.METADATA_CACHE_APPLICATION_SEARCH_URL);
+        return (config != null) ? (String) config : "";
+    }
+
+    /**
+     * Read retry count from config
+     * @return retry count, default value is 2
+     */
+    public int getRetryCount() {
+
+        Object config = getConfigElementFromKey(CommonConstants.METADATA_CACHE_RETRY_COUNT);
+        if (config != null && 0 < Integer.parseInt((String) config)) {
+            // configured value is a positive number
+            return Integer.parseInt((String) config);
+        }
+        return 2;
+    }
+
+    /**
+     * Read metadata cache expiry time in minutes from config
+     * @return expiry time, default value is 60
+     */
+    public int getCacheExpiryInMinutes() {
+
+        Object config = getConfigElementFromKey(CommonConstants.METADATA_CACHE_EXPIRY);
+        if (config != null && 0 < Integer.parseInt((String) config)) {
+            // configured value is a positive number
+            return Integer.parseInt((String) config);
+        }
+        return 60;
+    }
+
+    /**
+     * Check if data holder responsibilities can execute as bulk operations
+     * @return configured boolean value, default value is true
+     */
+    public boolean isBulkOperation() {
+        Object config = getConfigElementFromKey(CommonConstants.METADATA_CACHE_BULK_EXECUTE);
+        if (config != null) {
+            return Boolean.parseBoolean((String) config);
+        } else {
+            return true;
+        }
+    }
+
+    /**
+     * Read bulk execution hour from config
+     * @return execution hour, default value is 2 AM
+     */
+    public int getBulkExecutionHour() {
+
+        Object config = getConfigElementFromKey(CommonConstants.METADATA_CACHE_BULK_EXECUTE_HOUR);
+        if (config != null) {
+            final int hour = Integer.parseInt((String) config);
+            if (0 <= hour && 24 > hour) {
+                // configured value is a valid hour
+                return hour;
+            }
+        }
+        return 2;
+    }
 }
