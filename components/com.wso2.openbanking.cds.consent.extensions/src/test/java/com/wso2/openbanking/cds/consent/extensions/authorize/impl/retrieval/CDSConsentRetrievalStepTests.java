@@ -16,6 +16,8 @@ import com.wso2.openbanking.accelerator.consent.extensions.authorize.model.Conse
 import com.wso2.openbanking.accelerator.consent.extensions.common.ConsentException;
 import com.wso2.openbanking.accelerator.consent.mgt.dao.models.ConsentResource;
 import com.wso2.openbanking.accelerator.identity.push.auth.extension.request.validator.util.PushAuthRequestValidatorUtils;
+import com.wso2.openbanking.cds.common.config.OpenBankingCDSConfigParser;
+import com.wso2.openbanking.cds.common.metadata.status.validator.service.MetadataService;
 import com.wso2.openbanking.cds.consent.extensions.authorize.utils.CDSDataRetrievalUtil;
 import com.wso2.openbanking.cds.consent.extensions.util.CDSConsentAuthorizeTestConstants;
 import net.minidev.json.JSONObject;
@@ -26,6 +28,7 @@ import org.powermock.core.classloader.annotations.PrepareForTest;
 import org.powermock.modules.testng.PowerMockTestCase;
 import org.testng.Assert;
 import org.testng.annotations.BeforeClass;
+import org.testng.annotations.BeforeMethod;
 import org.testng.annotations.Test;
 import org.wso2.carbon.identity.oauth.cache.SessionDataCache;
 import org.wso2.carbon.identity.oauth.cache.SessionDataCacheEntry;
@@ -40,14 +43,14 @@ import static org.powermock.api.mockito.PowerMockito.when;
  * Test class for CDS Consent Retrieval
  */
 @PrepareForTest({SessionDataCacheEntry.class, SessionDataCache.class, PushAuthRequestValidatorUtils.class,
-        CDSDataRetrievalUtil.class})
+        CDSDataRetrievalUtil.class, MetadataService.class, OpenBankingCDSConfigParser.class})
 @PowerMockIgnore({"com.wso2.openbanking.accelerator.consent.extensions.common.*"})
 public class CDSConsentRetrievalStepTests extends PowerMockTestCase {
 
     private CDSConsentRetrievalStep cdsConsentRetrievalStep;
     private ConsentData consentDataMock;
     private ConsentResource consentResourceMock;
-
+    private OpenBankingCDSConfigParser openBankingCDSConfigParserMock;
 
     @BeforeClass
     public void initClass() {
@@ -55,6 +58,13 @@ public class CDSConsentRetrievalStepTests extends PowerMockTestCase {
         cdsConsentRetrievalStep = new CDSConsentRetrievalStep();
         consentDataMock = mock(ConsentData.class);
         consentResourceMock = mock(ConsentResource.class);
+        openBankingCDSConfigParserMock = mock(OpenBankingCDSConfigParser.class);
+    }
+
+    @BeforeMethod
+    public void beforeMethod() {
+        PowerMockito.stub(PowerMockito.method(OpenBankingCDSConfigParser.class, "getInstance"))
+                .toReturn(openBankingCDSConfigParserMock);
     }
 
     @Test(priority = 2)
@@ -162,6 +172,8 @@ public class CDSConsentRetrievalStepTests extends PowerMockTestCase {
         when(consentDataMock.getClientId()).thenReturn(clientId);
         PowerMockito.stub(PowerMockito.method(CDSDataRetrievalUtil.class, "getServiceProviderFullName"))
                 .toReturn(spFullName);
+        PowerMockito.stub(PowerMockito.method(MetadataService.class, "shouldFacilitateConsentAuthorisation"))
+                .toReturn(true);
 
         String requestObjectString = CDSConsentAuthorizeTestConstants.ENCRYPTED_JWT;
         OAuth2Parameters oAuth2Parameters = new OAuth2Parameters();
@@ -192,6 +204,20 @@ public class CDSConsentRetrievalStepTests extends PowerMockTestCase {
         String sampleQueryParams = redirectUri + request;
         doReturn(sampleQueryParams).when(consentDataMock).getSpQueryParams();
         doReturn(scopeString).when(consentDataMock).getScopeString();
+        cdsConsentRetrievalStep.execute(consentDataMock, jsonObject);
+    }
+
+    @Test(priority = 3, expectedExceptions = ConsentException.class)
+    public void testConsentRetrievalWithInvalidMetadataCache() {
+        JSONObject jsonObject = new JSONObject();
+        String clientId = "client-id";
+        when(consentDataMock.getClientId()).thenReturn(clientId);
+        when(openBankingCDSConfigParserMock.isMetadataCacheEnabled()).thenReturn(true);
+        PowerMockito.stub(PowerMockito.method(OpenBankingCDSConfigParser.class, "getInstance"))
+                .toReturn(openBankingCDSConfigParserMock);
+        PowerMockito.stub(PowerMockito.method(MetadataService.class, "shouldFacilitateConsentAuthorisation"))
+                .toReturn(false);
+
         cdsConsentRetrievalStep.execute(consentDataMock, jsonObject);
     }
 }

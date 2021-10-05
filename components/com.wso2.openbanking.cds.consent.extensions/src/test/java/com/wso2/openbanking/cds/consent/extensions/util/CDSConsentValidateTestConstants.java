@@ -16,6 +16,7 @@ import com.wso2.openbanking.accelerator.consent.mgt.dao.models.AuthorizationReso
 import com.wso2.openbanking.accelerator.consent.mgt.dao.models.ConsentMappingResource;
 import com.wso2.openbanking.accelerator.consent.mgt.dao.models.DetailedConsentResource;
 
+import java.time.Instant;
 import java.util.ArrayList;
 
 /**
@@ -63,7 +64,7 @@ public class CDSConsentValidateTestConstants {
     public static final String VALID_RECEIPT = "{\"accountData\": {\"permissions\": [\"CDRREADACCOUNTSBASIC\", " +
             "\"CDRREADACCOUNTSDETAILS\", \"CDRREADPAYEES\", \"CDRREADTRANSACTION\", \"READCUSTOMERDETAILS\", " +
             "\"READCUSTOMERDETAILSBASIC\", \"CDRREADPAYMENTS\"], \"expirationDateTime\": " +
-            "\"2021-10-05T05:03:35.958Z\"}}";
+            "\"" + Instant.now().plusSeconds(86400) + "\"}}";
 
     public static final String EXPIRED_CONSENT_RECEIPT = "{\"accountData\": {\"permissions\": " +
             "[\"CDRREADACCOUNTSBASIC\", \"CDRREADACCOUNTSDETAILS\", \"CDRREADPAYEES\", \"CDRREADTRANSACTION\", " +

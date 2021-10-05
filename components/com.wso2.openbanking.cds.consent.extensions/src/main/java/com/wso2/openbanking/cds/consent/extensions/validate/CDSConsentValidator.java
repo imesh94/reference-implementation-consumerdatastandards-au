@@ -18,6 +18,7 @@ import com.wso2.openbanking.accelerator.consent.extensions.validate.model.Consen
 import com.wso2.openbanking.accelerator.consent.extensions.validate.model.ConsentValidationResult;
 import com.wso2.openbanking.accelerator.consent.extensions.validate.model.ConsentValidator;
 import com.wso2.openbanking.cds.common.config.OpenBankingCDSConfigParser;
+import com.wso2.openbanking.cds.common.metadata.status.validator.service.MetadataService;
 import com.wso2.openbanking.cds.common.utils.ErrorConstants;
 import com.wso2.openbanking.cds.consent.extensions.common.CDSConsentExtensionConstants;
 import com.wso2.openbanking.cds.consent.extensions.validate.utils.CDSConsentValidatorUtil;
@@ -91,6 +92,15 @@ public class CDSConsentValidator implements ConsentValidator {
                 consentValidationResult.setHttpCode(HttpStatus.SC_UNPROCESSABLE_ENTITY);
                 return;
             }
+        }
+
+        // valiadate metadata status
+        if (OpenBankingCDSConfigParser.getInstance().isMetadataCacheEnabled() &&
+                !MetadataService.shouldDiscloseCDRData(consentValidateData.getClientId())) {
+            consentValidationResult.setErrorMessage(ErrorConstants.AUErrorEnum.INVALID_ADR_STATUS.getDetail());
+            consentValidationResult.setErrorCode(ErrorConstants.AUErrorEnum.INVALID_ADR_STATUS.getCode());
+            consentValidationResult.setHttpCode(ErrorConstants.AUErrorEnum.INVALID_ADR_STATUS.getHttpCode());
+            return;
         }
         consentValidationResult.setValid(true);
     }
