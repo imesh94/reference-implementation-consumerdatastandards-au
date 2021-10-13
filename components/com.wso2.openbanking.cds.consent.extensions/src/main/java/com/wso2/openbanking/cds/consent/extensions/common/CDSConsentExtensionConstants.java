@@ -88,6 +88,16 @@ public class CDSConsentExtensionConstants {
     public static final String ENABLE_ACCOUNT_ID_VALIDATION_ON_RETRIEVAL = "ConsentManagement.Validate" +
             "AccountIdOnRetrieval";
 
+    // DH revocation configs
+    public static final String ENABLE_RECIPIENT_CONSENT_REVOCATION = "RecipientConsentRevocationEndpoint.Enable";
+    public static final String DATA_HOLDER_ID = "DataHolder.ClientId";
+    public static final String RECIPIENT_BASE_URI = "recipient_base_uri";
+
+    public static final String KEYSTORE_LOCATION = "Security.InternalKeyStore.Location";
+    public static final String KEYSTORE_PASSWORD = "Security.InternalKeyStore.Password";
+    public static final String KEYSTORE_KEY_ALIAS = "Security.InternalKeyStore.KeyAlias";
+    public static final String KEYSTORE_KEY_PASSWORD = "Security.InternalKeyStore.KeyPassword";
+
     static {
         Map<String, Map<String, List<String>>> dataCluster = new HashMap<>();
 
