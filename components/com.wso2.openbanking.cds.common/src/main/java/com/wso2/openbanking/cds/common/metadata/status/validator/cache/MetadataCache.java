@@ -12,7 +12,6 @@
 
 package com.wso2.openbanking.cds.common.metadata.status.validator.cache;
 
-
 import com.wso2.openbanking.accelerator.common.caching.OpenBankingBaseCache;
 import com.wso2.openbanking.cds.common.config.OpenBankingCDSConfigParser;
 

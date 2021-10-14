@@ -12,7 +12,6 @@
 
 package com.wso2.openbanking.cds.common.metadata.status.validator.service;
 
-
 import com.wso2.openbanking.accelerator.common.exception.OpenBankingException;
 import com.wso2.openbanking.cds.common.metadata.periodical.updater.MetadataHolder;
 import com.wso2.openbanking.cds.common.metadata.periodical.updater.constants.MetadataConstants;

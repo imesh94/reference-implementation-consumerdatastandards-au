@@ -17,8 +17,6 @@ package com.wso2.openbanking.cds.common.metadata.periodical.updater.constants;
  */
 public class MetadataConstants {
 
-    private MetadataConstants() {}
-
     public static final String DR_JSON_ROOT                 = "data";
     public static final String DR_JSON_STATUS               = "status";
     public static final String DR_JSON_SP_KEY               = "softwareProductId";
@@ -35,4 +33,6 @@ public class MetadataConstants {
     public static final String LIST                         = "list";
     public static final String APPLICATION_ID               = "applicationId";
     public static final String APPLICATION_NAME             = "name";
+
+    private MetadataConstants() {}
 }

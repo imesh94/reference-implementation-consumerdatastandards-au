@@ -12,7 +12,6 @@
 
 package com.wso2.openbanking.cds.common.config;
 
-
 import com.wso2.openbanking.accelerator.common.constant.OpenBankingConstants;
 import com.wso2.openbanking.accelerator.common.exception.OpenBankingRuntimeException;
 import com.wso2.openbanking.accelerator.common.util.CarbonUtils;
@@ -270,6 +269,11 @@ public class OpenBankingCDSConfigParser {
         return configuration.get(key);
     }
 
+    /**
+     * Check metadata cache is enabled from config
+     *
+     * @return configured boolean value, default value is true
+     */
     public boolean isMetadataCacheEnabled() {
         Object config = getConfigElementFromKey(CommonConstants.METADATA_CACHE_ENABLED);
         if (config != null) {
