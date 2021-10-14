@@ -84,7 +84,7 @@ public class InvalidateConsentsResponsibility implements DataHolderResponsibilit
                 LOG.debug("Consent of consentId " + config.getInboundAuthKey()
                         + " was expired as DataHolder Responsibility");
             } catch (ConsentManagementException e) {
-                LOG.error("Exception occurred while revoking consents. Caused by, ", e);
+                LOG.error("Exception occurred while performing invalidate consents responsibility. Caused by, ", e);
             }
         }
     }

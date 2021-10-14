@@ -95,19 +95,19 @@ public class CleanupRegistrationResponsibility implements DataHolderResponsibili
                 deleteServiceProviderFromIS(config.getInboundAuthKey());
             }
         } catch (OpenBankingException e) {
-            LOG.error("Exception occurred while deleting client application. Caused by, ", e);
+            LOG.error("Exception occurred while performing cleanup registration responsibility. Caused by, ", e);
         }
     }
 
     /**
-     * Method used to delete a client application by specifying its id.
+     * Method used to delete a client application by specifying its name.
      *
-     * @param applicationId application id
+     * @param applicationName APIM application name
      */
-    private void deleteApplicationFromAPIM(String applicationId) throws OpenBankingException {
+    private void deleteApplicationFromAPIM(String applicationName) throws OpenBankingException {
         final String apimApplicationSearchUrl = OpenBankingCDSConfigParser.getInstance().getApimApplicationsSearchUrl();
         try {
-            executeDeleteRequest(getApplicationIdFromName(applicationId), apimApplicationSearchUrl,
+            executeDeleteRequest(getApplicationIdFromName(applicationName), apimApplicationSearchUrl,
                     Arrays.asList(HttpStatus.SC_OK, HttpStatus.SC_ACCEPTED));
         } catch (IOException e) {
             throw new OpenBankingException("Error while deleting application through APIM admin API", e);
@@ -129,6 +129,15 @@ public class CleanupRegistrationResponsibility implements DataHolderResponsibili
         }
     }
 
+    /**
+     * To send HTTP DELETE request to delete an application from APIM or to delete a service provider from IS
+     *
+     * @param applicationId APIM application id / IS service provider id
+     * @param url APIM application delete URL / DCR internal URL
+     * @param expectedStatusCodes expected status codes from DELETE response
+     * @throws OpenBankingException throws if invalid unexpected response code received
+     * @throws IOException throws when http delete request execution failed
+     */
     protected void executeDeleteRequest(String applicationId, String url, List<Integer> expectedStatusCodes)
             throws OpenBankingException, IOException {
 
@@ -162,7 +171,6 @@ public class CleanupRegistrationResponsibility implements DataHolderResponsibili
         }
     }
 
-
     private String getApplicationIdFromName(String applicationName) throws OpenBankingException {
 
         try {
@@ -178,9 +186,16 @@ public class CleanupRegistrationResponsibility implements DataHolderResponsibili
         } catch (IOException e) {
             throw new OpenBankingException("Error while retrieving application data through search API", e);
         }
-        return "";
+        return StringUtils.EMPTY;
     }
 
+    /**
+     * Retrieve all existing applications from APIM store by sending HTTP GET request
+     *
+     * @return JSONArray of APIM applications
+     * @throws OpenBankingException throws if invalid unexpected response code received
+     * @throws IOException throws when http GET request execution failed
+     */
     private JSONArray getAllApplications() throws OpenBankingException, IOException {
 
         try (CloseableHttpClient httpclient = HTTPClientUtils.getHttpsClient()) {
