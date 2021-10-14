@@ -17,9 +17,6 @@ package com.wso2.openbanking.cds.common.utils;
  */
 public class CommonConstants {
 
-
-    private CommonConstants() {}
-
     public static final String OB_CONSENT_ID_PREFIX = "OB_CONSENT_ID_";
     public static final String CDS_API_CONTEXT_PREFIX = "cds-au";
 
@@ -44,4 +41,6 @@ public class CommonConstants {
             ".DataHolderResponsibilities.BulkExecution";
     public static final String METADATA_CACHE_BULK_EXECUTE_HOUR = METADATA_CACHE +
             ".DataHolderResponsibilities.BulkExecutionHour";
+
+    private CommonConstants() {}
 }
