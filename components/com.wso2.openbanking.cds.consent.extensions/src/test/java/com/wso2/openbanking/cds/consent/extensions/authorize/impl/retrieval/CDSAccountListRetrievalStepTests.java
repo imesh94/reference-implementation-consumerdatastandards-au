@@ -17,7 +17,6 @@ import com.wso2.openbanking.accelerator.consent.extensions.common.ConsentExcepti
 import com.wso2.openbanking.accelerator.identity.util.HTTPClientUtils;
 import com.wso2.openbanking.cds.common.config.OpenBankingCDSConfigParser;
 import com.wso2.openbanking.cds.consent.extensions.common.CDSConsentExtensionConstants;
-import graphql.Assert;
 import net.minidev.json.JSONObject;
 import org.apache.commons.io.FileUtils;
 import org.apache.http.HttpEntity;
@@ -32,6 +31,7 @@ import org.powermock.api.mockito.PowerMockito;
 import org.powermock.core.classloader.annotations.PowerMockIgnore;
 import org.powermock.core.classloader.annotations.PrepareForTest;
 import org.powermock.modules.testng.PowerMockTestCase;
+import org.testng.Assert;
 import org.testng.annotations.BeforeClass;
 import org.testng.annotations.Test;
 
@@ -102,6 +102,8 @@ public class CDSAccountListRetrievalStepTests extends PowerMockTestCase {
 
         JSONObject jsonObject = new JSONObject();
         doReturn(CDSConsentExtensionConstants.ACCOUNTS).when(consentDataMock).getType();
+
+        when(consentDataMock.isRegulatory()).thenReturn(true);
         cdsAccountListRetrievalStep.execute(consentDataMock, jsonObject);
 
         Assert.assertNotNull(jsonObject.get("accounts"));
@@ -139,6 +141,8 @@ public class CDSAccountListRetrievalStepTests extends PowerMockTestCase {
 
         JSONObject jsonObject = new JSONObject();
         doReturn(CDSConsentExtensionConstants.ACCOUNTS).when(consentDataMock).getType();
+
+        when(consentDataMock.isRegulatory()).thenReturn(true);
         cdsAccountListRetrievalStep.execute(consentDataMock, jsonObject);
     }
 

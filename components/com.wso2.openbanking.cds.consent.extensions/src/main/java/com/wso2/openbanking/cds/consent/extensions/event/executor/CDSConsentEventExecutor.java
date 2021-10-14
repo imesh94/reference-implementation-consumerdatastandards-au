@@ -15,6 +15,7 @@ package com.wso2.openbanking.cds.consent.extensions.event.executor;
 import com.wso2.openbanking.accelerator.common.event.executor.OBEventExecutor;
 import com.wso2.openbanking.accelerator.common.event.executor.model.OBEvent;
 import com.wso2.openbanking.accelerator.common.exception.OpenBankingException;
+import com.wso2.openbanking.accelerator.common.util.Generated;
 import com.wso2.openbanking.accelerator.consent.mgt.service.constants.ConsentCoreServiceConstants;
 import com.wso2.openbanking.accelerator.identity.util.HTTPClientUtils;
 import com.wso2.openbanking.accelerator.identity.util.IdentityCommonHelper;
@@ -94,11 +95,10 @@ public class CDSConsentEventExecutor implements OBEventExecutor {
      * @param consentId  revoked sharing arrangement (consent) ID
      * @param dataHolderId ID of the Data Holder obtained from the CDR Register
      */
-    private void sendArrangementRevocationRequestToADR(String clientId, String consentId, String dataHolderId)
+    protected void sendArrangementRevocationRequestToADR(String clientId, String consentId, String dataHolderId)
             throws OpenBankingException {
 
-        String recipientBaseUri = new IdentityCommonHelper().getAppPropertyFromSPMetaData(clientId,
-                CDSConsentExtensionConstants.RECIPIENT_BASE_URI);
+        String recipientBaseUri = getRecipientBaseUri(clientId);
         if (StringUtils.isBlank(recipientBaseUri)) {
             String errorMessage = "DH initiated CDR Arrangement Revocation for cdr_arrangement_id " + consentId +
                     " failed due to unavailability of recipient_base_uri. " +
@@ -155,7 +155,7 @@ public class CDSConsentEventExecutor implements OBEventExecutor {
                     "\n" + (Arrays.toString(responseBody.getAllHeaders()))
                     .replaceAll("\\[|\\]", "").replaceAll(",", "\n") +
                     "\n" + responseBody.getEntity() != null ?
-                    EntityUtils.toString(responseBody.getEntity()): StringUtils.EMPTY);
+                    EntityUtils.toString(responseBody.getEntity()) : StringUtils.EMPTY);
 
         } catch (IOException e) {
             log.error("Error occurred while calling DR's CDR arrangement revocation endpoint", e);
@@ -169,7 +169,7 @@ public class CDSConsentEventExecutor implements OBEventExecutor {
      * @param currentTime Current time in milliseconds (unix timestamp format)
      * @return issued time in seconds (unix timestamp format)
      */
-    public static long getIatFromCurrentTime(long currentTime) {
+    protected static long getIatFromCurrentTime(long currentTime) {
 
         return currentTime / 1000;
     }
@@ -180,11 +180,16 @@ public class CDSConsentEventExecutor implements OBEventExecutor {
      * @param currentTime Current time in milliseconds (unix timestamp format)
      * @return expiry time in seconds (unix timestamp format)
      */
-    public static long getExpFromCurrentTime(long currentTime) {
+    protected static long getExpFromCurrentTime(long currentTime) {
         // (current time + 5 minutes) is the expiry time.
         return (currentTime / 1000) + 300;
     }
 
+    /**
+     * Method to generate signed JWT
+     *
+     * @return JWT as a string.
+     */
     protected String generateJWT(String payload, SignatureAlgorithm alg) throws OpenBankingException {
 
         return Jwts.builder()
@@ -194,9 +199,9 @@ public class CDSConsentEventExecutor implements OBEventExecutor {
     }
 
     /**
-     * Method to obtain signing key.
+     * Method to obtain signing key
      *
-     * @return Key as an Object.
+     * @return Key as an Object
      */
     protected static Key getJWTSigningKey() throws OpenBankingException {
 
@@ -221,5 +226,12 @@ public class CDSConsentEventExecutor implements OBEventExecutor {
             }
         }
         return key;
+    }
+
+    @Generated(message = "Excluding from code coverage since it requires a service call")
+    protected String getRecipientBaseUri(String clientId) throws OpenBankingException {
+
+        return new IdentityCommonHelper().getAppPropertyFromSPMetaData(clientId,
+                CDSConsentExtensionConstants.RECIPIENT_BASE_URI);
     }
 }
