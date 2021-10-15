@@ -16,6 +16,7 @@ import com.wso2.openbanking.accelerator.common.event.executor.model.OBEvent;
 import com.wso2.openbanking.accelerator.common.exception.OpenBankingException;
 import com.wso2.openbanking.accelerator.identity.util.HTTPClientUtils;
 import com.wso2.openbanking.cds.common.config.OpenBankingCDSConfigParser;
+import com.wso2.openbanking.cds.identity.utils.CDSIdentityUtil;
 import org.apache.http.HttpEntity;
 import org.apache.http.HttpStatus;
 import org.apache.http.StatusLine;
@@ -25,7 +26,6 @@ import org.apache.http.impl.client.CloseableHttpClient;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.mockito.Mockito;
-import org.powermock.api.mockito.PowerMockito;
 import org.powermock.core.classloader.annotations.PrepareForTest;
 import org.powermock.modules.testng.PowerMockTestCase;
 import org.testng.Assert;
@@ -36,7 +36,6 @@ import org.wso2.carbon.base.ServerConfiguration;
 
 import java.io.ByteArrayOutputStream;
 import java.io.PrintStream;
-import java.security.KeyStore;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -46,7 +45,8 @@ import static org.powermock.api.mockito.PowerMockito.mock;
 import static org.powermock.api.mockito.PowerMockito.mockStatic;
 import static org.powermock.api.mockito.PowerMockito.when;
 
-@PrepareForTest({OpenBankingCDSConfigParser.class, HTTPClientUtils.class, ServerConfiguration.class})
+@PrepareForTest({OpenBankingCDSConfigParser.class, HTTPClientUtils.class, ServerConfiguration.class,
+        CDSIdentityUtil.class})
 public class CDSConsentEventExecutorTests extends PowerMockTestCase {
 
     private static ByteArrayOutputStream outContent;
@@ -177,23 +177,5 @@ public class CDSConsentEventExecutorTests extends PowerMockTestCase {
                 Mockito.anyObject());
         cdsConsentEventExecutorSpy.sendArrangementRevocationRequestToADR("dummyClientId",
                 "dummyConsentId", "dummyDataHolderId");
-    }
-
-    @Test (expectedExceptions = OpenBankingException.class)
-    public void testGetJWTSigningKeyFailure() throws Exception {
-
-        CDSConsentEventExecutor cdsConsentEventExecutorSpy = Mockito.spy(new CDSConsentEventExecutor());
-
-        PowerMockito.mockStatic(HTTPClientUtils.class);
-
-        KeyStore keyStoreMock = Mockito.mock(KeyStore.class);
-        when(HTTPClientUtils.loadKeyStore(Mockito.anyString(), Mockito.anyString())).thenReturn(keyStoreMock);
-
-        ServerConfiguration serverConfigurationMock = Mockito.mock(ServerConfiguration.class);
-        mockStatic(ServerConfiguration.class);
-        when(ServerConfiguration.getInstance()).thenReturn(serverConfigurationMock);
-        when(serverConfigurationMock.getFirstProperty(Mockito.anyString())).thenReturn("wso2carbon");
-
-        cdsConsentEventExecutorSpy.getJWTSigningKey();
     }
 }

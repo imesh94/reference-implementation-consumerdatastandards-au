@@ -20,7 +20,9 @@ import com.wso2.openbanking.accelerator.consent.mgt.service.constants.ConsentCor
 import com.wso2.openbanking.accelerator.identity.util.HTTPClientUtils;
 import com.wso2.openbanking.accelerator.identity.util.IdentityCommonHelper;
 import com.wso2.openbanking.cds.common.config.OpenBankingCDSConfigParser;
+import com.wso2.openbanking.cds.common.utils.CommonConstants;
 import com.wso2.openbanking.cds.consent.extensions.common.CDSConsentExtensionConstants;
+import com.wso2.openbanking.cds.identity.utils.CDSIdentityUtil;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.SignatureAlgorithm;
 import net.minidev.json.JSONObject;
@@ -36,14 +38,9 @@ import org.apache.http.client.methods.HttpPost;
 import org.apache.http.impl.client.CloseableHttpClient;
 import org.apache.http.message.BasicNameValuePair;
 import org.apache.http.util.EntityUtils;
-import org.wso2.carbon.base.ServerConfiguration;
 
 import java.io.IOException;
-import java.security.Key;
-import java.security.KeyStore;
-import java.security.KeyStoreException;
-import java.security.NoSuchAlgorithmException;
-import java.security.UnrecoverableKeyException;
+import java.io.UnsupportedEncodingException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
@@ -56,7 +53,6 @@ public class CDSConsentEventExecutor implements OBEventExecutor {
 
     private static final Log log = LogFactory.getLog(CDSConsentEventExecutor.class);
     private static final String DATA_RECIPIENT_CDR_ARRANGEMENT_REVOCATION_PATH = "/arrangements/revoke";
-    private static volatile Key key;
     private static final String REVOKED_STATE = "revoked";
     private static final String REASON = "Reason";
     private static final String CLIENT_ID = "ClientId";
@@ -110,26 +106,10 @@ public class CDSConsentEventExecutor implements OBEventExecutor {
         String consentRevocationEndpoint = recipientBaseUri + DATA_RECIPIENT_CDR_ARRANGEMENT_REVOCATION_PATH;
 
         try (CloseableHttpClient httpclient = HTTPClientUtils.getHttpsClient()) {
-            HttpPost httpPost = new HttpPost(consentRevocationEndpoint);
 
-            long currentTime = System.currentTimeMillis();
+            HttpPost httpPost = generateHttpPost(consentRevocationEndpoint, dataHolderId, recipientBaseUri, consentId);
 
-            //Adding registered claims [https://tools.ietf.org/html/rfc7519]
-            JSONObject jwtPayload = new JSONObject();
-            jwtPayload.put("iss", dataHolderId);
-            jwtPayload.put("sub", dataHolderId);
-            jwtPayload.put("aud", recipientBaseUri);
-            jwtPayload.put("iat", getIatFromCurrentTime(currentTime));
-            jwtPayload.put("exp", getExpFromCurrentTime(currentTime));
-            jwtPayload.put("jti", currentTime);
-
-            httpPost.setHeader(HTTPConstants.CONTENT_TYPE, HTTPConstants.MEDIA_TYPE_X_WWW_FORM);
-            httpPost.setHeader(HTTPConstants.HEADER_AUTHORIZATION,
-                    "Bearer " + generateJWT(jwtPayload.toString(), SignatureAlgorithm.PS256));
-            List<NameValuePair> params = new ArrayList<>();
-            params.add(new BasicNameValuePair("cdr_arrangement_id", consentId));
-            httpPost.setEntity(new UrlEncodedFormEntity(params));
-
+            // POST request sent to ADR is logged here for further inspections
             log.info("DH initiated consent revocation - request: " +
                     "\n" + httpPost.getRequestLine() +
                     "\n" + (Arrays.toString(httpPost.getAllHeaders()))
@@ -149,13 +129,6 @@ public class CDSConsentEventExecutor implements OBEventExecutor {
                 log.error(error);
                 throw new OpenBankingException(error);
             }
-
-            log.info("DH initiated consent revocation - response: " +
-                    "\n" + responseBody.getStatusLine().toString() +
-                    "\n" + (Arrays.toString(responseBody.getAllHeaders()))
-                    .replaceAll("\\[|\\]", "").replaceAll(",", "\n") +
-                    "\n" + responseBody.getEntity() != null ?
-                    EntityUtils.toString(responseBody.getEntity()) : StringUtils.EMPTY);
 
         } catch (IOException e) {
             log.error("Error occurred while calling DR's CDR arrangement revocation endpoint", e);
@@ -188,44 +161,17 @@ public class CDSConsentEventExecutor implements OBEventExecutor {
     /**
      * Method to generate signed JWT
      *
+     * @param payload payload as a string
+     * @param alg signature algorithm
+     *
      * @return JWT as a string.
      */
     protected String generateJWT(String payload, SignatureAlgorithm alg) throws OpenBankingException {
 
         return Jwts.builder()
                 .setPayload(payload)
-                .signWith(alg, getJWTSigningKey())
+                .signWith(alg, CDSIdentityUtil.getJWTSigningKey())
                 .compact();
-    }
-
-    /**
-     * Method to obtain signing key
-     *
-     * @return Key as an Object
-     */
-    protected static Key getJWTSigningKey() throws OpenBankingException {
-
-        if (key == null) {
-            synchronized (CDSConsentEventExecutor.class) {
-                if (key == null) {
-                    KeyStore keyStore = HTTPClientUtils.loadKeyStore(ServerConfiguration.getInstance()
-                                    .getFirstProperty(CDSConsentExtensionConstants.KEYSTORE_LOCATION),
-                            ServerConfiguration.getInstance()
-                                    .getFirstProperty(CDSConsentExtensionConstants.KEYSTORE_PASSWORD));
-                    try {
-                        key = keyStore.getKey(ServerConfiguration.getInstance()
-                                        .getFirstProperty(CDSConsentExtensionConstants.KEYSTORE_KEY_ALIAS),
-                                ServerConfiguration.getInstance()
-                                        .getFirstProperty(CDSConsentExtensionConstants.KEYSTORE_KEY_PASSWORD)
-                                        .toCharArray());
-                    } catch (KeyStoreException | NoSuchAlgorithmException | UnrecoverableKeyException e) {
-                        log.error("Error occurred while retrieving private key from keystore ", e);
-                        throw new OpenBankingException("Error occurred while retrieving private key from keystore ", e);
-                    }
-                }
-            }
-        }
-        return key;
     }
 
     @Generated(message = "Excluding from code coverage since it requires a service call")
@@ -234,4 +180,58 @@ public class CDSConsentEventExecutor implements OBEventExecutor {
         return new IdentityCommonHelper().getAppPropertyFromSPMetaData(clientId,
                 CDSConsentExtensionConstants.RECIPIENT_BASE_URI);
     }
+
+    /**
+     * Method to generate http post request
+     *
+     * @param consentRevocationEndpoint consent revocation endpoint url
+     * @param dataHolderId data holder id
+     * @param recipientBaseUri recipient base uri
+     * @param consentId consent id
+     *
+     * @return HttpPost
+     */
+    protected HttpPost generateHttpPost(String consentRevocationEndpoint, String dataHolderId,
+                                        String recipientBaseUri, String consentId)
+            throws UnsupportedEncodingException, OpenBankingException {
+
+        HttpPost httpPost = new HttpPost(consentRevocationEndpoint);
+
+        JSONObject jwtPayload = generateJWTPayload(dataHolderId, recipientBaseUri);
+
+        httpPost.setHeader(HTTPConstants.CONTENT_TYPE, HTTPConstants.MEDIA_TYPE_X_WWW_FORM);
+        httpPost.setHeader(HTTPConstants.HEADER_AUTHORIZATION,
+                "Bearer " + generateJWT(jwtPayload.toString(), SignatureAlgorithm.PS256));
+        List<NameValuePair> params = new ArrayList<>();
+        params.add(new BasicNameValuePair(CDSConsentExtensionConstants.CDR_ARRANGEMENT_ID, consentId));
+        httpPost.setEntity(new UrlEncodedFormEntity(params));
+
+        return httpPost;
+    }
+
+    /**
+     * Method to generate http post request
+     *
+     *@param dataHolderId data holder id
+     * @param recipientBaseUri recipient base uri
+     *
+     * @return JSONObject jwt payload
+     */
+    protected JSONObject generateJWTPayload(String dataHolderId, String recipientBaseUri) {
+
+        long currentTime = System.currentTimeMillis();
+
+        //Adding registered claims [https://tools.ietf.org/html/rfc7519]
+        JSONObject jwtPayload = new JSONObject();
+        jwtPayload.put(CommonConstants.ISSURE_CLAIM, dataHolderId);
+        jwtPayload.put(CommonConstants.SUBJECT_CLAIM, dataHolderId);
+        jwtPayload.put(CommonConstants.AUDIENCE_CLAIM, recipientBaseUri);
+        jwtPayload.put(CommonConstants.IAT_CLAIM, getIatFromCurrentTime(currentTime));
+        jwtPayload.put(CommonConstants.EXP_CLAIM, getExpFromCurrentTime(currentTime));
+        jwtPayload.put(CommonConstants.JTI_CLAIM, currentTime);
+
+        return jwtPayload;
+    }
+
+
 }

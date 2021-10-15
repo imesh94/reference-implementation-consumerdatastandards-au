@@ -228,6 +228,11 @@
                 <artifactId>com.wso2.openbanking.cds.common</artifactId>
                 <version>${project.version}</version>
             </dependency>
+            <dependency>
+                <groupId>com.wso2.openbanking</groupId>
+                <artifactId>com.wso2.openbanking.cds.identity</artifactId>
+                <version>${project.version}</version>
+            </dependency>
             <!--General dependencies-->
             <dependency>
                 <groupId>org.wso2.carbon.apimgt</groupId>
