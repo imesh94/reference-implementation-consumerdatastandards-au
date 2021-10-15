@@ -48,47 +48,49 @@ public class CDSDataClusterRetrievalStep implements ConsentRetrievalStep {
     @Override
     public void execute(ConsentData consentData, JSONObject jsonObject) throws ConsentException {
 
-        if (!consentData.getMetaDataMap().containsKey(CDSConsentExtensionConstants.PERMISSIONS)) {
-            log.error("Error: Scopes are not found in consent data.");
-            return;
-        }
-        JSONArray dataCluster = new JSONArray();
-        JSONArray scopes = new JSONArray();
-        scopes.addAll((ArrayList) consentData.getMetaDataMap().get(CDSConsentExtensionConstants.PERMISSIONS));
-        String customerType = getCustomerType(consentData);
+        if (consentData.isRegulatory()) {
+            if (!consentData.getMetaDataMap().containsKey(CDSConsentExtensionConstants.PERMISSIONS)) {
+                log.error("Error: Scopes are not found in consent data.");
+                return;
+            }
+            JSONArray dataCluster = new JSONArray();
+            JSONArray scopes = new JSONArray();
+            scopes.addAll((ArrayList) consentData.getMetaDataMap().get(CDSConsentExtensionConstants.PERMISSIONS));
+            String customerType = getCustomerType(consentData);
 
-        for (Object scopeEnum: scopes) {
-            JSONObject dataClusterItem = new JSONObject();
-            String scope = scopeEnum.toString();
-            if (CDSConsentExtensionConstants.COMMON_CUSTOMER_BASIC_READ_SCOPE.equalsIgnoreCase(scope) &&
-                    scopes.contains(CDSConsentExtensionConstants.COMMON_CUSTOMER_DETAIL_READ_SCOPE)) {
-                continue;
-            } else if (CDSConsentExtensionConstants.COMMON_ACCOUNTS_BASIC_READ_SCOPE.equalsIgnoreCase(scope) &&
-                    scopes.contains(CDSConsentExtensionConstants.COMMON_ACCOUNTS_DETAIL_READ_SCOPE)) {
-                continue;
+            for (Object scopeEnum: scopes) {
+                JSONObject dataClusterItem = new JSONObject();
+                String scope = scopeEnum.toString();
+                if (CDSConsentExtensionConstants.COMMON_CUSTOMER_BASIC_READ_SCOPE.equalsIgnoreCase(scope) &&
+                        scopes.contains(CDSConsentExtensionConstants.COMMON_CUSTOMER_DETAIL_READ_SCOPE)) {
+                    continue;
+                } else if (CDSConsentExtensionConstants.COMMON_ACCOUNTS_BASIC_READ_SCOPE.equalsIgnoreCase(scope) &&
+                        scopes.contains(CDSConsentExtensionConstants.COMMON_ACCOUNTS_DETAIL_READ_SCOPE)) {
+                    continue;
+                }
+                Map<String, List<String>> cluster;
+                if (scope.contains(CDSConsentExtensionConstants.COMMON_SUBSTRING) &&
+                        CDSConsentExtensionConstants.ORGANISATION.equalsIgnoreCase(customerType)) {
+                    cluster = CDSConsentExtensionConstants.BUSINESS_CDS_DATA_CLUSTER.get(scope);
+                } else if (scope.contains(CDSConsentExtensionConstants.COMMON_SUBSTRING)) {
+                    cluster = CDSConsentExtensionConstants.INDIVIDUAL_CDS_DATA_CLUSTER.get(scope);
+                } else {
+                    cluster = CDSConsentExtensionConstants.CDS_DATA_CLUSTER.get(scope);
+                }
+                if (cluster == null) {
+                    log.warn("No data found for scope: " + scope + " requested by " + consentData.getClientId());
+                    continue;
+                }
+                for (Map.Entry<String, List<String>> entry : cluster.entrySet()) {
+                    dataClusterItem.put(CDSConsentExtensionConstants.TITLE, entry.getKey());
+                    JSONArray requestedData = new JSONArray();
+                    requestedData.addAll(entry.getValue());
+                    dataClusterItem.put(CDSConsentExtensionConstants.DATA, requestedData);
+                }
+                dataCluster.add(dataClusterItem);
             }
-            Map<String, List<String>> cluster;
-            if (scope.contains(CDSConsentExtensionConstants.COMMON_SUBSTRING) &&
-                    CDSConsentExtensionConstants.ORGANISATION.equalsIgnoreCase(customerType)) {
-                cluster = CDSConsentExtensionConstants.BUSINESS_CDS_DATA_CLUSTER.get(scope);
-            } else if (scope.contains(CDSConsentExtensionConstants.COMMON_SUBSTRING)) {
-                cluster = CDSConsentExtensionConstants.INDIVIDUAL_CDS_DATA_CLUSTER.get(scope);
-            } else {
-                cluster = CDSConsentExtensionConstants.CDS_DATA_CLUSTER.get(scope);
-            }
-            if (cluster == null) {
-                log.warn("No data found for scope: " + scope + " requested by " + consentData.getClientId());
-                continue;
-            }
-            for (Map.Entry<String, List<String>> entry : cluster.entrySet()) {
-                dataClusterItem.put(CDSConsentExtensionConstants.TITLE, entry.getKey());
-                JSONArray requestedData = new JSONArray();
-                requestedData.addAll(entry.getValue());
-                dataClusterItem.put(CDSConsentExtensionConstants.DATA, requestedData);
-            }
-            dataCluster.add(dataClusterItem);
+            jsonObject.put(CDSConsentExtensionConstants.DATA_REQUESTED, dataCluster);
         }
-        jsonObject.put(CDSConsentExtensionConstants.DATA_REQUESTED, dataCluster);
     }
 
     private static String getCustomerType(ConsentData consentData) {

@@ -28,6 +28,20 @@ public class CommonConstants {
     // Http related constants
     public static final String POST_METHOD = "POST";
 
+    // JWT common claims
+    public static final String ISSURE_CLAIM = "iss";
+    public static final String SUBJECT_CLAIM = "sub";
+    public static final String AUDIENCE_CLAIM = "aud";
+    public static final String IAT_CLAIM = "iat";
+    public static final String EXP_CLAIM = "exp";
+    public static final String JTI_CLAIM = "jti";
+
+    // Server configuration constants
+    public static final String KEYSTORE_LOCATION = "Security.InternalKeyStore.Location";
+    public static final String KEYSTORE_PASSWORD = "Security.InternalKeyStore.Password";
+    public static final String KEYSTORE_KEY_ALIAS = "Security.InternalKeyStore.KeyAlias";
+    public static final String KEYSTORE_KEY_PASSWORD = "Security.InternalKeyStore.KeyPassword";
+
     // metadata config constants
     public static final String METADATA_CACHE = "MetaDataCache";
     public static final String METADATA_CACHE_ENABLED = METADATA_CACHE + ".EnableMetaDataCache";

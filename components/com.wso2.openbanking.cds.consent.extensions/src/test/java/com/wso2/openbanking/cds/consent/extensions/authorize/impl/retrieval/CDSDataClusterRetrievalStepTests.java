@@ -17,7 +17,6 @@ import com.wso2.openbanking.accelerator.identity.util.HTTPClientUtils;
 import com.wso2.openbanking.cds.common.config.OpenBankingCDSConfigParser;
 import com.wso2.openbanking.cds.consent.extensions.common.CDSConsentExtensionConstants;
 import com.wso2.openbanking.cds.consent.extensions.util.CDSConsentAuthorizeTestConstants;
-import graphql.Assert;
 import net.minidev.json.JSONObject;
 import org.apache.commons.io.FileUtils;
 import org.apache.http.HttpEntity;
@@ -31,6 +30,7 @@ import org.mockito.Mockito;
 import org.powermock.api.mockito.PowerMockito;
 import org.powermock.core.classloader.annotations.PrepareForTest;
 import org.powermock.modules.testng.PowerMockTestCase;
+import org.testng.Assert;
 import org.testng.annotations.BeforeClass;
 import org.testng.annotations.Test;
 
@@ -109,6 +109,7 @@ public class CDSDataClusterRetrievalStepTests extends PowerMockTestCase {
         JSONObject jsonObject = new JSONObject();
         doReturn(consentDataMap).when(consentDataMock).getMetaDataMap();
         doReturn("admin@wso2.com@carbon.super").when(consentDataMock).getUserId();
+        when(consentDataMock.isRegulatory()).thenReturn(true);
         cdsDataClusterRetrievalStep.execute(consentDataMock, jsonObject);
 
         Assert.assertNotNull(jsonObject.get("data_requested"));
