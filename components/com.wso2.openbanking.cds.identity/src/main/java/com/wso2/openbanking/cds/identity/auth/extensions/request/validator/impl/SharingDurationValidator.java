@@ -14,7 +14,7 @@ package com.wso2.openbanking.cds.identity.auth.extensions.request.validator.impl
 import com.wso2.openbanking.cds.identity.auth.extensions.request.validator.annotation.ValidateSharingDuration;
 import com.wso2.openbanking.cds.identity.auth.extensions.request.validator.model.CDSRequestObject;
 import net.minidev.json.JSONObject;
-import org.apache.commons.lang.StringUtils;
+import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 

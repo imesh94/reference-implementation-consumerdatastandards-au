@@ -48,79 +48,81 @@ public class CDSConsentRetrievalStep implements ConsentRetrievalStep {
     @Override
     public void execute(ConsentData consentData, JSONObject jsonObject) throws ConsentException {
 
-        // validating meta data statuses
-        if (StringUtils.isNotBlank(consentData.getClientId())) {
-            if (OpenBankingCDSConfigParser.getInstance().isMetadataCacheEnabled() &&
-                    !MetadataService.shouldFacilitateConsentAuthorisation(consentData.getClientId())) {
-                log.error("Cannot facilitate consent authorisation. Metadata cache validation failed for clientId: " +
-                        consentData.getClientId());
-                throw new ConsentException(ResponseStatus.FORBIDDEN,
-                        ErrorConstants.AUErrorEnum.INVALID_ADR_STATUS.getDetail());
+        if (consentData.isRegulatory()) {
+            // validating meta data statuses
+            if (StringUtils.isNotBlank(consentData.getClientId())) {
+                if (OpenBankingCDSConfigParser.getInstance().isMetadataCacheEnabled() &&
+                        !MetadataService.shouldFacilitateConsentAuthorisation(consentData.getClientId())) {
+                    log.error("Cannot facilitate consent authorisation. Metadata cache validation failed for clientId: " +
+                            consentData.getClientId());
+                    throw new ConsentException(ResponseStatus.FORBIDDEN,
+                            ErrorConstants.AUErrorEnum.INVALID_ADR_STATUS.getDetail());
+                }
+            } else {
+                log.error("Error occurred while building service provider full name. Client-id is not found in " +
+                        "consent data.");
+                throw new ConsentException(ResponseStatus.INTERNAL_SERVER_ERROR,
+                        "Error occurred while building service provider full name. Client-id not found.");
             }
-        } else {
-            log.error("Error occurred while building service provider full name. Client-id is not found in " +
-                    "consent data.");
-            throw new ConsentException(ResponseStatus.INTERNAL_SERVER_ERROR,
-                    "Error occurred while building service provider full name. Client-id not found.");
-        }
 
-        String requestObject = CDSDataRetrievalUtil.extractRequestObject(consentData.getSpQueryParams());
-        Map<String, Object> requiredData = extractRequiredDataFromRequestObject(requestObject);
+            String requestObject = CDSDataRetrievalUtil.extractRequestObject(consentData.getSpQueryParams());
+            Map<String, Object> requiredData = extractRequiredDataFromRequestObject(requestObject);
 
-        JSONArray permissions = new JSONArray();
-        permissions.addAll(CDSDataRetrievalUtil.getPermissionList(consentData.getScopeString()));
-        JSONArray consentDataJSON = new JSONArray();
+            JSONArray permissions = new JSONArray();
+            permissions.addAll(CDSDataRetrievalUtil.getPermissionList(consentData.getScopeString()));
+            JSONArray consentDataJSON = new JSONArray();
 
-        JSONObject jsonElementPermissions = new JSONObject();
-        jsonElementPermissions.appendField(CDSConsentExtensionConstants.TITLE,
-                CDSConsentExtensionConstants.PERMISSION_TITLE);
-        jsonElementPermissions.appendField(CDSConsentExtensionConstants.DATA, permissions);
+            JSONObject jsonElementPermissions = new JSONObject();
+            jsonElementPermissions.appendField(CDSConsentExtensionConstants.TITLE,
+                    CDSConsentExtensionConstants.PERMISSION_TITLE);
+            jsonElementPermissions.appendField(CDSConsentExtensionConstants.DATA, permissions);
 
-        consentDataJSON.add(jsonElementPermissions);
-        String expiry =  requiredData.get(CDSConsentExtensionConstants.EXPIRATION_DATE_TIME).toString();
-        JSONArray expiryArray = new JSONArray();
-        expiryArray.add(expiry);
+            consentDataJSON.add(jsonElementPermissions);
+            String expiry =  requiredData.get(CDSConsentExtensionConstants.EXPIRATION_DATE_TIME).toString();
+            JSONArray expiryArray = new JSONArray();
+            expiryArray.add(expiry);
 
-        JSONObject jsonElementExpiry = new JSONObject();
-        jsonElementExpiry.appendField(CDSConsentExtensionConstants.TITLE,
-                CDSConsentExtensionConstants.EXPIRATION_DATE_TITLE);
-        jsonElementExpiry.appendField(CDSConsentExtensionConstants.DATA, expiryArray);
+            JSONObject jsonElementExpiry = new JSONObject();
+            jsonElementExpiry.appendField(CDSConsentExtensionConstants.TITLE,
+                    CDSConsentExtensionConstants.EXPIRATION_DATE_TITLE);
+            jsonElementExpiry.appendField(CDSConsentExtensionConstants.DATA, expiryArray);
 
-        consentDataJSON.add(jsonElementExpiry);
+            consentDataJSON.add(jsonElementExpiry);
 
-        jsonObject.appendField(CDSConsentExtensionConstants.CONSENT_DATA, consentDataJSON);
-        consentData.addData(CDSConsentExtensionConstants.PERMISSIONS,
-                CDSDataRetrievalUtil.getPermissionList(consentData.getScopeString()));
-        consentData.addData(CDSConsentExtensionConstants.EXPIRATION_DATE_TIME,
-                requiredData.get(CDSConsentExtensionConstants.EXPIRATION_DATE_TIME));
-        consentData.addData(CDSConsentExtensionConstants.SHARING_DURATION_VALUE,
-                requiredData.get(CDSConsentExtensionConstants.SHARING_DURATION_VALUE));
-        consentData.addData(CDSConsentExtensionConstants.CDR_ARRANGEMENT_ID,
-                requiredData.get(CDSConsentExtensionConstants.CDR_ARRANGEMENT_ID));
+            jsonObject.appendField(CDSConsentExtensionConstants.CONSENT_DATA, consentDataJSON);
+            consentData.addData(CDSConsentExtensionConstants.PERMISSIONS,
+                    CDSDataRetrievalUtil.getPermissionList(consentData.getScopeString()));
+            consentData.addData(CDSConsentExtensionConstants.EXPIRATION_DATE_TIME,
+                    requiredData.get(CDSConsentExtensionConstants.EXPIRATION_DATE_TIME));
+            consentData.addData(CDSConsentExtensionConstants.SHARING_DURATION_VALUE,
+                    requiredData.get(CDSConsentExtensionConstants.SHARING_DURATION_VALUE));
+            consentData.addData(CDSConsentExtensionConstants.CDR_ARRANGEMENT_ID,
+                    requiredData.get(CDSConsentExtensionConstants.CDR_ARRANGEMENT_ID));
 
-        // consent type is hard coded since CDS only support accounts type for the moment
-        // scopes will be used to determine consent type if any other types required in future
-        consentData.setType(CDSConsentExtensionConstants.CDR_ACCOUNTS);
+            // consent type is hard coded since CDS only support accounts type for the moment
+            // scopes will be used to determine consent type if any other types required in future
+            consentData.setType(CDSConsentExtensionConstants.CDR_ACCOUNTS);
 
-        // appending redirect URL
-        jsonObject.appendField(CDSConsentExtensionConstants.REDIRECT_URL, CDSDataRetrievalUtil
-                .getRedirectURL(consentData.getSpQueryParams()));
+            // appending redirect URL
+            jsonObject.appendField(CDSConsentExtensionConstants.REDIRECT_URL, CDSDataRetrievalUtil
+                    .getRedirectURL(consentData.getSpQueryParams()));
 
-        // appending openid_scopes to be retrieved in authentication webapp
-        jsonObject.appendField(CDSConsentExtensionConstants.OPENID_SCOPES, permissions);
+            // appending openid_scopes to be retrieved in authentication webapp
+            jsonObject.appendField(CDSConsentExtensionConstants.OPENID_SCOPES, permissions);
 
-        // append consent expiry date
-        jsonObject.appendField(CDSConsentExtensionConstants.CONSENT_EXPIRY, expiry);
+            // append consent expiry date
+            jsonObject.appendField(CDSConsentExtensionConstants.CONSENT_EXPIRY, expiry);
 
-        // append service provider full name
-        try {
-            jsonObject.appendField(CDSConsentExtensionConstants.SP_FULL_NAME,
-                    CDSDataRetrievalUtil.getServiceProviderFullName(consentData.getClientId()));
-        } catch (OpenBankingException e) {
-            log.error(String.format("Error occurred while building service provider full name. %s",
-                    e.getMessage()));
-            throw new ConsentException(ResponseStatus.INTERNAL_SERVER_ERROR,
-                    "Error occurred while building service provider full name");
+            // append service provider full name
+            try {
+                jsonObject.appendField(CDSConsentExtensionConstants.SP_FULL_NAME,
+                        CDSDataRetrievalUtil.getServiceProviderFullName(consentData.getClientId()));
+            } catch (OpenBankingException e) {
+                log.error(String.format("Error occurred while building service provider full name. %s",
+                        e.getMessage()));
+                throw new ConsentException(ResponseStatus.INTERNAL_SERVER_ERROR,
+                            "Error occurred while building service provider full name");
+            }
         }
     }
 

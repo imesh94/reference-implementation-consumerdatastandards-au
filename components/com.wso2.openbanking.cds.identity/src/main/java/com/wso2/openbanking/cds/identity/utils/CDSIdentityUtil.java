@@ -13,13 +13,23 @@
 package com.wso2.openbanking.cds.identity.utils;
 
 import com.wso2.openbanking.accelerator.common.exception.ConsentManagementException;
+import com.wso2.openbanking.accelerator.common.exception.OpenBankingException;
 import com.wso2.openbanking.accelerator.common.util.Generated;
 import com.wso2.openbanking.accelerator.consent.mgt.service.impl.ConsentCoreServiceImpl;
+import com.wso2.openbanking.accelerator.identity.util.HTTPClientUtils;
+import com.wso2.openbanking.cds.common.utils.CommonConstants;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.wso2.carbon.base.ServerConfiguration;
 import org.wso2.carbon.identity.oauth2.authz.OAuthAuthzReqMessageContext;
 
+
+import java.security.Key;
+import java.security.KeyStore;
+import java.security.KeyStoreException;
+import java.security.NoSuchAlgorithmException;
+import java.security.UnrecoverableKeyException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.LinkedList;
@@ -37,6 +47,7 @@ public class CDSIdentityUtil {
     private static final String SHARING_DURATION_VALUE = "sharing_duration_value";
     private static final String ZERO_SHARING_DURATION = "0";
     private static final String OB_CONSENT_ID_PREFIX = "OB_CONSENT_ID_";
+    private static volatile Key key;
 
     /**
      * method to retrieve the commonAuthId from the oauth message context.
@@ -113,5 +124,35 @@ public class CDSIdentityUtil {
             return StringUtils.EMPTY;
         }
         return consentId;
+    }
+
+    /**
+     * Method to obtain signing key
+     *
+     * @return Key as an Object
+     */
+    public static Key getJWTSigningKey() throws OpenBankingException {
+
+        if (key == null) {
+            synchronized (CDSIdentityUtil.class) {
+                if (key == null) {
+                    KeyStore keyStore = HTTPClientUtils.loadKeyStore(ServerConfiguration.getInstance()
+                                    .getFirstProperty(CommonConstants.KEYSTORE_LOCATION),
+                            ServerConfiguration.getInstance()
+                                    .getFirstProperty(CommonConstants.KEYSTORE_PASSWORD));
+                    try {
+                        key = keyStore.getKey(ServerConfiguration.getInstance()
+                                        .getFirstProperty(CommonConstants.KEYSTORE_KEY_ALIAS),
+                                ServerConfiguration.getInstance()
+                                        .getFirstProperty(CommonConstants.KEYSTORE_KEY_PASSWORD)
+                                        .toCharArray());
+                    } catch (KeyStoreException | NoSuchAlgorithmException | UnrecoverableKeyException e) {
+                        log.error("Error occurred while retrieving private key from keystore ", e);
+                        throw new OpenBankingException("Error occurred while retrieving private key from keystore ", e);
+                    }
+                }
+            }
+        }
+        return key;
     }
 }

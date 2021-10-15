@@ -33,25 +33,32 @@
     <build>
         <plugins>
             <plugin>
+                <artifactId>maven-clean-plugin</artifactId>
+                <version>3.1.0</version>
+                <configuration>
+                    <filesets>
+                        <fileset>
+                            <directory>${project.basedir}/carbon-home/repository/components/lib</directory>
+                            <excludes>
+                                <exclude>**/jjwt-0.9.1.jar</exclude>
+                            </excludes>
+                        </fileset>
+                    </filesets>
+                </configuration>
+                <executions>
+                    <execution>
+                        <id>auto-clean</id>
+                        <phase>initialize</phase>
+                        <goals>
+                            <goal>clean</goal>
+                        </goals>
+                    </execution>
+                </executions>
+            </plugin>
+            <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-antrun-plugin</artifactId>
                 <executions>
-                    <execution>
-                        <phase>initialize</phase>
-                        <goals>
-                            <goal>run</goal>
-                        </goals>
-                        <configuration>
-                            <tasks>
-                                <delete>
-                                    <fileset dir="${project.basedir}/carbon-home/repository/components/lib">
-                                        <filename
-                                                regex="(com.wso2.openbanking).*-(\d.*?)\.jar$"/>
-                                    </fileset>
-                                </delete>
-                            </tasks>
-                        </configuration>
-                    </execution>
                     <execution>
                         <id>create-solution</id>
                         <phase>package</phase>
