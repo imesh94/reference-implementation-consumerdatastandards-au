@@ -72,6 +72,7 @@ public class CDSConsentRetrievalStepTests extends PowerMockTestCase {
         when(consentDataMock.getClientId()).thenReturn(clientId);
         PowerMockito.stub(PowerMockito.method(CDSDataRetrievalUtil.class, "getServiceProviderFullName"))
                 .toReturn(spFullName);
+        when(consentDataMock.isRegulatory()).thenReturn(true);
         cdsConsentRetrievalStep.execute(consentDataMock, jsonObject);
         Assert.assertTrue(!jsonObject.isEmpty());
     }
@@ -91,6 +92,7 @@ public class CDSConsentRetrievalStepTests extends PowerMockTestCase {
         when(consentDataMock.getClientId()).thenReturn(clientId);
         PowerMockito.stub(PowerMockito.method(CDSDataRetrievalUtil.class, "getServiceProviderFullName"))
                 .toReturn(spFullName);
+        when(consentDataMock.isRegulatory()).thenReturn(true);
         cdsConsentRetrievalStep.execute(consentDataMock, jsonObject);
         Assert.assertTrue(!jsonObject.isEmpty());
     }
@@ -110,6 +112,7 @@ public class CDSConsentRetrievalStepTests extends PowerMockTestCase {
         when(consentDataMock.getClientId()).thenReturn(clientId);
         PowerMockito.stub(PowerMockito.method(CDSDataRetrievalUtil.class, "getServiceProviderFullName"))
                 .toReturn(spFullName);
+        when(consentDataMock.isRegulatory()).thenReturn(true);
         cdsConsentRetrievalStep.execute(consentDataMock, jsonObject);
         Assert.assertTrue(!jsonObject.isEmpty());
     }
@@ -143,6 +146,7 @@ public class CDSConsentRetrievalStepTests extends PowerMockTestCase {
 
         sessionDataCacheEntry.setoAuth2Parameters(oAuth2Parameters);
 
+        when(consentDataMock.isRegulatory()).thenReturn(true);
         cdsConsentRetrievalStep.execute(consentDataMock, jsonObject);
         Assert.assertTrue(!jsonObject.isEmpty());
     }
@@ -179,6 +183,7 @@ public class CDSConsentRetrievalStepTests extends PowerMockTestCase {
 
         sessionDataCacheEntry.setoAuth2Parameters(oAuth2Parameters);
 
+        when(consentDataMock.isRegulatory()).thenReturn(true);
         cdsConsentRetrievalStep.execute(consentDataMock, jsonObject);
         Assert.assertTrue(!jsonObject.isEmpty());
     }
@@ -192,6 +197,7 @@ public class CDSConsentRetrievalStepTests extends PowerMockTestCase {
         String sampleQueryParams = redirectUri + request;
         doReturn(sampleQueryParams).when(consentDataMock).getSpQueryParams();
         doReturn(scopeString).when(consentDataMock).getScopeString();
+        when(consentDataMock.isRegulatory()).thenReturn(true);
         cdsConsentRetrievalStep.execute(consentDataMock, jsonObject);
     }
 }

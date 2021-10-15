@@ -40,33 +40,36 @@ public class CDSAccountListRetrievalStep implements ConsentRetrievalStep {
     @Override
     public void execute(ConsentData consentData, JSONObject jsonObject) throws ConsentException {
 
-        String accountsURL = (String) OpenBankingCDSConfigParser.getInstance().getConfiguration()
-                .get(CDSConsentExtensionConstants.SHARABLE_ACCOUNTS_ENDPOINT);
+        if (consentData.isRegulatory()) {
+            String accountsURL = (String) OpenBankingCDSConfigParser.getInstance().getConfiguration()
+                    .get(CDSConsentExtensionConstants.SHARABLE_ACCOUNTS_ENDPOINT);
 
-        if (StringUtils.isNotBlank(accountsURL)) {
+            if (StringUtils.isNotBlank(accountsURL)) {
 
-            Map<String, String> parameters = new HashMap<>();
-            parameters.put(USER_ID_KEY_NAME, consentData.getUserId());
-            String accountData = CDSDataRetrievalUtil.getAccountsFromEndpoint(accountsURL, parameters, new HashMap<>());
+                Map<String, String> parameters = new HashMap<>();
+                parameters.put(USER_ID_KEY_NAME, consentData.getUserId());
+                String accountData = CDSDataRetrievalUtil.getAccountsFromEndpoint(accountsURL, parameters,
+                        new HashMap<>());
 
-            if (StringUtils.isBlank(accountData)) {
-                log.error("Unable to load accounts data for the user: " + consentData.getUserId());
+                if (StringUtils.isBlank(accountData)) {
+                    log.error("Unable to load accounts data for the user: " + consentData.getUserId());
+                    throw new ConsentException(ResponseStatus.INTERNAL_SERVER_ERROR,
+                            "Exception occurred while getting accounts data");
+                }
+                JSONParser parser = new JSONParser(JSONParser.MODE_PERMISSIVE);
+                try {
+                    JSONObject jsonAccountData = (JSONObject) parser.parse(accountData);
+                    JSONArray accountsJSON = (JSONArray) jsonAccountData.get(CDSConsentExtensionConstants.DATA);
+                    jsonObject.appendField(CDSConsentExtensionConstants.ACCOUNTS, accountsJSON);
+                } catch (ParseException e) {
+                    throw new ConsentException(ResponseStatus.INTERNAL_SERVER_ERROR,
+                            "Exception occurred while parsing accounts data");
+                }
+            } else {
+                log.error("Sharable accounts endpoint is not configured properly");
                 throw new ConsentException(ResponseStatus.INTERNAL_SERVER_ERROR,
-                        "Exception occurred while getting accounts data");
+                        "Sharable accounts endpoint is not configured properly");
             }
-            JSONParser parser = new JSONParser(JSONParser.MODE_PERMISSIVE);
-            try {
-                JSONObject jsonAccountData = (JSONObject) parser.parse(accountData);
-                JSONArray accountsJSON = (JSONArray) jsonAccountData.get(CDSConsentExtensionConstants.DATA);
-                jsonObject.appendField(CDSConsentExtensionConstants.ACCOUNTS, accountsJSON);
-            } catch (ParseException e) {
-                throw new ConsentException(ResponseStatus.INTERNAL_SERVER_ERROR,
-                        "Exception occurred while parsing accounts data");
-            }
-        } else {
-            log.error("Sharable accounts endpoint is not configured properly");
-            throw new ConsentException(ResponseStatus.INTERNAL_SERVER_ERROR,
-                    "Sharable accounts endpoint is not configured properly");
         }
     }
 }

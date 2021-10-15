@@ -23,6 +23,7 @@
             <class name="com.wso2.openbanking.cds.consent.extensions.validate.CDSConsentValidatorTest"/>
             <class name="com.wso2.openbanking.cds.consent.extensions.authservlet.impl.OBCDSAuthServletImplTests"/>
             <class name="com.wso2.openbanking.cds.consent.extensions.authorize.utils.CDSDataRetrievalUtilTest"/>
+            <class name="com.wso2.openbanking.cds.consent.extensions.event.executor.CDSConsentEventExecutorTests"/>
         </classes>
     </test>
 </suite>
