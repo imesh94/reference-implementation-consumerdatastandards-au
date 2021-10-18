@@ -52,20 +52,20 @@ public class MetadataServiceTest extends PowerMockTestCase {
 
     @Test
     public void testShouldDiscloseCDRData() {
-        Assert.assertTrue(MetadataService.shouldDiscloseCDRData(CLIENT_ID_ACTIVE_ACTIVE));
-        Assert.assertFalse(MetadataService.shouldDiscloseCDRData(CLIENT_ID_ACTIVE_INACTIVE));
+        Assert.assertTrue(MetadataService.shouldDiscloseCDRData(CLIENT_ID_ACTIVE_ACTIVE).isValid());
+        Assert.assertFalse(MetadataService.shouldDiscloseCDRData(CLIENT_ID_ACTIVE_INACTIVE).isValid());
     }
 
     @Test
     public void testShouldFacilitateConsentAuthorisation() {
-        Assert.assertTrue(MetadataService.shouldFacilitateConsentAuthorisation(CLIENT_ID_ACTIVE_ACTIVE));
-        Assert.assertFalse(MetadataService.shouldFacilitateConsentAuthorisation(CLIENT_ID_ACTIVE_INACTIVE));
+        Assert.assertTrue(MetadataService.shouldFacilitateConsentAuthorisation(CLIENT_ID_ACTIVE_ACTIVE).isValid());
+        Assert.assertFalse(MetadataService.shouldFacilitateConsentAuthorisation(CLIENT_ID_ACTIVE_INACTIVE).isValid());
     }
 
     @Test
     public void testShouldFacilitateConsentWithdrawal() {
-        Assert.assertTrue(MetadataService.shouldFacilitateConsentWithdrawal(CLIENT_ID_ACTIVE_ACTIVE));
-        Assert.assertFalse(MetadataService.shouldFacilitateConsentWithdrawal(CLIENT_ID_ACTIVE_INACTIVE));
-        Assert.assertFalse(MetadataService.shouldFacilitateConsentWithdrawal(CLIENT_ID_SUSPENDED_ACTIVE));
+        Assert.assertTrue(MetadataService.shouldFacilitateConsentWithdrawal(CLIENT_ID_ACTIVE_ACTIVE).isValid());
+        Assert.assertFalse(MetadataService.shouldFacilitateConsentWithdrawal(CLIENT_ID_ACTIVE_INACTIVE).isValid());
+        Assert.assertFalse(MetadataService.shouldFacilitateConsentWithdrawal(CLIENT_ID_SUSPENDED_ACTIVE).isValid());
     }
 }

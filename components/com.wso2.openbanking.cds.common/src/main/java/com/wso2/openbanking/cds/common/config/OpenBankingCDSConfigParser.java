@@ -272,14 +272,14 @@ public class OpenBankingCDSConfigParser {
     /**
      * Check metadata cache is enabled from config
      *
-     * @return configured boolean value, default value is true
+     * @return configured boolean value, default value is false
      */
     public boolean isMetadataCacheEnabled() {
         Object config = getConfigElementFromKey(CommonConstants.METADATA_CACHE_ENABLED);
         if (config != null) {
             return Boolean.parseBoolean((String) config);
         } else {
-            return true;
+            return false;
         }
     }
 
