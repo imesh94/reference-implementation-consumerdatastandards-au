@@ -16,6 +16,7 @@ import com.wso2.openbanking.accelerator.consent.extensions.validate.model.Consen
 import com.wso2.openbanking.accelerator.consent.extensions.validate.model.ConsentValidationResult;
 import com.wso2.openbanking.accelerator.consent.mgt.dao.models.DetailedConsentResource;
 import com.wso2.openbanking.cds.common.config.OpenBankingCDSConfigParser;
+import com.wso2.openbanking.cds.common.metadata.domain.MetadataValidationResponse;
 import com.wso2.openbanking.cds.common.metadata.status.validator.service.MetadataService;
 import com.wso2.openbanking.cds.common.utils.ErrorConstants;
 import com.wso2.openbanking.cds.consent.extensions.common.CDSConsentExtensionConstants;
@@ -245,10 +246,11 @@ public class CDSConsentValidatorTest extends PowerMockTestCase {
         PowerMockito.mockStatic(OpenBankingCDSConfigParser.class);
         when(OpenBankingCDSConfigParser.getInstance()).thenReturn(openBankingCDSConfigParserMock);
         when(openBankingCDSConfigParserMock.getConfiguration()).thenReturn(configs);
-        when(openBankingCDSConfigParserMock.isMetadataCacheEnabled()).thenReturn(true);
+        when(openBankingCDSConfigParserMock.isMetadataCacheEnabled()).thenReturn(new MetadataValidationResponse(true));
 
         PowerMockito.mockStatic(MetadataService.class);
-        PowerMockito.when(MetadataService.shouldDiscloseCDRData(Mockito.anyString())).thenReturn(false);
+        PowerMockito.when(MetadataService.shouldDiscloseCDRData(Mockito.anyString()))
+                .thenReturn(new MetadataValidationResponse(ErrorConstants.AUErrorEnum.INVALID_ADR_STATUS.getDetail()));
 
         ConsentValidationResult consentValidationResult = new ConsentValidationResult();
         cdsConsentValidator.validate(consentValidateDataMock, consentValidationResult);
