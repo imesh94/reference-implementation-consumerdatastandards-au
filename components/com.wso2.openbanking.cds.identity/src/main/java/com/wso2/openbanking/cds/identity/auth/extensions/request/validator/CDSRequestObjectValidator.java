@@ -16,6 +16,9 @@ import com.wso2.openbanking.accelerator.common.validator.OpenBankingValidator;
 import com.wso2.openbanking.accelerator.identity.auth.extensions.request.validator.OBRequestObjectValidator;
 import com.wso2.openbanking.accelerator.identity.auth.extensions.request.validator.models.OBRequestObject;
 import com.wso2.openbanking.accelerator.identity.auth.extensions.request.validator.models.ValidationResponse;
+import com.wso2.openbanking.cds.common.config.OpenBankingCDSConfigParser;
+import com.wso2.openbanking.cds.common.metadata.domain.MetadataValidationResponse;
+import com.wso2.openbanking.cds.common.metadata.status.validator.service.MetadataService;
 import com.wso2.openbanking.cds.identity.auth.extensions.request.validator.model.CDSRequestObject;
 import net.minidev.json.JSONObject;
 import org.apache.commons.lang.StringUtils;
@@ -44,6 +47,9 @@ public class CDSRequestObjectValidator extends OBRequestObjectValidator {
         if (superValidationResponse.isValid()) {
             CDSRequestObject cdsRequestObject = new CDSRequestObject(obRequestObject);
             String violation = validateScope(obRequestObject, dataMap);
+
+            violation = StringUtils.isEmpty(violation) ? validateMetadata(obRequestObject
+                    .getClaimValue("client_id")) : violation;
 
             violation = StringUtils.isEmpty(violation) ? OpenBankingValidator.getInstance()
                     .getFirstViolation(cdsRequestObject) : violation;
@@ -92,6 +98,18 @@ public class CDSRequestObjectValidator extends OBRequestObjectValidator {
             }
         } catch (ParseException | RequestObjectException e) {
              return e.getMessage();
+        }
+        return StringUtils.EMPTY;
+    }
+
+    private String validateMetadata(String clientId) {
+        if (OpenBankingCDSConfigParser.getInstance().isMetadataCacheEnabled() && StringUtils.isNotBlank(clientId)) {
+            MetadataValidationResponse metadataValidationResp =
+                    MetadataService.shouldFacilitateConsentAuthorisation(clientId);
+
+            if (!metadataValidationResp.isValid()) {
+                return metadataValidationResp.getErrorMessage();
+            }
         }
         return StringUtils.EMPTY;
     }
