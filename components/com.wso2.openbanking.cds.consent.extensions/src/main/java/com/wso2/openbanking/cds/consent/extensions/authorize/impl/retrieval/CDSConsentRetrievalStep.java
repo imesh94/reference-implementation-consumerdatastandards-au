@@ -16,9 +16,6 @@ import com.wso2.openbanking.accelerator.consent.extensions.authorize.model.Conse
 import com.wso2.openbanking.accelerator.consent.extensions.authorize.model.ConsentRetrievalStep;
 import com.wso2.openbanking.accelerator.consent.extensions.common.ConsentException;
 import com.wso2.openbanking.accelerator.consent.extensions.common.ResponseStatus;
-import com.wso2.openbanking.cds.common.config.OpenBankingCDSConfigParser;
-import com.wso2.openbanking.cds.common.metadata.status.validator.service.MetadataService;
-import com.wso2.openbanking.cds.common.utils.ErrorConstants;
 import com.wso2.openbanking.cds.consent.extensions.authorize.utils.CDSDataRetrievalUtil;
 import com.wso2.openbanking.cds.consent.extensions.common.CDSConsentExtensionConstants;
 import net.minidev.json.JSONArray;
@@ -49,22 +46,6 @@ public class CDSConsentRetrievalStep implements ConsentRetrievalStep {
     public void execute(ConsentData consentData, JSONObject jsonObject) throws ConsentException {
 
         if (consentData.isRegulatory()) {
-            // validating meta data statuses
-            if (StringUtils.isNotBlank(consentData.getClientId())) {
-                if (OpenBankingCDSConfigParser.getInstance().isMetadataCacheEnabled() &&
-                        !MetadataService.shouldFacilitateConsentAuthorisation(consentData.getClientId())) {
-                    log.error("Cannot facilitate consent authorisation. Metadata cache validation failed for clientId: " +
-                            consentData.getClientId());
-                    throw new ConsentException(ResponseStatus.FORBIDDEN,
-                            ErrorConstants.AUErrorEnum.INVALID_ADR_STATUS.getDetail());
-                }
-            } else {
-                log.error("Error occurred while building service provider full name. Client-id is not found in " +
-                        "consent data.");
-                throw new ConsentException(ResponseStatus.INTERNAL_SERVER_ERROR,
-                        "Error occurred while building service provider full name. Client-id not found.");
-            }
-
             String requestObject = CDSDataRetrievalUtil.extractRequestObject(consentData.getSpQueryParams());
             Map<String, Object> requiredData = extractRequiredDataFromRequestObject(requestObject);
 
@@ -114,14 +95,21 @@ public class CDSConsentRetrievalStep implements ConsentRetrievalStep {
             jsonObject.appendField(CDSConsentExtensionConstants.CONSENT_EXPIRY, expiry);
 
             // append service provider full name
-            try {
-                jsonObject.appendField(CDSConsentExtensionConstants.SP_FULL_NAME,
-                        CDSDataRetrievalUtil.getServiceProviderFullName(consentData.getClientId()));
-            } catch (OpenBankingException e) {
-                log.error(String.format("Error occurred while building service provider full name. %s",
-                        e.getMessage()));
-                throw new ConsentException(ResponseStatus.INTERNAL_SERVER_ERROR,
+            if (StringUtils.isNotBlank(consentData.getClientId())) {
+                try {
+                    jsonObject.appendField(CDSConsentExtensionConstants.SP_FULL_NAME,
+                            CDSDataRetrievalUtil.getServiceProviderFullName(consentData.getClientId()));
+                } catch (OpenBankingException e) {
+                    log.error(String.format("Error occurred while building service provider full name. %s",
+                            e.getMessage()));
+                    throw new ConsentException(ResponseStatus.INTERNAL_SERVER_ERROR,
                             "Error occurred while building service provider full name");
+                }
+            } else {
+                log.error("Error occurred while building service provider full name. Client-id is not found in " +
+                        "consent data.");
+                throw new ConsentException(ResponseStatus.INTERNAL_SERVER_ERROR,
+                        "Error occurred while building service provider full name. Client-id not found.");
             }
         }
     }
@@ -141,7 +129,7 @@ public class CDSConsentRetrievalStep implements ConsentRetrievalStep {
             // request object validation is carried out in request object validator
             String[] jwtTokenValues = requestObject.split("\\.");
             String requestObjectPayload = new String(Base64.getUrlDecoder().decode(jwtTokenValues[1]),
-                        StandardCharsets.UTF_8);
+                    StandardCharsets.UTF_8);
 
             Object payload = new JSONParser(JSONParser.MODE_PERMISSIVE).parse(requestObjectPayload);
             if (!(payload instanceof JSONObject)) {
