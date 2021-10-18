@@ -108,6 +108,8 @@ public class CDSRequestObjectValidator extends OBRequestObjectValidator {
                     MetadataService.shouldFacilitateConsentAuthorisation(clientId);
 
             if (!metadataValidationResp.isValid()) {
+                log.error("Metadata cache validation failed, cannot facilitate consent authorisation. Client ID " +
+                        clientId + ". Caused by, " + metadataValidationResp.getErrorMessage());
                 return metadataValidationResp.getErrorMessage();
             }
         }

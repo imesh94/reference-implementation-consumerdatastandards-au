@@ -18,6 +18,9 @@ import com.nimbusds.jwt.SignedJWT;
 import com.wso2.openbanking.accelerator.common.validator.OpenBankingValidator;
 import com.wso2.openbanking.accelerator.identity.auth.extensions.request.validator.models.OBRequestObject;
 import com.wso2.openbanking.accelerator.identity.auth.extensions.request.validator.models.ValidationResponse;
+import com.wso2.openbanking.cds.common.config.OpenBankingCDSConfigParser;
+import com.wso2.openbanking.cds.common.metadata.domain.MetadataValidationResponse;
+import com.wso2.openbanking.cds.common.metadata.status.validator.service.MetadataService;
 import com.wso2.openbanking.cds.identity.auth.extensions.request.validator.impl.SharingDurationValidator;
 import com.wso2.openbanking.cds.identity.auth.extensions.request.validator.model.CDSRequestObject;
 import com.wso2.openbanking.cds.identity.auth.extensions.request.validator.util.ReqObjectTestDataProvider;
@@ -36,7 +39,9 @@ import java.util.HashMap;
 import java.util.Map;
 
 import static org.mockito.Mockito.mock;
+import static org.powermock.api.mockito.PowerMockito.method;
 import static org.powermock.api.mockito.PowerMockito.mockStatic;
+import static org.powermock.api.mockito.PowerMockito.stub;
 import static org.powermock.api.mockito.PowerMockito.when;
 
 /**
@@ -63,6 +68,10 @@ public class RequestObjectValidatorTest extends PowerMockTestCase {
         mockStatic(OpenBankingValidator.class);
         when(OpenBankingValidator.getInstance()).thenReturn(openBankingValidatorMock);
         when(openBankingValidatorMock.getFirstViolation(Mockito.anyObject())).thenReturn("");
+
+        OpenBankingCDSConfigParser openBankingCDSConfigParserMock = mock(OpenBankingCDSConfigParser.class);
+        mockStatic(OpenBankingCDSConfigParser.class);
+        when(OpenBankingCDSConfigParser.getInstance()).thenReturn(openBankingCDSConfigParserMock);
 
         RequestObject requestObject = getObRequestObject(ReqObjectTestDataProvider.REQUEST_STRING);
         OBRequestObject obRequestObject = new OBRequestObject(requestObject);
@@ -93,6 +102,30 @@ public class RequestObjectValidatorTest extends PowerMockTestCase {
         SharingDurationValidator sharingDurationValidator = new SharingDurationValidator();
         boolean result = sharingDurationValidator.isValid(cdsRequestObject, null);
         Assert.assertTrue(result);
+    }
+
+    @Test
+    public void testValidateOBConstraintsWithInvalidMetadata() throws Exception {
+
+        OpenBankingValidator openBankingValidatorMock = mock(OpenBankingValidator.class);
+        mockStatic(OpenBankingValidator.class);
+        when(OpenBankingValidator.getInstance()).thenReturn(openBankingValidatorMock);
+        when(openBankingValidatorMock.getFirstViolation(Mockito.anyObject())).thenReturn("");
+
+        OpenBankingCDSConfigParser openBankingCDSConfigParserMock = mock(OpenBankingCDSConfigParser.class);
+        when(openBankingCDSConfigParserMock.isMetadataCacheEnabled()).thenReturn(true);
+
+        mockStatic(OpenBankingCDSConfigParser.class);
+        when(OpenBankingCDSConfigParser.getInstance()).thenReturn(openBankingCDSConfigParserMock);
+
+        stub(method(MetadataService.class, "shouldFacilitateConsentAuthorisation"))
+                .toReturn(new MetadataValidationResponse("test error - invalid ADR"));
+
+        RequestObject requestObject = getObRequestObject(ReqObjectTestDataProvider.REQUEST_STRING);
+        OBRequestObject<?> obRequestObject = new OBRequestObject<>(requestObject);
+        ValidationResponse response = cdsRequestObjectValidator.validateOBConstraints(obRequestObject, scopeData);
+
+        Assert.assertTrue(StringUtils.isNotBlank(response.getViolationMessage()));
     }
 
     private OBRequestObject<?> getObRequestObject(String request) throws ParseException, RequestObjectException {
