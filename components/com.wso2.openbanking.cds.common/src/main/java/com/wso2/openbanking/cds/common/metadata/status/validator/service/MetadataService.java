@@ -20,6 +20,7 @@ import com.wso2.openbanking.cds.common.metadata.periodical.updater.utils.DataRec
 import com.wso2.openbanking.cds.common.metadata.periodical.updater.utils.SoftwareProductStatusEnum;
 import com.wso2.openbanking.cds.common.metadata.status.validator.cache.MetadataCache;
 import com.wso2.openbanking.cds.common.metadata.status.validator.cache.MetadataCacheKey;
+import com.wso2.openbanking.cds.common.utils.ErrorConstants;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -32,11 +33,7 @@ import java.util.Map;
 public class MetadataService {
 
     private static final Log LOG = LogFactory.getLog(MetadataService.class);
-    private static final String ADR_STATUS_NOT_ACTIVE = "The ADR is not in an active state in the CDR Register";
-    private static final String SP_STATUS_NOT_ACTIVE =
-            "The ADR software product is not in an active state in the CDR Register";
-    private static final String ADR_STATUS_INVALID = "Invalid data recipient";
-    private static final String SP_STATUS_INVALID = "Invalid software product";
+    private static final String ERROR_MSG_FORMAT = "%s. Current status is %s";
 
     private MetadataService() {
     }
@@ -197,10 +194,12 @@ public class MetadataService {
                 // ADR status == ACTIVE && SP status == ACTIVE
                 return null;
             } else {
-                return SP_STATUS_NOT_ACTIVE;
+                return String.format(ERROR_MSG_FORMAT, ErrorConstants.AUErrorEnum.INVALID_PRODUCT_STATUS.getDetail(),
+                        softwareProductStatus);
             }
         } else {
-            return ADR_STATUS_NOT_ACTIVE;
+            return String.format(ERROR_MSG_FORMAT, ErrorConstants.AUErrorEnum.INVALID_ADR_STATUS.getDetail(),
+                    dataRecipientStatus);
         }
     }
 
@@ -217,10 +216,12 @@ public class MetadataService {
                 // ADR status == ACTIVE && SP status == INACTIVE
                 return null;
             } else {
-                return SP_STATUS_INVALID;
+                return String.format(ERROR_MSG_FORMAT, ErrorConstants.AUErrorEnum.INVALID_PRODUCT_STATUS.getDetail(),
+                        softwareProductStatus);
             }
         } else {
-            return ADR_STATUS_NOT_ACTIVE;
+            return String.format(ERROR_MSG_FORMAT, ErrorConstants.AUErrorEnum.INVALID_ADR_STATUS.getDetail(),
+                    dataRecipientStatus);
         }
     }
 
@@ -237,10 +238,12 @@ public class MetadataService {
                 // ADR status == SUSPENDED && SP status == INACTIVE
                 return null;
             } else {
-                return SP_STATUS_INVALID;
+                return String.format(ERROR_MSG_FORMAT, ErrorConstants.AUErrorEnum.INVALID_PRODUCT_STATUS.getDetail(),
+                        softwareProductStatus);
             }
         } else {
-            return ADR_STATUS_INVALID;
+            return String.format(ERROR_MSG_FORMAT, ErrorConstants.AUErrorEnum.INVALID_ADR_STATUS.getDetail(),
+                    dataRecipientStatus);
         }
     }
 }
