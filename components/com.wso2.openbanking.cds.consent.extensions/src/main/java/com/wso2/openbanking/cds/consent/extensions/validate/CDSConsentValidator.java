@@ -96,13 +96,15 @@ public class CDSConsentValidator implements ConsentValidator {
         }
 
         // validate metadata status
-        MetadataValidationResponse metadataValidationResp =
-                MetadataService.shouldDiscloseCDRData(consentValidateData.getClientId());
-        if (OpenBankingCDSConfigParser.getInstance().isMetadataCacheEnabled() && !metadataValidationResp.isValid()) {
-            consentValidationResult.setErrorMessage(metadataValidationResp.getErrorMessage());
-            consentValidationResult.setErrorCode(ErrorConstants.AUErrorEnum.INVALID_ADR_STATUS.getCode());
-            consentValidationResult.setHttpCode(ErrorConstants.AUErrorEnum.INVALID_ADR_STATUS.getHttpCode());
-            return;
+        if (OpenBankingCDSConfigParser.getInstance().isMetadataCacheEnabled()) {
+            MetadataValidationResponse metadataValidationResp =
+                    MetadataService.shouldDiscloseCDRData(consentValidateData.getClientId());
+            if (!metadataValidationResp.isValid()) {
+                consentValidationResult.setErrorMessage(metadataValidationResp.getErrorMessage());
+                consentValidationResult.setErrorCode(ErrorConstants.AUErrorEnum.INVALID_ADR_STATUS.getCode());
+                consentValidationResult.setHttpCode(ErrorConstants.AUErrorEnum.INVALID_ADR_STATUS.getHttpCode());
+                return;
+            }
         }
         consentValidationResult.setValid(true);
     }

@@ -246,7 +246,7 @@ public class CDSConsentValidatorTest extends PowerMockTestCase {
         PowerMockito.mockStatic(OpenBankingCDSConfigParser.class);
         when(OpenBankingCDSConfigParser.getInstance()).thenReturn(openBankingCDSConfigParserMock);
         when(openBankingCDSConfigParserMock.getConfiguration()).thenReturn(configs);
-        when(openBankingCDSConfigParserMock.isMetadataCacheEnabled()).thenReturn(new MetadataValidationResponse(true));
+        when(openBankingCDSConfigParserMock.isMetadataCacheEnabled()).thenReturn(true);
 
         PowerMockito.mockStatic(MetadataService.class);
         PowerMockito.when(MetadataService.shouldDiscloseCDRData(Mockito.anyString()))
