@@ -14,6 +14,7 @@
 package com.wso2.openbanking.cds.common.metadata.status.validator.service;
 
 import com.wso2.openbanking.accelerator.common.exception.OpenBankingException;
+import com.wso2.openbanking.cds.common.metadata.periodical.updater.constants.MetadataConstants;
 import com.wso2.openbanking.cds.common.metadata.status.validator.cache.MetadataCache;
 import com.wso2.openbanking.cds.common.metadata.status.validator.cache.MetadataCacheKey;
 import org.mockito.Mockito;
@@ -33,18 +34,36 @@ import java.util.HashMap;
 public class MetadataServiceTest extends PowerMockTestCase {
     private static final String CLIENT_ID_ACTIVE_ACTIVE = "client-id-active-active";
     private static final String CLIENT_ID_ACTIVE_INACTIVE = "client-id-active-inactive";
+    private static final String CLIENT_ID_ACTIVE_REMOVED = "client-id-active-removed";
     private static final String CLIENT_ID_SUSPENDED_ACTIVE = "client-id-suspended-active";
+    private static final String CLIENT_ID_SUSPENDED_INACTIVE = "client-id-suspended-inactive";
+    private static final String CLIENT_ID_SUSPENDED_REMOVED = "client-id-suspended-removed";
 
     @BeforeMethod
     public void init() throws OpenBankingException {
-        HashMap<String, String> testStatusMap = new HashMap<>();
-        testStatusMap.put(CLIENT_ID_ACTIVE_ACTIVE, "ACTIVE");
-        testStatusMap.put(CLIENT_ID_ACTIVE_INACTIVE, "INACTIVE");
-        testStatusMap.put(CLIENT_ID_SUSPENDED_ACTIVE, "SUSPENDED");
+        HashMap<String, String> adrStatusMap = new HashMap<>();
+        adrStatusMap.put(CLIENT_ID_ACTIVE_ACTIVE, "ACTIVE");
+        adrStatusMap.put(CLIENT_ID_ACTIVE_INACTIVE, "ACTIVE");
+        adrStatusMap.put(CLIENT_ID_ACTIVE_REMOVED, "ACTIVE");
+        adrStatusMap.put(CLIENT_ID_SUSPENDED_ACTIVE, "SUSPENDED");
+        adrStatusMap.put(CLIENT_ID_SUSPENDED_INACTIVE, "SUSPENDED");
+        adrStatusMap.put(CLIENT_ID_SUSPENDED_REMOVED, "SUSPENDED");
+
+        HashMap<String, String> spStatusMap = new HashMap<>();
+        spStatusMap.put(CLIENT_ID_ACTIVE_ACTIVE, "ACTIVE");
+        spStatusMap.put(CLIENT_ID_ACTIVE_INACTIVE, "INACTIVE");
+        spStatusMap.put(CLIENT_ID_ACTIVE_REMOVED, "REMOVED");
+        spStatusMap.put(CLIENT_ID_SUSPENDED_ACTIVE, "ACTIVE");
+        spStatusMap.put(CLIENT_ID_SUSPENDED_INACTIVE, "INACTIVE");
+        spStatusMap.put(CLIENT_ID_SUSPENDED_REMOVED, "REMOVED");
 
         MetadataCache metadataCacheMock = Mockito.mock(MetadataCache.class);
-        Mockito.when(metadataCacheMock.getFromCacheOrRetrieve(Mockito.any(MetadataCacheKey.class), Mockito.any()))
-                .thenReturn(testStatusMap);
+        Mockito.when(metadataCacheMock.getFromCacheOrRetrieve(Mockito
+                        .eq(MetadataCacheKey.from(MetadataConstants.MAP_DATA_RECIPIENTS)), Mockito.any()))
+                .thenReturn(adrStatusMap);
+        Mockito.when(metadataCacheMock.getFromCacheOrRetrieve(Mockito
+                        .eq(MetadataCacheKey.from(MetadataConstants.MAP_SOFTWARE_PRODUCTS)), Mockito.any()))
+                .thenReturn(spStatusMap);
 
         PowerMockito.mockStatic(MetadataCache.class);
         PowerMockito.when(MetadataCache.getInstance()).thenReturn(metadataCacheMock);
@@ -54,18 +73,24 @@ public class MetadataServiceTest extends PowerMockTestCase {
     public void testShouldDiscloseCDRData() {
         Assert.assertTrue(MetadataService.shouldDiscloseCDRData(CLIENT_ID_ACTIVE_ACTIVE).isValid());
         Assert.assertFalse(MetadataService.shouldDiscloseCDRData(CLIENT_ID_ACTIVE_INACTIVE).isValid());
+        Assert.assertFalse(MetadataService.shouldDiscloseCDRData(CLIENT_ID_SUSPENDED_INACTIVE).isValid());
     }
 
     @Test
     public void testShouldFacilitateConsentAuthorisation() {
         Assert.assertTrue(MetadataService.shouldFacilitateConsentAuthorisation(CLIENT_ID_ACTIVE_ACTIVE).isValid());
         Assert.assertFalse(MetadataService.shouldFacilitateConsentAuthorisation(CLIENT_ID_ACTIVE_INACTIVE).isValid());
+        Assert.assertFalse(MetadataService
+                .shouldFacilitateConsentAuthorisation(CLIENT_ID_SUSPENDED_INACTIVE).isValid());
     }
 
     @Test
     public void testShouldFacilitateConsentWithdrawal() {
         Assert.assertTrue(MetadataService.shouldFacilitateConsentWithdrawal(CLIENT_ID_ACTIVE_ACTIVE).isValid());
-        Assert.assertFalse(MetadataService.shouldFacilitateConsentWithdrawal(CLIENT_ID_ACTIVE_INACTIVE).isValid());
+        Assert.assertTrue(MetadataService.shouldFacilitateConsentWithdrawal(CLIENT_ID_ACTIVE_INACTIVE).isValid());
+        Assert.assertTrue(MetadataService.shouldFacilitateConsentWithdrawal(CLIENT_ID_SUSPENDED_INACTIVE).isValid());
         Assert.assertFalse(MetadataService.shouldFacilitateConsentWithdrawal(CLIENT_ID_SUSPENDED_ACTIVE).isValid());
+        Assert.assertFalse(MetadataService.shouldFacilitateConsentWithdrawal(CLIENT_ID_ACTIVE_REMOVED).isValid());
+        Assert.assertFalse(MetadataService.shouldFacilitateConsentWithdrawal(CLIENT_ID_SUSPENDED_REMOVED).isValid());
     }
 }

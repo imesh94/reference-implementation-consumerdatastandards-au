@@ -21,7 +21,6 @@ import com.wso2.openbanking.cds.common.metadata.periodical.updater.utils.Softwar
 import com.wso2.openbanking.cds.common.metadata.status.validator.cache.MetadataCache;
 import com.wso2.openbanking.cds.common.metadata.status.validator.cache.MetadataCacheKey;
 import com.wso2.openbanking.cds.common.utils.ErrorConstants;
-import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
@@ -42,19 +41,28 @@ public class MetadataService {
      * To check disclose CDR data DataHolderResponsibility
      *
      * @param clientId client id
-     * @return true when conditions are valid
+     * @return true when ADR status is ACTIVE also SP status is ACTIVE
      * @see <a href="https://cdr-register.github.io/register/#data-holder-responsibilities">
      * Data Holder Responsibilities</a>
      */
     public static MetadataValidationResponse shouldDiscloseCDRData(String clientId) {
         final String dataRecipientStatus = getDataRecipientStatus(clientId);
         final String softwareProductStatus = getSoftwareProductStatus(clientId);
+        String errorMessage;
 
-        String errorMessage = isFistConditionValid(dataRecipientStatus, softwareProductStatus);
-
-        if (StringUtils.isBlank(errorMessage)) {
-            // metadata condition is valid, can disclose cdr data
-            return new MetadataValidationResponse(true);
+        if (DataRecipientStatusEnum.ACTIVE.toString().equalsIgnoreCase(dataRecipientStatus)) {
+            if (SoftwareProductStatusEnum.ACTIVE.toString().equalsIgnoreCase(softwareProductStatus)) {
+                // ADR status == ACTIVE && SP status == ACTIVE
+                return new MetadataValidationResponse(true);
+            } else {
+                // Cannot disclose cdr data, ADR status == ACTIVE && SP status != ACTIVE
+                errorMessage = String.format(ERROR_MSG_FORMAT,
+                        ErrorConstants.AUErrorEnum.INVALID_PRODUCT_STATUS.getDetail(), softwareProductStatus);
+            }
+        } else {
+            // Cannot disclose cdr data, ADR status != ACTIVE
+            errorMessage = String.format(ERROR_MSG_FORMAT, ErrorConstants.AUErrorEnum.INVALID_ADR_STATUS.getDetail(),
+                    dataRecipientStatus);
         }
 
         if (LOG.isDebugEnabled()) {
@@ -68,19 +76,28 @@ public class MetadataService {
      * To check facilitate consent authorisation DataHolderResponsibility
      *
      * @param clientId client id
-     * @return true when conditions are valid
+     * @return true when ADR status is ACTIVE also SP status is ACTIVE
      * @see <a href="https://cdr-register.github.io/register/#data-holder-responsibilities">
      * Data Holder Responsibilities</a>
      */
     public static MetadataValidationResponse shouldFacilitateConsentAuthorisation(String clientId) {
         final String dataRecipientStatus = getDataRecipientStatus(clientId);
         final String softwareProductStatus = getSoftwareProductStatus(clientId);
+        String errorMessage;
 
-        String errorMessage = isFistConditionValid(dataRecipientStatus, softwareProductStatus);
-
-        if (StringUtils.isBlank(errorMessage)) {
-            // metadata condition is valid, can facilitate consent authorisation
-            return new MetadataValidationResponse(true);
+        if (DataRecipientStatusEnum.ACTIVE.toString().equalsIgnoreCase(dataRecipientStatus)) {
+            if (SoftwareProductStatusEnum.ACTIVE.toString().equalsIgnoreCase(softwareProductStatus)) {
+                // ADR status == ACTIVE && SP status == ACTIVE
+                return new MetadataValidationResponse(true);
+            } else {
+                // Cannot facilitate consent authorisation, ADR status == ACTIVE && SP status != ACTIVE
+                errorMessage = String.format(ERROR_MSG_FORMAT,
+                        ErrorConstants.AUErrorEnum.INVALID_PRODUCT_STATUS.getDetail(), softwareProductStatus);
+            }
+        } else {
+            // Cannot facilitate consent authorisation, ADR status != ACTIVE
+            errorMessage = String.format(ERROR_MSG_FORMAT, ErrorConstants.AUErrorEnum.INVALID_ADR_STATUS.getDetail(),
+                    dataRecipientStatus);
         }
 
         if (LOG.isDebugEnabled()) {
@@ -94,21 +111,39 @@ public class MetadataService {
      * To check facilitate consent withdrawal DataHolderResponsibility
      *
      * @param clientId client id
-     * @return true when conditions are valid
+     * @return true if ADR status is ACTIVE and SP status is ACTIVE or INACTIVE, also
+     *              if ADR status is SUSPENDED and SP status is INACTIVE
      * @see <a href="https://cdr-register.github.io/register/#data-holder-responsibilities">
      * Data Holder Responsibilities</a>
      */
     public static MetadataValidationResponse shouldFacilitateConsentWithdrawal(String clientId) {
         final String dataRecipientStatus = getDataRecipientStatus(clientId);
         final String softwareProductStatus = getSoftwareProductStatus(clientId);
+        String errorMessage;
 
-        String firstErrorMessage = isFistConditionValid(dataRecipientStatus, softwareProductStatus);
-        String secondErrorMessage = isSecondConditionValid(dataRecipientStatus, softwareProductStatus);
-        String fourthErrorMessage = isFourthConditionValid(dataRecipientStatus, softwareProductStatus);
-
-        if (StringUtils.isBlank(firstErrorMessage) || StringUtils.isBlank(secondErrorMessage) ||
-                StringUtils.isBlank(fourthErrorMessage)) {
-            return new MetadataValidationResponse(true);
+        if (DataRecipientStatusEnum.ACTIVE.toString().equalsIgnoreCase(dataRecipientStatus)) {
+            if (SoftwareProductStatusEnum.ACTIVE.toString().equalsIgnoreCase(softwareProductStatus) ||
+                    SoftwareProductStatusEnum.INACTIVE.toString().equalsIgnoreCase(softwareProductStatus)) {
+                // (ADR status == ACTIVE and SP status == ACTIVE) or (ADR status == ACTIVE and SP status == INACTIVE)
+                return new MetadataValidationResponse(true);
+            } else {
+                // Cannot facilitate consent withdrawal, ADR status == ACTIVE && SP status invalid
+                errorMessage = String.format(ERROR_MSG_FORMAT,
+                        ErrorConstants.AUErrorEnum.INVALID_PRODUCT_STATUS.getDetail(), softwareProductStatus);
+            }
+        } else if (DataRecipientStatusEnum.SUSPENDED.toString().equalsIgnoreCase(dataRecipientStatus)) {
+            if (SoftwareProductStatusEnum.INACTIVE.toString().equalsIgnoreCase(softwareProductStatus)) {
+                // ADR status == SUSPENDED and SP status == INACTIVE
+                return new MetadataValidationResponse(true);
+            } else {
+                // Cannot facilitate consent withdrawal, ADR status == SUSPENDED && SP status != INACTIVE
+                errorMessage = String.format(ERROR_MSG_FORMAT,
+                        ErrorConstants.AUErrorEnum.INVALID_PRODUCT_STATUS.getDetail(), softwareProductStatus);
+            }
+        } else {
+            // Cannot facilitate consent withdrawal, ADR status != ACTIVE or SUSPENDED
+            errorMessage = String.format(ERROR_MSG_FORMAT, ErrorConstants.AUErrorEnum.INVALID_ADR_STATUS.getDetail(),
+                    dataRecipientStatus);
         }
 
         if (LOG.isDebugEnabled()) {
@@ -116,7 +151,7 @@ public class MetadataService {
                     "SoftwareProductStatus: %s", dataRecipientStatus, softwareProductStatus));
         }
         // All metadata conditions are invalid, cannot facilitate consent withdrawal
-        return new MetadataValidationResponse(firstErrorMessage);
+        return new MetadataValidationResponse(errorMessage);
     }
 
     /**
@@ -179,71 +214,5 @@ public class MetadataService {
                 return null;
             }
         });
-    }
-
-    /**
-     * Validating the first condition of Data Holder Responsibilities table
-     * (ADR status needs to be ACTIVE and SP status needs to be ACTIVE)
-     *
-     * @see <a href="https://cdr-register.github.io/register/#data-holder-responsibilities">
-     * Data Holder Responsibilities</a>
-     */
-    private static String isFistConditionValid(String dataRecipientStatus, String softwareProductStatus) {
-        if (DataRecipientStatusEnum.ACTIVE.toString().equalsIgnoreCase(dataRecipientStatus)) {
-            if (SoftwareProductStatusEnum.ACTIVE.toString().equalsIgnoreCase(softwareProductStatus)) {
-                // ADR status == ACTIVE && SP status == ACTIVE
-                return null;
-            } else {
-                return String.format(ERROR_MSG_FORMAT, ErrorConstants.AUErrorEnum.INVALID_PRODUCT_STATUS.getDetail(),
-                        softwareProductStatus);
-            }
-        } else {
-            return String.format(ERROR_MSG_FORMAT, ErrorConstants.AUErrorEnum.INVALID_ADR_STATUS.getDetail(),
-                    dataRecipientStatus);
-        }
-    }
-
-    /**
-     * Validating the second condition of Data Holder Responsibilities table
-     * (ADR status needs to be ACTIVE and SP status needs to be INACTIVE)
-     *
-     * @see <a href="https://cdr-register.github.io/register/#data-holder-responsibilities">
-     * Data Holder Responsibilities</a>
-     */
-    private static String isSecondConditionValid(String dataRecipientStatus, String softwareProductStatus) {
-        if (DataRecipientStatusEnum.ACTIVE.toString().equalsIgnoreCase(dataRecipientStatus)) {
-            if (SoftwareProductStatusEnum.INACTIVE.toString().equalsIgnoreCase(softwareProductStatus)) {
-                // ADR status == ACTIVE && SP status == INACTIVE
-                return null;
-            } else {
-                return String.format(ERROR_MSG_FORMAT, ErrorConstants.AUErrorEnum.INVALID_PRODUCT_STATUS.getDetail(),
-                        softwareProductStatus);
-            }
-        } else {
-            return String.format(ERROR_MSG_FORMAT, ErrorConstants.AUErrorEnum.INVALID_ADR_STATUS.getDetail(),
-                    dataRecipientStatus);
-        }
-    }
-
-    /**
-     * Validating the fourth condition of Data Holder Responsibilities table
-     * (ADR status needs to be SUSPENDED and SP status needs to be INACTIVE)
-     *
-     * @see <a href="https://cdr-register.github.io/register/#data-holder-responsibilities">
-     * Data Holder Responsibilities</a>
-     */
-    private static String isFourthConditionValid(String dataRecipientStatus, String softwareProductStatus) {
-        if (DataRecipientStatusEnum.SUSPENDED.toString().equalsIgnoreCase(dataRecipientStatus)) {
-            if (SoftwareProductStatusEnum.INACTIVE.toString().equalsIgnoreCase(softwareProductStatus)) {
-                // ADR status == SUSPENDED && SP status == INACTIVE
-                return null;
-            } else {
-                return String.format(ERROR_MSG_FORMAT, ErrorConstants.AUErrorEnum.INVALID_PRODUCT_STATUS.getDetail(),
-                        softwareProductStatus);
-            }
-        } else {
-            return String.format(ERROR_MSG_FORMAT, ErrorConstants.AUErrorEnum.INVALID_ADR_STATUS.getDetail(),
-                    dataRecipientStatus);
-        }
     }
 }
