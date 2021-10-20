@@ -46,4 +46,14 @@
             <class name="com.wso2.openbanking.cds.identity.push.auth.extension.request.validator.CDSPushAuthRequestValidatorTest"/>
         </classes>
     </test>
+    <test name="metadata-periodical-updater">
+        <classes>
+            <class name="com.wso2.openbanking.cds.identity.metadata.periodical.updater.internal.PeriodicalMetaDataUpdateJobTest"/>
+            <class name="com.wso2.openbanking.cds.identity.metadata.periodical.updater.service.dataholder.responsibility.CleanupRegistrationResponsibilityTest"/>
+            <class name="com.wso2.openbanking.cds.identity.metadata.periodical.updater.service.dataholder.responsibility.DataHolderResponsibilitiesExecutorTest"/>
+            <class name="com.wso2.openbanking.cds.identity.metadata.periodical.updater.service.dataholder.responsibility.InvalidateConsentsResponsibilityTest"/>
+            <class name="com.wso2.openbanking.cds.identity.metadata.periodical.updater.service.retryer.RetryerTest"/>
+            <class name="com.wso2.openbanking.cds.identity.metadata.periodical.updater.utils.UtilsTest"/>
+        </classes>
+    </test>
 </suite>
