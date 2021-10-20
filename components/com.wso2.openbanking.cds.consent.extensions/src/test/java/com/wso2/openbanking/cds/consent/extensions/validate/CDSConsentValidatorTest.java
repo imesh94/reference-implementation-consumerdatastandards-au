@@ -16,12 +16,16 @@ import com.wso2.openbanking.accelerator.consent.extensions.validate.model.Consen
 import com.wso2.openbanking.accelerator.consent.extensions.validate.model.ConsentValidationResult;
 import com.wso2.openbanking.accelerator.consent.mgt.dao.models.DetailedConsentResource;
 import com.wso2.openbanking.cds.common.config.OpenBankingCDSConfigParser;
+import com.wso2.openbanking.cds.common.metadata.domain.MetadataValidationResponse;
+import com.wso2.openbanking.cds.common.metadata.status.validator.service.MetadataService;
+import com.wso2.openbanking.cds.common.utils.ErrorConstants;
 import com.wso2.openbanking.cds.consent.extensions.common.CDSConsentExtensionConstants;
 import com.wso2.openbanking.cds.consent.extensions.util.CDSConsentValidateTestConstants;
 import net.minidev.json.JSONObject;
 import net.minidev.json.parser.JSONParser;
 import net.minidev.json.parser.ParseException;
 import org.mockito.Mock;
+import org.mockito.Mockito;
 import org.powermock.api.mockito.PowerMockito;
 import org.powermock.core.classloader.annotations.PrepareForTest;
 import org.powermock.modules.testng.PowerMockTestCase;
@@ -39,7 +43,7 @@ import static org.mockito.Mockito.when;
 /**
  * Test class for CDS consent Validator
  */
-@PrepareForTest({OpenBankingCDSConfigParser.class})
+@PrepareForTest({OpenBankingCDSConfigParser.class, MetadataService.class})
 public class CDSConsentValidatorTest extends PowerMockTestCase {
 
     CDSConsentValidator cdsConsentValidator;
@@ -143,7 +147,7 @@ public class CDSConsentValidatorTest extends PowerMockTestCase {
         cdsConsentValidator.validate(consentValidateDataMock, consentValidationResult);
 
         Assert.assertFalse(consentValidationResult.isValid());
-        Assert.assertEquals(consentValidationResult.getErrorMessage(), "The consumer's consent is revoked");;
+        Assert.assertEquals(consentValidationResult.getErrorMessage(), "The consumer's consent is revoked");
         Assert.assertEquals(consentValidationResult.getErrorCode(), "AU.CDR.Entitlements.ConsentIsRevoked");
         Assert.assertEquals(consentValidationResult.getHttpCode(), 403);
 
@@ -229,4 +233,34 @@ public class CDSConsentValidatorTest extends PowerMockTestCase {
         Assert.assertEquals(consentValidationResult.getHttpCode(), 422);
     }
 
+    @Test
+    public void testValidateAccountRetrievalWithInvalidMetadataCache() {
+        doReturn(detailedConsentResourceMock).when(consentValidateDataMock).getComprehensiveConsent();
+        doReturn(CDSConsentValidateTestConstants
+                .getDetailedConsentResource(CDSConsentValidateTestConstants.VALID_RECEIPT, "123456")
+                .getReceipt()).when(detailedConsentResourceMock).getReceipt();
+        doReturn(CDSConsentExtensionConstants.AUTHORIZED_STATUS).when(detailedConsentResourceMock).getCurrentStatus();
+        doReturn(CDSConsentValidateTestConstants.ACCOUNT_PATH).when(consentValidateDataMock).getRequestPath();
+        doReturn("client-id").when(consentValidateDataMock).getClientId();
+
+        PowerMockito.mockStatic(OpenBankingCDSConfigParser.class);
+        when(OpenBankingCDSConfigParser.getInstance()).thenReturn(openBankingCDSConfigParserMock);
+        when(openBankingCDSConfigParserMock.getConfiguration()).thenReturn(configs);
+        when(openBankingCDSConfigParserMock.isMetadataCacheEnabled()).thenReturn(true);
+
+        PowerMockito.mockStatic(MetadataService.class);
+        PowerMockito.when(MetadataService.shouldDiscloseCDRData(Mockito.anyString()))
+                .thenReturn(new MetadataValidationResponse(ErrorConstants.AUErrorEnum.INVALID_ADR_STATUS.getDetail()));
+
+        ConsentValidationResult consentValidationResult = new ConsentValidationResult();
+        cdsConsentValidator.validate(consentValidateDataMock, consentValidationResult);
+
+        Assert.assertFalse(consentValidationResult.isValid());
+        Assert.assertEquals(consentValidationResult.getErrorMessage(), ErrorConstants.AUErrorEnum
+                .INVALID_ADR_STATUS.getDetail());
+        Assert.assertEquals(consentValidationResult.getErrorCode(), ErrorConstants.AUErrorEnum
+                .INVALID_ADR_STATUS.getCode());
+        Assert.assertEquals(consentValidationResult.getHttpCode(), ErrorConstants.AUErrorEnum.INVALID_ADR_STATUS
+                .getHttpCode());
+    }
 }

@@ -64,4 +64,53 @@
         <CustomerDetailsRetrieveEndpoint></CustomerDetailsRetrieveEndpoint>
         {% endif %}
      </CustomerDetails>
+     <MetaDataCache>
+        {% if open_banking_cds.metadata_cache.enable is defined %}
+        <EnableMetaDataCache>{{open_banking_cds.metadata_cache.enable}}</EnableMetaDataCache>
+        {% else %}
+        <EnableMetaDataCache>true</EnableMetaDataCache>
+        {% endif %}
+        {% if open_banking_cds.metadata_cache.update_period is defined %}
+        <MetaDataCacheUpdatePeriod>{{open_banking_cds.metadata_cache.update_period}}</MetaDataCacheUpdatePeriod>
+        {% else %}
+        <MetaDataCacheUpdatePeriod>5</MetaDataCacheUpdatePeriod>
+        {% endif %}
+        {% if open_banking_cds.metadata_cache.data_recipients_discovery_url is defined %}
+        <DataRecipientsDiscoveryURL>{{open_banking_cds.metadata_cache.data_recipients_discovery_url}}</DataRecipientsDiscoveryURL>
+        {% else %}
+        <DataRecipientsDiscoveryURL>https://api.cdr.gov.au/cdr-register/v1/banking/data-recipients</DataRecipientsDiscoveryURL>
+        {% endif %}
+        {% if open_banking_cds.metadata_cache.dcr_internal_url is defined %}
+        <DCRInternalURL>{{open_banking_cds.metadata_cache.dcr_internal_url}}</DCRInternalURL>
+        {% else %}
+        <DCRInternalURL>https://localhost:9446/api/openbanking/dynamic-client-registration/register</DCRInternalURL>
+        {% endif %}
+        {% if open_banking_cds.metadata_cache.apim_application_search_url is defined %}
+        <APIMApplicationSearchURL>{{open_banking_cds.metadata_cache.apim_application_search_url}}</APIMApplicationSearchURL>
+        {% else %}
+        <APIMApplicationSearchURL>https://localhost:9443/api/am/admin/v2/applications</APIMApplicationSearchURL>
+        {% endif %}
+        {% if open_banking_cds.metadata_cache.http_request_retry_count is defined %}
+        <RetryCount>{{open_banking_cds.metadata_cache.http_request_retry_count}}</RetryCount>
+        {% else %}
+        <RetryCount>3</RetryCount>
+        {% endif %}
+        {% if open_banking_cds.metadata_cache.expiry is defined %}
+        <Expiry>{{open_banking_cds.metadata_cache.expiry}}</Expiry>
+        {% else %}
+        <Expiry>60</Expiry>
+        {% endif %}
+        <DataHolderResponsibilities>
+            {% if open_banking_cds.metadata_cache.dataholder_responsibilities.bulk_execution is defined %}
+            <BulkExecution>{{open_banking_cds.metadata_cache.dataholder_responsibilities.bulk_execution}}</BulkExecution>
+            {% else %}
+            <BulkExecution>true</BulkExecution>
+            {% endif %}
+            {% if open_banking_cds.metadata_cache.dataholder_responsibilities.bulk_execution_hour is defined %}
+            <BulkExecutionHour>{{open_banking_cds.metadata_cache.dataholder_responsibilities.bulk_execution_hour}}</BulkExecutionHour>
+            {% else %}
+            <BulkExecutionHour>2</BulkExecutionHour>
+            {% endif %}
+        </DataHolderResponsibilities>
+     </MetaDataCache>
 </Server>

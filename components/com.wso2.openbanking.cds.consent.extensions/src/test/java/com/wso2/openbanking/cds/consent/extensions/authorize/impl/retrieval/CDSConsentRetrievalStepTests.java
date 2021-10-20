@@ -48,7 +48,6 @@ public class CDSConsentRetrievalStepTests extends PowerMockTestCase {
     private ConsentData consentDataMock;
     private ConsentResource consentResourceMock;
 
-
     @BeforeClass
     public void initClass() {
 

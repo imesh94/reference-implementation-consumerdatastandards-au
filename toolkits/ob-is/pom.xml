@@ -86,6 +86,8 @@
                                                 regex="com.wso2.openbanking.cds.consent.extensions-(\d.*?)\.jar$"/>
                                     </fileset>
                                 </copy>
+                                <unzip dest="${project.basedir}/carbon-home/repository/deployment/server/webapps/api#openbanking#metadata-mgt/"
+                                       src="../../internal-apis/internal-webapps/com.wso2.openbanking.cds.metadata.mgt.endpoint/target/api#openbanking#metadata-mgt.war"/>
                             </target>
                         </configuration>
                         <goals>

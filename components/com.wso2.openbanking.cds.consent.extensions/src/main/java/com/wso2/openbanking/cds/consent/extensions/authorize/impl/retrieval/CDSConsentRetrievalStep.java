@@ -129,7 +129,7 @@ public class CDSConsentRetrievalStep implements ConsentRetrievalStep {
             // request object validation is carried out in request object validator
             String[] jwtTokenValues = requestObject.split("\\.");
             String requestObjectPayload = new String(Base64.getUrlDecoder().decode(jwtTokenValues[1]),
-                        StandardCharsets.UTF_8);
+                    StandardCharsets.UTF_8);
 
             Object payload = new JSONParser(JSONParser.MODE_PERMISSIVE).parse(requestObjectPayload);
             if (!(payload instanceof JSONObject)) {
