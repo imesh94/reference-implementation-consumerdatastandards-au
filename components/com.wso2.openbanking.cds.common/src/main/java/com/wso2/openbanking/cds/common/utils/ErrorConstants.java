@@ -105,8 +105,8 @@ public class ErrorConstants {
         UNAUTHORIZED(401, "AU.CDR.Unauthorized", "Invalid Authorisation Header",
                 "Authorization header not found in the request"),
         //The ADR is not in an "active" state in the CDR Register
-        INVALID_ADR_STATUS(403, "AU.CDR.Entitlements.InvalidAdrStatus", "ADR Status Is Invalid",
-                "The ADR is not in an active state in the CDR Register"),
+        INVALID_ADR_STATUS(403, "urn:au-cds:error:cds-banking:Authorisation/AdrStatusNotActive",
+                "ADR Status Is Invalid", "The ADR is not in an active state in the CDR Register"),
         //The ADR software product is not in an "active" state in the CDR Register.
         INVALID_PRODUCT_STATUS(403, "AU.CDR.Entitlements.InvalidAdrSoftwareProductStatus", "ADR Software Product " +
                 "Status Is Invalid", "The ADR software product is not in an active state in the CDR Register"),

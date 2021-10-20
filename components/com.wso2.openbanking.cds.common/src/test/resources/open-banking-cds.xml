@@ -32,4 +32,18 @@
             <Repeatabletag>DummyValue3</Repeatabletag>
         </Sampletag>
     </DCR>
+
+    <MetaDataCache>
+        <EnableMetaDataCache>true</EnableMetaDataCache>
+        <MetaDataCacheUpdatePeriod>2</MetaDataCacheUpdatePeriod>
+        <DataRecipientsDiscoveryURL>https://test-discovery/</DataRecipientsDiscoveryURL>
+        <DCRInternalURL>https://localhost:9446/api/openbanking/dynamic-client-registration/register</DCRInternalURL>
+        <APIMApplicationSearchURL>https://localhost:9443/api/am/admin/v2/applications</APIMApplicationSearchURL>
+        <RetryCount>3</RetryCount>
+        <Expiry>120</Expiry>
+        <DataHolderResponsibilities>
+            <BulkExecution>false</BulkExecution>
+            <BulkExecutionHour>12</BulkExecutionHour>
+        </DataHolderResponsibilities>
+    </MetaDataCache>
 </Server>

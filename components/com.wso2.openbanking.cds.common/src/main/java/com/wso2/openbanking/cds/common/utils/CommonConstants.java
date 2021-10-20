@@ -42,6 +42,19 @@ public class CommonConstants {
     public static final String KEYSTORE_KEY_ALIAS = "Security.InternalKeyStore.KeyAlias";
     public static final String KEYSTORE_KEY_PASSWORD = "Security.InternalKeyStore.KeyPassword";
 
+    // metadata config constants
+    public static final String METADATA_CACHE = "MetaDataCache";
+    public static final String METADATA_CACHE_ENABLED = METADATA_CACHE + ".EnableMetaDataCache";
+    public static final String METADATA_CACHE_UPDATE_TIME = METADATA_CACHE + ".MetaDataCacheUpdatePeriod";
+    public static final String METADATA_CACHE_DATA_RECIPIENTS_URL = METADATA_CACHE + ".DataRecipientsDiscoveryURL";
+    public static final String METADATA_CACHE_DCR_INTERNAL_URL = METADATA_CACHE + ".DCRInternalURL";
+    public static final String METADATA_CACHE_APPLICATION_SEARCH_URL = METADATA_CACHE + ".APIMApplicationSearchURL";
+    public static final String METADATA_CACHE_RETRY_COUNT = METADATA_CACHE + ".RetryCount";
+    public static final String METADATA_CACHE_EXPIRY = METADATA_CACHE + ".Expiry";
+    public static final String METADATA_CACHE_BULK_EXECUTE = METADATA_CACHE +
+            ".DataHolderResponsibilities.BulkExecution";
+    public static final String METADATA_CACHE_BULK_EXECUTE_HOUR = METADATA_CACHE +
+            ".DataHolderResponsibilities.BulkExecutionHour";
 
-
+    private CommonConstants() {}
 }
