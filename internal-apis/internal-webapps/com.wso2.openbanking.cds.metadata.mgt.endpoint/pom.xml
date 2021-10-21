@@ -48,18 +48,9 @@
             <artifactId>jackson-databind</artifactId>
         </dependency>
         <dependency>
-            <groupId>org.apache.commons</groupId>
-            <artifactId>commons-lang3</artifactId>
-        </dependency>
-        <dependency>
             <groupId>com.wso2.openbanking</groupId>
             <artifactId>com.wso2.openbanking.cds.identity</artifactId>
-            <exclusions>
-                <exclusion>
-                    <groupId>com.wso2</groupId>
-                    <artifactId>com.wso2.openbanking.accelerator.service.activator</artifactId>
-                </exclusion>
-            </exclusions>
+            <scope>provided</scope>
         </dependency>
     </dependencies>
 
@@ -90,6 +81,7 @@
                 <artifactId>maven-war-plugin</artifactId>
                 <version>${maven-war-plugin.version}</version>
                 <configuration>
+                    <packagingExcludes>WEB-INF/lib/*.jar</packagingExcludes>
                     <webResources>
                         <resource>
                             <!-- this is relative to the pom.xml directory -->
