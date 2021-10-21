@@ -12,11 +12,13 @@
 
 package com.wso2.openbanking.cds.identity.utils;
 
+import com.wso2.openbanking.accelerator.common.config.OpenBankingConfigParser;
 import com.wso2.openbanking.accelerator.common.exception.ConsentManagementException;
 import com.wso2.openbanking.accelerator.common.exception.OpenBankingException;
 import com.wso2.openbanking.accelerator.common.util.Generated;
 import com.wso2.openbanking.accelerator.consent.mgt.service.impl.ConsentCoreServiceImpl;
 import com.wso2.openbanking.accelerator.identity.util.HTTPClientUtils;
+import com.wso2.openbanking.accelerator.identity.util.IdentityCommonConstants;
 import com.wso2.openbanking.cds.common.utils.CommonConstants;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.logging.Log;
@@ -46,7 +48,6 @@ public class CDSIdentityUtil {
     private static final String COMMON_AUTH_ID = "commonAuthId";
     private static final String SHARING_DURATION_VALUE = "sharing_duration_value";
     private static final String ZERO_SHARING_DURATION = "0";
-    private static final String OB_CONSENT_ID_PREFIX = "OB_CONSENT_ID_";
     private static volatile Key key;
 
     /**
@@ -103,11 +104,14 @@ public class CDSIdentityUtil {
      */
     public static String getConsentId(String[] scopes) {
 
+        String consentIdClaimName = OpenBankingConfigParser.getInstance().getConfiguration().get(
+                IdentityCommonConstants.CONSENT_ID_CLAIM_NAME).toString();
+
         if (scopes != null && scopes.length > 0) {
             List<String> scopesList = new LinkedList<>(Arrays.asList(scopes));
             for (String scope : scopesList) {
-                if (scope.startsWith(OB_CONSENT_ID_PREFIX)) {
-                    return scope.split(OB_CONSENT_ID_PREFIX)[1];
+                if (scope.startsWith(consentIdClaimName)) {
+                    return scope.split(consentIdClaimName)[1];
                 }
             }
         }
