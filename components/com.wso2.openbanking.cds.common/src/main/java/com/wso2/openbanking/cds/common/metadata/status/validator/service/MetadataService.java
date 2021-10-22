@@ -13,6 +13,7 @@
 package com.wso2.openbanking.cds.common.metadata.status.validator.service;
 
 import com.wso2.openbanking.accelerator.common.exception.OpenBankingException;
+import com.wso2.openbanking.cds.common.error.handling.util.ErrorConstants;
 import com.wso2.openbanking.cds.common.metadata.domain.MetadataValidationResponse;
 import com.wso2.openbanking.cds.common.metadata.periodical.updater.MetadataHolder;
 import com.wso2.openbanking.cds.common.metadata.periodical.updater.constants.MetadataConstants;
@@ -20,7 +21,6 @@ import com.wso2.openbanking.cds.common.metadata.periodical.updater.utils.DataRec
 import com.wso2.openbanking.cds.common.metadata.periodical.updater.utils.SoftwareProductStatusEnum;
 import com.wso2.openbanking.cds.common.metadata.status.validator.cache.MetadataCache;
 import com.wso2.openbanking.cds.common.metadata.status.validator.cache.MetadataCacheKey;
-import com.wso2.openbanking.cds.common.utils.ErrorConstants;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
@@ -112,7 +112,7 @@ public class MetadataService {
      *
      * @param clientId client id
      * @return true if ADR status is ACTIVE and SP status is ACTIVE or INACTIVE, also
-     *              if ADR status is SUSPENDED and SP status is INACTIVE
+     * if ADR status is SUSPENDED and SP status is INACTIVE
      * @see <a href="https://cdr-register.github.io/register/#data-holder-responsibilities">
      * Data Holder Responsibilities</a>
      */

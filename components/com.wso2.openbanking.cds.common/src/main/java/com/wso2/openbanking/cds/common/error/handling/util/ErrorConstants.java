@@ -10,7 +10,7 @@
  * WSO2 governing the purchase of this software and any associated services.
  */
 
-package com.wso2.openbanking.cds.common.utils;
+package com.wso2.openbanking.cds.common.error.handling.util;
 
 import com.wso2.openbanking.accelerator.common.util.Generated;
 
@@ -53,14 +53,16 @@ public class ErrorConstants {
     public static final String UNSUPPORTED_MEDIA_TYPE_CODE = "415 Unsupported Media Type";
 
     // Low level textual error code
-    public static final String RESOURCE_INVALID_BANKING_ACCOUNT = "AU.CDR.Resource.InvalidBankingAccount";
-    public static final String RESOURCE_INVALID = "AU.CDR.Resource.Invalid";
-    public static final String INVALID_CONSENT_STATUS = "AU.CDR.Entitlements.InvalidConsentStatus";
-    public static final String REVOKED_CONSENT_STATUS = "AU.CDR.Entitlements.ConsentIsRevoked";
+    public static final String RESOURCE_INVALID_BANKING_ACCOUNT =
+            "urn:au-cds:error:cds-banking:Authorisation/InvalidBankingAccount";
+    public static final String RESOURCE_INVALID = "urn:au-cds:error:cds-all:Resource/Invalid";
+    public static final String INVALID_CONSENT_STATUS = "urn:au-cds:error:cds-all:Authorisation/InvalidConsent";
+    public static final String REVOKED_CONSENT_STATUS = "urn:au-cds:error:cds-all:Authorisation/RevokedConsent";
 
     // Error object references
     public static final String ERROR_ENUM = "auErrorEnum";
-    public static final String SOURCE = "source";
+    public static final String METADATA  = "metadata";
+
 
     /**
      * AU Error enumerations.
@@ -75,8 +77,8 @@ public class ErrorConstants {
          * (HTTP Status Code, Error Code, Error Code Title, Error Message)
          */
         //Query or Request Body Parameter missing
-        FIELD_MISSING(400, "AU.CDR.Missing.Field", "Missing Required Field", "Missing Required Field %s in " +
-                "the request"),
+        FIELD_MISSING(400, "urn:au-cds:error:cds-all:Field/Missing", "Missing Required Field",
+                "Missing Required Field %s in the request"),
         //one or more http headers are missing
         HEADER_MISSING(400, "AU.CDR.Missing.Header", "Missing Required Header", "Mandatory header %s is missing"),
         //Query or Request Body Parameter is not defined by the API
@@ -104,6 +106,9 @@ public class ErrorConstants {
         //Invalid authorization header
         UNAUTHORIZED(401, "AU.CDR.Unauthorized", "Invalid Authorisation Header",
                 "Authorization header not found in the request"),
+        //Invalid authorization header
+        CLIENT_AUTH_FAILED(401, "urn:au-cds:error:cds-all:Authorisation/Unauthorized",
+                "Invalid Client", "Client authentication failed"),
         //The ADR is not in an "active" state in the CDR Register
         INVALID_ADR_STATUS(403, "urn:au-cds:error:cds-banking:Authorisation/AdrStatusNotActive",
                 "ADR Status Is Invalid", "The ADR is not in an active state in the CDR Register"),
@@ -117,8 +122,8 @@ public class ErrorConstants {
         REVOKED_CONSENT(403, "AU.CDR.Entitlements.ConsentIsRevoked", "Consent Is Revoked", "Provided consent is in " +
                 "the revoked state"),
         //The resource requested is forbidden
-        RESOURCE_FORBIDDEN(403, "AU.CDR.Entitlements.Forbidden", "Resource Is Forbidden", "The requested resource" +
-                " %s is forbidden"),
+        RESOURCE_FORBIDDEN(403, "urn:au-cds:error:cds-all:Authorisation/InvalidConsent",
+                "Resource Is Forbidden", "The requested resource %s is forbidden"),
         //Software product requested is invalid or cannot be found.
         INVALID_SOFTWARE_PRODUCT(404, "AU.CDR.Register.InvalidSoftwareProduct", "Invalid Software Product",
                 "Software product requested is invalid or cannot be found"),
@@ -131,8 +136,9 @@ public class ErrorConstants {
         //Resource requested is invalid, does not exist or will not be disclosed
         INVALID_RESOURCE_PATH(404, "AU.CDR.Resource.Invalid", "Invalid Resource Identifier",
                 "Resource requested is invalid, does not exist or will not be disclosed at the moment"),
-        INVALID_RESOURCE_BODY(422, "AU.CDR.Resource.Invalid", "Invalid Resource Identifier",
-                "Resource requested is invalid, does not exist or will not be disclosed at the moment"),
+        INVALID_RESOURCE_BODY(422, "urn:au-cds:error:cds-all: Resource/Invalid",
+                "Invalid Resource Identifier", "Resource requested is invalid, does not exist or will " +
+                "not be disclosed at the moment"),
         //The requested resource is currently in a state that makes it unavailable
         RESOURCE_UNAVAILABLE_PATH(404, "AU.CDR.Resource.Unavailable", "Resource Is Unavailable",
                 "The requested resource is currently in a state that makes it unavailable for consumers"),
@@ -162,7 +168,8 @@ public class ErrorConstants {
         SERVICE_UNAVAILABLE(503, "AU.CDR.Service.Unavailable", "Service Unavailable", "Service Unavailable"),
         TOO_MANY_REQUESTS(429, "AU.CDR.TooManyRequests", "Message throttled out", "You have exceeded your quota"),
         //An unexpected error occurred
-        UNEXPECTED_ERROR(500, "AU.CDR.UnexpectedError", "Unexpected Error", "Unexpected Error"),
+        UNEXPECTED_ERROR(500, "urn:au-cds:error:cds-all:GeneralError/Unexpected",
+                "Unexpected Error", "Unexpected Error"),
 
         /**
          * Error enumerations defined by the WSO2

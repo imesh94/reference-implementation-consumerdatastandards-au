@@ -12,6 +12,8 @@
 
 package com.wso2.openbanking.cds.common.util;
 
+import com.wso2.openbanking.cds.common.error.handling.models.CDSErrorMeta;
+import com.wso2.openbanking.cds.common.error.handling.util.ErrorConstants;
 import org.apache.http.HttpStatus;
 import org.testng.annotations.DataProvider;
 
@@ -41,6 +43,16 @@ public class CommonTestDataProvider {
                 {"404", HttpStatus.SC_NOT_FOUND},
                 {"406", HttpStatus.SC_NOT_ACCEPTABLE},
                 {"422", HttpStatus.SC_UNPROCESSABLE_ENTITY}
+        };
+    }
+
+    @DataProvider(name = "ErrorObjectTestDataProvider")
+    Object[][] getErrorObjectTestDataProvider() {
+
+        return new Object[][]{
+                {ErrorConstants.AUErrorEnum.CLIENT_AUTH_FAILED, "Client authentication failed", new CDSErrorMeta()},
+                {ErrorConstants.AUErrorEnum.UNEXPECTED_ERROR, "Unexpected error", new CDSErrorMeta()},
+                {ErrorConstants.AUErrorEnum.BAD_REQUEST, "Bad request", new CDSErrorMeta()}
         };
     }
 }

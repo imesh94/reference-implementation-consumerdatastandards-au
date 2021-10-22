@@ -19,8 +19,8 @@ import com.wso2.openbanking.accelerator.gateway.executor.model.OBAPIRequestConte
 import com.wso2.openbanking.accelerator.gateway.executor.model.OBAPIResponseContext;
 import com.wso2.openbanking.accelerator.gateway.executor.model.OpenBankingExecutorError;
 import com.wso2.openbanking.accelerator.gateway.util.GatewayConstants;
-import com.wso2.openbanking.cds.common.utils.ErrorConstants;
-import com.wso2.openbanking.cds.common.utils.ErrorUtil;
+import com.wso2.openbanking.cds.common.error.handling.util.ErrorConstants;
+import com.wso2.openbanking.cds.common.error.handling.util.ErrorUtil;
 import net.minidev.json.JSONArray;
 import net.minidev.json.JSONObject;
 import org.apache.commons.logging.Log;

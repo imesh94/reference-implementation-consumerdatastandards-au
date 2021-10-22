@@ -65,7 +65,7 @@
                         <configuration>
                             <target>
                                 <!-- Copying jars to lib -->
-                                <copy todir="${project.basedir}/carbon-home/repository/components/lib" overwrite="true">
+                                <copy todir="${project.basedir}/carbon-home/repository/components/dropins" overwrite="true">
                                     <fileset
                                             dir="../../components/com.wso2.openbanking.cds.identity/target">
                                         <filename
@@ -86,6 +86,8 @@
                                                 regex="com.wso2.openbanking.cds.consent.extensions-(\d.*?)\.jar$"/>
                                     </fileset>
                                 </copy>
+                                <unzip dest="${project.basedir}/carbon-home/repository/deployment/server/webapps/api#openbanking#cds-arrangement-revocation/"
+                                       src="../../internal-apis/internal-webapps/com.wso2.openbanking.cds.arrangement.revocation.endpoint/target/api#openbanking#cds-arrangement-revocation.war"/>
                                 <unzip dest="${project.basedir}/carbon-home/repository/deployment/server/webapps/api#openbanking#metadata-mgt/"
                                        src="../../internal-apis/internal-webapps/com.wso2.openbanking.cds.metadata.mgt.endpoint/target/api#openbanking#metadata-mgt.war"/>
                             </target>

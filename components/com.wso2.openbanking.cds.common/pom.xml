@@ -103,6 +103,7 @@
                         <exclude>**/MetadataCache.class</exclude>
                         <exclude>**/MetadataCacheKey.class</exclude>
                         <exclude>**/MetadataValidationResponse.class</exclude>
+                        <exclude>**/models/*</exclude>
                     </excludes>
                 </configuration>
                 <executions>
