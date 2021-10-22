@@ -25,16 +25,19 @@
 
     <artifactId>com.wso2.openbanking.cds.identity</artifactId>
     <name>WSO2 Open Banking CDS Toolkit - Identity Module</name>
-    <packaging>jar</packaging>
+    <packaging>bundle</packaging>
+
 
     <dependencies>
         <dependency>
             <groupId>org.apache.httpcomponents</groupId>
             <artifactId>httpclient</artifactId>
+            <scope>provided</scope>
         </dependency>
         <dependency>
             <groupId>org.apache.commons</groupId>
             <artifactId>commons-lang3</artifactId>
+            <scope>provided</scope>
         </dependency>
         <dependency>
             <groupId>com.wso2</groupId>
@@ -67,6 +70,17 @@
         <dependency>
             <groupId>com.wso2</groupId>
             <artifactId>com.wso2.openbanking.accelerator.service.activator</artifactId>
+            <scope>provided</scope>
+        </dependency>
+        <dependency>
+            <groupId>org.wso2.carbon.identity.inbound.auth.oauth2</groupId>
+            <artifactId>org.wso2.carbon.identity.oauth</artifactId>
+            <scope>provided</scope>
+        </dependency>
+        <dependency>
+            <groupId>org.wso2.carbon.extension.identity.oauth.addons</groupId>
+            <artifactId>org.wso2.carbon.identity.oauth2.token.handler.clientauth.jwt</artifactId>
+            <scope>provided</scope>
         </dependency>
         <dependency>
             <groupId>net.minidev</groupId>
@@ -81,6 +95,7 @@
         <dependency>
             <groupId>com.wso2.openbanking</groupId>
             <artifactId>com.wso2.openbanking.cds.common</artifactId>
+            <scope>provided</scope>
         </dependency>
         <dependency>
             <groupId>org.mockito</groupId>
@@ -135,6 +150,9 @@
                         <exclude>**/*CDSRequestObject.class</exclude>
                         <exclude>**/*CDSIdentityUtil.class</exclude>
                         <exclude>**/*CDSClaimProviderUtil.class</exclude>
+                        <exclude>**/*PrivateKeyJWTClientAuthenticator.class</exclude>
+                        <exclude>**/CDSJWTValidator.class</exclude>
+                        <exclude>**/internal/**/*</exclude>
                     </excludes>
                 </configuration>
                 <executions>
@@ -214,6 +232,77 @@
                         </goals>
                     </execution>
                 </executions>
+            </plugin>
+            <plugin>
+                <groupId>org.apache.felix</groupId>
+                <artifactId>maven-bundle-plugin</artifactId>
+                <extensions>true</extensions>
+                <configuration>
+                    <instructions>
+                        <Bundle-SymbolicName>
+                            ${project.artifactId}
+                        </Bundle-SymbolicName>
+                        <Private-Package>
+                            com.wso2.openbanking.cds.identity.internal
+                        </Private-Package>
+                        <Import-Package>
+                            javax.validation.*,
+                            org.apache.commons.beanutils,
+                            org.apache.commons.io,
+                            org.apache.commons.logging;version="${commons.logging.version}",
+                            org.osgi.framework;version="${osgi.framework.imp.pkg.version.range}",
+                            org.osgi.service.component;version="${osgi.service.component.imp.pkg.version.range}",
+                            org.wso2.carbon.identity.application.authentication.framework.*;version="${carbon.identity.framework.version.range}",
+                            org.wso2.carbon.identity.application.common;version="${carbon.identity.framework.version.range}",
+                            org.wso2.carbon.identity.application.common.model;version="${carbon.identity.framework.version.range}",
+                            org.wso2.carbon.identity.core.util;version="${carbon.identity.framework.version.range}",
+                            org.wso2.carbon.identity.application.mgt.*;version="${carbon.identity.framework.version.range}",
+                            org.wso2.carbon.context;version="${carbon.kernel.version}",
+                            org.wso2.carbon.identity.oauth;version="${identity.inbound.auth.oauth.version}",
+                            org.wso2.carbon.identity.oauth2;version="${identity.inbound.auth.oauth.version}",
+                            org.wso2.carbon.identity.oauth2.client.authentication;version="${identity.inbound.auth.oauth.version}",
+                            org.wso2.carbon.identity.oauth2.keyidprovider;version="${identity.inbound.auth.oauth.version}",
+                            org.wso2.carbon.identity.openidconnect;version="${identity.inbound.auth.oauth.version}",
+                            org.wso2.carbon.user.core.service;version="${carbon.kernel.version}",
+                            com.wso2.openbanking.accelerator.common.config;version="${accelerator.project.version.range}",
+                            com.wso2.openbanking.accelerator.common.util;version="${accelerator.project.version.range}",
+                            com.wso2.openbanking.accelerator.identity.auth.extensions.request.validator;version="${accelerator.project.version.range}",
+                            com.wso2.openbanking.accelerator.identity.auth.extensions.response.handler;version="${accelerator.project.version.range}",
+                            com.wso2.openbanking.accelerator.identity.authenticator;version="${accelerator.project.version.range}",
+                            com.wso2.openbanking.accelerator.identity.claims;version="${accelerator.project.version.range}",
+                            com.wso2.openbanking.accelerator.identity.clientauth;version="${accelerator.project.version.range}",
+                            com.wso2.openbanking.accelerator.identity.dcr.validation;version="${accelerator.project.version.range}",
+                            com.wso2.openbanking.accelerator.identity.interceptor;version="${accelerator.project.version.range}",
+                            com.wso2.openbanking.accelerator.identity.keyidprovider;version="${accelerator.project.version.range}",
+                            com.wso2.openbanking.accelerator.identity.listener.application;version="${accelerator.project.version.range}",
+                            com.wso2.openbanking.accelerator.identity.push.auth.extension.request.validator;version="${accelerator.project.version.range}",
+                            com.wso2.openbanking.accelerator.identity.token;version="${accelerator.project.version.range}",
+                            com.wso2.openbanking.accelerator.identity.token.validators;version="${accelerator.project.version.range}",
+                            com.wso2.openbanking.accelerator.throttler.service;version="${accelerator.project.version.range}",
+                            *
+                        </Import-Package>
+                        <Export-Package>
+                            !com.wso2.openbanking.cds.identity.internal,
+                            com.wso2.openbanking.cds.identity.authenticator;version="${project.version}",
+                            com.wso2.openbanking.cds.identity.authenticator.util;version="${project.version}",
+                            com.wso2.openbanking.cds.identity.dcr.*;version="${project.version}",
+                            com.wso2.openbanking.cds.identity.auth.extensions.request.validator;version="${project.version}",
+                            com.wso2.openbanking.cds.identity.auth.extensions.request.validator.*;version="${project.version}",
+                            com.wso2.openbanking.cds.identity.auth.extensions.response.handler;version="${project.version}",
+                            com.wso2.openbanking.cds.identity.claims;version="${project.version}",
+                            com.wso2.openbanking.cds.identity.claims.*;version="${project.version}",
+                            com.wso2.openbanking.cds.identity.grant.type.handlers;version="${project.version}",
+                            com.wso2.openbanking.cds.identity.grant.type.handlers.*;version="${project.version}",
+                            com.wso2.openbanking.cds.identity.listener.application;version="${project.version}",
+                            com.wso2.openbanking.cds.identity.metadata.periodical.updater;version="${project.version}",
+                            com.wso2.openbanking.cds.identity.metadata.periodical.updater.*;version="${project.version}",
+                            com.wso2.openbanking.cds.identity.push.auth.extension.request.validator;version="${project.version}",
+                            com.wso2.openbanking.cds.identity.utils;version="${project.version}"
+                        </Export-Package>
+                        <DynamicImport-Package>*</DynamicImport-Package>
+                        <_dsannotations>*</_dsannotations>
+                    </instructions>
+                </configuration>
             </plugin>
         </plugins>
     </build>
