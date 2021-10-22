@@ -17,7 +17,7 @@
   <groupId>com.wso2</groupId>
   <artifactId>open-banking-test-suite</artifactId>
   <name>WSO2 Open Banking Toolkit CDS Test Suite</name>
-  <version>1.0.0-M2</version>
+  <version>1.0.0-M3</version>
   <packaging>pom</packaging>
   <modules>
     <module>open-banking-test-framework</module>
