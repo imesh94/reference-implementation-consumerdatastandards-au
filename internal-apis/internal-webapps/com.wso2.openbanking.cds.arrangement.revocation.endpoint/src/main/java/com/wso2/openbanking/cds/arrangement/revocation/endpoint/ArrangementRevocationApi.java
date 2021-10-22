@@ -18,9 +18,12 @@ import com.wso2.openbanking.accelerator.consent.mgt.dao.models.DetailedConsentRe
 import com.wso2.openbanking.accelerator.consent.mgt.service.impl.ConsentCoreServiceImpl;
 import com.wso2.openbanking.accelerator.runtime.identity.authn.filter.OBOAuthClientAuthenticatorProxy;
 import com.wso2.openbanking.cds.arrangement.revocation.constants.Constants;
+import com.wso2.openbanking.cds.common.config.OpenBankingCDSConfigParser;
 import com.wso2.openbanking.cds.common.error.handling.models.CDSErrorMeta;
 import com.wso2.openbanking.cds.common.error.handling.util.ErrorConstants;
 import com.wso2.openbanking.cds.common.error.handling.util.ErrorUtil;
+import com.wso2.openbanking.cds.common.metadata.domain.MetadataValidationResponse;
+import com.wso2.openbanking.cds.common.metadata.status.validator.service.MetadataService;
 import io.swagger.annotations.Api;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.logging.Log;
@@ -45,8 +48,6 @@ import javax.ws.rs.core.Response;
  * CDR Arrangement Revocation Endpoint used by data recipients to revoke an existing sharing arrangement.
  * Endpoint is secured with MTLS
  * Private key jwt mechanism is used to authenticate the client
- * <p>
- * ToDO: Move to internal-apis directory
  */
 @Path("/arrangements")
 @InInterceptors(classes = OBOAuthClientAuthenticatorProxy.class)
@@ -78,13 +79,15 @@ public class ArrangementRevocationApi {
                     "not present in the request", HttpServletResponse.SC_BAD_REQUEST);
         }
 
-        //ToDo:Uncomment when metadata cache feature is available
-        /*if (OpenBankingCDSConfigParser.getInstance().isMetadataCacheEnabled() &&
-                !validateMetaData(clientAuthnContext.getClientId())) {
-            return handleErrorResponse(ErrorConstants.AUErrorEnum.INVALID_PRODUCT_STATUS,
-                    "software product is not in a valid state", Constants.POINTER_SOFTWARE_PRODUCT_STATUS,
-                    HttpServletResponse.SC_FORBIDDEN);
-        }*/
+        // Validate client status from metadata service
+        if (OpenBankingCDSConfigParser.getInstance().isMetadataCacheEnabled()) {
+            MetadataValidationResponse metadataValidationResponse = MetadataService.
+                    shouldFacilitateConsentWithdrawal(clientAuthnContext.getClientId());
+            if (!metadataValidationResponse.isValid()) {
+                return handleErrorResponse(ErrorConstants.AUErrorEnum.INVALID_PRODUCT_STATUS,
+                        metadataValidationResponse.getErrorMessage(), HttpServletResponse.SC_FORBIDDEN);
+            }
+        }
 
         String cdrArrangementId = objList.get(0);
         String clientId = clientAuthnContext.getClientId();
@@ -139,16 +142,6 @@ public class ArrangementRevocationApi {
         // Respond with 204 if successful
         return Response.noContent().build();
     }
-
-    //ToDo:Uncomment when metadata cache feature is available
-    /*private boolean validateMetaData(String clientId) {
-
-        String spStatus = AUMetadataService.getSoftwareProductStatus(clientId);
-        if (Constants.SP_ACTIVE.equalsIgnoreCase(spStatus) || Constants.SP_INACTIVE.equalsIgnoreCase(spStatus)) {
-            return true;
-        }
-        return false;
-    }*/
 
     /**
      * Return CDS specific error response
