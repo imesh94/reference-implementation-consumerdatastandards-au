@@ -11,15 +11,26 @@
  */
 package com.wso2.openbanking.cds.identity.authenticator;
 
+import com.nimbusds.jwt.JWTClaimsSet;
+import com.nimbusds.jwt.SignedJWT;
 import com.wso2.openbanking.cds.identity.authenticator.util.CDSJWTValidator;
 import com.wso2.openbanking.cds.identity.authenticator.util.Constants;
+import org.apache.commons.lang.StringUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.wso2.carbon.identity.oauth2.token.handler.clientauth.jwt.PrivateKeyJWTClientAuthenticator;
+import org.wso2.carbon.identity.base.IdentityConstants;
+import org.wso2.carbon.identity.core.util.IdentityUtil;
+import org.wso2.carbon.identity.oauth.common.OAuth2ErrorCodes;
+import org.wso2.carbon.identity.oauth2.bean.OAuthClientAuthnContext;
+import org.wso2.carbon.identity.oauth2.client.authentication.AbstractOAuthClientAuthenticator;
+import org.wso2.carbon.identity.oauth2.client.authentication.OAuthClientAuthnException;
 import org.wso2.carbon.identity.oauth2.util.OAuth2Util;
 
+import java.text.ParseException;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
+import javax.servlet.http.HttpServletRequest;
 
 import static org.apache.commons.lang.StringUtils.isNotEmpty;
 
@@ -28,7 +39,7 @@ import static org.apache.commons.lang.StringUtils.isNotEmpty;
  * Supports validating multiple audience claim values according to the CDS Specification
  * http://openid.net/specs/openid-connect-core-1_0.html#ClientAuthentication.
  */
-public class CDSBasePrivateKeyJWTClientAuthenticator extends PrivateKeyJWTClientAuthenticator {
+public class CDSBasePrivateKeyJWTClientAuthenticator extends AbstractOAuthClientAuthenticator {
 
     private static final Log LOG = LogFactory.getLog(CDSBasePrivateKeyJWTClientAuthenticator.class);
     private CDSJWTValidator jwtValidator;
@@ -53,6 +64,97 @@ public class CDSBasePrivateKeyJWTClientAuthenticator extends PrivateKeyJWTClient
             LOG.warn("Invalid PrivateKeyJWT Validity period found in the configuration. Using default value: " +
                     rejectBeforePeriod);
         }
+    }
+
+    /**
+     * To check whether the authentication is successful.
+     *
+     * @param httpServletRequest      http servelet request
+     * @param bodyParameters          map of request body params
+     * @param oAuthClientAuthnContext oAuthClientAuthnContext
+     * @return true if the authentication is successful.
+     * @throws OAuthClientAuthnException
+     */
+    @Override
+    public boolean authenticateClient(HttpServletRequest httpServletRequest, Map<String, List> bodyParameters,
+                                      OAuthClientAuthnContext oAuthClientAuthnContext)
+            throws OAuthClientAuthnException {
+
+        return jwtValidator.isValidAssertion(getSignedJWT(bodyParameters, oAuthClientAuthnContext));
+    }
+
+    /**
+     * Returns whether the incoming request can be handled by the particular authenticator.
+     *
+     * @param httpServletRequest      http servelet request
+     * @param bodyParameters          map of request body params
+     * @param oAuthClientAuthnContext oAuthClientAuthnContext
+     * @return true if the incoming request can be handled.
+     */
+    @Override
+    public boolean canAuthenticate(HttpServletRequest httpServletRequest, Map<String, List> bodyParameters,
+                                   OAuthClientAuthnContext oAuthClientAuthnContext) {
+
+        String oauthJWTAssertionType = getBodyParameters(bodyParameters).get(Constants.OAUTH_JWT_ASSERTION_TYPE);
+        String oauthJWTAssertion = getBodyParameters(bodyParameters).get(Constants.OAUTH_JWT_ASSERTION);
+        return isValidJWTClientAssertionRequest(oauthJWTAssertionType, oauthJWTAssertion);
+    }
+
+    /**
+     * Retrievs the client ID which is extracted from the JWT.
+     *
+     * @param httpServletRequest
+     * @param bodyParameters
+     * @param oAuthClientAuthnContext
+     * @return jwt 'sub' value as the client id
+     * @throws OAuthClientAuthnException
+     */
+    @Override
+    public String getClientId(HttpServletRequest httpServletRequest, Map<String, List> bodyParameters,
+                              OAuthClientAuthnContext oAuthClientAuthnContext) throws OAuthClientAuthnException {
+
+        SignedJWT signedJWT = getSignedJWT(bodyParameters, oAuthClientAuthnContext);
+        JWTClaimsSet claimsSet = jwtValidator.getClaimSet(signedJWT);
+        return jwtValidator.resolveSubject(claimsSet);
+    }
+
+    private SignedJWT getSignedJWT(Map<String, List> bodyParameters, OAuthClientAuthnContext oAuthClientAuthnContext)
+            throws OAuthClientAuthnException {
+
+        Object signedJWTFromContext = oAuthClientAuthnContext.getParameter(Constants.PRIVATE_KEY_JWT);
+        if (signedJWTFromContext != null) {
+            return (SignedJWT) signedJWTFromContext;
+        }
+        String assertion = getBodyParameters(bodyParameters).get(Constants.OAUTH_JWT_ASSERTION);
+        String errorMessage = "No Valid Assertion was found for " + Constants.OAUTH_JWT_BEARER_GRANT_TYPE;
+        SignedJWT signedJWT;
+        if (StringUtils.isEmpty(assertion)) {
+            throw new OAuthClientAuthnException(errorMessage, OAuth2ErrorCodes.INVALID_REQUEST);
+        }
+        try {
+            signedJWT = SignedJWT.parse(assertion);
+        } catch (ParseException e) {
+            if (LOG.isDebugEnabled()) {
+                LOG.debug(e.getMessage());
+            }
+            throw new OAuthClientAuthnException("Error while parsing the JWT.", OAuth2ErrorCodes.INVALID_REQUEST);
+        }
+        if (signedJWT == null) {
+            throw new OAuthClientAuthnException(errorMessage, OAuth2ErrorCodes.INVALID_REQUEST);
+        }
+        oAuthClientAuthnContext.addParameter(Constants.PRIVATE_KEY_JWT, signedJWT);
+        return signedJWT;
+    }
+
+    private boolean isValidJWTClientAssertionRequest(String clientAssertionType, String clientAssertion) {
+
+        if (LOG.isDebugEnabled()) {
+            LOG.debug("Authenticate Requested with clientAssertionType : " + clientAssertionType);
+            if (IdentityUtil.isTokenLoggable(IdentityConstants.IdentityTokens.ACCESS_TOKEN)) {
+                LOG.debug("Authenticate Requested with clientAssertion : " + clientAssertion);
+            }
+        }
+        return Constants.OAUTH_JWT_BEARER_GRANT_TYPE.equals(clientAssertionType) && isNotEmpty(clientAssertion);
     }
 
     private CDSJWTValidator createJWTValidator(String accessedEndpoint, boolean preventTokenReuse, int rejectBefore) {
