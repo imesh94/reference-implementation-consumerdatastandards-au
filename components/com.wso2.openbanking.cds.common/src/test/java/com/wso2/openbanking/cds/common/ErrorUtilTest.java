@@ -12,8 +12,12 @@
 
 package com.wso2.openbanking.cds.common;
 
+import com.wso2.openbanking.cds.common.error.handling.models.CDSErrorMeta;
+import com.wso2.openbanking.cds.common.error.handling.util.ErrorConstants;
+import com.wso2.openbanking.cds.common.error.handling.util.ErrorUtil;
 import com.wso2.openbanking.cds.common.util.CommonTestDataProvider;
-import com.wso2.openbanking.cds.common.utils.ErrorUtil;
+import org.json.JSONArray;
+import org.json.JSONObject;
 import org.testng.Assert;
 import org.testng.annotations.Test;
 
@@ -42,5 +46,22 @@ public class ErrorUtilTest {
         int httpsCode = ErrorUtil.getHTTPErrorCode(statusCodes);
 
         Assert.assertEquals(httpsCode, assertion);
+    }
+
+    @Test(dataProvider = "ErrorObjectTestDataProvider", dataProviderClass = CommonTestDataProvider.class)
+    public void testGetErrorObject(ErrorConstants.AUErrorEnum error, String errorMessage, CDSErrorMeta metaData) {
+
+        JSONObject errorJson = ErrorUtil.getErrorObject(error, errorMessage, metaData);
+        Assert.assertEquals(errorJson.get(ErrorConstants.ERROR_ENUM), error);
+    }
+
+    @Test(dataProvider = "ErrorObjectTestDataProvider", dataProviderClass = CommonTestDataProvider.class)
+    public void testGetErrorJson(ErrorConstants.AUErrorEnum error, String errorMessage, CDSErrorMeta metaData) {
+
+        JSONObject errorJson = ErrorUtil.getErrorObject(error, errorMessage, metaData);
+        JSONArray errorJsonArray = new JSONArray();
+        errorJsonArray.put(errorJson);
+        String errorJsonString = ErrorUtil.getErrorJson(errorJsonArray);
+        Assert.assertNotNull(errorJsonString);
     }
 }

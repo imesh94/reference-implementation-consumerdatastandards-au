@@ -16,9 +16,9 @@ import com.wso2.openbanking.accelerator.consent.extensions.validate.model.Consen
 import com.wso2.openbanking.accelerator.consent.extensions.validate.model.ConsentValidationResult;
 import com.wso2.openbanking.accelerator.consent.mgt.dao.models.DetailedConsentResource;
 import com.wso2.openbanking.cds.common.config.OpenBankingCDSConfigParser;
+import com.wso2.openbanking.cds.common.error.handling.util.ErrorConstants;
 import com.wso2.openbanking.cds.common.metadata.domain.MetadataValidationResponse;
 import com.wso2.openbanking.cds.common.metadata.status.validator.service.MetadataService;
-import com.wso2.openbanking.cds.common.utils.ErrorConstants;
 import com.wso2.openbanking.cds.consent.extensions.common.CDSConsentExtensionConstants;
 import com.wso2.openbanking.cds.consent.extensions.util.CDSConsentValidateTestConstants;
 import net.minidev.json.JSONObject;
@@ -148,7 +148,8 @@ public class CDSConsentValidatorTest extends PowerMockTestCase {
 
         Assert.assertFalse(consentValidationResult.isValid());
         Assert.assertEquals(consentValidationResult.getErrorMessage(), "The consumer's consent is revoked");
-        Assert.assertEquals(consentValidationResult.getErrorCode(), "AU.CDR.Entitlements.ConsentIsRevoked");
+        Assert.assertEquals(consentValidationResult.getErrorCode(),
+                "urn:au-cds:error:cds-all:Authorisation/RevokedConsent");
         Assert.assertEquals(consentValidationResult.getHttpCode(), 403);
 
     }
@@ -169,7 +170,8 @@ public class CDSConsentValidatorTest extends PowerMockTestCase {
         Assert.assertFalse(consentValidationResult.isValid());
         Assert.assertEquals(consentValidationResult.getErrorMessage(), "The resource’s associated consent " +
                 "is not in a status that would allow the resource to be executed");
-        Assert.assertEquals(consentValidationResult.getErrorCode(), "AU.CDR.Entitlements.InvalidConsentStatus");
+        Assert.assertEquals(consentValidationResult.getErrorCode(),
+                "urn:au-cds:error:cds-all:Authorisation/InvalidConsent");
         Assert.assertEquals(consentValidationResult.getHttpCode(), 403);
     }
 
@@ -229,7 +231,8 @@ public class CDSConsentValidatorTest extends PowerMockTestCase {
 
         Assert.assertFalse(consentValidationResult.isValid());
         Assert.assertEquals(consentValidationResult.getErrorMessage(), "ID of the account not found or invalid");
-        Assert.assertEquals(consentValidationResult.getErrorCode(), "AU.CDR.Resource.InvalidBankingAccount");
+        Assert.assertEquals(consentValidationResult.getErrorCode(),
+                "urn:au-cds:error:cds-banking:Authorisation/InvalidBankingAccount");
         Assert.assertEquals(consentValidationResult.getHttpCode(), 422);
     }
 

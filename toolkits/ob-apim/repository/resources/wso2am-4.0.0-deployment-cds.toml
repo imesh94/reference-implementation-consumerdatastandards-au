@@ -417,7 +417,7 @@ jwks_endpoint_name = "jwks_uri"
 app_name_claim = "client_name"
 token_endpoint = "https://APIM_HOSTNAME:9443/oauth2/token"
 use_softwareIdForAppName = true
-
+#isRequestJWT = true
 #[open_banking.dcr.jwks_retriever]
 #connection_timeout = 3000
 #read_timeout = 3000
@@ -646,6 +646,17 @@ roles = "AISP, PISP"
 [[open_banking.gateway.tpp_management.allowed_scopes]]
 name = "payments"
 roles = "PISP"
+
+#===================for Connection pool====================
+[open_banking.http_connection_pool]
+max_connections = 2000
+max_connections_per_route = 1500
+
+#===================for event==============================
+[open_banking.event]
+queue_size = 32768
+worker_thread_count = 10
+event_executor = "com.wso2.openbanking.accelerator.common.event.executor.DefaultOBEventExecutor"
 
 #=======================configs related to open-banking-cds.xml=====================
 

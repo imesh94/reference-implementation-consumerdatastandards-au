@@ -207,11 +207,38 @@ password = "${admin.password}"
 'header.X-WSO2-KEY-MANAGER' = "WSO2-IS"
 
 [[event_listener]]
+id = "cds_revoke_private_key_jwt_authenticator"
+type = "org.wso2.carbon.identity.core.handler.AbstractIdentityHandler"
+name = "com.wso2.openbanking.cds.identity.authenticator.CDSRevocationPrivateKeyJWTClientAuthenticator"
+order = "896"
+enable = true
+
+[event_listener.properties]
+EndpointAlias = "https://IS_HOSTNAME:9446/oauth2/revoke"
+
+[[event_listener]]
+id = "cds_arrangement_private_key_jwt_authenticator"
+type = "org.wso2.carbon.identity.core.handler.AbstractIdentityHandler"
+name = "com.wso2.openbanking.cds.identity.authenticator.CDSArrangementPrivateKeyJWTClientAuthenticator"
+order = "897"
+enable = true
+
+[event_listener.properties]
+EndpointAlias = "https://IS_HOSTNAME:8243/arrangements/1.0.0"
+
+[[event_listener]]
+id = "cds_token_private_key_jwt_authenticator"
+type = "org.wso2.carbon.identity.core.handler.AbstractIdentityHandler"
+name = "com.wso2.openbanking.cds.identity.authenticator.CDSTokenPrivateKeyJWTClientAuthenticator"
+order = "898"
+enable = true
+
+[[event_listener]]
 id = "private_key_jwt_authenticator"
 type = "org.wso2.carbon.identity.core.handler.AbstractIdentityHandler"
 name = "org.wso2.carbon.identity.oauth2.token.handler.clientauth.jwt.PrivateKeyJWTClientAuthenticator"
 order = "899"
-
+enable = false
 
 [oauth.grant_type]
 iwa_ntlm.enable = false
@@ -299,6 +326,11 @@ allowed_auth_handlers = ["BasicAuthentication"]
 context = "(.*)/api/openbanking/application/(.*)"
 secure="false"
 http_method="GET"
+
+[[resource.access_control]]
+context = "(.*)/api/openbanking/cds-arrangement-revocation/(.*)"
+secure="false"
+http_method="all"
 
 [authentication.adaptive.event_publisher]
 url = "http://IS_HOSTNAME:8006/"
@@ -398,8 +430,8 @@ read_timeout = 3000
 name = "cdr-register"
 
 #Signature algorithm types that are allowed
-#[[open_banking.signature_validation.allowed_algorithms.algorithms]]
-#algorithm = "PS256"
+#[[open_banking.signature_validation.allowed_algorithms]]
+#name = "PS256"
 
 [open_banking.sca.primaryauth]
 name = "IdentifierExecutor"
@@ -534,28 +566,39 @@ response_type_handler="com.wso2.openbanking.cds.identity.auth.extensions.respons
 claim_provider="com.wso2.openbanking.cds.identity.claims.CDSClaimProvider"
 push_auth_request_validator="com.wso2.openbanking.cds.identity.push.auth.extension.request.validator.CDSPushAuthRequestValidator"
 
+#===================for Connection pool====================
+[open_banking.http_connection_pool]
+max_connections = 2000
+max_connections_per_route = 1500
+
+#===================for event==============================
+[open_banking.event]
+queue_size = 32768
+worker_thread_count = 10
+event_executor = "com.wso2.openbanking.accelerator.common.event.executor.DefaultOBEventExecutor"
+
 #=======================configs related to open-banking-cds.xml=====================
 
 [open_banking_cds.dcr]
-enable_uri_validation=true
-enable_hostname_validation=true
-enable_sector_identifier_uri_validation=true
+enable_uri_validation=false
+enable_hostname_validation=false
+enable_sector_identifier_uri_validation=false
 
 [open_banking_cds.consent_management]
-sharable_accounts_retrieve_endpoint="http://localhost:9763/api/openbanking/cds/backend/services/bankaccounts/bankaccountservice/sharable-accounts"
+sharable_accounts_retrieve_endpoint="http://APIM_HOSTNAME:9763/api/openbanking/cds/backend/services/bankaccounts/bankaccountservice/sharable-accounts"
 validate_account_id_on_retrieval=true
 enable_account_masking=true
 
 [open_banking_cds.customer_details]
 enable=true
-customer_details_retrieval_endpoint="http://localhost:9763/api/openbanking/cds/backend/services/customerdetails/details/{userId}"
+customer_details_retrieval_endpoint="http://APIM_HOSTNAME:9763/api/openbanking/cds/backend/services/customerdetails/details/{userId}"
 
 [open_banking_cds.metadata_cache]
 enable=true
 update_period=2
 data_recipients_discovery_url="https://api.cdr.gov.au/cdr-register/v1/banking/data-recipients"
-dcr_internal_url="https://localhost:9446/api/openbanking/dynamic-client-registration/register"
-apim_application_search_url="https://localhost:9443/api/am/admin/v2/applications"
+dcr_internal_url="https://IS_HOSTNAME:9446/api/openbanking/dynamic-client-registration/register"
+apim_application_search_url="https://APIM_HOSTNAME:9443/api/am/admin/v2/applications"
 http_request_retry_count=2
 dataholder_responsibilities.bulk_execution=true
 dataholder_responsibilities.bulk_execution_hour=2
