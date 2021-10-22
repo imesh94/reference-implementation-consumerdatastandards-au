@@ -246,9 +246,9 @@
                             com.wso2.openbanking.cds.identity.internal
                         </Private-Package>
                         <Import-Package>
-                            javax.validation.*;version="0",
-                            org.apache.commons.beanutils;version="0",
-                            org.apache.commons.io;version="0",
+                            javax.validation.*,
+                            org.apache.commons.beanutils,
+                            org.apache.commons.io,
                             org.apache.commons.logging;version="${commons.logging.version}",
                             org.osgi.framework;version="${osgi.framework.imp.pkg.version.range}",
                             org.osgi.service.component;version="${osgi.service.component.imp.pkg.version.range}",

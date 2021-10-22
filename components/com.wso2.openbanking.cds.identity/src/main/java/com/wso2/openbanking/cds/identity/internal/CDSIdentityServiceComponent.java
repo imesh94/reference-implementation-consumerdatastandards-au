@@ -52,11 +52,6 @@ public class CDSIdentityServiceComponent {
                 new CDSTokenPrivateKeyJWTClientAuthenticator(), null);
     }
 
-    public static RealmService getRealmService() {
-        return (RealmService) PrivilegedCarbonContext.getThreadLocalCarbonContext()
-                .getOSGiService(RealmService.class);
-    }
-
     @Reference(
             name = "realm.service",
             service = RealmService.class,
