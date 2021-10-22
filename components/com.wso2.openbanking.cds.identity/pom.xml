@@ -283,7 +283,6 @@
                         </Import-Package>
                         <Export-Package>
                             !com.wso2.openbanking.cds.identity.internal,
-                            com.wso2.openbanking.cds.identity.filters;version="${project.version}",
                             com.wso2.openbanking.cds.identity.authenticator;version="${project.version}",
                             com.wso2.openbanking.cds.identity.authenticator.util;version="${project.version}",
                             com.wso2.openbanking.cds.identity.dcr.*;version="${project.version}",
