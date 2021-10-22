@@ -27,6 +27,7 @@
     <packaging>pom</packaging>
     <modules>
         <module>internal-webapps/com.wso2.openbanking.cds.metadata.mgt.endpoint</module>
+        <module>internal-webapps/com.wso2.openbanking.cds.arrangement.revocation.endpoint</module>
     </modules>
 
 </project>
