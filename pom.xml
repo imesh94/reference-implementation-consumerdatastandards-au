@@ -205,6 +205,11 @@
             </dependency>
             <dependency>
                 <groupId>com.wso2</groupId>
+                <artifactId>com.wso2.openbanking.accelerator.runtime.identity.authn.filter</artifactId>
+                <version>${accelerator.project.version.range}</version>
+            </dependency>
+            <dependency>
+                <groupId>com.wso2</groupId>
                 <artifactId>com.wso2.openbanking.accelerator.consent.service</artifactId>
                 <version>${accelerator.project.version.range}</version>
             </dependency>
@@ -226,7 +231,7 @@
             <dependency>
                 <groupId>com.wso2</groupId>
                 <artifactId>com.wso2.openbanking.accelerator.service.activator</artifactId>
-                <version>${accelerator.project.version}</version>
+                <version>${accelerator.project.version.range}</version>
             </dependency>
             <!--Dependencies from Toolkit -->
             <dependency>
@@ -240,6 +245,21 @@
                 <version>${project.version}</version>
             </dependency>
             <!--General dependencies-->
+            <dependency>
+                <groupId>org.wso2.carbon.identity.inbound.auth.oauth2</groupId>
+                <artifactId>org.wso2.carbon.identity.oauth.client.authn.filter</artifactId>
+                <version>${identity.inbound.auth.oauth.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>org.wso2.carbon.identity.inbound.auth.oauth2</groupId>
+                <artifactId>org.wso2.carbon.identity.oauth</artifactId>
+                <version>${identity.inbound.auth.oauth.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>org.wso2.carbon.extension.identity.oauth.addons</groupId>
+                <artifactId>org.wso2.carbon.identity.oauth2.token.handler.clientauth.jwt</artifactId>
+                <version>${carbon.identity.clientauth.jwt.version}</version>
+            </dependency>
             <dependency>
                 <groupId>org.wso2.carbon.apimgt</groupId>
                 <artifactId>org.wso2.carbon.apimgt.gateway</artifactId>
@@ -363,6 +383,7 @@
 
     <properties>
         <commons-lang.version>3.4</commons-lang.version>
+        <identity.inbound.auth.oauth.version>6.4.111</identity.inbound.auth.oauth.version>
         <accelerator.project.version>3.0.0</accelerator.project.version>
         <accelerator.project.version.range>[3.0.0, 4.0.0)</accelerator.project.version.range>
         <wso2.maven.compiler.source>1.8</wso2.maven.compiler.source>
@@ -394,6 +415,11 @@
         <spring-web-dev.version>5.3.3</spring-web-dev.version>
         <cxf-bundle-jaxrs.version>2.7.18</cxf-bundle-jaxrs.version>
         <httpclient.version>4.5.6</httpclient.version>
+        <carbon.identity.framework.version.range>[5.11.0, 6.1.0)</carbon.identity.framework.version.range>
+        <osgi.framework.imp.pkg.version.range>[1.7.0, 2.0.0)</osgi.framework.imp.pkg.version.range>
+        <osgi.service.component.imp.pkg.version.range>[1.2.0, 2.0.0)</osgi.service.component.imp.pkg.version.range>
+        <carbon.kernel.version>4.6.0</carbon.kernel.version>
+        <carbon.identity.clientauth.jwt.version>2.2.0</carbon.identity.clientauth.jwt.version>
     </properties>
 
 </project>
