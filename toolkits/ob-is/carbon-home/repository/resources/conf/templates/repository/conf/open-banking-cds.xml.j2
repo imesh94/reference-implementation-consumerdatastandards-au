@@ -113,4 +113,18 @@
             {% endif %}
         </DataHolderResponsibilities>
      </MetaDataCache>
+     <DataHolder>
+        {% if open_banking_cds.data_holder.client_id is defined %}
+        <ClientId>{{open_banking_cds.data_holder.client_id}}</ClientId>
+        {% else %}
+        <ClientId>dataholderbrand</ClientId>
+        {% endif %}
+     </DataHolder>
+     <RecipientConsentRevocationEndpoint>
+        {% if open_banking_cds.recipient_consent_revocation_endpoint.enable is defined %}
+        <Enable>{{open_banking_cds.recipient_consent_revocation_endpoint.enable}}</Enable>
+        {% else %}
+        <Enable>false</Enable>
+        {% endif %}
+     </RecipientConsentRevocationEndpoint>
 </Server>

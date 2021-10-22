@@ -575,7 +575,7 @@ max_connections_per_route = 1500
 [open_banking.event]
 queue_size = 32768
 worker_thread_count = 10
-event_executor = "com.wso2.openbanking.accelerator.common.event.executor.DefaultOBEventExecutor"
+event_executor = "com.wso2.openbanking.cds.consent.extensions.event.executor.CDSConsentEventExecutor"
 
 #=======================configs related to open-banking-cds.xml=====================
 
@@ -602,3 +602,9 @@ apim_application_search_url="https://APIM_HOSTNAME:9443/api/am/admin/v2/applicat
 http_request_retry_count=2
 dataholder_responsibilities.bulk_execution=true
 dataholder_responsibilities.bulk_execution_hour=2
+
+[open_banking_cds.recipient_consent_revocation_endpoint]
+enable=false
+
+[open_banking_cds.data_holder]
+client_id = "dataholderbrand"
