@@ -22,7 +22,7 @@ import com.wso2.openbanking.accelerator.common.exception.OpenBankingException;
 import com.wso2.openbanking.accelerator.common.util.Generated;
 import com.wso2.openbanking.accelerator.identity.util.IdentityCommonConstants;
 import com.wso2.openbanking.accelerator.identity.util.IdentityCommonHelper;
-import com.wso2.openbanking.cds.identity.internal.CDSIdentityServiceComponent;
+import com.wso2.openbanking.cds.identity.internal.CDSIdentityDataHolder;
 import org.apache.commons.lang.StringUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -214,7 +214,7 @@ public class CDSJWTValidator {
      * Check if the sent audience claim is one of the expected audiences in the list
      *
      * @param expectedAudiences - Expected audiences list
-     * @param audienceList - Received audiences list
+     * @param audienceList      - Received audiences list
      * @return - boolean
      * @throws OAuthClientAuthnException - OAuthClientAuthnException
      */
@@ -466,7 +466,8 @@ public class CDSJWTValidator {
 
         int tenantId;
         try {
-            tenantId = CDSIdentityServiceComponent.getRealmService().getTenantManager().getTenantId(tenantDomain);
+            tenantId = CDSIdentityDataHolder.getInstance().getRealmService().getTenantManager()
+                    .getTenantId(tenantDomain);
         } catch (org.wso2.carbon.user.api.UserStoreException e) {
             String errorMsg = "Error getting the tenant ID for the tenant domain : " + tenantDomain;
             throw new OAuthClientAuthnException(errorMsg, OAuth2ErrorCodes.INVALID_REQUEST);
