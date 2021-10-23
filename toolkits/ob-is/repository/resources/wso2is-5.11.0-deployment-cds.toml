@@ -373,11 +373,11 @@ retrieve_uma_permission_info_through_introspection = true
 
 [oauth.grant_type.refresh_token]
 enable=true
-grant_handler="com.wso2.openbanking.accelerator.identity.grant.type.handlers.OBRefreshGrantHandler"
+grant_handler="com.wso2.openbanking.cds.identity.grant.type.handlers.CDSRefreshGrantHandler"
 
 [oauth.grant_type.authorization_code]
 enable=true
-grant_handler="com.wso2.openbanking.accelerator.identity.grant.type.handlers.OBAuthorizationCodeGrantHandler"
+grant_handler="com.wso2.openbanking.cds.identity.grant.type.handlers.CDSAuthorizationCodeGrantHandler"
 
 [oauth.grant_type.password]
 enable=true

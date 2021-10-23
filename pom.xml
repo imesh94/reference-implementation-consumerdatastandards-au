@@ -56,6 +56,7 @@
             </activation>
             <modules>
                 <module>components</module>
+                <module>internal-apis</module>
                 <module>toolkits</module>
             </modules>
             <properties>
