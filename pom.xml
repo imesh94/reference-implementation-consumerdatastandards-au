@@ -57,6 +57,7 @@
             <modules>
                 <module>components</module>
                 <module>toolkits</module>
+                <module>internal-apis</module>
             </modules>
             <properties>
                 <npm.executable>npm</npm.executable>
