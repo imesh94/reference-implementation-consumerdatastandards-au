@@ -56,8 +56,8 @@
             </activation>
             <modules>
                 <module>components</module>
-                <module>toolkits</module>
                 <module>internal-apis</module>
+                <module>toolkits</module>
             </modules>
             <properties>
                 <npm.executable>npm</npm.executable>
