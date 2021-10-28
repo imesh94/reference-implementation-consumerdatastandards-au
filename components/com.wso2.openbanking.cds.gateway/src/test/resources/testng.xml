@@ -20,6 +20,7 @@
             <class name="com.wso2.openbanking.cds.gateway.executors.idpermanence.utils.IDPermanenceUtilsTest"></class>
             <class name="com.wso2.openbanking.cds.gateway.executors.idpermanence.IDPermanenceExecutorTest"></class>
             <class name="com.wso2.openbanking.cds.gateway.executors.core.CDSAPIRequestRouterTest"></class>
+            <class name="com.wso2.openbanking.cds.gateway.throttling.CDSThrottleDataPublisherImplTest"></class>
         </classes>
     </test>
 </suite>

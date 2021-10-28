@@ -22,6 +22,9 @@ import org.wso2.carbon.apimgt.common.gateway.dto.RequestContextDTO;
 import java.util.HashMap;
 import java.util.Map;
 
+/**
+ * CDS Throttle data publisher to add custom throttling properties based on request headers.
+ */
 public class CDSThrottleDataPublisherImpl implements ThrottleDataPublisher {
 
     private static final Log LOG = LogFactory.getLog(CDSThrottleDataPublisherImpl.class);
@@ -46,6 +49,7 @@ public class CDSThrottleDataPublisherImpl implements ThrottleDataPublisher {
         String accessToken = (authorizationHeader != null && authorizationHeader.split(" ").length > 1) ?
                 authorizationHeader.split(" ")[1] : null;
 
+        // Encrypt access token
         if (accessToken != null && OpenBankingCDSConfigParser.getInstance().isTokenEncryptionEnabled()) {
             accessToken = CDSCommonUtils.encryptAccessToken(accessToken);
         }
