@@ -66,7 +66,7 @@ public class CDSThrottleDataPublisherImpl implements ThrottleDataPublisher {
         }
 
         //Adding authorization header as a custom property
-        if (authorizationHeader != null) {
+        if (authorizationHeader != null && accessToken != null) {
             LOG.debug("Adding authorization header details to the custom property map");
             customPropertyMap.put(AUTHORIZATION_HEADER, accessToken);
             customPropertyMap.put(AUTHORIZATION_STATUS, SECURED_STATUS);

@@ -49,8 +49,10 @@ public class CDSCommonUtils {
             accessToken = new String(Hex.encodeHex(mac.doFinal(accessToken.getBytes(StandardCharsets.UTF_8))));
         } catch (NoSuchAlgorithmException e) {
             LOG.error("Unable to encrypt the access token. Invalid encryption algorithm.", e);
+            return null;
         } catch (InvalidKeyException e) {
             LOG.error("Unable to encrypt the access token. Invalid encryption key.", e);
+            return null;
         }
         return accessToken;
     }
