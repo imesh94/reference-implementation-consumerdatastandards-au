@@ -24,4 +24,16 @@
         <SecretKey>wso2</SecretKey>
         {% endif %}
     </IdPermanence>
+    <TokenEncryption>
+        {% if open_banking_cds.token_encryption.enabled is defined %}
+        <Enabled>{{open_banking_cds.token_encryption.enabled}}</Enabled>
+        {% else %}
+        <Enabled>true</Enabled>
+        {% endif %}
+        {% if open_banking_cds.token_encryption.secret_key is defined %}
+        <SecretKey>{{open_banking_cds.token_encryption.secret_key}}</SecretKey>
+        {% else %}
+        <SecretKey>wso2</SecretKey>
+        {% endif %}
+    </TokenEncryption>
 </Server>
