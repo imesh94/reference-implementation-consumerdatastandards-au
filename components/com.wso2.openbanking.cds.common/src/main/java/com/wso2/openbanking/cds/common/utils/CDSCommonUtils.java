@@ -23,12 +23,18 @@ import java.security.NoSuchAlgorithmException;
 import javax.crypto.Mac;
 import javax.crypto.spec.SecretKeySpec;
 
+/**
+ * CDS Common Utils.
+ */
 public class CDSCommonUtils {
+
+    private static final String HMACSHA256 = "HmacSHA256";
 
     private static final Log LOG = LogFactory.getLog(CDSCommonUtils.class);
 
     /**
      * Encrypt access token using HmacSHA256
+     *
      * @param accessToken String access token
      * @return encrypted token
      */
@@ -37,9 +43,8 @@ public class CDSCommonUtils {
         try {
             byte[] secretKey = OpenBankingCDSConfigParser.getInstance().getTokenEncryptionSecretKey()
                     .getBytes(StandardCharsets.UTF_8);
-            String algorithm = "HmacSHA256";
-            Mac mac = Mac.getInstance(algorithm);
-            SecretKeySpec secretKeySpec = new SecretKeySpec(secretKey, algorithm);
+            Mac mac = Mac.getInstance(HMACSHA256);
+            SecretKeySpec secretKeySpec = new SecretKeySpec(secretKey, HMACSHA256);
             mac.init(secretKeySpec);
             accessToken = new String(Hex.encodeHex(mac.doFinal(accessToken.getBytes(StandardCharsets.UTF_8))));
         } catch (NoSuchAlgorithmException e) {

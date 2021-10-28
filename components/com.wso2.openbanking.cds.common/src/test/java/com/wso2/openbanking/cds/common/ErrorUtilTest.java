@@ -15,7 +15,7 @@ package com.wso2.openbanking.cds.common;
 import com.wso2.openbanking.cds.common.error.handling.models.CDSErrorMeta;
 import com.wso2.openbanking.cds.common.error.handling.util.ErrorConstants;
 import com.wso2.openbanking.cds.common.error.handling.util.ErrorUtil;
-import com.wso2.openbanking.cds.common.util.CommonTestDataProvider;
+import com.wso2.openbanking.cds.common.testutils.CommonTestDataProvider;
 import org.json.JSONArray;
 import org.json.JSONObject;
 import org.testng.Assert;

@@ -10,7 +10,7 @@
  * with WSO2 governing the purchase of this software and any associated services.
  */
 
-package com.wso2.openbanking.cds.common.util;
+package com.wso2.openbanking.cds.common.testutils;
 
 import com.wso2.openbanking.cds.common.error.handling.models.CDSErrorMeta;
 import com.wso2.openbanking.cds.common.error.handling.util.ErrorConstants;
