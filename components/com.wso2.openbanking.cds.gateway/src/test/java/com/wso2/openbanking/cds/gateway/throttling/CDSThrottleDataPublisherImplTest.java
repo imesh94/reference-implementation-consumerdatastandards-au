@@ -72,6 +72,7 @@ public class CDSThrottleDataPublisherImplTest extends PowerMockTestCase {
 
     @Test
     public void testGetCustomPropertiesWithAuthHeader() {
+
         openBankingCDSConfigParserMock = PowerMockito.mock(OpenBankingCDSConfigParser.class);
         cdsCommonUtilsMock = PowerMockito.mock(CDSCommonUtils.class);
         PowerMockito.mockStatic(OpenBankingCDSConfigParser.class);
@@ -91,6 +92,7 @@ public class CDSThrottleDataPublisherImplTest extends PowerMockTestCase {
 
     @Test
     public void testGetCustomPropertiesWithCustomerIp() {
+
         Map<String, String> headerMap = new HashMap<>();
         headerMap.put(X_FAPI_CUSTOMER_IP_ADDRESS, SAMPLE_IP_ADDRESS);
         Mockito.when(requestContextDTO.getMsgInfo()).thenReturn(msgInfoDTO);
