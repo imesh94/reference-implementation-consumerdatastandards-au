@@ -391,4 +391,26 @@ public class OpenBankingCDSConfigParser {
         }
         return 2;
     }
+
+    /**
+     * Check if access token encryption is enabled
+     * @return configured boolean value, default value is true
+     */
+    public boolean isTokenEncryptionEnabled() {
+        Object config = getConfigElementFromKey(CommonConstants.TOKEN_ENCRYPTION_ENABLED);
+        if (config != null) {
+            return Boolean.parseBoolean((String) config);
+        } else {
+            return true;
+        }
+    }
+
+    /**
+     * Read token encryption secret from config
+     * @return token encryption secret, default value is "wso2"
+     */
+    public String getTokenEncryptionSecretKey() {
+        return getConfigElementFromKey(CommonConstants.TOKEN_ENCRYPTION_SECRETKEY) == null ? "wso2" :
+                ((String) getConfigElementFromKey(CommonConstants.TOKEN_ENCRYPTION_SECRETKEY)).trim();
+    }
 }

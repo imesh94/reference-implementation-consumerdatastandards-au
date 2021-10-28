@@ -24,6 +24,9 @@ public class CommonConstants {
     public static final String OB_CONFIG_FILE = "open-banking-cds.xml";
     public static final String ACCOUNT_MASKING = "ConsentManagement.EnableAccountMasking";
     public static final String ID_PERMANENCE_SECRET_KEY = "IdPermanence.SecretKey";
+    public static final String TOKEN_ENCRYPTION_ENABLED = "TokenEncryption.Enable";
+    public static final String TOKEN_ENCRYPTION_SECRETKEY = "TokenEncryption.SecretKey";
+
 
     // Http related constants
     public static final String POST_METHOD = "POST";
