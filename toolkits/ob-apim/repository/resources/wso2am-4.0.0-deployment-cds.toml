@@ -602,8 +602,8 @@ class = "com.wso2.openbanking.accelerator.gateway.executor.core.OBExtensionListe
 type = "THROTTLING"
 class = "com.wso2.openbanking.accelerator.gateway.throttling.OBThrottlingExtensionImpl"
 
-#[open_banking.gateway.throttling]
-#throttling_data_publisher = "com.wso2.openbanking.sample.throttling.publisher.SampleThrottlingDataPublisher"
+[open_banking.gateway.throttling]
+throttling_data_publisher = "com.wso2.openbanking.cds.gateway.throttling.CDSThrottleDataPublisherImpl"
 
 #keymanager name
 [open_banking.keyManager]
@@ -661,4 +661,8 @@ event_executor = "com.wso2.openbanking.accelerator.common.event.executor.Default
 #=======================configs related to open-banking-cds.xml=====================
 
 [open_banking_cds.id_permanence]
+secret_key="wso2"
+
+[open_banking_cds.token_encryption]
+enabled=true
 secret_key="wso2"
