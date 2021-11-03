@@ -90,9 +90,9 @@ public class BankAccountService {
             "            \"type\": \"TRANS_AND_SAVINGS_ACCOUNTS\",\n" +
             "            \"isEligible\": true,\n" +
             "            \"isJointAccount\": true,\n" +
-            "            \"jointAccountConsentElectionStatus\": true,\n" +
+            "            \"jointAccountConsentElectionStatus\": \"ELECTED\",\n" +
             "            \"jointAccountinfo\": {\n" +
-            "              \"LinkedMember\": [\n" +
+            "              \"linkedMember\": [\n" +
             "                {\n" +
             "                  \"memberId\": \"user1@wso2.com@carbon.super\",\n" +
             "                  \"meta\": {}\n" +

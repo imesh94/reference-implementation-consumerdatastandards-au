@@ -57,6 +57,17 @@ public class CDSConsentExtensionConstants {
     public static final String CONSENT_EXPIRY = "consent_expiration";
     public static final String ACCOUNT_MASKING_ENABLED = "account_masking_enabled";
 
+    // Joint account constants
+    public static final String IS_JOINT_ACCOUNT_RESPONSE = "isJointAccount";
+    public static final String IS_JOINT_ACCOUNT = "is_joint_account";
+    public static final String IS_SELECTABLE = "is_selectable";
+    public static final String JOINT_ACCOUNT_INFO = "jointAccountinfo";
+    public static final String JOINT_ACCOUNT_CONSENT_ELECTION_STATUS = "jointAccountConsentElectionStatus";
+    public static final String JOINT_ACCOUNT_PRE_APPROVAL = "ELECTED";
+    public static final String JOINT_ACCOUNT_NO_SHARING = "UNAVAILABLE";
+    public static final String LINKED_MEMBER = "linkedMember";
+    public static final String LINKED_MEMBERS_COUNT = "linked_members_count";
+
     public static final String CHAR_SET = "UTF-8";
     public static final String CUSTOMER_TYPE = "customerUType";
     public static final String ORGANISATION = "Organisation";

@@ -40,11 +40,36 @@
                         <c:forEach items="${accounts_data}" var="record">
                             <label for="${record['display_name']}">
                                 <input type="checkbox" id="${record['display_name']}" name="chkAccounts"
-                                       value="${record['account_id']}" onclick="updateAcc()"/>
-                                    ${record['display_name']} </br> 
-                                    <span class="accountIdClass" id="${record['account_id']}">
-                                        <small>${record['account_id']}</small>
-                                    </span>
+                                    value="${record['account_id']}" onclick="updateAcc()"
+                                    ${record['is_joint_account'] ? record['is_selectable'] ? "" : "disabled='disabled'" : ""}
+                                />
+                                ${record['display_name']} </br>
+                                <span class="accountIdClass" id="${record['account_id']}">
+                                    <small>${record['account_id']}</small>
+                                </span><br/>
+
+                                <!-- Display joint account expanded content -->
+                                <c:if test="${record['is_joint_account'] eq true}">
+                                    <c:if test="${record['is_selectable'] ne true}">
+                                        <small id="jointAccountHelp">Sharing is disabled for this account.</small>
+                                    </c:if>
+                                    <c:if test="${record['is_selectable'] eq true}">
+                                        <small id="jointAccountHelp">${record['linked_members_count']} other account holder(s) will be notified.
+                                            <a id="toggleJointAccountContent" href="#">Learn more</a>
+                                        </small><br/>
+                                        <div id="jointAccountContent">
+                                            <br/><p>&check; Pre-approval enabled</p>
+                                            <small>
+                                                Account holders can share this joint account data at any time,
+                                                without each other&lsquo;s permission.
+                                            </small><br/>
+                                            <small>
+                                                You can change sharing preferences for this account by going to
+                                                &lsquo;Settings &gt; Data sharing &gt; Account permissions&rsquo;
+                                            </small><br/><br/>
+                                        </div>
+                                    </c:if>
+                                </c:if>
                             </label>
                             <br>
                         </c:forEach>
@@ -104,6 +129,11 @@
                 document.getElementById(elementId).textContent=maskAccountId(elementId);
             }
         }
+
+        $("#jointAccountContent").hide();
+        $("#toggleJointAccountContent").click(function() {
+            $("#jointAccountContent").toggle();
+        });
     });
 </script>
 
