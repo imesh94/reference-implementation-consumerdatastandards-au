@@ -35,7 +35,6 @@ import java.util.Map;
 public class CDSAccountListRetrievalStep implements ConsentRetrievalStep {
 
     private static final Log log = LogFactory.getLog(CDSAccountListRetrievalStep.class);
-    private static final String USER_ID_KEY_NAME = "userID";
 
     @Override
     public void execute(ConsentData consentData, JSONObject jsonObject) throws ConsentException {
@@ -47,7 +46,7 @@ public class CDSAccountListRetrievalStep implements ConsentRetrievalStep {
             if (StringUtils.isNotBlank(accountsURL)) {
 
                 Map<String, String> parameters = new HashMap<>();
-                parameters.put(USER_ID_KEY_NAME, consentData.getUserId());
+                parameters.put(CDSConsentExtensionConstants.USER_ID_KEY_NAME, consentData.getUserId());
                 String accountData = CDSDataRetrievalUtil.getAccountsFromEndpoint(accountsURL, parameters,
                         new HashMap<>());
 

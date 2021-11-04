@@ -51,22 +51,29 @@
                                 <!-- Display joint account expanded content -->
                                 <c:if test="${record['is_joint_account'] eq true}">
                                     <c:if test="${record['is_selectable'] ne true}">
-                                        <small id="jointAccountHelp">Sharing is disabled for this account.</small>
+                                        <small>Sharing is disabled for this account.</small>
                                     </c:if>
                                     <c:if test="${record['is_selectable'] eq true}">
-                                        <small id="jointAccountHelp">${record['linked_members_count']} other account holder(s) will be notified.
-                                            <a id="toggleJointAccountContent" href="#">Learn more</a>
-                                        </small><br/>
-                                        <div id="jointAccountContent">
-                                            <br/><p>&check; Pre-approval enabled</p>
-                                            <small>
-                                                Account holders can share this joint account data at any time,
-                                                without each other&lsquo;s permission.
-                                            </small><br/>
-                                            <small>
-                                                You can change sharing preferences for this account by going to
-                                                &lsquo;Settings &gt; Data sharing &gt; Account permissions&rsquo;
-                                            </small><br/><br/>
+                                        <div id="${record['display_name']}_learn_more">
+                                            <small>Other account holders will be notified.
+                                                <a class="toggle-learn-more" href="#" data-key='{"learn_more_id":"${record['display_name']}"}'>Learn more</a>
+                                            </small>
+                                        </div>
+                                        <div class="default-hidden" id="${record['display_name']}_learn_less">
+                                            <small>Held with ${record['linked_members_count']} other account holders.
+                                                <a class="toggle-learn-more" href="#" data-key='{"learn_more_id":"${record['display_name']}"}'>Learn less</a>
+                                            </small>
+                                            <div>
+                                                <br/><p>&check; Pre-approval enabled</p>
+                                                <small>
+                                                    Account holders can share this joint account data at any time,
+                                                    without each other&lsquo;s permission.
+                                                </small><br/>
+                                                <small>
+                                                    You can change sharing preferences for this account by going to
+                                                    &lsquo;Settings &gt; Data sharing &gt; Account permissions&rsquo;
+                                                </small>
+                                            </div><br/>
                                         </div>
                                     </c:if>
                                 </c:if>
@@ -130,9 +137,11 @@
             }
         }
 
-        $("#jointAccountContent").hide();
-        $("#toggleJointAccountContent").click(function() {
-            $("#jointAccountContent").toggle();
+        $(".default-hidden").hide();
+        $(".toggle-learn-more").click(function() {
+            var data = $(this).data('key');
+            $("#" + data.learn_more_id + "_learn_less").toggle();
+            $("#" + data.learn_more_id + "_learn_more").toggle();
         });
     });
 </script>

@@ -56,6 +56,7 @@ public class CDSConsentExtensionConstants {
     public static final String ZERO = "0";
     public static final String CONSENT_EXPIRY = "consent_expiration";
     public static final String ACCOUNT_MASKING_ENABLED = "account_masking_enabled";
+    public static final String USER_ID_KEY_NAME = "userID";
 
     // Joint account constants
     public static final String IS_JOINT_ACCOUNT_RESPONSE = "isJointAccount";
@@ -67,6 +68,11 @@ public class CDSConsentExtensionConstants {
     public static final String JOINT_ACCOUNT_NO_SHARING = "UNAVAILABLE";
     public static final String LINKED_MEMBER = "linkedMember";
     public static final String LINKED_MEMBERS_COUNT = "linked_members_count";
+    public static final String LINKED_MEMBER_ID = "memberId";
+    public static final String AUTH_RESOURCE_TYPE_PRIMARY = "primary";
+    public static final String AUTH_RESOURCE_TYPE_SECONDARY = "secondary";
+    public static final String MAP_JOINT_ACCOUNTS_ID_WITH_USERS = "jointAccountIdWithUsers";
+    public static final String MAP_USER_ID_WITH_JOINT_ACCOUNTS = "usersWithMultipleJointAccounts";
 
     public static final String CHAR_SET = "UTF-8";
     public static final String CUSTOMER_TYPE = "customerUType";
