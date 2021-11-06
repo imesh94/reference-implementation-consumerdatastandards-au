@@ -57,6 +57,7 @@ public class CDSConsentExtensionConstants {
     public static final String CONSENT_EXPIRY = "consent_expiration";
     public static final String ACCOUNT_MASKING_ENABLED = "account_masking_enabled";
     public static final String USER_ID_KEY_NAME = "userID";
+    public static final String CONSENT_STATUS_REVOKED = "revoked";
 
     // Joint account constants
     public static final String IS_JOINT_ACCOUNT_RESPONSE = "isJointAccount";

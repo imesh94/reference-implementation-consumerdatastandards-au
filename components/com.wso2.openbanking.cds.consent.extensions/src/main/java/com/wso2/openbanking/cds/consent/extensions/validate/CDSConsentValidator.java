@@ -17,6 +17,7 @@ import com.wso2.openbanking.accelerator.consent.extensions.common.ResponseStatus
 import com.wso2.openbanking.accelerator.consent.extensions.validate.model.ConsentValidateData;
 import com.wso2.openbanking.accelerator.consent.extensions.validate.model.ConsentValidationResult;
 import com.wso2.openbanking.accelerator.consent.extensions.validate.model.ConsentValidator;
+import com.wso2.openbanking.accelerator.consent.mgt.dao.models.ConsentMappingResource;
 import com.wso2.openbanking.cds.common.config.OpenBankingCDSConfigParser;
 import com.wso2.openbanking.cds.common.error.handling.util.ErrorConstants;
 import com.wso2.openbanking.cds.common.metadata.domain.MetadataValidationResponse;
@@ -29,6 +30,11 @@ import net.minidev.json.parser.ParseException;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.apache.http.HttpStatus;
+
+import java.util.ArrayList;
+import java.util.List;
+
+import static com.wso2.openbanking.accelerator.consent.mgt.service.constants.ConsentCoreServiceConstants.INACTIVE_MAPPING_STATUS;
 
 /**
  * Consent validator CDS implementation.
@@ -106,6 +112,30 @@ public class CDSConsentValidator implements ConsentValidator {
                 return;
             }
         }
+
+        // remove inactive and duplicate consent mappings
+        removeInactiveAndDuplicateConsentMappings(consentValidateData);
+
         consentValidationResult.setValid(true);
+    }
+
+    /**
+     * Method to remove inactive and duplicate consent mappings from consentValidateData
+     *
+     * @param consentValidateData consentValidateData
+     */
+    private void removeInactiveAndDuplicateConsentMappings(ConsentValidateData consentValidateData) {
+        ArrayList<ConsentMappingResource> distinctMappingResources = new ArrayList<>();
+        List<String> duplicateAccountIds = new ArrayList<>();
+
+        consentValidateData.getComprehensiveConsent().getConsentMappingResources().stream()
+                .filter(mapping -> !INACTIVE_MAPPING_STATUS.equals(mapping.getMappingStatus()))
+                .filter(mapping -> !duplicateAccountIds.contains(mapping.getAccountID()))
+                .forEach(distinctMapping -> {
+                    duplicateAccountIds.add(distinctMapping.getAccountID());
+                    distinctMappingResources.add(distinctMapping);
+                });
+
+        consentValidateData.getComprehensiveConsent().setConsentMappingResources(distinctMappingResources);
     }
 }
