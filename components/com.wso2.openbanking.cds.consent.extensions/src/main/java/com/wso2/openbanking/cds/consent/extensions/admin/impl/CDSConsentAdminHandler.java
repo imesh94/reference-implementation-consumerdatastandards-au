@@ -38,9 +38,9 @@ import static com.wso2.openbanking.cds.consent.extensions.common.CDSConsentExten
  * Consent admin handler CDS implementation.
  */
 public class CDSConsentAdminHandler implements ConsentAdminHandler {
+    protected static final String CONSENT_ID = "consentID";
+    protected static final String USER_ID = "userID";
     private static final Log log = LogFactory.getLog(CDSConsentAdminHandler.class);
-    private static final String CONSENT_ID = "consentID";
-    private static final String USER_ID = "userID";
     private final ConsentCoreService consentCoreService;
     private final ConsentAdminHandler defaultConsentAdminHandler;
 
@@ -64,11 +64,11 @@ public class CDSConsentAdminHandler implements ConsentAdminHandler {
         try {
             Map queryParams = consentAdminData.getQueryParams();
             final String consentID = validateAndGetQueryParam(queryParams, CONSENT_ID);
-            final String userID = validateAndGetQueryParam(queryParams, USER_ID);
 
             if (StringUtils.isBlank(consentID)) {
                 throw new ConsentException(ResponseStatus.BAD_REQUEST, "Mandatory parameter consent ID not available");
             } else {
+                final String userID = validateAndGetQueryParam(queryParams, USER_ID);
                 DetailedConsentResource detailedConsentResource = this.consentCoreService.getDetailedConsent(consentID);
                 if (detailedConsentResource != null) {
                     if (StringUtils.isNotBlank(userID) && !isPrimaryUserRevoking(detailedConsentResource, userID)) {
@@ -81,7 +81,6 @@ public class CDSConsentAdminHandler implements ConsentAdminHandler {
                     }
                 }
             }
-            consentAdminData.setResponseStatus(ResponseStatus.OK);
             consentAdminData.setResponseStatus(ResponseStatus.NO_CONTENT);
         } catch (ConsentManagementException e) {
             throw new ConsentException(ResponseStatus.INTERNAL_SERVER_ERROR,
@@ -104,11 +103,9 @@ public class CDSConsentAdminHandler implements ConsentAdminHandler {
      * @return true if user's authorization resource type is primary
      */
     private boolean isPrimaryUserRevoking(DetailedConsentResource detailedConsentResource, String userID) {
-        if (detailedConsentResource != null) {
-            for (AuthorizationResource authorizationResource : detailedConsentResource.getAuthorizationResources()) {
-                if (userID.equals(authorizationResource.getUserID())) {
-                    return AUTH_RESOURCE_TYPE_PRIMARY.equals(authorizationResource.getAuthorizationType());
-                }
+        for (AuthorizationResource authorizationResource : detailedConsentResource.getAuthorizationResources()) {
+            if (userID.equals(authorizationResource.getUserID())) {
+                return AUTH_RESOURCE_TYPE_PRIMARY.equals(authorizationResource.getAuthorizationType());
             }
         }
         return false;
