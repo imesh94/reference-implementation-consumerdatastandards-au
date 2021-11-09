@@ -74,6 +74,11 @@ public class CDSConsentExtensionConstants {
     public static final String AUTH_RESOURCE_TYPE_SECONDARY = "secondary";
     public static final String MAP_JOINT_ACCOUNTS_ID_WITH_USERS = "jointAccountIdWithUsers";
     public static final String MAP_USER_ID_WITH_JOINT_ACCOUNTS = "usersWithMultipleJointAccounts";
+    public static final String JOINT_ACCOUNT_PAYLOAD_PRIMARY_USER = "primaryUser";
+    public static final String JOINT_ACCOUNT_PAYLOAD_SECONDARY_USER = "secondaryUser";
+    public static final String JOINT_ACCOUNT_PAYLOAD_USER_ID = "userId";
+    public static final String JOINT_ACCOUNT_PAYLOAD_ACCOUNT_ID = "accountId";
+    public static final String JOINT_ACCOUNTS_PAYLOAD = "joint_accounts_payload";
 
     public static final String CHAR_SET = "UTF-8";
     public static final String CUSTOMER_TYPE = "customerUType";

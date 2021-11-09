@@ -113,7 +113,7 @@ public class CDSConsentPersistStep implements ConsentPersistStep {
                 Object usersWithMultipleJointAccountsObj = consentPersistData.
                         getMetadata().get(CDSConsentExtensionConstants.MAP_USER_ID_WITH_JOINT_ACCOUNTS);
 
-                // Persist joint accounts
+                // bind user consented joint accounts with the create consent
                 if (jointAccountIdWithUsersObj != null && usersWithMultipleJointAccountsObj != null) {
                     bindJointAccountUsersToConsent(consentResource, consentData,
                             (Map<String, List<String>>) jointAccountIdWithUsersObj,
@@ -191,6 +191,12 @@ public class CDSConsentPersistStep implements ConsentPersistStep {
                 consentPersistData.getBrowserCookies().get(CDSConsentExtensionConstants.COMMON_AUTH_ID));
         consentAttributes.put(CDSConsentExtensionConstants.SHARING_DURATION_VALUE, consentData.getMetaDataMap()
                 .get(CDSConsentExtensionConstants.SHARING_DURATION_VALUE).toString());
+
+        final Object jointAccountsPayload = consentPersistData.getMetadata()
+                .get(CDSConsentExtensionConstants.JOINT_ACCOUNTS_PAYLOAD);
+        if (jointAccountsPayload != null && StringUtils.isNotBlank(jointAccountsPayload.toString())) {
+            consentAttributes.put(CDSConsentExtensionConstants.JOINT_ACCOUNTS_PAYLOAD, jointAccountsPayload.toString());
+        }
 
         return consentAttributes;
     }

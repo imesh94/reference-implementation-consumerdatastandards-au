@@ -22,6 +22,7 @@ import com.wso2.openbanking.cds.consent.extensions.authorize.utils.CDSDataRetrie
 import com.wso2.openbanking.cds.consent.extensions.common.CDSConsentExtensionConstants;
 import net.minidev.json.JSONArray;
 import net.minidev.json.JSONObject;
+import net.minidev.json.JSONStyle;
 import net.minidev.json.parser.JSONParser;
 import net.minidev.json.parser.ParseException;
 import org.apache.commons.lang3.StringUtils;
@@ -67,8 +68,12 @@ public class CDSJointAccountConsentPersistenceStep implements ConsentPersistStep
             // Add joint account data to consentPersistData, used in CDSConsentPersistStep.class
             consentPersistData.addMetadata(CDSConsentExtensionConstants.MAP_JOINT_ACCOUNTS_ID_WITH_USERS,
                     jointAccountIdWithUsers);
+            Map<String, List<String>> usersWithJointAccounts =
+                    getUsersWithMultipleJointAccounts(jointAccountIdWithUsers);
             consentPersistData.addMetadata(CDSConsentExtensionConstants.MAP_USER_ID_WITH_JOINT_ACCOUNTS,
-                    getUsersWithMultipleJointAccounts(jointAccountIdWithUsers));
+                    usersWithJointAccounts);
+            consentPersistData.addMetadata(CDSConsentExtensionConstants.JOINT_ACCOUNTS_PAYLOAD,
+                    getJointAccountConsentAttributePayload(consentData, usersWithJointAccounts));
         }
     }
 
@@ -76,7 +81,7 @@ public class CDSJointAccountConsentPersistenceStep implements ConsentPersistStep
      * Check whether joint account is sharable
      *
      * @param consentedAccountIdList: consented account id list
-     * @param account:            account received from bank backend
+     * @param account:                account received from bank backend
      * @return true if account is a pre-approved joint account
      */
     private boolean isValidJointAccount(JSONObject account, List<String> consentedAccountIdList) {
@@ -206,5 +211,28 @@ public class CDSJointAccountConsentPersistenceStep implements ConsentPersistStep
             }
         }
         return userWithJointAccountIds;
+    }
+
+    private String getJointAccountConsentAttributePayload(ConsentData consentData,
+                                                          Map<String, List<String>> usersWithJointAccounts) {
+        if (!usersWithJointAccounts.isEmpty()) {
+            JSONArray secondaryUsers = new JSONArray();
+            for (Map.Entry<String, List<String>> entry : usersWithJointAccounts.entrySet()) {
+                JSONObject secondaryUser = new JSONObject();
+                secondaryUser.put(CDSConsentExtensionConstants.JOINT_ACCOUNT_PAYLOAD_USER_ID, entry.getKey());
+                secondaryUser.put(CDSConsentExtensionConstants.JOINT_ACCOUNT_PAYLOAD_ACCOUNT_ID,
+                        JSONArray.toJSONString(entry.getValue()));
+
+                secondaryUsers.add(secondaryUser);
+            }
+            JSONObject jointAccountPayload = new JSONObject();
+            jointAccountPayload.put(CDSConsentExtensionConstants.JOINT_ACCOUNT_PAYLOAD_PRIMARY_USER,
+                    consentData.getUserId());
+            jointAccountPayload.put(CDSConsentExtensionConstants.JOINT_ACCOUNT_PAYLOAD_SECONDARY_USER, secondaryUsers);
+
+            return jointAccountPayload.toJSONString(JSONStyle.MAX_COMPRESS);
+        }
+        // joint account data is not present
+        return StringUtils.EMPTY;
     }
 }
