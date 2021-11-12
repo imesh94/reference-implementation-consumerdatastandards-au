@@ -113,7 +113,7 @@ public class CDSConsentPersistStep implements ConsentPersistStep {
                 Object usersWithMultipleJointAccountsObj = consentPersistData.
                         getMetadata().get(CDSConsentExtensionConstants.MAP_USER_ID_WITH_JOINT_ACCOUNTS);
 
-                // bind user consented joint accounts with the create consent
+                // bind user consented joint accounts with the created consent
                 if (jointAccountIdWithUsersObj != null && usersWithMultipleJointAccountsObj != null) {
                     bindJointAccountUsersToConsent(consentResource, consentData,
                             (Map<String, List<String>>) jointAccountIdWithUsersObj,

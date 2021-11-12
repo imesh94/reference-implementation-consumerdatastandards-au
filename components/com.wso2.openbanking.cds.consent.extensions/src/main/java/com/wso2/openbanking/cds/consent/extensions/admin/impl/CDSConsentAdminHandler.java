@@ -108,7 +108,7 @@ public class CDSConsentAdminHandler implements ConsentAdminHandler {
                 return AUTH_RESOURCE_TYPE_PRIMARY.equals(authorizationResource.getAuthorizationType());
             }
         }
-        return false;
+        return true;
     }
 
     /**

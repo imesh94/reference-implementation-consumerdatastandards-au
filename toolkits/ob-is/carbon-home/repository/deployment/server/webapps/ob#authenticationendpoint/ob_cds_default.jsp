@@ -47,38 +47,34 @@
                                 <span class="accountIdClass" id="${record['account_id']}">
                                     <small>${record['account_id']}</small>
                                 </span><br/>
+                            </label>
 
-                                <!-- Display joint account expanded content -->
+                            <div id="joint-accounts-info">
                                 <c:if test="${record['is_joint_account'] eq true}">
                                     <c:if test="${record['is_selectable'] ne true}">
-                                        <small>Sharing is disabled for this account.</small>
+                                        <small>Sharing is disabled for this account.
+                                            <%
+                                                String disabledPopoverContent = "<p style='text-align: left'> There are a range of reasons why certain accounts may not available to share."
+                                                    + "Please call the bank for more details.<br/><br/> For joint accounts, all account holders must elect to make the account available for sharing."
+                                                    + "This can be done via the Data Sharing dashboard in Internet Banking or the app. </p>";
+                                            %>
+                                            <a tabindex="0" role="button" data-html="true" data-placement="auto top" data-toggle="popover" data-template="<%=popoverTemplate%>"
+                                                data-trigger="focus" title="Why can't I share these?" data-content="<%=disabledPopoverContent%>">Learn more</a>
+                                        </small>
                                     </c:if>
                                     <c:if test="${record['is_selectable'] eq true}">
-                                        <div id="${record['display_name']}_learn_more">
-                                            <small>Other account holders will be notified.
-                                                <a class="toggle-learn-more" href="#" data-key='{"learn_more_id":"${record['display_name']}"}'>Learn more</a>
-                                            </small>
-                                        </div>
-                                        <div class="default-hidden" id="${record['display_name']}_learn_less">
-                                            <small>Held with ${record['linked_members_count']} other account holders.
-                                                <a class="toggle-learn-more" href="#" data-key='{"learn_more_id":"${record['display_name']}"}'>Learn less</a>
-                                            </small>
-                                            <div>
-                                                <br/><p>&check; Pre-approval enabled</p>
-                                                <small>
-                                                    Account holders can share this joint account data at any time,
-                                                    without each other&lsquo;s permission.
-                                                </small><br/>
-                                                <small>
-                                                    You can change sharing preferences for this account by going to
-                                                    &lsquo;Settings &gt; Data sharing &gt; Account permissions&rsquo;
-                                                </small>
-                                            </div><br/>
-                                        </div>
+                                        <%
+                                            String selectablePopoverContent = "<span style='text-align: left'> other account holder(s) can share this joint account data at any time,
+                                                + "without each other&lsquo;s permission. <br/><br/> You can change sharing preferences for this account by going to &lsquo;Settings &gt;
+                                                + "Data sharing &gt; Account permissions&rsquo;</span>";
+                                        %>
+                                        <small>Other account holders will be notified.
+                                            <a tabindex="0" role="button" data-html="true" data-placement="auto top" data-toggle="popover" data-template="<%=popoverTemplate%>"
+                                                data-trigger="focus" title="&check; Pre-approval enabled" data-content="${record['linked_members_count']}<%=selectablePopoverContent%>">Learn more</a>
+                                        </small>
                                     </c:if>
                                 </c:if>
-                            </label>
-                            <br>
+                            </div>
                         </c:forEach>
                     </div>
                 </div>
@@ -136,13 +132,6 @@
                 document.getElementById(elementId).textContent=maskAccountId(elementId);
             }
         }
-
-        $(".default-hidden").hide();
-        $(".toggle-learn-more").click(function() {
-            var data = $(this).data('key');
-            $("#" + data.learn_more_id + "_learn_less").toggle();
-            $("#" + data.learn_more_id + "_learn_more").toggle();
-        });
     });
 </script>
 

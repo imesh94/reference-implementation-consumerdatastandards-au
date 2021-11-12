@@ -60,6 +60,10 @@ configure_datasources() {
             sed -i -e 's|DB_PASS|'${DB_PASS}'|g' ${DEPLOYMENT_TOML_FILE}
             sed -i -e 's|DB_DRIVER|'${DB_DRIVER}'|g' ${DEPLOYMENT_TOML_FILE}
 
+            echo -e "\nAlter OB_CONSENT_ATTRIBUTE table ATT_VALUE field size to 1023"
+            echo -e "=======================================================================\n"
+            mysql -u${DB_USER} ${DB_MYSQL_PASS} -h${DB_HOST} -e "ALTER TABLE ${DB_OPEN_BANKING_STORE}.SP_METADATA MODIFY VALUE VARCHAR(1023)";
+
         else
             # IS
             sed -i -e 's|DB_APIMGT_URL|jdbc:sqlserver://'${DB_HOST}':1433;databaseName='${DB_APIMGT}';encrypt=false|g' ${DEPLOYMENT_TOML_FILE}

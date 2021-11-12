@@ -218,10 +218,12 @@ public class CDSJointAccountConsentPersistenceStep implements ConsentPersistStep
         if (!usersWithJointAccounts.isEmpty()) {
             JSONArray secondaryUsers = new JSONArray();
             for (Map.Entry<String, List<String>> entry : usersWithJointAccounts.entrySet()) {
+                JSONArray accountIds = new JSONArray();
+                accountIds.addAll(entry.getValue());
+
                 JSONObject secondaryUser = new JSONObject();
+                secondaryUser.put(CDSConsentExtensionConstants.JOINT_ACCOUNT_PAYLOAD_ACCOUNT_ID, accountIds);
                 secondaryUser.put(CDSConsentExtensionConstants.JOINT_ACCOUNT_PAYLOAD_USER_ID, entry.getKey());
-                secondaryUser.put(CDSConsentExtensionConstants.JOINT_ACCOUNT_PAYLOAD_ACCOUNT_ID,
-                        JSONArray.toJSONString(entry.getValue()));
 
                 secondaryUsers.add(secondaryUser);
             }
