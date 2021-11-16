@@ -19,10 +19,16 @@ import com.wso2.openbanking.accelerator.gateway.executor.model.OBAPIRequestConte
 import com.wso2.openbanking.accelerator.gateway.executor.model.OBAPIResponseContext;
 import com.wso2.openbanking.accelerator.gateway.executor.model.OpenBankingExecutorError;
 import com.wso2.openbanking.accelerator.gateway.util.GatewayConstants;
+import com.wso2.openbanking.cds.common.config.OpenBankingCDSConfigParser;
 import com.wso2.openbanking.cds.common.error.handling.util.ErrorConstants;
 import com.wso2.openbanking.cds.common.error.handling.util.ErrorUtil;
+import com.wso2.openbanking.cds.common.idpermanence.IdEncryptorDecryptor;
 import net.minidev.json.JSONArray;
 import net.minidev.json.JSONObject;
+import net.minidev.json.parser.JSONParser;
+import net.minidev.json.parser.ParseException;
+import net.sf.saxon.Err;
+import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.apache.http.HttpStatus;
@@ -37,6 +43,7 @@ import java.util.Map;
 public class CDSErrorHandler implements OpenBankingGatewayExecutor {
 
     private static Log log = LogFactory.getLog(CDSErrorHandler.class);
+    private static final String SECRET_KEY = OpenBankingCDSConfigParser.getInstance().getIdPermanenceSecretKey();
 
     /**
      * Method to handle pre request
@@ -101,7 +108,9 @@ public class CDSErrorHandler implements OpenBankingGatewayExecutor {
             JSONArray dcrErrorPayload = getDCRErrorJSON(errors);
             obapiRequestContext.setModifiedPayload(dcrErrorPayload.toString());
         } else {
-            JsonObject errorPayload = getErrorJson(errors);
+            String memberId = obapiRequestContext.getApiRequestInfo().getUsername();
+            String appId = obapiRequestContext.getApiRequestInfo().getConsumerKey();
+            JsonObject errorPayload = getErrorJson(errors, memberId, appId);
             obapiRequestContext.setModifiedPayload(errorPayload.toString());
         }
         Map<String, String> addedHeaders = obapiRequestContext.getAddedHeaders();
@@ -139,7 +148,9 @@ public class CDSErrorHandler implements OpenBankingGatewayExecutor {
             JSONArray dcrErrorPayload = getDCRErrorJSON(errors);
             obapiResponseContext.setModifiedPayload(dcrErrorPayload.toString());
         } else {
-            JsonObject errorPayload = getErrorJson(errors);
+            String memberId = obapiResponseContext.getApiRequestInfo().getUsername();
+            String appId = obapiResponseContext.getApiRequestInfo().getConsumerKey();
+            JsonObject errorPayload = getErrorJson(errors, memberId, appId);
             obapiResponseContext.setModifiedPayload(errorPayload.toString());
         }
         Map<String, String> addedHeaders = obapiResponseContext.getAddedHeaders();
@@ -174,16 +185,87 @@ public class CDSErrorHandler implements OpenBankingGatewayExecutor {
         return errorList;
     }
 
-    public static JsonObject getErrorJson(ArrayList<OpenBankingExecutorError> errors) {
+    public static JsonObject getErrorJson(ArrayList<OpenBankingExecutorError> errors, String memberId, String appId) {
 
         JsonArray errorList = new JsonArray();
         JsonObject parentObject = new JsonObject();
 
         for (OpenBankingExecutorError error : errors) {
             JsonObject errorObj = new JsonObject();
+
+            try {
+                Object errorPayload = new JSONParser(JSONParser.MODE_PERMISSIVE).parse(error.getMessage());
+
+//                if ("Consent Enforcement Error".equals(error.getTitle())) {
+//                    JSONObject errorJSON = (JSONObject) errorPayload;
+//                    errorObj.addProperty(ErrorConstants.TITLE, errorJSON.getAsString(ErrorConstants.TITLE));
+//
+//                    if (errorJSON.get(ErrorConstants.ACCOUNT_ID) != null) {
+//                        String stringToEncrypt = memberId + ":" + appId + ":" +
+//                                errorJSON.get(ErrorConstants.ACCOUNT_ID).toString();
+//                        String encryptedId = IdEncryptorDecryptor.encrypt(stringToEncrypt, SECRET_KEY);
+//                        errorObj.addProperty(ErrorConstants.DETAIL, encryptedId);
+//                    } else {
+//                        errorObj.addProperty(ErrorConstants.DETAIL, errorJSON.getAsString(ErrorConstants.DETAIL));
+//                    }
+//
+//                    if (errorJSON.getAsString(ErrorConstants.META_URN) != null) {
+//                        JsonObject meta = new JsonObject();
+//                        meta.addProperty("urn", errorJSON.getAsString(ErrorConstants.META_URN));
+//                        errorObj.add("meta", meta);
+//                    }
+//                } else {
+//                    if (errorPayload instanceof JSONObject) {
+//                        JSONObject errorJSON = (JSONObject) errorPayload;
+//                        errorObj.addProperty(ErrorConstants.DETAIL, errorJSON.getAsString(ErrorConstants.DETAIL));
+//
+//                        if (errorJSON.getAsString(ErrorConstants.META_URN) != null) {
+//                            JsonObject meta = new JsonObject();
+//                            meta.addProperty("urn", errorJSON.getAsString(ErrorConstants.META_URN));
+//                            errorObj.add("meta", meta);
+//                        }
+//                    } else {
+//                        errorObj.addProperty(ErrorConstants.DETAIL, errorPayload.toString());
+//                    }
+//                    errorObj.addProperty(ErrorConstants.TITLE, error.getTitle());
+//                }
+
+                //////////////////////////////////////////////////////////////////
+
+                if (errorPayload instanceof JSONObject) {
+
+                    JSONObject errorJSON = (JSONObject) errorPayload;
+
+                    if ("Consent Enforcement Error".equals(error.getTitle())) {
+                        errorObj.addProperty(ErrorConstants.TITLE, errorJSON.getAsString(ErrorConstants.TITLE));
+                        if (errorJSON.get(ErrorConstants.ACCOUNT_ID) != null) {
+                            String stringToEncrypt = memberId + ":" + appId + ":" +
+                                    errorJSON.get(ErrorConstants.ACCOUNT_ID).toString();
+                            String encryptedId = IdEncryptorDecryptor.encrypt(stringToEncrypt, SECRET_KEY);
+                            errorObj.addProperty(ErrorConstants.DETAIL, encryptedId);
+                        } else {
+                            errorObj.addProperty(ErrorConstants.DETAIL, errorJSON.getAsString(ErrorConstants.DETAIL));
+                        }
+
+                    } else {
+                        errorObj.addProperty(ErrorConstants.TITLE, error.getTitle());
+                        errorObj.addProperty(ErrorConstants.DETAIL, errorJSON.getAsString(ErrorConstants.DETAIL));
+                    }
+
+                    if (errorJSON.getAsString(ErrorConstants.META_URN) != null) {
+                        JsonObject meta = new JsonObject();
+                        meta.addProperty("urn", errorJSON.getAsString(ErrorConstants.META_URN));
+                        errorObj.add("meta", meta);
+                    }
+                } else {
+                    errorObj.addProperty(ErrorConstants.DETAIL, errorPayload.toString());
+                    errorObj.addProperty(ErrorConstants.TITLE, error.getTitle());
+                }
+
+            } catch (ParseException e) {
+                log.error("Unexpected Error", e);
+            }
             errorObj.addProperty(ErrorConstants.CODE, error.getCode());
-            errorObj.addProperty(ErrorConstants.TITLE, error.getTitle());
-            errorObj.addProperty(ErrorConstants.DETAIL, error.getMessage());
             errorList.add(errorObj);
         }
         parentObject.add(ErrorConstants.ERRORS, errorList);

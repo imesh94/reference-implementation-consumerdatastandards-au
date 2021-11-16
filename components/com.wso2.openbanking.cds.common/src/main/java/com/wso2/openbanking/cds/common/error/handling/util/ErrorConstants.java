@@ -26,6 +26,8 @@ public class ErrorConstants {
     public static final String CODE = "code";
     public static final String TITLE = "title";
     public static final String DETAIL = "detail";
+    public static final String META_URN = "metaURN";
+    public static final String ACCOUNT_ID = "accountId";
 
     // HTTP Error Codes
     public static final String HTTP_BAD_REQUEST = "400";
@@ -62,6 +64,7 @@ public class ErrorConstants {
     // Error object references
     public static final String ERROR_ENUM = "auErrorEnum";
     public static final String METADATA  = "metadata";
+    public static final String SUCCESS = "SUCCESS";
 
 
     /**
@@ -134,10 +137,10 @@ public class ErrorConstants {
         RESOURCE_NOT_FOUND(404, "AU.CDR.Resource.NotFound", "Resource Not Found", "Requested resource is not " +
                 "available in the specification"),
         //Resource requested is invalid, does not exist or will not be disclosed
-        INVALID_RESOURCE_PATH(404, "AU.CDR.Resource.Invalid", "Invalid Resource Identifier",
+        INVALID_RESOURCE_PATH(404, "urn:au-cds:error:cds-all:Resource/Invalid", "Invalid Resource",
                 "Resource requested is invalid, does not exist or will not be disclosed at the moment"),
-        INVALID_RESOURCE_BODY(422, "urn:au-cds:error:cds-all: Resource/Invalid",
-                "Invalid Resource Identifier", "Resource requested is invalid, does not exist or will " +
+        INVALID_RESOURCE_BODY(422, "urn:au-cds:error:cds-all:Resource/Invalid",
+                "Invalid Resource", "Resource requested is invalid, does not exist or will " +
                 "not be disclosed at the moment"),
         //The requested resource is currently in a state that makes it unavailable
         RESOURCE_UNAVAILABLE_PATH(404, "AU.CDR.Resource.Unavailable", "Resource Is Unavailable",
@@ -145,10 +148,10 @@ public class ErrorConstants {
         RESOURCE_UNAVAILABLE_BODY(422, "AU.CDR.Resource.Unavailable", "Resource Is Unavailable",
                 "The requested resource is currently in a state that makes it unavailable for consumers"),
         //Bank account does not exist or does nt associate with active consent
-        INVALID_BANK_ACCOUNT_BODY(422, "AU.CDR.Resource.InvalidBankingAccount", "Invalid Banking Account",
-                "ID of the account not found or invalid"),
-        INVALID_BANK_ACCOUNT_PATH(404, "AU.CDR.Resource.InvalidBankingAccount", "Invalid Banking Account",
-                "ID of the account not found or invalid"),
+        INVALID_BANK_ACCOUNT_BODY(422, "urn:au-cds:error:cds-banking:Authorisation/InvalidBankingAccount",
+                "Invalid Banking Account", "ID of the account not found or invalid"),
+        INVALID_BANK_ACCOUNT_PATH(404, "urn:au-cds:error:cds-banking:Authorisation/InvalidBankingAccount",
+                "Invalid Banking Account", "ID of the account not found or invalid"),
         //Bank account is no longer associated to the active consent, a joint-account holder has withdrawn consent
         // election or the account is currently in a state that makes it unavailable
         UNAVAILABLE_BANK_ACCOUNT(422, "AU.CDR.Resource.UnavailableBankingAccount", "Banking Account Is Unavailable",

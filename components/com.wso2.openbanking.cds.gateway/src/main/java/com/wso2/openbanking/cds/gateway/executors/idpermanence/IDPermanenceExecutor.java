@@ -45,6 +45,10 @@ public class IDPermanenceExecutor implements OpenBankingGatewayExecutor {
     @Override
     public void postProcessRequest(OBAPIRequestContext obApiRequestContext) {
 
+        if (obApiRequestContext.isError()) {
+            return;
+        }
+
         log.debug("IDPermanence Engaged.");
         String uriTemplate = obApiRequestContext.getMsgInfo().getElectedResource();
         String requestedUrl = obApiRequestContext.getMsgInfo().getResource();

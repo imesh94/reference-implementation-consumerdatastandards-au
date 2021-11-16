@@ -18,6 +18,7 @@ import com.wso2.openbanking.accelerator.consent.extensions.validate.model.Consen
 import com.wso2.openbanking.accelerator.consent.mgt.dao.models.ConsentMappingResource;
 import com.wso2.openbanking.cds.consent.extensions.common.CDSConsentExtensionConstants;
 import net.minidev.json.JSONObject;
+import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
@@ -61,7 +62,7 @@ public class CDSConsentValidatorUtil {
      * @param consentValidateData
      * @return
      */
-    public static Boolean validAccountIdsInPostRequest(ConsentValidateData consentValidateData) {
+    public static String validAccountIdsInPostRequest(ConsentValidateData consentValidateData) {
 
         List<String> requestedAccountsList = new ArrayList<>();
         for (Object element: (ArrayList) ((JSONObject) consentValidateData.getPayload()
@@ -69,7 +70,7 @@ public class CDSConsentValidatorUtil {
             if (element != null) {
                 requestedAccountsList.add(element.toString());
             } else {
-                return false;
+                return null;
             }
         }
         if (!requestedAccountsList.isEmpty()) {
@@ -79,9 +80,14 @@ public class CDSConsentValidatorUtil {
                     .getConsentMappingResources()) {
                 consentedAccountsList.add(resource.getAccountID());
             }
-            return consentedAccountsList.containsAll(requestedAccountsList);
+            for (String requestedAccount : requestedAccountsList) {
+                if (!consentedAccountsList.contains(requestedAccount)) {
+                    return requestedAccount;
+                }
+            }
+            return "SUCCESS";
         }
-        return false;
+        return null;
     }
 
     /**
