@@ -13,15 +13,24 @@
 package com.wso2.openbanking.cds.identity.grant.type.handlers;
 
 import com.wso2.openbanking.accelerator.identity.grant.type.handlers.OBRefreshGrantHandler;
+import com.wso2.openbanking.cds.common.data.publisher.CDSDataPublishingService;
 import com.wso2.openbanking.cds.identity.grant.type.handlers.utils.CDSGrantHandlerUtil;
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 import org.wso2.carbon.identity.oauth2.IdentityOAuth2Exception;
 import org.wso2.carbon.identity.oauth2.dto.OAuth2AccessTokenRespDTO;
 import org.wso2.carbon.identity.oauth2.token.OAuthTokenReqMessageContext;
+
+import java.util.HashMap;
+import java.util.Map;
 
 /**
  * CDS specific refresh grant handler
  */
 public class CDSRefreshGrantHandler extends OBRefreshGrantHandler {
+
+    private static Log log = LogFactory.getLog(CDSRefreshGrantHandler.class);
+    private CDSDataPublishingService dataPublishingService = CDSDataPublishingService.getCDSDataPublishingService();
 
     /**
      * Add cdr_arrangement_id
@@ -45,7 +54,10 @@ public class CDSRefreshGrantHandler extends OBRefreshGrantHandler {
     public void publishUserAccessTokenData(OAuth2AccessTokenRespDTO oAuth2AccessTokenRespDTO)
             throws IdentityOAuth2Exception {
 
-        // TODO Add data publishing logic
+        log.debug("Publishing user access token data for metrics.");
+        Map<String, Object> tokenData = new HashMap<>();
+        tokenData.put("accessTokenID", CDSGrantHandlerUtil.retrieveAccessToken(oAuth2AccessTokenRespDTO));
+        dataPublishingService.publishUserAccessTokenData(tokenData);
     }
 
 }
