@@ -1,0 +1,78 @@
+/*
+ * Copyright (c) 2021, WSO2 Inc. (http://www.wso2.com). All Rights Reserved.
+ *
+ * This software is the property of WSO2 Inc. and its suppliers, if any.
+ * Dissemination of any information or reproduction of any material contained
+ * herein is strictly forbidden, unless permitted by WSO2 in accordance with
+ * the WSO2 Commercial License available at http://wso2.com/licenses.
+ * For specific language governing the permissions and limitations under this
+ * license, please see the license as well as any agreement you’ve entered into
+ * with WSO2 governing the purchase of this software and any associated services.
+ */
+
+@App:name("CDSAvailabilityMetricsApp")
+@App:description('Calculate the availability metrics with outage data in CDS Metrics API')
+
+-- REST endpoint to publish availability data.
+@source(type='http',
+    receiver.url='http://<ANALYTICS_HOSTNAME>:8006/AvailabilityMetricsRawDataApp/AvailabilityMetricsRawDataStream',
+    basic.auth.enabled='false',
+    @map(type='json', @attributes(outages = "$.event")))
+define stream AvailabilityMetricsRawDataEventStream (outages string);
+
+-- REST endpoint to cleanup availability data.
+@source(type='http-request',
+    source.id='incidentDeletion',
+    receiver.url='http://<ANALYTICS_HOSTNAME>:8007/AvailabilityMetricsRawDataApp/IncidentDeletionRawDataStream',
+    basic.auth.enabled='false',
+    connection.timeout="5000",
+    @map(type='json', @attributes(MESSAGE_ID='trp:messageId', outages="$.event")))
+define stream IncidentDeletionRawDataStream (MESSAGE_ID string, outages string);
+
+-- Incident deletion response sink.
+@sink(type='http-response',
+	source.id='incidentDeletion',
+	message.id='{{MESSAGE_ID}}',
+	@map(type = 'json', enclosing.element='$.DELETED_OUTAGES',
+	@payload("""{"OUTAGE_ID":"{{OUTAGE_ID}}" }""")))
+define stream IncidentDeletionResponseStream(MESSAGE_ID string, OUTAGE_ID string);
+
+@primaryKey('OUTAGE_ID', 'TIMESTAMP')
+@store(type='rdbms', datasource='OB_REPORTING_DB')
+define table SERVER_OUTAGES_RAW_DATA(OUTAGE_ID string, TIMESTAMP long, TYPE string, TIME_FROM long, TIME_TO long);
+
+-- Persist server outages data.
+from AvailabilityMetricsRawDataEventStream#json:tokenizeAsObject ( outages, '$.outages')
+select  json:getString(jsonElement, 'id') as OUTAGE_ID,
+        time:timestampInMilliseconds()/1000 as TIMESTAMP,
+        json:getString(jsonElement, '$.type') as TYPE,
+        json:getLong(jsonElement, '$.from') as TIME_FROM,
+        json:getLong(jsonElement, '$.to') as TIME_TO
+insert into SERVER_OUTAGES_RAW_DATA;
+
+from IncidentDeletionRawDataStream#json:tokenizeAsObject ( outages, '$.outages')
+select  ifThenElse(json:isExists(jsonElement, '$.from'), json:getLong(jsonElement, '$.from'), -1L) as TIME_FROM,
+        ifThenElse(json:isExists(jsonElement, '$.to'), json:getLong(jsonElement, '$.to'), -1L) as TIME_TO,
+        json:getString(jsonElement, '$.id') as OUTAGE_ID,
+        MESSAGE_ID
+insert into IncidentDeletionDataStream;
+
+-- Delete availability metrics based on time range
+@info(name='timestampBasedDeletion')
+from IncidentDeletionDataStream[OUTAGE_ID is null and not(TIME_FROM < 0 and TIME_TO < 0)] as deletionStream
+join SERVER_OUTAGES_RAW_DATA as serverOutages
+    on deletionStream.TIME_FROM <= serverOutages.TIME_FROM and deletionStream.TIME_TO >= serverOutages.TIME_TO
+select MESSAGE_ID, serverOutages.OUTAGE_ID
+insert into IncidentDeletionResponseStream;
+
+-- Delete availability metrics based on outage id
+@info(name='idBasedDeletion')
+from IncidentDeletionDataStream[not(OUTAGE_ID is null) and (TIME_FROM < 0 and TIME_TO < 0)] as deletionStream
+join SERVER_OUTAGES_RAW_DATA as serverOutages
+    on deletionStream.OUTAGE_ID == serverOutages.OUTAGE_ID
+select MESSAGE_ID, serverOutages.OUTAGE_ID
+insert into IncidentDeletionResponseStream;
+
+from IncidentDeletionResponseStream
+delete SERVER_OUTAGES_RAW_DATA
+on SERVER_OUTAGES_RAW_DATA.OUTAGE_ID == OUTAGE_ID;

@@ -452,6 +452,9 @@ priority = 4
 name = "com.wso2.openbanking.accelerator.gateway.executor.impl.common.reporting.data.executor.CommonReportingDataExecutor"
 priority = 5
 [[open_banking.gateway.openbanking_gateway_executors.type.executors]]
+name = "com.wso2.openbanking.cds.gateway.executors.reporting.CDSCommonDataReportingExecutor"
+priority = 6
+[[open_banking.gateway.openbanking_gateway_executors.type.executors]]
 name = "com.wso2.openbanking.cds.gateway.executors.error.handler.CDSErrorHandler"
 priority = 1000
 
@@ -466,6 +469,9 @@ priority = 2
 [[open_banking.gateway.openbanking_gateway_executors.type.executors]]
 name = "com.wso2.openbanking.accelerator.gateway.executor.dcr.DCRExecutor"
 priority = 3
+[[open_banking.gateway.openbanking_gateway_executors.type.executors]]
+name = "com.wso2.openbanking.accelerator.gateway.executor.impl.common.reporting.data.executor.CommonReportingDataExecutor"
+priority = 4
 [[open_banking.gateway.openbanking_gateway_executors.type.executors]]
 name = "com.wso2.openbanking.cds.gateway.executors.error.handler.CDSErrorHandler"
 priority = 1000
@@ -491,6 +497,9 @@ priority = 5
 name = "com.wso2.openbanking.accelerator.gateway.executor.impl.common.reporting.data.executor.CommonReportingDataExecutor"
 priority = 6
 [[open_banking.gateway.openbanking_gateway_executors.type.executors]]
+name = "com.wso2.openbanking.cds.gateway.executors.reporting.CDSCommonDataReportingExecutor"
+priority = 7
+[[open_banking.gateway.openbanking_gateway_executors.type.executors]]
 name = "com.wso2.openbanking.cds.gateway.executors.error.handler.CDSErrorHandler"
 priority = 1000
 
@@ -515,53 +524,59 @@ publishing_timeout = 2000
 [[open_banking.data_publishing.thrift.stream]]
 name="APIInputStream"
 [[open_banking.data_publishing.thrift.stream.attributes]]
-name="consentId"
+name="messageId"
 priority=1
 [[open_banking.data_publishing.thrift.stream.attributes]]
-name="consumerId"
+name="consentId"
 priority=2
 [[open_banking.data_publishing.thrift.stream.attributes]]
-name="clientId"
+name="consumerId"
 priority=3
 [[open_banking.data_publishing.thrift.stream.attributes]]
-name="userAgent"
+name="clientId"
 priority=4
+[[open_banking.data_publishing.thrift.stream.attributes]]
+name="userAgent"
+priority=5
 required=true
 [[open_banking.data_publishing.thrift.stream.attributes]]
 name="statusCode"
-priority=5
+priority=6
 required=true
 type="int"
 [[open_banking.data_publishing.thrift.stream.attributes]]
 name="httpMethod"
-priority=6
+priority=7
 required=true
 [[open_banking.data_publishing.thrift.stream.attributes]]
 name="responsePayloadSize"
-priority=7
+priority=8
 required=true
 type="long"
 [[open_banking.data_publishing.thrift.stream.attributes]]
 name="electedResource"
-priority=8
-required=true
-[[open_banking.data_publishing.thrift.stream.attributes]]
-name="apiName"
 priority=9
 required=true
 [[open_banking.data_publishing.thrift.stream.attributes]]
-name="apiSpecVersion"
+name="apiName"
 priority=10
 required=true
 [[open_banking.data_publishing.thrift.stream.attributes]]
-name="timestamp"
+name="apiSpecVersion"
 priority=11
 required=true
-type="long"
 [[open_banking.data_publishing.thrift.stream.attributes]]
-name="messageId"
+name="timestamp"
 priority=12
 required=true
+type="long"
+required=true
+[[open_banking.data_publishing.thrift.stream.attributes]]
+name="customerStatus"
+priority=13
+[[open_banking.data_publishing.thrift.stream.attributes]]
+name="accessTokenID"
+priority=14
 
 [[open_banking.data_publishing.thrift.stream]]
 name="APILatencyInputStream"

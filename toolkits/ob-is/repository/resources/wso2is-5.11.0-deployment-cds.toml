@@ -518,6 +518,25 @@ name="AccessTokenInputStream"
 name="accessTokenID"
 priority=1
 
+[[open_banking.data_publishing.thrift.stream]]
+name="ConsentInputStream"
+[[open_banking.data_publishing.thrift.stream.attributes]]
+name="consentId"
+priority=1
+[[open_banking.data_publishing.thrift.stream.attributes]]
+name="userId"
+priority=2
+[[open_banking.data_publishing.thrift.stream.attributes]]
+name="clientId"
+priority=3
+[[open_banking.data_publishing.thrift.stream.attributes]]
+name="status"
+priority=4
+[[open_banking.data_publishing.thrift.stream.attributes]]
+name="expiryTime"
+priority=5
+type="long"
+
 #================custom filters and filter-mappings==============
 [[tomcat.filter]]
 name = "TokenFilter"
