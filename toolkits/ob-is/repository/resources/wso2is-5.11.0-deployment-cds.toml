@@ -595,7 +595,8 @@ customer_details_retrieval_endpoint="http://APIM_HOSTNAME:9763/api/openbanking/c
 
 [open_banking_cds.metadata_cache]
 enable=true
-update_period=2
+expiry=3
+update_period=4
 data_recipients_discovery_url="https://api.cdr.gov.au/cdr-register/v1/banking/data-recipients"
 dcr_internal_url="https://IS_HOSTNAME:9446/api/openbanking/dynamic-client-registration/register"
 apim_application_search_url="https://APIM_HOSTNAME:9443/api/am/admin/v2/applications"

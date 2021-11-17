@@ -297,7 +297,7 @@ public class CDSConsentPersistStep implements ConsentPersistStep {
         newAuthResource.setConsentID(consentId);
         newAuthResource.setUserID(secondaryUserId);
         newAuthResource.setAuthorizationStatus(CDSConsentExtensionConstants.CREATED_STATUS);
-        newAuthResource.setAuthorizationType(CDSConsentExtensionConstants.AUTH_RESOURCE_TYPE_SECONDARY);
+        newAuthResource.setAuthorizationType(CDSConsentExtensionConstants.AUTH_RESOURCE_TYPE_LINKED);
 
         return newAuthResource;
     }

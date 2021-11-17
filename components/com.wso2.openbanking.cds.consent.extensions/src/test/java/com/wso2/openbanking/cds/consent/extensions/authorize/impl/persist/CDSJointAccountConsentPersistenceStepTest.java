@@ -14,16 +14,12 @@ package com.wso2.openbanking.cds.consent.extensions.authorize.impl.persist;
 
 import com.wso2.openbanking.accelerator.consent.extensions.authorize.model.ConsentData;
 import com.wso2.openbanking.accelerator.consent.extensions.authorize.model.ConsentPersistData;
-import com.wso2.openbanking.cds.common.config.OpenBankingCDSConfigParser;
-import com.wso2.openbanking.cds.consent.extensions.authorize.utils.CDSDataRetrievalUtil;
 import com.wso2.openbanking.cds.consent.extensions.common.CDSConsentExtensionConstants;
 import net.minidev.json.JSONArray;
 import net.minidev.json.JSONObject;
+import net.minidev.json.parser.JSONParser;
+import net.minidev.json.parser.ParseException;
 import org.mockito.ArgumentCaptor;
-import org.mockito.Mockito;
-import org.powermock.api.mockito.PowerMockito;
-import org.powermock.core.classloader.annotations.PrepareForTest;
-import org.powermock.modules.testng.PowerMockTestCase;
 import org.testng.annotations.BeforeClass;
 import org.testng.annotations.Test;
 
@@ -32,8 +28,6 @@ import java.util.List;
 import java.util.Map;
 
 import static org.junit.Assert.assertTrue;
-import static org.mockito.Matchers.anyMapOf;
-import static org.mockito.Matchers.anyString;
 import static org.mockito.Matchers.eq;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.verify;
@@ -42,14 +36,11 @@ import static org.mockito.Mockito.when;
 /**
  * Test class for CDSJointAccountConsentPersistenceStep
  */
-@PrepareForTest({OpenBankingCDSConfigParser.class, CDSDataRetrievalUtil.class})
-public class CDSJointAccountConsentPersistenceStepTest extends PowerMockTestCase {
-    private static final String TEST_ACCOUNT_DATA_JSON = "{" +
-            "    \"data\": [" +
+public class CDSJointAccountConsentPersistenceStepTest {
+    private static final String TEST_ACCOUNT_DATA_JSON = "[" +
             "        {" +
-            "            \"account_id\": \"regular-account-id\"," +
-            "            \"display_name\": \"account_2\"," +
-            "            \"accountName\": \"account_2\"," +
+            "            \"" + CDSConsentExtensionConstants.ACCOUNT_ID + "\": \"regular-account-id\"," +
+            "            \"" + CDSConsentExtensionConstants.DISPLAY_NAME + "\": \"account_2\"," +
             "            \"authorizationMethod\": \"single\"," +
             "            \"nickName\": \"not-working\"," +
             "            \"customerAccountType\": \"Individual\"," +
@@ -59,9 +50,8 @@ public class CDSJointAccountConsentPersistenceStepTest extends PowerMockTestCase
             "            \"jointAccountConsentElectionStatus\": false" +
             "        }," +
             "        {" +
-            "            \"account_id\": \"joint-account-id\"," +
-            "            \"display_name\": \"joint_account_1\"," +
-            "            \"accountName\": \"Joint Account 1\"," +
+            "            \"" + CDSConsentExtensionConstants.ACCOUNT_ID + "\": \"joint-account-id\"," +
+            "            \"" + CDSConsentExtensionConstants.DISPLAY_NAME + "\": \"joint_account_1\"," +
             "            \"authorizationMethod\": \"single\"," +
             "            \"nickName\": \"joint-account-1\"," +
             "            \"customerAccountType\": \"Individual\"," +
@@ -83,27 +73,11 @@ public class CDSJointAccountConsentPersistenceStepTest extends PowerMockTestCase
             "            }," +
             "            \"meta\": {}" +
             "        }" +
-            "    ]" +
-            "}";
+            "    ]";
     private ConsentPersistData consentPersistDataMock;
 
     @BeforeClass
-    public void setUp() {
-        OpenBankingCDSConfigParser openBankingCDSConfigParser = Mockito.mock(OpenBankingCDSConfigParser.class);
-
-        Map<String, Object> configMap = new HashMap<>();
-        configMap.put(CDSConsentExtensionConstants.SHARABLE_ACCOUNTS_ENDPOINT, "https://test-server/sharable");
-        Mockito.when(openBankingCDSConfigParser.getConfiguration())
-                .thenReturn(configMap);
-
-        PowerMockito.mockStatic(OpenBankingCDSConfigParser.class);
-        PowerMockito.when(OpenBankingCDSConfigParser.getInstance()).thenReturn(openBankingCDSConfigParser);
-
-        PowerMockito.mockStatic(CDSDataRetrievalUtil.class);
-        PowerMockito.when(CDSDataRetrievalUtil.getAccountsFromEndpoint(anyString(),
-                        anyMapOf(String.class, String.class), anyMapOf(String.class, String.class)))
-                .thenReturn(TEST_ACCOUNT_DATA_JSON);
-
+    public void setUp() throws ParseException {
         this.consentPersistDataMock = mock(ConsentPersistData.class);
         JSONArray accounts = new JSONArray();
         accounts.add("regular-account-id");
@@ -112,8 +86,13 @@ public class CDSJointAccountConsentPersistenceStepTest extends PowerMockTestCase
         JSONObject payload = new JSONObject();
         payload.put(CDSConsentExtensionConstants.ACCOUNT_IDS, accounts);
 
+        Map<String, Object> consentDataMap = new HashMap<>();
+        consentDataMap.put(CDSConsentExtensionConstants.ACCOUNTS,
+                new JSONParser(JSONParser.MODE_PERMISSIVE).parse(TEST_ACCOUNT_DATA_JSON));
         ConsentData consentDataMock = mock(ConsentData.class);
+
         when(consentDataMock.getUserId()).thenReturn("test-joint-account-user-id");
+        when(consentDataMock.getMetaDataMap()).thenReturn(consentDataMap);
 
         when(this.consentPersistDataMock.getConsentData()).thenReturn(consentDataMock);
         when(this.consentPersistDataMock.getPayload()).thenReturn(payload);

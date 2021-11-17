@@ -152,7 +152,7 @@ public class CDSConsentAdminHandler implements ConsentAdminHandler {
     }
 
     private void revokeConsentAsPrimaryUser(String consentID) throws ConsentManagementException {
-        this.consentCoreService.revokeConsent(consentID, CONSENT_STATUS_REVOKED, null,
+        this.consentCoreService.revokeConsentWithReason(consentID, CONSENT_STATUS_REVOKED, null,
                 ConsentCoreServiceConstants.CONSENT_REVOKE_FROM_DASHBOARD_REASON);
     }
 }

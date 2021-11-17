@@ -60,6 +60,7 @@ public class CDSAccountListRetrievalStep implements ConsentRetrievalStep {
                     JSONObject jsonAccountData = (JSONObject) parser.parse(accountData);
                     JSONArray accountsJSON = (JSONArray) jsonAccountData.get(CDSConsentExtensionConstants.DATA);
                     jsonObject.appendField(CDSConsentExtensionConstants.ACCOUNTS, accountsJSON);
+                    consentData.addData(CDSConsentExtensionConstants.ACCOUNTS, accountsJSON);
                 } catch (ParseException e) {
                     throw new ConsentException(ResponseStatus.INTERNAL_SERVER_ERROR,
                             "Exception occurred while parsing accounts data");

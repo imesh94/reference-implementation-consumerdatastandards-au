@@ -17,14 +17,10 @@ import com.wso2.openbanking.accelerator.consent.extensions.authorize.model.Conse
 import com.wso2.openbanking.accelerator.consent.extensions.authorize.model.ConsentPersistStep;
 import com.wso2.openbanking.accelerator.consent.extensions.common.ConsentException;
 import com.wso2.openbanking.accelerator.consent.extensions.common.ResponseStatus;
-import com.wso2.openbanking.cds.common.config.OpenBankingCDSConfigParser;
-import com.wso2.openbanking.cds.consent.extensions.authorize.utils.CDSDataRetrievalUtil;
 import com.wso2.openbanking.cds.consent.extensions.common.CDSConsentExtensionConstants;
 import net.minidev.json.JSONArray;
 import net.minidev.json.JSONObject;
 import net.minidev.json.JSONStyle;
-import net.minidev.json.parser.JSONParser;
-import net.minidev.json.parser.ParseException;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -50,10 +46,8 @@ public class CDSJointAccountConsentPersistenceStep implements ConsentPersistStep
             ArrayList<String> consentedAccountIdList = getConsentedAccountIdList(payload);
             Map<String, List<String>> jointAccountIdWithUsers = new HashMap<>();
 
-            final String accountsUrl = (String) OpenBankingCDSConfigParser.getInstance().getConfiguration()
-                    .get(CDSConsentExtensionConstants.SHARABLE_ACCOUNTS_ENDPOINT);
             ConsentData consentData = consentPersistData.getConsentData();
-            JSONArray allAccounts = getAccountsJsonFromEndpoint(accountsUrl, consentData.getUserId());
+            JSONArray allAccounts = getAllAccounts(consentData);
 
             for (Object accountDetails : allAccounts) {
                 if (accountDetails instanceof JSONObject) {
@@ -153,40 +147,18 @@ public class CDSJointAccountConsentPersistenceStep implements ConsentPersistStep
     }
 
     /**
-     * Get accounts data from bank backend
+     * Get all accounts from consent data
      *
-     * @param accountsUrl: sharable accounts url
-     * @param userId:      ID of the primary user
+     * @param consentData: consent data from consentPersistData
      * @return JSONArray of accounts data
      */
-    private JSONArray getAccountsJsonFromEndpoint(String accountsUrl, String userId) {
+    private JSONArray getAllAccounts(ConsentData consentData) {
 
-        if (StringUtils.isNotBlank(accountsUrl)) {
-            Map<String, String> parameters = new HashMap<>();
-            parameters.put(CDSConsentExtensionConstants.USER_ID_KEY_NAME, userId);
-
-            final String accountData = CDSDataRetrievalUtil.getAccountsFromEndpoint(accountsUrl, parameters,
-                    new HashMap<>());
-
-            if (StringUtils.isBlank(accountData)) {
-                log.error("Unable to load accounts data for the user: " + userId);
-                throw new ConsentException(ResponseStatus.INTERNAL_SERVER_ERROR,
-                        "Exception occurred while getting accounts data");
-            }
-
-            JSONParser parser = new JSONParser(JSONParser.MODE_PERMISSIVE);
-            try {
-                JSONObject jsonAccountData = (JSONObject) parser.parse(accountData);
-                return (JSONArray) jsonAccountData.get(CDSConsentExtensionConstants.DATA);
-            } catch (ParseException e) {
-                log.error("Exception occurred while parsing accounts data. Caused by, ", e);
-                throw new ConsentException(ResponseStatus.INTERNAL_SERVER_ERROR,
-                        "Exception occurred while parsing accounts data");
-            }
+        Object accountsObj = consentData.getMetaDataMap().get(CDSConsentExtensionConstants.ACCOUNTS);
+        if (accountsObj instanceof JSONArray) {
+            return (JSONArray) accountsObj;
         } else {
-            log.error("Sharable accounts endpoint is not configured properly");
-            throw new ConsentException(ResponseStatus.INTERNAL_SERVER_ERROR,
-                    "Sharable accounts endpoint is not configured properly");
+            return new JSONArray();
         }
     }
 
@@ -228,9 +200,9 @@ public class CDSJointAccountConsentPersistenceStep implements ConsentPersistStep
                 secondaryUsers.add(secondaryUser);
             }
             JSONObject jointAccountPayload = new JSONObject();
-            jointAccountPayload.put(CDSConsentExtensionConstants.JOINT_ACCOUNT_PAYLOAD_PRIMARY_USER,
+            jointAccountPayload.put(CDSConsentExtensionConstants.JOINT_ACCOUNT_PAYLOAD_PRIMARY_MEMBER,
                     consentData.getUserId());
-            jointAccountPayload.put(CDSConsentExtensionConstants.JOINT_ACCOUNT_PAYLOAD_SECONDARY_USER, secondaryUsers);
+            jointAccountPayload.put(CDSConsentExtensionConstants.JOINT_ACCOUNT_PAYLOAD_LINKED_MEMBER, secondaryUsers);
 
             return jointAccountPayload.toJSONString(JSONStyle.MAX_COMPRESS);
         }

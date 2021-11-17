@@ -31,8 +31,8 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import static com.wso2.openbanking.cds.consent.extensions.common.CDSConsentExtensionConstants.AUTH_RESOURCE_TYPE_LINKED;
 import static com.wso2.openbanking.cds.consent.extensions.common.CDSConsentExtensionConstants.AUTH_RESOURCE_TYPE_PRIMARY;
-import static com.wso2.openbanking.cds.consent.extensions.common.CDSConsentExtensionConstants.AUTH_RESOURCE_TYPE_SECONDARY;
 import static org.junit.Assert.assertTrue;
 import static org.mockito.Matchers.any;
 import static org.mockito.Matchers.anyString;
@@ -72,7 +72,7 @@ public class CDSConsentAdminHandlerTest {
         AuthorizationResource authResource2 = new AuthorizationResource();
         authResource2.setAuthorizationID(AUTH_ID_SECONDARY);
         authResource2.setUserID(USER_ID_SECONDARY);
-        authResource2.setAuthorizationType(AUTH_RESOURCE_TYPE_SECONDARY);
+        authResource2.setAuthorizationType(AUTH_RESOURCE_TYPE_LINKED);
 
         ConsentMappingResource mapping1 = new ConsentMappingResource();
         mapping1.setMappingID(MAPPING_ID_1);
@@ -97,7 +97,7 @@ public class CDSConsentAdminHandlerTest {
         doReturn(true).when(consentCoreServiceMock).deactivateAccountMappings(any(ArrayList.class));
         doReturn(detailedConsentResource).when(consentCoreServiceMock).getDetailedConsent(anyString());
         doReturn(true).when(consentCoreServiceMock)
-                .revokeConsent(anyString(), anyString(), anyString(), anyString());
+                .revokeConsentWithReason(anyString(), anyString(), anyString(), anyString());
 
         this.uut = new CDSConsentAdminHandler(consentCoreServiceMock, null);
     }

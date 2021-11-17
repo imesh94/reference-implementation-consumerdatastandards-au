@@ -58,14 +58,14 @@ public class OBCDSAuthServletImpl implements OBAuthServletInterface {
         List<Map<String, Object>> accountsData = new ArrayList<>();
         JSONArray accountsArray = dataSet.getJSONArray(CDSConsentExtensionConstants.ACCOUNTS);
         for (int accountIndex = 0; accountIndex < accountsArray.length(); accountIndex++) {
-            JSONObject object = accountsArray.getJSONObject(accountIndex);
-            String accountId = object.getString(CDSConsentExtensionConstants.ACCOUNT_ID);
-            String displayName = object.getString(CDSConsentExtensionConstants.DISPLAY_NAME);
+            JSONObject account = accountsArray.getJSONObject(accountIndex);
+            String accountId = account.getString(CDSConsentExtensionConstants.ACCOUNT_ID);
+            String displayName = account.getString(CDSConsentExtensionConstants.DISPLAY_NAME);
 
             Map<String, Object> data = new HashMap<>();
             data.put(CDSConsentExtensionConstants.ACCOUNT_ID, accountId);
             data.put(CDSConsentExtensionConstants.DISPLAY_NAME, displayName);
-            updateJointAccountAttributes(object, data);
+            updateJointAccountAttributes(account, data);
 
             accountsData.add(data);
         }
