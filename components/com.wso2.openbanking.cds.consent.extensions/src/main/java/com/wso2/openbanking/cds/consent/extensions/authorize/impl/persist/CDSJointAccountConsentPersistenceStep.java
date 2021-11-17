@@ -72,7 +72,7 @@ public class CDSJointAccountConsentPersistenceStep implements ConsentPersistStep
     }
 
     /**
-     * Check whether joint account is sharable
+     * Check whether joint account is sharable.
      *
      * @param consentedAccountIdList: consented account id list
      * @param account:                account received from bank backend
@@ -97,7 +97,7 @@ public class CDSJointAccountConsentPersistenceStep implements ConsentPersistStep
     }
 
     /**
-     * Get user ids list from joint account
+     * Get user ids list from joint account.
      *
      * @param jointAccount: consented joint account
      * @return list of user ids
@@ -120,7 +120,7 @@ public class CDSJointAccountConsentPersistenceStep implements ConsentPersistStep
     }
 
     /**
-     * Get account list from payload data and check for validity
+     * Get account list from payload data and check for validity.
      *
      * @param payloadData payload data of retrieved from persist data
      * @return List of user consented accounts
@@ -147,7 +147,7 @@ public class CDSJointAccountConsentPersistenceStep implements ConsentPersistStep
     }
 
     /**
-     * Get all accounts from consent data
+     * Get all accounts from consent data.
      *
      * @param consentData: consent data from consentPersistData
      * @return JSONArray of accounts data
@@ -159,11 +159,11 @@ public class CDSJointAccountConsentPersistenceStep implements ConsentPersistStep
             return (JSONArray) accountsObj;
         } else {
             return new JSONArray();
-        }
+    }
     }
 
     /**
-     * Generate a list of account ids for users who has multiple joint accounts
+     * Generate a list of account ids for users who has multiple joint accounts.
      *
      * @param jointAccountIdWithUsers: joint account id and linked members map
      * @return a map of user ids and joint account ids

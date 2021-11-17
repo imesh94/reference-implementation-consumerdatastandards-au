@@ -34,7 +34,7 @@ import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 /**
- * Test class for CDSJointAccountConsentPersistenceStep
+ * Test class for CDSJointAccountConsentPersistenceStep.
  */
 public class CDSJointAccountConsentPersistenceStepTest {
     private static final String TEST_ACCOUNT_DATA_JSON = "[" +

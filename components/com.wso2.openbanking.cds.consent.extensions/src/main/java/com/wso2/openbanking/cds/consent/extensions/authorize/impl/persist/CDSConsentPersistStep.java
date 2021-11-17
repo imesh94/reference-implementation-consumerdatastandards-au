@@ -148,7 +148,7 @@ public class CDSConsentPersistStep implements ConsentPersistStep {
     }
 
     /**
-     * Create consent resource to the given parameters
+     * Create consent resource to the given parameters.
      *
      * @param consentData       consent data
      * @param requestString     request string of consent resource
@@ -176,7 +176,7 @@ public class CDSConsentPersistStep implements ConsentPersistStep {
     }
 
     /**
-     * Add meta data retrieved from web app to consent attributes
+     * Add meta data retrieved from web app to consent attributes.
      *
      * @param consentData        consent data
      * @param consentPersistData consent persist data
@@ -202,7 +202,7 @@ public class CDSConsentPersistStep implements ConsentPersistStep {
     }
 
     /**
-     * Get latest authorization using updated time and check whether its null or in proper state
+     * Get latest authorization using updated time and check whether its null or in proper state.
      *
      * @param createdConsent consent created
      * @return Latest authorization resource
@@ -237,7 +237,7 @@ public class CDSConsentPersistStep implements ConsentPersistStep {
     }
 
     /**
-     * Get account list from payload data and check for validity
+     * Get account list from payload data and check for validity.
      *
      * @param payloadData payload data of retrieved from persist data
      * @return List of user consented accounts
