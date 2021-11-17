@@ -42,7 +42,7 @@ import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 /**
- * Test class for CDSConsentAdminHandler
+ * Test class for CDSConsentAdminHandler.
  */
 public class CDSConsentAdminHandlerTest {
 

@@ -120,7 +120,7 @@ public class CDSConsentValidator implements ConsentValidator {
     }
 
     /**
-     * Method to remove inactive and duplicate consent mappings from consentValidateData
+     * Method to remove inactive and duplicate consent mappings from consentValidateData.
      *
      * @param consentValidateData consentValidateData
      */

@@ -76,7 +76,7 @@ public class CDSConsentAdminHandler implements ConsentAdminHandler {
                         deactivateAccountMappings(detailedConsentResource, userID);
                     } else {
                         log.debug("Revoke consent for consentID " + consentID);
-                        // do not require
+                        // Revoke consent as primary consent holder
                         revokeConsentAsPrimaryUser(consentID);
                     }
                 }
@@ -96,7 +96,7 @@ public class CDSConsentAdminHandler implements ConsentAdminHandler {
     }
 
     /**
-     * Method to check whether requested user's authorization resource type is primary
+     * Method to check requested user's authorization resource type is primary.
      *
      * @param detailedConsentResource detailedConsentResource
      * @param userID                  user id
@@ -112,7 +112,7 @@ public class CDSConsentAdminHandler implements ConsentAdminHandler {
     }
 
     /**
-     * Method to deactivate account mapping for secondary consent holders
+     * Method to deactivate account mapping for secondary consent holders.
      *
      * @param detailedConsentResource detailedConsentResource
      * @param secondaryUserID         id of the secondary consent holder
