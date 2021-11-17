@@ -28,6 +28,8 @@ public class ErrorConstants {
     public static final String DETAIL = "detail";
     public static final String META_URN = "metaURN";
     public static final String ACCOUNT_ID = "accountId";
+    public static final String META = "meta";
+    public static final String URN = "urn";
 
     // HTTP Error Codes
     public static final String HTTP_BAD_REQUEST = "400";
@@ -65,6 +67,7 @@ public class ErrorConstants {
     public static final String ERROR_ENUM = "auErrorEnum";
     public static final String METADATA  = "metadata";
     public static final String SUCCESS = "SUCCESS";
+    public static final String CONSENT_ENFORCEMENT_ERROR = "Consent Enforcement Error";
 
 
     /**

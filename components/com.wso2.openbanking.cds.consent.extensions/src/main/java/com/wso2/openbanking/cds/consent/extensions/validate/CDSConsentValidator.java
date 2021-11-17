@@ -32,6 +32,7 @@ import org.apache.commons.logging.LogFactory;
 import org.apache.http.HttpStatus;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 
 /**
  * Consent validator CDS implementation.
@@ -82,7 +83,13 @@ public class CDSConsentValidator implements ConsentValidator {
 
         if (Boolean.parseBoolean(isAccountIdValidationEnabled) &&
                 !CDSConsentValidatorUtil.isAccountIdValid(consentValidateData)) {
-            String accountId = consentValidateData.getResourceParams().get("ResourcePath");
+
+            ArrayList<String> requestPathResources = new ArrayList<>(Arrays.asList(consentValidateData.
+                    getRequestPath().split("/")));
+            int indexOfAccountID = requestPathResources.indexOf("{accountId}");
+            String accountId = new ArrayList<>(Arrays.asList(consentValidateData.getResourceParams()
+                    .get("ResourcePath").split("/"))).get(indexOfAccountID);
+
             consentValidationResult.setErrorMessage(generateErrorPayload("Invalid Banking Account",
                     "ID of the account not found or invalid", null, accountId));
             consentValidationResult.setErrorCode(ErrorConstants.RESOURCE_INVALID_BANKING_ACCOUNT);
@@ -125,8 +132,10 @@ public class CDSConsentValidator implements ConsentValidator {
         errorPayload.put(ErrorConstants.DETAIL, detail);
         errorPayload.put(ErrorConstants.TITLE, title);
 
-        if (StringUtils.isNotBlank(metaURN) && StringUtils.isNotBlank(accountId)) {
+        if (StringUtils.isNotBlank(metaURN)) {
             errorPayload.put(ErrorConstants.META_URN, metaURN);
+        }
+        if (StringUtils.isNotBlank(accountId)) {
             errorPayload.put(ErrorConstants.ACCOUNT_ID, accountId);
         }
         return errorPayload.toString();

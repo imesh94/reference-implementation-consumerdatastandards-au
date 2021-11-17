@@ -83,7 +83,7 @@ public class CDSConsentExtensionConstants {
     public static final String OPENID_SCOPE = "openid";
     public static final String PROFILE_SCOPE = "profile";
     public static final String CDR_REGISTRATION_SCOPE = "cdr:registration";
-    public static final String HTTP_METHOD = "HttpMethod";
+    public static final String HTTP_METHOD = "httpMethod";
     public static final String POST_METHOD = "POST";
     public static final String ENABLE_ACCOUNT_ID_VALIDATION_ON_RETRIEVAL = "ConsentManagement.Validate" +
             "AccountIdOnRetrieval";

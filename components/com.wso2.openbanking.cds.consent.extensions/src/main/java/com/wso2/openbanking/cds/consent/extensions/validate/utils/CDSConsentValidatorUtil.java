@@ -18,13 +18,13 @@ import com.wso2.openbanking.accelerator.consent.extensions.validate.model.Consen
 import com.wso2.openbanking.accelerator.consent.mgt.dao.models.ConsentMappingResource;
 import com.wso2.openbanking.cds.consent.extensions.common.CDSConsentExtensionConstants;
 import net.minidev.json.JSONObject;
-import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
 import java.time.OffsetDateTime;
 import java.time.format.DateTimeParseException;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 
 /**
@@ -101,10 +101,11 @@ public class CDSConsentValidatorUtil {
             return true;
         }
         String resourcePath = consentValidateData.getResourceParams().get("ResourcePath");
+        ArrayList<String> resourceArrayList = new ArrayList<>(Arrays.asList(resourcePath.split("/")));
 
         for (ConsentMappingResource resource : consentValidateData.getComprehensiveConsent()
                 .getConsentMappingResources()) {
-            if (resourcePath.contains(resource.getAccountID())) {
+            if (resourceArrayList.contains(resource.getAccountID())) {
                 return true;
             }
         }

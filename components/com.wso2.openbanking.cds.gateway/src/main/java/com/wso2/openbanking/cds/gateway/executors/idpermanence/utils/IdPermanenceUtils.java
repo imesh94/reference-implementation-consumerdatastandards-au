@@ -16,9 +16,11 @@ import com.google.gson.JsonArray;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import com.wso2.openbanking.accelerator.gateway.executor.model.OpenBankingExecutorError;
+import com.wso2.openbanking.cds.common.config.OpenBankingCDSConfigParser;
 import com.wso2.openbanking.cds.common.error.handling.util.ErrorConstants;
 import com.wso2.openbanking.cds.common.idpermanence.IdEncryptorDecryptor;
 import com.wso2.openbanking.cds.gateway.executors.idpermanence.model.IdPermanenceValidationResponse;
+import net.minidev.json.JSONObject;
 import org.apache.commons.lang.StringUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -37,6 +39,7 @@ import java.util.stream.Collectors;
 public class IdPermanenceUtils {
 
     private static final Log log = LogFactory.getLog(IdPermanenceUtils.class);
+    private static final String SECRET_KEY = OpenBankingCDSConfigParser.getInstance().getIdPermanenceSecretKey();
 
     /**
      * Mask resourceIds in response payload
@@ -191,10 +194,17 @@ public class IdPermanenceUtils {
                     !decryptedString.matches(IdPermanenceConstants.DECRYPTED_RESOURCE_ID_PATTERN)) {
                 idPermanenceValidationResponse.setValid(false);
                 if (resourceKey.equals(IdPermanenceConstants.ACCOUNT_ID)) {
+
+                    JSONObject errorPayload = new JSONObject();
+                    errorPayload.put(ErrorConstants.DETAIL,
+                            ErrorConstants.AUErrorEnum.INVALID_BANK_ACCOUNT_PATH.getDetail());
+                    errorPayload.put(ErrorConstants.META_URN,
+                            ErrorConstants.AUErrorEnum.INVALID_BANK_ACCOUNT_PATH.getDetail());
+
                     idPermanenceValidationResponse.setError(new OpenBankingExecutorError(
                             ErrorConstants.AUErrorEnum.INVALID_BANK_ACCOUNT_PATH.getCode(),
                             ErrorConstants.AUErrorEnum.INVALID_BANK_ACCOUNT_PATH.getTitle(),
-                            ErrorConstants.AUErrorEnum.INVALID_BANK_ACCOUNT_PATH.getDetail(),
+                            errorPayload.toString(),
                             String.valueOf(ErrorConstants.AUErrorEnum.INVALID_BANK_ACCOUNT_PATH.getHttpCode())
                     ));
                     idPermanenceValidationResponse.setHttpStatus(
@@ -431,4 +441,18 @@ public class IdPermanenceUtils {
         return jsonObject;
     }
 
+    /**
+     * Encrypt account ids in the error response.
+     *
+     * @param errorJSON jsonObject
+     * @param memberId member id
+     * @param appId app id
+     * @return String
+     */
+    public static String encryptAccountIdInErrorResponse(JSONObject errorJSON, String memberId, String appId) {
+
+        String stringToEncrypt = memberId + ":" + appId + ":" +
+                errorJSON.get(ErrorConstants.ACCOUNT_ID).toString();
+        return IdEncryptorDecryptor.encrypt(stringToEncrypt, SECRET_KEY);
+    }
 }

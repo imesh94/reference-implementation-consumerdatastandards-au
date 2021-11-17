@@ -22,13 +22,11 @@ import com.wso2.openbanking.accelerator.gateway.util.GatewayConstants;
 import com.wso2.openbanking.cds.common.config.OpenBankingCDSConfigParser;
 import com.wso2.openbanking.cds.common.error.handling.util.ErrorConstants;
 import com.wso2.openbanking.cds.common.error.handling.util.ErrorUtil;
-import com.wso2.openbanking.cds.common.idpermanence.IdEncryptorDecryptor;
+import com.wso2.openbanking.cds.gateway.executors.idpermanence.utils.IdPermanenceUtils;
 import net.minidev.json.JSONArray;
 import net.minidev.json.JSONObject;
 import net.minidev.json.parser.JSONParser;
 import net.minidev.json.parser.ParseException;
-import net.sf.saxon.Err;
-import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.apache.http.HttpStatus;
@@ -168,7 +166,6 @@ public class CDSErrorHandler implements OpenBankingGatewayExecutor {
                 statusCode = HttpStatus.SC_INTERNAL_SERVER_ERROR;
             }
         }
-
         obapiResponseContext.addContextProperty(GatewayConstants.ERROR_STATUS_PROP, String.valueOf(statusCode));
     }
 
@@ -192,80 +189,40 @@ public class CDSErrorHandler implements OpenBankingGatewayExecutor {
 
         for (OpenBankingExecutorError error : errors) {
             JsonObject errorObj = new JsonObject();
-
             try {
                 Object errorPayload = new JSONParser(JSONParser.MODE_PERMISSIVE).parse(error.getMessage());
-
-//                if ("Consent Enforcement Error".equals(error.getTitle())) {
-//                    JSONObject errorJSON = (JSONObject) errorPayload;
-//                    errorObj.addProperty(ErrorConstants.TITLE, errorJSON.getAsString(ErrorConstants.TITLE));
-//
-//                    if (errorJSON.get(ErrorConstants.ACCOUNT_ID) != null) {
-//                        String stringToEncrypt = memberId + ":" + appId + ":" +
-//                                errorJSON.get(ErrorConstants.ACCOUNT_ID).toString();
-//                        String encryptedId = IdEncryptorDecryptor.encrypt(stringToEncrypt, SECRET_KEY);
-//                        errorObj.addProperty(ErrorConstants.DETAIL, encryptedId);
-//                    } else {
-//                        errorObj.addProperty(ErrorConstants.DETAIL, errorJSON.getAsString(ErrorConstants.DETAIL));
-//                    }
-//
-//                    if (errorJSON.getAsString(ErrorConstants.META_URN) != null) {
-//                        JsonObject meta = new JsonObject();
-//                        meta.addProperty("urn", errorJSON.getAsString(ErrorConstants.META_URN));
-//                        errorObj.add("meta", meta);
-//                    }
-//                } else {
-//                    if (errorPayload instanceof JSONObject) {
-//                        JSONObject errorJSON = (JSONObject) errorPayload;
-//                        errorObj.addProperty(ErrorConstants.DETAIL, errorJSON.getAsString(ErrorConstants.DETAIL));
-//
-//                        if (errorJSON.getAsString(ErrorConstants.META_URN) != null) {
-//                            JsonObject meta = new JsonObject();
-//                            meta.addProperty("urn", errorJSON.getAsString(ErrorConstants.META_URN));
-//                            errorObj.add("meta", meta);
-//                        }
-//                    } else {
-//                        errorObj.addProperty(ErrorConstants.DETAIL, errorPayload.toString());
-//                    }
-//                    errorObj.addProperty(ErrorConstants.TITLE, error.getTitle());
-//                }
-
-                //////////////////////////////////////////////////////////////////
-
+                errorObj.addProperty(ErrorConstants.CODE, error.getCode());
                 if (errorPayload instanceof JSONObject) {
-
                     JSONObject errorJSON = (JSONObject) errorPayload;
-
-                    if ("Consent Enforcement Error".equals(error.getTitle())) {
+                    if (ErrorConstants.CONSENT_ENFORCEMENT_ERROR.equals(error.getTitle())) {
                         errorObj.addProperty(ErrorConstants.TITLE, errorJSON.getAsString(ErrorConstants.TITLE));
                         if (errorJSON.get(ErrorConstants.ACCOUNT_ID) != null) {
-                            String stringToEncrypt = memberId + ":" + appId + ":" +
-                                    errorJSON.get(ErrorConstants.ACCOUNT_ID).toString();
-                            String encryptedId = IdEncryptorDecryptor.encrypt(stringToEncrypt, SECRET_KEY);
+                            String encryptedId = IdPermanenceUtils.encryptAccountIdInErrorResponse(errorJSON,
+                                    memberId, appId);
                             errorObj.addProperty(ErrorConstants.DETAIL, encryptedId);
                         } else {
                             errorObj.addProperty(ErrorConstants.DETAIL, errorJSON.getAsString(ErrorConstants.DETAIL));
                         }
-
                     } else {
                         errorObj.addProperty(ErrorConstants.TITLE, error.getTitle());
                         errorObj.addProperty(ErrorConstants.DETAIL, errorJSON.getAsString(ErrorConstants.DETAIL));
                     }
-
                     if (errorJSON.getAsString(ErrorConstants.META_URN) != null) {
                         JsonObject meta = new JsonObject();
-                        meta.addProperty("urn", errorJSON.getAsString(ErrorConstants.META_URN));
-                        errorObj.add("meta", meta);
+                        meta.addProperty(ErrorConstants.URN, errorJSON.getAsString(ErrorConstants.META_URN));
+                        errorObj.add(ErrorConstants.META, meta);
                     }
                 } else {
-                    errorObj.addProperty(ErrorConstants.DETAIL, errorPayload.toString());
+                    // TODO: need to capture non JSON errors from accelerator side, error codes starting from 20000
                     errorObj.addProperty(ErrorConstants.TITLE, error.getTitle());
+                    errorObj.addProperty(ErrorConstants.DETAIL, errorPayload.toString());
                 }
-
             } catch (ParseException e) {
-                log.error("Unexpected Error", e);
+                log.error("Unexpected error while parsing string", e);
+                errorObj.addProperty(ErrorConstants.CODE, ErrorConstants.AUErrorEnum.UNEXPECTED_ERROR.getCode());
+                errorObj.addProperty(ErrorConstants.TITLE, ErrorConstants.AUErrorEnum.UNEXPECTED_ERROR.getTitle());
+                errorObj.addProperty(ErrorConstants.DETAIL, ErrorConstants.AUErrorEnum.UNEXPECTED_ERROR.getDetail());
             }
-            errorObj.addProperty(ErrorConstants.CODE, error.getCode());
             errorList.add(errorObj);
         }
         parentObject.add(ErrorConstants.ERRORS, errorList);
