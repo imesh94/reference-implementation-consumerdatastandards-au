@@ -122,10 +122,12 @@ public class ErrorConstants {
         INVALID_PRODUCT_STATUS(403, "AU.CDR.Entitlements.InvalidAdrSoftwareProductStatus", "ADR Software Product " +
                 "Status Is Invalid", "The ADR software product is not in an active state in the CDR Register"),
         //Consent status of the resource is not accepted by the API
-        INVALID_CONSENT(403, "AU.CDR.Entitlements.InvalidConsentStatus", "Consent Is Invalid", "Consent status is not" +
+        INVALID_CONSENT(403, "urn:au-cds:error:cds-all:Authorisation/InvalidConsent",
+                "Consent Is Invalid", "Consent status is not" +
                 " acceptable by the API"),
         //Consent is in the revoked state
-        REVOKED_CONSENT(403, "AU.CDR.Entitlements.ConsentIsRevoked", "Consent Is Revoked", "Provided consent is in " +
+        REVOKED_CONSENT(403, "AU.CDR.Entitlements.ConsentIsRevoked", "Consent Is Revoked",
+                "Provided consent is in " +
                 "the revoked state"),
         //The resource requested is forbidden
         RESOURCE_FORBIDDEN(403, "urn:au-cds:error:cds-all:Authorisation/InvalidConsent",
@@ -137,8 +139,8 @@ public class ErrorConstants {
         RESOURCE_NOT_IMPLEMENTED(404, "AU.CDR.Resource.NotImplemented", "Resource Not Implemented",
                 "Requested resource %s is available in the specification but not implemented"),
         //Requested resource is not available in the spec
-        RESOURCE_NOT_FOUND(404, "AU.CDR.Resource.NotFound", "Resource Not Found", "Requested resource is not " +
-                "available in the specification"),
+        RESOURCE_NOT_FOUND(404, "AU.CDR.Resource.NotFound", "Resource Not Found",
+                "Requested resource is not " + "available in the specification"),
         //Resource requested is invalid, does not exist or will not be disclosed
         INVALID_RESOURCE_PATH(404, "urn:au-cds:error:cds-all:Resource/Invalid", "Invalid Resource",
                 "Resource requested is invalid, does not exist or will not be disclosed at the moment"),
