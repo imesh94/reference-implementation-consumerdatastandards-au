@@ -194,17 +194,10 @@ public class IdPermanenceUtils {
                     !decryptedString.matches(IdPermanenceConstants.DECRYPTED_RESOURCE_ID_PATTERN)) {
                 idPermanenceValidationResponse.setValid(false);
                 if (resourceKey.equals(IdPermanenceConstants.ACCOUNT_ID)) {
-
-                    JSONObject errorPayload = new JSONObject();
-                    errorPayload.put(ErrorConstants.DETAIL,
-                            ErrorConstants.AUErrorEnum.INVALID_BANK_ACCOUNT_PATH.getDetail());
-                    errorPayload.put(ErrorConstants.META_URN,
-                            ErrorConstants.AUErrorEnum.INVALID_BANK_ACCOUNT_PATH.getDetail());
-
                     idPermanenceValidationResponse.setError(new OpenBankingExecutorError(
                             ErrorConstants.AUErrorEnum.INVALID_BANK_ACCOUNT_PATH.getCode(),
                             ErrorConstants.AUErrorEnum.INVALID_BANK_ACCOUNT_PATH.getTitle(),
-                            errorPayload.toString(),
+                            ErrorConstants.AUErrorEnum.INVALID_BANK_ACCOUNT_PATH.getDetail(),
                             String.valueOf(ErrorConstants.AUErrorEnum.INVALID_BANK_ACCOUNT_PATH.getHttpCode())
                     ));
                     idPermanenceValidationResponse.setHttpStatus(

@@ -16,8 +16,8 @@ import com.wso2.openbanking.cds.common.error.handling.models.CDSErrorMeta;
 import com.wso2.openbanking.cds.common.error.handling.util.ErrorConstants;
 import com.wso2.openbanking.cds.common.error.handling.util.ErrorUtil;
 import com.wso2.openbanking.cds.common.testutils.CommonTestDataProvider;
-import org.json.JSONArray;
-import org.json.JSONObject;
+import net.minidev.json.JSONArray;
+import net.minidev.json.JSONObject;
 import org.testng.Assert;
 import org.testng.annotations.Test;
 
@@ -60,7 +60,7 @@ public class ErrorUtilTest {
 
         JSONObject errorJson = ErrorUtil.getErrorObject(error, errorMessage, metaData);
         JSONArray errorJsonArray = new JSONArray();
-        errorJsonArray.put(errorJson);
+        errorJsonArray.add(errorJson);
         String errorJsonString = ErrorUtil.getErrorJson(errorJsonArray);
         Assert.assertNotNull(errorJsonString);
     }

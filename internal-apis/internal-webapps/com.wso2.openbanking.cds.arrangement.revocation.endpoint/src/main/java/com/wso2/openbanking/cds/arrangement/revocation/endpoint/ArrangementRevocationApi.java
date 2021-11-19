@@ -25,11 +25,12 @@ import com.wso2.openbanking.cds.common.error.handling.util.ErrorUtil;
 import com.wso2.openbanking.cds.common.metadata.domain.MetadataValidationResponse;
 import com.wso2.openbanking.cds.common.metadata.status.validator.service.MetadataService;
 import io.swagger.annotations.Api;
+import net.minidev.json.JSONArray;
+import net.minidev.json.JSONObject;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.apache.cxf.interceptor.InInterceptors;
-import org.json.JSONArray;
 import org.wso2.carbon.identity.oauth2.bean.OAuthClientAuthnContext;
 
 import java.util.ArrayList;
@@ -154,7 +155,7 @@ public class ArrangementRevocationApi {
     private Response handleErrorResponse(ErrorConstants.AUErrorEnum errorCode, String errorMessage, int httpCode) {
 
         JSONArray errorList = new JSONArray();
-        errorList.put(ErrorUtil.getErrorObject(errorCode, errorMessage, new CDSErrorMeta()));
+        errorList.add(ErrorUtil.getErrorObject(errorCode, errorMessage, new CDSErrorMeta()));
         Response.ResponseBuilder respBuilder = Response.status(httpCode);
         return respBuilder.entity(ErrorUtil.getErrorJson(errorList)).build();
     }

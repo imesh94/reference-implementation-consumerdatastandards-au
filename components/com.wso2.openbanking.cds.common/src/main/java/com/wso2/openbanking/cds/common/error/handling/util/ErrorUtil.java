@@ -16,14 +16,14 @@ import com.google.gson.Gson;
 import com.wso2.openbanking.cds.common.error.handling.models.CDSError;
 import com.wso2.openbanking.cds.common.error.handling.models.CDSErrorMeta;
 import com.wso2.openbanking.cds.common.error.handling.models.CDSErrorResponse;
+import net.minidev.json.JSONArray;
+import net.minidev.json.JSONObject;
 import net.minidev.json.parser.JSONParser;
 import net.minidev.json.parser.ParseException;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.apache.http.HttpStatus;
-import org.json.JSONArray;
-import org.json.JSONObject;
 
 import java.util.ArrayList;
 import java.util.HashSet;
@@ -132,10 +132,9 @@ public class ErrorUtil {
 
         List<CDSError> errorArray = new ArrayList<>();
 
-        for (int errorIndex = 0; errorIndex < errorData.length(); errorIndex++) {
+        for (Object errorDatum : errorData) {
 
-            JSONObject errorElement = errorData.getJSONObject(errorIndex);
-
+            JSONObject errorElement = (JSONObject) errorDatum;
             //Get the enum for respective error
             ErrorConstants.AUErrorEnum auError = ErrorConstants.AUErrorEnum
                     .fromValue(errorElement.get(ErrorConstants.ERROR_ENUM).toString());
@@ -143,14 +142,14 @@ public class ErrorUtil {
             //Setting the error details
             String errorMessage;
             String metaUrnError = StringUtils.EMPTY;
-            if (errorElement.has(ErrorConstants.DETAIL)) {
+            if (errorElement.get(ErrorConstants.DETAIL) != null) {
                 //Error detail is available in the object
                 try {
                     Object errorObject = new JSONParser(JSONParser.MODE_PERMISSIVE).parse(errorElement.
-                            getString(ErrorConstants.DETAIL));
+                            getAsString(ErrorConstants.DETAIL));
                     //Check errorObject instance to capture and convert string error message to JSON format
-                    if (errorObject instanceof net.minidev.json.JSONObject) {
-                        net.minidev.json.JSONObject errorJSON = (net.minidev.json.JSONObject) errorObject;
+                    if (errorObject instanceof JSONObject) {
+                        JSONObject errorJSON = (JSONObject) errorObject;
                         errorMessage = errorJSON.getAsString(ErrorConstants.DETAIL);
                         //Check for availability of urn in the error JSON
                         if (errorJSON.getAsString(ErrorConstants.META_URN) != null) {
