@@ -38,7 +38,7 @@ import java.util.Map;
  */
 public class GatewayErrorMediator extends AbstractMediator {
 
-    private static final String errorCode = "ERROR_CODE";
+    private static final String ERROR_CODE = "ERROR_CODE";
     private static final Log log = LogFactory.getLog(GatewayErrorMediator.class);
 
     @Override
@@ -49,7 +49,7 @@ public class GatewayErrorMediator extends AbstractMediator {
                 .get(DataPublishingConstants.DATA_PUBLISHING_ENABLED))) {
 
             log.debug("Publishing invocation error data from CDS error mediator.");
-            if ((messageContext.getProperty(errorCode)) != null) {
+            if ((messageContext.getProperty(ERROR_CODE)) != null) {
                 Map<String, Object> invocationErrorData = getApiInvocationErrorDataToPublish(messageContext);
                 CDSDataPublishingService.getCDSDataPublishingService().publishApiInvocationData(invocationErrorData);
             }
@@ -109,7 +109,7 @@ public class GatewayErrorMediator extends AbstractMediator {
             apiSpecVersion = (String) messageContext.getProperty(CDSDataPublishingConstants.API_SPEC_VERSION);
         }
 
-        int errorCode = (int) messageContext.getProperty(GatewayErrorMediator.errorCode);
+        int statusCode = (int) messageContext.getProperty(CDSDataPublishingConstants.HTTP_RESPONSE_STATUS_CODE);
         String messageId = (String) messageContext.getProperty(CDSDataPublishingConstants.CORRELATION_ID);
 
         String authorizationHeader = (String) headers.get(CDSDataPublishingConstants.AUTHORIZATION);
@@ -135,7 +135,7 @@ public class GatewayErrorMediator extends AbstractMediator {
         requestData.put("consumerId", consumerId);
         requestData.put("clientId", clientId);
         requestData.put("userAgent", userAgent);
-        requestData.put("statusCode", errorCode);
+        requestData.put("statusCode", statusCode);
         requestData.put("httpMethod", httpMethod);
         requestData.put("responsePayloadSize", payloadSize);
         requestData.put("electedResource", electedResource);

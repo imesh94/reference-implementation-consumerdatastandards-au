@@ -61,4 +61,5 @@ public class CDSDataPublishingConstants {
     public static final String SYNAPSE_REST_API = "SYNAPSE_REST_API";
     public static final String CORRELATION_ID = "correlation_id";
     public static final String REST_API_CONTEXT = "REST_API_CONTEXT";
+    public static final String HTTP_RESPONSE_STATUS_CODE = "HTTP_RESPONSE_STATUS_CODE";
 }
