@@ -51,7 +51,7 @@ on API_INVOCATION_RAW_DATA.ACCESS_TOKEN_ID == ACCESS_TOKEN_ID;
 
 --Generate CDS Metrics Raw stream
 from APIInputStream as apiInputStream
-join API_LATENCY_RAW_DATA as latencyRawData
+left outer join API_LATENCY_RAW_DATA as latencyRawData
     on apiInputStream.MESSAGE_ID == latencyRawData.MESSAGE_ID
 select UUID() as id, STATUS_CODE as statusCode, RESPONSE_LATENCY as respTime, ELECTED_RESOURCE as electedResource,
        TIMESTAMP as timestamp, CUSTOMER_STATUS as customerStatus

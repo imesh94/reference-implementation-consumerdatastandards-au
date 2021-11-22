@@ -517,6 +517,7 @@ name="AccessTokenInputStream"
 [[open_banking.data_publishing.thrift.stream.attributes]]
 name="accessTokenID"
 priority=1
+required=true
 
 [[open_banking.data_publishing.thrift.stream]]
 name="ConsentInputStream"

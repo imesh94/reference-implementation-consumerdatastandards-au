@@ -526,6 +526,7 @@ name="APIInputStream"
 [[open_banking.data_publishing.thrift.stream.attributes]]
 name="messageId"
 priority=1
+required=true
 [[open_banking.data_publishing.thrift.stream.attributes]]
 name="consentId"
 priority=2
@@ -570,7 +571,6 @@ name="timestamp"
 priority=12
 required=true
 type="long"
-required=true
 [[open_banking.data_publishing.thrift.stream.attributes]]
 name="customerStatus"
 priority=13
