@@ -28,7 +28,7 @@ class AuthorisationFlowUIValidationTest {
 
     //TODO:need to modify permission headings and permission list items according to CX specification.need to enable, Test true after issue fix.
     // git issue:https://github.com/wso2-enterprise/financial-open-banking/issues/5475
-    @Test(enabled = false)
+    @Test(enabled = true)
     void "TC0203003_Verify the permissions of a consent with common:customer.basic:read scope"() {
         List<AUConstants.SCOPES> scopes = [AUConstants.SCOPES.BANK_CUSTOMER_BASIC_READ]
 
