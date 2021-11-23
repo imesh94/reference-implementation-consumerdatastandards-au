@@ -87,6 +87,7 @@ public class CDSConsentExtensionConstants {
     public static final String EXISTING_PERMISSIONS = "existingPermissions";
     public static final String IS_SHARING_DURATION_UPDATED = "isSharingDurationUpdated";
     public static final String IS_CONSENT_AMENDMENT = "isConsentAmendment";
+    public static final String SINGLE_ACCESS_CONSENT = "Single use consent";
     public static final String CHAR_SET = "UTF-8";
     public static final String CUSTOMER_TYPE = "customerUType";
     public static final String ORGANISATION = "Organisation";
