@@ -79,7 +79,9 @@ public class CDSConsentExtensionConstants {
     public static final String JOINT_ACCOUNT_PAYLOAD_USER_ID = "userId";
     public static final String JOINT_ACCOUNT_PAYLOAD_ACCOUNT_ID = "accountId";
     public static final String JOINT_ACCOUNTS_PAYLOAD = "joint_accounts_payload";
-
+    public static final String PRE_SELECTED_ACCOUNT_LIST = "preSelectedAccountList";
+    public static final String EXISTING_PERMISSIONS = "existingPermissions";
+    public static final String IS_SHARING_DURATION_UPDATED = "isSharingDurationUpdated";
     public static final String CHAR_SET = "UTF-8";
     public static final String CUSTOMER_TYPE = "customerUType";
     public static final String ORGANISATION = "Organisation";
