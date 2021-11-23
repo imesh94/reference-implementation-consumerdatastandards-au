@@ -132,6 +132,9 @@ public class ErrorConstants {
         //The resource requested is forbidden
         RESOURCE_FORBIDDEN(403, "urn:au-cds:error:cds-all:Authorisation/InvalidConsent",
                 "Resource Is Forbidden", "The requested resource %s is forbidden"),
+        //Temp resource forbidden code
+        RESOURCE_FORBIDDEN_TEMP(403, "urn:au-cds:error:cds-all:Authorisation/ResourceForbidden",
+                "Resource Is Forbidden", "The requested resource %s is forbidden"),
         //Software product requested is invalid or cannot be found.
         INVALID_SOFTWARE_PRODUCT(404, "AU.CDR.Register.InvalidSoftwareProduct", "Invalid Software Product",
                 "Software product requested is invalid or cannot be found"),
