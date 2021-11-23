@@ -151,7 +151,7 @@ class AuthorisationFlowCXValidationTest {
 
         def automation = new BrowserAutomation(BrowserAutomation.DEFAULT_DELAY)
                 .addStep(new AUBasicAuthAutomationStep(authorisationBuilder.authoriseUrl))
-                .addStep { driver, LBL_INTEREST_RATEScontext ->
+                .addStep { driver, context ->
 
                     driver.findElement(By.xpath(AUTestUtil.getSingleAccountXPath())).click()
                     driver.findElement(By.xpath(AUConstants.CONSENT_SUBMIT_XPATH)).click()
