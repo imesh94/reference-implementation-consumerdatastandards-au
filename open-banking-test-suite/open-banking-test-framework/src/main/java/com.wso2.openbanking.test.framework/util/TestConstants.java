@@ -191,7 +191,8 @@ public class TestConstants {
     public static final String WINDOWS_SCROLL_20 = "window.scrollBy(0, 200)";
     public static final String LBL_OTP_TIMEOUT = "//div[@id='otpTimeout']";
     public static final String ELE_CONSENT_PAGE = "//form[@id='oauth2_authz_consent']";
-    public static final String LBL_AUTHENTICATION_FAILURE = "//div[contains(text(),'Authentication Error')]/../p";
+    public static final String LBL_AUTHENTICATION_FAILURE = "//div[@id='failed-msg']";
+    public static final String LBL_INCORRECT_USERNAME = "//div[@id='error-msg']";
     public static final String LBL_FOOTER_DESCRIPTION = "//div[@class='ui segment']/div/form/div/div";
 
     //Non-Regulatory
