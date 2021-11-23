@@ -12,6 +12,8 @@
 
 package com.wso2.openbanking.cds.identity.grant.type.handlers.utils;
 
+import com.wso2.openbanking.cds.common.config.OpenBankingCDSConfigParser;
+import com.wso2.openbanking.cds.common.utils.CDSCommonUtils;
 import com.wso2.openbanking.cds.identity.utils.CDSIdentityUtil;
 import org.wso2.carbon.identity.oauth2.dto.OAuth2AccessTokenRespDTO;
 
@@ -32,6 +34,22 @@ public class CDSGrantHandlerUtil {
 
             String consentId = CDSIdentityUtil.getConsentId(scopes);
             oAuth2AccessTokenRespDTO.addParameter(CDR_ARRANGEMENT_ID, consentId);
+    }
+
+    /**
+     * Retrieve access token from the oAuth2AccessTokenRespDTO and encrypt if required.
+     *
+     * @param oAuth2AccessTokenRespDTO oAuth2AccessTokenRespDTO
+     * @return access token string
+     */
+    public static String retrieveAccessToken(OAuth2AccessTokenRespDTO oAuth2AccessTokenRespDTO) {
+
+        String accessToken = oAuth2AccessTokenRespDTO.getAccessToken();
+        // Encrypt access token
+        if (accessToken != null && OpenBankingCDSConfigParser.getInstance().isTokenEncryptionEnabled()) {
+            accessToken = CDSCommonUtils.encryptAccessToken(accessToken);
+        }
+        return accessToken;
     }
 
 }

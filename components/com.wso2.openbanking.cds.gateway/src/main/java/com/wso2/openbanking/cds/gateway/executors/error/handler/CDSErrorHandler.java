@@ -37,6 +37,8 @@ import java.util.Map;
 public class CDSErrorHandler implements OpenBankingGatewayExecutor {
 
     private static Log log = LogFactory.getLog(CDSErrorHandler.class);
+    private static final String STATUS_CODE = "statusCode";
+    private static final String RESPONSE_PAYLOAD_SIZE = "responsePayloadSize";
 
     /**
      * Method to handle pre request
@@ -121,6 +123,11 @@ public class CDSErrorHandler implements OpenBankingGatewayExecutor {
         }
         obapiRequestContext.addContextProperty(GatewayConstants.ERROR_STATUS_PROP, String.valueOf(statusCode));
 
+        // Add error data to analytics map
+        Map<String, Object> analyticsData = obapiRequestContext.getAnalyticsData();
+        analyticsData.put(STATUS_CODE, statusCode);
+        analyticsData.put(RESPONSE_PAYLOAD_SIZE, (long) obapiRequestContext.getModifiedPayload().length());
+        obapiRequestContext.setAnalyticsData(analyticsData);
     }
 
     protected void handleResponseError(OBAPIResponseContext obapiResponseContext) {
@@ -159,6 +166,12 @@ public class CDSErrorHandler implements OpenBankingGatewayExecutor {
         }
 
         obapiResponseContext.addContextProperty(GatewayConstants.ERROR_STATUS_PROP, String.valueOf(statusCode));
+
+        // Add error data to analytics map
+        Map<String, Object> analyticsData = obapiResponseContext.getAnalyticsData();
+        analyticsData.put(STATUS_CODE, statusCode);
+        analyticsData.put(RESPONSE_PAYLOAD_SIZE, (long) obapiResponseContext.getModifiedPayload().length());
+        obapiResponseContext.setAnalyticsData(analyticsData);
     }
 
     public static JSONArray getDCRErrorJSON(ArrayList<OpenBankingExecutorError> errors) {
