@@ -1,0 +1,28 @@
+/*
+ * Copyright (c) 2021, WSO2 Inc. (http://www.wso2.com). All Rights Reserved.
+ *
+ * This software is the property of WSO2 Inc. and its suppliers, if any.
+ * Dissemination of any information or reproduction of any material contained
+ * herein is strictly forbidden, unless permitted by WSO2 in accordance with
+ * the WSO2 Commercial License available at http://wso2.com/licenses.
+ * For specific language governing the permissions and limitations under this
+ * license, please see the license as well as any agreement you’ve entered into
+ * with WSO2 governing the purchase of this software and any associated services.
+ */
+
+@App:name("APILatencyRawDataApp")
+
+@source(type='wso2event',  @map(type='wso2event'))
+define stream APILatencyInputStream(MESSAGE_ID string, REQUEST_TIMESTAMP string, BACKEND_LATENCY long,
+                        REQUEST_MEDIATION_LATENCY long, RESPONSE_LATENCY long, RESPONSE_MEDIATION_LATENCY long);
+
+@primaryKey('ID','MESSAGE_ID')
+@store(type='rdbms', datasource='OB_REPORTING_DB')
+define table API_LATENCY_RAW_DATA(ID string, MESSAGE_ID string, REQUEST_TIMESTAMP string, BACKEND_LATENCY long,
+                        REQUEST_MEDIATION_LATENCY long, RESPONSE_LATENCY long, RESPONSE_MEDIATION_LATENCY long);
+
+--Persist API Latency Raw Data
+from APILatencyInputStream
+select UUID() as ID, MESSAGE_ID, REQUEST_TIMESTAMP, BACKEND_LATENCY, REQUEST_MEDIATION_LATENCY, RESPONSE_LATENCY,
+                        RESPONSE_MEDIATION_LATENCY
+insert into API_LATENCY_RAW_DATA;

@@ -12,16 +12,29 @@
 package com.wso2.openbanking.cds.identity.listener.application;
 
 import com.wso2.openbanking.accelerator.common.exception.OpenBankingException;
+import com.wso2.openbanking.accelerator.consent.mgt.service.impl.ConsentCoreServiceImpl;
 import com.wso2.openbanking.accelerator.identity.listener.application.ApplicationUpdaterImpl;
 import com.wso2.openbanking.cds.identity.dcr.constants.CDSValidationConstants;
+import org.apache.commons.lang3.StringUtils;
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
+import org.wso2.carbon.identity.application.common.model.InboundAuthenticationRequestConfig;
+import org.wso2.carbon.identity.application.common.model.ServiceProvider;
 import org.wso2.carbon.identity.oauth.dto.OAuthConsumerAppDTO;
-
 import java.util.Map;
 
 /**
  * Implementation class extended from ApplicationUpdaterImpl
  */
 public class CDSApplicationUpdaterImpl extends ApplicationUpdaterImpl {
+
+    private static final String CDR_ACCOUNTS = "CDR_ACCOUNTS";
+    private static final String AUTHORIZED = "authorized";
+    private static final String REVOKED = "revoked";
+    private static final String AM_RESTAPI_INVOKER = "AM_RESTAPI_INVOKER";
+    private static final String CARBON_SUPER_TENANT_DOMAIN = "@carbon.super";
+    private static final ConsentCoreServiceImpl consentCoreService = new ConsentCoreServiceImpl();
+    private static final Log log = LogFactory.getLog(CDSApplicationUpdaterImpl.class);
 
     @Override
     public void setOauthAppProperties(boolean isRegulatoryApp, OAuthConsumerAppDTO oauthApplication,
@@ -37,10 +50,27 @@ public class CDSApplicationUpdaterImpl extends ApplicationUpdaterImpl {
         }
     }
 
-    @Override
-    public void publishData(Map<String, Object> spMetaData, OAuthConsumerAppDTO oAuthConsumerAppDTO) 
+    public void doPostDeleteApplication(ServiceProvider serviceProvider, String tenantDomain, String userName)
             throws OpenBankingException {
-        super.publishData(spMetaData, oAuthConsumerAppDTO);
-        // TODO: 2021-03-22 Add data publishing logic for application here later 
+
+        // Revoke tokens and consents bound to the application.
+        if (!serviceProvider.getApplicationName().equals(AM_RESTAPI_INVOKER)) {
+            String clientId = null;
+            InboundAuthenticationRequestConfig inboundAuthRequestConfigs =
+                    serviceProvider.getInboundAuthenticationConfig()
+                            .getInboundAuthenticationRequestConfigs()[0];
+            if (inboundAuthRequestConfigs != null) {
+                clientId = inboundAuthRequestConfigs.getInboundAuthKey();
+            }
+            if (!userName.contains(CARBON_SUPER_TENANT_DOMAIN)) {
+                userName = userName + CARBON_SUPER_TENANT_DOMAIN;
+            }
+            if (!StringUtils.isEmpty(clientId)) {
+                consentCoreService.revokeExistingApplicableConsents(clientId, userName, CDR_ACCOUNTS, AUTHORIZED,
+                        REVOKED, true);
+                log.debug("Applicable tokens and consents revoked successfully.");
+            }
+        }
     }
+
 }

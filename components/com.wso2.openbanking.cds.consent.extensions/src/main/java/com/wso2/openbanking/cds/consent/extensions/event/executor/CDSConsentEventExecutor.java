@@ -16,10 +16,13 @@ import com.wso2.openbanking.accelerator.common.event.executor.OBEventExecutor;
 import com.wso2.openbanking.accelerator.common.event.executor.model.OBEvent;
 import com.wso2.openbanking.accelerator.common.exception.OpenBankingException;
 import com.wso2.openbanking.accelerator.common.util.Generated;
+import com.wso2.openbanking.accelerator.consent.mgt.dao.models.ConsentResource;
+import com.wso2.openbanking.accelerator.consent.mgt.dao.models.DetailedConsentResource;
 import com.wso2.openbanking.accelerator.consent.mgt.service.constants.ConsentCoreServiceConstants;
 import com.wso2.openbanking.accelerator.identity.util.HTTPClientUtils;
 import com.wso2.openbanking.accelerator.identity.util.IdentityCommonHelper;
 import com.wso2.openbanking.cds.common.config.OpenBankingCDSConfigParser;
+import com.wso2.openbanking.cds.common.data.publisher.CDSDataPublishingService;
 import com.wso2.openbanking.cds.common.utils.CommonConstants;
 import com.wso2.openbanking.cds.consent.extensions.common.CDSConsentExtensionConstants;
 import com.wso2.openbanking.cds.identity.utils.CDSIdentityUtil;
@@ -41,8 +44,11 @@ import org.apache.http.util.EntityUtils;
 
 import java.io.IOException;
 import java.io.UnsupportedEncodingException;
+import java.time.OffsetDateTime;
+import java.time.ZoneOffset;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -52,11 +58,25 @@ import java.util.Map;
 public class CDSConsentEventExecutor implements OBEventExecutor {
 
     private static final Log log = LogFactory.getLog(CDSConsentEventExecutor.class);
+    private CDSDataPublishingService dataPublishingService = CDSDataPublishingService.getCDSDataPublishingService();
     private static final String DATA_RECIPIENT_CDR_ARRANGEMENT_REVOCATION_PATH = "/arrangements/revoke";
     private static final String REVOKED_STATE = "revoked";
+    private static final String AUTHORIZED_STATE = "authorized";
     private static final String REASON = "Reason";
     private static final String CLIENT_ID = "ClientId";
     private static final String CONSENT_ID = "ConsentId";
+    private static final String USER_ID = "UserId";
+    private static final String VALIDITY_PERIOD = "ValidityPeriod";
+    private static final String CONSENT_DATA_MAP = "ConsentDataMap";
+    private static final String CONSENT_RESOURCE = "ConsentResource";
+    private static final String DETAILED_CONSENT_RESOURCE = "DetailedConsentResource";
+
+    // Data publishing related constants.
+    private static final String CLIENT_ID_KEY = "clientId";
+    private static final String CONSENT_ID_KEY = "consentId";
+    private static final String USER_ID_KEY = "userId";
+    private static final String STATUS_KEY = "status";
+    private static final String EXPIRY_TIME_KEY = "expiryTime";
 
     @Override
     public void processEvent(OBEvent obEvent) {
@@ -80,6 +100,36 @@ public class CDSConsentEventExecutor implements OBEventExecutor {
             } catch (OpenBankingException e) {
                 log.error("Something went wrong when sending the arrangement revocation request to ADR", e);
             }
+        }
+
+        // Publish consent data for metrics.
+        if (REVOKED_STATE.equalsIgnoreCase(obEvent.getEventType()) ||
+                AUTHORIZED_STATE.equalsIgnoreCase(obEvent.getEventType())) {
+
+            log.debug("Publishing consent data for metrics.");
+            HashMap<String, Object> consentData = new HashMap<>();
+            consentData.put(CONSENT_ID_KEY, eventData.get(CONSENT_ID));
+            consentData.put(USER_ID_KEY, eventData.get(USER_ID));
+            consentData.put(CLIENT_ID_KEY, eventData.get(CLIENT_ID));
+            consentData.put(STATUS_KEY, obEvent.getEventType());
+
+            long expiryTime;
+            if (AUTHORIZED_STATE.equalsIgnoreCase(obEvent.getEventType())) {
+                HashMap<String, Object> consentDataMap = (HashMap<String, Object>) eventData.get(CONSENT_DATA_MAP);
+                if (consentDataMap.containsKey(CONSENT_RESOURCE) && consentDataMap.get(CONSENT_RESOURCE) != null) {
+                    expiryTime = ((ConsentResource) consentDataMap.get(CONSENT_RESOURCE)).getValidityPeriod();
+                } else if (consentDataMap.containsKey(DETAILED_CONSENT_RESOURCE) &&
+                        consentDataMap.get(DETAILED_CONSENT_RESOURCE) != null) {
+                    expiryTime = ((DetailedConsentResource) consentDataMap.get(DETAILED_CONSENT_RESOURCE))
+                            .getValidityPeriod();
+                } else {
+                    expiryTime = OffsetDateTime.now(ZoneOffset.UTC).toEpochSecond();
+                }
+            } else {
+                expiryTime = 0;
+            }
+            consentData.put(EXPIRY_TIME_KEY, expiryTime);
+            dataPublishingService.publishConsentData(consentData);
         }
 
     }
