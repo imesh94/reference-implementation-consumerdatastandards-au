@@ -38,21 +38,16 @@ public class OBCDSAuthServletImpl implements OBAuthServletInterface {
 
         // Sets "data_requested" that contains the human-readable scope-requested information
         JSONArray dataRequestedJsonArray = dataSet.getJSONArray(CDSConsentExtensionConstants.DATA_REQUESTED);
-        Map<String, List<String>> dataRequested = new LinkedHashMap<>();
-
-        // Add requested data to an array list
-        for (int requestedDataIndex = 0; requestedDataIndex < dataRequestedJsonArray.length(); requestedDataIndex++) {
-            JSONObject dataObj = dataRequestedJsonArray.getJSONObject(requestedDataIndex);
-            String title = dataObj.getString(CDSConsentExtensionConstants.TITLE);
-            JSONArray dataArray = dataObj.getJSONArray(CDSConsentExtensionConstants.DATA);
-
-            ArrayList<String> listData = new ArrayList<>();
-            for (int dataIndex = 0; dataIndex < dataArray.length(); dataIndex++) {
-                listData.add(dataArray.getString(dataIndex));
-            }
-            dataRequested.put(title, listData);
-        }
+        Map<String, List<String>> dataRequested = getRequestedDataMap(dataRequestedJsonArray);
         returnMaps.put(CDSConsentExtensionConstants.DATA_REQUESTED, dataRequested);
+
+        //Consent amendment flow
+        if (dataSet.has(CDSConsentExtensionConstants.IS_CONSENT_AMENDMENT) &&
+                (boolean) dataSet.get(CDSConsentExtensionConstants.IS_CONSENT_AMENDMENT)) {
+            JSONArray newDataRequestedJsonArray = dataSet.getJSONArray(CDSConsentExtensionConstants.NEW_DATA_REQUESTED);
+            Map<String, List<String>> newDataRequested = getRequestedDataMap(newDataRequestedJsonArray);
+            returnMaps.put(CDSConsentExtensionConstants.NEW_DATA_REQUESTED, newDataRequested);
+        }
 
         // add accounts list
         List<Map<String, Object>> accountsData = new ArrayList<>();
@@ -125,5 +120,22 @@ public class OBCDSAuthServletImpl implements OBAuthServletInterface {
                         jointAccountInfo.getJSONArray(CDSConsentExtensionConstants.LINKED_MEMBER).length());
             }
         }
+    }
+
+    private Map<String, List<String>> getRequestedDataMap (JSONArray dataRequestedJsonArray) {
+
+        Map<String, List<String>> dataRequested = new LinkedHashMap<>();
+        for (int requestedDataIndex = 0; requestedDataIndex < dataRequestedJsonArray.length(); requestedDataIndex++) {
+            JSONObject dataObj = dataRequestedJsonArray.getJSONObject(requestedDataIndex);
+            String title = dataObj.getString(CDSConsentExtensionConstants.TITLE);
+            JSONArray dataArray = dataObj.getJSONArray(CDSConsentExtensionConstants.DATA);
+
+            ArrayList<String> listData = new ArrayList<>();
+            for (int dataIndex = 0; dataIndex < dataArray.length(); dataIndex++) {
+                listData.add(dataArray.getString(dataIndex));
+            }
+            dataRequested.put(title, listData);
+        }
+        return dataRequested;
     }
 }

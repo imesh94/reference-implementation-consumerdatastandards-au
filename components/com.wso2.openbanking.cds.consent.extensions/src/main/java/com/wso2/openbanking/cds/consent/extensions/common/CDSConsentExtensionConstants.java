@@ -82,10 +82,12 @@ public class CDSConsentExtensionConstants {
     public static final String PRE_SELECTED_ACCOUNT_LIST = "preSelectedAccountList";
     public static final String EXISTING_PERMISSIONS = "existingPermissions";
     public static final String IS_SHARING_DURATION_UPDATED = "isSharingDurationUpdated";
+    public static final String IS_CONSENT_AMENDMENT = "isConsentAmendment";
     public static final String CHAR_SET = "UTF-8";
     public static final String CUSTOMER_TYPE = "customerUType";
     public static final String ORGANISATION = "Organisation";
     public static final String DATA_REQUESTED = "data_requested";
+    public static final String NEW_DATA_REQUESTED = "new_data_requested";
     public static final String COMMON_CUSTOMER_BASIC_READ_SCOPE = "common:customer.basic:read";
     public static final String COMMON_CUSTOMER_DETAIL_READ_SCOPE = "common:customer.detail:read";
     public static final String COMMON_ACCOUNTS_BASIC_READ_SCOPE = "bank:accounts.basic:read";

@@ -58,7 +58,7 @@ public class CDSConsentRetrievalStep implements ConsentRetrievalStep {
             // check for consent amendment
             if (requiredData.containsKey("cdr_arrangement_id")) {
                 String consentId = requiredData.get("cdr_arrangement_id").toString();
-                jsonObject.appendField(CDSConsentExtensionConstants.IS_SHARING_DURATION_UPDATED,
+                jsonObject.appendField(CDSConsentExtensionConstants.IS_CONSENT_AMENDMENT,
                         true);
                 try {
                     DetailedConsentResource consentResource = consentCoreService.getDetailedConsent(consentId);
@@ -114,6 +114,9 @@ public class CDSConsentRetrievalStep implements ConsentRetrievalStep {
                     throw new ConsentException(ResponseStatus.INTERNAL_SERVER_ERROR,
                             "Error occurred while searching for the existing consent");
                 }
+            } else {
+                jsonObject.appendField(CDSConsentExtensionConstants.IS_CONSENT_AMENDMENT,
+                        false);
             }
 
             JSONArray permissions = new JSONArray();
