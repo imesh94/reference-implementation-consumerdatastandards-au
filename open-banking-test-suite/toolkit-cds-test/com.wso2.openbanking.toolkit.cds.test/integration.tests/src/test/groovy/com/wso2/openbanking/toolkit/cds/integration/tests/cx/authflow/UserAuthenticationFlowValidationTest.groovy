@@ -59,8 +59,11 @@ class UserAuthenticationFlowValidationTest {
             driver.findElement(By.id(TestConstants.TXT_OTP_CODE)).sendKeys(otpCode)
 
             Assert.assertTrue(driver.findElement(By.xpath(TestConstants.LBL_FOOTER_DESCRIPTION)).getText().trim()
-                    .contains("Your Customer ID will not be shared with any third party. One time passwords are used " +
-                    "to share CDR data. You will never be asked to provide your real password to share CDR data."))
+                    .contains("Your Customer ID will not be shared with \"Mock Company Inc.,Mock Software\". One time " +
+                            "passwords are used to share banking data. You will never be asked to provide your real " +
+                            "password to share banking data."))
+
+
 
             driver.findElement(By.xpath(TestConstants.BTN_AUTHENTICATE)).click()
 
@@ -92,8 +95,8 @@ class UserAuthenticationFlowValidationTest {
             driver.findElement(By.xpath(TestConstants.AUTH_SIGNIN_XPATH_AU_200)).click()
             driver.manage().timeouts().implicitlyWait(30, TimeUnit.SECONDS)
 
-            Assert.assertTrue(driver.findElement(By.xpath(TestConstants.LBL_AUTHENTICATION_FAILURE)).getText()
-                    .contains("Something went wrong during the authentication process."))
+            Assert.assertTrue(driver.findElement(By.xpath(TestConstants.LBL_INCORRECT_USERNAME)).getText()
+                    .contains("These Details are incorrect. Please try again."))
         }
         .execute()
     }
@@ -128,7 +131,7 @@ class UserAuthenticationFlowValidationTest {
             driver.manage().timeouts().implicitlyWait(30, TimeUnit.SECONDS)
 
             Assert.assertTrue(driver.findElement(By.xpath(TestConstants.LBL_AUTHENTICATION_FAILURE)).getText()
-                    .contains("Something went wrong during the authentication process."))
+                    .contains("Authentication Failed! Please Retry"))
         }
         .execute()
     }
@@ -201,7 +204,7 @@ class UserAuthenticationFlowValidationTest {
             driver.manage().timeouts().implicitlyWait(30, TimeUnit.SECONDS)
 
             Assert.assertTrue(driver.findElement(By.xpath(TestConstants.LBL_AUTHENTICATION_FAILURE)).getText()
-                    .contains("Something went wrong during the authentication process."))
+                    .contains("The code entered is expired. Click Resend Code to continue."))
         }
         .execute()
     }
