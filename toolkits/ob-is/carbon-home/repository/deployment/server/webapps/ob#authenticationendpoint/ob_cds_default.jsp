@@ -16,6 +16,7 @@
 <jsp:include page="includes/consent_top.jsp"/>
 <%
     session.setAttribute("configParamsMap", request.getAttribute("data_requested"));
+    session.setAttribute("newConfigParamsMap", request.getAttribute("new_data_requested"));
     String popoverTemplate = "<div class='popover dark-bg' role='tooltip'><div class='arrow'></div><h6 class='popover-title dark-bg'></h6><div class='popover-content'></div></div>";
 %>
 <div class="row data-container">
