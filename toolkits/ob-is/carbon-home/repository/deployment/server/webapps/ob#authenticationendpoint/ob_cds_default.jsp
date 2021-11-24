@@ -43,6 +43,7 @@
                             <label for="${record['displayName']}">
                                 <input type="checkbox" id="${record['displayName']}" name="chkAccounts"
                                     value="${record['accountId']}" onclick="updateAcc()"
+                                    ${record['isPreSelectedAccount'] ? 'checked' : ''}
                                     ${record['is_joint_account'] ? record['is_selectable'] ? "" : "disabled='disabled'" : ""}
                                 />
                                 ${record['displayName']}

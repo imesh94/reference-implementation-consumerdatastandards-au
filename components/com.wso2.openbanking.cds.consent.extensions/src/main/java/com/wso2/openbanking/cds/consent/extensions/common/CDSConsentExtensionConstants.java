@@ -30,6 +30,7 @@ public class CDSConsentExtensionConstants {
     public static final String ACCOUNTS_DATA = "accounts_data";
     public static final String ACCOUNT_ID = "accountId";
     public static final String DISPLAY_NAME = "displayName";
+    public static final String PRE_ACCOUNTS_DATA = "pre_accounts_data";
     public static final String REDIRECT_URL = "redirectURL";
     public static final String EXPIRATION_DATE_TITLE = "Expiration Date Time";
     public static final String PERMISSION_TITLE = "Permissions";
@@ -80,6 +81,7 @@ public class CDSConsentExtensionConstants {
     public static final String JOINT_ACCOUNT_PAYLOAD_ACCOUNT_ID = "accountId";
     public static final String JOINT_ACCOUNTS_PAYLOAD = "joint_accounts_payload";
     public static final String PRE_SELECTED_ACCOUNT_LIST = "preSelectedAccountList";
+    public static final String IS_PRE_SELECTED_ACCOUNT = "isPreSelectedAccount";
     public static final String EXISTING_PERMISSIONS = "existingPermissions";
     public static final String IS_SHARING_DURATION_UPDATED = "isSharingDurationUpdated";
     public static final String IS_CONSENT_AMENDMENT = "isConsentAmendment";

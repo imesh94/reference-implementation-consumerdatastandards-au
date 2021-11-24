@@ -44,7 +44,6 @@ public class CDSAccountListRetrievalStep implements ConsentRetrievalStep {
                     .get(CDSConsentExtensionConstants.SHARABLE_ACCOUNTS_ENDPOINT);
 
             if (StringUtils.isNotBlank(accountsURL)) {
-
                 Map<String, String> parameters = new HashMap<>();
                 parameters.put(CDSConsentExtensionConstants.USER_ID_KEY_NAME, consentData.getUserId());
                 String accountData = CDSDataRetrievalUtil.getAccountsFromEndpoint(accountsURL, parameters,
@@ -59,6 +58,27 @@ public class CDSAccountListRetrievalStep implements ConsentRetrievalStep {
                 try {
                     JSONObject jsonAccountData = (JSONObject) parser.parse(accountData);
                     JSONArray accountsJSON = (JSONArray) jsonAccountData.get(CDSConsentExtensionConstants.DATA);
+
+                    //Consent amendment flow. Mark pre-selected accounts
+                    if (jsonObject.containsKey(CDSConsentExtensionConstants.IS_CONSENT_AMENDMENT) &&
+                            (boolean) jsonObject.get(CDSConsentExtensionConstants.IS_CONSENT_AMENDMENT)) {
+                        if (jsonObject.containsKey(CDSConsentExtensionConstants.PRE_SELECTED_ACCOUNT_LIST)) {
+                            JSONArray preSelectedAccounts = (JSONArray) jsonObject.get(CDSConsentExtensionConstants.
+                                    PRE_SELECTED_ACCOUNT_LIST);
+
+                            accountsJSON.forEach(account -> {
+                                JSONObject accountJson = (JSONObject) account;
+                                if (accountJson.containsKey(CDSConsentExtensionConstants.ACCOUNT_ID) &&
+                                        preSelectedAccounts.contains(accountJson.
+                                                get(CDSConsentExtensionConstants.ACCOUNT_ID))) {
+                                    ((JSONObject) account).appendField(CDSConsentExtensionConstants.
+                                            IS_PRE_SELECTED_ACCOUNT, "true");
+                                }
+
+                            });
+                        }
+                    }
+
                     jsonObject.appendField(CDSConsentExtensionConstants.ACCOUNTS, accountsJSON);
                     consentData.addData(CDSConsentExtensionConstants.ACCOUNTS, accountsJSON);
                 } catch (ParseException e) {
