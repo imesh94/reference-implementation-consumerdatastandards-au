@@ -80,7 +80,8 @@ public class ErrorConstants {
         FIELD_MISSING(400, "urn:au-cds:error:cds-all:Field/Missing", "Missing Required Field",
                 "Missing Required Field %s in the request"),
         //one or more http headers are missing
-        HEADER_MISSING(400, "AU.CDR.Missing.Header", "Missing Required Header", "Mandatory header %s is missing"),
+        HEADER_MISSING(400, "urn:au-cds:error:cds-all:Header/Missing", "Missing Required Header",
+                "Mandatory header %s is missing"),
         //Query or Request Body Parameter is not defined by the API
         UNEXPECTED_FIELD(400, "AU.CDR.Unexpected.Field", "Unexpected Field Not Allowed", "Unexpected Field %s is " +
                 "not allowed by the API"),
@@ -90,7 +91,8 @@ public class ErrorConstants {
         //Query, PAth or Request Body Parameter is invalid
         INVALID_FIELD(400, "AU.CDR.Invalid.Field", "Invalid Field", "Invalid Field %s found in the request"),
         //Header is invalid type or violates the constraints
-        INVALID_HEADER(400, "AU.CDR.Invalid.Header", "Invalid Header", "Requested %s header is not supported"),
+        INVALID_HEADER(400, "urn:au-cds:error:cds-all:Header/Invalid", "Invalid Header",
+                "Requested %s header is not supported"),
         //Invalid date is provided in query parameters
         INVALID_DATE(400, "AU.CDR.Invalid.DateTime", "Invalid Date", "Date found in the query parameters is not" +
                 " in the accepted format"),
