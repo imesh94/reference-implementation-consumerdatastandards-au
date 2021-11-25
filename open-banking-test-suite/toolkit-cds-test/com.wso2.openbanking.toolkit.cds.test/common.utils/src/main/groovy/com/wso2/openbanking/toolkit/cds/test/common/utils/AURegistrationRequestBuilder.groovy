@@ -140,7 +140,7 @@ class AURegistrationRequestBuilder {
                 "iat": ${currentTimeInSeconds},
                 "exp": ${currentTimeInSeconds + 3600},
                 "jti": "${currentTimeInMillis}",
-                "aud": "https://www.infosec.cdr.gov.au/token",
+                 "aud": "${AUDCRConstants.AUD_VALUE}",
                 "redirect_uris": [
                     "${AUDCRConstants.REDIRECT_URI}",
                     "${AUDCRConstants.ALTERNATE_REDIRECT_URI}"

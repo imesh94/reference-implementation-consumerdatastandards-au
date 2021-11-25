@@ -24,8 +24,9 @@ class AUDCRConstants {
 
     static final String SSA = new File(AppConfigReader.getSSAFilePath()).text
     static final String SOFTWARE_PRODUCT_ID = AppConfigReader.getSoftwareId()
-    static final String REDIRECT_URI = ConfigParser.getInstance().getRedirectUri()
-    static final String ALTERNATE_REDIRECT_URI = ConfigParser.getInstance().getRedirectUri()
+    static final String REDIRECT_URI = AppConfigReader.getDcrRedirectUri()
+    static final String ALTERNATE_REDIRECT_URI = AppConfigReader.getAlternateRedirectUri()
+    static final String AUD_VALUE = ConfigParser.getInstance().getAudienceValue()
 
     static final BASE_PATH_TYPE_DCR = "DCR"
     static final INVALID_CLIENT_METADATA = "invalid_client_metadata"
