@@ -120,6 +120,7 @@
                                         <limit implementation="org.jacoco.report.check.Limit">
                                             <counter>INSTRUCTION</counter>
                                             <value>COVEREDRATIO</value>
+                                            <!-- todo: temporary reducing the coverage limit -->
                                             <minimum>0.5</minimum>
                                         </limit>
                                     </limits>
