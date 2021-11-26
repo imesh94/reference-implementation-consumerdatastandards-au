@@ -78,7 +78,6 @@ public class CDSAccountListRetrievalStep implements ConsentRetrievalStep {
                             });
                         }
                     }
-
                     jsonObject.appendField(CDSConsentExtensionConstants.ACCOUNTS, accountsJSON);
                     consentData.addData(CDSConsentExtensionConstants.ACCOUNTS, accountsJSON);
                 } catch (ParseException e) {

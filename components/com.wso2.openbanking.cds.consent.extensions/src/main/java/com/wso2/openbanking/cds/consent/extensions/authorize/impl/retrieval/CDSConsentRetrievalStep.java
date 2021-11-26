@@ -17,6 +17,7 @@ import com.wso2.openbanking.accelerator.consent.extensions.authorize.model.Conse
 import com.wso2.openbanking.accelerator.consent.extensions.authorize.model.ConsentRetrievalStep;
 import com.wso2.openbanking.accelerator.consent.extensions.common.ConsentException;
 import com.wso2.openbanking.accelerator.consent.extensions.common.ResponseStatus;
+import com.wso2.openbanking.accelerator.consent.mgt.dao.models.AuthorizationResource;
 import com.wso2.openbanking.accelerator.consent.mgt.dao.models.ConsentMappingResource;
 import com.wso2.openbanking.accelerator.consent.mgt.dao.models.DetailedConsentResource;
 import com.wso2.openbanking.accelerator.consent.mgt.service.impl.ConsentCoreServiceImpl;
@@ -54,10 +55,12 @@ public class CDSConsentRetrievalStep implements ConsentRetrievalStep {
         if (consentData.isRegulatory()) {
             String requestObject = CDSDataRetrievalUtil.extractRequestObject(consentData.getSpQueryParams());
             Map<String, Object> requiredData = extractRequiredDataFromRequestObject(requestObject);
+            boolean isConsentAmendment = false;
 
             // check for consent amendment
-            if (requiredData.containsKey("cdr_arrangement_id")) {
-                String consentId = requiredData.get("cdr_arrangement_id").toString();
+            if (requiredData.containsKey(CDSConsentExtensionConstants.CDR_ARRANGEMENT_ID)) {
+                isConsentAmendment = true;
+                String consentId = requiredData.get(CDSConsentExtensionConstants.CDR_ARRANGEMENT_ID).toString();
                 jsonObject.appendField(CDSConsentExtensionConstants.IS_CONSENT_AMENDMENT,
                         true);
                 try {
@@ -69,6 +72,32 @@ public class CDSConsentRetrievalStep implements ConsentRetrievalStep {
                                 getExpiryFromReceipt(consentResource.getReceipt()));
                         OffsetDateTime currentDateTime = OffsetDateTime.now(ZoneOffset.UTC);
                         if (existingConsentExpiry.isAfter(currentDateTime)) {
+                            // Add required data for the persistence step
+                            String userId = consentData.getUserId();
+                            String authId = null;
+                            String authStatus = null;
+                            ArrayList<AuthorizationResource> authResourceList = consentResource.
+                                    getAuthorizationResources();
+                            for (AuthorizationResource authResource : authResourceList) {
+                                if (userId.equals(authResource.getUserID())) {
+                                    authId = authResource.getAuthorizationID();
+                                    authStatus = authResource.getAuthorizationStatus();
+                                }
+                            }
+                            if (authId == null || authStatus == null) {
+                                String errorMessage = String.format("There's no authorization resource " +
+                                                "corresponds to consent id %s and user id %s.", consentId,
+                                        consentData.getUserId());
+                                if (log.isDebugEnabled()) {
+                                    log.debug(errorMessage);
+                                }
+                                throw new ConsentException(ResponseStatus.BAD_REQUEST, errorMessage);
+                            }
+                            consentData.addData(CDSConsentExtensionConstants.CDR_ARRANGEMENT_ID,
+                                    requiredData.get(CDSConsentExtensionConstants.CDR_ARRANGEMENT_ID));
+                            consentData.addData(CDSConsentExtensionConstants.AUTH_RESOURCE_ID, authId);
+                            consentData.addData(CDSConsentExtensionConstants.AUTH_RESOURCE_STATUS, authStatus);
+
                             // Get pre-selected account list
                             JSONArray preSelectedAccounts = new JSONArray();
                             ArrayList<ConsentMappingResource> mappingResourceArrayList =
@@ -147,8 +176,8 @@ public class CDSConsentRetrievalStep implements ConsentRetrievalStep {
                     requiredData.get(CDSConsentExtensionConstants.EXPIRATION_DATE_TIME));
             consentData.addData(CDSConsentExtensionConstants.SHARING_DURATION_VALUE,
                     requiredData.get(CDSConsentExtensionConstants.SHARING_DURATION_VALUE));
-            consentData.addData(CDSConsentExtensionConstants.CDR_ARRANGEMENT_ID,
-                    requiredData.get(CDSConsentExtensionConstants.CDR_ARRANGEMENT_ID));
+            consentData.addData(CDSConsentExtensionConstants.IS_CONSENT_AMENDMENT,
+                    isConsentAmendment);
 
             // consent type is hard coded since CDS only support accounts type for the moment
             // scopes will be used to determine consent type if any other types required in future

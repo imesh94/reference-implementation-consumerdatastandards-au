@@ -32,6 +32,7 @@ import net.minidev.json.JSONObject;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.wso2.carbon.identity.oauth2.IdentityOAuth2Exception;
 
 import java.time.OffsetDateTime;
 import java.util.ArrayList;
@@ -55,6 +56,8 @@ public class CDSConsentPersistStep implements ConsentPersistStep {
             try {
                 ConsentData consentData = consentPersistData.getConsentData();
                 JSONObject payloadData = consentPersistData.getPayload();
+                String userId = consentData.getUserId();
+                ArrayList<String> accountIdList = getAccountIdList(payloadData);
                 // get the consent model to be created
                 AccountConsentRequest accountConsentRequest = CDSDataRetrievalUtil
                         .getAccountConsent(consentData, consentData.getMetaDataMap().
@@ -72,38 +75,69 @@ public class CDSConsentPersistStep implements ConsentPersistStep {
                 ConsentResource consentResource = createConsentAndSetAttributes(consentData, requestString,
                         consentAttributes);
 
-                // create authorizable consent using the consent resource above
-                DetailedConsentResource createdConsent = null;
-                try {
-                    createdConsent = createConsent(consentCoreService, consentResource, consentData);
-                } catch (ConsentManagementException e) {
-                    log.error("Error while creating the consent");
-                    throw new ConsentException(ResponseStatus.INTERNAL_SERVER_ERROR,
-                            "Error while creating the consent");
+                // Consent amendment flow
+                if (consentData.getMetaDataMap().containsKey(CDSConsentExtensionConstants.IS_CONSENT_AMENDMENT) &&
+                        Boolean.parseBoolean(consentData.getMetaDataMap().get(
+                                CDSConsentExtensionConstants.IS_CONSENT_AMENDMENT).toString())) {
+                    String cdrArrangementId = consentData.getMetaDataMap().get(CDSConsentExtensionConstants.
+                            CDR_ARRANGEMENT_ID).toString();
+                    String authResorceId = consentData.getMetaDataMap().get(CDSConsentExtensionConstants.
+                            AUTH_RESOURCE_ID).toString();
+                    String authResourceStatus = consentData.getMetaDataMap().get(CDSConsentExtensionConstants.
+                            AUTH_RESOURCE_STATUS).toString();
+                    Map<String, ArrayList<String>> accountIdsMap = new HashMap<>();
+                    ArrayList<String> permissionsList = new ArrayList<>();
+                    permissionsList.add("n/a");
+                    for (String accountId : accountIdList) {
+                        accountIdsMap.put(accountId, permissionsList);
+                    }
+                    // Revoke existing tokens
+                    revokeTokens(cdrArrangementId, userId);
+                    // Amend consent data
+                    long validityPeriod = ((OffsetDateTime) consentData.getMetaDataMap()
+                            .get(CDSConsentExtensionConstants.EXPIRATION_DATE_TIME)).toEpochSecond();
+                    consentCoreService.amendConsentData(cdrArrangementId, consentResource.getReceipt(),
+                            validityPeriod, userId);
+                    // Reauthorize consent
+                    consentCoreService.reAuthorizeExistingAuthResource(cdrArrangementId, authResorceId,
+                            userId, accountIdsMap, authResourceStatus,
+                            CDSConsentExtensionConstants.AUTHORIZED_STATUS);
+                    // Update consent attributes
+                    ArrayList<String> consentAttributesKeyList = new ArrayList<>();
+                    consentAttributesKeyList.add(CDSConsentExtensionConstants.COMMON_AUTH_ID);
+                    consentAttributesKeyList.add(CDSConsentExtensionConstants.SHARING_DURATION_VALUE);
+                    consentCoreService.deleteConsentAttributes(cdrArrangementId, consentAttributesKeyList);
+                    consentCoreService.storeConsentAttributes(cdrArrangementId, consentAttributes);
+
+                } else {
+                    // create authorizable consent using the consent resource above
+                    DetailedConsentResource createdConsent = null;
+                    try {
+                        createdConsent = createConsent(consentCoreService, consentResource, consentData);
+                    } catch (ConsentManagementException e) {
+                        log.error("Error while creating the consent");
+                        throw new ConsentException(ResponseStatus.INTERNAL_SERVER_ERROR,
+                                "Error while creating the consent");
+                    }
+                    // set consentId for the consentData from obtained from detailed consent resource
+                    String consentId = createdConsent.getConsentID();
+                    consentData.setConsentId(consentId);
+
+                    // get the latest authorization resource from updated time parameter
+                    AuthorizationResource authorizationResource = getLatestAuthResource(createdConsent);
+
+                    consentData.setAuthResource(authorizationResource);
+                    consentData.setConsentResource(consentResource);
+
+                    if (consentData.getConsentId() == null && consentData.getConsentResource() == null) {
+                        log.error("Consent ID not available in consent data");
+                        throw new ConsentException(ResponseStatus.INTERNAL_SERVER_ERROR,
+                                "Consent ID not available in consent data");
+                    }
+                    // bind user consented accounts with the create consent
+                    bindUserAccountsToConsent(consentCoreService, consentResource, consentData, accountIdList);
                 }
-                // set consentId for the consentData from obtained from detailed consent resource
-                String consentId = createdConsent.getConsentID();
-                consentData.setConsentId(consentId);
-
-                // get the latest authorization resource from updated time parameter
-                AuthorizationResource authorizationResource = getLatestAuthResource(createdConsent);
-
-                consentData.setAuthResource(authorizationResource);
-                consentData.setConsentResource(consentResource);
-
-                if (consentData.getConsentId() == null && consentData.getConsentResource() == null) {
-                    log.error("Consent ID not available in consent data");
-                    throw new ConsentException(ResponseStatus.INTERNAL_SERVER_ERROR,
-                            "Consent ID not available in consent data");
-                }
-
-                // get user consented accounts list to bind them with the consent
-                ArrayList<String> accountIdList = getAccountIdList(payloadData);
-
-                // TODO: Re-auth scenario implementation
-                // TODO: Revoke existing arrangement
                 // TODO: Data reporting
-
                 // bind user consented accounts with the create consent
                 bindUserAccountsToConsent(consentCoreService, consentResource, consentData, accountIdList);
 
@@ -300,5 +334,23 @@ public class CDSConsentPersistStep implements ConsentPersistStep {
         newAuthResource.setAuthorizationType(CDSConsentExtensionConstants.AUTH_RESOURCE_TYPE_LINKED);
 
         return newAuthResource;
+    }
+
+    /**
+     * Revoke tokens for the given user id and arrangement id.
+     *
+     * @param cdrArrangementId - cdr-arrangement-id
+     * @param userId           - userId
+     * @throws ConsentManagementException - ConsentManagementException
+     */
+    private void revokeTokens(String cdrArrangementId, String userId) throws ConsentManagementException {
+        DetailedConsentResource detailedConsentResource = consentCoreService.getDetailedConsent(cdrArrangementId);
+
+        try {
+            consentCoreService.revokeTokens(detailedConsentResource, userId);
+        } catch (IdentityOAuth2Exception e) {
+            log.error(String.format("Error occurred while revoking tokens. %s", e.getMessage()));
+            throw new ConsentManagementException("Error occurred while revoking tokens.", e);
+        }
     }
 }
