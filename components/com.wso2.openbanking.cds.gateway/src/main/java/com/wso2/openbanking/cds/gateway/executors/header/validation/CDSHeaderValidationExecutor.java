@@ -117,15 +117,15 @@ public class CDSHeaderValidationExecutor implements OpenBankingGatewayExecutor {
     /**
      * Validates time when the customer last logged in to the Data Recipient Software Product as described in [FAPI-R].
      * As in section 7.1.1.1 of [RFC7231], this method validates IMF-fixdate, rfc850-date, and asctime-date
-     * <p><code><br>
-     * 1. IMF-fixdate = short-day-name "," SP day SP month SP year SP 24-hour ":" minute ":" second SP GMT
-     * <br>e.g. Sun, 06 Nov 1994 08:49:37 GMT
-     * <p>
-     * 2. rfc850-date = day-name "," SP day "-" month "-" 2DIGIT SP hour ":" minute ":" second SP GMT Sunday,
-     * <br>e.g. Sunday, 06-Nov-94 08:49:37 GMT
-     * <p>
-     * 3. asctime-date  = day-name SP month SP ( 2DIGIT / ( SP 1DIGIT )) SP hour ":" minute ":" second SP year
-     * <br>e.g. Sun Nov  6 08:49:37 1994 / Sun Nov 16 08:49:37 1994
+     * <code><br>
+     *      1. IMF-fixdate = short-day-name "," SP day SP month SP year SP 24-hour ":" minute ":" second SP GMT
+     *      e.g. Sun, 06 Nov 1994 08:49:37 GMT
+     *      <br>
+     *      2. rfc850-date = day-name "," SP day "-" month "-" 2DIGIT SP hour ":" minute ":" second SP GMT Sunday,
+     *      e.g. Sunday, 06-Nov-94 08:49:37 GMT
+     *      <br>
+     *      3. asctime-date  = day-name SP month SP ( 2DIGIT / ( SP 1DIGIT )) SP hour ":" minute ":" second SP year
+     *      e.g. Sun Nov  6 08:49:37 1994 / Sun Nov 16 08:49:37 1994
      * </code>
      *
      * @param httpDate date string received in request header

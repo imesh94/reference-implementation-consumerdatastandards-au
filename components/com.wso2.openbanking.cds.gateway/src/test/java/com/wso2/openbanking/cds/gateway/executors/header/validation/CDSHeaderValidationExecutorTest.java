@@ -77,19 +77,19 @@ public class CDSHeaderValidationExecutorTest extends PowerMockTestCase {
                         "192.1.1.300", "invalid");
 
         // Assert valid IP addresses
-        this.uut.preProcessRequest(obApiRequestContextMock);
-        this.uut.preProcessRequest(obApiRequestContextMock);
-        this.uut.preProcessRequest(obApiRequestContextMock);
-        this.uut.preProcessRequest(obApiRequestContextMock);
-        this.uut.preProcessRequest(obApiRequestContextMock);
-        this.uut.preProcessRequest(obApiRequestContextMock);
-        this.uut.preProcessRequest(obApiRequestContextMock);
-        this.uut.preProcessRequest(obApiRequestContextMock);
+        this.uut.preProcessRequest(obApiRequestContextMock); // test empty string, should return true
+        this.uut.preProcessRequest(obApiRequestContextMock); // test "192.1.2.3", should return true
+        this.uut.preProcessRequest(obApiRequestContextMock); // test "::", should return true
+        this.uut.preProcessRequest(obApiRequestContextMock); // test "2001:db8::", should return true
+        this.uut.preProcessRequest(obApiRequestContextMock); // test "::1234:5678", should return true
+        this.uut.preProcessRequest(obApiRequestContextMock); // test "2001:db8::1234:5678", should return true
+        this.uut.preProcessRequest(obApiRequestContextMock); // test "2001:db8:1::ab9:C0A8:102", should return true
+        this.uut.preProcessRequest(obApiRequestContextMock); // test "2001:db8::127.10.11.12", should return true
         verify(obApiRequestContextMock, times(0)).setError(true);
 
         // Assert invalid IP addresses
-        this.uut.preProcessRequest(obApiRequestContextMock);
-        this.uut.preProcessRequest(obApiRequestContextMock);
+        this.uut.preProcessRequest(obApiRequestContextMock); // test "192.1.1.300", should return false
+        this.uut.preProcessRequest(obApiRequestContextMock); // test "invalid", should return false
         verify(obApiRequestContextMock, times(2)).setError(true);
     }
 
@@ -142,8 +142,8 @@ public class CDSHeaderValidationExecutorTest extends PowerMockTestCase {
     public void testIsValidMaxVersion() {
         OBAPIRequestContext obApiRequestContextMock = getOBAPIRequestContext
                 (CDSGatewayConstants.MAX_REQUESTED_ENDPOINT_VERSION, "1", "foo", "1-2-3", "1.5", "100");
-        this.uut.preProcessRequest(obApiRequestContextMock); // test "1", should return true
         this.uut.preProcessRequest(obApiRequestContextMock); // test empty string, should return false
+        this.uut.preProcessRequest(obApiRequestContextMock); // test "1", should return true
         this.uut.preProcessRequest(obApiRequestContextMock); // test "foo", should return false
         this.uut.preProcessRequest(obApiRequestContextMock); // test "1-2-3", should return false
         this.uut.preProcessRequest(obApiRequestContextMock); // test "1.5", should return false
