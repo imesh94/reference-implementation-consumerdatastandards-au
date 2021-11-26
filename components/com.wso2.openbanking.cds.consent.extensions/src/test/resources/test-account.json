@@ -52,6 +52,27 @@
 
       "jointAccountConsentElectionStatus":false
 
+    },
+
+    {
+      "accountId": "19761212",
+      "accountName": "Everyday Account",
+      "nickName": "My day to day expenses",
+      "customerAccountType": "Personal",
+      "type": "TRANS_AND_SAVINGS_ACCOUNTS",
+      "isEligible": true,
+      "isJointAccount": true,
+      "jointAccountinfo": {
+        "jointAccountConsentElectionStatus": "ELECTED",
+        "linkedMember": [
+          {
+            "memberId": "jah-a@wso2.com@carbon.super",
+            "type": "Owner",
+            "meta": {}
+          }
+        ]
+      },
+      "meta": {}
     }
 
   ]

@@ -28,8 +28,8 @@ public class CDSConsentExtensionConstants {
     public static final String CONSENT_DATA = "consentData";
     public static final String ACCOUNT_DATA = "accountData";
     public static final String ACCOUNTS_DATA = "accounts_data";
-    public static final String ACCOUNT_ID = "account_id";
-    public static final String DISPLAY_NAME = "display_name";
+    public static final String ACCOUNT_ID = "accountId";
+    public static final String DISPLAY_NAME = "displayName";
     public static final String REDIRECT_URL = "redirectURL";
     public static final String EXPIRATION_DATE_TITLE = "Expiration Date Time";
     public static final String PERMISSION_TITLE = "Permissions";
@@ -56,6 +56,29 @@ public class CDSConsentExtensionConstants {
     public static final String ZERO = "0";
     public static final String CONSENT_EXPIRY = "consent_expiration";
     public static final String ACCOUNT_MASKING_ENABLED = "account_masking_enabled";
+    public static final String USER_ID_KEY_NAME = "userID";
+    public static final String CONSENT_STATUS_REVOKED = "revoked";
+
+    // Joint account constants
+    public static final String IS_JOINT_ACCOUNT_RESPONSE = "isJointAccount";
+    public static final String IS_JOINT_ACCOUNT = "is_joint_account";
+    public static final String IS_SELECTABLE = "is_selectable";
+    public static final String JOINT_ACCOUNT_INFO = "jointAccountinfo";
+    public static final String JOINT_ACCOUNT_CONSENT_ELECTION_STATUS = "jointAccountConsentElectionStatus";
+    public static final String JOINT_ACCOUNT_PRE_APPROVAL = "ELECTED";
+    public static final String JOINT_ACCOUNT_NO_SHARING = "UNAVAILABLE";
+    public static final String LINKED_MEMBER = "linkedMember";
+    public static final String LINKED_MEMBERS_COUNT = "linked_members_count";
+    public static final String LINKED_MEMBER_ID = "memberId";
+    public static final String AUTH_RESOURCE_TYPE_PRIMARY = "primary_member";
+    public static final String AUTH_RESOURCE_TYPE_LINKED = "linked_member";
+    public static final String MAP_JOINT_ACCOUNTS_ID_WITH_USERS = "jointAccountIdWithUsers";
+    public static final String MAP_USER_ID_WITH_JOINT_ACCOUNTS = "usersWithMultipleJointAccounts";
+    public static final String JOINT_ACCOUNT_PAYLOAD_PRIMARY_MEMBER = "primaryMember";
+    public static final String JOINT_ACCOUNT_PAYLOAD_LINKED_MEMBER = "linkedMember";
+    public static final String JOINT_ACCOUNT_PAYLOAD_USER_ID = "userId";
+    public static final String JOINT_ACCOUNT_PAYLOAD_ACCOUNT_ID = "accountId";
+    public static final String JOINT_ACCOUNTS_PAYLOAD = "joint_accounts_payload";
 
     public static final String CHAR_SET = "UTF-8";
     public static final String CUSTOMER_TYPE = "customerUType";

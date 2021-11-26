@@ -100,15 +100,23 @@ public class OBCDSAuthServletImplTests extends PowerMockTestCase {
         JSONArray testArray = new JSONArray();
         JSONObject dataReqJsonElement = new JSONObject();
         JSONObject accJsonElement = new JSONObject();
+        JSONObject jointAccountInfo = new JSONObject();
 
         // add data to 'data_requested' section
         dataReqJsonElement.put(CDSConsentExtensionConstants.TITLE, "testTitle");
         dataReqJsonElement.put(CDSConsentExtensionConstants.DATA, testArray);
         dataRequested.put(dataReqJsonElement);
 
+        // add data to jointAccountInfo
+        jointAccountInfo.put(CDSConsentExtensionConstants.LINKED_MEMBER, new JSONArray());
+
         // add accounts data
         accJsonElement.put(CDSConsentExtensionConstants.ACCOUNT_ID, "1234");
         accJsonElement.put(CDSConsentExtensionConstants.DISPLAY_NAME, "test-account");
+        accJsonElement.put(CDSConsentExtensionConstants.IS_JOINT_ACCOUNT_RESPONSE, true);
+        accJsonElement.put(CDSConsentExtensionConstants.JOINT_ACCOUNT_CONSENT_ELECTION_STATUS,
+                CDSConsentExtensionConstants.JOINT_ACCOUNT_PRE_APPROVAL);
+        accJsonElement.put(CDSConsentExtensionConstants.JOINT_ACCOUNT_INFO, jointAccountInfo);
         accounts.put(accJsonElement);
 
         dataSet.put(CDSConsentExtensionConstants.DATA_REQUESTED, dataRequested);

@@ -16,6 +16,7 @@
 <jsp:include page="includes/consent_top.jsp"/>
 <%
     session.setAttribute("configParamsMap", request.getAttribute("data_requested"));
+    String popoverTemplate = "<div class='popover dark-bg' role='tooltip'><div class='arrow'></div><h6 class='popover-title dark-bg'></h6><div class='popover-content'></div></div>";
 %>
 <div class="row data-container">
     <div class="clearfix"></div>
@@ -38,15 +39,40 @@
                     </h5>
                     <div class="col-md-12" >
                         <c:forEach items="${accounts_data}" var="record">
-                            <label for="${record['display_name']}">
-                                <input type="checkbox" id="${record['display_name']}" name="chkAccounts"
-                                       value="${record['account_id']}" onclick="updateAcc()"/>
-                                    ${record['display_name']} </br> 
-                                    <span class="accountIdClass" id="${record['account_id']}">
-                                        <small>${record['account_id']}</small>
-                                    </span>
+                            <label for="${record['displayName']}">
+                                <input type="checkbox" id="${record['displayName']}" name="chkAccounts"
+                                    value="${record['accountId']}" onclick="updateAcc()"
+                                    ${record['is_joint_account'] ? record['is_selectable'] ? "" : "disabled='disabled'" : ""}
+                                />
+                                ${record['displayName']}
                             </label>
-                            <br>
+
+                            <span id="joint-accounts-info">
+                                <c:if test="${record['is_joint_account'] eq true}">
+                                    <c:if test="${record['is_selectable'] ne true}">
+                                        <%
+                                            String disabledPopoverContent = "<p style='text-align: left'> There are a range of reasons why certain accounts may not available to share."
+                                                + "Please call the bank for more details.<br/><br/> For joint accounts, all account holders must elect to make the account available for sharing."
+                                                + "This can be done via the Data Sharing dashboard in Internet Banking or the app. </p>";
+                                        %>
+                                        <a tabindex="0" role="button" data-html="true" data-placement="auto top" data-toggle="popover" data-template="<%=popoverTemplate%>"
+                                            data-trigger="focus" title="Why can't I share these?" data-content="<%=disabledPopoverContent%>">&#9432;</a>
+                                    </c:if>
+                                    <c:if test="${record['is_selectable'] eq true}">
+                                        <%
+                                            String selectablePopoverContent = "<span style='text-align: left'> other account holder(s) can share this joint account data at any time, "
+                                                + "without each other&lsquo;s permission. <br/><br/> You can change sharing preferences for this account by going to &lsquo;Settings &gt;"
+                                                + "Data sharing &gt; Account permissions&rsquo;</span>";
+                                        %>
+                                        <a tabindex="0" role="button" data-html="true" data-placement="auto top" data-toggle="popover" data-template="<%=popoverTemplate%>"
+                                            data-trigger="focus" title="&check; Pre-approval enabled" data-content="${record['linked_members_count']}<%=selectablePopoverContent%>">&#9432;</a>
+                                    </c:if>
+                                </c:if>
+                            </span>
+
+                            <div class="accountIdClass" id="${record['accountId']}">
+                                <small>${record['accountId']}</small>
+                            </div><br/>
                         </c:forEach>
                     </div>
                 </div>
@@ -65,7 +91,7 @@
                     <input type="hidden" name="accNames" id="accountName" value=""/>
                     <input type="hidden" name="type" id="type" value="accounts"/>
                     <input type="hidden" name="consent-expiry-date" id="consentExp" value="${consent_expiration}"/>
-                    <input type="hidden" name="accountMaskingEnabled" id="accountMaskingEnabled" value="${account_masking_enabled}";/>
+                    <input type="hidden" name="accountMaskingEnabled" id="accountMaskingEnabled" value="${account_masking_enabled}"/>
                 </div>
             </div>
 
@@ -104,6 +130,8 @@
                 document.getElementById(elementId).textContent=maskAccountId(elementId);
             }
         }
+
+        $('[data-toggle="popover"]').popover();
     });
 </script>
 
