@@ -16,11 +16,12 @@
 <suite name="gateway-base-test-suite">
     <test name="gateway-base-test-all">
         <classes>
-            <class name="com.wso2.openbanking.cds.gateway.executors.error.handler.CDSErrorHandlerTest"></class>
-            <class name="com.wso2.openbanking.cds.gateway.executors.idpermanence.utils.IDPermanenceUtilsTest"></class>
-            <class name="com.wso2.openbanking.cds.gateway.executors.idpermanence.IDPermanenceExecutorTest"></class>
-            <class name="com.wso2.openbanking.cds.gateway.executors.core.CDSAPIRequestRouterTest"></class>
-            <class name="com.wso2.openbanking.cds.gateway.throttling.CDSThrottleDataPublisherImplTest"></class>
+            <!--<class name="com.wso2.openbanking.cds.gateway.executors.error.handler.CDSErrorHandlerTest"/>-->
+            <class name="com.wso2.openbanking.cds.gateway.executors.idpermanence.utils.IDPermanenceUtilsTest"/>
+            <class name="com.wso2.openbanking.cds.gateway.executors.idpermanence.IDPermanenceExecutorTest"/>
+            <class name="com.wso2.openbanking.cds.gateway.executors.core.CDSAPIRequestRouterTest"/>
+            <class name="com.wso2.openbanking.cds.gateway.throttling.CDSThrottleDataPublisherImplTest"/>
+            <class name="com.wso2.openbanking.cds.gateway.executors.header.validation.CDSHeaderValidationExecutorTest"/>
         </classes>
     </test>
 </suite>

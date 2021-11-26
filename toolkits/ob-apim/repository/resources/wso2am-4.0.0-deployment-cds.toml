@@ -681,3 +681,6 @@ secret_key="wso2"
 [open_banking_cds.token_encryption]
 enabled=true
 secret_key="wso2"
+
+[open_banking_cds.headers]
+holder_identifier="HID"

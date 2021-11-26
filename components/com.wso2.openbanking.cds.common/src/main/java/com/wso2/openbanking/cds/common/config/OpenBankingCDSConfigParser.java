@@ -44,13 +44,11 @@ public class OpenBankingCDSConfigParser {
     // To enable attempted thread-safety using double-check locking
     private static final Object lock = new Object();
     private static final Log log = LogFactory.getLog(OpenBankingCDSConfigParser.class);
-
+    private static final Map<String, Object> configuration = new HashMap<>();
     private static OpenBankingCDSConfigParser parser;
     private static String configFilePath;
     private static SecretResolver secretResolver;
     private OMElement rootElement;
-
-    private static final Map<String, Object> configuration = new HashMap<>();
 
     /**
      * Private Constructor of config parser.
@@ -313,6 +311,7 @@ public class OpenBankingCDSConfigParser {
 
     /**
      * Read APIM DCR register url from config
+     *
      * @return configured url
      */
     public String getDcrInternalUrl() {
@@ -336,6 +335,7 @@ public class OpenBankingCDSConfigParser {
 
     /**
      * Read retry count from config
+     *
      * @return retry count, default value is 2
      */
     public int getRetryCount() {
@@ -350,6 +350,7 @@ public class OpenBankingCDSConfigParser {
 
     /**
      * Read metadata cache expiry time in minutes from config
+     *
      * @return expiry time, default value is 60
      */
     public int getCacheExpiryInMinutes() {
@@ -364,6 +365,7 @@ public class OpenBankingCDSConfigParser {
 
     /**
      * Check if data holder responsibilities can execute as bulk operations
+     *
      * @return configured boolean value, default value is true
      */
     public boolean isBulkOperation() {
@@ -377,6 +379,7 @@ public class OpenBankingCDSConfigParser {
 
     /**
      * Read bulk execution hour from config
+     *
      * @return execution hour, default value is 2 AM
      */
     public int getBulkExecutionHour() {
@@ -394,6 +397,7 @@ public class OpenBankingCDSConfigParser {
 
     /**
      * Check if access token encryption is enabled
+     *
      * @return configured boolean value, default value is true
      */
     public boolean isTokenEncryptionEnabled() {
@@ -407,10 +411,21 @@ public class OpenBankingCDSConfigParser {
 
     /**
      * Read token encryption secret from config
+     *
      * @return token encryption secret, default value is "wso2"
      */
     public String getTokenEncryptionSecretKey() {
         return getConfigElementFromKey(CommonConstants.TOKEN_ENCRYPTION_SECRETKEY) == null ? "wso2" :
                 ((String) getConfigElementFromKey(CommonConstants.TOKEN_ENCRYPTION_SECRETKEY)).trim();
+    }
+
+    /**
+     * Read the holder specific id (HID) from config.
+     *
+     * @return configured value of the x-<HID>-v
+     */
+    public String getHolderSpecificIdentifier() {
+        Object config = getConfigElementFromKey(CommonConstants.HOLDER_SPECIFIC_IDENTIFIER);
+        return (config != null) ? (String) config : "";
     }
 }

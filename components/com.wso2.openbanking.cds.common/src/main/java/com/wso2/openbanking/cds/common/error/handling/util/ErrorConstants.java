@@ -156,15 +156,16 @@ public class ErrorConstants {
         UNAVAILABLE_BANK_ACCOUNT(422, "AU.CDR.Resource.UnavailableBankingAccount", "Banking Account Is Unavailable",
                 "Banking Account ID provided in the request is Unavailable"),
         //Requested version is less than the minimum version or greater than the maximum version
-        UNSUPPORTED_VERSION(406, "AU.CDR.Unsupported.Version", "Unsupported Version Requested", "Requested x-v " +
-                "version is not supported"),
+        UNSUPPORTED_VERSION(406, "urn:au-cds:error:cds-all:Header/UnsupportedVersion", "Unsupported Version",
+                "Requested endpoint version %s is not supported"),
         //Page out of range
         PAGE_OUT_OF_RANGE(422, "AU.CDR.Invalid.PageOutOfRange", "Page Requested Is Out Of Range",
                 "Page Requested Is Out Of Range"),
         //Page size is greater than max
         PAGE_SIZE_EXCEED(422, "AU.CDR.Invalid.PageSizeTooLarge", "Page Size Exceeded", "Page Size Exceeded"),
         //Requested version is not a positive integer
-        INVALID_VERSION(422, "AU.CDR.Invalid.Version", "Invalid Version Requested", "Invalid Version Requested"),
+        INVALID_VERSION(400, "urn:au-cds:error:cds-all:Header/InvalidVersion", "Invalid Version",
+                "Requested %s version is not valid"),
         TEAPOT(418, "AU.CDR.IAmATeapot", "I'm A Teapot", "I'm A Teapot"),
         //API unavailable as part of a partial outage.
         SERVICE_UNAVAILABLE(503, "AU.CDR.Service.Unavailable", "Service Unavailable", "Service Unavailable"),

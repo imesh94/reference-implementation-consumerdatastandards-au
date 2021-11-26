@@ -46,4 +46,8 @@
             <BulkExecutionHour>12</BulkExecutionHour>
         </DataHolderResponsibilities>
     </MetaDataCache>
+
+    <Headers>
+        <HolderIdentifier>HID</HolderIdentifier>
+    </Headers>
 </Server>

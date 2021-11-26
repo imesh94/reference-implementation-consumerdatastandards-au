@@ -36,4 +36,9 @@
         <SecretKey>wso2</SecretKey>
         {% endif %}
     </TokenEncryption>
+    <Headers>
+        {% if open_banking_cds.headers.holder_identifier is defined %}
+        <HolderIdentifier>{{open_banking_cds.headers.holder_identifier}}</HolderIdentifier>
+        {% endif %}
+    </Headers>
 </Server>
