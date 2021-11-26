@@ -54,6 +54,10 @@ class AURegistrationRequestBuilder {
         }
     }
 
+    String getSoftwareProductId(){
+        return softwareProductId
+    }
+
     /**
      * Get a basic request.
      *
@@ -140,7 +144,7 @@ class AURegistrationRequestBuilder {
                 "iat": ${currentTimeInSeconds},
                 "exp": ${currentTimeInSeconds + 3600},
                 "jti": "${currentTimeInMillis}",
-                "aud": "https://www.infosec.cdr.gov.au/token",
+                 "aud": "${AUDCRConstants.AUD_VALUE}",
                 "redirect_uris": [
                     "${AUDCRConstants.REDIRECT_URI}",
                     "${AUDCRConstants.ALTERNATE_REDIRECT_URI}"
@@ -175,7 +179,7 @@ class AURegistrationRequestBuilder {
                 "iat": ${currentTimeInSeconds},
                 "exp": ${currentTimeInSeconds + 3600},
                 "jti": "${currentTimeInMillis}",
-                "aud": "https://www.infosec.cdr.gov.au/token",
+                "aud": "${AUDCRConstants.AUD_VALUE}",
                 "redirect_uris": [
                     "${AUDCRConstants.REDIRECT_URI}",
                     "${AUDCRConstants.ALTERNATE_REDIRECT_URI}"
@@ -210,7 +214,7 @@ class AURegistrationRequestBuilder {
                 "iat": ${currentTimeInSeconds},
                 "exp": ${currentTimeInSeconds + 3600},
                 "jti": "${currentTimeInMillis}",
-                "aud": "https://www.infosec.cdr.gov.au/token",
+                "aud": "${AUDCRConstants.AUD_VALUE}",
                 "redirect_uris": [
                     "${redirectUri}"
                     ],
@@ -277,7 +281,7 @@ class AURegistrationRequestBuilder {
                 "iat": ${currentTimeInSeconds},
                 "exp": ${currentTimeInSeconds + 3600},
                 "jti": "${currentTimeInMillis}",
-                "aud": "https://www.infosec.cdr.gov.au/token",
+                "aud": "${AUDCRConstants.AUD_VALUE}",
                 "redirect_uris": [
                     "https://www.google.com/redirects/non-matching-redirect"
                     ],
@@ -311,7 +315,7 @@ class AURegistrationRequestBuilder {
                 "iat": ${currentTimeInSeconds},
                 "exp": ${currentTimeInSeconds + 3600},
                 "jti": "${currentTimeInMillis}",
-                "aud": "https://www.infosec.cdr.gov.au/token",
+                "aud": "${AUDCRConstants.AUD_VALUE}",
                 "redirect_uris": [
                     "${AUDCRConstants.ALTERNATE_REDIRECT_URI}"
                     ],
@@ -345,7 +349,7 @@ class AURegistrationRequestBuilder {
                 "iat": ${currentTimeInSeconds},
                 "exp": ${currentTimeInSeconds + 3600},
                 "jti": "${currentTimeInMillis}",
-                "aud": "https://www.infosec.cdr.gov.au/token",
+                "aud": "${AUDCRConstants.AUD_VALUE}",
                 "redirect_uris": [
                     "${AUDCRConstants.REDIRECT_URI}"
                     ],
@@ -378,7 +382,7 @@ class AURegistrationRequestBuilder {
                 "iat": ${currentTimeInSeconds},
                 "exp": ${currentTimeInSeconds + 3600},
                 "jti": "${currentTimeInMillis}",
-                "aud": "https://www.infosec.cdr.gov.au/token",
+                "aud": "${AUDCRConstants.AUD_VALUE}",
                 "redirect_uris": [
                     "${AUDCRConstants.REDIRECT_URI}"
                     ],
@@ -411,7 +415,7 @@ class AURegistrationRequestBuilder {
                 "iat": ${currentTimeInSeconds},
                 "exp": ${currentTimeInSeconds + 3600},
                 "jti": "${currentTimeInMillis}",
-                "aud": "https://www.infosec.cdr.gov.au/token",
+                "aud": "${AUDCRConstants.AUD_VALUE}",
                 "redirect_uris": [
                     "${AUDCRConstants.REDIRECT_URI}"
                     ],
@@ -440,7 +444,7 @@ class AURegistrationRequestBuilder {
                 "iat": ${currentTimeInSeconds},
                 "exp": ${currentTimeInSeconds + 3600},
                 "jti": "${currentTimeInMillis}",
-                "aud": "https://www.infosec.cdr.gov.au/token",
+                "aud": "${AUDCRConstants.AUD_VALUE}",
                 "redirect_uris": [
                     "${AUDCRConstants.REDIRECT_URI}"
                     ],
@@ -471,7 +475,7 @@ class AURegistrationRequestBuilder {
                 "iat": ${currentTimeInSeconds},
                 "exp": ${currentTimeInSeconds + 3600},
                 "jti": "${currentTimeInMillis}",
-                "aud": "https://www.infosec.cdr.gov.au/token",
+                "aud": "${AUDCRConstants.AUD_VALUE}",
                 "redirect_uris": [
                     "${AUDCRConstants.REDIRECT_URI}"
                     ],
@@ -504,7 +508,7 @@ class AURegistrationRequestBuilder {
                 "iat": ${currentTimeInSeconds},
                 "exp": ${currentTimeInSeconds + 3600},
                 "jti": "${currentTimeInMillis}",
-                "aud": "https://www.infosec.cdr.gov.au/token",
+                "aud": "${AUDCRConstants.AUD_VALUE}",
                 "redirect_uris": [
                     "${AUDCRConstants.REDIRECT_URI}",
                     "${AUDCRConstants.ALTERNATE_REDIRECT_URI}"
@@ -538,7 +542,7 @@ class AURegistrationRequestBuilder {
                 "iat": ${currentTimeInSeconds},
                 "exp": ${currentTimeInSeconds + 3600},
                 "jti": "${currentTimeInMillis}",
-                "aud": "https://www.infosec.cdr.gov.au/token",
+                "aud": "${AUDCRConstants.AUD_VALUE}",
                 "redirect_uris": [
                     "${AUDCRConstants.REDIRECT_URI}",
                     "${AUDCRConstants.ALTERNATE_REDIRECT_URI}"
@@ -572,7 +576,7 @@ class AURegistrationRequestBuilder {
                 "iat": ${currentTimeInSeconds},
                 "exp": ${currentTimeInSeconds + 3600},
                 "jti": "${currentTimeInMillis}",
-                "aud": "https://www.infosec.cdr.gov.au/token",
+                "aud": "${AUDCRConstants.AUD_VALUE}",
                 "redirect_uris": [
                     "${AUDCRConstants.REDIRECT_URI}",
                     "${AUDCRConstants.ALTERNATE_REDIRECT_URI}"
@@ -607,7 +611,7 @@ class AURegistrationRequestBuilder {
                 "iat": ${currentTimeInSeconds},
                 "exp": ${currentTimeInSeconds + 3600},
                 "jti": "${currentTimeInMillis}",
-                "aud": "https://www.infosec.cdr.gov.au/token",
+                "aud": "${AUDCRConstants.AUD_VALUE}",
                 "redirect_uris": [
                     "${AUDCRConstants.REDIRECT_URI}",
                     "${AUDCRConstants.ALTERNATE_REDIRECT_URI}"
@@ -642,7 +646,7 @@ class AURegistrationRequestBuilder {
                 "iat": ${currentTimeInSeconds},
                 "exp": ${currentTimeInSeconds + 3600},
                 "jti": "${currentTimeInMillis}",
-                "aud": "https://www.infosec.cdr.gov.au/token",
+                "aud": "${AUDCRConstants.AUD_VALUE}",
                 "redirect_uris": [
                     "${AUDCRConstants.REDIRECT_URI}",
                     "${AUDCRConstants.ALTERNATE_REDIRECT_URI}"
@@ -676,7 +680,7 @@ class AURegistrationRequestBuilder {
                 "iat": ${currentTimeInSeconds},
                 "exp": ${currentTimeInSeconds + 3600},
                 "jti": "${jti}",
-                "aud": "https://www.infosec.cdr.gov.au/token",
+                "aud": "${AUDCRConstants.AUD_VALUE}",
                 "redirect_uris": [
                     "${AUDCRConstants.REDIRECT_URI}",
                     "${AUDCRConstants.ALTERNATE_REDIRECT_URI}"
@@ -711,7 +715,7 @@ class AURegistrationRequestBuilder {
                 "iat": ${currentTimeInSeconds},
                 "exp": ${currentTimeInSeconds + 3600},
                 "jti": "${currentTimeInMillis}",
-                "aud": "https://www.infosec.cdr.gov.au/token",
+                "aud": "${AUDCRConstants.AUD_VALUE}",
                 "redirect_uris": [
                     "${AUDCRConstants.REDIRECT_URI}",
                     "${AUDCRConstants.ALTERNATE_REDIRECT_URI}"
@@ -746,7 +750,7 @@ class AURegistrationRequestBuilder {
                 "iat": ${currentTimeInSeconds},
                 "exp": ${currentTimeInSeconds + 3600},
                 "jti": "${currentTimeInMillis}",
-                "aud": "https://www.infosec.cdr.gov.au/token",
+                "aud": "${AUDCRConstants.AUD_VALUE}",
                 "redirect_uris": [
                     "${AUDCRConstants.REDIRECT_URI}",
                     "${AUDCRConstants.ALTERNATE_REDIRECT_URI}"
@@ -779,7 +783,7 @@ class AURegistrationRequestBuilder {
                 "iat": ${currentTimeInSeconds},
                 "exp": ${currentTimeInSeconds + 3600},
                 "jti": "${currentTimeInMillis}",
-                "aud": "https://www.infosec.cdr.gov.au/token",
+                "aud": "${AUDCRConstants.AUD_VALUE}",
                 "redirect_uris": [
                     "${AUDCRConstants.REDIRECT_URI}",
                     "${AUDCRConstants.ALTERNATE_REDIRECT_URI}"
@@ -814,7 +818,7 @@ class AURegistrationRequestBuilder {
                 "iat": ${currentTimeInSeconds},
                 "exp": ${currentTimeInSeconds + 3600},
                 "jti": "${currentTimeInMillis}",
-                "aud": "https://www.infosec.cdr.gov.au/token",
+                "aud": "${AUDCRConstants.AUD_VALUE}",
                 "redirect_uris": [
                     "${AUDCRConstants.REDIRECT_URI}",
                     "${AUDCRConstants.ALTERNATE_REDIRECT_URI}"
@@ -849,7 +853,7 @@ class AURegistrationRequestBuilder {
                 "iat": ${currentTimeInSeconds},
                 "exp": ${currentTimeInSeconds + 3600},
                 "jti": "${currentTimeInMillis}",
-                "aud": "https://www.infosec.cdr.gov.au/token",
+                "aud": "${AUDCRConstants.AUD_VALUE}",
                 "redirect_uris": [
                     "${AUDCRConstants.REDIRECT_URI}",
                     "${AUDCRConstants.ALTERNATE_REDIRECT_URI}"
@@ -883,7 +887,7 @@ class AURegistrationRequestBuilder {
                 "iat": ${currentTimeInSeconds},
                 "exp": ${currentTimeInSeconds + 3600},
                 "jti": "${currentTimeInMillis}",
-                "aud": "https://www.infosec.cdr.gov.au/token",
+                "aud": "${AUDCRConstants.AUD_VALUE}",
                 "redirect_uris": [
                     "${AUDCRConstants.REDIRECT_URI}",
                     "${AUDCRConstants.ALTERNATE_REDIRECT_URI}"
@@ -918,7 +922,7 @@ class AURegistrationRequestBuilder {
                 "iat": ${currentTimeInSeconds},
                 "exp": ${currentTimeInSeconds + 3600},
                 "jti": "${currentTimeInMillis}",
-                "aud": "https://www.infosec.cdr.gov.au/token",
+                "aud": "${AUDCRConstants.AUD_VALUE}",
                 "token_endpoint_auth_signing_alg": "PS256",
                 "token_endpoint_auth_method": "private_key_jwt",
                 "grant_types": [
@@ -949,7 +953,7 @@ class AURegistrationRequestBuilder {
                 "iat": ${currentTimeInSeconds},
                 "exp": ${currentTimeInSeconds + 3600},
                 "jti": "${currentTimeInMillis}",
-                "aud": "https://www.infosec.cdr.gov.au/token",
+                "aud": "${AUDCRConstants.AUD_VALUE}",
                 "redirect_uris": [
                     "${AUDCRConstants.REDIRECT_URI}",
                     "${AUDCRConstants.ALTERNATE_REDIRECT_URI}"
