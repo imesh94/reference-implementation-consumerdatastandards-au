@@ -413,4 +413,13 @@ public class OpenBankingCDSConfigParser {
         return getConfigElementFromKey(CommonConstants.TOKEN_ENCRYPTION_SECRETKEY) == null ? "wso2" :
                 ((String) getConfigElementFromKey(CommonConstants.TOKEN_ENCRYPTION_SECRETKEY)).trim();
     }
+
+    /**
+     * Read the Admin API self link Url
+     * @return configured url
+     */
+    public String getAdminAPISelfLink () {
+        String value = (String) getConfigElementFromKey(CommonConstants.ADMIN_API_SELF_LINK);
+        return value == null ? "" : value;
+    }
 }

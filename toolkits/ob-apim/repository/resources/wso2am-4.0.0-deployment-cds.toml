@@ -187,6 +187,9 @@ enable = true
 config_endpoint = "https://analytics-event-auth.st.choreo.dev/auth/v1"
 auth_token = ""
 properties.'publisher.reporter.class' = "com.wso2.openbanking.accelerator.gateway.reporter.OBAnalyticsMetricReporter"
+properties.'stream.processor.rest.api.url' = "https://BI_HOSTNAME:7444"
+properties.'stream.processor.rest.api.username' = "admin@wso2.com@carbon.super"
+properties.'stream.processor.rest.api.password' = "$ref{super_admin.password}"
 
 [apim.key_manager]
 service_url = "https://IS_HOSTNAME:9446${carbon.context}services/"
@@ -681,3 +684,6 @@ secret_key="wso2"
 [open_banking_cds.token_encryption]
 enabled=true
 secret_key="wso2"
+
+[open_banking_cds.admin]
+api_self_link = "https://APIM_HOSTNAME:8243/cds-au/v2/admin/"
