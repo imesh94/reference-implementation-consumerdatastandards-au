@@ -393,7 +393,7 @@ class DynamicClientRegistrationFlowTest {
                 AUDCRConstants.SSA)
     }
 
-    //@Test (priority = 1, groups = "SmokeTest", dependsOnMethods = "TC0101008_Create application")
+    @Test (priority = 1, groups = "SmokeTest", dependsOnMethods = "TC0101008_Create application")
     void "TC0101018_Retrieve Application"() {
         URI devPortalEndpoint =
                 new URI("${String.valueOf(ConfigParser.getInstance().getConfiguration().get("Server.GatewayURL"))}"
@@ -410,7 +410,7 @@ class DynamicClientRegistrationFlowTest {
 
     }
 
-    //@Test (priority = 1, groups = "SmokeTest",  dependsOnMethods = "TC0101018_Retrieve Application")
+    @Test (priority = 1, groups = "SmokeTest",  dependsOnMethods = "TC0101018_Retrieve Application")
     void "TC0101019_Subscribe admin API"() {
         def apiID = ConfigParser.getRESTApiApiId()
         URI devPortalEndpoint =
@@ -438,7 +438,7 @@ class DynamicClientRegistrationFlowTest {
         Assert.assertNotNull(accessToken)
     }
 
-    //@Test (priority = 1, dependsOnMethods = "TC0101009_Get access token")
+    @Test (priority = 1, dependsOnMethods = "TC0101009_Get access token")
     void "TC0102001_Get registration details with invalid client id"() {
 
         String invalidClientId = "invalidclientid"
@@ -450,7 +450,7 @@ class DynamicClientRegistrationFlowTest {
         Assert.assertEquals(registrationResponse.statusCode(), AUConstants.STATUS_CODE_401)
     }
 
-    //@Test (priority = 1, groups = "SmokeTest", dependsOnMethods = "TC0101009_Get access token")
+    @Test (priority = 1, groups = "SmokeTest", dependsOnMethods = "TC0101009_Get access token")
     void "TC0102002_Get registration details"() {
 
         def registrationResponse = AURegistrationRequestBuilder.buildBasicRequest(accessToken)
@@ -460,7 +460,7 @@ class DynamicClientRegistrationFlowTest {
         Assert.assertEquals(registrationResponse.statusCode(), AUConstants.STATUS_CODE_200)
     }
 
-   // @Test (priority = 1, dependsOnMethods = "TC0101009_Get access token")
+   @Test (priority = 1, dependsOnMethods = "TC0101009_Get access token")
     void "TC0103001_Update registration details with invalid client id"() {
 
         def registrationResponse = AURegistrationRequestBuilder.buildBasicRequest(accessToken)
@@ -472,7 +472,7 @@ class DynamicClientRegistrationFlowTest {
         Assert.assertEquals(registrationResponse.statusCode(), AUConstants.STATUS_CODE_401)
     }
 
-    //@Test (priority = 1, groups = "SmokeTest", dependsOnMethods = "TC0101009_Get access token")
+    @Test (priority = 1, groups = "SmokeTest", dependsOnMethods = "TC0101009_Get access token")
     void "TC0103002_Update registration details"() {
 
         def registrationResponse = AURegistrationRequestBuilder.buildBasicRequest(accessToken)
@@ -510,7 +510,7 @@ class DynamicClientRegistrationFlowTest {
                 "Application with the name " +AUDCRConstants.SOFTWARE_PRODUCT_ID+ " already exist in the system"))
     }
 
-    //@Test (priority = 2, dependsOnMethods = "TC0101009_Get access token")
+    @Test (priority = 2, dependsOnMethods = "TC0101009_Get access token")
     void "OB-1167_Update registration details without SSA"() {
 
         def registrationResponse = AURegistrationRequestBuilder.buildBasicRequest(accessToken)
@@ -524,7 +524,7 @@ class DynamicClientRegistrationFlowTest {
                 AUDCRConstants.INVALID_CLIENT_METADATA)
     }
 
-   // @Test (priority = 2, dependsOnMethods = "TC0101009_Get access token")
+   @Test (priority = 2, dependsOnMethods = "TC0101009_Get access token")
     void "OB-1168_Update registration details with fields not supported by data holder brand"() {
 
         def registrationResponse = AURegistrationRequestBuilder.buildBasicRequest(accessToken)
@@ -543,7 +543,7 @@ class DynamicClientRegistrationFlowTest {
         Assert.assertNull(TestUtil.parseResponseBody(retrievalResponse, "adr_name"))
     }
 
-    //@Test (priority = 3)
+    @Test (priority = 3)
     void "OB-1169_Update registration details with a access token bound only to CDR Authorization scopes"() {
 
         scopes = [
@@ -569,7 +569,7 @@ class DynamicClientRegistrationFlowTest {
 
     }
 
-    //@Test (priority = 3)
+    @Test (priority = 3)
     void "OB-1170_Update registration details without access token"() {
 
         def registrationResponse = AURegistrationRequestBuilder.buildBasicRequest(null)
@@ -581,7 +581,7 @@ class DynamicClientRegistrationFlowTest {
         Assert.assertEquals(registrationResponse.statusCode(), AUConstants.STATUS_CODE_401)
     }
 
-    //@Test (priority = 3)
+    @Test (priority = 3)
     void "OB-1171_Update registration details with invalid access token"() {
 
         def registrationResponse = AURegistrationRequestBuilder.buildBasicRequest("asd")

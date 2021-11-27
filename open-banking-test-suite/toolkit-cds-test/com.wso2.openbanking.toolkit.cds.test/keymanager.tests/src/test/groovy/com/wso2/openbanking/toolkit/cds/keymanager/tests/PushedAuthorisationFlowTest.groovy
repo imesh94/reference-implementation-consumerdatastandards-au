@@ -329,7 +329,6 @@ class PushedAuthorisationFlowTest extends AbstractAUTests {
 
         //Generate User Access Token
         userAccessToken = AURequestBuilder.getUserToken(authorisationCode)
-        Assert.assertNotNull(userAccessToken.tokens.refreshToken)
         Assert.assertNotNull(userAccessToken.tokens.accessToken)
     }
 
@@ -353,7 +352,6 @@ class PushedAuthorisationFlowTest extends AbstractAUTests {
 
         //Generate User Access Token
         userAccessToken = AURequestBuilder.getUserToken(authorisationCode)
-        Assert.assertNotNull(userAccessToken.tokens.refreshToken)
         Assert.assertNotNull(userAccessToken.tokens.accessToken)
     }
 
@@ -484,7 +482,7 @@ class PushedAuthorisationFlowTest extends AbstractAUTests {
                 .contentType(TestConstants.ACCESS_TOKEN_CONTENT_TYPE)
                 .header(TestConstants.AUTHORIZATION_HEADER_KEY, "Basic " + Base64.encoder.encodeToString(
                         headerString.getBytes(Charset.forName("UTF-8"))))
-                .formParams(TestConstants.REDIRECT_URI_KEY, request_uri)
+                .formParams(TestConstants.REQUEST_URI_KEY, request_uri)
                 .baseUri(AUConstants.PUSHED_AUTHORISATION_BASE_PATH)
                 .post(AUConstants.PAR_ENDPOINT)
 
