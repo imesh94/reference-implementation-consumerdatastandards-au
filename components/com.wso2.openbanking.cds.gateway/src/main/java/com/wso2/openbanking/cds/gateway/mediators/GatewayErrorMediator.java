@@ -16,35 +16,32 @@ import com.wso2.openbanking.accelerator.common.config.OpenBankingConfigParser;
 import com.wso2.openbanking.accelerator.data.publisher.common.constants.DataPublishingConstants;
 import com.wso2.openbanking.cds.common.config.OpenBankingCDSConfigParser;
 import com.wso2.openbanking.cds.common.data.publisher.CDSDataPublishingService;
+import com.wso2.openbanking.cds.common.error.handling.models.CDSErrorMeta;
+import com.wso2.openbanking.cds.common.error.handling.util.ErrorConstants;
+import com.wso2.openbanking.cds.common.error.handling.util.ErrorUtil;
 import com.wso2.openbanking.cds.common.utils.CDSCommonUtils;
-import com.wso2.openbanking.cds.gateway.util.CDSDataPublishingConstants;
+import com.wso2.openbanking.cds.gateway.utils.GatewayConstants;
+import net.minidev.json.JSONArray;
+import net.minidev.json.JSONObject;
 import org.apache.axiom.soap.SOAPBody;
 import org.apache.axiom.soap.SOAPEnvelope;
+import org.apache.axis2.AxisFault;
+import org.apache.commons.lang.StringUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.apache.http.HttpStatus;
 import org.apache.synapse.MessageContext;
+import org.apache.synapse.commons.json.JsonUtil;
 import org.apache.synapse.core.axis2.Axis2MessageContext;
 import org.apache.synapse.mediators.AbstractMediator;
+import org.apache.synapse.transport.nhttp.NhttpConstants;
 import org.wso2.carbon.apimgt.impl.APIConstants;
 
 import java.nio.charset.Charset;
 import java.time.Instant;
 import java.util.HashMap;
 import java.util.Map;
-import com.wso2.openbanking.cds.common.error.handling.models.CDSErrorMeta;
-import com.wso2.openbanking.cds.common.error.handling.util.ErrorConstants;
-import com.wso2.openbanking.cds.common.error.handling.util.ErrorUtil;
-import com.wso2.openbanking.cds.gateway.utils.GatewayConstants;
-import net.minidev.json.JSONArray;
-import net.minidev.json.JSONObject;
-import org.apache.axis2.AxisFault;
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
-import org.apache.synapse.MessageContext;
-import org.apache.synapse.commons.json.JsonUtil;
-import org.apache.synapse.core.axis2.Axis2MessageContext;
-import org.apache.synapse.mediators.AbstractMediator;
-import org.apache.synapse.transport.nhttp.NhttpConstants;
+
 
 /**
  * CDS Gateway error mediator.
@@ -52,7 +49,6 @@ import org.apache.synapse.transport.nhttp.NhttpConstants;
  */
 public class GatewayErrorMediator extends AbstractMediator {
 
-    private static final String ERROR_CODE = "ERROR_CODE";
     private static final Log log = LogFactory.getLog(GatewayErrorMediator.class);
 
     @Override
@@ -63,11 +59,12 @@ public class GatewayErrorMediator extends AbstractMediator {
                 .get(DataPublishingConstants.DATA_PUBLISHING_ENABLED))) {
 
             log.debug("Publishing invocation error data from CDS error mediator.");
-            if ((messageContext.getProperty(ERROR_CODE)) != null) {
+            if ((messageContext.getProperty(GatewayConstants.ERROR_CODE)) != null) {
                 Map<String, Object> invocationErrorData = getApiInvocationErrorDataToPublish(messageContext);
                 CDSDataPublishingService.getCDSDataPublishingService().publishApiInvocationData(invocationErrorData);
             }
         }
+        // Error handling logic.
         if ((messageContext.getProperty(GatewayConstants.ERROR_CODE)) != null) {
 
             int errorCode = (int) messageContext.getProperty(GatewayConstants.ERROR_CODE);
@@ -75,9 +72,10 @@ public class GatewayErrorMediator extends AbstractMediator {
             String errorDetail = (String) messageContext.getProperty(GatewayConstants.ERROR_DETAIL);
 
             JSONObject errorData;
-
             if (Integer.toString(errorCode).startsWith("9")) {
                 errorData = getAuthFailureResponse(errorCode, errorMessage);
+            } else if (Integer.toString(errorCode).startsWith("4") && StringUtils.isEmpty(errorDetail)) {
+                errorData = getResourceFailureResponse(errorCode, errorMessage);
             } else {
                 return true;
             }
@@ -85,7 +83,6 @@ public class GatewayErrorMediator extends AbstractMediator {
             String errorResponse = errorData.get(GatewayConstants.ERROR_RESPONSE).toString();
             int status = (int) errorData.get(GatewayConstants.STATUS_CODE);
             setFaultPayload(messageContext, errorResponse, status);
-
         }
         return true;
     }
@@ -108,44 +105,44 @@ public class GatewayErrorMediator extends AbstractMediator {
         String electedResource = (String) messageContext.getProperty(APIConstants.API_ELECTED_RESOURCE);
 
         String userAgent;
-        if (messageContext.getProperty(CDSDataPublishingConstants.CLIENT_USER_AGENT) != null) {
-            userAgent = (String) messageContext.getProperty(CDSDataPublishingConstants.CLIENT_USER_AGENT);
-        } else if (headers.get(CDSDataPublishingConstants.CLIENT_USER_AGENT) != null) {
-            userAgent = (String) headers.get(CDSDataPublishingConstants.CLIENT_USER_AGENT);
+        if (messageContext.getProperty(GatewayConstants.CLIENT_USER_AGENT) != null) {
+            userAgent = (String) messageContext.getProperty(GatewayConstants.CLIENT_USER_AGENT);
+        } else if (headers.get(GatewayConstants.CLIENT_USER_AGENT) != null) {
+            userAgent = (String) headers.get(GatewayConstants.CLIENT_USER_AGENT);
         } else {
-            userAgent = CDSDataPublishingConstants.UNKNOWN;
+            userAgent = GatewayConstants.UNKNOWN;
         }
 
-        String restApiContext = (String) messageContext.getProperty(CDSDataPublishingConstants.REST_API_CONTEXT);
+        String restApiContext = (String) messageContext.getProperty(GatewayConstants.REST_API_CONTEXT);
         String customerStatus;
-        if (CDSDataPublishingConstants.INFOSEC_ENDPOINTS.contains(restApiContext) ||
-                CDSDataPublishingConstants.INFOSEC_ENDPOINTS.contains(electedResource)) {
-            customerStatus = CDSDataPublishingConstants.UNDEFINED;
-        } else if (headers.get(CDSDataPublishingConstants.X_FAPI_CUSTOMER_IP_ADDRESS) == null) {
-            customerStatus = CDSDataPublishingConstants.UNATTENDED;
+        if (GatewayConstants.INFOSEC_ENDPOINTS.contains(restApiContext) ||
+                GatewayConstants.INFOSEC_ENDPOINTS.contains(electedResource)) {
+            customerStatus = GatewayConstants.UNDEFINED;
+        } else if (headers.get(GatewayConstants.X_FAPI_CUSTOMER_IP_ADDRESS) == null) {
+            customerStatus = GatewayConstants.UNATTENDED;
         } else {
-            customerStatus = CDSDataPublishingConstants.CUSTOMER_PRESENT;
+            customerStatus = GatewayConstants.CUSTOMER_PRESENT;
         }
 
-        String consumerId = (String) axis2MessageContext.getProperty(CDSDataPublishingConstants.USER_NAME);
-        String clientId = (String) axis2MessageContext.getProperty(CDSDataPublishingConstants.CONSUMER_KEY);
-        String httpMethod = (String) axis2MessageContext.getProperty(CDSDataPublishingConstants.HTTP_METHOD);
-        String apiName = (String) axis2MessageContext.getProperty(CDSDataPublishingConstants.API_NAME);
+        String consumerId = (String) axis2MessageContext.getProperty(GatewayConstants.USER_NAME);
+        String clientId = (String) axis2MessageContext.getProperty(GatewayConstants.CONSUMER_KEY);
+        String httpMethod = (String) axis2MessageContext.getProperty(GatewayConstants.HTTP_METHOD);
+        String apiName = (String) axis2MessageContext.getProperty(GatewayConstants.API_NAME);
         // Get api name from SYNAPSE_REST_API if not available in axis2 message context.
-        if (apiName == null && messageContext.getProperty(CDSDataPublishingConstants.SYNAPSE_REST_API) != null) {
-            apiName = (messageContext.getProperty(CDSDataPublishingConstants.SYNAPSE_REST_API).toString())
+        if (apiName == null && messageContext.getProperty(GatewayConstants.SYNAPSE_REST_API) != null) {
+            apiName = (messageContext.getProperty(GatewayConstants.SYNAPSE_REST_API).toString())
                             .split(":")[0];
         }
 
         String apiSpecVersion = null;
-        if (messageContext.getProperty(CDSDataPublishingConstants.API_SPEC_VERSION) != null) {
-            apiSpecVersion = (String) messageContext.getProperty(CDSDataPublishingConstants.API_SPEC_VERSION);
+        if (messageContext.getProperty(GatewayConstants.API_SPEC_VERSION) != null) {
+            apiSpecVersion = (String) messageContext.getProperty(GatewayConstants.API_SPEC_VERSION);
         }
 
-        int statusCode = (int) messageContext.getProperty(CDSDataPublishingConstants.HTTP_RESPONSE_STATUS_CODE);
-        String messageId = (String) messageContext.getProperty(CDSDataPublishingConstants.CORRELATION_ID);
+        int statusCode = (int) messageContext.getProperty(GatewayConstants.HTTP_RESPONSE_STATUS_CODE);
+        String messageId = (String) messageContext.getProperty(GatewayConstants.CORRELATION_ID);
 
-        String authorizationHeader = (String) headers.get(CDSDataPublishingConstants.AUTHORIZATION);
+        String authorizationHeader = (String) headers.get(GatewayConstants.AUTHORIZATION);
         String accessToken = (authorizationHeader != null && authorizationHeader.split(" ").length > 1) ?
                 authorizationHeader.split(" ")[1] : null;
         // Encrypt access token if configured.
@@ -229,8 +226,8 @@ public class GatewayErrorMediator extends AbstractMediator {
         } else if (errorCode == GatewayConstants.API_AUTH_INCORRECT_API_RESOURCE ||
                 errorCode == GatewayConstants.API_AUTH_FORBIDDEN ||
                 errorCode == GatewayConstants.INVALID_SCOPE) {
-            status = ErrorConstants.AUErrorEnum.RESOURCE_FORBIDDEN.getHttpCode();
-            errorList.add(ErrorUtil.getErrorObject(ErrorConstants.AUErrorEnum.RESOURCE_FORBIDDEN_TEMP, errorMessage,
+            status = 403;
+            errorList.add(ErrorUtil.getErrorObject(ErrorConstants.AUErrorEnum.EXPECTED_GENERAL_ERROR, errorMessage,
                     new CDSErrorMeta()));
             errorResponse = ErrorUtil.getErrorJson(errorList);
         } else if (errorCode == GatewayConstants.API_AUTH_MISSING_CREDENTIALS ||
@@ -245,12 +242,39 @@ public class GatewayErrorMediator extends AbstractMediator {
                     new CDSErrorMeta()));
             errorResponse = ErrorUtil.getErrorJson(errorList);
         }
-
         errorData.put(GatewayConstants.STATUS_CODE, status);
         errorData.put(GatewayConstants.ERROR_RESPONSE, errorResponse);
 
         return errorData;
+    }
 
+    private static JSONObject getResourceFailureResponse(int errorCode, String errorMessage) {
+
+        JSONObject errorData = new JSONObject();
+        JSONArray errorList = new JSONArray();
+        String errorResponse;
+        int status;
+
+        if (errorCode == 404) {
+            status = ErrorConstants.AUErrorEnum.RESOURCE_NOT_FOUND.getHttpCode();
+            errorList.add(ErrorUtil.getErrorObject(ErrorConstants.AUErrorEnum.RESOURCE_NOT_FOUND, errorMessage,
+                    new CDSErrorMeta()));
+            errorResponse = ErrorUtil.getErrorJson(errorList);
+        } else if (errorCode == 422) {
+            status = ErrorConstants.AUErrorEnum.RESOURCE_UNAVAILABLE_BODY.getHttpCode();
+            errorList.add(ErrorUtil.getErrorObject(ErrorConstants.AUErrorEnum.RESOURCE_UNAVAILABLE_BODY, errorMessage,
+                    new CDSErrorMeta()));
+            errorResponse = ErrorUtil.getErrorJson(errorList);
+        } else {
+            status = errorCode;
+            errorList.add(ErrorUtil.getErrorObject(ErrorConstants.AUErrorEnum.EXPECTED_GENERAL_ERROR, errorMessage,
+                    new CDSErrorMeta()));
+            errorResponse = ErrorUtil.getErrorJson(errorList);
+        }
+        errorData.put(GatewayConstants.STATUS_CODE, status);
+        errorData.put(GatewayConstants.ERROR_RESPONSE, errorResponse);
+
+        return errorData;
     }
 }
 

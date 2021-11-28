@@ -80,7 +80,7 @@ public class BankAccountService {
             "            ]\n" +
             "        },\n" +
             "        {\n" +
-            "            \"account_id\": \"650-000 N1232\",\n" +
+            "            \"account_id\": \"6500001232\",\n" +
             "            \"display_name\": \"Extra_account\",\n" +
             "            \"accountId\": \"650-000 N1232\",\n" +
             "            \"accountName\": \"Extra Account\",\n" +

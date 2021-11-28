@@ -132,9 +132,6 @@ public class ErrorConstants {
         //The resource requested is forbidden
         RESOURCE_FORBIDDEN(403, "urn:au-cds:error:cds-all:Authorisation/InvalidConsent",
                 "Resource Is Forbidden", "The requested resource %s is forbidden"),
-        //Temp resource forbidden code
-        RESOURCE_FORBIDDEN_TEMP(403, "urn:au-cds:error:cds-all:Authorisation/ResourceForbidden",
-                "Resource Is Forbidden", "The requested resource %s is forbidden"),
         //Software product requested is invalid or cannot be found.
         INVALID_SOFTWARE_PRODUCT(404, "AU.CDR.Register.InvalidSoftwareProduct", "Invalid Software Product",
                 "Software product requested is invalid or cannot be found"),
@@ -181,6 +178,9 @@ public class ErrorConstants {
         //An unexpected error occurred
         UNEXPECTED_ERROR(500, "urn:au-cds:error:cds-all:GeneralError/Unexpected",
                 "Unexpected Error", "Unexpected Error"),
+        //Expected general error occurred
+        EXPECTED_GENERAL_ERROR(404, "urn:au-cds:error:cds-all:GeneralError/Expected",
+                "Expected Error Encountered", "Expected Error Encountered"),
 
         /**
          * Error enumerations defined by the WSO2

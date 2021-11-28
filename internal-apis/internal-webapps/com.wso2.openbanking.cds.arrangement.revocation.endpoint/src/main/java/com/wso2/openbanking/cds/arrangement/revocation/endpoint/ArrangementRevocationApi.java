@@ -26,7 +26,6 @@ import com.wso2.openbanking.cds.common.metadata.domain.MetadataValidationRespons
 import com.wso2.openbanking.cds.common.metadata.status.validator.service.MetadataService;
 import io.swagger.annotations.Api;
 import net.minidev.json.JSONArray;
-import net.minidev.json.JSONObject;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
