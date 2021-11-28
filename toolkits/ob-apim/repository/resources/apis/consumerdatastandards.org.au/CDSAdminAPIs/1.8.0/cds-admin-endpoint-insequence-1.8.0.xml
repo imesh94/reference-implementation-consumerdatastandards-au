@@ -21,7 +21,7 @@
     <filter regex=".*metrics.*" source="$ctx:endpointURI">
         <then>
             <property name="pathParam" value="get-property('To')" />
-            <header name="To" expression="fn:concat('https://localhost:9443/api/openbanking/metrics/admin/metrics', '?period=ALL')" />
+            <header name="To" expression="fn:concat('https://localhost:9443/api/openbanking/metricsendpoint/admin/metrics', '?period=ALL')" />
         </then>
         <else>
             <header name="To" value=" https://localhost:9446/api/openbanking/metadata-mgt/admin/register/metadata" />
