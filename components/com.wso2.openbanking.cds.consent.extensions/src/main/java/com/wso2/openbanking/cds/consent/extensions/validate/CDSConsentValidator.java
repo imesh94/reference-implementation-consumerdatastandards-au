@@ -72,7 +72,7 @@ public class CDSConsentValidator implements ConsentValidator {
         if (CDSConsentValidatorUtil
                 .isConsentExpired(((JSONObject) receiptJSON.get(CDSConsentExtensionConstants.ACCOUNT_DATA))
                         .getAsString(CDSConsentExtensionConstants.EXPIRATION_DATE_TIME))) {
-            String description = "The resource’s associated consent is not in a status " +
+            String description = "The associated consent for resource is not in a status " +
                     "that would allow the resource to be executed";
             consentValidationResult.setErrorMessage(generateErrorPayload("Consent Is Invalid", description,
                     null, null));

@@ -64,4 +64,19 @@ public class ErrorUtilTest {
         String errorJsonString = ErrorUtil.getErrorJson(errorJsonArray);
         Assert.assertNotNull(errorJsonString);
     }
+
+    @Test
+    public void testGetErrorJsonWithJsonErrorMessage() {
+
+        ErrorConstants.AUErrorEnum error = ErrorConstants.AUErrorEnum.EXPECTED_GENERAL_ERROR;
+        JSONObject jsonObject = new JSONObject();
+        jsonObject.put("detail", "Expected error");
+        jsonObject.put("metaURN", "cds-standard-error-code");
+
+        JSONObject errorJson = ErrorUtil.getErrorObject(error, jsonObject.toString(), new CDSErrorMeta());
+        JSONArray errorJsonArray = new JSONArray();
+        errorJsonArray.add(errorJson);
+        String errorJsonString = ErrorUtil.getErrorJson(errorJsonArray);
+        Assert.assertNotNull(errorJsonString);
+    }
 }
