@@ -26,8 +26,7 @@ import org.testng.annotations.Test
  */
 class AuthorisationFlowCXValidationTest {
 
-    //TODO:need to modify permission headings and permission list items according to CX specification.need to enable, Test true after issue fix.
-    @Test(enabled = false, groups = "SmokeTest")
+    @Test(groups = "SmokeTest")
     void "TC0203003_Verify the permissions of a consent with common:customer.basic:read scope"() {
         List<AUConstants.SCOPES> scopes = [AUConstants.SCOPES.BANK_CUSTOMER_BASIC_READ]
 
@@ -41,23 +40,24 @@ class AuthorisationFlowCXValidationTest {
                 driver.findElement(By.xpath(AUTestUtil.getSingleAccountXPath())).click()
                 driver.findElement(By.xpath(AUConstants.CONSENT_SUBMIT_XPATH)).click()
 
-                    Assert.assertTrue(driver.findElement(By.xpath(AUConstants.LBL_PERMISSION_HEADER)).getText().trim()
-                            .contains(AUConstants.BANK_CUSTOMER_BASIC_READ))
-                    Assert.assertEquals(driver.findElement(By.xpath(AUConstants.LBL_PERMISSION_LIST_ITEM_1)).getText(),
+                    def lbl_permission_header = driver.findElement(By.xpath(AUConstants.LBL_PERMISSION_HEADER_ORG_PROFILE))
+                    Assert.assertTrue(lbl_permission_header.isDisplayed())
+                    lbl_permission_header.click()
+                    Assert.assertEquals(lbl_permission_header.findElement(By.xpath(AUConstants.LBL_PERMISSION_LIST_ITEM_1)).getText(),
                             AUConstants.LBL_AGENT_NAME_AND_ROLE)
-                    Assert.assertEquals(driver.findElement(By.xpath(AUConstants.LBL_PERMISSION_LIST_ITEM_2)).getText(),
+                    Assert.assertEquals(lbl_permission_header.findElement(By.xpath(AUConstants.LBL_PERMISSION_LIST_ITEM_2)).getText(),
                             AUConstants.LBL_ORGANISATION_NAME)
-                    Assert.assertEquals(driver.findElement(By.xpath(AUConstants.LBL_PERMISSION_LIST_ITEM_3)).getText(),
+                    Assert.assertEquals(lbl_permission_header.findElement(By.xpath(AUConstants.LBL_PERMISSION_LIST_ITEM_3)).getText(),
                             AUConstants.LBL_ORGANISATION_NUMBER)
-                    Assert.assertEquals(driver.findElement(By.xpath(AUConstants.LBL_PERMISSION_LIST_ITEM_4)).getText(),
+                    Assert.assertEquals(lbl_permission_header.findElement(By.xpath(AUConstants.LBL_PERMISSION_LIST_ITEM_4)).getText(),
                             AUConstants.LBL_CHARITY_STATUS)
-                    Assert.assertEquals(driver.findElement(By.xpath(AUConstants.LBL_PERMISSION_LIST_ITEM_5)).getText(),
+                    Assert.assertEquals(lbl_permission_header.findElement(By.xpath(AUConstants.LBL_PERMISSION_LIST_ITEM_5)).getText(),
                             AUConstants.LBL_ESTABLISHMENT_DATE)
-                    Assert.assertEquals(driver.findElement(By.xpath(AUConstants.LBL_PERMISSION_LIST_ITEM_6)).getText(),
+                    Assert.assertEquals(lbl_permission_header.findElement(By.xpath(AUConstants.LBL_PERMISSION_LIST_ITEM_6)).getText(),
                             AUConstants.LBL_INDUSTRY)
-                    Assert.assertEquals(driver.findElement(By.xpath(AUConstants.LBL_PERMISSION_LIST_ITEM_7)).getText(),
+                    Assert.assertEquals(lbl_permission_header.findElement(By.xpath(AUConstants.LBL_PERMISSION_LIST_ITEM_7)).getText(),
                             AUConstants.LBL_ORGANISATION_TYPE)
-                    Assert.assertEquals(driver.findElement(By.xpath(AUConstants.LBL_PERMISSION_LIST_ITEM_8)).getText(),
+                    Assert.assertEquals(lbl_permission_header.findElement(By.xpath(AUConstants.LBL_PERMISSION_LIST_ITEM_8)).getText(),
                             AUConstants.LBL_COUNTRY_OF_REGISTRATION)
                     // Submit consent
                     driver.findElement(By.xpath(AUConstants.CONSENT_SUBMIT_XPATH)).click()
@@ -65,8 +65,7 @@ class AuthorisationFlowCXValidationTest {
                 .execute()
     }
 
-    //TODO:need to modify permission headings and permission list items according to CX specification.need to enable, Test true after issue fix.
-    @Test(enabled = false)
+   @Test
     void "TC0203004_Verify the permissions of a consent with common:customer.detail:read scope"() {
         List<AUConstants.SCOPES> scopes = [AUConstants.SCOPES.BANK_CUSTOMER_DETAIL_READ]
 
@@ -80,29 +79,30 @@ class AuthorisationFlowCXValidationTest {
                     driver.findElement(By.xpath(AUTestUtil.getSingleAccountXPath())).click()
                     driver.findElement(By.xpath(AUConstants.CONSENT_SUBMIT_XPATH)).click()
 
-                    Assert.assertTrue(driver.findElement(By.xpath(AUConstants.LBL_PERMISSION_HEADER)).getText().trim()
-                            .contains(AUConstants.BANK_CUSTOMER_DETAIL_READ))
-                    Assert.assertEquals(driver.findElement(By.xpath(AUConstants.LBL_PERMISSION_LIST_ITEM_1)).getText(),
+                    def lbl_permission_header = driver.findElement(By.xpath(AUConstants.LBL_PERMISSION_HEADER_ORG_PROFILE))
+                    Assert.assertTrue(lbl_permission_header.isDisplayed())
+                    lbl_permission_header.click()
+                    Assert.assertEquals(lbl_permission_header.findElement(By.xpath(AUConstants.LBL_PERMISSION_LIST_ITEM_1)).getText(),
                             AUConstants.LBL_AGENT_NAME_AND_ROLE)
-                    Assert.assertEquals(driver.findElement(By.xpath(AUConstants.LBL_PERMISSION_LIST_ITEM_2)).getText(),
+                    Assert.assertEquals(lbl_permission_header.findElement(By.xpath(AUConstants.LBL_PERMISSION_LIST_ITEM_2)).getText(),
                             AUConstants.LBL_ORGANISATION_NAME)
-                    Assert.assertEquals(driver.findElement(By.xpath(AUConstants.LBL_PERMISSION_LIST_ITEM_3)).getText(),
+                    Assert.assertEquals(lbl_permission_header.findElement(By.xpath(AUConstants.LBL_PERMISSION_LIST_ITEM_3)).getText(),
                             AUConstants.LBL_ORGANISATION_NUMBER)
-                    Assert.assertEquals(driver.findElement(By.xpath(AUConstants.LBL_PERMISSION_LIST_ITEM_4)).getText(),
+                    Assert.assertEquals(lbl_permission_header.findElement(By.xpath(AUConstants.LBL_PERMISSION_LIST_ITEM_4)).getText(),
                             AUConstants.LBL_CHARITY_STATUS)
-                    Assert.assertEquals(driver.findElement(By.xpath(AUConstants.LBL_PERMISSION_LIST_ITEM_5)).getText(),
+                    Assert.assertEquals(lbl_permission_header.findElement(By.xpath(AUConstants.LBL_PERMISSION_LIST_ITEM_5)).getText(),
                             AUConstants.LBL_ESTABLISHMENT_DATE)
-                    Assert.assertEquals(driver.findElement(By.xpath(AUConstants.LBL_PERMISSION_LIST_ITEM_6)).getText(),
+                    Assert.assertEquals(lbl_permission_header.findElement(By.xpath(AUConstants.LBL_PERMISSION_LIST_ITEM_6)).getText(),
                             AUConstants.LBL_INDUSTRY)
-                    Assert.assertEquals(driver.findElement(By.xpath(AUConstants.LBL_PERMISSION_LIST_ITEM_7)).getText(),
+                    Assert.assertEquals(lbl_permission_header.findElement(By.xpath(AUConstants.LBL_PERMISSION_LIST_ITEM_7)).getText(),
                             AUConstants.LBL_ORGANISATION_TYPE)
-                    Assert.assertEquals(driver.findElement(By.xpath(AUConstants.LBL_PERMISSION_LIST_ITEM_8)).getText(),
+                    Assert.assertEquals(lbl_permission_header.findElement(By.xpath(AUConstants.LBL_PERMISSION_LIST_ITEM_8)).getText(),
                             AUConstants.LBL_COUNTRY_OF_REGISTRATION)
-                    Assert.assertEquals(driver.findElement(By.xpath(AUConstants.LBL_PERMISSION_LIST_ITEM_9)).getText(),
+                    Assert.assertEquals(lbl_permission_header.findElement(By.xpath(AUConstants.LBL_PERMISSION_LIST_ITEM_9)).getText(),
                             AUConstants.LBL_ORGANISATION_ADDRESS)
-                    Assert.assertEquals(driver.findElement(By.xpath(AUConstants.LBL_PERMISSION_LIST_ITEM_10)).getText(),
+                    Assert.assertEquals(lbl_permission_header.findElement(By.xpath(AUConstants.LBL_PERMISSION_LIST_ITEM_10)).getText(),
                             AUConstants.LBL_MAIL_ADDRESS)
-                    Assert.assertEquals(driver.findElement(By.xpath(AUConstants.LBL_PERMISSION_LIST_ITEM_11)).getText(),
+                    Assert.assertEquals(lbl_permission_header.findElement(By.xpath(AUConstants.LBL_PERMISSION_LIST_ITEM_11)).getText(),
                             AUConstants.LBL_PHONE_NUMBER)
                     // Submit consent
                     driver.findElement(By.xpath(AUConstants.CONSENT_SUBMIT_XPATH)).click()
@@ -125,13 +125,14 @@ class AuthorisationFlowCXValidationTest {
                     driver.findElement(By.xpath(AUTestUtil.getSingleAccountXPath())).click()
                     driver.findElement(By.xpath(AUConstants.CONSENT_SUBMIT_XPATH)).click()
 
-                    Assert.assertTrue(driver.findElement(By.xpath(AUConstants.LBL_PERMISSION_HEADER)).getText().trim()
-                            .contains(AUConstants.BANK_ACCOUNT_BASIC_READ))
-                    Assert.assertEquals(driver.findElement(By.xpath(AUConstants.LBL_PERMISSION_LIST_ITEM_1)).getText(),
+                    def lbl_permission_header = driver.findElement(By.xpath(AUConstants.LBL_PERMISSION_HEADER_ACC_NAME))
+                    Assert.assertTrue(lbl_permission_header.isDisplayed())
+                    lbl_permission_header.click()
+                    Assert.assertEquals(lbl_permission_header.findElement(By.xpath(AUConstants.LBL_PERMISSION_LIST_ITEM_1)).getText(),
                             AUConstants.LBL_NAME_OF_ACCOUNT)
-                    Assert.assertEquals(driver.findElement(By.xpath(AUConstants.LBL_PERMISSION_LIST_ITEM_2)).getText(),
+                    Assert.assertEquals(lbl_permission_header.findElement(By.xpath(AUConstants.LBL_PERMISSION_LIST_ITEM_2)).getText(),
                             AUConstants.LBL_TYPE_OF_ACCOUNT)
-                    Assert.assertEquals(driver.findElement(By.xpath(AUConstants.LBL_PERMISSION_LIST_ITEM_3)).getText(),
+                    Assert.assertEquals(lbl_permission_header.findElement(By.xpath(AUConstants.LBL_PERMISSION_LIST_ITEM_3)).getText(),
                             AUConstants.LBL_ACCOUNT_BALANCE)
                     // Submit consent
                     driver.findElement(By.xpath(AUConstants.CONSENT_SUBMIT_XPATH)).click()
@@ -139,8 +140,7 @@ class AuthorisationFlowCXValidationTest {
                 .execute()
     }
 
-    //TODO:need to modify permission headings and permission list items according to CX specification.need to enable, Test true after issue fix.
-    @Test(enabled = false)
+    @Test
     void "TC0203006_Verify the permissions of a consent with bank:accounts.detail:read scope"() {
 
         List<AUConstants.SCOPES> scopes = [AUConstants.SCOPES.BANK_ACCOUNT_DETAIL_READ]
@@ -156,25 +156,26 @@ class AuthorisationFlowCXValidationTest {
                     driver.findElement(By.xpath(AUTestUtil.getSingleAccountXPath())).click()
                     driver.findElement(By.xpath(AUConstants.CONSENT_SUBMIT_XPATH)).click()
 
-                    Assert.assertTrue(driver.findElement(By.xpath(AUConstants.LBL_PERMISSION_HEADER)).getText().trim()
-                            .contains(AUConstants.BANK_ACCOUNT_DETAIL_READ))
-                    Assert.assertEquals(driver.findElement(By.xpath(AUConstants.LBL_PERMISSION_LIST_ITEM_1)).getText(),
+                    def lbl_permission_header = driver.findElement(By.xpath(AUConstants.LBL_PERMISSION_HEADER_ACC_BAL))
+                    Assert.assertTrue(lbl_permission_header.isDisplayed())
+                    lbl_permission_header.click()
+                    Assert.assertEquals(lbl_permission_header.findElement(By.xpath(AUConstants.LBL_PERMISSION_LIST_ITEM_1)).getText(),
                             AUConstants.LBL_NAME_OF_ACCOUNT)
-                    Assert.assertEquals(driver.findElement(By.xpath(AUConstants.LBL_PERMISSION_LIST_ITEM_2)).getText(),
+                    Assert.assertEquals(lbl_permission_header.findElement(By.xpath(AUConstants.LBL_PERMISSION_LIST_ITEM_2)).getText(),
                             AUConstants.LBL_TYPE_OF_ACCOUNT)
-                    Assert.assertEquals(driver.findElement(By.xpath(AUConstants.LBL_PERMISSION_LIST_ITEM_3)).getText(),
+                    Assert.assertEquals(lbl_permission_header.findElement(By.xpath(AUConstants.LBL_PERMISSION_LIST_ITEM_3)).getText(),
                             AUConstants.LBL_ACCOUNT_BALANCE)
-                    Assert.assertEquals(driver.findElement(By.xpath(AUConstants.LBL_PERMISSION_LIST_ITEM_4)).getText(),
+                    Assert.assertEquals(lbl_permission_header.findElement(By.xpath(AUConstants.LBL_PERMISSION_LIST_ITEM_4)).getText(),
                             AUConstants.LBL_ACCOUNT_NUMBER)
-                    Assert.assertEquals(driver.findElement(By.xpath(AUConstants.LBL_PERMISSION_LIST_ITEM_4)).getText(),
+                    Assert.assertEquals(lbl_permission_header.findElement(By.xpath(AUConstants.LBL_PERMISSION_LIST_ITEM_5)).getText(),
                             AUConstants.LBL_INTEREST_RATES)
-                    Assert.assertEquals(driver.findElement(By.xpath(AUConstants.LBL_PERMISSION_LIST_ITEM_6)).getText(),
+                    Assert.assertEquals(lbl_permission_header.findElement(By.xpath(AUConstants.LBL_PERMISSION_LIST_ITEM_6)).getText(),
                             AUConstants.LBL_FEES)
-                    Assert.assertEquals(driver.findElement(By.xpath(AUConstants.LBL_PERMISSION_LIST_ITEM_7)).getText(),
+                    Assert.assertEquals(lbl_permission_header.findElement(By.xpath(AUConstants.LBL_PERMISSION_LIST_ITEM_7)).getText(),
                             AUConstants.LBL_DISCOUNTS)
-                    Assert.assertEquals(driver.findElement(By.xpath(AUConstants.LBL_PERMISSION_LIST_ITEM_8)).getText(),
+                    Assert.assertEquals(lbl_permission_header.findElement(By.xpath(AUConstants.LBL_PERMISSION_LIST_ITEM_8)).getText(),
                             AUConstants.LBL_ACCOUNT_TERMS)
-                    Assert.assertEquals(driver.findElement(By.xpath(AUConstants.LBL_PERMISSION_LIST_ITEM_9)).getText(),
+                    Assert.assertEquals(lbl_permission_header.findElement(By.xpath(AUConstants.LBL_PERMISSION_LIST_ITEM_9)).getText(),
                             AUConstants.LBL_ACCOUNT_MAIL_ADDRESS)
                     // Submit consent
                     driver.findElement(By.xpath(AUConstants.CONSENT_SUBMIT_XPATH)).click()
@@ -182,8 +183,7 @@ class AuthorisationFlowCXValidationTest {
                 .execute()
     }
 
-    //TODO:need to modify permission headings and permission list items according to CX specification.need to enable, Test true after issue fix.
-    @Test(enabled = false)
+    @Test
     void "TC0203007_Verify the permissions of a consent with bank:transactions:read scope"() {
 
         List<AUConstants.SCOPES> scopes = [AUConstants.SCOPES.BANK_TRANSACTION_READ]
@@ -199,17 +199,18 @@ class AuthorisationFlowCXValidationTest {
                     driver.findElement(By.xpath(AUTestUtil.getSingleAccountXPath())).click()
                     driver.findElement(By.xpath(AUConstants.CONSENT_SUBMIT_XPATH)).click()
 
-                    Assert.assertTrue(driver.findElement(By.xpath(AUConstants.LBL_PERMISSION_HEADER)).getText().trim()
-                            .contains(AUConstants.BANK_TRANSACTION_READ))
-                    Assert.assertEquals(driver.findElement(By.xpath(AUConstants.LBL_PERMISSION_LIST_ITEM_1)).getText(),
+                    def lbl_permission_header = driver.findElement(By.xpath(AUConstants.LBL_PERMISSION_HEADER_TRA_DETAILS))
+                    Assert.assertTrue(lbl_permission_header.isDisplayed())
+                    lbl_permission_header.click()
+                    Assert.assertEquals(lbl_permission_header.findElement(By.xpath(AUConstants.LBL_PERMISSION_LIST_ITEM_1)).getText(),
                             AUConstants.LBL_INCOMING_AND_OUTGOING_TRANSACTIONS)
-                    Assert.assertEquals(driver.findElement(By.xpath(AUConstants.LBL_PERMISSION_LIST_ITEM_2)).getText(),
+                    Assert.assertEquals(lbl_permission_header.findElement(By.xpath(AUConstants.LBL_PERMISSION_LIST_ITEM_2)).getText(),
                             AUConstants.LBL_AMOUNTS)
-                    Assert.assertEquals(driver.findElement(By.xpath(AUConstants.LBL_PERMISSION_LIST_ITEM_3)).getText(),
+                    Assert.assertEquals(lbl_permission_header.findElement(By.xpath(AUConstants.LBL_PERMISSION_LIST_ITEM_3)).getText(),
                             AUConstants.LBL_DATES)
-                    Assert.assertEquals(driver.findElement(By.xpath(AUConstants.LBL_PERMISSION_LIST_ITEM_4)).getText(),
+                    Assert.assertEquals(lbl_permission_header.findElement(By.xpath(AUConstants.LBL_PERMISSION_LIST_ITEM_4)).getText(),
                             AUConstants.LBL_DESCRIPTION_OF_TRANSACTION)
-                    Assert.assertEquals(driver.findElement(By.xpath(AUConstants.LBL_PERMISSION_LIST_ITEM_5)).getText(),
+                    Assert.assertEquals(lbl_permission_header.findElement(By.xpath(AUConstants.LBL_PERMISSION_LIST_ITEM_5)).getText(),
                             AUConstants.LBL_NAME_OF_MONEY_RECIPIENT)
                     // Submit consent
                     driver.findElement(By.xpath(AUConstants.CONSENT_SUBMIT_XPATH)).click()
@@ -233,11 +234,12 @@ class AuthorisationFlowCXValidationTest {
                     driver.findElement(By.xpath(AUTestUtil.getSingleAccountXPath())).click()
                     driver.findElement(By.xpath(AUConstants.CONSENT_SUBMIT_XPATH)).click()
 
-                    Assert.assertTrue(driver.findElement(By.xpath(AUConstants.LBL_PERMISSION_HEADER)).getText().trim()
-                            .contains(AUConstants.BANK_REGULAR_PAYMENTS_READ))
-                    Assert.assertEquals(driver.findElement(By.xpath(AUConstants.LBL_PERMISSION_LIST_ITEM_1)).getText(),
+                    def lbl_permission_header = driver.findElement(By.xpath(AUConstants.LBL_PERMISSION_HEADER_PAYMENT_READ))
+                    Assert.assertTrue(lbl_permission_header.isDisplayed())
+                    lbl_permission_header.click()
+                    Assert.assertEquals(lbl_permission_header.findElement(By.xpath(AUConstants.LBL_PERMISSION_LIST_ITEM_1)).getText(),
                             AUConstants.LBL_DIRECT_DEBITS)
-                    Assert.assertEquals(driver.findElement(By.xpath(AUConstants.LBL_PERMISSION_LIST_ITEM_2)).getText(),
+                    Assert.assertEquals(lbl_permission_header.findElement(By.xpath(AUConstants.LBL_PERMISSION_LIST_ITEM_2)).getText(),
                             AUConstants.LBL_SCHEDULE_PAYMENTS)
                     // Submit consent
                     driver.findElement(By.xpath(AUConstants.CONSENT_SUBMIT_XPATH)).click()
@@ -245,8 +247,7 @@ class AuthorisationFlowCXValidationTest {
                 .execute()
     }
 
-    //TODO:need to modify permission headings and permission list items according to CX specification.need to enable, Test true after issue fix.
-    @Test(enabled = false)
+    @Test
     void "TC0203009_Verify the permissions of a consent with bank:payees:read scope"() {
 
         List<AUConstants.SCOPES> scopes = [AUConstants.SCOPES.BANK_PAYEES_READ]
@@ -262,9 +263,10 @@ class AuthorisationFlowCXValidationTest {
                     driver.findElement(By.xpath(AUTestUtil.getSingleAccountXPath())).click()
                     driver.findElement(By.xpath(AUConstants.CONSENT_SUBMIT_XPATH)).click()
 
-                    Assert.assertTrue(driver.findElement(By.xpath(AUConstants.LBL_PERMISSION_HEADER)).getText().trim()
-                            .contains(AUConstants.BANK_PAYEES_READ))
-                    Assert.assertEquals(driver.findElement(By.xpath(AUConstants.LBL_PERMISSION_LIST_ITEM_1)).getText(),
+                    def lbl_permission_header = driver.findElement(By.xpath(AUConstants.LBL_PERMISSION_HEADER_PAYEES))
+                    Assert.assertTrue(lbl_permission_header.isDisplayed())
+                    lbl_permission_header.click()
+                    Assert.assertEquals(lbl_permission_header.findElement(By.xpath(AUConstants.LBL_PERMISSION_LIST_ITEM_1)).getText(),
                             AUConstants.LBL_DETAILS_OF_SAVED_ACCOUNTS)
                     // Submit consent
                     driver.findElement(By.xpath(AUConstants.CONSENT_SUBMIT_XPATH)).click()

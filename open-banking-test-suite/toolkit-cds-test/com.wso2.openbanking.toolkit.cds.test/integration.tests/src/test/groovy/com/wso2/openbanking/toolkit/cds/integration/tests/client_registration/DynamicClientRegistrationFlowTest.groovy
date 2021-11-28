@@ -14,6 +14,7 @@ package com.wso2.openbanking.toolkit.cds.integration.tests.client_registration
 
 import com.wso2.openbanking.test.framework.TestSuite
 import com.wso2.openbanking.test.framework.util.TestUtil
+import com.wso2.openbanking.toolkit.cds.test.common.utils.AUTestUtil
 import com.wso2.openbanking.test.framework.util.ConfigParser
 import com.wso2.openbanking.test.framework.util.TestConstants
 import com.wso2.openbanking.toolkit.cds.test.common.utils.AUConstants
@@ -77,8 +78,8 @@ class DynamicClientRegistrationFlowTest {
                 .post(registrationPath)
 
         Assert.assertEquals(registrationResponse.statusCode(), AUConstants.STATUS_CODE_400)
-        Assert.assertEquals(TestUtil.parseResponseBody(registrationResponse, TestConstants.ERROR),
-                AUDCRConstants.INVALID_REDIRECT_URI)
+        Assert.assertEquals(TestUtil.parseResponseBody(registrationResponse, TestConstants.ERROR_DESCRIPTION),
+                AUDCRConstants.INVALID_REDIRECT_DESCRIPTION)
     }
 
     @Test(priority = 4)
@@ -92,6 +93,8 @@ class DynamicClientRegistrationFlowTest {
         Assert.assertEquals(registrationResponse.statusCode(), AUConstants.STATUS_CODE_400)
         Assert.assertEquals(TestUtil.parseResponseBody(registrationResponse, TestConstants.ERROR),
                 AUDCRConstants.INVALID_CLIENT_METADATA)
+        Assert.assertEquals(TestUtil.parseResponseBody(registrationResponse, TestConstants.ERROR_DESCRIPTION),
+                AUDCRConstants.WITHOUT_TOKEN_ENDPOINT_SIGNINGALGO)
     }
 
     @Test(priority = 4)
@@ -103,8 +106,8 @@ class DynamicClientRegistrationFlowTest {
                 .post(registrationPath)
 
         Assert.assertEquals(registrationResponse.statusCode(), AUConstants.STATUS_CODE_400)
-        Assert.assertEquals(TestUtil.parseResponseBody(registrationResponse, TestConstants.ERROR),
-                AUDCRConstants.INVALID_CLIENT_METADATA)
+        Assert.assertEquals(TestUtil.parseResponseBody(registrationResponse, TestConstants.ERROR_DESCRIPTION),
+                AUDCRConstants.WITHOUT_TOKEN_ENDPOINT_AUTHMETHOD)
     }
 
     @Test(priority = 4)
@@ -116,8 +119,8 @@ class DynamicClientRegistrationFlowTest {
                 .post(registrationPath)
 
         Assert.assertEquals(registrationResponse.statusCode(), AUConstants.STATUS_CODE_400)
-        Assert.assertEquals(TestUtil.parseResponseBody(registrationResponse, TestConstants.ERROR),
-                AUDCRConstants.INVALID_CLIENT_METADATA)
+        Assert.assertEquals(TestUtil.parseResponseBody(registrationResponse, TestConstants.ERROR_DESCRIPTION),
+                AUDCRConstants.GRANT_TYPES_NULL)
     }
 
     @Test(priority = 4)
@@ -131,6 +134,8 @@ class DynamicClientRegistrationFlowTest {
         Assert.assertEquals(registrationResponse.statusCode(), AUConstants.STATUS_CODE_400)
         Assert.assertEquals(TestUtil.parseResponseBody(registrationResponse, TestConstants.ERROR),
                 AUDCRConstants.INVALID_CLIENT_METADATA)
+        Assert.assertEquals(TestUtil.parseResponseBody(registrationResponse, TestConstants.ERROR_DESCRIPTION),
+               AUDCRConstants.WITHOUT_RESPONSE_TYPES)
     }
 
     @Test(priority = 4)
@@ -142,8 +147,8 @@ class DynamicClientRegistrationFlowTest {
                 .post(registrationPath)
 
         Assert.assertEquals(registrationResponse.statusCode(), AUConstants.STATUS_CODE_400)
-        Assert.assertEquals(TestUtil.parseResponseBody(registrationResponse, TestConstants.ERROR),
-                AUDCRConstants.INVALID_CLIENT_METADATA)
+        Assert.assertEquals(TestUtil.parseResponseBody(registrationResponse, TestConstants.ERROR_DESCRIPTION),
+                AUDCRConstants.WITHOUT_SSA)
     }
 
     @Test(priority = 4)
@@ -157,9 +162,11 @@ class DynamicClientRegistrationFlowTest {
         Assert.assertEquals(registrationResponse.statusCode(), AUConstants.STATUS_CODE_400)
         Assert.assertEquals(TestUtil.parseResponseBody(registrationResponse, TestConstants.ERROR),
                 AUDCRConstants.INVALID_CLIENT_METADATA)
+        Assert.assertEquals(TestUtil.parseResponseBody(registrationResponse, TestConstants.ERROR_DESCRIPTION),
+                AUDCRConstants.WITHOUT_ID_TOKEN_RESPONSE_ALGO)
     }
 
-    @Test(priority = 4)
+   @Test(priority = 4)
     void "TC0101013_Create application without ID Token Encrypted Response Encryption Method"() {
 
         def registrationResponse = AURegistrationRequestBuilder
@@ -170,6 +177,8 @@ class DynamicClientRegistrationFlowTest {
         Assert.assertEquals(registrationResponse.statusCode(), AUConstants.STATUS_CODE_400)
         Assert.assertEquals(TestUtil.parseResponseBody(registrationResponse, TestConstants.ERROR),
                 AUDCRConstants.INVALID_CLIENT_METADATA)
+       Assert.assertEquals(TestUtil.parseResponseBody(registrationResponse, TestConstants.ERROR_DESCRIPTION),
+               AUDCRConstants.WITHOUT_ID_TOKEN_ENCRYPTION_METHOD)
     }
 
     @Test(priority = 4)
@@ -183,6 +192,8 @@ class DynamicClientRegistrationFlowTest {
         Assert.assertEquals(registrationResponse.statusCode(), AUConstants.STATUS_CODE_400)
         Assert.assertEquals(TestUtil.parseResponseBody(registrationResponse, TestConstants.ERROR),
                 AUDCRConstants.INVALID_CLIENT_METADATA)
+        Assert.assertEquals(TestUtil.parseResponseBody(registrationResponse, TestConstants.ERROR_DESCRIPTION),
+                AUDCRConstants.INVALID_ID_TOKEN_ENCRYPTION_ALGO)
     }
 
     @Test(priority = 4)
@@ -196,6 +207,8 @@ class DynamicClientRegistrationFlowTest {
         Assert.assertEquals(registrationResponse.statusCode(), AUConstants.STATUS_CODE_400)
         Assert.assertEquals(TestUtil.parseResponseBody(registrationResponse, TestConstants.ERROR),
                 AUDCRConstants.INVALID_CLIENT_METADATA)
+        Assert.assertEquals(TestUtil.parseResponseBody(registrationResponse, TestConstants.ERROR_DESCRIPTION),
+                AUDCRConstants.INVALID_ID_TOKEN_ENCRYPTION_METHOD)
     }
 
     @Test(priority = 4)
@@ -210,7 +223,7 @@ class DynamicClientRegistrationFlowTest {
         Assert.assertEquals(TestUtil.parseResponseBody(registrationResponse, TestConstants.ERROR),
                 AUDCRConstants.INVALID_CLIENT_METADATA)
         Assert.assertEquals(TestUtil.parseResponseBody(registrationResponse, TestConstants.ERROR_DESCRIPTION),
-                "Request JWT Issuer does not match with the software ID of the SSA")
+                "Invalid issuer")
     }
 
     @Test(priority = 4)
@@ -255,7 +268,7 @@ class DynamicClientRegistrationFlowTest {
         Assert.assertEquals(TestUtil.parseResponseBody(registrationResponse, TestConstants.ERROR),
                 AUDCRConstants.INVALID_CLIENT_METADATA)
         Assert.assertEquals(TestUtil.parseResponseBody(registrationResponse,TestConstants.ERROR_DESCRIPTION),
-                "Invalid token_endpoint_auth_method found in the request")
+                "Invalid tokenEndPointAuthentication provided")
     }
 
     @Test(priority = 4)
@@ -313,7 +326,7 @@ class DynamicClientRegistrationFlowTest {
 
         Assert.assertEquals(registrationResponse.statusCode(), AUConstants.STATUS_CODE_400)
         Assert.assertEquals(TestUtil.parseResponseBody(registrationResponse, TestConstants.ERROR),
-                AUDCRConstants.UNAPPROVED_SOFTWARE_STATEMENT)
+                AUDCRConstants.INVALID_CLIENT_METADATA)
         Assert.assertEquals(TestUtil.parseResponseBody(registrationResponse,TestConstants.ERROR_DESCRIPTION),
                 "Provided SSA is malformed or unsupported by the specification")
     }
@@ -380,7 +393,7 @@ class DynamicClientRegistrationFlowTest {
                 AUDCRConstants.SSA)
     }
 
-    @Test (priority = 1, groups = "SmokeTest", dependsOnMethods = "TC0101008_Create application")
+    //@Test (priority = 1, groups = "SmokeTest", dependsOnMethods = "TC0101008_Create application")
     void "TC0101018_Retrieve Application"() {
         URI devPortalEndpoint =
                 new URI("${String.valueOf(ConfigParser.getInstance().getConfiguration().get("Server.GatewayURL"))}"
@@ -397,7 +410,7 @@ class DynamicClientRegistrationFlowTest {
 
     }
 
-    @Test (priority = 1, groups = "SmokeTest",  dependsOnMethods = "TC0101018_Retrieve Application")
+    //@Test (priority = 1, groups = "SmokeTest",  dependsOnMethods = "TC0101018_Retrieve Application")
     void "TC0101019_Subscribe admin API"() {
         def apiID = ConfigParser.getRESTApiApiId()
         URI devPortalEndpoint =
@@ -414,7 +427,7 @@ class DynamicClientRegistrationFlowTest {
 
     }
 
-    @Test (priority = 2, groups = "SmokeTest", dependsOnMethods = "TC0101008_Create application")
+     @Test (priority = 2, groups = "SmokeTest", dependsOnMethods = "TC0101008_Create application")
     void "TC0101009_Get access token"() {
 
         clientId = clientIdFile.text
@@ -425,7 +438,7 @@ class DynamicClientRegistrationFlowTest {
         Assert.assertNotNull(accessToken)
     }
 
-    @Test (priority = 1, dependsOnMethods = "TC0101009_Get access token")
+    //@Test (priority = 1, dependsOnMethods = "TC0101009_Get access token")
     void "TC0102001_Get registration details with invalid client id"() {
 
         String invalidClientId = "invalidclientid"
@@ -437,7 +450,7 @@ class DynamicClientRegistrationFlowTest {
         Assert.assertEquals(registrationResponse.statusCode(), AUConstants.STATUS_CODE_401)
     }
 
-    @Test (priority = 1, groups = "SmokeTest", dependsOnMethods = "TC0101009_Get access token")
+    //@Test (priority = 1, groups = "SmokeTest", dependsOnMethods = "TC0101009_Get access token")
     void "TC0102002_Get registration details"() {
 
         def registrationResponse = AURegistrationRequestBuilder.buildBasicRequest(accessToken)
@@ -447,7 +460,7 @@ class DynamicClientRegistrationFlowTest {
         Assert.assertEquals(registrationResponse.statusCode(), AUConstants.STATUS_CODE_200)
     }
 
-    @Test (priority = 1, dependsOnMethods = "TC0101009_Get access token")
+   // @Test (priority = 1, dependsOnMethods = "TC0101009_Get access token")
     void "TC0103001_Update registration details with invalid client id"() {
 
         def registrationResponse = AURegistrationRequestBuilder.buildBasicRequest(accessToken)
@@ -459,7 +472,7 @@ class DynamicClientRegistrationFlowTest {
         Assert.assertEquals(registrationResponse.statusCode(), AUConstants.STATUS_CODE_401)
     }
 
-    @Test (priority = 1, groups = "SmokeTest", dependsOnMethods = "TC0101009_Get access token")
+    //@Test (priority = 1, groups = "SmokeTest", dependsOnMethods = "TC0101009_Get access token")
     void "TC0103002_Update registration details"() {
 
         def registrationResponse = AURegistrationRequestBuilder.buildBasicRequest(accessToken)
@@ -489,15 +502,15 @@ class DynamicClientRegistrationFlowTest {
             default:
                 Assert.assertEquals(registrationResponse.statusCode(), AUConstants.STATUS_CODE_400)
                 Assert.assertEquals(TestUtil.parseResponseBody(registrationResponse,"error"),
-                        "resource_already_exists")
+                        "invalid_client_metadata")
                 break
         }
 
         Assert.assertTrue(TestUtil.parseResponseBody(registrationResponse,"error_description").contains(
-                "An application created with the given SSA is already available."))
+                "Application with the name " +AUDCRConstants.SOFTWARE_PRODUCT_ID+ " already exist in the system"))
     }
 
-    @Test (priority = 2, dependsOnMethods = "TC0101009_Get access token")
+    //@Test (priority = 2, dependsOnMethods = "TC0101009_Get access token")
     void "OB-1167_Update registration details without SSA"() {
 
         def registrationResponse = AURegistrationRequestBuilder.buildBasicRequest(accessToken)
@@ -511,7 +524,7 @@ class DynamicClientRegistrationFlowTest {
                 AUDCRConstants.INVALID_CLIENT_METADATA)
     }
 
-    @Test (priority = 2, dependsOnMethods = "TC0101009_Get access token")
+   // @Test (priority = 2, dependsOnMethods = "TC0101009_Get access token")
     void "OB-1168_Update registration details with fields not supported by data holder brand"() {
 
         def registrationResponse = AURegistrationRequestBuilder.buildBasicRequest(accessToken)
@@ -530,7 +543,7 @@ class DynamicClientRegistrationFlowTest {
         Assert.assertNull(TestUtil.parseResponseBody(retrievalResponse, "adr_name"))
     }
 
-    @Test (priority = 3)
+    //@Test (priority = 3)
     void "OB-1169_Update registration details with a access token bound only to CDR Authorization scopes"() {
 
         scopes = [
@@ -556,7 +569,7 @@ class DynamicClientRegistrationFlowTest {
 
     }
 
-    @Test (priority = 3)
+    //@Test (priority = 3)
     void "OB-1170_Update registration details without access token"() {
 
         def registrationResponse = AURegistrationRequestBuilder.buildBasicRequest(null)
@@ -568,7 +581,7 @@ class DynamicClientRegistrationFlowTest {
         Assert.assertEquals(registrationResponse.statusCode(), AUConstants.STATUS_CODE_401)
     }
 
-    @Test (priority = 3)
+    //@Test (priority = 3)
     void "OB-1171_Update registration details with invalid access token"() {
 
         def registrationResponse = AURegistrationRequestBuilder.buildBasicRequest("asd")

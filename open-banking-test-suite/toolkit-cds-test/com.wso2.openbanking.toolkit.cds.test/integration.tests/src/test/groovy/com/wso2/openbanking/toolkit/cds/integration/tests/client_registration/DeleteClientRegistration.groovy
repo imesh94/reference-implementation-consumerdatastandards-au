@@ -13,6 +13,7 @@
 package com.wso2.openbanking.toolkit.cds.integration.tests.client_registration
 
 import com.wso2.openbanking.test.framework.TestSuite
+import com.wso2.openbanking.test.framework.util.TestUtil
 import com.wso2.openbanking.toolkit.cds.test.common.utils.AUConstants
 import com.wso2.openbanking.toolkit.cds.test.common.utils.AUDCRConstants
 import com.wso2.openbanking.toolkit.cds.test.common.utils.AURegistrationRequestBuilder
@@ -39,17 +40,20 @@ class DeleteClientRegistration{
 
     @BeforeClass (alwaysRun = true)
     void "Initialize Test Suite"() {
+        AURegistrationRequestBuilder.retrieveADRInfo()
         TestSuite.init()
     }
 
     @Test (groups = "SmokeTest")
     void "TC0101009_Get access token"() {
 
-        clientId = clientIdFile.text
+        def registrationResponse = AURegistrationRequestBuilder
+                .buildRegistrationRequest(AURegistrationRequestBuilder.getRegularClaims())
+                .when()
+                .post(registrationPath)
 
+        clientId = TestUtil.parseResponseBody(registrationResponse, "client_id")
         accessToken = AURequestBuilder.getApplicationToken(scopes, clientId)
-        accessTokenFile.write(accessToken)
-
         Assert.assertNotNull(accessToken)
     }
     
@@ -65,9 +69,6 @@ class DeleteClientRegistration{
 
     @Test (groups = "SmokeTest", dependsOnMethods = "TC0101009_Get access token", priority = 1)
     void "TC0104002_Delete application"() {
-
-        clientId = clientIdFile.text
-        accessToken = accessTokenFile.text
 
         def registrationResponse = AURegistrationRequestBuilder.buildBasicRequest(accessToken)
                 .when()

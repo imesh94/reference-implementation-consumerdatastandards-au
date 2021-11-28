@@ -131,7 +131,7 @@ public class ArrangementRevocationApi {
 
         // Revoke the consent and tokens
         try {
-            consentCoreService.revokeConsent(cdrArrangementId, Constants.REVOKED_CONSENT_STATUS, userId,
+            consentCoreService.revokeConsentWithReason(cdrArrangementId, Constants.REVOKED_CONSENT_STATUS, userId,
                     Constants.CONSENT_REVOKE_REASON);
         } catch (ConsentManagementException e) {
             LOG.error("Error occurred while revoking the consent", e);

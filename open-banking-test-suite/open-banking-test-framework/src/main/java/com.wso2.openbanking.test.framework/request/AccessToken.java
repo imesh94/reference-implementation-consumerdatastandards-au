@@ -66,7 +66,7 @@ public class AccessToken {
           throws TestFrameworkException {
 
     String payload;
-    RestAssured.baseURI = ConfigParser.getInstance().getBaseUrl();
+    RestAssured.baseURI = ConfigParser.getInstance().getAuthorisationServerUrl();
 
     if (clientId == null) {
       payload = applicationAccessTokenDto.getPayload();

@@ -35,7 +35,6 @@ import java.util.Map;
 public class CDSAccountListRetrievalStep implements ConsentRetrievalStep {
 
     private static final Log log = LogFactory.getLog(CDSAccountListRetrievalStep.class);
-    private static final String USER_ID_KEY_NAME = "userID";
 
     @Override
     public void execute(ConsentData consentData, JSONObject jsonObject) throws ConsentException {
@@ -47,7 +46,7 @@ public class CDSAccountListRetrievalStep implements ConsentRetrievalStep {
             if (StringUtils.isNotBlank(accountsURL)) {
 
                 Map<String, String> parameters = new HashMap<>();
-                parameters.put(USER_ID_KEY_NAME, consentData.getUserId());
+                parameters.put(CDSConsentExtensionConstants.USER_ID_KEY_NAME, consentData.getUserId());
                 String accountData = CDSDataRetrievalUtil.getAccountsFromEndpoint(accountsURL, parameters,
                         new HashMap<>());
 
@@ -61,6 +60,7 @@ public class CDSAccountListRetrievalStep implements ConsentRetrievalStep {
                     JSONObject jsonAccountData = (JSONObject) parser.parse(accountData);
                     JSONArray accountsJSON = (JSONArray) jsonAccountData.get(CDSConsentExtensionConstants.DATA);
                     jsonObject.appendField(CDSConsentExtensionConstants.ACCOUNTS, accountsJSON);
+                    consentData.addData(CDSConsentExtensionConstants.ACCOUNTS, accountsJSON);
                 } catch (ParseException e) {
                     throw new ConsentException(ResponseStatus.INTERNAL_SERVER_ERROR,
                             "Exception occurred while parsing accounts data");
