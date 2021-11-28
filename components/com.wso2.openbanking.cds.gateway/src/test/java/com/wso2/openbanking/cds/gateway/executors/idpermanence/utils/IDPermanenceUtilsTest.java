@@ -14,6 +14,7 @@ package com.wso2.openbanking.cds.gateway.executors.idpermanence.utils;
 
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
+import com.wso2.openbanking.cds.common.config.OpenBankingCDSConfigParser;
 import com.wso2.openbanking.cds.common.idpermanence.IdEncryptorDecryptor;
 import com.wso2.openbanking.cds.gateway.executors.idpermanence.model.IdPermanenceValidationResponse;
 import org.apache.commons.io.FileUtils;
@@ -36,7 +37,7 @@ import java.nio.charset.StandardCharsets;
 /**
  * Test class for IDPermanenceUtils
  */
-@PrepareForTest(IdEncryptorDecryptor.class)
+@PrepareForTest({IdEncryptorDecryptor.class, OpenBankingCDSConfigParser.class})
 public class IDPermanenceUtilsTest extends PowerMockTestCase {
 
     private static final String ACCOUNTS_URL = "/banking/accounts";
@@ -62,6 +63,10 @@ public class IDPermanenceUtilsTest extends PowerMockTestCase {
     @BeforeClass
     public void initClass() {
 
+        PowerMockito.mockStatic(OpenBankingCDSConfigParser.class);
+        OpenBankingCDSConfigParser openBankingCDSConfigParserMock = PowerMockito.mock(OpenBankingCDSConfigParser.class);
+        PowerMockito.when(OpenBankingCDSConfigParser.getInstance()).thenReturn(openBankingCDSConfigParserMock);
+        PowerMockito.when(openBankingCDSConfigParserMock.getIdPermanenceSecretKey()).thenReturn("wso2123");
     }
 
     @Test
