@@ -733,10 +733,10 @@ public class MetricsProcessorUtil {
 
         return new ServerOutageDataModel(
                 serverOutageDateJsonObject.get(0).toString(),
-                (Long) serverOutageDateJsonObject.get(1),
+                Long.parseLong(serverOutageDateJsonObject.get(1).toString()),
                 serverOutageDateJsonObject.get(2).toString(),
-                (Long) serverOutageDateJsonObject.get(3),
-                (Long) serverOutageDateJsonObject.get(4));
+                Long.parseLong(serverOutageDateJsonObject.get(3).toString()),
+                Long.parseLong(serverOutageDateJsonObject.get(4).toString()));
     }
 
     /**

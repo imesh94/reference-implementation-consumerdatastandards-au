@@ -53,7 +53,7 @@ public class SPJsonProcessorUtil {
 
         JSONArray recordsArray = (JSONArray) jsonObject.get(RECORDS);
         JSONArray countArray;
-        int totalCount = 0;
+        long totalCount = 0;
         for (Object object : recordsArray) {
             countArray = (JSONArray) object;
             totalCount += Long.parseLong(countArray.get(0).toString());
@@ -74,8 +74,8 @@ public class SPJsonProcessorUtil {
         String validity;
         ArrayList<BigDecimal> elementList = new ArrayList<>(Arrays.asList(new BigDecimal[2]));
         Collections.fill(elementList, BigDecimal.valueOf(0));
-        int totalCountAuthenticated = 0;
-        int totalCountUnauthenticated = 0;
+        long totalCountAuthenticated = 0;
+        long totalCountUnauthenticated = 0;
 
         for (Object object : recordsArray) {
             countArray = (JSONArray) object;
