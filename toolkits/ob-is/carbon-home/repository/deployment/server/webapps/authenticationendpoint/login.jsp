@@ -16,6 +16,7 @@
 <%@ page import="org.wso2.carbon.identity.application.authentication.endpoint.util.Constants" %>
 <%@ page import="org.wso2.carbon.identity.core.util.IdentityCoreConstants" %>
 <%@ page import="org.wso2.carbon.identity.core.util.IdentityUtil" %>
+<%@ page import="org.wso2.carbon.identity.captcha.util.CaptchaUtil" %>
 <%@ page import="static org.wso2.carbon.identity.application.authentication.endpoint.util.Constants.STATUS" %>
 <%@ page import="static org.wso2.carbon.identity.application.authentication.endpoint.util.Constants.STATUS_MSG" %>
 <%@ page import="static org.wso2.carbon.identity.application.authentication.endpoint.util.Constants.CONFIGURATION_ERROR" %>
@@ -39,6 +40,8 @@
     private static final String OPEN_ID_AUTHENTICATOR = "OpenIDAuthenticator";
     private static final String JWT_BASIC_AUTHENTICATOR = "JWTBasicAuthenticator";
     private static final String X509_CERTIFICATE_AUTHENTICATOR = "x509CertificateAuthenticator";
+    private String reCaptchaAPI = null;
+    private String reCaptchaKey = null;
 %>
 
 <%
@@ -78,13 +81,16 @@
 %>
 <%
     boolean reCaptchaEnabled = false;
-    if (request.getParameter("reCaptcha") != null && Boolean.parseBoolean(request.getParameter("reCaptcha"))) {
-        reCaptchaEnabled = true;
+    boolean reCaptchaResendEnabled = false;
+    if (CaptchaUtil.isReCaptchaEnabled()) {
+        reCaptchaEnabled = CaptchaUtil.isReCaptchaEnabledForFlow("sso.login.recaptcha.enable.always", tenantDomain);
+        reCaptchaResendEnabled = CaptchaUtil.isReCaptchaEnabledForFlow("SelfRegistration.ResendConfirmationReCaptcha",
+                tenantDomain);
     }
 
-    boolean reCaptchaResendEnabled = false;
-    if (request.getParameter("reCaptchaResend") != null && Boolean.parseBoolean(request.getParameter("reCaptchaResend"))) {
-        reCaptchaResendEnabled = true;
+    if (reCaptchaEnabled || reCaptchaResendEnabled) {
+        reCaptchaKey = CaptchaUtil.reCaptchaSiteKey();
+        reCaptchaAPI = CaptchaUtil.reCaptchaAPIURL();
     }
 %>
 <%
@@ -139,7 +145,7 @@
     <%
         if (reCaptchaEnabled || reCaptchaResendEnabled) {
     %>
-        <script src='<%=(Encode.forJavaScriptSource(request.getParameter("reCaptchaAPI")))%>'></script>
+        <script src='<%=(Encode.forJavaScriptSource(reCaptchaAPI))%>'></script>
     <%
         }
     %>
@@ -147,8 +153,8 @@
         if (localAuthenticatorNames.contains(IDENTIFIER_EXECUTOR)) {
     %>
         <link rel = "stylesheet" type = "text/css" href = "extensions/identifier-style.css" />
-    <% 
-       } 
+    <%
+       }
     %>
 </head>
 <body class="login-portal layout authentication-portal-layout" onload="checkSessionKey()">
