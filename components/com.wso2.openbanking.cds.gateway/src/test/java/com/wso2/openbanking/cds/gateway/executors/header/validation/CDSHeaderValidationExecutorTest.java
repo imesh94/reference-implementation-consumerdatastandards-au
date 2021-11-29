@@ -14,7 +14,7 @@ package com.wso2.openbanking.cds.gateway.executors.header.validation;
 
 import com.wso2.openbanking.accelerator.gateway.executor.model.OBAPIRequestContext;
 import com.wso2.openbanking.cds.common.config.OpenBankingCDSConfigParser;
-import com.wso2.openbanking.cds.gateway.util.CDSGatewayConstants;
+import com.wso2.openbanking.cds.gateway.utils.GatewayConstants;
 import io.swagger.v3.oas.models.OpenAPI;
 import io.swagger.v3.oas.models.Operation;
 import io.swagger.v3.oas.models.PathItem;
@@ -72,7 +72,7 @@ public class CDSHeaderValidationExecutorTest extends PowerMockTestCase {
     @Test
     public void testPreProcessRequestWithCustomerIpAddress() {
         OBAPIRequestContext obApiRequestContextMock = getOBAPIRequestContext
-                (CDSGatewayConstants.X_FAPI_CUSTOMER_IP_ADDRESS, "192.1.2.3", "::", "2001:db8::", "::1234:5678",
+                (GatewayConstants.X_FAPI_CUSTOMER_IP_ADDRESS, "192.1.2.3", "::", "2001:db8::", "::1234:5678",
                         "2001:db8::1234:5678", "2001:db8:1::ab9:C0A8:102", "2001:db8::127.10.11.12",
                         "192.1.1.300", "invalid");
 
@@ -96,7 +96,7 @@ public class CDSHeaderValidationExecutorTest extends PowerMockTestCase {
     @Test
     public void testPreProcessRequestWithInvalidClientHeaders() {
         OBAPIRequestContext obApiRequestContextMock = getOBAPIRequestContext
-                (CDSGatewayConstants.X_CDS_CLIENT_HEADERS, StringUtils.SPACE);
+                (GatewayConstants.X_CDS_CLIENT_HEADERS, StringUtils.SPACE);
 
         this.uut.preProcessRequest(obApiRequestContextMock);
         this.uut.preProcessRequest(obApiRequestContextMock);
@@ -106,7 +106,7 @@ public class CDSHeaderValidationExecutorTest extends PowerMockTestCase {
     @Test
     public void testPreProcessRequestWithAuthDate() {
         OBAPIRequestContext obApiRequestContextMock = getOBAPIRequestContext
-                (CDSGatewayConstants.X_FAPI_AUTH_DATE, "Sun, 06 Nov 2024 08:49:37 GMT", "24-11-1994 08:10 PM");
+                (GatewayConstants.X_FAPI_AUTH_DATE, "Sun, 06 Nov 2024 08:49:37 GMT", "24-11-1994 08:10 PM");
         this.uut.preProcessRequest(obApiRequestContextMock); // test 06 Nov 2024 08:49:37 GMT, should return true
 
         this.uut.preProcessRequest(obApiRequestContextMock); // test empty string, should return false
@@ -118,7 +118,7 @@ public class CDSHeaderValidationExecutorTest extends PowerMockTestCase {
     @Test
     public void testPreProcessRequestWithInteractionId() {
         OBAPIRequestContext obApiRequestContextMock = getOBAPIRequestContext
-                (CDSGatewayConstants.X_FAPI_INTERACTION_ID, "invalid-uuid", "1-2-3-4-5");
+                (GatewayConstants.X_FAPI_INTERACTION_ID, "invalid-uuid", "1-2-3-4-5");
         this.uut.preProcessRequest(obApiRequestContextMock);
         this.uut.preProcessRequest(obApiRequestContextMock);
         this.uut.preProcessRequest(obApiRequestContextMock);
@@ -141,7 +141,7 @@ public class CDSHeaderValidationExecutorTest extends PowerMockTestCase {
     @Test
     public void testIsValidMaxVersion() {
         OBAPIRequestContext obApiRequestContextMock = getOBAPIRequestContext
-                (CDSGatewayConstants.MAX_REQUESTED_ENDPOINT_VERSION, "1", "foo", "1-2-3", "1.5", "100");
+                (GatewayConstants.MAX_REQUESTED_ENDPOINT_VERSION, "1", "foo", "1-2-3", "1.5", "100");
         this.uut.preProcessRequest(obApiRequestContextMock); // test empty string, should return false
         this.uut.preProcessRequest(obApiRequestContextMock); // test "1", should return true
         this.uut.preProcessRequest(obApiRequestContextMock); // test "foo", should return false
@@ -155,7 +155,7 @@ public class CDSHeaderValidationExecutorTest extends PowerMockTestCase {
     @Test
     public void testIsValidMinVersion() {
         OBAPIRequestContext obApiRequestContextMock = getOBAPIRequestContext
-                (CDSGatewayConstants.MIN_REQUESTED_ENDPOINT_VERSION, "2", "1", "foo", "1-2-3", "1.5", "-3");
+                (GatewayConstants.MIN_REQUESTED_ENDPOINT_VERSION, "2", "1", "foo", "1-2-3", "1.5", "-3");
         this.uut.preProcessRequest(obApiRequestContextMock); // test empty string, should return true
         this.uut.preProcessRequest(obApiRequestContextMock); // test "2", should return true
 
@@ -184,11 +184,11 @@ public class CDSHeaderValidationExecutorTest extends PowerMockTestCase {
 
     private OBAPIRequestContext getOBAPIRequestContext(Map<String, Object> extensions, String key, String... values) {
         Map<String, String> headers = mock(Map.class);
-        when(headers.get(CDSGatewayConstants.X_CDS_CLIENT_HEADERS)).thenReturn(VALID_CLIENT_HEADERS);
-        when(headers.get(CDSGatewayConstants.X_FAPI_AUTH_DATE)).thenReturn(VALID_AUTH_DATE);
-        when(headers.get(CDSGatewayConstants.X_FAPI_CUSTOMER_IP_ADDRESS)).thenReturn(VALID_CUSTOMER_IP6_ADDR);
-        when(headers.get(CDSGatewayConstants.X_FAPI_INTERACTION_ID)).thenReturn(VALID_INTERACTION_ID);
-        when(headers.get(CDSGatewayConstants.MAX_REQUESTED_ENDPOINT_VERSION)).thenReturn("1");
+        when(headers.get(GatewayConstants.X_CDS_CLIENT_HEADERS)).thenReturn(VALID_CLIENT_HEADERS);
+        when(headers.get(GatewayConstants.X_FAPI_AUTH_DATE)).thenReturn(VALID_AUTH_DATE);
+        when(headers.get(GatewayConstants.X_FAPI_CUSTOMER_IP_ADDRESS)).thenReturn(VALID_CUSTOMER_IP6_ADDR);
+        when(headers.get(GatewayConstants.X_FAPI_INTERACTION_ID)).thenReturn(VALID_INTERACTION_ID);
+        when(headers.get(GatewayConstants.MAX_REQUESTED_ENDPOINT_VERSION)).thenReturn("1");
         when(headers.get(HttpHeaders.AUTHORIZATION)).thenReturn("test-access-token");
 
         if (StringUtils.isNotBlank(key)) {
@@ -200,8 +200,8 @@ public class CDSHeaderValidationExecutorTest extends PowerMockTestCase {
         when(msgInfoDTOMock.getElectedResource())
                 .thenReturn("/test-endpoint");
         when(msgInfoDTOMock.getHttpMethod())
-                .thenReturn(CDSGatewayConstants.HTTP_GET)
-                .thenReturn(CDSGatewayConstants.HTTP_POST);
+                .thenReturn(GatewayConstants.HTTP_GET)
+                .thenReturn(GatewayConstants.HTTP_POST);
 
         OBAPIRequestContext obApiRequestContextMock = mock(OBAPIRequestContext.class);
         when(obApiRequestContextMock.getMsgInfo()).thenReturn(msgInfoDTOMock);
@@ -213,7 +213,7 @@ public class CDSHeaderValidationExecutorTest extends PowerMockTestCase {
 
     private OBAPIRequestContext getOBAPIRequestContext(String key, String... values) {
         Map<String, Object> extensions = new HashMap<>();
-        extensions.put(CDSGatewayConstants.X_VERSION, "2");
+        extensions.put(GatewayConstants.X_VERSION, "2");
 
         return getOBAPIRequestContext(extensions, key, values);
     }
@@ -224,7 +224,7 @@ public class CDSHeaderValidationExecutorTest extends PowerMockTestCase {
         when(getOperationMock.getExtensions()).thenReturn(extensions);
 
         Map<String, Object> postExtensions = new HashMap<>();
-        postExtensions.put(CDSGatewayConstants.X_VERSION, "2,3,4");
+        postExtensions.put(GatewayConstants.X_VERSION, "2,3,4");
         Operation postOperationMock = mock(Operation.class);
         when(postOperationMock.getExtensions()).thenReturn(postExtensions);
 

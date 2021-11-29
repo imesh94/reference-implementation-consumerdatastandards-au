@@ -36,7 +36,9 @@
     LocalDateTime now = LocalDateTime.now();
     String currentDate = dtf.format(now);
     Map<String, List<String>> consentData = (Map<String, List<String>>) session.getAttribute("configParamsMap");
+    Map<String, List<String>> newConsentData = (Map<String, List<String>>) session.getAttribute("newConfigParamsMap");
     session.setAttribute("configParamsMap", consentData);
+    session.setAttribute("newConfigParamsMap", newConsentData);
 %>
 <div class="col-xs-12 col-sm-12 col-md-12 col-lg-12 data-container">
     <div class="clearfix"></div>
@@ -92,6 +94,30 @@
                         </div>
                         <br>
                     </c:forEach>
+                    <!--Display newly added requested data (Upon consent Amendment)-->
+                    <c:if test="${not empty newConfigParamsMap}">
+                        <c:forEach items="<%=newConsentData%>" var="record">
+                            <div class="padding" style="border:1px solid #555;">
+                                <button type="button" class="collapsible">${record.key}
+                                    <span style="border: 1px solid #1b2c8f;color:#1b2c8f;font-weight:bold;background-color:#f4f5fd">New</span>
+                                </button>
+                                <div class="content">
+                                    <ul class="scopes-list padding">
+                                        <c:forEach items="${record.value}" var="record_data">
+                                            <li>${record_data}</li>
+                                        </c:forEach>
+                                    </ul>
+                                    <c:if test="${(record.key eq 'Account name, type, and balance') ||
+                                    (record.key eq 'Account balance and details') || (record.key eq 'Transaction details')
+                                    || (record.key eq 'Direct debits and scheduled payments')}">
+                                        <br>
+                                        <p> This may include historical data that dates back to 1 January 2017. </p>
+                                    </c:if>
+                                </div>
+                            </div>
+                            <br>
+                        </c:forEach>
+                    </c:if>
 
                     <h4 class="section-heading-5 ui subheading">Sharing Period:</h4>
 

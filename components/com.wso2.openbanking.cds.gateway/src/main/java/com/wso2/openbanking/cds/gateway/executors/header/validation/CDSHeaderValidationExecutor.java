@@ -36,19 +36,19 @@ import java.util.List;
 import java.util.Map;
 import java.util.TimeZone;
 
-import static com.wso2.openbanking.cds.gateway.util.CDSGatewayConstants.ASC_TIME_DATE_PATTERN;
-import static com.wso2.openbanking.cds.gateway.util.CDSGatewayConstants.HTTP_GET;
-import static com.wso2.openbanking.cds.gateway.util.CDSGatewayConstants.HTTP_POST;
-import static com.wso2.openbanking.cds.gateway.util.CDSGatewayConstants.IMF_FIX_DATE_PATTERN;
-import static com.wso2.openbanking.cds.gateway.util.CDSGatewayConstants.MAX_REQUESTED_ENDPOINT_VERSION;
-import static com.wso2.openbanking.cds.gateway.util.CDSGatewayConstants.MIN_REQUESTED_ENDPOINT_VERSION;
-import static com.wso2.openbanking.cds.gateway.util.CDSGatewayConstants.RFC850_DATE_PATTERN;
-import static com.wso2.openbanking.cds.gateway.util.CDSGatewayConstants.UUID_REGEX_PATTERN;
-import static com.wso2.openbanking.cds.gateway.util.CDSGatewayConstants.X_CDS_CLIENT_HEADERS;
-import static com.wso2.openbanking.cds.gateway.util.CDSGatewayConstants.X_FAPI_AUTH_DATE;
-import static com.wso2.openbanking.cds.gateway.util.CDSGatewayConstants.X_FAPI_CUSTOMER_IP_ADDRESS;
-import static com.wso2.openbanking.cds.gateway.util.CDSGatewayConstants.X_FAPI_INTERACTION_ID;
-import static com.wso2.openbanking.cds.gateway.util.CDSGatewayConstants.X_VERSION;
+import static com.wso2.openbanking.cds.gateway.utils.GatewayConstants.ASC_TIME_DATE_PATTERN;
+import static com.wso2.openbanking.cds.gateway.utils.GatewayConstants.HTTP_GET;
+import static com.wso2.openbanking.cds.gateway.utils.GatewayConstants.HTTP_POST;
+import static com.wso2.openbanking.cds.gateway.utils.GatewayConstants.IMF_FIX_DATE_PATTERN;
+import static com.wso2.openbanking.cds.gateway.utils.GatewayConstants.MAX_REQUESTED_ENDPOINT_VERSION;
+import static com.wso2.openbanking.cds.gateway.utils.GatewayConstants.MIN_REQUESTED_ENDPOINT_VERSION;
+import static com.wso2.openbanking.cds.gateway.utils.GatewayConstants.RFC850_DATE_PATTERN;
+import static com.wso2.openbanking.cds.gateway.utils.GatewayConstants.UUID_REGEX_PATTERN;
+import static com.wso2.openbanking.cds.gateway.utils.GatewayConstants.X_CDS_CLIENT_HEADERS;
+import static com.wso2.openbanking.cds.gateway.utils.GatewayConstants.X_FAPI_AUTH_DATE;
+import static com.wso2.openbanking.cds.gateway.utils.GatewayConstants.X_FAPI_CUSTOMER_IP_ADDRESS;
+import static com.wso2.openbanking.cds.gateway.utils.GatewayConstants.X_FAPI_INTERACTION_ID;
+import static com.wso2.openbanking.cds.gateway.utils.GatewayConstants.X_VERSION;
 
 /**
  * CDSHeaderValidationExecutor.
