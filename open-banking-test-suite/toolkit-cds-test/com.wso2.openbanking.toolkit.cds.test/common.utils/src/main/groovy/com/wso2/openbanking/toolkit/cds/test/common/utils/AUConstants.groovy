@@ -25,7 +25,7 @@ class AUConstants {
     static final CONSENT_SUBMIT_XPATH = "//*[@id='approve']"
     static final CONSENT_DENY_XPATH = "//*[@value='Deny']"
     static final CONSENT_CANCEL_XPATH = "//*[@value='Cancel']"
-    static final CONFIRM_CONSENT_DENY_XPATH = "//*[@value='Yes cancel']"
+    static final CONFIRM_CONSENT_DENY_XPATH = "//*[@value='Deny']"
     static final ADR_NAME_HEADER_XPATH = "//h3[@class='ui header']"
     static final SINGLE_ACCOUNT_XPATH = "//option[contains(text(),'account_1')]"
     static final SINGLE_ACCOUNT_XPATH_200 = "//input[@id='account_1']"
@@ -141,7 +141,7 @@ class AUConstants {
     static final String DISCOVERY_OUTAGES = "/discovery/outages"
     static final String ACCOUNTS_CONSENT_PATH = "/au100/accounts-validation"
     static final String CDR_ARRANGEMENT_ENDPOINT = "/arrangements/1.0.0"
-    static final String INTROSPECTION_ENDPOINT = "/token/introspect"
+    static final String INTROSPECTION_ENDPOINT = "/oauth2/introspect"
     static final String CONSENT_STATUS_ENDPOINT = "/api/openbanking/consent-mgt/uk300"
     public static final String PUSHED_AUTHORISATION_BASE_PATH = config.getAuthorisationServerUrl() +
             "/api/openbanking/push-authorization"
