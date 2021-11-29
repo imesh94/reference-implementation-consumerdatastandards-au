@@ -647,11 +647,11 @@ public class BankingService {
                 "        \"paymentSet\": [\n" +
                 "          {\n" +
                 "            \"to\": {\n" +
-                "              \"toUType\": \"1234\",\n" +
+                "              \"toUType\": \"biller\",\n" +
                 "              \"accountId\": \"2345\",\n" +
                 "              \"payeeId\": \"435f\",\n" +
                 "              \"domestic\": {\n" +
-                "                \"payeeAccountUType\": \"234\",\n" +
+                "                \"payeeAccountUType\": \"card\",\n" +
                 "                \"account\": {\n" +
                 "                  \"accountName\": \"accountName\",\n" +
                 "                  \"bsb\": \"bsb\",\n" +
@@ -707,7 +707,7 @@ public class BankingService {
                 "          \"intervalSchedule\": {\n" +
                 "            \"finalPaymentDate\": \"2019-05-01T15:43:00.12345Z\",\n" +
                 "            \"paymentsRemaining\": 0,\n" +
-                "            \"nonBusinessDayTreatment\": \"ON\",\n" +
+                "            \"nonBusinessDayTreatment\": \"ONLY\",\n" +
                 "            \"intervals\": [\n" +
                 "              {\n" +
                 "                \"interval\": \"interval\",\n" +
@@ -719,7 +719,7 @@ public class BankingService {
                 "            \"finalPaymentDate\": \"2019-05-01T15:43:00.12345Z\",\n" +
                 "            \"paymentsRemaining\": 0,\n" +
                 "            \"interval\": \"interval\",\n" +
-                "            \"lastWeekDay\": 0\n" +
+                "            \"lastWeekDay\": \"FRI\"\n" +
                 "          },\n" +
                 "          \"eventBased\": {\n" +
                 "            \"description\": \"desc\"\n" +
