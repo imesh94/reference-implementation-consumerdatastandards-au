@@ -15,9 +15,12 @@ import com.wso2.openbanking.accelerator.common.exception.OpenBankingException;
 import com.wso2.openbanking.accelerator.consent.extensions.authorize.model.ConsentData;
 import com.wso2.openbanking.accelerator.consent.extensions.authorize.model.ConsentRetrievalStep;
 import com.wso2.openbanking.accelerator.consent.extensions.common.ConsentException;
+import com.wso2.openbanking.accelerator.consent.extensions.common.ResponseStatus;
 import com.wso2.openbanking.accelerator.identity.util.HTTPClientUtils;
 import com.wso2.openbanking.cds.common.config.OpenBankingCDSConfigParser;
+import com.wso2.openbanking.cds.consent.extensions.authorize.utils.PermissionsEnum;
 import com.wso2.openbanking.cds.consent.extensions.common.CDSConsentExtensionConstants;
+import net.minidev.json.JSONArray;
 import net.minidev.json.JSONObject;
 import net.minidev.json.parser.JSONParser;
 import net.minidev.json.parser.ParseException;
@@ -28,7 +31,6 @@ import org.apache.commons.logging.LogFactory;
 import org.apache.http.HttpResponse;
 import org.apache.http.client.methods.HttpGet;
 import org.apache.http.impl.client.CloseableHttpClient;
-import org.json.simple.JSONArray;
 
 import java.io.IOException;
 import java.io.InputStream;
@@ -53,43 +55,42 @@ public class CDSDataClusterRetrievalStep implements ConsentRetrievalStep {
                 log.error("Error: Scopes are not found in consent data.");
                 return;
             }
-            JSONArray dataCluster = new JSONArray();
             JSONArray scopes = new JSONArray();
             scopes.addAll((ArrayList) consentData.getMetaDataMap().get(CDSConsentExtensionConstants.PERMISSIONS));
             String customerType = getCustomerType(consentData);
-
-            for (Object scopeEnum: scopes) {
-                JSONObject dataClusterItem = new JSONObject();
-                String scope = scopeEnum.toString();
-                if (CDSConsentExtensionConstants.COMMON_CUSTOMER_BASIC_READ_SCOPE.equalsIgnoreCase(scope) &&
-                        scopes.contains(CDSConsentExtensionConstants.COMMON_CUSTOMER_DETAIL_READ_SCOPE)) {
-                    continue;
-                } else if (CDSConsentExtensionConstants.COMMON_ACCOUNTS_BASIC_READ_SCOPE.equalsIgnoreCase(scope) &&
-                        scopes.contains(CDSConsentExtensionConstants.COMMON_ACCOUNTS_DETAIL_READ_SCOPE)) {
-                    continue;
-                }
-                Map<String, List<String>> cluster;
-                if (scope.contains(CDSConsentExtensionConstants.COMMON_SUBSTRING) &&
-                        CDSConsentExtensionConstants.ORGANISATION.equalsIgnoreCase(customerType)) {
-                    cluster = CDSConsentExtensionConstants.BUSINESS_CDS_DATA_CLUSTER.get(scope);
-                } else if (scope.contains(CDSConsentExtensionConstants.COMMON_SUBSTRING)) {
-                    cluster = CDSConsentExtensionConstants.INDIVIDUAL_CDS_DATA_CLUSTER.get(scope);
+            // Consent amendment flow
+            if (jsonObject.containsKey(CDSConsentExtensionConstants.IS_CONSENT_AMENDMENT) &&
+                    (boolean) jsonObject.get(CDSConsentExtensionConstants.IS_CONSENT_AMENDMENT)) {
+                //get existing scopes
+                JSONArray existingScopes = new JSONArray();
+                JSONArray commonScopes = new JSONArray(); //scopes that are in both old and new request objects
+                JSONArray newScopes = new JSONArray();
+                if (jsonObject.containsKey(CDSConsentExtensionConstants.EXISTING_PERMISSIONS)) {
+                    JSONArray existingPermissions = (JSONArray) jsonObject.get(CDSConsentExtensionConstants.
+                            EXISTING_PERMISSIONS);
+                    for (Object permission : existingPermissions) {
+                        existingScopes.add(PermissionsEnum.valueOf(permission.toString()).toString());
+                    }
+                    for (Object scope : scopes) {
+                        if (existingScopes.contains(scope.toString())) {
+                            commonScopes.add(scope);
+                        } else {
+                            newScopes.add(scope);
+                        }
+                    }
+                    JSONArray dataCluster = getDataClusterFromScopes(commonScopes, customerType);
+                    JSONArray newDataCluster = getDataClusterFromScopes(newScopes, customerType);
+                    jsonObject.put(CDSConsentExtensionConstants.DATA_REQUESTED, dataCluster);
+                    jsonObject.put(CDSConsentExtensionConstants.NEW_DATA_REQUESTED, newDataCluster);
                 } else {
-                    cluster = CDSConsentExtensionConstants.CDS_DATA_CLUSTER.get(scope);
+                    log.error("Permissions not found for the given consent");
+                    throw new ConsentException(ResponseStatus.INTERNAL_SERVER_ERROR,
+                            "Permissions not found for the given consent");
                 }
-                if (cluster == null) {
-                    log.warn("No data found for scope: " + scope + " requested by " + consentData.getClientId());
-                    continue;
-                }
-                for (Map.Entry<String, List<String>> entry : cluster.entrySet()) {
-                    dataClusterItem.put(CDSConsentExtensionConstants.TITLE, entry.getKey());
-                    JSONArray requestedData = new JSONArray();
-                    requestedData.addAll(entry.getValue());
-                    dataClusterItem.put(CDSConsentExtensionConstants.DATA, requestedData);
-                }
-                dataCluster.add(dataClusterItem);
+            } else {
+                JSONArray dataCluster = getDataClusterFromScopes(scopes, customerType);
+                jsonObject.put(CDSConsentExtensionConstants.DATA_REQUESTED, dataCluster);
             }
-            jsonObject.put(CDSConsentExtensionConstants.DATA_REQUESTED, dataCluster);
         }
     }
 
@@ -142,5 +143,49 @@ public class CDSDataClusterRetrievalStep implements ConsentRetrievalStep {
             log.error("Exception occurred while retrieving sharable accounts", e);
         }
         return null;
+    }
+
+    /**
+     * Get data clusters mapping to the given scopes.
+     *
+     * @param scopes cds scopes
+     * @param customerType customer type
+     * @return data cluster
+     */
+    private static JSONArray getDataClusterFromScopes(JSONArray scopes, String customerType) {
+
+        JSONArray dataCluster = new JSONArray();
+        for (Object scopeEnum : scopes) {
+            JSONObject dataClusterItem = new JSONObject();
+            String scope = scopeEnum.toString();
+            if (CDSConsentExtensionConstants.COMMON_CUSTOMER_BASIC_READ_SCOPE.equalsIgnoreCase(scope) &&
+                    scopes.contains(CDSConsentExtensionConstants.COMMON_CUSTOMER_DETAIL_READ_SCOPE)) {
+                continue;
+            } else if (CDSConsentExtensionConstants.COMMON_ACCOUNTS_BASIC_READ_SCOPE.equalsIgnoreCase(scope) &&
+                    scopes.contains(CDSConsentExtensionConstants.COMMON_ACCOUNTS_DETAIL_READ_SCOPE)) {
+                continue;
+            }
+            Map<String, List<String>> cluster;
+            if (scope.contains(CDSConsentExtensionConstants.COMMON_SUBSTRING) &&
+                    CDSConsentExtensionConstants.ORGANISATION.equalsIgnoreCase(customerType)) {
+                cluster = CDSConsentExtensionConstants.BUSINESS_CDS_DATA_CLUSTER.get(scope);
+            } else if (scope.contains(CDSConsentExtensionConstants.COMMON_SUBSTRING)) {
+                cluster = CDSConsentExtensionConstants.INDIVIDUAL_CDS_DATA_CLUSTER.get(scope);
+            } else {
+                cluster = CDSConsentExtensionConstants.CDS_DATA_CLUSTER.get(scope);
+            }
+            if (cluster == null) {
+                log.warn(String.format("No data found for scope: %s requested.", scope));
+                continue;
+            }
+            for (Map.Entry<String, List<String>> entry : cluster.entrySet()) {
+                dataClusterItem.put(CDSConsentExtensionConstants.TITLE, entry.getKey());
+                JSONArray requestedData = new JSONArray();
+                requestedData.addAll(entry.getValue());
+                dataClusterItem.put(CDSConsentExtensionConstants.DATA, requestedData);
+            }
+            dataCluster.add(dataClusterItem);
+        }
+        return dataCluster;
     }
 }

@@ -26,6 +26,10 @@ public class ErrorConstants {
     public static final String CODE = "code";
     public static final String TITLE = "title";
     public static final String DETAIL = "detail";
+    public static final String META_URN = "metaURN";
+    public static final String ACCOUNT_ID = "accountId";
+    public static final String META = "meta";
+    public static final String URN = "urn";
 
     // HTTP Error Codes
     public static final String HTTP_BAD_REQUEST = "400";
@@ -62,6 +66,8 @@ public class ErrorConstants {
     // Error object references
     public static final String ERROR_ENUM = "auErrorEnum";
     public static final String METADATA  = "metadata";
+    public static final String SUCCESS = "SUCCESS";
+    public static final String CONSENT_ENFORCEMENT_ERROR = "Consent Enforcement Error";
 
 
     /**
@@ -118,11 +124,12 @@ public class ErrorConstants {
         INVALID_PRODUCT_STATUS(403, "AU.CDR.Entitlements.InvalidAdrSoftwareProductStatus", "ADR Software Product " +
                 "Status Is Invalid", "The ADR software product is not in an active state in the CDR Register"),
         //Consent status of the resource is not accepted by the API
-        INVALID_CONSENT(403, "AU.CDR.Entitlements.InvalidConsentStatus", "Consent Is Invalid", "Consent status is not" +
+        INVALID_CONSENT(403, "urn:au-cds:error:cds-all:Authorisation/InvalidConsent",
+                "Consent Is Invalid", "Consent status is not" +
                 " acceptable by the API"),
         //Consent is in the revoked state
-        REVOKED_CONSENT(403, "AU.CDR.Entitlements.ConsentIsRevoked", "Consent Is Revoked", "Provided consent is in " +
-                "the revoked state"),
+        REVOKED_CONSENT(403, "AU.CDR.Entitlements.ConsentIsRevoked", "Consent Is Revoked",
+                "Provided consent is in the revoked state"),
         //The resource requested is forbidden
         RESOURCE_FORBIDDEN(403, "urn:au-cds:error:cds-all:Authorisation/InvalidConsent",
                 "Resource Is Forbidden", "The requested resource %s is forbidden"),
@@ -133,13 +140,13 @@ public class ErrorConstants {
         RESOURCE_NOT_IMPLEMENTED(404, "AU.CDR.Resource.NotImplemented", "Resource Not Implemented",
                 "Requested resource %s is available in the specification but not implemented"),
         //Requested resource is not available in the spec
-        RESOURCE_NOT_FOUND(404, "AU.CDR.Resource.NotFound", "Resource Not Found", "Requested resource is not " +
-                "available in the specification"),
+        RESOURCE_NOT_FOUND(404, "AU.CDR.Resource.NotFound", "Resource Not Found",
+                "Requested resource is not " + "available in the specification"),
         //Resource requested is invalid, does not exist or will not be disclosed
-        INVALID_RESOURCE_PATH(404, "AU.CDR.Resource.Invalid", "Invalid Resource Identifier",
+        INVALID_RESOURCE_PATH(404, "urn:au-cds:error:cds-all:Resource/Invalid", "Invalid Resource",
                 "Resource requested is invalid, does not exist or will not be disclosed at the moment"),
-        INVALID_RESOURCE_BODY(422, "urn:au-cds:error:cds-all: Resource/Invalid",
-                "Invalid Resource Identifier", "Resource requested is invalid, does not exist or will " +
+        INVALID_RESOURCE_BODY(422, "urn:au-cds:error:cds-all:Resource/Invalid",
+                "Invalid Resource", "Resource requested is invalid, does not exist or will " +
                 "not be disclosed at the moment"),
         //The requested resource is currently in a state that makes it unavailable
         RESOURCE_UNAVAILABLE_PATH(404, "AU.CDR.Resource.Unavailable", "Resource Is Unavailable",
@@ -147,10 +154,10 @@ public class ErrorConstants {
         RESOURCE_UNAVAILABLE_BODY(422, "AU.CDR.Resource.Unavailable", "Resource Is Unavailable",
                 "The requested resource is currently in a state that makes it unavailable for consumers"),
         //Bank account does not exist or does nt associate with active consent
-        INVALID_BANK_ACCOUNT_BODY(422, "AU.CDR.Resource.InvalidBankingAccount", "Invalid Banking Account",
-                "ID of the account not found or invalid"),
-        INVALID_BANK_ACCOUNT_PATH(404, "AU.CDR.Resource.InvalidBankingAccount", "Invalid Banking Account",
-                "ID of the account not found or invalid"),
+        INVALID_BANK_ACCOUNT_BODY(422, "urn:au-cds:error:cds-banking:Authorisation/InvalidBankingAccount",
+                "Invalid Banking Account", "ID of the account not found or invalid"),
+        INVALID_BANK_ACCOUNT_PATH(404, "urn:au-cds:error:cds-banking:Authorisation/InvalidBankingAccount",
+                "Invalid Banking Account", "ID of the account not found or invalid"),
         //Bank account is no longer associated to the active consent, a joint-account holder has withdrawn consent
         // election or the account is currently in a state that makes it unavailable
         UNAVAILABLE_BANK_ACCOUNT(422, "AU.CDR.Resource.UnavailableBankingAccount", "Banking Account Is Unavailable",
@@ -173,6 +180,9 @@ public class ErrorConstants {
         //An unexpected error occurred
         UNEXPECTED_ERROR(500, "urn:au-cds:error:cds-all:GeneralError/Unexpected",
                 "Unexpected Error", "Unexpected Error"),
+        //Expected general error occurred
+        EXPECTED_GENERAL_ERROR(404, "urn:au-cds:error:cds-all:GeneralError/Expected",
+                "Expected Error Encountered", "Expected Error Encountered"),
 
         /**
          * Error enumerations defined by the WSO2

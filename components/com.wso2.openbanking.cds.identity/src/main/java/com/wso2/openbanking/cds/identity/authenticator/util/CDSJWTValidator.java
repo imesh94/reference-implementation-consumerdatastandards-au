@@ -23,7 +23,7 @@ import com.wso2.openbanking.accelerator.common.util.Generated;
 import com.wso2.openbanking.accelerator.identity.util.IdentityCommonConstants;
 import com.wso2.openbanking.accelerator.identity.util.IdentityCommonHelper;
 import com.wso2.openbanking.cds.identity.internal.CDSIdentityDataHolder;
-import org.apache.commons.lang.StringUtils;
+import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.wso2.carbon.base.MultitenantConstants;
