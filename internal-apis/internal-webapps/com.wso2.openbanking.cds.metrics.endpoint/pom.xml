@@ -105,7 +105,7 @@
                             <directory>src/main/webapp</directory>
                         </resource>
                     </webResources>
-                    <warName>api#openbanking#metrics</warName>
+                    <warName>api#openbanking#metricsendpoint</warName>
                 </configuration>
             </plugin>
         </plugins>
