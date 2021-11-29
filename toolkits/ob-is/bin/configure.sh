@@ -50,6 +50,13 @@ OPENBANKING_CDS_XML_FILE=${WSO2_OB_IS_HOME}/repository/conf/open-banking-cds.xml
 configure_datasources() {
     if [ "${DB_TYPE}" == "mysql" ]
         then
+            if [ "${DB_PASS}" == "" ]
+            then
+                DB_MYSQL_PASS=""
+            else
+                DB_MYSQL_PASS="-p${DB_PASS}"
+            fi
+
             # IS
             sed -i -e 's|DB_APIMGT_URL|jdbc:mysql://'${DB_HOST}':3306/'${DB_APIMGT}'?autoReconnect=true\&amp;useSSL=false|g' ${DEPLOYMENT_TOML_FILE}
             sed -i -e 's|DB_IS_CONFIG_URL|jdbc:mysql://'${DB_HOST}':3306/'${DB_IS_CONFIG}'?autoReconnect=true\&amp;useSSL=false|g' ${DEPLOYMENT_TOML_FILE}
@@ -59,6 +66,10 @@ configure_datasources() {
             sed -i -e 's|DB_USER|'${DB_USER}'|g' ${DEPLOYMENT_TOML_FILE}
             sed -i -e 's|DB_PASS|'${DB_PASS}'|g' ${DEPLOYMENT_TOML_FILE}
             sed -i -e 's|DB_DRIVER|'${DB_DRIVER}'|g' ${DEPLOYMENT_TOML_FILE}
+
+            echo -e "\nAlter OB_CONSENT_ATTRIBUTE table ATT_VALUE field size to 1023"
+            echo -e "=======================================================================\n"
+            mysql -u${DB_USER} ${DB_MYSQL_PASS} -h${DB_HOST} -D${DB_OPEN_BANKING_STORE} -e "ALTER TABLE OB_CONSENT_ATTRIBUTE MODIFY ATT_VALUE VARCHAR(1023)";
 
         else
             # IS

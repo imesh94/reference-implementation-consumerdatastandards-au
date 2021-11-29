@@ -187,6 +187,9 @@ enable = true
 config_endpoint = "https://analytics-event-auth.st.choreo.dev/auth/v1"
 auth_token = ""
 properties.'publisher.reporter.class' = "com.wso2.openbanking.accelerator.gateway.reporter.OBAnalyticsMetricReporter"
+properties.'stream.processor.rest.api.url' = "https://BI_HOSTNAME:7444"
+properties.'stream.processor.rest.api.username' = "admin@wso2.com@carbon.super"
+properties.'stream.processor.rest.api.password' = "$ref{super_admin.password}"
 
 [apim.key_manager]
 service_url = "https://IS_HOSTNAME:9446${carbon.context}services/"
@@ -423,7 +426,7 @@ use_softwareIdForAppName = true
 #read_timeout = 3000
 
 [[open_banking.dcr.regulatory_api]]
-api_name = "CDR-DynamicClientRegistration"
+api_name = "CDR Dynamic Client Registration API"
 roles = "data-recipient-software-product"
 
 [[open_banking.dcr.regulatory_api]]
@@ -446,17 +449,14 @@ priority = 2
 name = "com.wso2.openbanking.accelerator.gateway.executor.impl.api.resource.access.validation.APIResourceAccessValidationExecutor"
 priority = 3
 [[open_banking.gateway.openbanking_gateway_executors.type.executors]]
-name = "com.wso2.openbanking.cds.gateway.executors.header.validation.CDSHeaderValidationExecutor"
+name = "com.wso2.openbanking.accelerator.gateway.executor.impl.consent.ConsentEnforcementExecutor"
 priority = 4
 [[open_banking.gateway.openbanking_gateway_executors.type.executors]]
-name = "com.wso2.openbanking.accelerator.gateway.executor.impl.consent.ConsentEnforcementExecutor"
+name = "com.wso2.openbanking.accelerator.gateway.executor.impl.common.reporting.data.executor.CommonReportingDataExecutor"
 priority = 5
 [[open_banking.gateway.openbanking_gateway_executors.type.executors]]
-name = "com.wso2.openbanking.accelerator.gateway.executor.impl.common.reporting.data.executor.CommonReportingDataExecutor"
-priority = 6
-[[open_banking.gateway.openbanking_gateway_executors.type.executors]]
 name = "com.wso2.openbanking.cds.gateway.executors.reporting.CDSCommonDataReportingExecutor"
-priority = 7
+priority = 6
 [[open_banking.gateway.openbanking_gateway_executors.type.executors]]
 name = "com.wso2.openbanking.cds.gateway.executors.error.handler.CDSErrorHandler"
 priority = 1000
@@ -494,17 +494,14 @@ priority = 3
 name = "com.wso2.openbanking.cds.gateway.executors.idpermanence.IDPermanenceExecutor"
 priority = 4
 [[open_banking.gateway.openbanking_gateway_executors.type.executors]]
-name = "com.wso2.openbanking.cds.gateway.executors.header.validation.CDSHeaderValidationExecutor"
+name = "com.wso2.openbanking.accelerator.gateway.executor.impl.consent.ConsentEnforcementExecutor"
 priority = 5
 [[open_banking.gateway.openbanking_gateway_executors.type.executors]]
-name = "com.wso2.openbanking.accelerator.gateway.executor.impl.consent.ConsentEnforcementExecutor"
+name = "com.wso2.openbanking.accelerator.gateway.executor.impl.common.reporting.data.executor.CommonReportingDataExecutor"
 priority = 6
 [[open_banking.gateway.openbanking_gateway_executors.type.executors]]
-name = "com.wso2.openbanking.accelerator.gateway.executor.impl.common.reporting.data.executor.CommonReportingDataExecutor"
-priority = 7
-[[open_banking.gateway.openbanking_gateway_executors.type.executors]]
 name = "com.wso2.openbanking.cds.gateway.executors.reporting.CDSCommonDataReportingExecutor"
-priority = 8
+priority = 7
 [[open_banking.gateway.openbanking_gateway_executors.type.executors]]
 name = "com.wso2.openbanking.cds.gateway.executors.error.handler.CDSErrorHandler"
 priority = 1000
@@ -687,6 +684,9 @@ secret_key="wso2"
 [open_banking_cds.token_encryption]
 enabled=true
 secret_key="wso2"
+
+[open_banking_cds.admin]
+api_self_link = "https://APIM_HOSTNAME:8243/cds-au/v2/admin/"
 
 [open_banking_cds.headers]
 holder_identifier="HID"

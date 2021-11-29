@@ -28,6 +28,7 @@ import org.openqa.selenium.By
 import org.testng.Assert
 import org.testng.annotations.BeforeClass
 import org.testng.annotations.Test
+import org.testng.asserts.SoftAssert
 
 
 /**
@@ -132,7 +133,6 @@ class AuthorisationFlowTest {
             // Extra step for OB-2.0 AU Authentication flow.
             if (TestConstants.SOLUTION_VERSION_200.equals(ConfigParser.getInstance().getSolutionVersion())) {
                 driver.findElement(By.xpath(AUConstants.CONSENT_SUBMIT_XPATH)).click()
-                driver.findElement(By.xpath(AUConstants.CONSENT_CANCEL_XPATH)).click()
                 driver.findElement(By.xpath(AUConstants.CONFIRM_CONSENT_DENY_XPATH)).click()
             } else {
                 driver.findElement(By.xpath(AUConstants.CONSENT_DENY_XPATH)).click()
@@ -143,8 +143,8 @@ class AuthorisationFlowTest {
 
         if (TestConstants.SOLUTION_VERSION_200.equals(ConfigParser.getInstance().getSolutionVersion())) {
             String url = automation.currentUrl.get()
-            def errorMessage = url.split("#")[1].split("&")[1].split("=")[1].replaceAll("%20", " ")
-            Assert.assertEquals(errorMessage, "User skip the consent flow")
+            def errorMessage = url.split("error_description=")[1].split("&")[0].replaceAll("\\+"," ")
+            Assert.assertEquals(errorMessage, "User denied the consent")
 
         } else {
             String url = automation.currentUrl.get()

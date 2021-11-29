@@ -55,15 +55,18 @@ public class OBCDSAuthServletImpl implements OBAuthServletInterface {
         returnMaps.put(CDSConsentExtensionConstants.DATA_REQUESTED, dataRequested);
 
         // add accounts list
-        List<Map<String, String>> accountsData = new ArrayList<>();
+        List<Map<String, Object>> accountsData = new ArrayList<>();
         JSONArray accountsArray = dataSet.getJSONArray(CDSConsentExtensionConstants.ACCOUNTS);
         for (int accountIndex = 0; accountIndex < accountsArray.length(); accountIndex++) {
-            JSONObject object = accountsArray.getJSONObject(accountIndex);
-            String accountId = object.getString(CDSConsentExtensionConstants.ACCOUNT_ID);
-            String displayName = object.getString(CDSConsentExtensionConstants.DISPLAY_NAME);
-            Map<String, String> data = new HashMap<>();
+            JSONObject account = accountsArray.getJSONObject(accountIndex);
+            String accountId = account.getString(CDSConsentExtensionConstants.ACCOUNT_ID);
+            String displayName = account.getString(CDSConsentExtensionConstants.DISPLAY_NAME);
+
+            Map<String, Object> data = new HashMap<>();
             data.put(CDSConsentExtensionConstants.ACCOUNT_ID, accountId);
             data.put(CDSConsentExtensionConstants.DISPLAY_NAME, displayName);
+            updateJointAccountAttributes(account, data);
+
             accountsData.add(data);
         }
         httpServletRequest.setAttribute(CDSConsentExtensionConstants.ACCOUNTS_DATA, accountsData);
@@ -105,5 +108,22 @@ public class OBCDSAuthServletImpl implements OBAuthServletInterface {
     @Override
     public String getJSPPath() {
         return "/ob_cds_default.jsp";
+    }
+
+    private void updateJointAccountAttributes(JSONObject account, Map<String, Object> data) {
+        if (account != null && account.getBoolean(CDSConsentExtensionConstants.IS_JOINT_ACCOUNT_RESPONSE)) {
+            data.put(CDSConsentExtensionConstants.IS_JOINT_ACCOUNT, true);
+
+            String consentElectionStatus = String
+                    .valueOf(account.get(CDSConsentExtensionConstants.JOINT_ACCOUNT_CONSENT_ELECTION_STATUS));
+            data.put(CDSConsentExtensionConstants.IS_SELECTABLE,
+                    CDSConsentExtensionConstants.JOINT_ACCOUNT_PRE_APPROVAL.equalsIgnoreCase(consentElectionStatus));
+
+            JSONObject jointAccountInfo = account.getJSONObject(CDSConsentExtensionConstants.JOINT_ACCOUNT_INFO);
+            if (jointAccountInfo != null) {
+                data.put(CDSConsentExtensionConstants.LINKED_MEMBERS_COUNT,
+                        jointAccountInfo.getJSONArray(CDSConsentExtensionConstants.LINKED_MEMBER).length());
+            }
+        }
     }
 }

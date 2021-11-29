@@ -29,6 +29,7 @@ import com.wso2.openbanking.cds.consent.extensions.authorize.utils.PermissionsEn
 import com.wso2.openbanking.cds.consent.extensions.common.CDSConsentExtensionConstants;
 import net.minidev.json.JSONArray;
 import net.minidev.json.JSONObject;
+import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
@@ -53,7 +54,7 @@ public class CDSConsentPersistStep implements ConsentPersistStep {
         if (consentPersistData.getApproval()) {
             try {
                 ConsentData consentData = consentPersistData.getConsentData();
-                JSONObject payloadData =  consentPersistData.getPayload();
+                JSONObject payloadData = consentPersistData.getPayload();
                 // get the consent model to be created
                 AccountConsentRequest accountConsentRequest = CDSDataRetrievalUtil
                         .getAccountConsent(consentData, consentData.getMetaDataMap().
@@ -99,13 +100,25 @@ public class CDSConsentPersistStep implements ConsentPersistStep {
                 // get user consented accounts list to bind them with the consent
                 ArrayList<String> accountIdList = getAccountIdList(payloadData);
 
-                // TODO: Joint Account implementation
                 // TODO: Re-auth scenario implementation
                 // TODO: Revoke existing arrangement
                 // TODO: Data reporting
 
                 // bind user consented accounts with the create consent
                 bindUserAccountsToConsent(consentCoreService, consentResource, consentData, accountIdList);
+
+                // Get joint account data from consentPersistData
+                Object jointAccountIdWithUsersObj = consentPersistData.
+                        getMetadata().get(CDSConsentExtensionConstants.MAP_JOINT_ACCOUNTS_ID_WITH_USERS);
+                Object usersWithMultipleJointAccountsObj = consentPersistData.
+                        getMetadata().get(CDSConsentExtensionConstants.MAP_USER_ID_WITH_JOINT_ACCOUNTS);
+
+                // bind user consented joint accounts with the created consent
+                if (jointAccountIdWithUsersObj != null && usersWithMultipleJointAccountsObj != null) {
+                    bindJointAccountUsersToConsent(consentResource, consentData,
+                            (Map<String, List<String>>) jointAccountIdWithUsersObj,
+                            (Map<String, ArrayList<String>>) usersWithMultipleJointAccountsObj);
+                }
             } catch (ConsentManagementException e) {
                 throw new ConsentException(ResponseStatus.INTERNAL_SERVER_ERROR,
                         "Exception occurred while persisting consent");
@@ -119,7 +132,7 @@ public class CDSConsentPersistStep implements ConsentPersistStep {
             throws ConsentManagementException {
 
         return consentCoreService.createAuthorizableConsent(requestedConsent, consentData.getUserId(),
-                CDSConsentExtensionConstants.CREATED_STATUS, CDSConsentExtensionConstants.AWAITING_AUTH_STATUS,
+                CDSConsentExtensionConstants.CREATED_STATUS, CDSConsentExtensionConstants.AUTH_RESOURCE_TYPE_PRIMARY,
                 true);
     }
 
@@ -135,10 +148,10 @@ public class CDSConsentPersistStep implements ConsentPersistStep {
     }
 
     /**
-     * Create consent resource to the given parameters
+     * Create consent resource to the given parameters.
      *
-     * @param consentData consent data
-     * @param requestString request string of consent resource
+     * @param consentData       consent data
+     * @param requestString     request string of consent resource
      * @param consentAttributes map of consent attributes
      * @return consentResource
      */
@@ -163,9 +176,9 @@ public class CDSConsentPersistStep implements ConsentPersistStep {
     }
 
     /**
-     * Add meta data retrieved from web app to consent attributes
+     * Add meta data retrieved from web app to consent attributes.
      *
-     * @param consentData consent data
+     * @param consentData        consent data
      * @param consentPersistData consent persist data
      * @return Map of consentAttributes to be stored with consent resource
      */
@@ -179,11 +192,17 @@ public class CDSConsentPersistStep implements ConsentPersistStep {
         consentAttributes.put(CDSConsentExtensionConstants.SHARING_DURATION_VALUE, consentData.getMetaDataMap()
                 .get(CDSConsentExtensionConstants.SHARING_DURATION_VALUE).toString());
 
+        final Object jointAccountsPayload = consentPersistData.getMetadata()
+                .get(CDSConsentExtensionConstants.JOINT_ACCOUNTS_PAYLOAD);
+        if (jointAccountsPayload != null && StringUtils.isNotBlank(jointAccountsPayload.toString())) {
+            consentAttributes.put(CDSConsentExtensionConstants.JOINT_ACCOUNTS_PAYLOAD, jointAccountsPayload.toString());
+        }
+
         return consentAttributes;
     }
 
     /**
-     * Get latest authorization using updated time and check whether its null or in proper state
+     * Get latest authorization using updated time and check whether its null or in proper state.
      *
      * @param createdConsent consent created
      * @return Latest authorization resource
@@ -197,7 +216,7 @@ public class CDSConsentPersistStep implements ConsentPersistStep {
         long updatedTime = 0;
         AuthorizationResource authorizationResource = null;
         if (!authorizationResources.isEmpty()) {
-            for (AuthorizationResource authorizationResourceValue: authorizationResources) {
+            for (AuthorizationResource authorizationResourceValue : authorizationResources) {
                 if (authorizationResourceValue.getUpdatedTime() > updatedTime) {
                     updatedTime = authorizationResourceValue.getUpdatedTime();
                     authorizationResource = authorizationResourceValue;
@@ -218,7 +237,7 @@ public class CDSConsentPersistStep implements ConsentPersistStep {
     }
 
     /**
-     * Get account list from payload data and check for validity
+     * Get account list from payload data and check for validity.
      *
      * @param payloadData payload data of retrieved from persist data
      * @return List of user consented accounts
@@ -243,5 +262,43 @@ public class CDSConsentPersistStep implements ConsentPersistStep {
             accountIdsList.add((String) account);
         }
         return accountIdsList;
+    }
+
+    @Generated(message = "Excluding from code coverage since it requires a service call")
+    private void bindJointAccountUsersToConsent(ConsentResource consentResource, ConsentData consentData,
+                                                  Map<String, List<String>> jointAccountIdWithUsers,
+                                                  Map<String, ArrayList<String>> usersWithMultipleJointAccounts)
+            throws ConsentManagementException {
+
+        final List<String> alreadyAddedUsers = new ArrayList<>();
+        // add primary user to already added users list
+        alreadyAddedUsers.add(consentData.getUserId());
+
+        for (Map.Entry<String, List<String>> entry : jointAccountIdWithUsers.entrySet()) {
+            List<String> userIdList = entry.getValue();
+            for (String userId : userIdList) {
+                if (StringUtils.isNotBlank(userId) && !alreadyAddedUsers.contains(userId)) {
+                    AuthorizationResource createdAuthResource = consentCoreService.createConsentAuthorization(
+                            getSecondaryAuthorizationResource(consentData.getConsentId(), userId));
+
+                    consentCoreService.bindUserAccountsToConsent(consentResource, userId,
+                            createdAuthResource.getAuthorizationID(), usersWithMultipleJointAccounts.get(userId),
+                            CDSConsentExtensionConstants.AUTHORIZED_STATUS,
+                            CDSConsentExtensionConstants.AUTHORIZED_STATUS);
+
+                    alreadyAddedUsers.add(userId);
+                }
+            }
+        }
+    }
+
+    private AuthorizationResource getSecondaryAuthorizationResource(String consentId, String secondaryUserId) {
+        AuthorizationResource newAuthResource = new AuthorizationResource();
+        newAuthResource.setConsentID(consentId);
+        newAuthResource.setUserID(secondaryUserId);
+        newAuthResource.setAuthorizationStatus(CDSConsentExtensionConstants.CREATED_STATUS);
+        newAuthResource.setAuthorizationType(CDSConsentExtensionConstants.AUTH_RESOURCE_TYPE_LINKED);
+
+        return newAuthResource;
     }
 }
