@@ -15,7 +15,7 @@
 
 -- REST endpoint to publish availability data.
 @source(type='http',
-    receiver.url='http://<ANALYTICS_HOSTNAME>:8006/AvailabilityMetricsRawDataApp/AvailabilityMetricsRawDataStream',
+    receiver.url='http://<BI_HOSTNAME>:8006/AvailabilityMetricsRawDataApp/AvailabilityMetricsRawDataStream',
     basic.auth.enabled='false',
     @map(type='json', @attributes(outages = "$.event")))
 define stream AvailabilityMetricsRawDataEventStream (outages string);
@@ -23,7 +23,7 @@ define stream AvailabilityMetricsRawDataEventStream (outages string);
 -- REST endpoint to cleanup availability data.
 @source(type='http-request',
     source.id='incidentDeletion',
-    receiver.url='http://<ANALYTICS_HOSTNAME>:8007/AvailabilityMetricsRawDataApp/IncidentDeletionRawDataStream',
+    receiver.url='http://<BI_HOSTNAME>:8007/AvailabilityMetricsRawDataApp/IncidentDeletionRawDataStream',
     basic.auth.enabled='false',
     connection.timeout="5000",
     @map(type='json', @attributes(MESSAGE_ID='trp:messageId', outages="$.event")))
