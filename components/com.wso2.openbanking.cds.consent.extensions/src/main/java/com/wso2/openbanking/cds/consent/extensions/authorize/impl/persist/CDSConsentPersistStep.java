@@ -87,7 +87,7 @@ public class CDSConsentPersistStep implements ConsentPersistStep {
                             AUTH_RESOURCE_STATUS).toString();
                     Map<String, ArrayList<String>> accountIdsMap = new HashMap<>();
                     ArrayList<String> permissionsList = new ArrayList<>();
-                    permissionsList.add("n/a");
+                    permissionsList.add("n/a"); // Not applicable for CDS
                     for (String accountId : accountIdList) {
                         accountIdsMap.put(accountId, permissionsList);
                     }

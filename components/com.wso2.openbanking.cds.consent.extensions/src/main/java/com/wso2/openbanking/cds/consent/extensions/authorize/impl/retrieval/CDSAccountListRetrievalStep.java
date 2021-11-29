@@ -74,7 +74,6 @@ public class CDSAccountListRetrievalStep implements ConsentRetrievalStep {
                                     ((JSONObject) account).appendField(CDSConsentExtensionConstants.
                                             IS_PRE_SELECTED_ACCOUNT, "true");
                                 }
-
                             });
                         }
                     }
