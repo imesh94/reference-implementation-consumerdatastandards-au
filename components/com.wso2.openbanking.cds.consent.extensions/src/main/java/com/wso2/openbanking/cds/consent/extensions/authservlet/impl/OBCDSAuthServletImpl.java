@@ -63,8 +63,14 @@ public class OBCDSAuthServletImpl implements OBAuthServletInterface {
         // Add additional attributes to be displayed
         httpServletRequest.setAttribute(CDSConsentExtensionConstants.SP_FULL_NAME,
                 dataSet.getString(CDSConsentExtensionConstants.SP_FULL_NAME));
-        httpServletRequest.setAttribute(CDSConsentExtensionConstants.CONSENT_EXPIRY,
-                dataSet.getString(CDSConsentExtensionConstants.CONSENT_EXPIRY));
+        // Check for zero sharing duration and display as once off consent
+        if (CDSConsentExtensionConstants.ZERO.equals(dataSet.getString(CDSConsentExtensionConstants.CONSENT_EXPIRY))) {
+            httpServletRequest.setAttribute(CDSConsentExtensionConstants.CONSENT_EXPIRY,
+                    CDSConsentExtensionConstants.SINGLE_ACCESS_CONSENT);
+        } else {
+            httpServletRequest.setAttribute(CDSConsentExtensionConstants.CONSENT_EXPIRY,
+                    dataSet.getString(CDSConsentExtensionConstants.CONSENT_EXPIRY));
+        }
         httpServletRequest.setAttribute(CDSConsentExtensionConstants.ACCOUNT_MASKING_ENABLED,
                 OpenBankingCDSConfigParser.getInstance().isAccountMaskingEnabled());
 
