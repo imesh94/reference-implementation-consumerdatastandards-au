@@ -36,4 +36,11 @@
         <SecretKey>wso2</SecretKey>
         {% endif %}
     </TokenEncryption>
+    <Admin>
+        {% if open_banking_cds.admin.api_self_link is defined %}
+        <APISelfLink>{{open_banking_cds.admin.api_self_link}}</APISelfLink>
+        {% else %}
+        <APISelfLink>https://localhost:8243/cds-au/v2/admin/</APISelfLink>
+        {% endif %}
+    </Admin>
 </Server>
