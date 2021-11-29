@@ -687,3 +687,6 @@ secret_key="wso2"
 
 [open_banking_cds.admin]
 api_self_link = "https://APIM_HOSTNAME:8243/cds-au/v2/admin/"
+
+[open_banking_cds.headers]
+holder_identifier="HID"

@@ -86,7 +86,8 @@ public class ErrorConstants {
         FIELD_MISSING(400, "urn:au-cds:error:cds-all:Field/Missing", "Missing Required Field",
                 "Missing Required Field %s in the request"),
         //one or more http headers are missing
-        HEADER_MISSING(400, "AU.CDR.Missing.Header", "Missing Required Header", "Mandatory header %s is missing"),
+        HEADER_MISSING(400, "urn:au-cds:error:cds-all:Header/Missing", "Missing Required Header",
+                "Mandatory header %s is missing"),
         //Query or Request Body Parameter is not defined by the API
         UNEXPECTED_FIELD(400, "AU.CDR.Unexpected.Field", "Unexpected Field Not Allowed", "Unexpected Field %s is " +
                 "not allowed by the API"),
@@ -96,7 +97,8 @@ public class ErrorConstants {
         //Query, PAth or Request Body Parameter is invalid
         INVALID_FIELD(400, "AU.CDR.Invalid.Field", "Invalid Field", "Invalid Field %s found in the request"),
         //Header is invalid type or violates the constraints
-        INVALID_HEADER(400, "AU.CDR.Invalid.Header", "Invalid Header", "Requested %s header is not supported"),
+        INVALID_HEADER(400, "urn:au-cds:error:cds-all:Header/Invalid", "Invalid Header",
+                "Requested %s header is not supported"),
         //Invalid date is provided in query parameters
         INVALID_DATE(400, "AU.CDR.Invalid.DateTime", "Invalid Date", "Date found in the query parameters is not" +
                 " in the accepted format"),
@@ -161,15 +163,16 @@ public class ErrorConstants {
         UNAVAILABLE_BANK_ACCOUNT(422, "AU.CDR.Resource.UnavailableBankingAccount", "Banking Account Is Unavailable",
                 "Banking Account ID provided in the request is Unavailable"),
         //Requested version is less than the minimum version or greater than the maximum version
-        UNSUPPORTED_VERSION(406, "AU.CDR.Unsupported.Version", "Unsupported Version Requested", "Requested x-v " +
-                "version is not supported"),
+        UNSUPPORTED_VERSION(406, "urn:au-cds:error:cds-all:Header/UnsupportedVersion", "Unsupported Version",
+                "Requested endpoint version %s is not supported"),
         //Page out of range
         PAGE_OUT_OF_RANGE(422, "AU.CDR.Invalid.PageOutOfRange", "Page Requested Is Out Of Range",
                 "Page Requested Is Out Of Range"),
         //Page size is greater than max
         PAGE_SIZE_EXCEED(422, "AU.CDR.Invalid.PageSizeTooLarge", "Page Size Exceeded", "Page Size Exceeded"),
         //Requested version is not a positive integer
-        INVALID_VERSION(422, "AU.CDR.Invalid.Version", "Invalid Version Requested", "Invalid Version Requested"),
+        INVALID_VERSION(400, "urn:au-cds:error:cds-all:Header/InvalidVersion", "Invalid Version",
+                "Requested %s version is not valid"),
         TEAPOT(418, "AU.CDR.IAmATeapot", "I'm A Teapot", "I'm A Teapot"),
         //API unavailable as part of a partial outage.
         SERVICE_UNAVAILABLE(503, "AU.CDR.Service.Unavailable", "Service Unavailable", "Service Unavailable"),

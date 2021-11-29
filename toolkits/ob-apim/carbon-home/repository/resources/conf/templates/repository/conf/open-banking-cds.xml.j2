@@ -43,4 +43,9 @@
         <APISelfLink>https://localhost:8243/cds-au/v2/admin/</APISelfLink>
         {% endif %}
     </Admin>
+    <Headers>
+        {% if open_banking_cds.headers.holder_identifier is defined %}
+        <HolderIdentifier>{{open_banking_cds.headers.holder_identifier}}</HolderIdentifier>
+        {% endif %}
+    </Headers>
 </Server>
