@@ -30,6 +30,7 @@ public class CDSConsentExtensionConstants {
     public static final String ACCOUNTS_DATA = "accounts_data";
     public static final String ACCOUNT_ID = "accountId";
     public static final String DISPLAY_NAME = "displayName";
+    public static final String PRE_ACCOUNTS_DATA = "pre_accounts_data";
     public static final String REDIRECT_URL = "redirectURL";
     public static final String EXPIRATION_DATE_TITLE = "Expiration Date Time";
     public static final String PERMISSION_TITLE = "Permissions";
@@ -37,6 +38,8 @@ public class CDSConsentExtensionConstants {
     public static final String PERMISSIONS = "permissions";
     public static final String SHARING_DURATION_VALUE = "sharing_duration_value";
     public static final String CDR_ARRANGEMENT_ID = "cdr_arrangement_id";
+    public static final String AUTH_RESOURCE_ID = "authResourceId";
+    public static final String AUTH_RESOURCE_STATUS = "authResourceStatus";
     public static final String CDR_ACCOUNTS = "CDR_ACCOUNTS";
     public static final String OPENID_SCOPES = "openid_scopes";
     public static final String CLIENT_ID = "client_id";
@@ -79,11 +82,16 @@ public class CDSConsentExtensionConstants {
     public static final String JOINT_ACCOUNT_PAYLOAD_USER_ID = "userId";
     public static final String JOINT_ACCOUNT_PAYLOAD_ACCOUNT_ID = "accountId";
     public static final String JOINT_ACCOUNTS_PAYLOAD = "joint_accounts_payload";
-
+    public static final String PRE_SELECTED_ACCOUNT_LIST = "preSelectedAccountList";
+    public static final String IS_PRE_SELECTED_ACCOUNT = "isPreSelectedAccount";
+    public static final String EXISTING_PERMISSIONS = "existingPermissions";
+    public static final String IS_SHARING_DURATION_UPDATED = "isSharingDurationUpdated";
+    public static final String IS_CONSENT_AMENDMENT = "isConsentAmendment";
     public static final String CHAR_SET = "UTF-8";
     public static final String CUSTOMER_TYPE = "customerUType";
     public static final String ORGANISATION = "Organisation";
     public static final String DATA_REQUESTED = "data_requested";
+    public static final String NEW_DATA_REQUESTED = "new_data_requested";
     public static final String COMMON_CUSTOMER_BASIC_READ_SCOPE = "common:customer.basic:read";
     public static final String COMMON_CUSTOMER_DETAIL_READ_SCOPE = "common:customer.detail:read";
     public static final String COMMON_ACCOUNTS_BASIC_READ_SCOPE = "bank:accounts.basic:read";
