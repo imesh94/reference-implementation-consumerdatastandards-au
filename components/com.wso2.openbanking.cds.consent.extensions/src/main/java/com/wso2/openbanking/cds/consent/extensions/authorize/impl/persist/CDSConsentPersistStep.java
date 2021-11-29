@@ -136,23 +136,21 @@ public class CDSConsentPersistStep implements ConsentPersistStep {
                     }
                     // bind user consented accounts with the create consent
                     bindUserAccountsToConsent(consentCoreService, consentResource, consentData, accountIdList);
+
+                    // Get joint account data from consentPersistData
+                    Object jointAccountIdWithUsersObj = consentPersistData.
+                            getMetadata().get(CDSConsentExtensionConstants.MAP_JOINT_ACCOUNTS_ID_WITH_USERS);
+                    Object usersWithMultipleJointAccountsObj = consentPersistData.
+                            getMetadata().get(CDSConsentExtensionConstants.MAP_USER_ID_WITH_JOINT_ACCOUNTS);
+
+                    // bind user consented joint accounts with the created consent
+                    if (jointAccountIdWithUsersObj != null && usersWithMultipleJointAccountsObj != null) {
+                        bindJointAccountUsersToConsent(consentResource, consentData,
+                                (Map<String, List<String>>) jointAccountIdWithUsersObj,
+                                (Map<String, ArrayList<String>>) usersWithMultipleJointAccountsObj);
+                    }
                 }
                 // TODO: Data reporting
-                // bind user consented accounts with the create consent
-                bindUserAccountsToConsent(consentCoreService, consentResource, consentData, accountIdList);
-
-                // Get joint account data from consentPersistData
-                Object jointAccountIdWithUsersObj = consentPersistData.
-                        getMetadata().get(CDSConsentExtensionConstants.MAP_JOINT_ACCOUNTS_ID_WITH_USERS);
-                Object usersWithMultipleJointAccountsObj = consentPersistData.
-                        getMetadata().get(CDSConsentExtensionConstants.MAP_USER_ID_WITH_JOINT_ACCOUNTS);
-
-                // bind user consented joint accounts with the created consent
-                if (jointAccountIdWithUsersObj != null && usersWithMultipleJointAccountsObj != null) {
-                    bindJointAccountUsersToConsent(consentResource, consentData,
-                            (Map<String, List<String>>) jointAccountIdWithUsersObj,
-                            (Map<String, ArrayList<String>>) usersWithMultipleJointAccountsObj);
-                }
             } catch (ConsentManagementException e) {
                 throw new ConsentException(ResponseStatus.INTERNAL_SERVER_ERROR,
                         "Exception occurred while persisting consent");

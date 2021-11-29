@@ -43,7 +43,7 @@ public class OBCDSAuthServletImpl implements OBAuthServletInterface {
 
         // Add accounts list
         JSONArray accountsArray = dataSet.getJSONArray(CDSConsentExtensionConstants.ACCOUNTS);
-        List<Map<String, String>> accountsData = getAccountsDataMap(accountsArray);
+        List<Map<String, Object>> accountsData = getAccountsDataMap(accountsArray);
         httpServletRequest.setAttribute(CDSConsentExtensionConstants.ACCOUNTS_DATA, accountsData);
 
         //Consent amendment flow
@@ -53,6 +53,11 @@ public class OBCDSAuthServletImpl implements OBAuthServletInterface {
             JSONArray newDataRequestedJsonArray = dataSet.getJSONArray(CDSConsentExtensionConstants.NEW_DATA_REQUESTED);
             Map<String, List<String>> newDataRequested = getRequestedDataMap(newDataRequestedJsonArray);
             returnMaps.put(CDSConsentExtensionConstants.NEW_DATA_REQUESTED, newDataRequested);
+            httpServletRequest.setAttribute(CDSConsentExtensionConstants.IS_CONSENT_AMENDMENT, true);
+            if (dataSet.has(CDSConsentExtensionConstants.IS_SHARING_DURATION_UPDATED)) {
+                httpServletRequest.setAttribute(CDSConsentExtensionConstants.IS_SHARING_DURATION_UPDATED,
+                        dataSet.get(CDSConsentExtensionConstants.IS_SHARING_DURATION_UPDATED));
+            }
         }
 
         // Add additional attributes to be displayed
@@ -129,19 +134,20 @@ public class OBCDSAuthServletImpl implements OBAuthServletInterface {
         return dataRequested;
     }
 
-    private List<Map<String, String>> getAccountsDataMap(JSONArray accountsArray) {
+    private List<Map<String, Object>> getAccountsDataMap(JSONArray accountsArray) {
 
-        List<Map<String, String>> accountsData = new ArrayList<>();
+        List<Map<String, Object>> accountsData = new ArrayList<>();
         for (int accountIndex = 0; accountIndex < accountsArray.length(); accountIndex++) {
-            JSONObject object = accountsArray.getJSONObject(accountIndex);
-            String accountId = object.getString(CDSConsentExtensionConstants.ACCOUNT_ID);
-            String displayName = object.getString(CDSConsentExtensionConstants.DISPLAY_NAME);
+            Map<String, Object> data = new HashMap<>();
+            JSONObject account = accountsArray.getJSONObject(accountIndex);
+            String accountId = account.getString(CDSConsentExtensionConstants.ACCOUNT_ID);
+            String displayName = account.getString(CDSConsentExtensionConstants.DISPLAY_NAME);
             String isPreSelectedAccount = "false";
+            updateJointAccountAttributes(account, data);
 
-            if (object.has(CDSConsentExtensionConstants.IS_PRE_SELECTED_ACCOUNT)) {
-                isPreSelectedAccount = object.getString(CDSConsentExtensionConstants.IS_PRE_SELECTED_ACCOUNT);
+            if (account.has(CDSConsentExtensionConstants.IS_PRE_SELECTED_ACCOUNT)) {
+                isPreSelectedAccount = account.getString(CDSConsentExtensionConstants.IS_PRE_SELECTED_ACCOUNT);
             }
-            Map<String, String> data = new HashMap<>();
             data.put(CDSConsentExtensionConstants.ACCOUNT_ID, accountId);
             data.put(CDSConsentExtensionConstants.DISPLAY_NAME, displayName);
             data.put(CDSConsentExtensionConstants.IS_PRE_SELECTED_ACCOUNT, isPreSelectedAccount);
