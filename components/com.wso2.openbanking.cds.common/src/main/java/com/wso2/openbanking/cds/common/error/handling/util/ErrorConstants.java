@@ -127,8 +127,7 @@ public class ErrorConstants {
                 " acceptable by the API"),
         //Consent is in the revoked state
         REVOKED_CONSENT(403, "AU.CDR.Entitlements.ConsentIsRevoked", "Consent Is Revoked",
-                "Provided consent is in " +
-                "the revoked state"),
+                "Provided consent is in the revoked state"),
         //The resource requested is forbidden
         RESOURCE_FORBIDDEN(403, "urn:au-cds:error:cds-all:Authorisation/InvalidConsent",
                 "Resource Is Forbidden", "The requested resource %s is forbidden"),
