@@ -115,7 +115,7 @@ public class CDSConsentPersistStep implements ConsentPersistStep {
                     try {
                         createdConsent = createConsent(consentCoreService, consentResource, consentData);
                     } catch (ConsentManagementException e) {
-                        log.error("Error while creating the consent");
+                        log.error(String.format("Error while creating the consent. %s", e.getMessage()));
                         throw new ConsentException(ResponseStatus.INTERNAL_SERVER_ERROR,
                                 "Error while creating the consent");
                     }

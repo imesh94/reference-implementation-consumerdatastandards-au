@@ -139,7 +139,8 @@ public class CDSConsentRetrievalStep implements ConsentRetrievalStep {
                         throw new ConsentException(ResponseStatus.BAD_REQUEST, errorMessage);
                     }
                 } catch (ConsentManagementException e) {
-                    log.error("Error occurred while searching for the existing consent");
+                    log.error(String.format("Error occurred while searching for the existing consent. %s",
+                            e.getMessage()));
                     throw new ConsentException(ResponseStatus.INTERNAL_SERVER_ERROR,
                             "Error occurred while searching for the existing consent");
                 }
