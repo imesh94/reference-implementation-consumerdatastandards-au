@@ -38,6 +38,8 @@ import java.util.Map;
 public class CDSRequestObjectValidator extends OBRequestObjectValidator {
 
     private static final Log log = LogFactory.getLog(CDSRequestObjectValidator.class);
+    private static final String CDR_ARRANGEMENT_ID = "cdr_arrangement_id";
+    private static final String PAR_INITIATED_REQ_OBJ = "par_initiated_request_object";
 
     @Override
     public ValidationResponse validateOBConstraints(OBRequestObject obRequestObject, Map<String, Object> dataMap) {
@@ -47,6 +49,8 @@ public class CDSRequestObjectValidator extends OBRequestObjectValidator {
         if (superValidationResponse.isValid()) {
             CDSRequestObject cdsRequestObject = new CDSRequestObject(obRequestObject);
             String violation = validateScope(obRequestObject, dataMap);
+
+            violation = StringUtils.isEmpty(violation) ? validateConsentAmendment(obRequestObject) : violation;
 
             violation = StringUtils.isEmpty(violation) ? validateMetadata(obRequestObject
                     .getClaimValue("client_id")) : violation;
@@ -112,6 +116,19 @@ public class CDSRequestObjectValidator extends OBRequestObjectValidator {
                         clientId + ". Caused by, " + metadataValidationResp.getErrorMessage());
                 return metadataValidationResp.getErrorMessage();
             }
+        }
+        return StringUtils.EMPTY;
+    }
+
+    private String validateConsentAmendment(OBRequestObject obRequestObject) {
+
+        // Check for par request if cdr_arrangement_id is available in the request object.
+        if (obRequestObject.getRequestedClaims().containsKey(CDR_ARRANGEMENT_ID) &&
+                !Boolean.parseBoolean(obRequestObject.getClaimValue(PAR_INITIATED_REQ_OBJ))) {
+            String errorMessage = "Request object validation failed.The claim cdr_arrangement_id is only accepted " +
+                    "in par initiated requests.";
+            log.error(errorMessage);
+            return errorMessage;
         }
         return StringUtils.EMPTY;
     }

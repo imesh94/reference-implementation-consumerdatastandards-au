@@ -37,7 +37,7 @@ public class Constants {
     //Endpoint identifiers
     public static final String ARRANGEMENTS = "arrangements";
     public static final String TOKEN = "token";
-    public static final String REVOKE = "revoke";
+    public static final String REVOKE = "oauth2/revoke";
     public static final String PAR = "par";
 
 
