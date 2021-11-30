@@ -55,11 +55,9 @@ public class CDSConsentRetrievalStep implements ConsentRetrievalStep {
         if (consentData.isRegulatory()) {
             String requestObject = CDSDataRetrievalUtil.extractRequestObject(consentData.getSpQueryParams());
             Map<String, Object> requiredData = extractRequiredDataFromRequestObject(requestObject);
-            boolean isConsentAmendment = false;
 
             // check for consent amendment
             if (requiredData.containsKey(CDSConsentExtensionConstants.CDR_ARRANGEMENT_ID)) {
-                isConsentAmendment = true;
                 String consentId = requiredData.get(CDSConsentExtensionConstants.CDR_ARRANGEMENT_ID).toString();
                 jsonObject.appendField(CDSConsentExtensionConstants.IS_CONSENT_AMENDMENT,
                         true);
@@ -118,7 +116,7 @@ public class CDSConsentRetrievalStep implements ConsentRetrievalStep {
                             // Check if the sharing duration is updated
                             long newSharingDuration = Long.parseLong(requiredData.get(
                                     CDSConsentExtensionConstants.SHARING_DURATION_VALUE).toString());
-                            boolean isSharingDurationUpdated = getConsentExpiryDateTime(newSharingDuration).
+                            boolean isSharingDurationUpdated = !getConsentExpiryDateTime(newSharingDuration).
                                     isEqual(existingConsentExpiry);
                             jsonObject.appendField(CDSConsentExtensionConstants.IS_SHARING_DURATION_UPDATED,
                                     isSharingDurationUpdated);
@@ -177,8 +175,6 @@ public class CDSConsentRetrievalStep implements ConsentRetrievalStep {
                     requiredData.get(CDSConsentExtensionConstants.EXPIRATION_DATE_TIME));
             consentData.addData(CDSConsentExtensionConstants.SHARING_DURATION_VALUE,
                     requiredData.get(CDSConsentExtensionConstants.SHARING_DURATION_VALUE));
-            consentData.addData(CDSConsentExtensionConstants.IS_CONSENT_AMENDMENT,
-                    isConsentAmendment);
 
             // consent type is hard coded since CDS only support accounts type for the moment
             // scopes will be used to determine consent type if any other types required in future
