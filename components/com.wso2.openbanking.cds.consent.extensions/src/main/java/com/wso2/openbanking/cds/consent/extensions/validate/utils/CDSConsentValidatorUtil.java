@@ -42,7 +42,8 @@ public class CDSConsentValidatorUtil {
      */
     public static Boolean isConsentExpired(String expDateVal) throws ConsentException {
 
-        if (expDateVal != null && !expDateVal.isEmpty()) {
+        if (expDateVal != null && !expDateVal.isEmpty() &&
+                !CDSConsentExtensionConstants.ZERO.equalsIgnoreCase(expDateVal)) {
             try {
                 OffsetDateTime expDate = OffsetDateTime.parse(expDateVal);
                 return OffsetDateTime.now().isAfter(expDate);
