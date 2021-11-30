@@ -454,17 +454,14 @@ priority = 2
 name = "com.wso2.openbanking.accelerator.gateway.executor.impl.api.resource.access.validation.APIResourceAccessValidationExecutor"
 priority = 3
 [[open_banking.gateway.openbanking_gateway_executors.type.executors]]
-name = "com.wso2.openbanking.cds.gateway.executors.header.validation.CDSHeaderValidationExecutor"
+name = "com.wso2.openbanking.accelerator.gateway.executor.impl.consent.ConsentEnforcementExecutor"
 priority = 4
 [[open_banking.gateway.openbanking_gateway_executors.type.executors]]
-name = "com.wso2.openbanking.accelerator.gateway.executor.impl.consent.ConsentEnforcementExecutor"
+name = "com.wso2.openbanking.accelerator.gateway.executor.impl.common.reporting.data.executor.CommonReportingDataExecutor"
 priority = 5
 [[open_banking.gateway.openbanking_gateway_executors.type.executors]]
-name = "com.wso2.openbanking.accelerator.gateway.executor.impl.common.reporting.data.executor.CommonReportingDataExecutor"
-priority = 6
-[[open_banking.gateway.openbanking_gateway_executors.type.executors]]
 name = "com.wso2.openbanking.cds.gateway.executors.reporting.CDSCommonDataReportingExecutor"
-priority = 7
+priority = 6
 [[open_banking.gateway.openbanking_gateway_executors.type.executors]]
 name = "com.wso2.openbanking.cds.gateway.executors.error.handler.CDSErrorHandler"
 priority = 1000
