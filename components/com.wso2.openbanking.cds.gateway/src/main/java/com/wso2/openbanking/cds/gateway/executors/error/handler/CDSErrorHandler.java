@@ -14,6 +14,7 @@ package com.wso2.openbanking.cds.gateway.executors.error.handler;
 
 import com.google.gson.JsonArray;
 import com.google.gson.JsonObject;
+import com.wso2.openbanking.accelerator.common.error.OpenBankingErrorCodes;
 import com.wso2.openbanking.accelerator.gateway.executor.core.OpenBankingGatewayExecutor;
 import com.wso2.openbanking.accelerator.gateway.executor.model.OBAPIRequestContext;
 import com.wso2.openbanking.accelerator.gateway.executor.model.OBAPIResponseContext;
@@ -22,7 +23,6 @@ import com.wso2.openbanking.accelerator.gateway.util.GatewayConstants;
 import com.wso2.openbanking.cds.common.error.handling.util.ErrorConstants;
 import com.wso2.openbanking.cds.common.error.handling.util.ErrorUtil;
 import com.wso2.openbanking.cds.gateway.executors.idpermanence.utils.IdPermanenceUtils;
-import net.minidev.json.JSONArray;
 import net.minidev.json.JSONObject;
 import net.minidev.json.parser.JSONParser;
 import net.minidev.json.parser.ParseException;
@@ -103,7 +103,15 @@ public class CDSErrorHandler implements OpenBankingGatewayExecutor {
         }
 
         if (obapiRequestContext.getMsgInfo().getResource().contains("/register")) {
-            JsonObject dcrErrorPayload = getDCRErrorJSON(errors);
+            if (errors.isEmpty() && obapiRequestContext.getContextProperty(GatewayConstants.ERROR_STATUS_PROP) != null
+                    && OpenBankingErrorCodes.UNAUTHORIZED_CODE.equals(obapiRequestContext
+                    .getContextProperty(GatewayConstants.ERROR_STATUS_PROP))) {
+                OpenBankingExecutorError error = new OpenBankingExecutorError(OpenBankingErrorCodes.UNAUTHORIZED_CODE,
+                        "invalid_client", "Request failed due to unknown or invalid Client",
+                        OpenBankingErrorCodes.UNAUTHORIZED_CODE);
+                errors.add(error);
+            }
+            JSONObject dcrErrorPayload = getDCRErrorJSON(errors);
             obapiRequestContext.setModifiedPayload(dcrErrorPayload.toString());
         } else {
             String memberId = obapiRequestContext.getApiRequestInfo().getUsername();
@@ -148,7 +156,7 @@ public class CDSErrorHandler implements OpenBankingGatewayExecutor {
         }
 
         if (obapiResponseContext.getMsgInfo().getResource().contains("/register")) {
-            JsonObject dcrErrorPayload = getDCRErrorJSON(errors);
+            JSONObject dcrErrorPayload = getDCRErrorJSON(errors);
             obapiResponseContext.setModifiedPayload(dcrErrorPayload.toString());
         } else {
             String memberId = obapiResponseContext.getApiRequestInfo().getUsername();
@@ -180,13 +188,12 @@ public class CDSErrorHandler implements OpenBankingGatewayExecutor {
         obapiResponseContext.setAnalyticsData(analyticsData);
     }
 
-    public static JsonObject getDCRErrorJSON(ArrayList<OpenBankingExecutorError> errors) {
+    public static JSONObject getDCRErrorJSON(ArrayList<OpenBankingExecutorError> errors) {
 
-        JsonObject errorObj = new JsonObject();
-
+        JSONObject errorObj = new JSONObject();
         for (OpenBankingExecutorError error : errors) {
-            errorObj.addProperty(ErrorConstants.ERROR, error.getTitle());
-            errorObj.addProperty(ErrorConstants.ERROR_DESCRIPTION, error.getMessage());
+            errorObj.put(ErrorConstants.ERROR, error.getTitle());
+            errorObj.put(ErrorConstants.ERROR_DESCRIPTION, error.getMessage());
         }
         return errorObj;
     }
