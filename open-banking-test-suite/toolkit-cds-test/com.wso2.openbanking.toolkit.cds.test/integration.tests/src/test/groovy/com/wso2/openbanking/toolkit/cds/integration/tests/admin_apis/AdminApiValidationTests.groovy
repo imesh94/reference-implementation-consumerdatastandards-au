@@ -75,7 +75,7 @@ class AdminApiValidationTests extends AbstractAUTests {
     @Test
     void "TC1002001_Retrieve operational statistics from the Data Holder"() {
 
-        accessToken = accessTokenJWTDTO.getJWT(AUConstants.ADMIN_API_ISSUER, AUConstants.ADMIN_API_AUDIENCE)
+        accessToken = accessTokenJWTDTO.getJwt(AUConstants.ADMIN_API_ISSUER)
 
         def response = TestSuite.buildRequest()
                 .header(AUConstants.CONTENT_TYPE, "application/json")
@@ -92,7 +92,7 @@ class AdminApiValidationTests extends AbstractAUTests {
     @Test(enabled = false)
     void "Meta Data"() {
 
-        accessToken = accessTokenJWTDTO.getJWT(AUConstants.ADMIN_API_ISSUER, AUConstants.ADMIN_API_AUDIENCE)
+        accessToken = accessTokenJWTDTO.getJwt(AUConstants.ADMIN_API_ISSUER, AUConstants.ADMIN_API_AUDIENCE)
 
         String requestBody = """
             {

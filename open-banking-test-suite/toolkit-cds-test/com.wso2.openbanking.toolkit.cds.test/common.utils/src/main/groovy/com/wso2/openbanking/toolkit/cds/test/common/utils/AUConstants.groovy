@@ -80,7 +80,7 @@ class AUConstants {
     static final String ERROR_DESCRIPTION = "error_description"
     static final String ERROR_INVALID_SOFTWARE_PRODUCT = "Invalid Software Product"
 
-    static final CONSENT_EXPIRY_XPATH = "//span[@id='consent-expiry-date']"
+    static final CONSENT_EXPIRY_XPATH = "//button[@id='consent-expiry-date']"
     static final NEGATIVE_SHARING_DURATION_ERROR_PATH = "//td[contains(text(),'Negative sharing_duration')]"
     static final long DEFAULT_SHARING_DURATION = 60000
     static final long SINGLE_ACCESS_CONSENT = 0

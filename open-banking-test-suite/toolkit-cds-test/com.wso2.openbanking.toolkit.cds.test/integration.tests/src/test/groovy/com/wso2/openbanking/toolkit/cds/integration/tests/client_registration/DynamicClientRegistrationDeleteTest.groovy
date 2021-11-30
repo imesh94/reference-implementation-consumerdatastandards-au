@@ -22,7 +22,7 @@ import org.testng.Assert
 import org.testng.annotations.BeforeClass
 import org.testng.annotations.Test
 
-class DeleteClientRegistration{
+class DynamicClientRegistrationDeleteTest {
 
     private List<String> scopes = [
             AUConstants.SCOPES.BANK_ACCOUNT_BASIC_READ.getScopeString(),
@@ -42,6 +42,7 @@ class DeleteClientRegistration{
     void "Initialize Test Suite"() {
         AURegistrationRequestBuilder.retrieveADRInfo()
         TestSuite.init()
+        deleteApplicationIfExists()
     }
 
     @Test (groups = "SmokeTest")
@@ -53,8 +54,12 @@ class DeleteClientRegistration{
                 .post(registrationPath)
 
         clientId = TestUtil.parseResponseBody(registrationResponse, "client_id")
+        clientIdFile.write(clientId)
+        def newFile = new File("target/test.properties")
+        newFile << "\nClientID=$clientId"
         accessToken = AURequestBuilder.getApplicationToken(scopes, clientId)
         Assert.assertNotNull(accessToken)
+        accessTokenFile.write(accessToken)
     }
     
     @Test (dependsOnMethods = "TC0101009_Get access token")
@@ -75,5 +80,20 @@ class DeleteClientRegistration{
                 .delete(registrationPath + clientId)
 
         Assert.assertEquals(registrationResponse.statusCode(), AUConstants.STATUS_CODE_204)
+    }
+
+    void deleteApplicationIfExists() {
+
+        clientId = clientIdFile.text
+        if (clientId) {
+            String token = AURequestBuilder.getApplicationToken(scopes, clientId)
+
+            if (token) {
+                def deletionResponse = AURegistrationRequestBuilder.buildBasicRequest(token)
+                        .when()
+                        .delete(registrationPath + clientId)
+                Assert.assertEquals(deletionResponse.statusCode(), AUConstants.STATUS_CODE_204)
+            }
+        }
     }
 }
