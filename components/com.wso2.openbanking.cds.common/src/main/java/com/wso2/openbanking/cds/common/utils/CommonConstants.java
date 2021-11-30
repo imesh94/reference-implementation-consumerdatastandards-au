@@ -58,6 +58,7 @@ public class CommonConstants {
             ".DataHolderResponsibilities.BulkExecution";
     public static final String METADATA_CACHE_BULK_EXECUTE_HOUR = METADATA_CACHE +
             ".DataHolderResponsibilities.BulkExecutionHour";
+    public static final String HOLDER_SPECIFIC_IDENTIFIER = "Headers.HolderIdentifier";
 
     // Admin API constants
     public static final String ADMIN_API_SELF_LINK = "Admin.APISelfLink";

@@ -422,4 +422,14 @@ public class OpenBankingCDSConfigParser {
         String value = (String) getConfigElementFromKey(CommonConstants.ADMIN_API_SELF_LINK);
         return value == null ? "" : value;
     }
+
+    /**
+     * Read the holder specific id (HID) from config.
+     *
+     * @return configured value of the x-<HID>-v
+     */
+    public String getHolderSpecificIdentifier() {
+        Object config = getConfigElementFromKey(CommonConstants.HOLDER_SPECIFIC_IDENTIFIER);
+        return (config != null) ? (String) config : "";
+    }
 }

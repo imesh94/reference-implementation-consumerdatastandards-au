@@ -87,6 +87,8 @@
                                         <filename regex="api#openbanking#cds#backend.war$"/>
                                     </fileset>
                                 </copy>
+                                <unzip dest="${project.basedir}/carbon-home/repository/deployment/server/webapps/api#openbanking#metricsendpoint/"
+                                       src="../../internal-apis/internal-webapps/com.wso2.openbanking.cds.metrics.endpoint/target/api#openbanking#metricsendpoint.war"/>
                             </target>
                         </configuration>
                         <goals>

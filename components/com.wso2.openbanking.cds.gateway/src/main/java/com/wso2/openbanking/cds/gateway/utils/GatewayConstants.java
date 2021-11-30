@@ -14,11 +14,15 @@ package com.wso2.openbanking.cds.gateway.utils;
 
 import java.util.Arrays;
 import java.util.List;
+import java.util.regex.Pattern;
 
 /**
  * Gateway Constant Class
  */
 public class GatewayConstants {
+
+    private GatewayConstants() {
+    }
 
     //Error handling constants
     public static final String ERROR_CODE = "ERROR_CODE";
@@ -97,4 +101,21 @@ public class GatewayConstants {
     public static final String CORRELATION_ID = "correlation_id";
     public static final String REST_API_CONTEXT = "REST_API_CONTEXT";
     public static final String HTTP_RESPONSE_STATUS_CODE = "HTTP_RESPONSE_STATUS_CODE";
+
+    // Constants related to executors
+    public static final String HTTP_GET = "GET";
+    public static final String HTTP_POST = "POST";
+
+    // CDSHeaderValidationExecutor constants
+    public static final String X_CDS_CLIENT_HEADERS = "x-cds-client-headers";
+    public static final String X_FAPI_AUTH_DATE = "x-fapi-auth-date";
+    public static final String X_FAPI_INTERACTION_ID = "x-fapi-interaction-id";
+    public static final String MAX_REQUESTED_ENDPOINT_VERSION = "x-v";
+    public static final String MIN_REQUESTED_ENDPOINT_VERSION = "x-min-v";
+    public static final String X_VERSION = "x-version";
+    public static final String IMF_FIX_DATE_PATTERN = "EEE, dd MMM uuuu HH:mm:ss 'GMT'";
+    public static final String RFC850_DATE_PATTERN = "EEEE, dd-MMM-uu HH:mm:ss 'GMT'";
+    public static final String ASC_TIME_DATE_PATTERN = "EE MMM dd HH:mm:ss uuuu";
+    public static final Pattern UUID_REGEX_PATTERN =
+            Pattern.compile("^[{]?[0-9a-fA-F]{8}-([0-9a-fA-F]{4}-){3}[0-9a-fA-F]{12}[}]?$");
 }

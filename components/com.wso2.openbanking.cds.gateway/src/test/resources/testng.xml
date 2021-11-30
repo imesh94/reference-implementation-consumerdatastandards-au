@@ -23,6 +23,7 @@
             <class name="com.wso2.openbanking.cds.gateway.throttling.CDSThrottleDataPublisherImplTest"/>
             <class name="com.wso2.openbanking.cds.gateway.mediators.GatewayErrorMediatorTest"/>
             <class name="com.wso2.openbanking.cds.gateway.executors.reporting.CDSCommonDataReportingExecutorTest"/>
+            <class name="com.wso2.openbanking.cds.gateway.executors.header.validation.CDSHeaderValidationExecutorTest"/>
         </classes>
     </test>
 </suite>
