@@ -332,6 +332,13 @@ context = "(.*)/api/openbanking/cds-arrangement-revocation/(.*)"
 secure="false"
 http_method="all"
 
+[[resource.access_control]]
+context = "(.*)/api/openbanking/metadata-mgt/(.*)"
+secure="true"
+http_method="POST"
+permissions=["/permission/admin"]
+allowed_auth_handlers = ["BasicAuthentication"]
+
 [authentication.adaptive.event_publisher]
 url = "http://IS_HOSTNAME:8006/"
 
