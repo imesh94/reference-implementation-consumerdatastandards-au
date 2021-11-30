@@ -103,7 +103,7 @@ public class CDSErrorHandler implements OpenBankingGatewayExecutor {
         }
 
         if (obapiRequestContext.getMsgInfo().getResource().contains("/register")) {
-            JSONArray dcrErrorPayload = getDCRErrorJSON(errors);
+            JsonObject dcrErrorPayload = getDCRErrorJSON(errors);
             obapiRequestContext.setModifiedPayload(dcrErrorPayload.toString());
         } else {
             String memberId = obapiRequestContext.getApiRequestInfo().getUsername();
@@ -148,7 +148,7 @@ public class CDSErrorHandler implements OpenBankingGatewayExecutor {
         }
 
         if (obapiResponseContext.getMsgInfo().getResource().contains("/register")) {
-            JSONArray dcrErrorPayload = getDCRErrorJSON(errors);
+            JsonObject dcrErrorPayload = getDCRErrorJSON(errors);
             obapiResponseContext.setModifiedPayload(dcrErrorPayload.toString());
         } else {
             String memberId = obapiResponseContext.getApiRequestInfo().getUsername();
@@ -180,17 +180,15 @@ public class CDSErrorHandler implements OpenBankingGatewayExecutor {
         obapiResponseContext.setAnalyticsData(analyticsData);
     }
 
-    public static JSONArray getDCRErrorJSON(ArrayList<OpenBankingExecutorError> errors) {
+    public static JsonObject getDCRErrorJSON(ArrayList<OpenBankingExecutorError> errors) {
 
-        JSONArray errorList = new JSONArray();
+        JsonObject errorObj = new JsonObject();
 
         for (OpenBankingExecutorError error : errors) {
-            JSONObject errorObj = new JSONObject();
-            errorObj.put(ErrorConstants.ERROR, error.getTitle());
-            errorObj.put(ErrorConstants.ERROR_DESCRIPTION, error.getMessage());
-            errorList.add(errorObj);
+            errorObj.addProperty(ErrorConstants.ERROR, error.getTitle());
+            errorObj.addProperty(ErrorConstants.ERROR_DESCRIPTION, error.getMessage());
         }
-        return errorList;
+        return errorObj;
     }
 
     public static JsonObject getErrorJson(ArrayList<OpenBankingExecutorError> errors, String memberId, String appId) {

@@ -18,6 +18,7 @@ import com.wso2.openbanking.accelerator.identity.dcr.validation.validationgroups
 import com.wso2.openbanking.accelerator.identity.dcr.validation.validationgroups.MandatoryChecks;
 import com.wso2.openbanking.cds.identity.dcr.constants.CDSValidationConstants;
 import com.wso2.openbanking.cds.identity.dcr.validation.annotation.ValidateCallbackUris;
+import com.wso2.openbanking.cds.identity.dcr.validation.annotation.ValidateJTI;
 import com.wso2.openbanking.cds.identity.dcr.validation.annotation.ValidateRedirectUriFormat;
 import com.wso2.openbanking.cds.identity.dcr.validation.annotation.ValidateUriConnection;
 import com.wso2.openbanking.cds.identity.dcr.validation.annotation.ValidateUriHostnames;
@@ -39,6 +40,9 @@ import java.util.List;
 @ValidateUriConnection(registrationRequestProperty = "registrationRequest", ssa = "softwareStatement",
         message = "Provided logo_uri/client_uri/policy_uri/tos_uri in the request does not resolve" +
                 " to a valid web page:" + CDSValidationConstants.INVALID_REDIRECT_URI, groups = AttributeChecks.class)
+@ValidateJTI(registrationRequestProperty = "registrationRequest", ssa = "softwareStatement",
+        message = CDSValidationConstants.JTI_REPLAYED + ":" + DCRCommonConstants.INVALID_META_DATA,
+        groups = AttributeChecks.class)
 public class CDSRegistrationRequest extends RegistrationRequest {
 
     private RegistrationRequest registrationRequest;

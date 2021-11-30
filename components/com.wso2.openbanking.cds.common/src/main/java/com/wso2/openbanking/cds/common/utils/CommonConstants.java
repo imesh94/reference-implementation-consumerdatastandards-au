@@ -62,5 +62,11 @@ public class CommonConstants {
     // Admin API constants
     public static final String ADMIN_API_SELF_LINK = "Admin.APISelfLink";
 
+    // DCR configs
+    public static final String ENABLE_REQUEST_JTI_VALIDATION = "DCR.EnableRequestJTIValidation";
+    public static final String ENABLE_SSA_JTI_VALIDATION = "DCR.EnableSSAJTIValidation";
+    public static final String JTI_CACHE_ACCESS_EXPIRY = "DCR.JTICache.CacheAccessExpiry";
+    public static final String JTI_CACHE_MODIFY_EXPIRY = "DCR.JTICache.CacheModifiedExpiry";
+
     private CommonConstants() {}
 }

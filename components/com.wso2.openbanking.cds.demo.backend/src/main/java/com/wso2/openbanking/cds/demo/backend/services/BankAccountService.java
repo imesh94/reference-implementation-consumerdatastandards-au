@@ -53,7 +53,7 @@ public class BankAccountService {
             "            \"jointAccountConsentElectionStatus\": false\n" +
             "        },\n" +
             "        {\n" +
-            "            \"accountId\": \"650-000 N1232\",\n" +
+            "            \"accountId\": \"6500001232\",\n" +
             "            \"displayName\": \"joint_account_1\",\n" +
             "            \"authorizationMethod\": \"single\",\n" +
             "            \"nickName\": \"not-working\",\n" +
@@ -77,7 +77,7 @@ public class BankAccountService {
             "            \"meta\": {}\n" +
             "        },\n" +
             "        {\n" +
-            "            \"accountId\": \"750-010 N1544\",\n" +
+            "            \"accountId\": \"7500101544\",\n" +
             "            \"displayName\": \"joint_account_2\",\n" +
             "            \"authorizationMethod\": \"single\",\n" +
             "            \"nickName\": \"joint-account-2\",\n" +
