@@ -21,8 +21,11 @@ import com.wso2.openbanking.accelerator.gateway.executor.model.OpenBankingExecut
 import com.wso2.openbanking.accelerator.gateway.util.GatewayConstants;
 import com.wso2.openbanking.cds.common.error.handling.util.ErrorConstants;
 import com.wso2.openbanking.cds.common.error.handling.util.ErrorUtil;
+import com.wso2.openbanking.cds.gateway.executors.idpermanence.utils.IdPermanenceUtils;
 import net.minidev.json.JSONArray;
 import net.minidev.json.JSONObject;
+import net.minidev.json.parser.JSONParser;
+import net.minidev.json.parser.ParseException;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.apache.http.HttpStatus;
@@ -103,7 +106,9 @@ public class CDSErrorHandler implements OpenBankingGatewayExecutor {
             JSONArray dcrErrorPayload = getDCRErrorJSON(errors);
             obapiRequestContext.setModifiedPayload(dcrErrorPayload.toString());
         } else {
-            JsonObject errorPayload = getErrorJson(errors);
+            String memberId = obapiRequestContext.getApiRequestInfo().getUsername();
+            String appId = obapiRequestContext.getApiRequestInfo().getConsumerKey();
+            JsonObject errorPayload = getErrorJson(errors, memberId, appId);
             obapiRequestContext.setModifiedPayload(errorPayload.toString());
         }
         Map<String, String> addedHeaders = obapiRequestContext.getAddedHeaders();
@@ -146,7 +151,9 @@ public class CDSErrorHandler implements OpenBankingGatewayExecutor {
             JSONArray dcrErrorPayload = getDCRErrorJSON(errors);
             obapiResponseContext.setModifiedPayload(dcrErrorPayload.toString());
         } else {
-            JsonObject errorPayload = getErrorJson(errors);
+            String memberId = obapiResponseContext.getApiRequestInfo().getUsername();
+            String appId = obapiResponseContext.getApiRequestInfo().getConsumerKey();
+            JsonObject errorPayload = getErrorJson(errors, memberId, appId);
             obapiResponseContext.setModifiedPayload(errorPayload.toString());
         }
         Map<String, String> addedHeaders = obapiResponseContext.getAddedHeaders();
@@ -164,7 +171,6 @@ public class CDSErrorHandler implements OpenBankingGatewayExecutor {
                 statusCode = HttpStatus.SC_INTERNAL_SERVER_ERROR;
             }
         }
-
         obapiResponseContext.addContextProperty(GatewayConstants.ERROR_STATUS_PROP, String.valueOf(statusCode));
 
         // Add error data to analytics map
@@ -187,16 +193,47 @@ public class CDSErrorHandler implements OpenBankingGatewayExecutor {
         return errorList;
     }
 
-    public static JsonObject getErrorJson(ArrayList<OpenBankingExecutorError> errors) {
+    public static JsonObject getErrorJson(ArrayList<OpenBankingExecutorError> errors, String memberId, String appId) {
 
         JsonArray errorList = new JsonArray();
         JsonObject parentObject = new JsonObject();
 
         for (OpenBankingExecutorError error : errors) {
             JsonObject errorObj = new JsonObject();
-            errorObj.addProperty(ErrorConstants.CODE, error.getCode());
-            errorObj.addProperty(ErrorConstants.TITLE, error.getTitle());
-            errorObj.addProperty(ErrorConstants.DETAIL, error.getMessage());
+            try {
+                Object errorPayload = new JSONParser(JSONParser.MODE_PERMISSIVE).parse(error.getMessage());
+                errorObj.addProperty(ErrorConstants.CODE, error.getCode());
+                if (errorPayload instanceof JSONObject) {
+                    JSONObject errorJSON = (JSONObject) errorPayload;
+                    if (ErrorConstants.CONSENT_ENFORCEMENT_ERROR.equals(error.getTitle())) {
+                        errorObj.addProperty(ErrorConstants.TITLE, errorJSON.getAsString(ErrorConstants.TITLE));
+                        if (errorJSON.get(ErrorConstants.ACCOUNT_ID) != null) {
+                            String encryptedId = IdPermanenceUtils.encryptAccountIdInErrorResponse(errorJSON,
+                                    memberId, appId);
+                            errorObj.addProperty(ErrorConstants.DETAIL, encryptedId);
+                        } else {
+                            errorObj.addProperty(ErrorConstants.DETAIL, errorJSON.getAsString(ErrorConstants.DETAIL));
+                        }
+                    } else {
+                        errorObj.addProperty(ErrorConstants.TITLE, error.getTitle());
+                        errorObj.addProperty(ErrorConstants.DETAIL, errorJSON.getAsString(ErrorConstants.DETAIL));
+                    }
+                    if (errorJSON.getAsString(ErrorConstants.META_URN) != null) {
+                        JsonObject meta = new JsonObject();
+                        meta.addProperty(ErrorConstants.URN, errorJSON.getAsString(ErrorConstants.META_URN));
+                        errorObj.add(ErrorConstants.META, meta);
+                    }
+                } else {
+                    // TODO: need to capture non JSON errors from accelerator side, error codes starting from 20000
+                    errorObj.addProperty(ErrorConstants.TITLE, error.getTitle());
+                    errorObj.addProperty(ErrorConstants.DETAIL, errorPayload.toString());
+                }
+            } catch (ParseException e) {
+                log.error("Unexpected error while parsing string", e);
+                errorObj.addProperty(ErrorConstants.CODE, ErrorConstants.AUErrorEnum.UNEXPECTED_ERROR.getCode());
+                errorObj.addProperty(ErrorConstants.TITLE, ErrorConstants.AUErrorEnum.UNEXPECTED_ERROR.getTitle());
+                errorObj.addProperty(ErrorConstants.DETAIL, ErrorConstants.AUErrorEnum.UNEXPECTED_ERROR.getDetail());
+            }
             errorList.add(errorObj);
         }
         parentObject.add(ErrorConstants.ERRORS, errorList);

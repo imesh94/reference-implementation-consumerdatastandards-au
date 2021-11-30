@@ -36,18 +36,18 @@ paths:
           required: false
           type: string
           enum:
-            - TRANS_AND_SAVINGS_ACCOUNTS
-            - TERM_DEPOSITS
-            - TRAVEL_CARDS
+            - BUSINESS_LOANS
+            - CRED_AND_CHRG_CARDS
+            - LEASES
+            - MARGIN_LOANS
+            - OVERDRAFTS
+            - PERS_LOANS
             - REGULATED_TRUST_ACCOUNTS
             - RESIDENTIAL_MORTGAGES
-            - CRED_AND_CHRG_CARDS
-            - PERS_LOANS
-            - MARGIN_LOANS
-            - LEASES
+            - TERM_DEPOSITS
             - TRADE_FINANCE
-            - OVERDRAFTS
-            - BUSINESS_LOANS
+            - TRANS_AND_SAVINGS_ACCOUNTS
+            - TRAVEL_CARDS
         - name: open-status
           in: query
           description: Used to filter results according to open/closed status. Values can be OPEN, CLOSED or ALL. If absent then ALL is assumed
@@ -55,9 +55,9 @@ paths:
           type: string
           default: ALL
           enum:
-            - OPEN
-            - CLOSED
             - ALL
+            - CLOSED
+            - OPEN
         - name: is-owned
           in: query
           description: Filters accounts based on whether they are owned by the authorised customer.  True for owned accounts, false for unowned accounts and absent for all accounts
@@ -83,12 +83,12 @@ paths:
           x-cds-type: PositiveInteger
         - name: x-v
           in: header
-          description: Version of the API end point requested by the client. Must be set to a positive integer. The data holder should respond with the highest supported version between [x-min-v](#request-headers) and [x-v](#request-headers). If the value of [x-min-v](#request-headers) is equal to or higher than the value of [x-v](#request-headers) then the [x-min-v](#request-headers) header should be treated as absent. If all versions requested are not supported then the data holder should respond with a 406 Not Acceptable. See [HTTP Headers](#request-headers)
+          description: Version of the API end point requested by the client. Must be set to a positive integer. The data holder should respond with the highest supported version between [x-min-v](#request-headers) and [x-v](#request-headers). If the value of [x-min-v](#request-headers) is equal to or higher than the value of [x-v](#request-headers) then the [x-min-v](#request-headers) header should be treated as absent. If all versions requested are not supported then the data holder must respond with a 406 Not Acceptable. See [HTTP Headers](#request-headers)
           required: true
           type: string
         - name: x-min-v
           in: header
-          description: Minimum version of the API end point requested by the client. Must be set to a positive integer if provided. The data holder should respond with the highest supported version between [x-min-v](#request-headers) and [x-v](#request-headers). If all versions requested are not supported then the data holder should respond with a 406 Not Acceptable.
+          description: Minimum version of the API end point requested by the client. Must be set to a positive integer if provided. The data holder should respond with the highest supported version between [x-min-v](#request-headers) and [x-v](#request-headers). If all versions requested are not supported then the data holder must respond with a 406 Not Acceptable.
           required: false
           type: string
         - $ref: '#/parameters/RequestHeader_x-fapi-interaction-id'
@@ -138,18 +138,18 @@ paths:
           required: false
           type: string
           enum:
-            - TRANS_AND_SAVINGS_ACCOUNTS
-            - TERM_DEPOSITS
-            - TRAVEL_CARDS
+            - BUSINESS_LOANS
+            - CRED_AND_CHRG_CARDS
+            - LEASES
+            - MARGIN_LOANS
+            - OVERDRAFTS
+            - PERS_LOANS
             - REGULATED_TRUST_ACCOUNTS
             - RESIDENTIAL_MORTGAGES
-            - CRED_AND_CHRG_CARDS
-            - PERS_LOANS
-            - MARGIN_LOANS
-            - LEASES
+            - TERM_DEPOSITS
             - TRADE_FINANCE
-            - OVERDRAFTS
-            - BUSINESS_LOANS
+            - TRANS_AND_SAVINGS_ACCOUNTS
+            - TRAVEL_CARDS
         - name: open-status
           in: query
           description: Used to filter results according to open/closed status. Values can be OPEN, CLOSED or ALL. If absent then ALL is assumed
@@ -157,9 +157,9 @@ paths:
           type: string
           default: ALL
           enum:
-            - OPEN
-            - CLOSED
-            - ALL
+          - ALL
+          - CLOSED
+          - OPEN
         - name: is-owned
           in: query
           description: Filters accounts based on whether they are owned by the authorised customer.  True for owned accounts, false for unowned accounts and absent for all accounts
@@ -185,12 +185,12 @@ paths:
           x-cds-type: PositiveInteger
         - name: x-v
           in: header
-          description: Version of the API end point requested by the client. Must be set to a positive integer. The data holder should respond with the highest supported version between [x-min-v](#request-headers) and [x-v](#request-headers). If the value of [x-min-v](#request-headers) is equal to or higher than the value of [x-v](#request-headers) then the [x-min-v](#request-headers) header should be treated as absent. If all versions requested are not supported then the data holder should respond with a 406 Not Acceptable. See [HTTP Headers](#request-headers)
+          description: Version of the API end point requested by the client. Must be set to a positive integer. The data holder should respond with the highest supported version between [x-min-v](#request-headers) and [x-v](#request-headers). If the value of [x-min-v](#request-headers) is equal to or higher than the value of [x-v](#request-headers) then the [x-min-v](#request-headers) header should be treated as absent. If all versions requested are not supported then the data holder must respond with a 406 Not Acceptable. See [HTTP Headers](#request-headers)
           required: true
           type: string
         - name: x-min-v
           in: header
-          description: Minimum version of the API end point requested by the client. Must be set to a positive integer if provided. The data holder should respond with the highest supported version between [x-min-v](#request-headers) and [x-v](#request-headers). If all versions requested are not supported then the data holder should respond with a 406 Not Acceptable.
+          description: Minimum version of the API end point requested by the client. Must be set to a positive integer if provided. The data holder should respond with the highest supported version between [x-min-v](#request-headers) and [x-v](#request-headers). If all versions requested are not supported then the data holder must respond with a 406 Not Acceptable.
           required: false
           type: string
         - $ref: '#/parameters/RequestHeader_x-fapi-interaction-id'
@@ -258,12 +258,12 @@ paths:
           x-cds-type: PositiveInteger
         - name: x-v
           in: header
-          description: Version of the API end point requested by the client. Must be set to a positive integer. The data holder should respond with the highest supported version between [x-min-v](#request-headers) and [x-v](#request-headers). If the value of [x-min-v](#request-headers) is equal to or higher than the value of [x-v](#request-headers) then the [x-min-v](#request-headers) header should be treated as absent. If all versions requested are not supported then the data holder should respond with a 406 Not Acceptable. See [HTTP Headers](#request-headers)
+          description: Version of the API end point requested by the client. Must be set to a positive integer. The data holder should respond with the highest supported version between [x-min-v](#request-headers) and [x-v](#request-headers). If the value of [x-min-v](#request-headers) is equal to or higher than the value of [x-v](#request-headers) then the [x-min-v](#request-headers) header should be treated as absent. If all versions requested are not supported then the data holder must respond with a 406 Not Acceptable. See [HTTP Headers](#request-headers)
           required: true
           type: string
         - name: x-min-v
           in: header
-          description: Minimum version of the API end point requested by the client. Must be set to a positive integer if provided. The data holder should respond with the highest supported version between [x-min-v](#request-headers) and [x-v](#request-headers). If all versions requested are not supported then the data holder should respond with a 406 Not Acceptable.
+          description: Minimum version of the API end point requested by the client. Must be set to a positive integer if provided. The data holder should respond with the highest supported version between [x-min-v](#request-headers) and [x-v](#request-headers). If all versions requested are not supported then the data holder must respond with a 406 Not Acceptable.
           required: false
           type: string
         - $ref: '#/parameters/RequestHeader_x-fapi-interaction-id'
@@ -291,7 +291,7 @@ paths:
           schema:
             $ref: '#/definitions/ResponseBankingAccountsBalanceList'
         422:
-          description: The request was well formed but was unable to be processed due to business logic specific to the request
+          description: The request was well formed but was unable to be processed due to business logic specific to the request.  For this API a 422 response must be given if any of the account IDs provided are invalid for the consent context
           headers:
             x-fapi-interaction-id:
               type: string
@@ -323,12 +323,12 @@ paths:
           x-cds-type: ASCIIString
         - name: x-v
           in: header
-          description: Version of the API end point requested by the client. Must be set to a positive integer. The data holder should respond with the highest supported version between [x-min-v](#request-headers) and [x-v](#request-headers). If the value of [x-min-v](#request-headers) is equal to or higher than the value of [x-v](#request-headers) then the [x-min-v](#request-headers) header should be treated as absent. If all versions requested are not supported then the data holder should respond with a 406 Not Acceptable. See [HTTP Headers](#request-headers)
+          description: Version of the API end point requested by the client. Must be set to a positive integer. The data holder should respond with the highest supported version between [x-min-v](#request-headers) and [x-v](#request-headers). If the value of [x-min-v](#request-headers) is equal to or higher than the value of [x-v](#request-headers) then the [x-min-v](#request-headers) header should be treated as absent. If all versions requested are not supported then the data holder must respond with a 406 Not Acceptable. See [HTTP Headers](#request-headers)
           required: true
           type: string
         - name: x-min-v
           in: header
-          description: Minimum version of the API end point requested by the client. Must be set to a positive integer if provided. The data holder should respond with the highest supported version between [x-min-v](#request-headers) and [x-v](#request-headers). If all versions requested are not supported then the data holder should respond with a 406 Not Acceptable.
+          description: Minimum version of the API end point requested by the client. Must be set to a positive integer if provided. The data holder should respond with the highest supported version between [x-min-v](#request-headers) and [x-v](#request-headers). If all versions requested are not supported then the data holder must respond with a 406 Not Acceptable.
           required: false
           type: string
         - $ref: '#/parameters/RequestHeader_x-fapi-interaction-id'
@@ -380,12 +380,12 @@ paths:
           x-cds-type: ASCIIString
         - name: x-v
           in: header
-          description: Version of the API end point requested by the client. Must be set to a positive integer. The data holder should respond with the highest supported version between [x-min-v](#request-headers) and [x-v](#request-headers). If the value of [x-min-v](#request-headers) is equal to or higher than the value of [x-v](#request-headers) then the [x-min-v](#request-headers) header should be treated as absent. If all versions requested are not supported then the data holder should respond with a 406 Not Acceptable. See [HTTP Headers](#request-headers)
+          description: Version of the API end point requested by the client. Must be set to a positive integer. The data holder should respond with the highest supported version between [x-min-v](#request-headers) and [x-v](#request-headers). If the value of [x-min-v](#request-headers) is equal to or higher than the value of [x-v](#request-headers) then the [x-min-v](#request-headers) header should be treated as absent. If all versions requested are not supported then the data holder must respond with a 406 Not Acceptable. See [HTTP Headers](#request-headers)
           required: true
           type: string
         - name: x-min-v
           in: header
-          description: Minimum version of the API end point requested by the client. Must be set to a positive integer if provided. The data holder should respond with the highest supported version between [x-min-v](#request-headers) and [x-v](#request-headers). If all versions requested are not supported then the data holder should respond with a 406 Not Acceptable.
+          description: Minimum version of the API end point requested by the client. Must be set to a positive integer if provided. The data holder should respond with the highest supported version between [x-min-v](#request-headers) and [x-v](#request-headers). If all versions requested are not supported then the data holder must respond with a 406 Not Acceptable.
           required: false
           type: string
         - $ref: '#/parameters/RequestHeader_x-fapi-interaction-id'
@@ -426,7 +426,18 @@ paths:
         - Banking
         - Accounts
       summary: Get Transactions For Account
-      description: "Obtain transactions for a specific account.\n\nSome general notes that apply to all end points that retrieve transactions:\n\n- Where multiple transactions are returned, transactions should be ordered according to effective date in descending order\n- As the date and time for a transaction can alter depending on status and transaction type two separate date/times are included in the payload. There are still some scenarios where neither of these time stamps is available. For the purpose of filtering and ordering it is expected that the data holder will use the “effective” date/time which will be defined as:\n\t\t- Posted date/time if available, then\n\t\t- Execution date/time if available, then\n\t\t- A reasonable date/time nominated by the data holder using internal data structures\n- For transaction amounts it should be assumed that a negative value indicates a reduction of the available balance on the account while a positive value indicates an increase in the available balance on the account\n- For aggregated transactions (ie. groups of sub transactions reported as a single entry for the account) only the aggregated information, with as much consistent information accross the subsidiary transactions as possible, is required to be shared"
+      description: |-
+        Obtain transactions for a specific account.
+
+        Some general notes that apply to all end points that retrieve transactions:
+
+        - Where multiple transactions are returned, transactions should be ordered according to effective date in descending order
+        - As the date and time for a transaction can alter depending on status and transaction type two separate date/times are included in the payload. There are still some scenarios where neither of these time stamps is available. For the purpose of filtering and ordering it is expected that the data holder will use the “effective” date/time which will be defined as:
+          - Posted date/time if available, then
+          - Execution date/time if available, then
+          - A reasonable date/time nominated by the data holder using internal data structures
+        - For transaction amounts it should be assumed that a negative value indicates a reduction of the available balance on the account while a positive value indicates an increase in the available balance on the account
+        - For aggregated transactions (ie. groups of sub transactions reported as a single entry for the account) only the aggregated information, with as much consistent information accross the subsidiary transactions as possible, is required to be shared
       operationId: getTransactions
       parameters:
         - name: accountId
@@ -483,12 +494,12 @@ paths:
           x-cds-type: PositiveInteger
         - name: x-v
           in: header
-          description: Version of the API end point requested by the client. Must be set to a positive integer. The data holder should respond with the highest supported version between [x-min-v](#request-headers) and [x-v](#request-headers). If the value of [x-min-v](#request-headers) is equal to or higher than the value of [x-v](#request-headers) then the [x-min-v](#request-headers) header should be treated as absent. If all versions requested are not supported then the data holder should respond with a 406 Not Acceptable. See [HTTP Headers](#request-headers)
+          description: Version of the API end point requested by the client. Must be set to a positive integer. The data holder should respond with the highest supported version between [x-min-v](#request-headers) and [x-v](#request-headers). If the value of [x-min-v](#request-headers) is equal to or higher than the value of [x-v](#request-headers) then the [x-min-v](#request-headers) header should be treated as absent. If all versions requested are not supported then the data holder must respond with a 406 Not Acceptable. See [HTTP Headers](#request-headers)
           required: true
           type: string
         - name: x-min-v
           in: header
-          description: Minimum version of the API end point requested by the client. Must be set to a positive integer if provided. The data holder should respond with the highest supported version between [x-min-v](#request-headers) and [x-v](#request-headers). If all versions requested are not supported then the data holder should respond with a 406 Not Acceptable.
+          description: Minimum version of the API end point requested by the client. Must be set to a positive integer if provided. The data holder should respond with the highest supported version between [x-min-v](#request-headers) and [x-v](#request-headers). If all versions requested are not supported then the data holder must respond with a 406 Not Acceptable.
           required: false
           type: string
         - $ref: '#/parameters/RequestHeader_x-fapi-interaction-id'
@@ -546,12 +557,12 @@ paths:
           x-cds-type: ASCIIString
         - name: x-v
           in: header
-          description: Version of the API end point requested by the client. Must be set to a positive integer. The data holder should respond with the highest supported version between [x-min-v](#request-headers) and [x-v](#request-headers). If the value of [x-min-v](#request-headers) is equal to or higher than the value of [x-v](#request-headers) then the [x-min-v](#request-headers) header should be treated as absent. If all versions requested are not supported then the data holder should respond with a 406 Not Acceptable. See [HTTP Headers](#request-headers)
+          description: Version of the API end point requested by the client. Must be set to a positive integer. The data holder should respond with the highest supported version between [x-min-v](#request-headers) and [x-v](#request-headers). If the value of [x-min-v](#request-headers) is equal to or higher than the value of [x-v](#request-headers) then the [x-min-v](#request-headers) header should be treated as absent. If all versions requested are not supported then the data holder must respond with a 406 Not Acceptable. See [HTTP Headers](#request-headers)
           required: true
           type: string
         - name: x-min-v
           in: header
-          description: Minimum version of the API end point requested by the client. Must be set to a positive integer if provided. The data holder should respond with the highest supported version between [x-min-v](#request-headers) and [x-v](#request-headers). If all versions requested are not supported then the data holder should respond with a 406 Not Acceptable.
+          description: Minimum version of the API end point requested by the client. Must be set to a positive integer if provided. The data holder should respond with the highest supported version between [x-min-v](#request-headers) and [x-v](#request-headers). If all versions requested are not supported then the data holder must respond with a 406 Not Acceptable.
           required: false
           type: string
         - $ref: '#/parameters/RequestHeader_x-fapi-interaction-id'
@@ -620,12 +631,12 @@ paths:
           x-cds-type: PositiveInteger
         - name: x-v
           in: header
-          description: Version of the API end point requested by the client. Must be set to a positive integer. The data holder should respond with the highest supported version between [x-min-v](#request-headers) and [x-v](#request-headers). If the value of [x-min-v](#request-headers) is equal to or higher than the value of [x-v](#request-headers) then the [x-min-v](#request-headers) header should be treated as absent. If all versions requested are not supported then the data holder should respond with a 406 Not Acceptable. See [HTTP Headers](#request-headers)
+          description: Version of the API end point requested by the client. Must be set to a positive integer. The data holder should respond with the highest supported version between [x-min-v](#request-headers) and [x-v](#request-headers). If the value of [x-min-v](#request-headers) is equal to or higher than the value of [x-v](#request-headers) then the [x-min-v](#request-headers) header should be treated as absent. If all versions requested are not supported then the data holder must respond with a 406 Not Acceptable. See [HTTP Headers](#request-headers)
           required: true
           type: string
         - name: x-min-v
           in: header
-          description: Minimum version of the API end point requested by the client. Must be set to a positive integer if provided. The data holder should respond with the highest supported version between [x-min-v](#request-headers) and [x-v](#request-headers). If all versions requested are not supported then the data holder should respond with a 406 Not Acceptable.
+          description: Minimum version of the API end point requested by the client. Must be set to a positive integer if provided. The data holder should respond with the highest supported version between [x-min-v](#request-headers) and [x-v](#request-headers). If all versions requested are not supported then the data holder must respond with a 406 Not Acceptable.
           required: false
           type: string
         - $ref: '#/parameters/RequestHeader_x-fapi-interaction-id'
@@ -675,18 +686,18 @@ paths:
           required: false
           type: string
           enum:
-            - TRANS_AND_SAVINGS_ACCOUNTS
-            - TERM_DEPOSITS
-            - TRAVEL_CARDS
+            - BUSINESS_LOANS
+            - CRED_AND_CHRG_CARDS
+            - LEASES
+            - MARGIN_LOANS
+            - OVERDRAFTS
+            - PERS_LOANS
             - REGULATED_TRUST_ACCOUNTS
             - RESIDENTIAL_MORTGAGES
-            - CRED_AND_CHRG_CARDS
-            - PERS_LOANS
-            - MARGIN_LOANS
-            - LEASES
+            - TERM_DEPOSITS
             - TRADE_FINANCE
-            - OVERDRAFTS
-            - BUSINESS_LOANS
+            - TRANS_AND_SAVINGS_ACCOUNTS
+            - TRAVEL_CARDS
         - name: open-status
           in: query
           description: Used to filter results according to open/closed status. Values can be OPEN, CLOSED or ALL. If absent then ALL is assumed
@@ -694,9 +705,9 @@ paths:
           type: string
           default: ALL
           enum:
-            - OPEN
-            - CLOSED
             - ALL
+            - CLOSED
+            - OPEN
         - name: is-owned
           in: query
           description: Filters accounts based on whether they are owned by the authorised customer.  True for owned accounts, false for unowned accounts and absent for all accounts
@@ -722,12 +733,12 @@ paths:
           x-cds-type: PositiveInteger
         - name: x-v
           in: header
-          description: Version of the API end point requested by the client. Must be set to a positive integer. The data holder should respond with the highest supported version between [x-min-v](#request-headers) and [x-v](#request-headers). If the value of [x-min-v](#request-headers) is equal to or higher than the value of [x-v](#request-headers) then the [x-min-v](#request-headers) header should be treated as absent. If all versions requested are not supported then the data holder should respond with a 406 Not Acceptable. See [HTTP Headers](#request-headers)
+          description: Version of the API end point requested by the client. Must be set to a positive integer. The data holder should respond with the highest supported version between [x-min-v](#request-headers) and [x-v](#request-headers). If the value of [x-min-v](#request-headers) is equal to or higher than the value of [x-v](#request-headers) then the [x-min-v](#request-headers) header should be treated as absent. If all versions requested are not supported then the data holder must respond with a 406 Not Acceptable. See [HTTP Headers](#request-headers)
           required: true
           type: string
         - name: x-min-v
           in: header
-          description: Minimum version of the API end point requested by the client. Must be set to a positive integer if provided. The data holder should respond with the highest supported version between [x-min-v](#request-headers) and [x-v](#request-headers). If all versions requested are not supported then the data holder should respond with a 406 Not Acceptable.
+          description: Minimum version of the API end point requested by the client. Must be set to a positive integer if provided. The data holder should respond with the highest supported version between [x-min-v](#request-headers) and [x-v](#request-headers). If all versions requested are not supported then the data holder must respond with a 406 Not Acceptable.
           required: false
           type: string
         - $ref: '#/parameters/RequestHeader_x-fapi-interaction-id'
@@ -795,12 +806,12 @@ paths:
           x-cds-type: PositiveInteger
         - name: x-v
           in: header
-          description: Version of the API end point requested by the client. Must be set to a positive integer. The data holder should respond with the highest supported version between [x-min-v](#request-headers) and [x-v](#request-headers). If the value of [x-min-v](#request-headers) is equal to or higher than the value of [x-v](#request-headers) then the [x-min-v](#request-headers) header should be treated as absent. If all versions requested are not supported then the data holder should respond with a 406 Not Acceptable. See [HTTP Headers](#request-headers)
+          description: Version of the API end point requested by the client. Must be set to a positive integer. The data holder should respond with the highest supported version between [x-min-v](#request-headers) and [x-v](#request-headers). If the value of [x-min-v](#request-headers) is equal to or higher than the value of [x-v](#request-headers) then the [x-min-v](#request-headers) header should be treated as absent. If all versions requested are not supported then the data holder must respond with a 406 Not Acceptable. See [HTTP Headers](#request-headers)
           required: true
           type: string
         - name: x-min-v
           in: header
-          description: Minimum version of the API end point requested by the client. Must be set to a positive integer if provided. The data holder should respond with the highest supported version between [x-min-v](#request-headers) and [x-v](#request-headers). If all versions requested are not supported then the data holder should respond with a 406 Not Acceptable.
+          description: Minimum version of the API end point requested by the client. Must be set to a positive integer if provided. The data holder should respond with the highest supported version between [x-min-v](#request-headers) and [x-v](#request-headers). If all versions requested are not supported then the data holder must respond with a 406 Not Acceptable.
           required: false
           type: string
         - $ref: '#/parameters/RequestHeader_x-fapi-interaction-id'
@@ -828,7 +839,7 @@ paths:
           schema:
             $ref: '#/definitions/ResponseBankingDirectDebitAuthorisationList'
         422:
-          description: The request was well formed but was unable to be processed due to business logic specific to the request
+          description: The request was well formed but was unable to be processed due to business logic specific to the request.  For this API a 422 response must be given if any of the account IDs provided are invalid for the consent context
           headers:
             x-fapi-interaction-id:
               type: string
@@ -877,12 +888,12 @@ paths:
           x-cds-type: PositiveInteger
         - name: x-v
           in: header
-          description: Version of the API end point requested by the client. Must be set to a positive integer. The data holder should respond with the highest supported version between [x-min-v](#request-headers) and [x-v](#request-headers). If the value of [x-min-v](#request-headers) is equal to or higher than the value of [x-v](#request-headers) then the [x-min-v](#request-headers) header should be treated as absent. If all versions requested are not supported then the data holder should respond with a 406 Not Acceptable. See [HTTP Headers](#request-headers)
+          description: Version of the API end point requested by the client. Must be set to a positive integer. The data holder should respond with the highest supported version between [x-min-v](#request-headers) and [x-v](#request-headers). If the value of [x-min-v](#request-headers) is equal to or higher than the value of [x-v](#request-headers) then the [x-min-v](#request-headers) header should be treated as absent. If all versions requested are not supported then the data holder must respond with a 406 Not Acceptable. See [HTTP Headers](#request-headers)
           required: true
           type: string
         - name: x-min-v
           in: header
-          description: Minimum version of the API end point requested by the client. Must be set to a positive integer if provided. The data holder should respond with the highest supported version between [x-min-v](#request-headers) and [x-v](#request-headers). If all versions requested are not supported then the data holder should respond with a 406 Not Acceptable.
+          description: Minimum version of the API end point requested by the client. Must be set to a positive integer if provided. The data holder should respond with the highest supported version between [x-min-v](#request-headers) and [x-v](#request-headers). If all versions requested are not supported then the data holder must respond with a 406 Not Acceptable.
           required: false
           type: string
         - $ref: '#/parameters/RequestHeader_x-fapi-interaction-id'
@@ -932,18 +943,18 @@ paths:
           required: false
           type: string
           enum:
-            - TRANS_AND_SAVINGS_ACCOUNTS
-            - TERM_DEPOSITS
-            - TRAVEL_CARDS
+            - BUSINESS_LOANS
+            - CRED_AND_CHRG_CARDS
+            - LEASES
+            - MARGIN_LOANS
+            - OVERDRAFTS
+            - PERS_LOANS
             - REGULATED_TRUST_ACCOUNTS
             - RESIDENTIAL_MORTGAGES
-            - CRED_AND_CHRG_CARDS
-            - PERS_LOANS
-            - MARGIN_LOANS
-            - LEASES
+            - TERM_DEPOSITS
             - TRADE_FINANCE
-            - OVERDRAFTS
-            - BUSINESS_LOANS
+            - TRANS_AND_SAVINGS_ACCOUNTS
+            - TRAVEL_CARDS
         - name: open-status
           in: query
           description: Used to filter results according to open/closed status. Values can be OPEN, CLOSED or ALL. If absent then ALL is assumed
@@ -951,9 +962,9 @@ paths:
           type: string
           default: ALL
           enum:
-            - OPEN
-            - CLOSED
             - ALL
+            - CLOSED
+            - OPEN
         - name: is-owned
           in: query
           description: Filters accounts based on whether they are owned by the authorised customer.  True for owned accounts, false for unowned accounts and absent for all accounts
@@ -979,12 +990,12 @@ paths:
           x-cds-type: PositiveInteger
         - name: x-v
           in: header
-          description: Version of the API end point requested by the client. Must be set to a positive integer. The data holder should respond with the highest supported version between [x-min-v](#request-headers) and [x-v](#request-headers). If the value of [x-min-v](#request-headers) is equal to or higher than the value of [x-v](#request-headers) then the [x-min-v](#request-headers) header should be treated as absent. If all versions requested are not supported then the data holder should respond with a 406 Not Acceptable. See [HTTP Headers](#request-headers)
+          description: Version of the API end point requested by the client. Must be set to a positive integer. The data holder should respond with the highest supported version between [x-min-v](#request-headers) and [x-v](#request-headers). If the value of [x-min-v](#request-headers) is equal to or higher than the value of [x-v](#request-headers) then the [x-min-v](#request-headers) header should be treated as absent. If all versions requested are not supported then the data holder must respond with a 406 Not Acceptable. See [HTTP Headers](#request-headers)
           required: true
           type: string
         - name: x-min-v
           in: header
-          description: Minimum version of the API end point requested by the client. Must be set to a positive integer if provided. The data holder should respond with the highest supported version between [x-min-v](#request-headers) and [x-v](#request-headers). If all versions requested are not supported then the data holder should respond with a 406 Not Acceptable.
+          description: Minimum version of the API end point requested by the client. Must be set to a positive integer if provided. The data holder should respond with the highest supported version between [x-min-v](#request-headers) and [x-v](#request-headers). If all versions requested are not supported then the data holder must respond with a 406 Not Acceptable.
           required: false
           type: string
         - $ref: '#/parameters/RequestHeader_x-fapi-interaction-id'
@@ -1052,12 +1063,12 @@ paths:
           x-cds-type: PositiveInteger
         - name: x-v
           in: header
-          description: Version of the API end point requested by the client. Must be set to a positive integer. The data holder should respond with the highest supported version between [x-min-v](#request-headers) and [x-v](#request-headers). If the value of [x-min-v](#request-headers) is equal to or higher than the value of [x-v](#request-headers) then the [x-min-v](#request-headers) header should be treated as absent. If all versions requested are not supported then the data holder should respond with a 406 Not Acceptable. See [HTTP Headers](#request-headers)
+          description: Version of the API end point requested by the client. Must be set to a positive integer. The data holder should respond with the highest supported version between [x-min-v](#request-headers) and [x-v](#request-headers). If the value of [x-min-v](#request-headers) is equal to or higher than the value of [x-v](#request-headers) then the [x-min-v](#request-headers) header should be treated as absent. If all versions requested are not supported then the data holder must respond with a 406 Not Acceptable. See [HTTP Headers](#request-headers)
           required: true
           type: string
         - name: x-min-v
           in: header
-          description: Minimum version of the API end point requested by the client. Must be set to a positive integer if provided. The data holder should respond with the highest supported version between [x-min-v](#request-headers) and [x-v](#request-headers). If all versions requested are not supported then the data holder should respond with a 406 Not Acceptable.
+          description: Minimum version of the API end point requested by the client. Must be set to a positive integer if provided. The data holder should respond with the highest supported version between [x-min-v](#request-headers) and [x-v](#request-headers). If all versions requested are not supported then the data holder must respond with a 406 Not Acceptable.
           required: false
           type: string
         - $ref: '#/parameters/RequestHeader_x-fapi-interaction-id'
@@ -1085,7 +1096,7 @@ paths:
           schema:
             $ref: '#/definitions/ResponseBankingScheduledPaymentsList'
         422:
-          description: The request was well formed but was unable to be processed due to business logic specific to the request
+          description: The request was well formed but was unable to be processed due to business logic specific to the request.  For this API a 422 response must be given if any of the account IDs provided are invalid for the consent context
           headers:
             x-fapi-interaction-id:
               type: string
@@ -1116,10 +1127,10 @@ paths:
           type: string
           default: ALL
           enum:
+            - ALL
+            - BILLER
             - DOMESTIC
             - INTERNATIONAL
-            - BILLER
-            - ALL
         - name: page
           in: query
           description: Page of results to request (standard pagination)
@@ -1139,12 +1150,12 @@ paths:
           x-cds-type: PositiveInteger
         - name: x-v
           in: header
-          description: Version of the API end point requested by the client. Must be set to a positive integer. The data holder should respond with the highest supported version between [x-min-v](#request-headers) and [x-v](#request-headers). If the value of [x-min-v](#request-headers) is equal to or higher than the value of [x-v](#request-headers) then the [x-min-v](#request-headers) header should be treated as absent. If all versions requested are not supported then the data holder should respond with a 406 Not Acceptable. See [HTTP Headers](#request-headers)
+          description: Version of the API end point requested by the client. Must be set to a positive integer. The data holder should respond with the highest supported version between [x-min-v](#request-headers) and [x-v](#request-headers). If the value of [x-min-v](#request-headers) is equal to or higher than the value of [x-v](#request-headers) then the [x-min-v](#request-headers) header should be treated as absent. If all versions requested are not supported then the data holder must respond with a 406 Not Acceptable. See [HTTP Headers](#request-headers)
           required: true
           type: string
         - name: x-min-v
           in: header
-          description: Minimum version of the API end point requested by the client. Must be set to a positive integer if provided. The data holder should respond with the highest supported version between [x-min-v](#request-headers) and [x-v](#request-headers). If all versions requested are not supported then the data holder should respond with a 406 Not Acceptable.
+          description: Minimum version of the API end point requested by the client. Must be set to a positive integer if provided. The data holder should respond with the highest supported version between [x-min-v](#request-headers) and [x-v](#request-headers). If all versions requested are not supported then the data holder must respond with a 406 Not Acceptable.
           required: false
           type: string
         - $ref: '#/parameters/RequestHeader_x-fapi-interaction-id'
@@ -1199,12 +1210,12 @@ paths:
           x-cds-type: ASCIIString
         - name: x-v
           in: header
-          description: Version of the API end point requested by the client. Must be set to a positive integer. The data holder should respond with the highest supported version between [x-min-v](#request-headers) and [x-v](#request-headers). If the value of [x-min-v](#request-headers) is equal to or higher than the value of [x-v](#request-headers) then the [x-min-v](#request-headers) header should be treated as absent. If all versions requested are not supported then the data holder should respond with a 406 Not Acceptable. See [HTTP Headers](#request-headers)
+          description: Version of the API end point requested by the client. Must be set to a positive integer. The data holder should respond with the highest supported version between [x-min-v](#request-headers) and [x-v](#request-headers). If the value of [x-min-v](#request-headers) is equal to or higher than the value of [x-v](#request-headers) then the [x-min-v](#request-headers) header should be treated as absent. If all versions requested are not supported then the data holder must respond with a 406 Not Acceptable. See [HTTP Headers](#request-headers)
           required: true
           type: string
         - name: x-min-v
           in: header
-          description: Minimum version of the API end point requested by the client. Must be set to a positive integer if provided. The data holder should respond with the highest supported version between [x-min-v](#request-headers) and [x-v](#request-headers). If all versions requested are not supported then the data holder should respond with a 406 Not Acceptable.
+          description: Minimum version of the API end point requested by the client. Must be set to a positive integer if provided. The data holder should respond with the highest supported version between [x-min-v](#request-headers) and [x-v](#request-headers). If all versions requested are not supported then the data holder must respond with a 406 Not Acceptable.
           required: false
           type: string
         - $ref: '#/parameters/RequestHeader_x-fapi-interaction-id'
@@ -1248,7 +1259,7 @@ paths:
       description: |-
         Obtain a list of products that are currently openly offered to the market
 
-        Note that the results returned by this end point are expected to be ordered according to updated-since
+        Note that the results returned by this end point are expected to be ordered in descending order according to ``lastUpdated``.
 
         ### Conventions
         In the product reference payloads there are a number of recurring conventions that are explained here, in one place.
@@ -1294,9 +1305,9 @@ paths:
           type: string
           default: CURRENT
           enum:
+            - ALL
             - CURRENT
             - FUTURE
-            - ALL
         - name: updated-since
           in: query
           description: Only include products that have been updated after the specified date and time. If absent defaults to include all products
@@ -1314,18 +1325,18 @@ paths:
           required: false
           type: string
           enum:
-            - TRANS_AND_SAVINGS_ACCOUNTS
-            - TERM_DEPOSITS
-            - TRAVEL_CARDS
+            - BUSINESS_LOANS
+            - CRED_AND_CHRG_CARDS
+            - LEASES
+            - MARGIN_LOANS
+            - OVERDRAFTS
+            - PERS_LOANS
             - REGULATED_TRUST_ACCOUNTS
             - RESIDENTIAL_MORTGAGES
-            - CRED_AND_CHRG_CARDS
-            - PERS_LOANS
-            - MARGIN_LOANS
-            - LEASES
+            - TERM_DEPOSITS
             - TRADE_FINANCE
-            - OVERDRAFTS
-            - BUSINESS_LOANS
+            - TRANS_AND_SAVINGS_ACCOUNTS
+            - TRAVEL_CARDS
         - name: page
           in: query
           description: Page of results to request (standard pagination)
@@ -1345,12 +1356,12 @@ paths:
           x-cds-type: PositiveInteger
         - name: x-v
           in: header
-          description: Version of the API end point requested by the client. Must be set to a positive integer. The data holder should respond with the highest supported version between [x-min-v](#request-headers) and [x-v](#request-headers). If the value of [x-min-v](#request-headers) is equal to or higher than the value of [x-v](#request-headers) then the [x-min-v](#request-headers) header should be treated as absent. If all versions requested are not supported then the data holder should respond with a 406 Not Acceptable. See [HTTP Headers](#request-headers)
+          description: Version of the API end point requested by the client. Must be set to a positive integer. The data holder should respond with the highest supported version between [x-min-v](#request-headers) and [x-v](#request-headers). If the value of [x-min-v](#request-headers) is equal to or higher than the value of [x-v](#request-headers) then the [x-min-v](#request-headers) header should be treated as absent. If all versions requested are not supported then the data holder must respond with a 406 Not Acceptable. See [HTTP Headers](#request-headers)
           required: true
           type: string
         - name: x-min-v
           in: header
-          description: Minimum version of the API end point requested by the client. Must be set to a positive integer if provided. The data holder should respond with the highest supported version between [x-min-v](#request-headers) and [x-v](#request-headers). If all versions requested are not supported then the data holder should respond with a 406 Not Acceptable.
+          description: Minimum version of the API end point requested by the client. Must be set to a positive integer if provided. The data holder should respond with the highest supported version between [x-min-v](#request-headers) and [x-v](#request-headers). If all versions requested are not supported then the data holder must respond with a 406 Not Acceptable.
           required: false
           type: string
       responses:
@@ -1389,12 +1400,12 @@ paths:
           x-cds-type: ASCIIString
         - name: x-v
           in: header
-          description: Version of the API end point requested by the client. Must be set to a positive integer. The data holder should respond with the highest supported version between [x-min-v](#request-headers) and [x-v](#request-headers). If the value of [x-min-v](#request-headers) is equal to or higher than the value of [x-v](#request-headers) then the [x-min-v](#request-headers) header should be treated as absent. If all versions requested are not supported then the data holder should respond with a 406 Not Acceptable. See [HTTP Headers](#request-headers)
+          description: Version of the API end point requested by the client. Must be set to a positive integer. The data holder should respond with the highest supported version between [x-min-v](#request-headers) and [x-v](#request-headers). If the value of [x-min-v](#request-headers) is equal to or higher than the value of [x-v](#request-headers) then the [x-min-v](#request-headers) header should be treated as absent. If all versions requested are not supported then the data holder must respond with a 406 Not Acceptable. See [HTTP Headers](#request-headers)
           required: true
           type: string
         - name: x-min-v
           in: header
-          description: Minimum version of the API end point requested by the client. Must be set to a positive integer if provided. The data holder should respond with the highest supported version between [x-min-v](#request-headers) and [x-v](#request-headers). If all versions requested are not supported then the data holder should respond with a 406 Not Acceptable.
+          description: Minimum version of the API end point requested by the client. Must be set to a positive integer if provided. The data holder should respond with the highest supported version between [x-min-v](#request-headers) and [x-v](#request-headers). If all versions requested are not supported then the data holder must respond with a 406 Not Acceptable.
           required: false
           type: string
       responses:
@@ -1422,12 +1433,12 @@ paths:
       parameters:
         - name: x-v
           in: header
-          description: Version of the API end point requested by the client. Must be set to a positive integer. The data holder should respond with the highest supported version between [x-min-v](#request-headers) and [x-v](#request-headers). If the value of [x-min-v](#request-headers) is equal to or higher than the value of [x-v](#request-headers) then the [x-min-v](#request-headers) header should be treated as absent. If all versions requested are not supported then the data holder should respond with a 406 Not Acceptable. See [HTTP Headers](#request-headers)
+          description: Version of the API end point requested by the client. Must be set to a positive integer. The data holder should respond with the highest supported version between [x-min-v](#request-headers) and [x-v](#request-headers). If the value of [x-min-v](#request-headers) is equal to or higher than the value of [x-v](#request-headers) then the [x-min-v](#request-headers) header should be treated as absent. If all versions requested are not supported then the data holder must respond with a 406 Not Acceptable. See [HTTP Headers](#request-headers)
           required: true
           type: string
         - name: x-min-v
           in: header
-          description: Minimum version of the API end point requested by the client. Must be set to a positive integer if provided. The data holder should respond with the highest supported version between [x-min-v](#request-headers) and [x-v](#request-headers). If all versions requested are not supported then the data holder should respond with a 406 Not Acceptable.
+          description: Minimum version of the API end point requested by the client. Must be set to a positive integer if provided. The data holder should respond with the highest supported version between [x-min-v](#request-headers) and [x-v](#request-headers). If all versions requested are not supported then the data holder must respond with a 406 Not Acceptable.
           required: false
           type: string
         - $ref: '#/parameters/RequestHeader_x-fapi-interaction-id'
@@ -1473,12 +1484,12 @@ paths:
       parameters:
         - name: x-v
           in: header
-          description: Version of the API end point requested by the client. Must be set to a positive integer. The data holder should respond with the highest supported version between [x-min-v](#request-headers) and [x-v](#request-headers). If the value of [x-min-v](#request-headers) is equal to or higher than the value of [x-v](#request-headers) then the [x-min-v](#request-headers) header should be treated as absent. If all versions requested are not supported then the data holder should respond with a 406 Not Acceptable. See [HTTP Headers](#request-headers)
+          description: Version of the API end point requested by the client. Must be set to a positive integer. The data holder should respond with the highest supported version between [x-min-v](#request-headers) and [x-v](#request-headers). If the value of [x-min-v](#request-headers) is equal to or higher than the value of [x-v](#request-headers) then the [x-min-v](#request-headers) header should be treated as absent. If all versions requested are not supported then the data holder must respond with a 406 Not Acceptable. See [HTTP Headers](#request-headers)
           required: true
           type: string
         - name: x-min-v
           in: header
-          description: Minimum version of the API end point requested by the client. Must be set to a positive integer if provided. The data holder should respond with the highest supported version between [x-min-v](#request-headers) and [x-v](#request-headers). If all versions requested are not supported then the data holder should respond with a 406 Not Acceptable.
+          description: Minimum version of the API end point requested by the client. Must be set to a positive integer if provided. The data holder should respond with the highest supported version between [x-min-v](#request-headers) and [x-v](#request-headers). If all versions requested are not supported then the data holder must respond with a 406 Not Acceptable.
           required: false
           type: string
         - $ref: '#/parameters/RequestHeader_x-fapi-interaction-id'
@@ -1524,12 +1535,12 @@ paths:
       parameters:
         - name: x-v
           in: header
-          description: Version of the API end point requested by the client. Must be set to a positive integer. The data holder should respond with the highest supported version between [x-min-v](#request-headers) and [x-v](#request-headers). If the value of [x-min-v](#request-headers) is equal to or higher than the value of [x-v](#request-headers) then the [x-min-v](#request-headers) header should be treated as absent. If all versions requested are not supported then the data holder should respond with a 406 Not Acceptable. See [HTTP Headers](#request-headers)
+          description: Version of the API end point requested by the client. Must be set to a positive integer. The data holder should respond with the highest supported version between [x-min-v](#request-headers) and [x-v](#request-headers). If the value of [x-min-v](#request-headers) is equal to or higher than the value of [x-v](#request-headers) then the [x-min-v](#request-headers) header should be treated as absent. If all versions requested are not supported then the data holder must respond with a 406 Not Acceptable. See [HTTP Headers](#request-headers)
           required: true
           type: string
         - name: x-min-v
           in: header
-          description: Minimum version of the API end point requested by the client. Must be set to a positive integer if provided. The data holder should respond with the highest supported version between [x-min-v](#request-headers) and [x-v](#request-headers). If all versions requested are not supported then the data holder should respond with a 406 Not Acceptable.
+          description: Minimum version of the API end point requested by the client. Must be set to a positive integer if provided. The data holder should respond with the highest supported version between [x-min-v](#request-headers) and [x-v](#request-headers). If all versions requested are not supported then the data holder must respond with a 406 Not Acceptable.
           required: false
           type: string
       responses:
@@ -1557,12 +1568,12 @@ paths:
       parameters:
         - name: x-v
           in: header
-          description: Version of the API end point requested by the client. Must be set to a positive integer. The data holder should respond with the highest supported version between [x-min-v](#request-headers) and [x-v](#request-headers). If the value of [x-min-v](#request-headers) is equal to or higher than the value of [x-v](#request-headers) then the [x-min-v](#request-headers) header should be treated as absent. If all versions requested are not supported then the data holder should respond with a 406 Not Acceptable. See [HTTP Headers](#request-headers)
+          description: Version of the API end point requested by the client. Must be set to a positive integer. The data holder should respond with the highest supported version between [x-min-v](#request-headers) and [x-v](#request-headers). If the value of [x-min-v](#request-headers) is equal to or higher than the value of [x-v](#request-headers) then the [x-min-v](#request-headers) header should be treated as absent. If all versions requested are not supported then the data holder must respond with a 406 Not Acceptable. See [HTTP Headers](#request-headers)
           required: true
           type: string
         - name: x-min-v
           in: header
-          description: Minimum version of the API end point requested by the client. Must be set to a positive integer if provided. The data holder should respond with the highest supported version between [x-min-v](#request-headers) and [x-v](#request-headers). If all versions requested are not supported then the data holder should respond with a 406 Not Acceptable.
+          description: Minimum version of the API end point requested by the client. Must be set to a positive integer if provided. The data holder should respond with the highest supported version between [x-min-v](#request-headers) and [x-v](#request-headers). If all versions requested are not supported then the data holder must respond with a 406 Not Acceptable.
           required: false
           type: string
       responses:
@@ -1725,12 +1736,12 @@ definitions:
       - links
     properties:
       data:
-        $ref: '#/definitions/BankingProductDetailV2'
+        $ref: '#/definitions/BankingProductDetailV3'
       links:
         $ref: '#/definitions/Links'
       meta:
         $ref: '#/definitions/Meta'
-  BankingProductDetailV2:
+  BankingProductDetailV3:
     allOf:
       - $ref: '#/definitions/BankingProductV3'
       - type: object
@@ -1769,7 +1780,7 @@ definitions:
             type: array
             description: Interest rates charged against lending balances
             items:
-              $ref: '#/definitions/BankingProductLendingRate'
+              $ref: '#/definitions/BankingProductLendingRateV2'
   BankingProductBundle:
     type: object
     required:
@@ -1804,29 +1815,29 @@ definitions:
         type: string
         description: The type of feature described
         enum:
-          - CARD_ACCESS
           - ADDITIONAL_CARDS
-          - UNLIMITED_TXNS
+          - BALANCE_TRANSFERS
+          - BILL_PAYMENT
+          - BONUS_REWARDS
+          - CARD_ACCESS
+          - COMPLEMENTARY_PRODUCT_DISCOUNTS
+          - DIGITAL_BANKING
+          - DIGITAL_WALLET
+          - DONATE_INTEREST
           - FREE_TXNS
           - FREE_TXNS_ALLOWANCE
-          - LOYALTY_PROGRAM
-          - OFFSET
-          - OVERDRAFT
-          - REDRAW
           - INSURANCE
-          - BALANCE_TRANSFERS
           - INTEREST_FREE
           - INTEREST_FREE_TRANSFERS
-          - DIGITAL_WALLET
-          - DIGITAL_BANKING
-          - NPP_PAYID
-          - NPP_ENABLED
-          - DONATE_INTEREST
-          - BILL_PAYMENT
-          - COMPLEMENTARY_PRODUCT_DISCOUNTS
-          - BONUS_REWARDS
+          - LOYALTY_PROGRAM
           - NOTIFICATIONS
+          - NPP_ENABLED
+          - NPP_PAYID
+          - OFFSET
           - OTHER
+          - OVERDRAFT
+          - REDRAW
+          - UNLIMITED_TXNS
       additionalValue:
         type: string
         description: Generic field containing additional information relevant to the [featureType](#tocSproductfeaturetypedoc) specified. Whether mandatory or not is dependent on the value of the [featureType.](#tocSproductfeaturetypedoc)
@@ -1849,11 +1860,11 @@ definitions:
         type: string
         description: The type of constraint described.  See the next section for an overview of valid values and their meaning
         enum:
-          - MIN_BALANCE
           - MAX_BALANCE
-          - OPENING_BALANCE
           - MAX_LIMIT
+          - MIN_BALANCE
           - MIN_LIMIT
+          - OPENING_BALANCE
       additionalValue:
         type: string
         description: Generic field containing additional information relevant to the [constraintType](#tocSproductconstrainttypedoc) specified.  Whether mandatory or not is dependent on the value of [constraintType](#tocSproductconstrainttypedoc)
@@ -1876,17 +1887,17 @@ definitions:
         description: The type of eligibility criteria described.  See the next section for an overview of valid values and their meaning
         enum:
           - BUSINESS
-          - PENSION_RECIPIENT
-          - MIN_AGE
+          - EMPLOYMENT_STATUS
           - MAX_AGE
+          - MIN_AGE
           - MIN_INCOME
           - MIN_TURNOVER
-          - STAFF
-          - STUDENT
-          - EMPLOYMENT_STATUS
-          - RESIDENCY_STATUS
           - NATURAL_PERSON
           - OTHER
+          - PENSION_RECIPIENT
+          - RESIDENCY_STATUS
+          - STAFF
+          - STUDENT
       additionalValue:
         type: string
         description: Generic field containing additional information relevant to the [eligibilityType](#tocSproducteligibilitytypedoc) specified. Whether mandatory or not is dependent on the value of [eligibilityType](#tocSproducteligibilitytypedoc)
@@ -1913,30 +1924,31 @@ definitions:
         type: string
         description: The type of fee
         enum:
-          - PERIODIC
-          - TRANSACTION
-          - WITHDRAWAL
           - DEPOSIT
-          - PAYMENT
-          - PURCHASE
           - EVENT
-          - UPFRONT
           - EXIT
+          - PAYMENT
+          - PERIODIC
+          - PURCHASE
+          - TRANSACTION
+          - UPFRONT
+          - VARIABLE
+          - WITHDRAWAL
       amount:
         type: string
-        description: The amount charged for the fee. One of amount, balanceRate, transactionRate and accruedRate is mandatory
+        description: The amount charged for the fee. One of amount, balanceRate, transactionRate and accruedRate is mandatory unless the *feeType* "VARIABLE" is supplied
         x-cds-type: AmountString
       balanceRate:
         type: string
-        description: A fee rate calculated based on a proportion of the balance. One of amount, balanceRate, transactionRate and accruedRate is mandatory
+        description: A fee rate calculated based on a proportion of the balance. One of amount, balanceRate, transactionRate and accruedRate is mandatory unless the *feeType* "VARIABLE" is supplied.
         x-cds-type: RateString
       transactionRate:
         type: string
-        description: A fee rate calculated based on a proportion of a transaction. One of amount, balanceRate, transactionRate and accruedRate is mandatory
+        description: A fee rate calculated based on a proportion of a transaction. One of amount, balanceRate, transactionRate and accruedRate is mandatory unless the *feeType* "VARIABLE" is supplied
         x-cds-type: RateString
       accruedRate:
         type: string
-        description: A fee rate calculated based on a proportion of the calculated interest accrued on the account. One of amount, balanceRate, transactionRate and accruedRate is mandatory
+        description: A fee rate calculated based on a proportion of the calculated interest accrued on the account. One of amount, balanceRate, transactionRate and accruedRate is mandatory unless the *feeType* "VARIABLE" is supplied
         x-cds-type: RateString
       accrualFrequency:
         type: string
@@ -1982,12 +1994,12 @@ definitions:
         enum:
           - BALANCE
           - DEPOSITS
-          - PAYMENTS
-          - FEE_CAP
           - ELIGIBILITY_ONLY
+          - FEE_CAP
+          - PAYMENTS
       amount:
         type: string
-        description: Value of the discount. When following properties include one of amount, balanceRate, transactionRate, accruedRate and feeRate is mandatory
+        description: Dollar value of the discount. One of amount, balanceRate, transactionRate, accruedRate and feeRate is mandatory.
         x-cds-type: AmountString
       balanceRate:
         type: string
@@ -2017,16 +2029,17 @@ definitions:
         x-cds-type: URIString
       eligibility:
         type: array
-        description: Eligibility constraints that apply to this discount
+        description: Eligibility constraints that apply to this discount. Mandatory if ``discountType`` is ``ELIGIBILITY_ONLY``.
         items:
           $ref: '#/definitions/BankingProductDiscountEligibility'
     x-conditional:
-      - balanceRate
-      - transactionRate
       - accruedRate
-      - feeRate
       - additionalValue
       - amount
+      - balanceRate
+      - eligibility
+      - feeRate
+      - transactionRate
   BankingProductDiscountEligibility:
     type: object
     required:
@@ -2037,29 +2050,30 @@ definitions:
         description: The type of the specific eligibility constraint for a discount
         enum:
           - BUSINESS
-          - PENSION_RECIPIENT
-          - MIN_AGE
+          - EMPLOYMENT_STATUS
+          - INTRODUCTORY
           - MAX_AGE
+          - MIN_AGE
           - MIN_INCOME
           - MIN_TURNOVER
+          - NATURAL_PERSON
+          - OTHER
+          - PENSION_RECIPIENT
+          - RESIDENCY_STATUS
           - STAFF
           - STUDENT
-          - EMPLOYMENT_STATUS
-          - RESIDENCY_STATUS
-          - NATURAL_PERSON
-          - INTRODUCTORY
-          - OTHER
       additionalValue:
         type: string
         description: Generic field containing additional information relevant to the [discountEligibilityType](#tocSproductdiscounteligibilitydoc) specified. Whether mandatory or not is dependent on the value of [discountEligibilityType](#tocSproductdiscounteligibilitydoc)
       additionalInfo:
         type: string
-        description: Display text providing more information on this eligibility constraint
+        description: Display text providing more information on this eligibility constraint. Whether mandatory or not is dependent on the value of [discountEligibilityType](#tocSproductdiscounteligibilitydoc)
       additionalInfoUri:
         type: string
         description: Link to a web page with more information on this eligibility constraint
         x-cds-type: URIString
     x-conditional:
+      - additionalInfo
       - additionalValue
   BankingProductDepositRate:
     type: object
@@ -2071,13 +2085,13 @@ definitions:
         type: string
         description: The type of rate (base, bonus, etc). See the next section for an overview of valid values and their meaning
         enum:
-          - FIXED
           - BONUS
           - BUNDLE_BONUS
-          - VARIABLE
-          - INTRODUCTORY
+          - FIXED
           - FLOATING
+          - INTRODUCTORY
           - MARKET_LINKED
+          - VARIABLE
       rate:
         type: string
         description: The rate to be applied
@@ -2094,7 +2108,7 @@ definitions:
         type: array
         description: Rate tiers applicable for this rate
         items:
-          $ref: '#/definitions/BankingProductRateTier'
+          $ref: '#/definitions/BankingProductRateTierV3'
       additionalValue:
         type: string
         description: Generic field containing additional information relevant to the [depositRateType](#tocSproductdepositratetypedoc) specified. Whether mandatory or not is dependent on the value of [depositRateType](#tocSproductdepositratetypedoc)
@@ -2107,7 +2121,7 @@ definitions:
         x-cds-type: URIString
     x-conditional:
       - additionalValue
-  BankingProductLendingRate:
+  BankingProductLendingRateV2:
     type: object
     required:
       - lendingRateType
@@ -2117,17 +2131,17 @@ definitions:
         type: string
         description: The type of rate (fixed, variable, etc). See the next section for an overview of valid values and their meaning
         enum:
-          - FIXED
-          - VARIABLE
-          - INTRODUCTORY
-          - DISCOUNT
-          - PENALTY
-          - FLOATING
-          - MARKET_LINKED
-          - CASH_ADVANCE
-          - PURCHASE
           - BUNDLE_DISCOUNT_FIXED
           - BUNDLE_DISCOUNT_VARIABLE
+          - CASH_ADVANCE
+          - DISCOUNT
+          - FIXED
+          - FLOATING
+          - INTRODUCTORY
+          - MARKET_LINKED
+          - PENALTY
+          - PURCHASE
+          - VARIABLE
       rate:
         type: string
         description: The rate to be applied
@@ -2148,8 +2162,8 @@ definitions:
         type: string
         description: When loan payments are due to be paid within each period. The investment benefit of earlier payments affect the rate that can be offered
         enum:
-          - IN_ARREARS
           - IN_ADVANCE
+          - IN_ARREARS
       repaymentType:
         type: string
         description: Options in place for repayments. If absent, the lending rate is applicable to all repayment types
@@ -2160,13 +2174,13 @@ definitions:
         type: string
         description: The reason for taking out the loan. If absent, the lending rate is applicable to all loan purposes
         enum:
-          - OWNER_OCCUPIED
           - INVESTMENT
+          - OWNER_OCCUPIED
       tiers:
         type: array
         description: Rate tiers applicable for this rate
         items:
-          $ref: '#/definitions/BankingProductRateTier'
+          $ref: '#/definitions/BankingProductRateTierV3'
       additionalValue:
         type: string
         description: Generic field containing additional information relevant to the [lendingRateType](#tocSproductlendingratetypedoc) specified. Whether mandatory or not is dependent on the value of [lendingRateType](#tocSproductlendingratetypedoc)
@@ -2179,7 +2193,7 @@ definitions:
         x-cds-type: URIString
     x-conditional:
       - additionalValue
-  BankingProductRateTier:
+  BankingProductRateTierV3:
     type: object
     required:
       - minimumValue
@@ -2193,22 +2207,24 @@ definitions:
         type: string
         description: The unit of measure that applies to the tierValueMinimum and tierValueMaximum values e.g. a **DOLLAR** amount. **PERCENT** (in the case of loan-to-value ratio or LVR). Tier term period representing a discrete number of **MONTH**'s or **DAY**'s (in the case of term deposit tiers)
         enum:
-          - DOLLAR
-          - PERCENT
-          - MONTH
           - DAY
+          - DOLLAR
+          - MONTH
+          - PERCENT
       minimumValue:
         type: number
         description: The number of tierUnitOfMeasure units that form the lower bound of the tier. The tier should be inclusive of this value
+        x-cds-type: Number
       maximumValue:
         type: number
         description: 'The number of tierUnitOfMeasure units that form the upper bound of the tier or band. For a tier with a discrete value (as opposed to a range of values e.g. 1 month) this must be the same as tierValueMinimum. Where this is the same as the tierValueMinimum value of the next-higher tier the referenced tier should be exclusive of this value. For example a term deposit of 2 months falls into the upper tier of the following tiers: (1 – 2 months, 2 – 3 months). If absent the tier''s range has no upper bound.'
+        x-cds-type: Number
       rateApplicationMethod:
         type: string
         description: The method used to calculate the amount to be applied using one or more tiers. A single rate may be applied to the entire balance or each applicable tier rate is applied to the portion of the balance that falls into that tier (referred to as 'bands' or 'steps')
         enum:
-          - WHOLE_BALANCE
           - PER_TIER
+          - WHOLE_BALANCE
       applicabilityConditions:
         $ref: '#/definitions/BankingProductRateCondition'
       additionalInfo:
@@ -2271,8 +2287,8 @@ definitions:
         description: Open or closed status for the account. If not present then OPEN is assumed
         default: OPEN
         enum:
-          - OPEN
           - CLOSED
+          - OPEN
       isOwned:
         type: boolean
         description: Flag indicating that the customer associated with the authorisation is an owner of the account. Does not indicate sole ownership, however. If not present then 'true' is assumed
@@ -2317,9 +2333,9 @@ definitions:
             type: string
             description: The type of structure to present account specific fields.
             enum:
-              - termDeposit
               - creditCard
               - loan
+              - termDeposit
           termDeposit:
             type: array
             items:
@@ -2345,7 +2361,7 @@ definitions:
             type: array
             description: Fully described deposit rates for this account based on the equivalent structure in Product Reference
             items:
-              $ref: '#/definitions/BankingProductLendingRate'
+              $ref: '#/definitions/BankingProductLendingRateV2'
           features:
             type: array
             description: Array of features of the account based on the equivalent structure in Product Reference with the following additional field
@@ -2399,10 +2415,11 @@ definitions:
         x-cds-type: CurrencyString
       maturityInstructions:
         type: string
-        description: Current instructions on action to be taken at maturity
+        description: Current instructions on action to be taken at maturity. This includes default actions that may be specified in the terms and conditions for the product e.g. roll-over to the same term and frequency of interest payments
         enum:
-          - ROLLED_OVER
+          - HOLD_ON_MATURITY
           - PAID_OUT_AT_MATURITY
+          - ROLLED_OVER
   BankingCreditCardAccount:
     type: object
     required:
@@ -2538,14 +2555,14 @@ definitions:
         type: string
         description: The type of the transaction
         enum:
+          - DIRECT_DEBIT
           - FEE
           - INTEREST_CHARGED
           - INTEREST_PAID
-          - TRANSFER_OUTGOING
-          - TRANSFER_INCOMING
-          - PAYMENT
-          - DIRECT_DEBIT
           - OTHER
+          - PAYMENT
+          - TRANSFER_INCOMING
+          - TRANSFER_OUTGOING
       status:
         type: string
         description: Status of the transaction whether pending or posted. Note that there is currently no provision in the standards to guarantee the ability to correlate a pending transaction with an associated posted transaction
@@ -2592,13 +2609,14 @@ definitions:
         description: Name of the BPAY biller for the transaction (if available)
       crn:
         type: string
-        description: BPAY CRN for the transaction (if available)
+        description: BPAY CRN for the transaction (if available).<br/>Where the CRN contains sensitive information, it should be masked in line with how the Data Holder currently displays account identifiers in their existing online banking channels. If the contents of the CRN match the format of a Credit Card PAN they should be masked according to the rules applicable for MaskedPANString. If the contents are are otherwise sensitive, then it should be masked using the rules applicable for the MaskedAccountString common type.
       apcaNumber:
         type: string
         description: 6 Digit APCA number for the initiating institution. The field is fixed-width and padded with leading zeros if applicable.
     x-conditional:
       - transactionId
       - postingDateTime
+      - crn
   ResponseBankingTransactionById:
     type: object
     required:
@@ -2731,7 +2749,7 @@ definitions:
         x-cds-type: ASCIIString
       nickname:
         type: string
-        description: The short display name of the payee as provided by the customer
+        description: The short display name of the payee as provided by the customer. Where a customer has not provided a nickname, a display name derived by the bank for the payee consistent with existing digital banking channels
       description:
         type: string
         description: A description of the payee provided by the customer
@@ -2739,9 +2757,9 @@ definitions:
         type: string
         description: The type of payee. DOMESTIC means a registered payee for domestic payments including NPP. INTERNATIONAL means a registered payee for international payments. BILLER means a registered payee for BPAY
         enum:
+          - BILLER
           - DOMESTIC
           - INTERNATIONAL
-          - BILLER
       creationDate:
         type: string
         description: The date the payee was created by the customer
@@ -2757,8 +2775,8 @@ definitions:
             type: string
             description: Type of object included that describes the payee in detail
             enum:
-              - domestic
               - biller
+              - domestic
               - international
           domestic:
             $ref: '#/definitions/BankingDomesticPayee'
@@ -2832,10 +2850,10 @@ definitions:
         type: string
         description: The type of the PayID
         enum:
-          - EMAIL
-          - TELEPHONE
           - ABN
+          - EMAIL
           - ORG_IDENTIFIER
+          - TELEPHONE
   BankingBillerPayee:
     type: object
     required:
@@ -2847,7 +2865,7 @@ definitions:
         description: BPAY Biller Code of the Biller
       crn:
         type: string
-        description: BPAY CRN of the Biller. If the contents of the CRN match the format of a Credit Card PAN then it should be masked using the rules applicable for the MaskedPANString common type
+        description: BPAY CRN of the Biller (if available).<br/>Where the CRN contains sensitive information, it should be masked in line with how the Data Holder currently displays account identifiers in their existing online banking channels. If the contents of the CRN match the format of a Credit Card PAN they should be masked according to the rules applicable for MaskedPANString. If the contents are are otherwise sensitive, then it should be masked using the rules applicable for the MaskedAccountString common type.
       billerName:
         type: string
         description: Name of the Biller
@@ -2931,7 +2949,6 @@ definitions:
     type: object
     required:
       - from
-      - payeeReference
       - payerReference
       - paymentSet
       - recurrence
@@ -2944,20 +2961,20 @@ definitions:
         x-cds-type: ASCIIString
       nickname:
         type: string
-        description: The short display name of the payee as provided by the customer
+        description: The short display name of the scheduled payment as provided by the customer if provided. Where a customer has not provided a nickname, a display name derived by the bank for the scheduled payment should be provided that is consistent with existing digital banking channels
       payerReference:
         type: string
         description: The reference for the transaction that will be used by the originating institution for the purposes of constructing a statement narrative on the payer’s account. Empty string if no data provided
       payeeReference:
         type: string
-        description: The reference for the transaction that will be provided by the originating institution. Empty string if no data provided
+        description: The reference for the transaction, if applicable, that will be provided by the originating institution for all payments in the payment set. Empty string if no data provided
       status:
         type: string
         description: Indicates whether the schedule is currently active. The value SKIP is equivalent to ACTIVE except that the customer has requested the next normal occurrence to be skipped.
         enum:
           - ACTIVE
-          - SKIP
           - INACTIVE
+          - SKIP
       from:
         $ref: '#/definitions/BankingScheduledPaymentFrom'
       paymentSet:
@@ -2966,6 +2983,8 @@ definitions:
           $ref: '#/definitions/BankingScheduledPaymentSet'
       recurrence:
         $ref: '#/definitions/BankingScheduledPaymentRecurrence'
+    x-conditional:
+      - payeeReference
   BankingScheduledPaymentSet:
     required:
       - to
@@ -2997,10 +3016,10 @@ definitions:
         description: The type of object provided that specifies the destination of the funds for the payment.
         enum:
           - accountId
-          - payeeId
-          - domestic
           - biller
+          - domestic
           - international
+          - payeeId
       accountId:
         type: string
         description: Present if toUType is set to accountId. Indicates that the payment is to another account that is accessible under the current consent
@@ -3009,6 +3028,12 @@ definitions:
         type: string
         description: Present if toUType is set to payeeId. Indicates that the payment is to registered payee that can be accessed using the payee end point. If the Bank Payees scope has not been consented to then a payeeId should not be provided and the full payee details should be provided instead
         x-cds-type: ASCIIString
+      nickname:
+        type: string
+        description: The short display name of the payee as provided by the customer unless toUType is set to payeeId. Where a customer has not provided a nickname, a display name derived by the bank for payee should be provided that is consistent with existing digital banking channels
+      payeeReference:
+        type: string
+        description: The reference for the transaction, if applicable, that will be provided by the originating institution for the specific payment. If not empty, it overrides the value provided at the BankingScheduledPayment level.
       domestic:
         $ref: '#/definitions/BankingDomesticPayee'
       biller:
@@ -3022,6 +3047,8 @@ definitions:
       - domestic
       - biller
       - international
+      - nickname
+      - payeeReference
   BankingScheduledPaymentFrom:
     type: object
     required:
@@ -3045,10 +3072,10 @@ definitions:
         type: string
         description: The type of recurrence used to define the schedule
         enum:
-          - onceOff
+          - eventBased
           - intervalSchedule
           - lastWeekDay
-          - eventBased
+          - onceOff
       onceOff:
         $ref: '#/definitions/BankingScheduledPaymentRecurrenceOnceOff'
       intervalSchedule:
@@ -3084,6 +3111,7 @@ definitions:
         x-cds-type: DateString
       paymentsRemaining:
         type: integer
+        example: 1
         description: Indicates the number of payments remaining in the schedule. If both finalPaymentDate and paymentsRemaining are present then payments will stop according to the most constraining value, If neither field is present the payments will continue indefinitely
         x-cds-type: PositiveInteger
       nonBusinessDayTreatment:
@@ -3126,6 +3154,7 @@ definitions:
         x-cds-type: DateString
       paymentsRemaining:
         type: integer
+        example: 1
         description: Indicates the number of payments remaining in the schedule. If both finalPaymentDate and paymentsRemaining are present then payments will stop according to the most constraining value. If neither field is present the payments will continue indefinitely
         x-cds-type: PositiveInteger
       interval:
@@ -3136,13 +3165,13 @@ definitions:
         type: string
         description: The weekDay specified. The payment will occur on the last occurrence of this weekday in the interval.
         enum:
-          - MON
-          - TUE
-          - WED
-          - THU
           - FRI
+          - MON
           - SAT
           - SUN
+          - THU
+          - TUE
+          - WED
       nonBusinessDayTreatment:
         type: string
         description: Enumerated field giving the treatment where a scheduled payment date is not a business day. If absent assumed to be ON.<br/>**AFTER** - If a scheduled payment date is a non-business day the payment will be made on the first business day after the scheduled payment date.<br/>**BEFORE** - If a scheduled payment date is a non-business day the payment will be made on the first business day before the scheduled payment date.<br/>**ON** - If a scheduled payment date is a non-business day the payment will be made on that day regardless.<br/>**ONLY** - Payments only occur on business days. If a scheduled payment date is a non-business day the payment will be ignored
@@ -3204,6 +3233,7 @@ definitions:
       isPartial:
         type: boolean
         description: Flag that indicates, if present and set to true, that the outage is only partial meaning that only a subset of normally available end points will be affected by the outage
+        x-cds-type: Boolean
       explanation:
         type: string
         description: Provides an explanation of the current outage that can be displayed to an end customer
@@ -3266,7 +3296,19 @@ definitions:
         description: Used for a trailing suffix to the name (e.g. Jr)
       occupationCode:
         type: string
-        description: Value is a valid [ANZSCO v1.2](http://www.abs.gov.au/ANZSCO) Standard Occupation classification.
+        description: Value is a valid [ANZSCO](http://www.abs.gov.au/ANZSCO) Standard Occupation classification code. If the occupation code held by the data holder is not one of the supported [ANZSCO](http://www.abs.gov.au/ANZSCO) versions, then it must not be supplied.
+        x-cds-type: ExternalRef
+      occupationCodeVersion:
+        type: string
+        description: The applicable [ANZSCO](http://www.abs.gov.au/ANZSCO) release version of the occupation code provided. Mandatory if an ``occupationCode`` is supplied. If ``occupationCode`` is supplied but ``occupationCodeVersion`` is absent, default is ``ANZSCO_1220.0_2013_V1.2``
+        default: ANZSCO_1220.0_2013_V1.2
+        enum:
+          - ANZSCO_1220.0_2006_V1.0
+          - ANZSCO_1220.0_2006_V1.1
+          - ANZSCO_1220.0_2013_V1.2
+          - ANZSCO_1220.0_2013_V1.3
+    x-conditional:
+      - occupationCodeVersion
   CommonPersonDetail:
     allOf:
       - $ref: '#/definitions/CommonPerson'
@@ -3333,17 +3375,25 @@ definitions:
         x-cds-type: Boolean
       industryCode:
         type: string
-        description: '[ANZSIC (2006)](http://www.abs.gov.au/anzsic) code for the organisation.'
+        description: A valid [ANZSIC](http://www.abs.gov.au/ANZSIC) code for the organisation. If the industry code held by the data holder is not one of the supported [ANZSIC](http://www.abs.gov.au/ANZSIC) versions, then it must not be supplied.
+        x-cds-type: ExternalRef
+      industryCodeVersion:
+        type: string
+        description: The applicable [ANZSIC](http://www.abs.gov.au/ANZSIC) release version of the industry code provided. Should only be supplied if ``industryCode`` is also supplied. If ``industryCode`` is supplied but ``industryCodeVersion`` is absent, default is ``ANZSIC_1292.0_2006_V2.0``
+        default: ANZSIC_1292.0_2006_V2.0
+        enum:
+          - ANZSIC_1292.0_2006_V1.0
+          - ANZSIC_1292.0_2006_V2.0
       organisationType:
         type: string
         description: Legal organisation type
         enum:
-          - SOLE_TRADER
           - COMPANY
-          - PARTNERSHIP
-          - TRUST
           - GOVERNMENT_ENTITY
           - OTHER
+          - PARTNERSHIP
+          - SOLE_TRADER
+          - TRUST
       registeredCountry:
         type: string
         description: Enumeration with values from [ISO 3166 Alpha-3](https://www.iso.org/iso-3166-country-codes.html) country codes.  Assumed to be AUS if absent
@@ -3352,6 +3402,8 @@ definitions:
         type: string
         description: The date the organisation described was established
         x-cds-type: DateString
+    x-conditional:
+      - industryCodeVersion
   CommonOrganisationDetail:
     allOf:
       - $ref: '#/definitions/CommonOrganisation'
@@ -3379,12 +3431,12 @@ definitions:
         type: string
         description: The purpose of the number as specified by the customer
         enum:
-          - MOBILE
           - HOME
-          - WORK
-          - OTHER
           - INTERNATIONAL
+          - MOBILE
+          - OTHER
           - UNSPECIFIED
+          - WORK
       countryCode:
         type: string
         description: If absent, assumed to be Australia (+61). The + should be included
@@ -3417,10 +3469,10 @@ definitions:
         type: string
         description: The purpose for the email, as specified by the customer (Enumeration)
         enum:
-          - WORK
           - HOME
           - OTHER
           - UNSPECIFIED
+          - WORK
       address:
         type: string
         description: A correctly formatted email address, as defined by the addr_spec format in [RFC 5322](https://www.ietf.org/rfc/rfc5322.txt)
@@ -3436,11 +3488,11 @@ definitions:
             type: string
             description: Enumeration of values indicating the purpose of the physical address
             enum:
-              - REGISTERED
               - MAIL
-              - PHYSICAL
-              - WORK
               - OTHER
+              - PHYSICAL
+              - REGISTERED
+              - WORK
   CommonPhysicalAddress:
     type: object
     required:
@@ -3450,8 +3502,8 @@ definitions:
         type: string
         description: The type of address object present
         enum:
-          - simple
           - paf
+          - simple
       simple:
         $ref: '#/definitions/CommonSimpleAddress'
       paf:
@@ -3639,18 +3691,18 @@ definitions:
     type: string
     description: The category to which a product or account belongs. See [here](#product-categories) for more details
     enum:
-      - TRANS_AND_SAVINGS_ACCOUNTS
-      - TERM_DEPOSITS
-      - TRAVEL_CARDS
+      - BUSINESS_LOANS
+      - CRED_AND_CHRG_CARDS
+      - LEASES
+      - MARGIN_LOANS
+      - OVERDRAFTS
+      - PERS_LOANS
       - REGULATED_TRUST_ACCOUNTS
       - RESIDENTIAL_MORTGAGES
-      - CRED_AND_CHRG_CARDS
-      - PERS_LOANS
-      - MARGIN_LOANS
-      - LEASES
+      - TERM_DEPOSITS
       - TRADE_FINANCE
-      - OVERDRAFTS
-      - BUSINESS_LOANS
+      - TRANS_AND_SAVINGS_ACCOUNTS
+      - TRAVEL_CARDS
   RequestAccountIds_data:
     required:
       - accountIds
@@ -3702,7 +3754,7 @@ definitions:
         description: Display label for the specific image
       imageUri:
         type: string
-        description: Link to a PNG, JPG or GIF image with proportions defined by ISO 7810 ID-1 and width no greater than 512 pixels
+        description: URI reference to a PNG, JPG or GIF image with proportions defined by ISO 7810 ID-1 and width no greater than 512 pixels. The URI reference may be a link or url-encoded data URI [RFC 2397](https://tools.ietf.org/html/rfc2397)
         x-cds-type: URIString
   ResponseBankingAccountList_data:
     required:
@@ -3862,8 +3914,8 @@ definitions:
         enum:
           - OK
           - PARTIAL_FAILURE
-          - UNAVAILABLE
           - SCHEDULED_OUTAGE
+          - UNAVAILABLE
       explanation:
         type: string
         description: Provides an explanation of the current outage that can be displayed to an end customer. Mandatory if the status property is any value other than OK
@@ -3896,8 +3948,8 @@ definitions:
         type: string
         description: The type of customer object that is present
         enum:
-          - person
           - organisation
+          - person
       person:
         $ref: '#/definitions/CommonPerson'
       organisation:
@@ -3910,8 +3962,8 @@ definitions:
         type: string
         description: The type of customer object that is present
         enum:
-          - person
           - organisation
+          - person
       person:
         $ref: '#/definitions/CommonPersonDetail'
       organisation:
@@ -3939,13 +3991,13 @@ parameters:
   RequestHeader_x-v:
     name: x-v
     in: header
-    description: Version of the API end point requested by the client. Must be set to a positive integer. The data holder should respond with the highest supported version between [x-min-v](#request-headers) and [x-v](#request-headers). If the value of [x-min-v](#request-headers) is equal to or higher than the value of [x-v](#request-headers) then the [x-min-v](#request-headers) header should be treated as absent. If all versions requested are not supported then the data holder should respond with a 406 Not Acceptable. See [HTTP Headers](#request-headers)
+    description: Version of the API end point requested by the client. Must be set to a positive integer. The data holder should respond with the highest supported version between [x-min-v](#request-headers) and [x-v](#request-headers). If the value of [x-min-v](#request-headers) is equal to or higher than the value of [x-v](#request-headers) then the [x-min-v](#request-headers) header should be treated as absent. If all versions requested are not supported then the data holder must respond with a 406 Not Acceptable. See [HTTP Headers](#request-headers)
     required: true
     type: string
   RequestHeader_x-min-v:
     name: x-min-v
     in: header
-    description: Minimum version of the API end point requested by the client. Must be set to a positive integer if provided. The data holder should respond with the highest supported version between [x-min-v](#request-headers) and [x-v](#request-headers). If all versions requested are not supported then the data holder should respond with a 406 Not Acceptable.
+    description: Minimum version of the API end point requested by the client. Must be set to a positive integer if provided. The data holder should respond with the highest supported version between [x-min-v](#request-headers) and [x-v](#request-headers). If all versions requested are not supported then the data holder must respond with a 406 Not Acceptable.
     required: false
     type: string
   RequestHeader_x-fapi-interaction-id:
@@ -3983,9 +4035,9 @@ parameters:
     type: string
     default: ALL
     enum:
-      - OPEN
-      - CLOSED
       - ALL
+      - CLOSED
+      - OPEN
   ParamProductCategory:
     name: product-category
     in: query
@@ -3993,18 +4045,18 @@ parameters:
     required: false
     type: string
     enum:
-      - TRANS_AND_SAVINGS_ACCOUNTS
-      - TERM_DEPOSITS
-      - TRAVEL_CARDS
+      - BUSINESS_LOANS
+      - CRED_AND_CHRG_CARDS
+      - LEASES
+      - MARGIN_LOANS
+      - OVERDRAFTS
+      - PERS_LOANS
       - REGULATED_TRUST_ACCOUNTS
       - RESIDENTIAL_MORTGAGES
-      - CRED_AND_CHRG_CARDS
-      - PERS_LOANS
-      - MARGIN_LOANS
-      - LEASES
+      - TERM_DEPOSITS
       - TRADE_FINANCE
-      - OVERDRAFTS
-      - BUSINESS_LOANS
+      - TRANS_AND_SAVINGS_ACCOUNTS
+      - TRAVEL_CARDS
   ParamAccountIsOwned:
     name: is-owned
     in: query

@@ -19,6 +19,7 @@ public class CDSErrorMeta {
 
     private String totalRecords;
     private String totalPages;
+    private String urn;
 
     public String getTotalRecords() {
         return totalRecords;
@@ -34,5 +35,13 @@ public class CDSErrorMeta {
 
     public void setTotalPages(String totalPages) {
         this.totalPages = totalPages;
+    }
+
+    public String getUrn() {
+        return urn;
+    }
+
+    public void setUrn(String urn) {
+        this.urn = urn;
     }
 }

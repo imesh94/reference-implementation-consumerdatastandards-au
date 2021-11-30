@@ -157,6 +157,13 @@ public class OpenBankingCDSConfigParserTest {
         Assert.assertEquals(openBankingCDSConfigParser.getBulkExecutionHour(), 12);
     }
 
+    @Test(priority = 7)
+    public void testGetHolderSpecificIdentifier() {
+        String dummyConfigFile = absolutePathForTestResources + "/open-banking-cds.xml";
+        OpenBankingCDSConfigParser openBankingCDSConfigParser = OpenBankingCDSConfigParser.getInstance(dummyConfigFile);
+        Assert.assertEquals(openBankingCDSConfigParser.getHolderSpecificIdentifier(), "HID");
+    }
+
     private void injectEnvironmentVariable(String key, String value)
             throws ReflectiveOperationException {
 

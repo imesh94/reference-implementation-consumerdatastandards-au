@@ -28,8 +28,9 @@ public class CDSConsentExtensionConstants {
     public static final String CONSENT_DATA = "consentData";
     public static final String ACCOUNT_DATA = "accountData";
     public static final String ACCOUNTS_DATA = "accounts_data";
-    public static final String ACCOUNT_ID = "account_id";
-    public static final String DISPLAY_NAME = "display_name";
+    public static final String ACCOUNT_ID = "accountId";
+    public static final String DISPLAY_NAME = "displayName";
+    public static final String PRE_ACCOUNTS_DATA = "pre_accounts_data";
     public static final String REDIRECT_URL = "redirectURL";
     public static final String EXPIRATION_DATE_TITLE = "Expiration Date Time";
     public static final String PERMISSION_TITLE = "Permissions";
@@ -37,6 +38,8 @@ public class CDSConsentExtensionConstants {
     public static final String PERMISSIONS = "permissions";
     public static final String SHARING_DURATION_VALUE = "sharing_duration_value";
     public static final String CDR_ARRANGEMENT_ID = "cdr_arrangement_id";
+    public static final String AUTH_RESOURCE_ID = "authResourceId";
+    public static final String AUTH_RESOURCE_STATUS = "authResourceStatus";
     public static final String CDR_ACCOUNTS = "CDR_ACCOUNTS";
     public static final String OPENID_SCOPES = "openid_scopes";
     public static final String CLIENT_ID = "client_id";
@@ -56,11 +59,40 @@ public class CDSConsentExtensionConstants {
     public static final String ZERO = "0";
     public static final String CONSENT_EXPIRY = "consent_expiration";
     public static final String ACCOUNT_MASKING_ENABLED = "account_masking_enabled";
+    public static final String USER_ID_KEY_NAME = "userID";
+    public static final String CONSENT_STATUS_REVOKED = "revoked";
 
+    // Joint account constants
+    public static final String IS_JOINT_ACCOUNT_RESPONSE = "isJointAccount";
+    public static final String IS_JOINT_ACCOUNT = "is_joint_account";
+    public static final String IS_SELECTABLE = "is_selectable";
+    public static final String JOINT_ACCOUNT_INFO = "jointAccountinfo";
+    public static final String JOINT_ACCOUNT_CONSENT_ELECTION_STATUS = "jointAccountConsentElectionStatus";
+    public static final String JOINT_ACCOUNT_PRE_APPROVAL = "ELECTED";
+    public static final String JOINT_ACCOUNT_NO_SHARING = "UNAVAILABLE";
+    public static final String LINKED_MEMBER = "linkedMember";
+    public static final String LINKED_MEMBERS_COUNT = "linked_members_count";
+    public static final String LINKED_MEMBER_ID = "memberId";
+    public static final String AUTH_RESOURCE_TYPE_PRIMARY = "primary_member";
+    public static final String AUTH_RESOURCE_TYPE_LINKED = "linked_member";
+    public static final String MAP_JOINT_ACCOUNTS_ID_WITH_USERS = "jointAccountIdWithUsers";
+    public static final String MAP_USER_ID_WITH_JOINT_ACCOUNTS = "usersWithMultipleJointAccounts";
+    public static final String JOINT_ACCOUNT_PAYLOAD_PRIMARY_MEMBER = "primaryMember";
+    public static final String JOINT_ACCOUNT_PAYLOAD_LINKED_MEMBER = "linkedMember";
+    public static final String JOINT_ACCOUNT_PAYLOAD_USER_ID = "userId";
+    public static final String JOINT_ACCOUNT_PAYLOAD_ACCOUNT_ID = "accountId";
+    public static final String JOINT_ACCOUNTS_PAYLOAD = "joint_accounts_payload";
+    public static final String PRE_SELECTED_ACCOUNT_LIST = "preSelectedAccountList";
+    public static final String IS_PRE_SELECTED_ACCOUNT = "isPreSelectedAccount";
+    public static final String EXISTING_PERMISSIONS = "existingPermissions";
+    public static final String IS_SHARING_DURATION_UPDATED = "isSharingDurationUpdated";
+    public static final String IS_CONSENT_AMENDMENT = "isConsentAmendment";
+    public static final String SINGLE_ACCESS_CONSENT = "Single use consent";
     public static final String CHAR_SET = "UTF-8";
     public static final String CUSTOMER_TYPE = "customerUType";
     public static final String ORGANISATION = "Organisation";
     public static final String DATA_REQUESTED = "data_requested";
+    public static final String NEW_DATA_REQUESTED = "new_data_requested";
     public static final String COMMON_CUSTOMER_BASIC_READ_SCOPE = "common:customer.basic:read";
     public static final String COMMON_CUSTOMER_DETAIL_READ_SCOPE = "common:customer.detail:read";
     public static final String COMMON_ACCOUNTS_BASIC_READ_SCOPE = "bank:accounts.basic:read";
@@ -83,7 +115,7 @@ public class CDSConsentExtensionConstants {
     public static final String OPENID_SCOPE = "openid";
     public static final String PROFILE_SCOPE = "profile";
     public static final String CDR_REGISTRATION_SCOPE = "cdr:registration";
-    public static final String HTTP_METHOD = "HttpMethod";
+    public static final String HTTP_METHOD = "httpMethod";
     public static final String POST_METHOD = "POST";
     public static final String ENABLE_ACCOUNT_ID_VALIDATION_ON_RETRIEVAL = "ConsentManagement.Validate" +
             "AccountIdOnRetrieval";

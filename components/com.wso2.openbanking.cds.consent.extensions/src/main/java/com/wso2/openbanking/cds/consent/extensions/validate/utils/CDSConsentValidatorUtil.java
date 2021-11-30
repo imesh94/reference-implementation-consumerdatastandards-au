@@ -24,6 +24,7 @@ import org.apache.commons.logging.LogFactory;
 import java.time.OffsetDateTime;
 import java.time.format.DateTimeParseException;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 
 /**
@@ -61,7 +62,7 @@ public class CDSConsentValidatorUtil {
      * @param consentValidateData
      * @return
      */
-    public static Boolean validAccountIdsInPostRequest(ConsentValidateData consentValidateData) {
+    public static String validAccountIdsInPostRequest(ConsentValidateData consentValidateData) {
 
         List<String> requestedAccountsList = new ArrayList<>();
         for (Object element: (ArrayList) ((JSONObject) consentValidateData.getPayload()
@@ -69,7 +70,7 @@ public class CDSConsentValidatorUtil {
             if (element != null) {
                 requestedAccountsList.add(element.toString());
             } else {
-                return false;
+                return null;
             }
         }
         if (!requestedAccountsList.isEmpty()) {
@@ -79,9 +80,14 @@ public class CDSConsentValidatorUtil {
                     .getConsentMappingResources()) {
                 consentedAccountsList.add(resource.getAccountID());
             }
-            return consentedAccountsList.containsAll(requestedAccountsList);
+            for (String requestedAccount : requestedAccountsList) {
+                if (!consentedAccountsList.contains(requestedAccount)) {
+                    return requestedAccount;
+                }
+            }
+            return "SUCCESS";
         }
-        return false;
+        return null;
     }
 
     /**
@@ -95,10 +101,11 @@ public class CDSConsentValidatorUtil {
             return true;
         }
         String resourcePath = consentValidateData.getResourceParams().get("ResourcePath");
+        ArrayList<String> resourceArrayList = new ArrayList<>(Arrays.asList(resourcePath.split("/")));
 
         for (ConsentMappingResource resource : consentValidateData.getComprehensiveConsent()
                 .getConsentMappingResources()) {
-            if (resourcePath.contains(resource.getAccountID())) {
+            if (resourceArrayList.contains(resource.getAccountID())) {
                 return true;
             }
         }

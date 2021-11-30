@@ -63,7 +63,7 @@ public class CDSConsentValidatorTest extends PowerMockTestCase {
         detailedConsentResourceMock = mock(DetailedConsentResource.class);
         openBankingCDSConfigParserMock = mock(OpenBankingCDSConfigParser.class);
         configs.put("ConsentManagement.ValidateAccountIdOnRetrieval", "true");
-        resourceParams.put("ResourcePath", "123456");
+        resourceParams.put("ResourcePath", CDSConsentValidateTestConstants.ACCOUNT_PATH + "/123456");
     }
 
     @Test
@@ -147,7 +147,6 @@ public class CDSConsentValidatorTest extends PowerMockTestCase {
         cdsConsentValidator.validate(consentValidateDataMock, consentValidationResult);
 
         Assert.assertFalse(consentValidationResult.isValid());
-        Assert.assertEquals(consentValidationResult.getErrorMessage(), "The consumer's consent is revoked");
         Assert.assertEquals(consentValidationResult.getErrorCode(),
                 "urn:au-cds:error:cds-all:Authorisation/RevokedConsent");
         Assert.assertEquals(consentValidationResult.getHttpCode(), 403);
@@ -168,15 +167,13 @@ public class CDSConsentValidatorTest extends PowerMockTestCase {
         cdsConsentValidator.validate(consentValidateDataMock, consentValidationResult);
 
         Assert.assertFalse(consentValidationResult.isValid());
-        Assert.assertEquals(consentValidationResult.getErrorMessage(), "The resource’s associated consent " +
-                "is not in a status that would allow the resource to be executed");
         Assert.assertEquals(consentValidationResult.getErrorCode(),
                 "urn:au-cds:error:cds-all:Authorisation/InvalidConsent");
         Assert.assertEquals(consentValidationResult.getHttpCode(), 403);
     }
 
     @Test(priority = 1)
-    public void testValidateAccountRetrievalWithForValidPOSTRequests() throws ParseException {
+    public void testValidateAccountRetrievalForValidPOSTRequests() throws ParseException {
 
         doReturn(detailedConsentResourceMock).when(consentValidateDataMock).getComprehensiveConsent();
         doReturn(CDSConsentValidateTestConstants
@@ -195,7 +192,7 @@ public class CDSConsentValidatorTest extends PowerMockTestCase {
         PowerMockito.mockStatic(OpenBankingCDSConfigParser.class);
         when(OpenBankingCDSConfigParser.getInstance()).thenReturn(openBankingCDSConfigParserMock);
         when(openBankingCDSConfigParserMock.getConfiguration()).thenReturn(configs);
-        resourceParams.put("HttpMethod", "POST");
+        resourceParams.put("httpMethod", "POST");
         doReturn(resourceParams).when(consentValidateDataMock).getResourceParams();
 
         ConsentValidationResult consentValidationResult = new ConsentValidationResult();
@@ -204,8 +201,8 @@ public class CDSConsentValidatorTest extends PowerMockTestCase {
         Assert.assertTrue(consentValidationResult.isValid());
     }
 
-    @Test(dependsOnMethods = "testValidateAccountRetrievalWithForValidPOSTRequests", priority = 1)
-    public void testValidateAccountRetrievalWithForInvalidPOSTRequests() throws ParseException {
+    @Test(dependsOnMethods = "testValidateAccountRetrievalForValidPOSTRequests", priority = 1)
+    public void testValidateAccountRetrievalForInvalidPOSTRequests() throws ParseException {
 
         doReturn(detailedConsentResourceMock).when(consentValidateDataMock).getComprehensiveConsent();
         doReturn(CDSConsentValidateTestConstants
@@ -230,7 +227,6 @@ public class CDSConsentValidatorTest extends PowerMockTestCase {
         cdsConsentValidator.validate(consentValidateDataMock, consentValidationResult);
 
         Assert.assertFalse(consentValidationResult.isValid());
-        Assert.assertEquals(consentValidationResult.getErrorMessage(), "ID of the account not found or invalid");
         Assert.assertEquals(consentValidationResult.getErrorCode(),
                 "urn:au-cds:error:cds-banking:Authorisation/InvalidBankingAccount");
         Assert.assertEquals(consentValidationResult.getHttpCode(), 422);
@@ -259,8 +255,6 @@ public class CDSConsentValidatorTest extends PowerMockTestCase {
         cdsConsentValidator.validate(consentValidateDataMock, consentValidationResult);
 
         Assert.assertFalse(consentValidationResult.isValid());
-        Assert.assertEquals(consentValidationResult.getErrorMessage(), ErrorConstants.AUErrorEnum
-                .INVALID_ADR_STATUS.getDetail());
         Assert.assertEquals(consentValidationResult.getErrorCode(), ErrorConstants.AUErrorEnum
                 .INVALID_ADR_STATUS.getCode());
         Assert.assertEquals(consentValidationResult.getHttpCode(), ErrorConstants.AUErrorEnum.INVALID_ADR_STATUS

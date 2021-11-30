@@ -31,10 +31,8 @@ public class BankAccountService {
     private static final String accountList = "{\n" +
             "    \"data\": [\n" +
             "        {\n" +
-            "            \"account_id\": \"30080012343456\",\n" +
-            "            \"display_name\": \"account_1\",\n" +
             "            \"accountId\": \"30080012343456\",\n" +
-            "            \"accountName\": \"account_1\",\n" +
+            "            \"displayName\": \"account_1\",\n" +
             "            \"authorizationMethod\": \"single\",\n" +
             "            \"nickName\": \"not-working\",\n" +
             "            \"customerAccountType\": \"Individual\",\n" +
@@ -44,10 +42,8 @@ public class BankAccountService {
             "            \"jointAccountConsentElectionStatus\": false\n" +
             "        },\n" +
             "        {\n" +
-            "            \"account_id\": \"30080098763459\",\n" +
-            "            \"display_name\": \"account_2\",\n" +
             "            \"accountId\": \"30080098763459\",\n" +
-            "            \"accountName\": \"account_2\",\n" +
+            "            \"displayName\": \"account_2\",\n" +
             "            \"authorizationMethod\": \"single\",\n" +
             "            \"nickName\": \"not-working\",\n" +
             "            \"customerAccountType\": \"Individual\",\n" +
@@ -57,50 +53,49 @@ public class BankAccountService {
             "            \"jointAccountConsentElectionStatus\": false\n" +
             "        },\n" +
             "        {\n" +
-            "            \"account_id\": \"30080098971337\",\n" +
-            "            \"display_name\": \"multi_auth_account\",\n" +
-            "            \"accountId\": \"30080098971337\",\n" +
-            "            \"accountName\": \"multi_auth_account\",\n" +
-            "            \"authorizationMethod\": \"multiple\",\n" +
-            "            \"nickName\": \"not-working\",\n" +
-            "            \"customerAccountType\": \"Individual\",\n" +
-            "            \"type\": \"TRANS_AND_SAVINGS_ACCOUNTS\",\n" +
-            "            \"isEligible\": true,\n" +
-            "            \"isJointAccount\": false,\n" +
-            "            \"jointAccountConsentElectionStatus\": false,\n" +
-            "            \"authorizationUsers\": [\n" +
-            "                {\n" +
-            "                    \"customer_id\": \"123\",\n" +
-            "                    \"user_id\": \"psu1@wso2.com@carbon.super\"\n" +
-            "                },\n" +
-            "                {\n" +
-            "                    \"customer_id\": \"456\",\n" +
-            "                    \"user_id\": \"psu2@wso2.com@carbon.super\"\n" +
-            "                }\n" +
-            "            ]\n" +
-            "        },\n" +
-            "        {\n" +
-            "            \"account_id\": \"650-000 N1232\",\n" +
-            "            \"display_name\": \"Extra_account\",\n" +
             "            \"accountId\": \"650-000 N1232\",\n" +
-            "            \"accountName\": \"Extra Account\",\n" +
+            "            \"displayName\": \"joint_account_1\",\n" +
             "            \"authorizationMethod\": \"single\",\n" +
             "            \"nickName\": \"not-working\",\n" +
             "            \"customerAccountType\": \"Individual\",\n" +
             "            \"type\": \"TRANS_AND_SAVINGS_ACCOUNTS\",\n" +
             "            \"isEligible\": true,\n" +
             "            \"isJointAccount\": true,\n" +
-            "            \"jointAccountConsentElectionStatus\": true,\n" +
+            "            \"jointAccountConsentElectionStatus\": \"ELECTED\",\n" +
             "            \"jointAccountinfo\": {\n" +
-            "              \"LinkedMember\": [\n" +
+            "              \"linkedMember\": [\n" +
             "                {\n" +
-            "                  \"memberId\": \"user1@wso2.com@carbon.super\",\n" +
+            "                  \"memberId\": \"amy@gold.com@carbon.super\",\n" +
             "                  \"meta\": {}\n" +
-            "                }\n" +
+            "                },\n" +
+            "                {\n" +
+            "                  \"memberId\": \"ann@gold.com@carbon.super\",\n" +
+            "                  \"meta\": {}\n" +
+            "                }" +
             "              ]\n" +
             "            },\n" +
             "            \"meta\": {}\n" +
-            "      }\n" +
+            "        },\n" +
+            "        {\n" +
+            "            \"accountId\": \"750-010 N1544\",\n" +
+            "            \"displayName\": \"joint_account_2\",\n" +
+            "            \"authorizationMethod\": \"single\",\n" +
+            "            \"nickName\": \"joint-account-2\",\n" +
+            "            \"customerAccountType\": \"Individual\",\n" +
+            "            \"type\": \"TRANS_AND_SAVINGS_ACCOUNTS\",\n" +
+            "            \"isEligible\": true,\n" +
+            "            \"isJointAccount\": true,\n" +
+            "            \"jointAccountConsentElectionStatus\": \"UNAVAILABLE\",\n" +
+            "            \"jointAccountinfo\": {\n" +
+            "                \"linkedMember\": [\n" +
+            "                    {\n" +
+            "                        \"memberId\": \"amy@gold.com@carbon.super\",\n" +
+            "                        \"meta\": {}\n" +
+            "                    }\n" +
+            "                ]\n" +
+            "            },\n" +
+            "            \"meta\": {}\n" +
+            "        }" +
             "    ]\n" +
             "}";
     @GET

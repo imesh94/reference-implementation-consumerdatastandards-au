@@ -23,6 +23,10 @@ import com.wso2.openbanking.accelerator.identity.util.IdentityCommonHelper;
 import com.wso2.openbanking.cds.consent.extensions.authorize.impl.model.AccountConsentRequest;
 import com.wso2.openbanking.cds.consent.extensions.authorize.impl.model.AccountData;
 import com.wso2.openbanking.cds.consent.extensions.common.CDSConsentExtensionConstants;
+import net.minidev.json.JSONArray;
+import net.minidev.json.JSONObject;
+import net.minidev.json.parser.JSONParser;
+import net.minidev.json.parser.ParseException;
 import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.logging.Log;
@@ -145,6 +149,7 @@ public class CDSDataRetrievalUtil {
 
     /**
      * Method to extract request object from query params
+     *
      * @param spQueryParams
      * @return
      */
@@ -208,6 +213,7 @@ public class CDSDataRetrievalUtil {
 
     /**
      * Method to extract redirect url from query params
+     *
      * @param spQueryParams
      * @return
      */
@@ -230,8 +236,8 @@ public class CDSDataRetrievalUtil {
     /**
      * Maps data to AccountConsentRequest model.
      *
-     * @param consentData consent data
-     * @param date expirationDate
+     * @param consentData     consent data
+     * @param date            expirationDate
      * @param permissionsList permissions list
      * @return an AccountConsentRequest model
      */
@@ -258,6 +264,42 @@ public class CDSDataRetrievalUtil {
         String spOrgName = identityCommonHelper.getAppPropertyFromSPMetaData(clientId, "org_name");
         String spClientName = identityCommonHelper.getAppPropertyFromSPMetaData(clientId, "client_name");
         return String.format("%s, %s", spOrgName, spClientName);
+    }
+
+    public static String getExpiryFromReceipt(String receiptString) throws ConsentException {
+
+        try {
+            Object receiptJSON = new JSONParser(JSONParser.MODE_PERMISSIVE).parse(receiptString);
+            if (!(receiptJSON instanceof JSONObject)) {
+                log.error("Receipt is not a JSON object");
+                throw new ConsentException(ResponseStatus.INTERNAL_SERVER_ERROR, "Receipt is not a JSON object");
+            }
+            JSONObject receipt = (JSONObject) receiptJSON;
+            return ((JSONObject) receipt.get(CDSConsentExtensionConstants.ACCOUNT_DATA)).
+                    getAsString(CDSConsentExtensionConstants.EXPIRATION_DATE_TIME);
+        } catch (ParseException e) {
+            log.error(String.format("Exception occurred while parsing the consent receipt. %s", e.getMessage()));
+            throw new ConsentException(ResponseStatus.INTERNAL_SERVER_ERROR,
+                    "Exception occurred while parsing the consent receipt");
+        }
+    }
+
+    public static JSONArray getPermissionsFromReceipt(String receiptString) throws ConsentException {
+
+        try {
+            Object receiptJSON = new JSONParser(JSONParser.MODE_PERMISSIVE).parse(receiptString);
+            if (!(receiptJSON instanceof JSONObject)) {
+                log.error("Receipt is not a JSON object");
+                throw new ConsentException(ResponseStatus.INTERNAL_SERVER_ERROR, "Receipt is not a JSON object");
+            }
+            JSONObject receipt = (JSONObject) receiptJSON;
+            JSONObject accountData = (JSONObject) receipt.get(CDSConsentExtensionConstants.ACCOUNT_DATA);
+            return (JSONArray) accountData.get(CDSConsentExtensionConstants.PERMISSIONS);
+        } catch (ParseException e) {
+            log.error(String.format("Exception occurred while parsing the consent receipt. %s", e.getMessage()));
+            throw new ConsentException(ResponseStatus.INTERNAL_SERVER_ERROR,
+                    "Exception occurred while parsing the consent receipt");
+        }
     }
 
 }

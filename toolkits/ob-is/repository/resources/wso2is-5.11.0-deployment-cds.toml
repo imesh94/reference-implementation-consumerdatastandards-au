@@ -418,8 +418,8 @@ subscriber="com.wso2.openbanking.cds.identity.metadata.periodical.updater.intern
 [open_banking.dcr]
 validator = "com.wso2.openbanking.cds.identity.dcr.validation.CDSRegistrationValidatorImpl"
 jwks_endpoint_name = "jwks_uri"
-jwks_url_sandbox = "https://keystore.openbankingtest.org.uk/0015800001HQQrZAAX/9b5usDpbNtmxDcTzs7GzKp.jwks"
-jwks_url_production = "https://keystore.openbankingtest.org.uk/0015800001HQQrZAAX/9b5usDpbNtmxDcTzs7GzKp.jwks"
+jwks_url_sandbox = "https://keystore.openbankingtest.org.uk/0015800001HQQrZAAX/ykNOgWd2RgnuoLRRyWBkaY.jwks"
+jwks_url_production = "https://keystore.openbankingtest.org.uk/0015800001HQQrZAAX/ykNOgWd2RgnuoLRRyWBkaY.jwks"
 applicationupdater = "com.wso2.openbanking.cds.identity.listener.application.CDSApplicationUpdaterImpl"
 use_softwareIdForAppName = true
 [open_banking.dcr.jwks_retriever]
@@ -578,7 +578,7 @@ validator="com.wso2.openbanking.cds.consent.extensions.validate.CDSConsentValida
 alias="wso2carbon"
 
 [open_banking.consent.admin]
-handler="com.wso2.openbanking.accelerator.consent.extensions.admin.impl.DefaultConsentAdminHandler"
+handler="com.wso2.openbanking.cds.consent.extensions.admin.impl.CDSConsentAdminHandler"
 
 [open_banking.identity.extensions]
 request_object_validator="com.wso2.openbanking.cds.identity.auth.extensions.request.validator.CDSRequestObjectValidator"
@@ -615,7 +615,8 @@ customer_details_retrieval_endpoint="http://APIM_HOSTNAME:9763/api/openbanking/c
 
 [open_banking_cds.metadata_cache]
 enable=true
-update_period=2
+expiry=3
+update_period=4
 data_recipients_discovery_url="https://api.cdr.gov.au/cdr-register/v1/banking/data-recipients"
 dcr_internal_url="https://IS_HOSTNAME:9446/api/openbanking/dynamic-client-registration/register"
 apim_application_search_url="https://APIM_HOSTNAME:9443/api/am/admin/v2/applications"

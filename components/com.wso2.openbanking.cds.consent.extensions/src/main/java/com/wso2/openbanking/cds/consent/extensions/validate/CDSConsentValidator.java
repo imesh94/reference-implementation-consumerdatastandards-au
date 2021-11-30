@@ -17,6 +17,7 @@ import com.wso2.openbanking.accelerator.consent.extensions.common.ResponseStatus
 import com.wso2.openbanking.accelerator.consent.extensions.validate.model.ConsentValidateData;
 import com.wso2.openbanking.accelerator.consent.extensions.validate.model.ConsentValidationResult;
 import com.wso2.openbanking.accelerator.consent.extensions.validate.model.ConsentValidator;
+import com.wso2.openbanking.accelerator.consent.mgt.dao.models.ConsentMappingResource;
 import com.wso2.openbanking.cds.common.config.OpenBankingCDSConfigParser;
 import com.wso2.openbanking.cds.common.error.handling.util.ErrorConstants;
 import com.wso2.openbanking.cds.common.metadata.domain.MetadataValidationResponse;
@@ -26,9 +27,16 @@ import com.wso2.openbanking.cds.consent.extensions.validate.utils.CDSConsentVali
 import net.minidev.json.JSONObject;
 import net.minidev.json.parser.JSONParser;
 import net.minidev.json.parser.ParseException;
+import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.apache.http.HttpStatus;
+
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
+
+import static com.wso2.openbanking.accelerator.consent.mgt.service.constants.ConsentCoreServiceConstants.INACTIVE_MAPPING_STATUS;
 
 /**
  * Consent validator CDS implementation.
@@ -51,10 +59,10 @@ public class CDSConsentValidator implements ConsentValidator {
         }
 
         // consent status validation
-        // TODO need to consider re-auth and other scenarios when setting error
         if (!CDSConsentExtensionConstants.AUTHORIZED_STATUS
                 .equalsIgnoreCase(consentValidateData.getComprehensiveConsent().getCurrentStatus())) {
-            consentValidationResult.setErrorMessage("The consumer's consent is revoked");
+            consentValidationResult.setErrorMessage(generateErrorPayload("Consent Is Revoked",
+                    "The consumer's consent is revoked", null, null));
             consentValidationResult.setErrorCode(ErrorConstants.REVOKED_CONSENT_STATUS);
             consentValidationResult.setHttpCode(HttpStatus.SC_FORBIDDEN);
             return;
@@ -64,8 +72,10 @@ public class CDSConsentValidator implements ConsentValidator {
         if (CDSConsentValidatorUtil
                 .isConsentExpired(((JSONObject) receiptJSON.get(CDSConsentExtensionConstants.ACCOUNT_DATA))
                         .getAsString(CDSConsentExtensionConstants.EXPIRATION_DATE_TIME))) {
-            consentValidationResult.setErrorMessage("The resource’s associated consent is not in a status that would" +
-                    " allow the resource to be executed");
+            String description = "The associated consent for resource is not in a status " +
+                    "that would allow the resource to be executed";
+            consentValidationResult.setErrorMessage(generateErrorPayload("Consent Is Invalid", description,
+                    null, null));
             consentValidationResult.setErrorCode(ErrorConstants.INVALID_CONSENT_STATUS);
             consentValidationResult.setHttpCode(HttpStatus.SC_FORBIDDEN);
             return;
@@ -77,7 +87,15 @@ public class CDSConsentValidator implements ConsentValidator {
 
         if (Boolean.parseBoolean(isAccountIdValidationEnabled) &&
                 !CDSConsentValidatorUtil.isAccountIdValid(consentValidateData)) {
-            consentValidationResult.setErrorMessage("Invalid Banking Account");
+
+            ArrayList<String> requestPathResources = new ArrayList<>(Arrays.asList(consentValidateData.
+                    getRequestPath().split("/")));
+            int indexOfAccountID = requestPathResources.indexOf("{accountId}");
+            String accountId = new ArrayList<>(Arrays.asList(consentValidateData.getResourceParams()
+                    .get("ResourcePath").split("/"))).get(indexOfAccountID);
+
+            consentValidationResult.setErrorMessage(generateErrorPayload("Invalid Banking Account",
+                    "ID of the account not found or invalid", null, accountId));
             consentValidationResult.setErrorCode(ErrorConstants.RESOURCE_INVALID_BANKING_ACCOUNT);
             consentValidationResult.setHttpCode(HttpStatus.SC_NOT_FOUND);
             return;
@@ -87,8 +105,10 @@ public class CDSConsentValidator implements ConsentValidator {
         String httpMethod = consentValidateData.getResourceParams().get(CDSConsentExtensionConstants.HTTP_METHOD);
         if (CDSConsentExtensionConstants.POST_METHOD.equals(httpMethod)) {
 
-            if (!CDSConsentValidatorUtil.validAccountIdsInPostRequest(consentValidateData)) {
-                consentValidationResult.setErrorMessage("ID of the account not found or invalid");
+            String validationResult = CDSConsentValidatorUtil.validAccountIdsInPostRequest(consentValidateData);
+            if (!ErrorConstants.SUCCESS.equals(validationResult)) {
+                consentValidationResult.setErrorMessage(generateErrorPayload("Invalid Banking Account",
+                        "ID of the account not found or invalid", null, validationResult));
                 consentValidationResult.setErrorCode(ErrorConstants.RESOURCE_INVALID_BANKING_ACCOUNT);
                 consentValidationResult.setHttpCode(HttpStatus.SC_UNPROCESSABLE_ENTITY);
                 return;
@@ -100,12 +120,52 @@ public class CDSConsentValidator implements ConsentValidator {
             MetadataValidationResponse metadataValidationResp =
                     MetadataService.shouldDiscloseCDRData(consentValidateData.getClientId());
             if (!metadataValidationResp.isValid()) {
-                consentValidationResult.setErrorMessage(metadataValidationResp.getErrorMessage());
+                consentValidationResult.setErrorMessage(generateErrorPayload("ADR Status Is Not Active",
+                        metadataValidationResp.getErrorMessage(), null, null));
                 consentValidationResult.setErrorCode(ErrorConstants.AUErrorEnum.INVALID_ADR_STATUS.getCode());
                 consentValidationResult.setHttpCode(ErrorConstants.AUErrorEnum.INVALID_ADR_STATUS.getHttpCode());
                 return;
             }
         }
+
+        // remove inactive and duplicate consent mappings
+        removeInactiveAndDuplicateConsentMappings(consentValidateData);
+
         consentValidationResult.setValid(true);
+    }
+
+    /**
+     * Method to remove inactive and duplicate consent mappings from consentValidateData.
+     *
+     * @param consentValidateData consentValidateData
+     */
+    private void removeInactiveAndDuplicateConsentMappings(ConsentValidateData consentValidateData) {
+        ArrayList<ConsentMappingResource> distinctMappingResources = new ArrayList<>();
+        List<String> duplicateAccountIds = new ArrayList<>();
+
+        consentValidateData.getComprehensiveConsent().getConsentMappingResources().stream()
+                .filter(mapping -> !INACTIVE_MAPPING_STATUS.equals(mapping.getMappingStatus()))
+                .filter(mapping -> !duplicateAccountIds.contains(mapping.getAccountID()))
+                .forEach(distinctMapping -> {
+                    duplicateAccountIds.add(distinctMapping.getAccountID());
+                    distinctMappingResources.add(distinctMapping);
+                });
+
+        consentValidateData.getComprehensiveConsent().setConsentMappingResources(distinctMappingResources);
+    }
+
+    private String generateErrorPayload(String title, String detail, String metaURN, String accountId) {
+
+        JSONObject errorPayload = new JSONObject();
+        errorPayload.put(ErrorConstants.DETAIL, detail);
+        errorPayload.put(ErrorConstants.TITLE, title);
+
+        if (StringUtils.isNotBlank(metaURN)) {
+            errorPayload.put(ErrorConstants.META_URN, metaURN);
+        }
+        if (StringUtils.isNotBlank(accountId)) {
+            errorPayload.put(ErrorConstants.ACCOUNT_ID, accountId);
+        }
+        return errorPayload.toString();
     }
 }

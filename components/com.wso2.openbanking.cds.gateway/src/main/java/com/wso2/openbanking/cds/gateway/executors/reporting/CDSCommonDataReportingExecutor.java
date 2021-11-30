@@ -17,7 +17,7 @@ import com.wso2.openbanking.accelerator.gateway.executor.model.OBAPIRequestConte
 import com.wso2.openbanking.accelerator.gateway.executor.model.OBAPIResponseContext;
 import com.wso2.openbanking.cds.common.config.OpenBankingCDSConfigParser;
 import com.wso2.openbanking.cds.common.utils.CDSCommonUtils;
-import com.wso2.openbanking.cds.gateway.util.CDSDataPublishingConstants;
+import com.wso2.openbanking.cds.gateway.utils.GatewayConstants;
 
 import java.util.Map;
 
@@ -32,22 +32,22 @@ public class CDSCommonDataReportingExecutor implements OpenBankingGatewayExecuto
         // Add customer status to the analytics data by the presence of x-fapi-customer-ip-address header.
         // Customer status is undefined for infosec endpoints.
         Map<String, String> headers = obapiRequestContext.getMsgInfo().getHeaders();
-        Object xFapiCustomerIpAddress = headers.get(CDSDataPublishingConstants.X_FAPI_CUSTOMER_IP_ADDRESS);
+        Object xFapiCustomerIpAddress = headers.get(GatewayConstants.X_FAPI_CUSTOMER_IP_ADDRESS);
         String electedResource = obapiRequestContext.getMsgInfo().getElectedResource();
         String restApiContext = obapiRequestContext.getApiRequestInfo().getContext();
         String customerStatus;
-        if (CDSDataPublishingConstants.INFOSEC_ENDPOINTS.contains(restApiContext) ||
-                CDSDataPublishingConstants.INFOSEC_ENDPOINTS.contains(electedResource)) {
-            customerStatus = CDSDataPublishingConstants.UNDEFINED;
+        if (GatewayConstants.INFOSEC_ENDPOINTS.contains(restApiContext) ||
+                GatewayConstants.INFOSEC_ENDPOINTS.contains(electedResource)) {
+            customerStatus = GatewayConstants.UNDEFINED;
         } else if (xFapiCustomerIpAddress == null) {
-            customerStatus = CDSDataPublishingConstants.UNATTENDED;
+            customerStatus = GatewayConstants.UNATTENDED;
         } else {
-            customerStatus = CDSDataPublishingConstants.CUSTOMER_PRESENT;
+            customerStatus = GatewayConstants.CUSTOMER_PRESENT;
         }
 
         // Add data publishing elements
         Map<String, Object> analyticsData = obapiRequestContext.getAnalyticsData();
-        analyticsData.put(CDSDataPublishingConstants.CUSTOMER_STATUS, customerStatus);
+        analyticsData.put(GatewayConstants.CUSTOMER_STATUS, customerStatus);
         obapiRequestContext.setAnalyticsData(analyticsData);
 
     }
@@ -57,7 +57,7 @@ public class CDSCommonDataReportingExecutor implements OpenBankingGatewayExecuto
 
         // Add access token to the analytics data.
         Map<String, String> headers = obapiRequestContext.getMsgInfo().getHeaders();
-        String authorizationHeader = headers.get(CDSDataPublishingConstants.AUTHORIZATION);
+        String authorizationHeader = headers.get(GatewayConstants.AUTHORIZATION);
         String accessToken = (authorizationHeader != null && authorizationHeader.split(" ").length > 1) ?
                 authorizationHeader.split(" ")[1] : null;
 
@@ -67,7 +67,7 @@ public class CDSCommonDataReportingExecutor implements OpenBankingGatewayExecuto
         }
         // Add data publishing elements
         Map<String, Object> analyticsData = obapiRequestContext.getAnalyticsData();
-        analyticsData.put(CDSDataPublishingConstants.ACCESS_TOKEN_ID, accessToken);
+        analyticsData.put(GatewayConstants.ACCESS_TOKEN_ID, accessToken);
         obapiRequestContext.setAnalyticsData(analyticsData);
     }
 

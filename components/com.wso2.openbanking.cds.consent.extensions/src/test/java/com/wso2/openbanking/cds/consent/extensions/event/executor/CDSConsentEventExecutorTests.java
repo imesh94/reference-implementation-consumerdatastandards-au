@@ -14,6 +14,7 @@ package com.wso2.openbanking.cds.consent.extensions.event.executor;
 
 import com.wso2.openbanking.accelerator.common.event.executor.model.OBEvent;
 import com.wso2.openbanking.accelerator.common.exception.OpenBankingException;
+import com.wso2.openbanking.accelerator.data.publisher.common.util.OBDataPublisherUtil;
 import com.wso2.openbanking.accelerator.identity.util.HTTPClientUtils;
 import com.wso2.openbanking.cds.common.config.OpenBankingCDSConfigParser;
 import com.wso2.openbanking.cds.identity.utils.CDSIdentityUtil;
@@ -46,7 +47,7 @@ import static org.powermock.api.mockito.PowerMockito.mockStatic;
 import static org.powermock.api.mockito.PowerMockito.when;
 
 @PrepareForTest({OpenBankingCDSConfigParser.class, HTTPClientUtils.class, ServerConfiguration.class,
-        CDSIdentityUtil.class})
+        CDSIdentityUtil.class, OBDataPublisherUtil.class})
 public class CDSConsentEventExecutorTests extends PowerMockTestCase {
 
     private static ByteArrayOutputStream outContent;
@@ -77,6 +78,10 @@ public class CDSConsentEventExecutorTests extends PowerMockTestCase {
         when(OpenBankingCDSConfigParser.getInstance()).thenReturn(openBankingCDSConfigParserMock);
         when(openBankingCDSConfigParserMock.getConfiguration()).thenReturn(configs);
 
+        mockStatic(OBDataPublisherUtil.class);
+        doNothing().when(OBDataPublisherUtil.class, "publishData", Mockito.anyString(), Mockito.anyString(),
+                Mockito.anyObject());
+
         Map<String, Object> eventData = new HashMap<>();
         eventData.put("Reason", "Revoke the consent from dashboard");
         eventData.put("ConsentId", "dummyConsentId");
@@ -88,7 +93,7 @@ public class CDSConsentEventExecutorTests extends PowerMockTestCase {
                 Mockito.anyString(), Mockito.anyString());
         cdsConsentEventExecutorSpy.processEvent(obEvent);
 
-        Assert.assertTrue(outContent.toString().isEmpty());
+        Assert.assertTrue(outContent.toString().contains("Publishing consent data for metrics."));
     }
 
     @Test
@@ -105,6 +110,10 @@ public class CDSConsentEventExecutorTests extends PowerMockTestCase {
         mockStatic(OpenBankingCDSConfigParser.class);
         when(OpenBankingCDSConfigParser.getInstance()).thenReturn(openBankingCDSConfigParserMock);
         when(openBankingCDSConfigParserMock.getConfiguration()).thenReturn(configs);
+
+        mockStatic(OBDataPublisherUtil.class);
+        doNothing().when(OBDataPublisherUtil.class, "publishData", Mockito.anyString(), Mockito.anyString(),
+                Mockito.anyObject());
 
         Map<String, Object> eventData = new HashMap<>();
         eventData.put("Reason", "Revoke the consent from dashboard");
