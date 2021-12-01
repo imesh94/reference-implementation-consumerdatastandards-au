@@ -603,6 +603,12 @@ event_executor = "com.wso2.openbanking.cds.consent.extensions.event.executor.CDS
 enable_uri_validation=false
 enable_hostname_validation=false
 enable_sector_identifier_uri_validation=false
+request_jti_validation_enabled=true
+ssa_jti_validation_enabled=false
+
+[open_banking_cds.dcr.jti.cache]
+cache_access_expiry_minutes=5
+cache_modified_expiry_minutes=5
 
 [open_banking_cds.consent_management]
 sharable_accounts_retrieve_endpoint="http://APIM_HOSTNAME:9763/api/openbanking/cds/backend/services/bankaccounts/bankaccountservice/sharable-accounts"

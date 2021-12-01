@@ -23,7 +23,7 @@ import static java.lang.annotation.ElementType.TYPE;
 import static java.lang.annotation.RetentionPolicy.RUNTIME;
 
 /**
- * Annotation class for JTI validation
+ * Annotation class for JTI validation.
  */
 @Target(TYPE)
 @Retention(RUNTIME)

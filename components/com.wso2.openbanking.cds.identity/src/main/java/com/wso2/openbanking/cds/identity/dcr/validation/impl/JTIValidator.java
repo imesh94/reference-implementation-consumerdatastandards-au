@@ -31,7 +31,7 @@ import javax.validation.ConstraintValidator;
 import javax.validation.ConstraintValidatorContext;
 
 /**
- * Validator class to validate JTI
+ * Validator class to validate JTI.
  */
 public class JTIValidator implements ConstraintValidator<ValidateJTI, Object> {
 
