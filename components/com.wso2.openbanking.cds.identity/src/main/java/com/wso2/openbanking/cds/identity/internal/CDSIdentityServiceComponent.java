@@ -14,7 +14,6 @@ package com.wso2.openbanking.cds.identity.internal;
 
 import com.wso2.openbanking.cds.identity.authenticator.CDSArrangementPrivateKeyJWTClientAuthenticator;
 import com.wso2.openbanking.cds.identity.authenticator.CDSPARPrivateKeyJWTClientAuthenticator;
-import com.wso2.openbanking.cds.identity.authenticator.CDSRevocationPrivateKeyJWTClientAuthenticator;
 import com.wso2.openbanking.cds.identity.authenticator.CDSTokenPrivateKeyJWTClientAuthenticator;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
