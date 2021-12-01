@@ -451,7 +451,8 @@ public class IdPermanenceUtils {
      */
     public static JsonObject removeEmptyStrings(JsonObject jsonObject) {
         for (Map.Entry<String, JsonElement> entry : jsonObject.entrySet()) {
-            if (!entry.getValue().isJsonObject() && entry.getValue().getAsString().length() == 0) {
+            if (!entry.getValue().isJsonNull() && !entry.getValue().isJsonObject() && entry.getValue()
+                    .getAsString().length() == 0) {
                 entry.setValue(null);
             }
         }
