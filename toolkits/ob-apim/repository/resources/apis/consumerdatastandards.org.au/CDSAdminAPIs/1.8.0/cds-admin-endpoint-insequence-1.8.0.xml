@@ -24,7 +24,7 @@
             <header name="To" expression="fn:concat('https://localhost:9443/api/openbanking/metricsendpoint/admin/metrics', '?period=ALL')" />
         </then>
         <else>
-            <header name="To" value="https://localhost:9446/api/openbanking/metadata-mgt/admin/register/metadata" />
+            <header name="To" value="https://localhost:9446/api/openbanking/metadata-mgt/admin" />
         </else>
     </filter>
 
