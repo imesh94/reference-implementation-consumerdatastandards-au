@@ -53,8 +53,8 @@ public class GatewayErrorMediator extends AbstractMediator {
     @Override
     public boolean mediate(MessageContext messageContext) {
 
-        String restApiContext = messageContext.getProperty("REST_API_CONTEXT") != null ?
-                messageContext.getProperty("REST_API_CONTEXT").toString() : null;
+        String restApiContext = messageContext.getProperty(GatewayConstants.REST_API_CONTEXT) != null ?
+                messageContext.getProperty(GatewayConstants.REST_API_CONTEXT).toString() : null;
 
         // Publish gateway error data.
         if (Boolean.parseBoolean((String) OpenBankingConfigParser.getInstance().getConfiguration()
