@@ -581,8 +581,12 @@ class = "com.wso2.openbanking.cds.consent.extensions.authorize.impl.retrieval.CD
 priority = 4
 
 [[open_banking.consent.authorize_steps.persist]]
-class = "com.wso2.openbanking.cds.consent.extensions.authorize.impl.persist.CDSConsentPersistStep"
+class = "com.wso2.openbanking.cds.consent.extensions.authorize.impl.persist.CDSJointAccountConsentPersistenceStep"
 priority = 1
+
+[[open_banking.consent.authorize_steps.persist]]
+class = "com.wso2.openbanking.cds.consent.extensions.authorize.impl.persist.CDSConsentPersistStep"
+priority = 2
 
 [open_banking.consent.manage]
 handler="com.wso2.openbanking.accelerator.consent.extensions.manage.impl.DefaultConsentManageHandler"
@@ -595,6 +599,16 @@ alias="wso2carbon"
 
 [open_banking.consent.admin]
 handler="com.wso2.openbanking.cds.consent.extensions.admin.impl.CDSConsentAdminHandler"
+
+[open_banking.consent.periodical_expiration]
+# This property needs to be true in order to run the consent expiration periodical updater.
+enabled=false
+# Cron value for the periodical updater. "0 0 0 * * ?" cron will describe as 00:00:00am every day
+cron_value="0 0 0 * * ?"
+# This value to be update for expired consents.
+expired_consent_status_value="Expired"
+# These consent statuses will only be consider when checking for expired consents. (Comma separated value list)
+eligible_statuses="authorised"
 
 [open_banking.identity.extensions]
 request_object_validator="com.wso2.openbanking.cds.identity.auth.extensions.request.validator.CDSRequestObjectValidator"
