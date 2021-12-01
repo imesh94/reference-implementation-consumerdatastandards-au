@@ -13,22 +13,24 @@
 package com.wso2.openbanking.toolkit.cds.integration.tests.client_registration
 
 import com.wso2.openbanking.test.framework.TestSuite
+import com.wso2.openbanking.test.framework.util.AppConfigReader
 import com.wso2.openbanking.test.framework.util.TestUtil
-import com.wso2.openbanking.toolkit.cds.test.common.utils.AUTestUtil
 import com.wso2.openbanking.test.framework.util.TestConstants
 import com.wso2.openbanking.toolkit.cds.test.common.utils.AUConstants
 import com.wso2.openbanking.toolkit.cds.test.common.utils.AUDCRConstants
 import com.wso2.openbanking.toolkit.cds.test.common.utils.AURegistrationRequestBuilder
 import com.wso2.openbanking.toolkit.cds.test.common.utils.AURequestBuilder
 import com.wso2.openbanking.toolkit.cds.test.common.utils.AUMockCDRIntegrationUtil
+import com.wso2.openbanking.toolkit.cds.test.common.utils.AbstractAUTests
 import org.testng.Assert
+import org.testng.annotations.AfterClass
 import org.testng.annotations.BeforeClass
 import org.testng.annotations.Test
 
 /**
  * Dynamic client registration flow tests.
  */
-class DynamicClientRegistrationCreateTest {
+class DynamicClientRegistrationCreateTest extends AbstractAUTests {
 
     private List<String> scopes = [
             AUConstants.SCOPES.BANK_ACCOUNT_BASIC_READ.getScopeString(),
@@ -40,19 +42,23 @@ class DynamicClientRegistrationCreateTest {
     private String accessToken
     private String clientId
     private String registrationPath = AUDCRConstants.REGISTRATION_ENDPOINT
-    File clientIdFile = new File('clientId.txt')
-    File accessTokenFile = new File('accessToken.txt')
 
-    @BeforeClass (alwaysRun = true)
+    File xmlFile = new File(System.getProperty("user.dir").toString()
+            .concat("/../../resources/test-config.xml"))
+    AppConfigReader appConfigReader = new AppConfigReader()
+
+    @BeforeClass(alwaysRun = true)
     void "Initialize Test Suite"() {
+
         TestSuite.init()
+        appConfigReader.setTppNumber(0)
         AURequestBuilder.getApplicationToken(scopes, null) //to prevent 'connection refused' error
         AUMockCDRIntegrationUtil.loadMetaDataToCDRRegister()
         AURegistrationRequestBuilder.retrieveADRInfo()
-        deleteApplicationIfExists()
+        deleteApplicationIfExists(scopes)
     }
 
-    @Test (priority = 1, groups = "SmokeTest")
+    @Test(priority = 0, groups = "SmokeTest")
     void "TC0101008_Create application"() {
 
         def registrationResponse = AURegistrationRequestBuilder
@@ -61,27 +67,23 @@ class DynamicClientRegistrationCreateTest {
                 .post(registrationPath)
 
         clientId = TestUtil.parseResponseBody(registrationResponse, "client_id")
-        clientIdFile.write(clientId)
-        def newFile = new File("target/test.properties")
-        newFile << "\nClientID=$clientId"
+
+        TestUtil.writeXMLContent(xmlFile.toString(), "Application", "ClientID", clientId,
+                appConfigReader.tppNumber)
 
         Assert.assertEquals(registrationResponse.statusCode(), AUConstants.STATUS_CODE_201)
         Assert.assertEquals(TestUtil.parseResponseBody(registrationResponse, "software_statement"),
                 AUDCRConstants.SSA)
     }
 
-    @Test (priority = 1, groups = "SmokeTest", dependsOnMethods = "TC0101008_Create application")
+    @Test(priority = 1, groups = "SmokeTest", dependsOnMethods = "TC0101008_Create application")
     void "TC0101009_Get access token"() {
 
-        clientId = clientIdFile.text
-
         accessToken = AURequestBuilder.getApplicationToken(scopes, clientId)
-        accessTokenFile.write(accessToken)
-
         Assert.assertNotNull(accessToken)
     }
 
-    @Test (priority = 2, dependsOnMethods = "TC0101008_Create application")
+    @Test(priority = 2, dependsOnMethods = "TC0101008_Create application")
     void "TC0101011_Create application with already available SSA"() {
 
         def registrationResponse = AURegistrationRequestBuilder
@@ -89,28 +91,18 @@ class DynamicClientRegistrationCreateTest {
                 .when()
                 .post(registrationPath)
 
-        switch (AUTestUtil.solutionVersion) {
-            case AUConstants.SOLUTION_VERSION_150:
-                Assert.assertEquals(registrationResponse.statusCode(), AUConstants.STATUS_CODE_409)
-                Assert.assertEquals(TestUtil.parseResponseBody(registrationResponse,"code"),
-                        "resource_already_exists")
-                break
+        Assert.assertEquals(registrationResponse.statusCode(), AUConstants.STATUS_CODE_400)
+        Assert.assertEquals(TestUtil.parseResponseBody(registrationResponse, "error"),
+                "invalid_client_metadata")
 
-            default:
-                Assert.assertEquals(registrationResponse.statusCode(), AUConstants.STATUS_CODE_400)
-                Assert.assertEquals(TestUtil.parseResponseBody(registrationResponse,"error"),
-                        "invalid_client_metadata")
-                break
-        }
-
-        Assert.assertTrue(TestUtil.parseResponseBody(registrationResponse,"error_description").contains(
-                "Application with the name " +AUDCRConstants.SOFTWARE_PRODUCT_ID+ " already exist in the system"))
+        Assert.assertTrue(TestUtil.parseResponseBody(registrationResponse, "error_description").contains(
+                "Application with the name " + AUDCRConstants.SOFTWARE_PRODUCT_ID + " already exist in the system"))
     }
 
     @Test(priority = 4)
     void "TC0101001_Create application without Aud"() {
 
-        deleteApplicationIfExists()
+        deleteApplicationIfExists(scopes, clientId)
         def registrationResponse = AURegistrationRequestBuilder
                 .buildRegistrationRequest(AURegistrationRequestBuilder.getClaimsWithoutAud())
                 .when()
@@ -126,7 +118,7 @@ class DynamicClientRegistrationCreateTest {
 
         def registrationResponse = AURegistrationRequestBuilder
                 .buildRegistrationRequest(AURegistrationRequestBuilder
-                .getRegularClaimsWithNonMatchingRedirectUri())
+                        .getRegularClaimsWithNonMatchingRedirectUri())
                 .when()
                 .post(registrationPath)
 
@@ -188,7 +180,7 @@ class DynamicClientRegistrationCreateTest {
         Assert.assertEquals(TestUtil.parseResponseBody(registrationResponse, TestConstants.ERROR),
                 AUDCRConstants.INVALID_CLIENT_METADATA)
         Assert.assertEquals(TestUtil.parseResponseBody(registrationResponse, TestConstants.ERROR_DESCRIPTION),
-               AUDCRConstants.WITHOUT_RESPONSE_TYPES)
+                AUDCRConstants.WITHOUT_RESPONSE_TYPES)
     }
 
     @Test(priority = 4)
@@ -219,7 +211,7 @@ class DynamicClientRegistrationCreateTest {
                 AUDCRConstants.WITHOUT_ID_TOKEN_RESPONSE_ALGO)
     }
 
-   @Test(priority = 4)
+    @Test(priority = 4)
     void "TC0101013_Create application without ID Token Encrypted Response Encryption Method"() {
 
         def registrationResponse = AURegistrationRequestBuilder
@@ -230,8 +222,8 @@ class DynamicClientRegistrationCreateTest {
         Assert.assertEquals(registrationResponse.statusCode(), AUConstants.STATUS_CODE_400)
         Assert.assertEquals(TestUtil.parseResponseBody(registrationResponse, TestConstants.ERROR),
                 AUDCRConstants.INVALID_CLIENT_METADATA)
-       Assert.assertEquals(TestUtil.parseResponseBody(registrationResponse, TestConstants.ERROR_DESCRIPTION),
-               AUDCRConstants.WITHOUT_ID_TOKEN_ENCRYPTION_METHOD)
+        Assert.assertEquals(TestUtil.parseResponseBody(registrationResponse, TestConstants.ERROR_DESCRIPTION),
+                AUDCRConstants.WITHOUT_ID_TOKEN_ENCRYPTION_METHOD)
     }
 
     @Test(priority = 4)
@@ -282,7 +274,7 @@ class DynamicClientRegistrationCreateTest {
     @Test(priority = 4)
     void "TC0101017_Create application with a replayed JTI value in JWT request"() {
 
-        deleteApplicationIfExists()
+        deleteApplicationIfExists(scopes, clientId)
         String jti = String.valueOf(System.currentTimeMillis())
 
         def registrationResponse = AURegistrationRequestBuilder
@@ -293,8 +285,9 @@ class DynamicClientRegistrationCreateTest {
         Assert.assertEquals(registrationResponse.statusCode(), AUConstants.STATUS_CODE_201)
 
         clientId = TestUtil.parseResponseBody(registrationResponse, "client_id")
-        clientIdFile.write(clientId)
-        deleteApplicationIfExists()
+        TestUtil.writeXMLContent(xmlFile.toString(), "Application", "ClientID", clientId,
+                appConfigReader.tppNumber)
+        deleteApplicationIfExists(scopes, clientId)
 
         registrationResponse = AURegistrationRequestBuilder
                 .buildRegistrationRequest(AURegistrationRequestBuilder.getRegularClaimsWithGivenJti(jti))
@@ -311,7 +304,7 @@ class DynamicClientRegistrationCreateTest {
     @Test(priority = 3)
     void "OB-1160_Create application with unsupported TokenEndpointAuthMethod"() {
 
-        deleteApplicationIfExists()
+        deleteApplicationIfExists(scopes, clientId)
         def registrationResponse = AURegistrationRequestBuilder
                 .buildRegistrationRequest(AURegistrationRequestBuilder.getClaimsWithUnsupportedTokenEndpointAuthMethod())
                 .when()
@@ -321,7 +314,7 @@ class DynamicClientRegistrationCreateTest {
 
         Assert.assertEquals(TestUtil.parseResponseBody(registrationResponse, TestConstants.ERROR),
                 AUDCRConstants.INVALID_CLIENT_METADATA)
-        Assert.assertEquals(TestUtil.parseResponseBody(registrationResponse,TestConstants.ERROR_DESCRIPTION),
+        Assert.assertEquals(TestUtil.parseResponseBody(registrationResponse, TestConstants.ERROR_DESCRIPTION),
                 "Invalid tokenEndPointAuthentication provided")
     }
 
@@ -336,7 +329,7 @@ class DynamicClientRegistrationCreateTest {
         Assert.assertEquals(registrationResponse.statusCode(), AUConstants.STATUS_CODE_400)
         Assert.assertEquals(TestUtil.parseResponseBody(registrationResponse, TestConstants.ERROR),
                 AUDCRConstants.INVALID_CLIENT_METADATA)
-        Assert.assertEquals(TestUtil.parseResponseBody(registrationResponse,TestConstants.ERROR_DESCRIPTION),
+        Assert.assertEquals(TestUtil.parseResponseBody(registrationResponse, TestConstants.ERROR_DESCRIPTION),
                 "Invalid grantTypes provided")
     }
 
@@ -351,7 +344,7 @@ class DynamicClientRegistrationCreateTest {
         Assert.assertEquals(registrationResponse.statusCode(), AUConstants.STATUS_CODE_400)
         Assert.assertEquals(TestUtil.parseResponseBody(registrationResponse, TestConstants.ERROR),
                 AUDCRConstants.INVALID_CLIENT_METADATA)
-        Assert.assertEquals(TestUtil.parseResponseBody(registrationResponse,TestConstants.ERROR_DESCRIPTION),
+        Assert.assertEquals(TestUtil.parseResponseBody(registrationResponse, TestConstants.ERROR_DESCRIPTION),
                 "Invalid responseTypes provided")
     }
 
@@ -366,7 +359,7 @@ class DynamicClientRegistrationCreateTest {
         Assert.assertEquals(registrationResponse.statusCode(), AUConstants.STATUS_CODE_400)
         Assert.assertEquals(TestUtil.parseResponseBody(registrationResponse, TestConstants.ERROR),
                 AUDCRConstants.INVALID_CLIENT_METADATA)
-        Assert.assertEquals(TestUtil.parseResponseBody(registrationResponse,TestConstants.ERROR_DESCRIPTION),
+        Assert.assertEquals(TestUtil.parseResponseBody(registrationResponse, TestConstants.ERROR_DESCRIPTION),
                 "Invalid applicationType provided")
     }
 
@@ -381,7 +374,7 @@ class DynamicClientRegistrationCreateTest {
         Assert.assertEquals(registrationResponse.statusCode(), AUConstants.STATUS_CODE_400)
         Assert.assertEquals(TestUtil.parseResponseBody(registrationResponse, TestConstants.ERROR),
                 AUDCRConstants.INVALID_CLIENT_METADATA)
-        Assert.assertEquals(TestUtil.parseResponseBody(registrationResponse,TestConstants.ERROR_DESCRIPTION),
+        Assert.assertEquals(TestUtil.parseResponseBody(registrationResponse, TestConstants.ERROR_DESCRIPTION),
                 "Provided SSA is malformed or unsupported by the specification")
     }
 
@@ -394,7 +387,9 @@ class DynamicClientRegistrationCreateTest {
                 .post(registrationPath)
 
         clientId = TestUtil.parseResponseBody(registrationResponse, "client_id")
-        clientIdFile.write(clientId)
+        TestUtil.writeXMLContent(xmlFile.toString(), "Application", "ClientID", clientId,
+                appConfigReader.tppNumber)
+        deleteApplicationIfExists(scopes, clientId)
 
         Assert.assertEquals(registrationResponse.statusCode(), AUConstants.STATUS_CODE_201)
         Assert.assertNotNull(TestUtil.parseResponseBody(registrationResponse, "request_object_signing_alg"))
@@ -403,31 +398,22 @@ class DynamicClientRegistrationCreateTest {
     @Test(priority = 4)
     void "OB-1166_Create application without redirect_uris"() {
 
-        deleteApplicationIfExists()
+        deleteApplicationIfExists(scopes, clientId)
         def registrationResponse = AURegistrationRequestBuilder
                 .buildRegistrationRequest(AURegistrationRequestBuilder.getRegularClaimsWithoutRedirectUris())
                 .when()
                 .post(registrationPath)
 
         clientId = TestUtil.parseResponseBody(registrationResponse, "client_id")
-        clientIdFile.write(clientId)
+        TestUtil.writeXMLContent(xmlFile.toString(), "Application", "ClientID", clientId,
+                appConfigReader.tppNumber)
 
         Assert.assertEquals(registrationResponse.statusCode(), AUConstants.STATUS_CODE_201)
         Assert.assertNotNull(TestUtil.parseResponseBody(registrationResponse, "redirect_uris"))
     }
 
-    void deleteApplicationIfExists() {
-
-        clientId = clientIdFile.text
-        if (clientId) {
-            String token = AURequestBuilder.getApplicationToken(scopes, clientId)
-
-            if (token) {
-                def deletionResponse = AURegistrationRequestBuilder.buildBasicRequest(token)
-                        .when()
-                        .delete(registrationPath + clientId)
-                Assert.assertEquals(deletionResponse.statusCode(), AUConstants.STATUS_CODE_204)
-            }
-        }
+    @AfterClass(alwaysRun = true)
+    void tearDown() {
+        deleteApplicationIfExists(scopes, clientId)
     }
 }

@@ -13,6 +13,7 @@
 package com.wso2.openbanking.toolkit.cds.integration.tests.client_registration
 
 import com.wso2.openbanking.test.framework.TestSuite
+import com.wso2.openbanking.test.framework.util.AppConfigReader
 import com.wso2.openbanking.test.framework.util.ConfigParser
 import com.wso2.openbanking.test.framework.util.TestConstants
 import com.wso2.openbanking.test.framework.util.TestUtil
@@ -25,7 +26,7 @@ import org.testng.annotations.Test
 /**
  * Dynamic client registration flow tests.
  */
-class DynamicClientRegistrationUpdateTest {
+class DynamicClientRegistrationUpdateTest extends AbstractAUTests {
 
     private List<String> scopes = [
             AUConstants.SCOPES.BANK_ACCOUNT_BASIC_READ.getScopeString(),
@@ -38,29 +39,30 @@ class DynamicClientRegistrationUpdateTest {
     private String clientId
     private String registrationPath = AUDCRConstants.REGISTRATION_ENDPOINT
     private String invalidClientId = "invalidclientid"
-    File clientIdFile = new File('clientId.txt')
-    File accessTokenFile = new File('accessToken.txt')
+    File xmlFile = new File(System.getProperty("user.dir").toString()
+            .concat("/../../resources/test-config.xml"))
+    AppConfigReader appConfigReader = new AppConfigReader()
 
-    @BeforeClass (alwaysRun = true)
+    @BeforeClass(alwaysRun = true)
     void "Initialize Test Suite"() {
         TestSuite.init()
+        appConfigReader.setTppNumber(0)
         AURequestBuilder.getApplicationToken(scopes, null) //to prevent 'connection refused' error
         AUMockCDRIntegrationUtil.loadMetaDataToCDRRegister()
         AURegistrationRequestBuilder.retrieveADRInfo()
 
-        deleteApplicationIfExists()
+        deleteApplicationIfExists(scopes)
         def registrationResponse = AURegistrationRequestBuilder
                 .buildRegistrationRequest(AURegistrationRequestBuilder.getRegularClaims())
                 .when()
                 .post(registrationPath)
 
         clientId = TestUtil.parseResponseBody(registrationResponse, "client_id")
-        clientIdFile.write(clientId)
-        def newFile = new File("target/test.properties")
-        newFile << "\nClientID=$clientId"
+        TestUtil.writeXMLContent(xmlFile.toString(), "Application", "ClientID", clientId,
+                appConfigReader.tppNumber)
     }
 
-    @Test (priority = 1, dependsOnMethods = "TC0101009_Get access token")
+    @Test(priority = 1, dependsOnMethods = "TC0101009_Get access token")
     void "TC0103001_Update registration details with invalid client id"() {
 
         def registrationResponse = AURegistrationRequestBuilder.buildBasicRequest(accessToken)
@@ -72,7 +74,7 @@ class DynamicClientRegistrationUpdateTest {
         Assert.assertEquals(registrationResponse.statusCode(), AUConstants.STATUS_CODE_401)
     }
 
-    @Test (priority = 1, groups = "SmokeTest", dependsOnMethods = "TC0101009_Get access token")
+    @Test(priority = 1, groups = "SmokeTest", dependsOnMethods = "TC0101009_Get access token")
     void "TC0103002_Update registration details"() {
 
         def registrationResponse = AURegistrationRequestBuilder.buildBasicRequest(accessToken)
@@ -84,18 +86,14 @@ class DynamicClientRegistrationUpdateTest {
         Assert.assertEquals(registrationResponse.statusCode(), AUConstants.STATUS_CODE_200)
     }
 
-     @Test (priority = 2, groups = "SmokeTest")
+    @Test(priority = 2, groups = "SmokeTest")
     void "TC0101009_Get access token"() {
 
-        clientId = clientIdFile.text
-
         accessToken = AURequestBuilder.getApplicationToken(scopes, clientId)
-        accessTokenFile.write(accessToken)
-
         Assert.assertNotNull(accessToken)
     }
 
-    @Test (priority = 2, dependsOnMethods = "TC0101009_Get access token")
+    @Test(priority = 2, dependsOnMethods = "TC0101009_Get access token")
     void "OB-1167_Update registration details without SSA"() {
 
         def registrationResponse = AURegistrationRequestBuilder.buildBasicRequest(accessToken)
@@ -109,7 +107,7 @@ class DynamicClientRegistrationUpdateTest {
                 AUDCRConstants.INVALID_CLIENT_METADATA)
     }
 
-   @Test (priority = 2, dependsOnMethods = "TC0101009_Get access token")
+    @Test(priority = 2, dependsOnMethods = "TC0101009_Get access token")
     void "OB-1168_Update registration details with fields not supported by data holder brand"() {
 
         def registrationResponse = AURegistrationRequestBuilder.buildBasicRequest(accessToken)
@@ -124,11 +122,11 @@ class DynamicClientRegistrationUpdateTest {
                 .when()
                 .get(registrationPath + clientId)
 
-        Assert.assertEquals(retrievalResponse.statusCode(), AUConstants.STATUS_CODE_200)
+        Assert.assertEquals(retrievalResponse.statusCode(), AUConstants.STATUS_CODE_400)
         Assert.assertNull(TestUtil.parseResponseBody(retrievalResponse, "adr_name"))
     }
 
-    @Test (priority = 3)
+    @Test(priority = 3)
     void "OB-1169_Update registration details with a access token bound only to CDR Authorization scopes"() {
 
         scopes = [
@@ -137,11 +135,7 @@ class DynamicClientRegistrationUpdateTest {
                 AUConstants.SCOPES.BANK_CUSTOMER_DETAIL_READ.getScopeString()
         ]
 
-        clientId = clientIdFile.text
-
         accessToken = AURequestBuilder.getApplicationToken(scopes, clientId)
-        accessTokenFile.write(accessToken)
-
         Assert.assertNotNull(accessToken)
 
         def registrationResponse = AURegistrationRequestBuilder.buildBasicRequest(accessToken)
@@ -151,10 +145,9 @@ class DynamicClientRegistrationUpdateTest {
                 .put(registrationPath + clientId)
 
         Assert.assertEquals(registrationResponse.statusCode(), AUConstants.STATUS_CODE_403)
-
     }
 
-    @Test (priority = 3)
+    @Test(priority = 3)
     void "OB-1170_Update registration details without access token"() {
 
         def registrationResponse = AURegistrationRequestBuilder.buildBasicRequest(null)
@@ -166,7 +159,7 @@ class DynamicClientRegistrationUpdateTest {
         Assert.assertEquals(registrationResponse.statusCode(), AUConstants.STATUS_CODE_401)
     }
 
-    @Test (priority = 3)
+    @Test(priority = 3)
     void "OB-1171_Update registration details with invalid access token"() {
 
         def registrationResponse = AURegistrationRequestBuilder.buildBasicRequest("asd")
@@ -180,21 +173,6 @@ class DynamicClientRegistrationUpdateTest {
 
     @AfterClass(alwaysRun = true)
     void tearDown() {
-        deleteApplicationIfExists()
-    }
-
-    void deleteApplicationIfExists() {
-
-        clientId = clientIdFile.text
-        if (clientId) {
-            String token = AURequestBuilder.getApplicationToken(scopes, clientId)
-
-            if (token) {
-                def deletionResponse = AURegistrationRequestBuilder.buildBasicRequest(token)
-                        .when()
-                        .delete(registrationPath + clientId)
-                Assert.assertEquals(deletionResponse.statusCode(), AUConstants.STATUS_CODE_204)
-            }
-        }
+        deleteApplicationIfExists(scopes, clientId)
     }
 }

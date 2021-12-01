@@ -13,18 +13,20 @@
 package com.wso2.openbanking.toolkit.cds.integration.tests.client_registration
 
 import com.wso2.openbanking.test.framework.TestSuite
+import com.wso2.openbanking.test.framework.util.AppConfigReader
 import com.wso2.openbanking.test.framework.util.ConfigParser
 import com.wso2.openbanking.test.framework.util.TestConstants
 import com.wso2.openbanking.test.framework.util.TestUtil
 import com.wso2.openbanking.toolkit.cds.test.common.utils.*
 import org.testng.Assert
+import org.testng.annotations.AfterClass
 import org.testng.annotations.BeforeClass
 import org.testng.annotations.Test
 
 /**
  * Dynamic client registration flow tests.
  */
-class DynamicClientRegistrationRetrievalTest {
+class DynamicClientRegistrationRetrievalTest extends AbstractAUTests {
 
     private List<String> scopes = [
             AUConstants.SCOPES.BANK_ACCOUNT_BASIC_READ.getScopeString(),
@@ -37,27 +39,28 @@ class DynamicClientRegistrationRetrievalTest {
     private String clientId
     private String applicationId
     private String registrationPath = AUDCRConstants.REGISTRATION_ENDPOINT
-    File clientIdFile = new File('clientId.txt')
-    File accessTokenFile = new File('accessToken.txt')
+    File xmlFile = new File(System.getProperty("user.dir").toString()
+            .concat("/../../resources/test-config.xml"))
+    AppConfigReader appConfigReader = new AppConfigReader()
     String baseURL = TestConstants.REST_API_STORE_ENDPOINT;
 
     @BeforeClass(alwaysRun = true)
     void "Initialize Test Suite"() {
         TestSuite.init()
+        appConfigReader.setTppNumber(0)
         AURequestBuilder.getApplicationToken(scopes, null) //to prevent 'connection refused' error
         AUMockCDRIntegrationUtil.loadMetaDataToCDRRegister()
         AURegistrationRequestBuilder.retrieveADRInfo()
 
-        deleteApplicationIfExists()
+        deleteApplicationIfExists(scopes)
         def registrationResponse = AURegistrationRequestBuilder
                 .buildRegistrationRequest(AURegistrationRequestBuilder.getRegularClaims())
                 .when()
                 .post(registrationPath)
 
         clientId = TestUtil.parseResponseBody(registrationResponse, "client_id")
-        clientIdFile.write(clientId)
-        def newFile = new File("target/test.properties")
-        newFile << "\nClientID=$clientId"
+        TestUtil.writeXMLContent(xmlFile.toString(), "Application", "ClientID", clientId,
+                appConfigReader.tppNumber)
     }
 
     @Test(priority = 1, groups = "SmokeTest")
@@ -74,7 +77,6 @@ class DynamicClientRegistrationRetrievalTest {
         Assert.assertEquals(response.statusCode(), AUConstants.STATUS_CODE_200)
         Assert.assertEquals(TestUtil.parseResponseBody(response, "count"), "2")
         applicationId = TestUtil.parseResponseBody(response, "list[1].applicationId")
-
     }
 
     @Test(priority = 1, groups = "SmokeTest", dependsOnMethods = "TC0101018_Retrieve Application")
@@ -91,7 +93,6 @@ class DynamicClientRegistrationRetrievalTest {
                 .post(devPortalEndpoint.toString())
 
         Assert.assertEquals(response.statusCode(), AUConstants.STATUS_CODE_201)
-
     }
 
     @Test(priority = 1, dependsOnMethods = "TC0101009_Get access token")
@@ -119,12 +120,13 @@ class DynamicClientRegistrationRetrievalTest {
     @Test(priority = 2, groups = "SmokeTest")
     void "TC0101009_Get access token"() {
 
-        clientId = clientIdFile.text
-
         accessToken = AURequestBuilder.getApplicationToken(scopes, clientId)
-        accessTokenFile.write(accessToken)
-
         Assert.assertNotNull(accessToken)
+    }
+
+    @AfterClass(alwaysRun = true)
+    void tearDown() {
+        deleteApplicationIfExists(scopes, clientId)
     }
 
     static String getSubscriptionPayload(String applicationId, String apiId) {
@@ -135,20 +137,5 @@ class DynamicClientRegistrationRetrievalTest {
               "throttlingPolicy": "Unlimited"
             }
             """.stripIndent()
-    }
-
-    void deleteApplicationIfExists() {
-
-        clientId = clientIdFile.text
-        if (clientId) {
-            String token = AURequestBuilder.getApplicationToken(scopes, clientId)
-
-            if (token) {
-                def deletionResponse = AURegistrationRequestBuilder.buildBasicRequest(token)
-                        .when()
-                        .delete(registrationPath + clientId)
-                Assert.assertEquals(deletionResponse.statusCode(), AUConstants.STATUS_CODE_204)
-            }
-        }
     }
 }
