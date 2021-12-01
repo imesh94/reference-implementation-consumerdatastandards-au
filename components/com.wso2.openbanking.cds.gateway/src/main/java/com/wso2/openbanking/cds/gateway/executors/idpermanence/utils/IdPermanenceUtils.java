@@ -232,11 +232,35 @@ public class IdPermanenceUtils {
     public static IdPermanenceValidationResponse unmaskRequestBodyAccountIDs
     (JsonObject requestJsonPayload, String key) {
 
-        JsonObject data = (JsonObject) requestJsonPayload.get(IdPermanenceConstants.DATA);
-        JsonArray accountIdList = (JsonArray) data.get(IdPermanenceConstants.ACCOUNT_IDS);
+        IdPermanenceValidationResponse idPermanenceValidationResponse = new IdPermanenceValidationResponse();
+        JsonObject data;
+        JsonArray accountIdList;
+        if (requestJsonPayload != null && !(requestJsonPayload.get(IdPermanenceConstants.DATA)).isJsonNull()) {
+            data = (JsonObject) requestJsonPayload.get(IdPermanenceConstants.DATA);
+            if (data != null && data.get(IdPermanenceConstants.ACCOUNT_IDS) instanceof JsonArray) {
+                accountIdList = (JsonArray) data.get(IdPermanenceConstants.ACCOUNT_IDS);
+            } else {
+                idPermanenceValidationResponse.setValid(false);
+                idPermanenceValidationResponse.setError(new OpenBankingExecutorError(
+                        ErrorConstants.AUErrorEnum.INVALID_BANK_ACCOUNT_BODY.getCode(),
+                        ErrorConstants.AUErrorEnum.INVALID_BANK_ACCOUNT_BODY.getTitle(),
+                        ErrorConstants.AUErrorEnum.INVALID_BANK_ACCOUNT_BODY.getDetail(),
+                        String.valueOf(ErrorConstants.AUErrorEnum.INVALID_BANK_ACCOUNT_BODY.getHttpCode()))
+                );
+                return idPermanenceValidationResponse;
+            }
+        } else {
+            idPermanenceValidationResponse.setValid(false);
+            idPermanenceValidationResponse.setError(new OpenBankingExecutorError(
+                    ErrorConstants.AUErrorEnum.INVALID_BANK_ACCOUNT_BODY.getCode(),
+                    ErrorConstants.AUErrorEnum.INVALID_BANK_ACCOUNT_BODY.getTitle(),
+                    ErrorConstants.AUErrorEnum.INVALID_BANK_ACCOUNT_BODY.getDetail(),
+                    String.valueOf(ErrorConstants.AUErrorEnum.INVALID_BANK_ACCOUNT_BODY.getHttpCode()))
+            );
+            return idPermanenceValidationResponse;
+        }
         JsonArray decryptedAccountIdList = new JsonArray();
 
-        IdPermanenceValidationResponse idPermanenceValidationResponse = new IdPermanenceValidationResponse();
         for (int accountIndex = 0; accountIndex < accountIdList.size(); accountIndex++) {
             String encryptedId = String.valueOf(accountIdList.get(accountIndex).getAsString());
             String decryptedString;

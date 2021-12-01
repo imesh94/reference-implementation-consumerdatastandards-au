@@ -207,6 +207,16 @@ password = "${admin.password}"
 'header.X-WSO2-KEY-MANAGER' = "WSO2-IS"
 
 [[event_listener]]
+id = "cds_par_private_key_jwt_authenticator"
+type = "org.wso2.carbon.identity.core.handler.AbstractIdentityHandler"
+name = "com.wso2.openbanking.cds.identity.authenticator.CDSPARPrivateKeyJWTClientAuthenticator"
+order = "895"
+enable = true
+
+[event_listener.properties]
+EndpointAlias = "https://localhost:9446/api/openbanking/push-authorization/par"
+
+[[event_listener]]
 id = "cds_revoke_private_key_jwt_authenticator"
 type = "org.wso2.carbon.identity.core.handler.AbstractIdentityHandler"
 name = "com.wso2.openbanking.cds.identity.authenticator.CDSRevocationPrivateKeyJWTClientAuthenticator"
@@ -320,7 +330,6 @@ context = "(.*)/api/openbanking/push-authorization/(.*)"
 secure="true"
 http_method="all"
 permissions=["/permission/admin"]
-allowed_auth_handlers = ["BasicAuthentication"]
 
 [[resource.access_control]]
 context = "(.*)/api/openbanking/application/(.*)"
@@ -331,6 +340,13 @@ http_method="GET"
 context = "(.*)/api/openbanking/cds-arrangement-revocation/(.*)"
 secure="false"
 http_method="all"
+
+[[resource.access_control]]
+context = "(.*)/api/openbanking/metadata-mgt/(.*)"
+secure="true"
+http_method="POST"
+permissions=["/permission/admin"]
+allowed_auth_handlers = ["BasicAuthentication"]
 
 [authentication.adaptive.event_publisher]
 url = "http://IS_HOSTNAME:8006/"
@@ -603,6 +619,12 @@ event_executor = "com.wso2.openbanking.cds.consent.extensions.event.executor.CDS
 enable_uri_validation=false
 enable_hostname_validation=false
 enable_sector_identifier_uri_validation=false
+request_jti_validation_enabled=true
+ssa_jti_validation_enabled=false
+
+[open_banking_cds.dcr.jti.cache]
+cache_access_expiry_minutes=5
+cache_modified_expiry_minutes=5
 
 [open_banking_cds.consent_management]
 sharable_accounts_retrieve_endpoint="http://APIM_HOSTNAME:9763/api/openbanking/cds/backend/services/bankaccounts/bankaccountservice/sharable-accounts"
@@ -615,7 +637,7 @@ customer_details_retrieval_endpoint="http://APIM_HOSTNAME:9763/api/openbanking/c
 
 [open_banking_cds.metadata_cache]
 enable=true
-expiry=3
+expiry=2
 update_period=4
 data_recipients_discovery_url="https://api.cdr.gov.au/cdr-register/v1/banking/data-recipients"
 dcr_internal_url="https://IS_HOSTNAME:9446/api/openbanking/dynamic-client-registration/register"

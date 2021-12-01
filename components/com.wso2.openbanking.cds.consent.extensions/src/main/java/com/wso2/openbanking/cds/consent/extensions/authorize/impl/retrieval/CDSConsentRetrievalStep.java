@@ -118,7 +118,7 @@ public class CDSConsentRetrievalStep implements ConsentRetrievalStep {
                             // Check if the sharing duration is updated
                             long newSharingDuration = Long.parseLong(requiredData.get(
                                     CDSConsentExtensionConstants.SHARING_DURATION_VALUE).toString());
-                            boolean isSharingDurationUpdated = getConsentExpiryDateTime(newSharingDuration).
+                            boolean isSharingDurationUpdated = !getConsentExpiryDateTime(newSharingDuration).
                                     isEqual(existingConsentExpiry);
                             jsonObject.appendField(CDSConsentExtensionConstants.IS_SHARING_DURATION_UPDATED,
                                     isSharingDurationUpdated);

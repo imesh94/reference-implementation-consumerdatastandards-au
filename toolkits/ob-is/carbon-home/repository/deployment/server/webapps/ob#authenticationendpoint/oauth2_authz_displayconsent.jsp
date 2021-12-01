@@ -17,10 +17,14 @@
 <%@ page import="java.util.Map" %>
 <%@ page import="java.time.format.DateTimeFormatter" %>
 <%@ page import="java.time.LocalDateTime" %>
+<%@ page import="java.time.OffsetDateTime" %>
+<%@ page import="java.time.ZoneOffset" %>
 <jsp:include page="includes/consent_top.jsp"/>
 
 <%
     String sessionDataKeyConsent = request.getParameter("sessionDataKeyConsent");
+    String isConsentAmendment = request.getParameter("isConsentAmendment");
+    String isSharingDurationUpdated = request.getParameter("isSharingDurationUpdated");
     String accounts = request.getParameter("accountsArry[]");
     String accounNames = request.getParameter("accNames");
     String appName = request.getParameter("app");
@@ -39,6 +43,18 @@
     Map<String, List<String>> newConsentData = (Map<String, List<String>>) session.getAttribute("newConfigParamsMap");
     session.setAttribute("configParamsMap", consentData);
     session.setAttribute("newConfigParamsMap", newConsentData);
+    session.setAttribute("isConsentAmendment", isConsentAmendment);
+    session.setAttribute("isSharingDurationUpdated", isSharingDurationUpdated);
+
+    boolean isSharedWithinDay = true;
+    if (!"Single use consent".equals(consentExpiryDateTime)) {
+        OffsetDateTime expDate = OffsetDateTime.parse(consentExpiryDateTime);
+        OffsetDateTime curDate = OffsetDateTime.now(ZoneOffset.UTC);
+        if ((expDate.toEpochSecond() - curDate.toEpochSecond())/(3600*24.0) > 1) {
+            isSharedWithinDay = false;
+        }
+    }
+    session.setAttribute("isSharedWithinDay", isSharedWithinDay);
 %>
 <div class="col-xs-12 col-sm-12 col-md-12 col-lg-12 data-container">
     <div class="clearfix"></div>
@@ -122,21 +138,35 @@
                     <h4 class="section-heading-5 ui subheading">Sharing Period:</h4>
 
                     <div class="padding" style="border:1px solid #555;">
-                        <div class="padding-top ui subheading">
-                        Your data will be shared for the given sharing period :
-                            <button type="button" class="collapsible" id="consent-expiry-date"> <%=currentDate%> - <%=consentExpiryDate%>
-                                <c:if test="${isConsentAmendment && isSharingDurationUpdated}">
-                                    <span style="border: 1px solid #1b2c8f;color:#1b2c8f;font-weight:bold;background-color:#f4f5fd">New</span>
-                                </c:if>
-                            </button>
-                            <div class="content">
+                        <c:choose>
+                            <c:when test="${!isSharedWithinDay}">
+                                <div class="padding-top ui subheading">
+                                    Your data will be shared for the given sharing period :
+                                    <button type="button" class="collapsible" id="consent-expiry-date"> <%=currentDate%> - <%=consentExpiryDate%>
+                                        <c:if test="${isConsentAmendment && isSharingDurationUpdated}">
+                                            <span style="border: 1px solid #1b2c8f;color:#1b2c8f;font-weight:bold;background-color:#f4f5fd">New</span>
+                                        </c:if>
+                                    </button>
+                                    <div class="content">
+                                        <!-- <div class="padding-top ui subheading">How Often your data will be shared : -->
+                                        <h5 class="section-heading-5 padding-left ui subheading">
+                                            <span id="consentExpiryTime"></span>
+                                        </h5>
+                                        <!-- </div> -->
+                                    </div>
+                                </div>
+                            </c:when>
+                            <c:otherwise>
                                 <!-- <div class="padding-top ui subheading">How Often your data will be shared : -->
-                                    <h5 class="section-heading-5 padding-left ui subheading">
-                                        <span id="consentExpiryTime"></span>
-                                    </h5>
+                                <h5 class="section-heading-5 padding-left ui subheading">
+                                    <span id="consentExpiryTime"></span>
+                                    <c:if test="${isConsentAmendment && isSharingDurationUpdated}">
+                                        <span style="border: 1px solid #1b2c8f;color:#1b2c8f;font-weight:bold;background-color:#f4f5fd">New</span>
+                                    </c:if>
+                                </h5>
                                 <!-- </div> -->
-                            </div>
-                        </div>
+                            </c:otherwise>
+                        </c:choose>
                     </div>
 
                      <div class="padding-top ui subheading">Where to manage this arrangement :
@@ -203,9 +233,9 @@
 
         function maskAccountId(accountId) {
             var start = accountId.substring(0,4);
-            var end = accountId.slice(accountId.length - 4); 
+            var end = accountId.slice(accountId.length - 4);
             var mask = "*".repeat(accountId.length - 8);
-            var maskedAccId = start + mask + end; 
+            var maskedAccId = start + mask + end;
             return maskedAccId;
         }
 
@@ -216,6 +246,78 @@
                 document.getElementById(elementId).textContent=maskAccountId(elementId);
             }
         }
+
+        var consentExpiryDate = "<%=consentExpiryDateTime%>";
+        var output = "";
+        var finalOutput = "";
+
+        if ("Single use consent" == consentExpiryDate) {
+            output = "Your data will be shared once.";
+        } else {
+            var consentExpiryTime = consentExpiryDate.split("T")[0] + " " + (consentExpiryDate.split("T")[1]).split("\\.")[0];
+            if (!navigator.userAgent.match(/(chrome|firefox)\/?\s*(\d+)/i)) {
+                consentExpiryTime = consentExpiryDate.split(".")[0] + "Z";
+            }
+            var datetime = new Date(consentExpiryTime);
+            var date = new Date();
+            var now = new Date(date.getTime());
+            var diff = datetime.getTime() - now.getTime();
+
+            var seconds = Number(diff/1000)
+            var months = Math.floor(seconds / (3600*24*30));
+            var days = Math.ceil((seconds / (3600*24)) % 30);
+            var hours = Math.floor(seconds % (3600*24) / 3600);
+            var mins = Math.ceil(seconds % 3600 / 60);
+
+            var monthsDisplay = months > 0 ? months + (months == 1 ? " month " : " months ") : "";
+            var daysDisplay = days > 0 ? days + (days == 1 ? " day " : " days ") : "";
+            var hoursDisplay = hours > 0 ? hours + (hours == 1 ? " hour " : " hours ") : "";
+            var minsDisplay = mins > 0 ? mins + (mins == 1 ? " minute " : " minutes ") : "";
+
+            var value;
+            if (seconds < 86400) {
+                if (hoursDisplay == "") {
+                    finalOutput = "Your data will be accessible for the next 1 hour";
+                } else {
+                    if (minsDisplay == "60 minutes ") {
+                        var hour = hoursDisplay.substring(0,2);
+                        if (hour > 0) {
+                            value = (parseInt(hour) + 1) + " hours";
+                        } else {
+                            value = "1 hour ";
+                        }
+                    } else {
+                        value = hoursDisplay;
+                    }
+                }
+            } else {
+                if (daysDisplay == "30 days ") {
+                    var month = monthsDisplay.substring(0,2);
+                    if (month > 0) {
+                        value = (parseInt(month) + 1) + " months";
+                    } else {
+                        value = "1 month ";
+                    }
+                } else {
+                    var month = monthsDisplay.substring(0,2);
+                    if (month >= 12){
+                        value = "1 year";
+                    } else if (month == 0){
+                        value = daysDisplay;
+                    } else {
+                        value = monthsDisplay + "and " + daysDisplay;
+                    }
+                }
+            }
+
+            if (finalOutput == "") {
+                output = "Your data will be shared on an on-going basis for " +  value;
+            } else {
+                output = finalOutput;
+            }
+
+        }
+        document.getElementById("consentExpiryTime").textContent= output;
     });
 
     var coll = document.getElementsByClassName("collapsible");

@@ -90,8 +90,10 @@ paths:
             The client does not have permission to read, update or delete the
             Client
       security:
-        - TPPOAuth2Security: []
-        - default: []
+        - TPPOAuth2Security:
+            - "cdr:registration"
+        - default:
+            - "cdr:registration"
       x-auth-type: Application
       x-throttling-tier: Unlimited
       x-wso2-application-security:
@@ -151,8 +153,10 @@ paths:
             The client does not have permission to read, update or delete the
             Client
       security:
-        - TPPOAuth2Security: []
-        - default: []
+        - TPPOAuth2Security:
+            - "cdr:registration"
+        - default:
+            - "cdr:registration"
       x-auth-type: Application
       x-throttling-tier: Unlimited
       x-wso2-application-security:
@@ -197,8 +201,10 @@ paths:
         '405':
           description: Method Not Allowed. The requested method is unsupported
       security:
-        - TPPOAuth2Security: []
-        - default: []
+        - TPPOAuth2Security:
+            - "cdr:registration"
+        - default:
+            - "cdr:registration"
       x-auth-type: Application
       x-throttling-tier: Unlimited
       x-wso2-application-security:
@@ -214,17 +220,17 @@ securityDefinitions:
     tokenUrl: 'https://authserver.example/token'
     flow: application
     scopes:
-      cdr-registration: Ability to call registration endpoint
+      cdr:registration: Ability to call registration endpoint
     x-scopes-bindings:
-      cdr-registration: Internal/subscriber
+      cdr:registration: Internal/subscriber
   default:
     type: oauth2
     authorizationUrl: 'https://test.com'
     flow: implicit
     scopes:
-      cdr-registration: Ability to call registration endpoint
+      cdr:registration: Ability to call registration endpoint
     x-scopes-bindings:
-      cdr-registration: Internal/subscriber
+      cdr:registration: Internal/subscriber
 definitions:
   RegistrationProperties:
     type: object
