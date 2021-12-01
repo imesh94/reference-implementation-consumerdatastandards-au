@@ -98,7 +98,7 @@
         {% if open_banking_cds.metadata_cache.expiry is defined %}
         <Expiry>{{open_banking_cds.metadata_cache.expiry}}</Expiry>
         {% else %}
-        <Expiry>60</Expiry>
+        <Expiry>2</Expiry>
         {% endif %}
         <DataHolderResponsibilities>
             {% if open_banking_cds.metadata_cache.dataholder_responsibilities.bulk_execution is defined %}

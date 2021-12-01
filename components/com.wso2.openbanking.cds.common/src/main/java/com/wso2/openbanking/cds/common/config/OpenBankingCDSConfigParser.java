@@ -350,7 +350,7 @@ public class OpenBankingCDSConfigParser {
 
     /**
      * Read metadata cache expiry time in minutes from config
-     * @return expiry time, default value is 60
+     * @return expiry time, default value is 2 min
      */
     public int getCacheExpiryInMinutes() {
 
@@ -359,7 +359,7 @@ public class OpenBankingCDSConfigParser {
             // configured value is a positive number
             return Integer.parseInt((String) config);
         }
-        return 60;
+        return 2;
     }
 
     /**
