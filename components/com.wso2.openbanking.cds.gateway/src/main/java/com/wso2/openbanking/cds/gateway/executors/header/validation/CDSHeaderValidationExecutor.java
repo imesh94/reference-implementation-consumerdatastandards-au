@@ -65,8 +65,14 @@ public class CDSHeaderValidationExecutor implements OpenBankingGatewayExecutor {
     private static final String ERROR_HEADER_MISSING = "Header validation failed. %s is missing";
     private static final String ERROR_HEADER_INVALID = "Header validation failed. %s is invalid";
 
+    @Generated(message = "Ignoring since empty")
     @Override
     public void preProcessRequest(OBAPIRequestContext obapiRequestContext) {
+        // Do not need to handle
+    }
+
+    @Override
+    public void postProcessRequest(OBAPIRequestContext obapiRequestContext) {
         // Skip the executor if previous executors failed.
         if (obapiRequestContext.isError()) {
             return;
@@ -85,12 +91,6 @@ public class CDSHeaderValidationExecutor implements OpenBankingGatewayExecutor {
             }
             LOG.debug("CDS HTTP header validation success");
         }
-    }
-
-    @Generated(message = "Ignoring since empty")
-    @Override
-    public void postProcessRequest(OBAPIRequestContext obapiRequestContext) {
-        // Do not need to handle
     }
 
     @Generated(message = "Ignoring since empty")

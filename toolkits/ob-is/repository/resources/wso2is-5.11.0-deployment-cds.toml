@@ -332,6 +332,13 @@ context = "(.*)/api/openbanking/cds-arrangement-revocation/(.*)"
 secure="false"
 http_method="all"
 
+[[resource.access_control]]
+context = "(.*)/api/openbanking/metadata-mgt/(.*)"
+secure="true"
+http_method="POST"
+permissions=["/permission/admin"]
+allowed_auth_handlers = ["BasicAuthentication"]
+
 [authentication.adaptive.event_publisher]
 url = "http://IS_HOSTNAME:8006/"
 
@@ -615,7 +622,7 @@ customer_details_retrieval_endpoint="http://APIM_HOSTNAME:9763/api/openbanking/c
 
 [open_banking_cds.metadata_cache]
 enable=true
-expiry=3
+expiry=2
 update_period=4
 data_recipients_discovery_url="https://api.cdr.gov.au/cdr-register/v1/banking/data-recipients"
 dcr_internal_url="https://IS_HOSTNAME:9446/api/openbanking/dynamic-client-registration/register"
