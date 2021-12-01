@@ -141,9 +141,9 @@ public class CDSHeaderValidationExecutorTest extends PowerMockTestCase {
     @Test
     public void testIsValidMaxVersion() {
         OBAPIRequestContext obApiRequestContextMock = getOBAPIRequestContext
-                (GatewayConstants.MAX_REQUESTED_ENDPOINT_VERSION, "1", "foo", "1-2-3", "1.5", "100");
+                (GatewayConstants.MAX_REQUESTED_ENDPOINT_VERSION, "4", "foo", "1-2-3", "1.5", "100");
         this.uut.postProcessRequest(obApiRequestContextMock); // test empty string, should return false
-        this.uut.postProcessRequest(obApiRequestContextMock); // test "1", should return true
+        this.uut.postProcessRequest(obApiRequestContextMock); // test "4", should return true
         this.uut.postProcessRequest(obApiRequestContextMock); // test "foo", should return false
         this.uut.postProcessRequest(obApiRequestContextMock); // test "1-2-3", should return false
         this.uut.postProcessRequest(obApiRequestContextMock); // test "1.5", should return false
@@ -155,11 +155,11 @@ public class CDSHeaderValidationExecutorTest extends PowerMockTestCase {
     @Test
     public void testIsValidMinVersion() {
         OBAPIRequestContext obApiRequestContextMock = getOBAPIRequestContext
-                (GatewayConstants.MIN_REQUESTED_ENDPOINT_VERSION, "2", "1", "foo", "1-2-3", "1.5", "-3");
+                (GatewayConstants.MIN_REQUESTED_ENDPOINT_VERSION, "2", "-1", "foo", "1-2-3", "1.5", "-3");
         this.uut.postProcessRequest(obApiRequestContextMock); // test empty string, should return true
         this.uut.postProcessRequest(obApiRequestContextMock); // test "2", should return true
 
-        this.uut.postProcessRequest(obApiRequestContextMock); // test "1", should return false
+        this.uut.postProcessRequest(obApiRequestContextMock); // test "-1", should return false
         this.uut.postProcessRequest(obApiRequestContextMock); // test "foo", should return false
         this.uut.postProcessRequest(obApiRequestContextMock); // test "1-2-3", should return false
         this.uut.postProcessRequest(obApiRequestContextMock); // test "1.5", should return false
@@ -170,11 +170,11 @@ public class CDSHeaderValidationExecutorTest extends PowerMockTestCase {
     @Test
     public void testIsValidHidVersion() {
         OBAPIRequestContext obApiRequestContextMock = getOBAPIRequestContext
-                (HOLDER_SPECIFIC_IDENTIFIER, "2", "1", "foo", "1-2-3", "1.5");
+                (HOLDER_SPECIFIC_IDENTIFIER, "2", "-1", "foo", "1-2-3", "1.5");
         this.uut.postProcessRequest(obApiRequestContextMock); // test empty string, should return true
         this.uut.postProcessRequest(obApiRequestContextMock); // test "2", should return true
 
-        this.uut.postProcessRequest(obApiRequestContextMock); // test "1", should return false
+        this.uut.postProcessRequest(obApiRequestContextMock); // test "-1", should return false
         this.uut.postProcessRequest(obApiRequestContextMock); // test "foo", should return false
         this.uut.postProcessRequest(obApiRequestContextMock); // test "1-2-3", should return false
         this.uut.postProcessRequest(obApiRequestContextMock); // test "1.5", should return false
@@ -188,7 +188,7 @@ public class CDSHeaderValidationExecutorTest extends PowerMockTestCase {
         when(headers.get(GatewayConstants.X_FAPI_AUTH_DATE)).thenReturn(VALID_AUTH_DATE);
         when(headers.get(GatewayConstants.X_FAPI_CUSTOMER_IP_ADDRESS)).thenReturn(VALID_CUSTOMER_IP6_ADDR);
         when(headers.get(GatewayConstants.X_FAPI_INTERACTION_ID)).thenReturn(VALID_INTERACTION_ID);
-        when(headers.get(GatewayConstants.MAX_REQUESTED_ENDPOINT_VERSION)).thenReturn("1");
+        when(headers.get(GatewayConstants.MAX_REQUESTED_ENDPOINT_VERSION)).thenReturn("4");
         when(headers.get(HttpHeaders.AUTHORIZATION)).thenReturn("test-access-token");
 
         if (StringUtils.isNotBlank(key)) {
@@ -213,7 +213,7 @@ public class CDSHeaderValidationExecutorTest extends PowerMockTestCase {
 
     private OBAPIRequestContext getOBAPIRequestContext(String key, String... values) {
         Map<String, Object> extensions = new HashMap<>();
-        extensions.put(GatewayConstants.X_VERSION, "2");
+        extensions.put(GatewayConstants.X_VERSION, "4");
 
         return getOBAPIRequestContext(extensions, key, values);
     }
