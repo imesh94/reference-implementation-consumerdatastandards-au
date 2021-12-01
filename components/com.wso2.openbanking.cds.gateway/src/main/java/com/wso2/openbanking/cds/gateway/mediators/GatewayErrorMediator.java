@@ -26,7 +26,7 @@ import net.minidev.json.JSONObject;
 import org.apache.axiom.soap.SOAPBody;
 import org.apache.axiom.soap.SOAPEnvelope;
 import org.apache.axis2.AxisFault;
-import org.apache.commons.lang.StringUtils;
+import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.apache.synapse.MessageContext;
@@ -52,6 +52,9 @@ public class GatewayErrorMediator extends AbstractMediator {
 
     @Override
     public boolean mediate(MessageContext messageContext) {
+
+        String restApiContext = messageContext.getProperty(GatewayConstants.REST_API_CONTEXT) != null ?
+                messageContext.getProperty(GatewayConstants.REST_API_CONTEXT).toString() : null;
 
         // Publish gateway error data.
         if (Boolean.parseBoolean((String) OpenBankingConfigParser.getInstance().getConfiguration()
@@ -80,6 +83,9 @@ public class GatewayErrorMediator extends AbstractMediator {
                 return true;
             }
 
+        } else if (StringUtils.isNotBlank(restApiContext) && (restApiContext.contains("arrangements")
+                || restApiContext.contains("admin"))) {
+            return true;
         } else {
             // The status code values may pass as int or String format
             String errorCode;
