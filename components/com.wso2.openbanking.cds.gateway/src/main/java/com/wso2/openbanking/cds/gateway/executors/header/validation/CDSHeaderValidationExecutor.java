@@ -26,6 +26,7 @@ import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.apache.http.HttpHeaders;
+import org.wso2.carbon.apimgt.common.gateway.dto.MsgInfoDTO;
 
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
@@ -259,8 +260,16 @@ public class CDSHeaderValidationExecutor implements OpenBankingGatewayExecutor {
                 isMinRequestedVersionPresent = false;
             }
 
-            if (isMinRequestedVersionPresent && minRequestedVersion < 0) {
-                return false;
+            if (isMinRequestedVersionPresent) {
+                if (minRequestedVersion < 0) {
+                    return false;
+                }
+
+                if (minRequestedVersion >= maxRequestedVersion)  {
+                    // If the value of x-min-v is equal to or higher than the value of x-v then the x-min-v
+                    // header should be treated as absent.
+                    isMinRequestedVersionPresent = false;
+                }
             }
         }
 
@@ -269,15 +278,21 @@ public class CDSHeaderValidationExecutor implements OpenBankingGatewayExecutor {
             final int dataHolderMaxVersion = Collections.max(applicableVersionList);
             final int dataHolderMinVersion = Collections.min(applicableVersionList);
 
-            if (maxRequestedVersion > dataHolderMaxVersion) {
+            if (isMinRequestedVersionPresent) {
+                if (maxRequestedVersion < dataHolderMinVersion) {
+                    setError(obapiRequestContext, AUErrorEnum.UNSUPPORTED_VERSION, String.valueOf(maxRequestedVersion));
+                    return false;
+                } else if (minRequestedVersion > dataHolderMaxVersion) {
+                    setError(obapiRequestContext, AUErrorEnum.UNSUPPORTED_VERSION, String.valueOf(minRequestedVersion));
+                    return false;
+                }
+            } else if ((maxRequestedVersion > dataHolderMaxVersion) || (maxRequestedVersion < dataHolderMinVersion)) {
                 setError(obapiRequestContext, AUErrorEnum.UNSUPPORTED_VERSION, String.valueOf(maxRequestedVersion));
                 return false;
-            } else if (isMinRequestedVersionPresent && minRequestedVersion < dataHolderMinVersion) {
-                setError(obapiRequestContext, AUErrorEnum.UNSUPPORTED_VERSION, String.valueOf(minRequestedVersion));
-                return false;
-            } else {
-                LOG.debug("version validation is success");
             }
+            LOG.debug("version validation is success");
+            updateResponseHeader(obapiRequestContext, MAX_REQUESTED_ENDPOINT_VERSION,
+                    String.valueOf(dataHolderMaxVersion));
         }
         return true;
     }
@@ -324,5 +339,13 @@ public class CDSHeaderValidationExecutor implements OpenBankingGatewayExecutor {
         } else {
             return holderId;
         }
+    }
+
+    private void updateResponseHeader(OBAPIRequestContext obapiRequestContext, String key, String value) {
+        MsgInfoDTO msgInfo = obapiRequestContext.getMsgInfo();
+        Map<String, String> headers = msgInfo.getHeaders();
+        headers.put(key, value);
+        msgInfo.setHeaders(headers);
+        obapiRequestContext.setMsgInfo(msgInfo);
     }
 }
