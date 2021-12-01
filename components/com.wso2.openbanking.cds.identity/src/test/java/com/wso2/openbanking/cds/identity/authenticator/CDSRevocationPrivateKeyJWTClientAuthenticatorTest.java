@@ -55,7 +55,7 @@ public class CDSRevocationPrivateKeyJWTClientAuthenticatorTest extends PowerMock
         CDSRevocationPrivateKeyJWTClientAuthenticator authenticator =
                 PowerMockito.spy(new CDSRevocationPrivateKeyJWTClientAuthenticator());
         Map<String, List> bodyParams = new HashMap<>();
-        request.setRequestURI("baseUri/revoke");
+        request.setRequestURI("oauth2/revoke");
         PowerMockito.doReturn(true).when(authenticator, "canSuperAuthenticate",
                 any(MockHttpServletRequest.class), any(Map.class), any(OAuthClientAuthnContext.class));
         boolean response = authenticator.canAuthenticate(request, bodyParams, clientAuthnContext);

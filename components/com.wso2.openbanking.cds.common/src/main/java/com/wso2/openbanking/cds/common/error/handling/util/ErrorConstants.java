@@ -121,8 +121,9 @@ public class ErrorConstants {
         INVALID_ADR_STATUS(403, "urn:au-cds:error:cds-banking:Authorisation/AdrStatusNotActive",
                 "ADR Status Is Invalid", "The ADR is not in an active state in the CDR Register"),
         //The ADR software product is not in an "active" state in the CDR Register.
-        INVALID_PRODUCT_STATUS(403, "AU.CDR.Entitlements.InvalidAdrSoftwareProductStatus", "ADR Software Product " +
-                "Status Is Invalid", "The ADR software product is not in an active state in the CDR Register"),
+        INVALID_PRODUCT_STATUS(403, "urn:au-cds:error:cds-banking:Authorisation/AdrStatusNotActive",
+                "ADR Software Product Status Is Invalid", "The software product of ADR is not in an " +
+                "active state in the CDR Register"),
         //Consent status of the resource is not accepted by the API
         INVALID_CONSENT(403, "urn:au-cds:error:cds-all:Authorisation/InvalidConsent",
                 "Consent Is Invalid", "Consent status is not" +

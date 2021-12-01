@@ -352,6 +352,13 @@ custom_webapps = ["/keymanager-operations/"]
 url = "https://APIM_HOSTNAME:8280/"
 authentication.basic.enable = true
 
+[[resource.access_control]]
+context = "(.*)/api/openbanking/metricsendpoint/(.*)"
+secure="true"
+http_method="GET"
+permissions=["/permission/admin"]
+allowed_auth_handlers = ["BasicAuthentication"]
+
 #================configs related to identity-event.properties=============
 
 [[event_handler]]
@@ -431,7 +438,7 @@ use_softwareIdForAppName = true
 #read_timeout = 3000
 
 [[open_banking.dcr.regulatory_api]]
-api_name = "CDR Dynamic Client Registration API"
+api_name = "CDRDynamicClientRegistrationAPI"
 roles = "data-recipient-software-product"
 
 [[open_banking.dcr.regulatory_api]]
@@ -440,6 +447,7 @@ roles = "data-recipient-software-product"
 
 [open_banking.gateway]
 request_router="com.wso2.openbanking.cds.gateway.executors.core.CDSAPIRequestRouter"
+consent.validation.endpoint="https://IS_HOSTNAME:9446/api/openbanking/consent/validate"
 
 #============executors=========================
 [[open_banking.gateway.openbanking_gateway_executors.type]]
@@ -499,14 +507,17 @@ priority = 3
 name = "com.wso2.openbanking.cds.gateway.executors.idpermanence.IDPermanenceExecutor"
 priority = 4
 [[open_banking.gateway.openbanking_gateway_executors.type.executors]]
-name = "com.wso2.openbanking.accelerator.gateway.executor.impl.consent.ConsentEnforcementExecutor"
+name = "com.wso2.openbanking.cds.gateway.executors.header.validation.CDSHeaderValidationExecutor"
 priority = 5
 [[open_banking.gateway.openbanking_gateway_executors.type.executors]]
-name = "com.wso2.openbanking.accelerator.gateway.executor.impl.common.reporting.data.executor.CommonReportingDataExecutor"
+name = "com.wso2.openbanking.accelerator.gateway.executor.impl.consent.ConsentEnforcementExecutor"
 priority = 6
 [[open_banking.gateway.openbanking_gateway_executors.type.executors]]
-name = "com.wso2.openbanking.cds.gateway.executors.reporting.CDSCommonDataReportingExecutor"
+name = "com.wso2.openbanking.accelerator.gateway.executor.impl.common.reporting.data.executor.CommonReportingDataExecutor"
 priority = 7
+[[open_banking.gateway.openbanking_gateway_executors.type.executors]]
+name = "com.wso2.openbanking.cds.gateway.executors.reporting.CDSCommonDataReportingExecutor"
+priority = 8
 [[open_banking.gateway.openbanking_gateway_executors.type.executors]]
 name = "com.wso2.openbanking.cds.gateway.executors.error.handler.CDSErrorHandler"
 priority = 1000

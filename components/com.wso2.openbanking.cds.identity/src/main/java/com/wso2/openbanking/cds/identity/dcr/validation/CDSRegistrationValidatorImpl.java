@@ -21,6 +21,7 @@ import com.wso2.openbanking.cds.identity.dcr.model.CDSRegistrationRequest;
 import com.wso2.openbanking.cds.identity.dcr.model.CDSRegistrationResponse;
 import com.wso2.openbanking.cds.identity.dcr.model.CDSSoftwareStatementBody;
 import com.wso2.openbanking.cds.identity.dcr.utils.ValidationUtils;
+import org.apache.commons.lang3.StringUtils;
 
 import java.util.Map;
 
@@ -57,6 +58,9 @@ public class CDSRegistrationValidatorImpl extends DefaultRegistrationValidatorIm
         Gson gson = new Gson();
         JsonElement jsonElement = gson.toJsonTree(spMetaData);
         CDSRegistrationResponse cdsRegistrationResponse =  gson.fromJson(jsonElement, CDSRegistrationResponse.class);
+        if (StringUtils.isBlank(cdsRegistrationResponse.getRequestObjectSigningAlg())) {
+            cdsRegistrationResponse.setRequestObjectSigningAlg("PS256");
+        }
         return gson.toJson(cdsRegistrationResponse);
     }
 }

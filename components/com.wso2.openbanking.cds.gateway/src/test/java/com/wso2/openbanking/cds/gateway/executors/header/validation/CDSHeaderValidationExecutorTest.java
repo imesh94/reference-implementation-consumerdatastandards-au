@@ -63,65 +63,65 @@ public class CDSHeaderValidationExecutorTest extends PowerMockTestCase {
     }
 
     @Test
-    public void testPreProcessRequest() {
+    public void testPostProcessRequest() {
         OBAPIRequestContext obApiRequestContextMock = getOBAPIRequestContext(StringUtils.EMPTY, StringUtils.EMPTY);
-        this.uut.preProcessRequest(obApiRequestContextMock);
+        this.uut.postProcessRequest(obApiRequestContextMock);
         verify(obApiRequestContextMock, times(0)).setError(true);
     }
 
     @Test
-    public void testPreProcessRequestWithCustomerIpAddress() {
+    public void testPostProcessRequestWithCustomerIpAddress() {
         OBAPIRequestContext obApiRequestContextMock = getOBAPIRequestContext
                 (GatewayConstants.X_FAPI_CUSTOMER_IP_ADDRESS, "192.1.2.3", "::", "2001:db8::", "::1234:5678",
                         "2001:db8::1234:5678", "2001:db8:1::ab9:C0A8:102", "2001:db8::127.10.11.12",
                         "192.1.1.300", "invalid");
 
         // Assert valid IP addresses
-        this.uut.preProcessRequest(obApiRequestContextMock); // test empty string, should return true
-        this.uut.preProcessRequest(obApiRequestContextMock); // test "192.1.2.3", should return true
-        this.uut.preProcessRequest(obApiRequestContextMock); // test "::", should return true
-        this.uut.preProcessRequest(obApiRequestContextMock); // test "2001:db8::", should return true
-        this.uut.preProcessRequest(obApiRequestContextMock); // test "::1234:5678", should return true
-        this.uut.preProcessRequest(obApiRequestContextMock); // test "2001:db8::1234:5678", should return true
-        this.uut.preProcessRequest(obApiRequestContextMock); // test "2001:db8:1::ab9:C0A8:102", should return true
-        this.uut.preProcessRequest(obApiRequestContextMock); // test "2001:db8::127.10.11.12", should return true
+        this.uut.postProcessRequest(obApiRequestContextMock); // test empty string, should return true
+        this.uut.postProcessRequest(obApiRequestContextMock); // test "192.1.2.3", should return true
+        this.uut.postProcessRequest(obApiRequestContextMock); // test "::", should return true
+        this.uut.postProcessRequest(obApiRequestContextMock); // test "2001:db8::", should return true
+        this.uut.postProcessRequest(obApiRequestContextMock); // test "::1234:5678", should return true
+        this.uut.postProcessRequest(obApiRequestContextMock); // test "2001:db8::1234:5678", should return true
+        this.uut.postProcessRequest(obApiRequestContextMock); // test "2001:db8:1::ab9:C0A8:102", should return true
+        this.uut.postProcessRequest(obApiRequestContextMock); // test "2001:db8::127.10.11.12", should return true
         verify(obApiRequestContextMock, times(0)).setError(true);
 
         // Assert invalid IP addresses
-        this.uut.preProcessRequest(obApiRequestContextMock); // test "192.1.1.300", should return false
-        this.uut.preProcessRequest(obApiRequestContextMock); // test "invalid", should return false
+        this.uut.postProcessRequest(obApiRequestContextMock); // test "192.1.1.300", should return false
+        this.uut.postProcessRequest(obApiRequestContextMock); // test "invalid", should return false
         verify(obApiRequestContextMock, times(2)).setError(true);
     }
 
     @Test
-    public void testPreProcessRequestWithInvalidClientHeaders() {
+    public void testPostProcessRequestWithInvalidClientHeaders() {
         OBAPIRequestContext obApiRequestContextMock = getOBAPIRequestContext
                 (GatewayConstants.X_CDS_CLIENT_HEADERS, StringUtils.SPACE);
 
-        this.uut.preProcessRequest(obApiRequestContextMock);
-        this.uut.preProcessRequest(obApiRequestContextMock);
+        this.uut.postProcessRequest(obApiRequestContextMock);
+        this.uut.postProcessRequest(obApiRequestContextMock);
         verify(obApiRequestContextMock, times(2)).setError(true);
     }
 
     @Test
-    public void testPreProcessRequestWithAuthDate() {
+    public void testPostProcessRequestWithAuthDate() {
         OBAPIRequestContext obApiRequestContextMock = getOBAPIRequestContext
                 (GatewayConstants.X_FAPI_AUTH_DATE, "Sun, 06 Nov 2024 08:49:37 GMT", "24-11-1994 08:10 PM");
-        this.uut.preProcessRequest(obApiRequestContextMock); // test 06 Nov 2024 08:49:37 GMT, should return true
+        this.uut.postProcessRequest(obApiRequestContextMock); // test 06 Nov 2024 08:49:37 GMT, should return true
 
-        this.uut.preProcessRequest(obApiRequestContextMock); // test empty string, should return false
-        this.uut.preProcessRequest(obApiRequestContextMock); // test 24-11-1994 08:10 PM, should return false
+        this.uut.postProcessRequest(obApiRequestContextMock); // test empty string, should return false
+        this.uut.postProcessRequest(obApiRequestContextMock); // test 24-11-1994 08:10 PM, should return false
 
         verify(obApiRequestContextMock, times(2)).setError(true);
     }
 
     @Test
-    public void testPreProcessRequestWithInteractionId() {
+    public void testPostProcessRequestWithInteractionId() {
         OBAPIRequestContext obApiRequestContextMock = getOBAPIRequestContext
                 (GatewayConstants.X_FAPI_INTERACTION_ID, "invalid-uuid", "1-2-3-4-5");
-        this.uut.preProcessRequest(obApiRequestContextMock);
-        this.uut.preProcessRequest(obApiRequestContextMock);
-        this.uut.preProcessRequest(obApiRequestContextMock);
+        this.uut.postProcessRequest(obApiRequestContextMock);
+        this.uut.postProcessRequest(obApiRequestContextMock);
+        this.uut.postProcessRequest(obApiRequestContextMock);
         verify(obApiRequestContextMock, times(2)).setError(true);
     }
 
@@ -141,13 +141,13 @@ public class CDSHeaderValidationExecutorTest extends PowerMockTestCase {
     @Test
     public void testIsValidMaxVersion() {
         OBAPIRequestContext obApiRequestContextMock = getOBAPIRequestContext
-                (GatewayConstants.MAX_REQUESTED_ENDPOINT_VERSION, "1", "foo", "1-2-3", "1.5", "100");
-        this.uut.preProcessRequest(obApiRequestContextMock); // test empty string, should return false
-        this.uut.preProcessRequest(obApiRequestContextMock); // test "1", should return true
-        this.uut.preProcessRequest(obApiRequestContextMock); // test "foo", should return false
-        this.uut.preProcessRequest(obApiRequestContextMock); // test "1-2-3", should return false
-        this.uut.preProcessRequest(obApiRequestContextMock); // test "1.5", should return false
-        this.uut.preProcessRequest(obApiRequestContextMock); // test "100", should return false
+                (GatewayConstants.MAX_REQUESTED_ENDPOINT_VERSION, "4", "foo", "1-2-3", "1.5", "100");
+        this.uut.postProcessRequest(obApiRequestContextMock); // test empty string, should return false
+        this.uut.postProcessRequest(obApiRequestContextMock); // test "4", should return true
+        this.uut.postProcessRequest(obApiRequestContextMock); // test "foo", should return false
+        this.uut.postProcessRequest(obApiRequestContextMock); // test "1-2-3", should return false
+        this.uut.postProcessRequest(obApiRequestContextMock); // test "1.5", should return false
+        this.uut.postProcessRequest(obApiRequestContextMock); // test "100", should return false
 
         verify(obApiRequestContextMock, times(5)).setError(true);
     }
@@ -155,14 +155,14 @@ public class CDSHeaderValidationExecutorTest extends PowerMockTestCase {
     @Test
     public void testIsValidMinVersion() {
         OBAPIRequestContext obApiRequestContextMock = getOBAPIRequestContext
-                (GatewayConstants.MIN_REQUESTED_ENDPOINT_VERSION, "2", "1", "foo", "1-2-3", "1.5", "-3");
-        this.uut.preProcessRequest(obApiRequestContextMock); // test empty string, should return true
-        this.uut.preProcessRequest(obApiRequestContextMock); // test "2", should return true
+                (GatewayConstants.MIN_REQUESTED_ENDPOINT_VERSION, "2", "-1", "foo", "1-2-3", "1.5", "-3");
+        this.uut.postProcessRequest(obApiRequestContextMock); // test empty string, should return true
+        this.uut.postProcessRequest(obApiRequestContextMock); // test "2", should return true
 
-        this.uut.preProcessRequest(obApiRequestContextMock); // test "1", should return false
-        this.uut.preProcessRequest(obApiRequestContextMock); // test "foo", should return false
-        this.uut.preProcessRequest(obApiRequestContextMock); // test "1-2-3", should return false
-        this.uut.preProcessRequest(obApiRequestContextMock); // test "1.5", should return false
+        this.uut.postProcessRequest(obApiRequestContextMock); // test "-1", should return false
+        this.uut.postProcessRequest(obApiRequestContextMock); // test "foo", should return false
+        this.uut.postProcessRequest(obApiRequestContextMock); // test "1-2-3", should return false
+        this.uut.postProcessRequest(obApiRequestContextMock); // test "1.5", should return false
 
         verify(obApiRequestContextMock, times(4)).setError(true);
     }
@@ -170,14 +170,14 @@ public class CDSHeaderValidationExecutorTest extends PowerMockTestCase {
     @Test
     public void testIsValidHidVersion() {
         OBAPIRequestContext obApiRequestContextMock = getOBAPIRequestContext
-                (HOLDER_SPECIFIC_IDENTIFIER, "2", "1", "foo", "1-2-3", "1.5");
-        this.uut.preProcessRequest(obApiRequestContextMock); // test empty string, should return true
-        this.uut.preProcessRequest(obApiRequestContextMock); // test "2", should return true
+                (HOLDER_SPECIFIC_IDENTIFIER, "2", "-1", "foo", "1-2-3", "1.5");
+        this.uut.postProcessRequest(obApiRequestContextMock); // test empty string, should return true
+        this.uut.postProcessRequest(obApiRequestContextMock); // test "2", should return true
 
-        this.uut.preProcessRequest(obApiRequestContextMock); // test "1", should return false
-        this.uut.preProcessRequest(obApiRequestContextMock); // test "foo", should return false
-        this.uut.preProcessRequest(obApiRequestContextMock); // test "1-2-3", should return false
-        this.uut.preProcessRequest(obApiRequestContextMock); // test "1.5", should return false
+        this.uut.postProcessRequest(obApiRequestContextMock); // test "-1", should return false
+        this.uut.postProcessRequest(obApiRequestContextMock); // test "foo", should return false
+        this.uut.postProcessRequest(obApiRequestContextMock); // test "1-2-3", should return false
+        this.uut.postProcessRequest(obApiRequestContextMock); // test "1.5", should return false
 
         verify(obApiRequestContextMock, times(4)).setError(true);
     }
@@ -188,7 +188,7 @@ public class CDSHeaderValidationExecutorTest extends PowerMockTestCase {
         when(headers.get(GatewayConstants.X_FAPI_AUTH_DATE)).thenReturn(VALID_AUTH_DATE);
         when(headers.get(GatewayConstants.X_FAPI_CUSTOMER_IP_ADDRESS)).thenReturn(VALID_CUSTOMER_IP6_ADDR);
         when(headers.get(GatewayConstants.X_FAPI_INTERACTION_ID)).thenReturn(VALID_INTERACTION_ID);
-        when(headers.get(GatewayConstants.MAX_REQUESTED_ENDPOINT_VERSION)).thenReturn("1");
+        when(headers.get(GatewayConstants.MAX_REQUESTED_ENDPOINT_VERSION)).thenReturn("4");
         when(headers.get(HttpHeaders.AUTHORIZATION)).thenReturn("test-access-token");
 
         if (StringUtils.isNotBlank(key)) {
@@ -213,7 +213,7 @@ public class CDSHeaderValidationExecutorTest extends PowerMockTestCase {
 
     private OBAPIRequestContext getOBAPIRequestContext(String key, String... values) {
         Map<String, Object> extensions = new HashMap<>();
-        extensions.put(GatewayConstants.X_VERSION, "2");
+        extensions.put(GatewayConstants.X_VERSION, "4");
 
         return getOBAPIRequestContext(extensions, key, values);
     }

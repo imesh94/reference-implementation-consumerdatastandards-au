@@ -18,6 +18,7 @@ import com.wso2.openbanking.accelerator.consent.extensions.validate.model.Consen
 import com.wso2.openbanking.accelerator.consent.mgt.dao.models.ConsentMappingResource;
 import com.wso2.openbanking.cds.consent.extensions.common.CDSConsentExtensionConstants;
 import net.minidev.json.JSONObject;
+import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
@@ -42,7 +43,7 @@ public class CDSConsentValidatorUtil {
      */
     public static Boolean isConsentExpired(String expDateVal) throws ConsentException {
 
-        if (expDateVal != null && !expDateVal.isEmpty()) {
+        if (StringUtils.isNotBlank(expDateVal) && !CDSConsentExtensionConstants.ZERO.equalsIgnoreCase(expDateVal)) {
             try {
                 OffsetDateTime expDate = OffsetDateTime.parse(expDateVal);
                 return OffsetDateTime.now().isAfter(expDate);

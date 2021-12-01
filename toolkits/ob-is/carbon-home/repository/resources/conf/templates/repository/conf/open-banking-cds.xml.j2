@@ -29,6 +29,28 @@
         {% else %}
         <EnableSectorIdentifierUriValidation>false</EnableSectorIdentifierUriValidation>
         {% endif %}
+        {% if open_banking_cds.dcr.request_jti_validation_enabled is defined %}
+        <EnableRequestJTIValidation>{{open_banking_cds.dcr.request_jti_validation_enabled}}</EnableRequestJTIValidation>
+        {% else %}
+        <EnableRequestJTIValidation>true</EnableRequestJTIValidation>
+        {% endif %}
+        {% if open_banking_cds.dcr.ssa_jti_validation_enabled is defined %}
+        <EnableSSAJTIValidation>{{open_banking_cds.dcr.ssa_jti_validation_enabled}}</EnableSSAJTIValidation>
+        {% else %}
+        <EnableSSAJTIValidation>false</EnableSSAJTIValidation>
+        {% endif %}
+        <JTICache>
+            {% if open_banking_cds.dcr.jti.cache.cache_access_expiry_minutes is defined %}
+            <CacheAccessExpiry>{{open_banking_cds.dcr.jti.cache.cache_access_expiry_minutes}}</CacheAccessExpiry>
+            {% else %}
+            <CacheAccessExpiry>5</CacheAccessExpiry>
+            {% endif %}
+            {% if open_banking_cds.dcr.jti.cache.cache_modified_expiry_minutes is defined %}
+            <CacheModifiedExpiry>{{open_banking_cds.dcr.jti.cache.cache_modified_expiry_minutes}}</CacheModifiedExpiry>
+            {% else %}
+            <CacheModifiedExpiry>5</CacheModifiedExpiry>
+            {% endif %}
+        </JTICache>
      </DCR>
      <ConsentManagement>
         {% if open_banking_cds.consent_management.payable_accounts_retrieve_endpoint is defined %}
@@ -98,7 +120,7 @@
         {% if open_banking_cds.metadata_cache.expiry is defined %}
         <Expiry>{{open_banking_cds.metadata_cache.expiry}}</Expiry>
         {% else %}
-        <Expiry>60</Expiry>
+        <Expiry>2</Expiry>
         {% endif %}
         <DataHolderResponsibilities>
             {% if open_banking_cds.metadata_cache.dataholder_responsibilities.bulk_execution is defined %}
