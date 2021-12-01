@@ -53,8 +53,8 @@ public class GatewayErrorMediator extends AbstractMediator {
     @Override
     public boolean mediate(MessageContext messageContext) {
 
-        String restApiContext = messageContext.getProperty(GatewayConstants.REST_API_CONTEXT) != null ?
-                messageContext.getProperty(GatewayConstants.REST_API_CONTEXT).toString() : null;
+        String restApiName = messageContext.getProperty(GatewayConstants.REST_API_NAME) != null ?
+                messageContext.getProperty(GatewayConstants.REST_API_NAME).toString() : null;
 
         // Publish gateway error data.
         if (Boolean.parseBoolean((String) OpenBankingConfigParser.getInstance().getConfiguration()
@@ -83,8 +83,9 @@ public class GatewayErrorMediator extends AbstractMediator {
                 return true;
             }
 
-        } else if (StringUtils.isNotBlank(restApiContext) && (restApiContext.contains("arrangements")
-                || restApiContext.contains("admin"))) {
+        } else if (StringUtils.isNotBlank(restApiName) && (restApiName.equals("CDRDynamicClientRegistrationAPI")
+                || restApiName.equals("CDRArrangementManagementAPI")
+                || restApiName.equals("ConsumerDataStandardsAdminAPI"))) {
             return true;
         } else {
             // The status code values may pass as int or String format
