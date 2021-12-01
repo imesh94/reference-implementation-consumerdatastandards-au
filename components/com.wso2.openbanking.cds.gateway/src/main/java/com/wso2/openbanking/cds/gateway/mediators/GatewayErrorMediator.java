@@ -64,13 +64,14 @@ public class GatewayErrorMediator extends AbstractMediator {
             }
         }
         // Error handling logic.
+        JSONObject errorData;
         if ((messageContext.getProperty(GatewayConstants.ERROR_CODE)) != null) {
 
             int errorCode = (int) messageContext.getProperty(GatewayConstants.ERROR_CODE);
             String errorMessage = (String) messageContext.getProperty(GatewayConstants.ERROR_MSG);
             String errorDetail = (String) messageContext.getProperty(GatewayConstants.ERROR_DETAIL);
 
-            JSONObject errorData;
+
             if (Integer.toString(errorCode).startsWith("9")) {
                 errorData = getAuthFailureResponse(errorCode, errorMessage);
             } else if (Integer.toString(errorCode).startsWith("4") && StringUtils.isEmpty(errorDetail)) {
@@ -79,10 +80,44 @@ public class GatewayErrorMediator extends AbstractMediator {
                 return true;
             }
 
-            String errorResponse = errorData.get(GatewayConstants.ERROR_RESPONSE).toString();
-            int status = (int) errorData.get(GatewayConstants.STATUS_CODE);
-            setFaultPayload(messageContext, errorResponse, status);
+        } else {
+            // The status code values may pass as int or String format
+            String errorCode;
+            org.apache.axis2.context.MessageContext axis2MessageContext = ((Axis2MessageContext) messageContext)
+                    .getAxis2MessageContext();
+
+            if (axis2MessageContext.getProperty(GatewayConstants.HTTP_SC) != null) {
+                errorCode = String.valueOf(axis2MessageContext.getProperty(GatewayConstants.HTTP_SC));
+            } else if (messageContext.getProperty(GatewayConstants.HTTP_RESPONSE_STATUS_CODE) != null) {
+                errorCode = String.valueOf(messageContext.getProperty(GatewayConstants
+                        .HTTP_RESPONSE_STATUS_CODE));
+            } else if (messageContext.getProperty(GatewayConstants.CUSTOM_HTTP_SC) != null) {
+                errorCode = String.valueOf(messageContext.getProperty(GatewayConstants.CUSTOM_HTTP_SC));
+            } else {
+                return true;
+            }
+            JSONArray errorList = new JSONArray();
+            String errorResponse;
+            errorData = new JSONObject();
+            if (errorCode.startsWith("4")) {
+                errorList.add(ErrorUtil.getErrorObject(ErrorConstants.AUErrorEnum.EXPECTED_GENERAL_ERROR,
+                        ErrorConstants.AUErrorEnum.EXPECTED_GENERAL_ERROR.getDetail(), new CDSErrorMeta()));
+                errorResponse = ErrorUtil.getErrorJson(errorList);
+                errorData.put(GatewayConstants.STATUS_CODE, Integer.parseInt(errorCode));
+                errorData.put(GatewayConstants.ERROR_RESPONSE, errorResponse);
+            } else if (errorCode.startsWith("5")) {
+                errorList.add(ErrorUtil.getErrorObject(ErrorConstants.AUErrorEnum.UNEXPECTED_ERROR,
+                        ErrorConstants.AUErrorEnum.UNEXPECTED_ERROR.getDetail(), new CDSErrorMeta()));
+                errorResponse = ErrorUtil.getErrorJson(errorList);
+                errorData.put(GatewayConstants.STATUS_CODE, Integer.parseInt(errorCode));
+                errorData.put(GatewayConstants.ERROR_RESPONSE, errorResponse);
+            } else {
+                return true;
+            }
         }
+        String errorResponse = errorData.get(GatewayConstants.ERROR_RESPONSE).toString();
+        int status = (int) errorData.get(GatewayConstants.STATUS_CODE);
+        setFaultPayload(messageContext, errorResponse, status);
         return true;
     }
 
