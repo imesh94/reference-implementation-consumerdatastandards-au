@@ -20,7 +20,6 @@ import com.wso2.openbanking.accelerator.gateway.util.GatewayConstants;
 import com.wso2.openbanking.cds.common.config.OpenBankingCDSConfigParser;
 import com.wso2.openbanking.cds.common.error.handling.util.ErrorConstants;
 import com.wso2.openbanking.cds.gateway.executors.idpermanence.utils.IdPermanenceUtils;
-import net.minidev.json.JSONArray;
 import net.minidev.json.JSONObject;
 import org.mockito.Mockito;
 import org.powermock.api.mockito.PowerMockito;
@@ -244,20 +243,17 @@ public class CDSErrorHandlerTest extends PowerMockTestCase {
     @Test
     public void testGetDCRErrorJson() {
 
-        JSONArray errorJson = CDSErrorHandler.getDCRErrorJSON(dcrErrors);
-
+        JSONObject errorJson = CDSErrorHandler.getDCRErrorJSON(dcrErrors);
         Assert.assertNotNull(errorJson);
-        JSONObject error = (JSONObject) errorJson.get(0);
-        Assert.assertEquals(error.get(ErrorConstants.ERROR), "invalid_software_statement");
-        Assert.assertEquals(error.get(ErrorConstants.ERROR_DESCRIPTION),
+        Assert.assertEquals(errorJson.get(ErrorConstants.ERROR), "invalid_software_statement");
+        Assert.assertEquals(errorJson.get(ErrorConstants.ERROR_DESCRIPTION),
                 "Duplicate registrations for a given software_id are not valid");
     }
 
     @Test
     public void testGetEmptyDCRErrorJson() {
 
-        JSONArray errorJson = CDSErrorHandler.getDCRErrorJSON(emptyErrors);
-
+        JSONObject errorJson = CDSErrorHandler.getDCRErrorJSON(emptyErrors);
         Assert.assertTrue(errorJson.isEmpty());
     }
 

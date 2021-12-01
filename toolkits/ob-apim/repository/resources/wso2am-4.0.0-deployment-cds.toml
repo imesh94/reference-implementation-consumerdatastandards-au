@@ -438,7 +438,7 @@ use_softwareIdForAppName = true
 #read_timeout = 3000
 
 [[open_banking.dcr.regulatory_api]]
-api_name = "CDR Dynamic Client Registration API"
+api_name = "CDRDynamicClientRegistrationAPI"
 roles = "data-recipient-software-product"
 
 [[open_banking.dcr.regulatory_api]]
