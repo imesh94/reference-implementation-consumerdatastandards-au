@@ -101,6 +101,8 @@ public class GatewayConstants {
     public static final String CORRELATION_ID = "correlation_id";
     public static final String REST_API_CONTEXT = "REST_API_CONTEXT";
     public static final String HTTP_RESPONSE_STATUS_CODE = "HTTP_RESPONSE_STATUS_CODE";
+    public static final String CUSTOM_HTTP_SC = "CUSTOM_HTTP_SC";
+    public static final String HTTP_SC = "HTTP_SC";
 
     // Constants related to executors
     public static final String HTTP_GET = "GET";

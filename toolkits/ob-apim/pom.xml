@@ -81,6 +81,13 @@
                                                 regex="com.wso2.openbanking.cds.gateway-(\d.*?)\.jar$"/>
                                     </fileset>
                                 </copy>
+                                <copy todir="${project.basedir}/carbon-home/repository/components/lib" overwrite="true">
+                                    <fileset
+                                            dir="../../components/com.wso2.openbanking.cds.metrics/target">
+                                        <filename
+                                                regex="com.wso2.openbanking.cds.metrics-(\d.*?)\.jar$"/>
+                                    </fileset>
+                                </copy>
                                 <copy todir="${project.basedir}/carbon-home/repository/deployment/server/webapps" overwrite="true">
                                     <fileset
                                             dir="../../components/com.wso2.openbanking.cds.demo.backend/target">

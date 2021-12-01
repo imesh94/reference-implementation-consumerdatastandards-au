@@ -17,7 +17,7 @@ var doLogin = function(context) {
             doLogin(context);
         }
     });
-}
+};
 
 var OTPFlow = function(context) {
     executeStep(2, {
@@ -31,4 +31,4 @@ var OTPFlow = function(context) {
             OTPFlow(context);
         }
     });
-}
+};

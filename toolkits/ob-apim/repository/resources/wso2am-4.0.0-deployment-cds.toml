@@ -352,6 +352,13 @@ custom_webapps = ["/keymanager-operations/"]
 url = "https://APIM_HOSTNAME:8280/"
 authentication.basic.enable = true
 
+[[resource.access_control]]
+context = "(.*)/api/openbanking/metricsendpoint/(.*)"
+secure="true"
+http_method="GET"
+permissions=["/permission/admin"]
+allowed_auth_handlers = ["BasicAuthentication"]
+
 #================configs related to identity-event.properties=============
 
 [[event_handler]]
