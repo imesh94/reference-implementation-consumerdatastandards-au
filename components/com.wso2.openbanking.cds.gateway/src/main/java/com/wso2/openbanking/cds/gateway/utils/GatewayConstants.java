@@ -100,6 +100,7 @@ public class GatewayConstants {
     public static final String SYNAPSE_REST_API = "SYNAPSE_REST_API";
     public static final String CORRELATION_ID = "correlation_id";
     public static final String REST_API_CONTEXT = "REST_API_CONTEXT";
+    public static final String REST_API_NAME = "api.ut.api";
     public static final String HTTP_RESPONSE_STATUS_CODE = "HTTP_RESPONSE_STATUS_CODE";
     public static final String CUSTOM_HTTP_SC = "CUSTOM_HTTP_SC";
     public static final String HTTP_SC = "HTTP_SC";
