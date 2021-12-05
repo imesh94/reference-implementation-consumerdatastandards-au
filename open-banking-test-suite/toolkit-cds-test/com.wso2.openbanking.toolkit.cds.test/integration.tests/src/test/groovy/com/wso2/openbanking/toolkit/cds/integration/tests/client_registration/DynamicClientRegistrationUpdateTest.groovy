@@ -46,7 +46,6 @@ class DynamicClientRegistrationUpdateTest extends AbstractAUTests {
     @BeforeClass(alwaysRun = true)
     void "Initialize Test Suite"() {
         TestSuite.init()
-        appConfigReader.setTppNumber(0)
         AURequestBuilder.getApplicationToken(scopes, null) //to prevent 'connection refused' error
         AUMockCDRIntegrationUtil.loadMetaDataToCDRRegister()
         AURegistrationRequestBuilder.retrieveADRInfo()

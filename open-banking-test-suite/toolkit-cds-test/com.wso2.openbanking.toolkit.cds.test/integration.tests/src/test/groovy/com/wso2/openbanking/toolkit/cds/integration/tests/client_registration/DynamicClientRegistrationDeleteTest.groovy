@@ -44,7 +44,6 @@ class DynamicClientRegistrationDeleteTest extends AbstractAUTests {
 
     @BeforeClass(alwaysRun = true)
     void "Initialize Test Suite"() {
-        appConfigReader.setTppNumber(0)
         AURegistrationRequestBuilder.retrieveADRInfo()
         TestSuite.init()
         deleteApplicationIfExists(scopes)
