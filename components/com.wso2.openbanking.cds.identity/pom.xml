@@ -296,7 +296,8 @@
                             com.wso2.openbanking.cds.identity.metadata.periodical.updater;version="${project.version}",
                             com.wso2.openbanking.cds.identity.metadata.periodical.updater.*;version="${project.version}",
                             com.wso2.openbanking.cds.identity.push.auth.extension.request.validator;version="${project.version}",
-                            com.wso2.openbanking.cds.identity.utils;version="${project.version}"
+                            com.wso2.openbanking.cds.identity.utils;version="${project.version}",
+                            com.wso2.openbanking.cds.identity.tomcat.filters;version="${project.version}"
                         </Export-Package>
                         <DynamicImport-Package>*</DynamicImport-Package>
                         <_dsannotations>*</_dsannotations>

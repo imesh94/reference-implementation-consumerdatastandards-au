@@ -23,8 +23,9 @@ public class CDSDataPublishingServiceImpl implements CDSDataPublishingService {
 
     private static final String INPUT_STREAM_VERSION = "1.0.0";
     private static final String ACCESS_TOKEN_INPUT_STREAM = "AccessTokenInputStream";
-    public static final String API_DATA_STREAM = "APIInputStream";
-    public static final String CONSENT_INPUT_STREAM = "ConsentInputStream";
+    private static final String API_DATA_STREAM = "APIInputStream";
+    private static final String CONSENT_INPUT_STREAM = "ConsentInputStream";
+    private static final String API_LATENCY_INPUT_STREAM = "APILatencyInputStream";
 
     private static final CDSDataPublishingServiceImpl dataPublishingService = new CDSDataPublishingServiceImpl();
 
@@ -52,5 +53,11 @@ public class CDSDataPublishingServiceImpl implements CDSDataPublishingService {
 
         OBDataPublisherUtil.publishData(CONSENT_INPUT_STREAM, INPUT_STREAM_VERSION, consentData);
 
+    }
+
+    @Override
+    public void publishApiLatencyData(Map<String, Object> apiLatencyData) {
+
+        OBDataPublisherUtil.publishData(API_LATENCY_INPUT_STREAM, INPUT_STREAM_VERSION, apiLatencyData);
     }
 }
