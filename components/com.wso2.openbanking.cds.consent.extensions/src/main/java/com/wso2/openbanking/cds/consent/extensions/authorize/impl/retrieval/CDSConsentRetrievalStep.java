@@ -47,7 +47,15 @@ public class CDSConsentRetrievalStep implements ConsentRetrievalStep {
 
     private static final Log log = LogFactory.getLog(CDSConsentRetrievalStep.class);
     private static final int secondsInYear = (int) TimeUnit.SECONDS.convert(365, TimeUnit.DAYS);
-    private static final ConsentCoreServiceImpl consentCoreService = new ConsentCoreServiceImpl();
+    private final ConsentCoreServiceImpl consentCoreService;
+
+    public CDSConsentRetrievalStep() {
+        this.consentCoreService = new ConsentCoreServiceImpl();
+    }
+
+    public CDSConsentRetrievalStep(ConsentCoreServiceImpl consentCoreServiceImpl) {
+        this.consentCoreService = consentCoreServiceImpl;
+    }
 
     @Override
     public void execute(ConsentData consentData, JSONObject jsonObject) throws ConsentException {

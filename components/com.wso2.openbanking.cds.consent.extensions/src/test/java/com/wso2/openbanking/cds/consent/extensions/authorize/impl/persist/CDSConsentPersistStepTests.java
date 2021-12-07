@@ -19,11 +19,10 @@ import com.wso2.openbanking.accelerator.consent.mgt.dao.models.AuthorizationReso
 import com.wso2.openbanking.accelerator.consent.mgt.dao.models.ConsentResource;
 import com.wso2.openbanking.accelerator.consent.mgt.dao.models.DetailedConsentResource;
 import com.wso2.openbanking.accelerator.consent.mgt.service.impl.ConsentCoreServiceImpl;
+import com.wso2.openbanking.cds.consent.extensions.common.CDSConsentExtensionConstants;
 import com.wso2.openbanking.cds.consent.extensions.util.CDSConsentAuthorizeTestConstants;
 import net.minidev.json.JSONObject;
 import net.minidev.json.parser.JSONParser;
-import org.powermock.core.classloader.annotations.PowerMockIgnore;
-import org.powermock.modules.testng.PowerMockTestCase;
 import org.testng.Assert;
 import org.testng.annotations.BeforeClass;
 import org.testng.annotations.Test;
@@ -34,15 +33,19 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.UUID;
 
+import static org.mockito.Mockito.any;
+import static org.mockito.Mockito.anyLong;
+import static org.mockito.Mockito.anyString;
+import static org.mockito.Mockito.doNothing;
 import static org.mockito.Mockito.doReturn;
 import static org.mockito.Mockito.mock;
 
 /**
- * Test class for CDS Consent Persistence
+ * Test class for CDS Consent Persistence.
  */
-@PowerMockIgnore({"com.wso2.openbanking.accelerator.consent.extensions.common.*", "net.minidev.*"})
-public class CDSConsentPersistStepTests extends PowerMockTestCase {
+public class CDSConsentPersistStepTests {
 
     private static CDSConsentPersistStep cdsConsentPersistStep;
     private static ConsentPersistData consentPersistDataMock;
@@ -164,9 +167,53 @@ public class CDSConsentPersistStepTests extends PowerMockTestCase {
         mockCDSConsentPersistError.execute(consentPersistDataMock);
     }
 
+    @Test
+    public void testConsentPersistWithAmendment() throws Exception {
+
+        doReturn(null).when(consentCoreServiceMock).amendConsentData(anyString(), anyString(), anyLong(), anyString());
+        doReturn(true).when(consentCoreServiceMock).reAuthorizeExistingAuthResource(anyString(), anyString(),
+                anyString(), any(HashMap.class), anyString(), anyString());
+        doReturn(true).when(consentCoreServiceMock).deleteConsentAttributes(anyString(), any(ArrayList.class));
+        doReturn(true).when(consentCoreServiceMock)
+                .storeConsentAttributes(anyString(), any(HashMap.class));
+        doReturn(new DetailedConsentResource()).when(consentCoreServiceMock).getDetailedConsent(anyString());
+        doNothing().when(consentCoreServiceMock).revokeTokens(any(DetailedConsentResource.class), anyString());
+
+        Map<Object, Object> consentDataMapClone = new HashMap<>(consentDataMap);
+        consentDataMapClone.put(CDSConsentExtensionConstants.IS_CONSENT_AMENDMENT, true);
+        consentDataMapClone.put(CDSConsentExtensionConstants.CDR_ARRANGEMENT_ID, UUID.randomUUID().toString());
+        consentDataMapClone.put(CDSConsentExtensionConstants.AUTH_RESOURCE_ID, UUID.randomUUID().toString());
+        consentDataMapClone.put(CDSConsentExtensionConstants.AUTH_RESOURCE_STATUS, "Authorized");
+
+        doReturn(consentDataMock).when(consentPersistDataMock).getConsentData();
+        doReturn(consentDataMapClone).when(consentDataMock).getMetaDataMap();
+        doReturn(consentResourceMock).when(consentDataMock).getConsentResource();
+        doReturn(authorizationResourceMock).when(consentDataMock).getAuthResource();
+        JSONParser parser = new JSONParser(JSONParser.MODE_PERMISSIVE);
+        JSONObject payload = (JSONObject) parser
+                .parse(CDSConsentAuthorizeTestConstants.PAYLOAD);
+        doReturn(payload).when(consentPersistDataMock).getPayload();
+        doReturn(browserCookies).when(consentPersistDataMock).getBrowserCookies();
+        doReturn(true).when(consentPersistDataMock).getApproval();
+
+        MockCDSConsentPersistSuccess mockCDSConsentPersist = new MockCDSConsentPersistSuccess(consentCoreServiceMock);
+
+        try {
+            mockCDSConsentPersist.execute(consentPersistDataMock);
+        } catch (ConsentException e) {
+            Assert.fail("should not throw exception");
+        }
+    }
 }
 
 class MockCDSConsentPersistSuccess extends CDSConsentPersistStep {
+
+    public MockCDSConsentPersistSuccess() {
+    }
+
+    public MockCDSConsentPersistSuccess(ConsentCoreServiceImpl consentCoreService) {
+        super(consentCoreService);
+    }
 
     @Override
     protected DetailedConsentResource createConsent(ConsentCoreServiceImpl consentCoreService,

@@ -112,6 +112,21 @@ public class CDSConsentAuthorizeTestConstants {
             "Oi6-BRxJAgOXr2J8NjyD-jXo52TTWKU5kPlRsZyoDBpjZ9RQP2ssxdc_TQsKQdzHeSNdIoD6rpwY7qWkhnbv69Re0oIPTpPvAJ" +
             "_7_UW7NvUDFu56xN3.U1nq0A6rc8mdTdb1iL2s3w";
 
+    public static final String VALID_AMENDMENT_REQUEST_OBJECT = "eyJraWQiOiJXX1RjblFWY0hBeTIwcTh6Q01jZEJ5cm9vdH" +
+            "ciLCJhbGciOiJQUzI1NiJ9.eyJhdWQiOiJodHRwczovL2xvY2FsaG9zdDo5NDQ2L29hdXRoMi90b2tlbiIsImlzcyI6Im1DbVd" +
+            "0RUhBa0FmU2FCcEtLaF9MTEtUUG5Hc2EiLCJzY29wZSI6Im9wZW5pZCBiYW5rOmFjY291bnRzLmJhc2ljOnJlYWQgYmFuazphY" +
+            "2NvdW50cy5kZXRhaWw6cmVhZCBiYW5rOnRyYW5zYWN0aW9uczpyZWFkIGJhbms6cGF5ZWVzOnJlYWQgYmFuazpyZWd1bGFyX3B" +
+            "heW1lbnRzOnJlYWQgY29tbW9uOmN1c3RvbWVyLmJhc2ljOnJlYWQgY29tbW9uOmN1c3RvbWVyLmRldGFpbDpyZWFkIiwiY2xha" +
+            "W1zIjp7InNoYXJpbmdfZHVyYXRpb24iOjYwMDAwLCJjZHJfYXJyYW5nZW1lbnRfaWQiOiI2M2JjMjJhYy02ZmQyLTRlODUtYTk" +
+            "3OS1jMmZjN2M0ZGI5ZGEiLCJpZF90b2tlbiI6eyJhY3IiOnsidmFsdWVzIjpbInVybjpjZHMuYXU6Y2RyOjMiXSwiZXNzZW50a" +
+            "WFsIjp0cnVlfX0sInVzZXJpbmZvIjp7fX0sInJlc3BvbnNlX3R5cGUiOiJjb2RlIGlkX3Rva2VuIiwicmVkaXJlY3RfdXJpIjo" +
+            "iaHR0cHM6Ly93d3cuZ29vZ2xlLmNvbS9yZWRpcmVjdHMvcmVkaXJlY3QxIiwic3RhdGUiOiJzdWl0ZSIsImV4cCI6MTYzOTY0M" +
+            "DUzMiwibm9uY2UiOiI4ZmM0Y2JiNC0yODdiLTQyYWEtYTFkMC02N2RjZTZmYzc0NzkiLCJjbGllbnRfaWQiOiJtQ21XdEVIQWt" +
+            "BZlNhQnBLS2hfTExLVFBuR3NhIn0.ZWmudH6Ob5VJOLYblt_oOl5ZNxnzKG2nDOuFf5QDrnuI53RIy57rsKVe9rVdIRFh1H23e" +
+            "wgQC49SMugS6lhiijOrUAFd8gKgt_brZMcr02vP37_lUDVT_5Lt_-koTYfohcODnneeSWVUL8DP8OVHMtMk7qUTHVkKAT362to" +
+            "8zpbqX1m9jB3RSbli1pA6-AelMT9mEn5nSxQJhjczo7dZ8ulgNee03sHe9jw5vTha3nYDgxty-6xmLovl62mblGzgidkbSvj5c" +
+            "pz_DtZPCFsaxNRipjiXlcRpz7kHrziCQBOnphtwm-GQWHDziu9_F_SFC-h0zYpBY7zb03bV2CT0rQ";
+
     public static DetailedConsentResource getDetailedConsentResource() {
         DetailedConsentResource detailedConsentResource = new DetailedConsentResource();
         detailedConsentResource.setConsentID("1234");

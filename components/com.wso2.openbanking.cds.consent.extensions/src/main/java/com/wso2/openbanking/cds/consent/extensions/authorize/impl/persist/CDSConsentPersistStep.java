@@ -49,7 +49,15 @@ import java.util.Set;
 public class CDSConsentPersistStep implements ConsentPersistStep {
 
     private static final Log log = LogFactory.getLog(CDSConsentPersistStep.class);
-    private static final ConsentCoreServiceImpl consentCoreService = new ConsentCoreServiceImpl();
+    private final ConsentCoreServiceImpl consentCoreService;
+
+    public CDSConsentPersistStep() {
+        this.consentCoreService = new ConsentCoreServiceImpl();
+    }
+
+    public CDSConsentPersistStep(ConsentCoreServiceImpl consentCoreService) {
+        this.consentCoreService = consentCoreService;
+    }
 
     @Override
     public void execute(ConsentPersistData consentPersistData) throws ConsentException {

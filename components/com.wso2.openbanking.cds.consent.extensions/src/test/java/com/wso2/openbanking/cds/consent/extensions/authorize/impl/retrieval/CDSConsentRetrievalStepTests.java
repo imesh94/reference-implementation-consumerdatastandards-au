@@ -14,7 +14,11 @@ package com.wso2.openbanking.cds.consent.extensions.authorize.impl.retrieval;
 import com.wso2.openbanking.accelerator.common.exception.OpenBankingException;
 import com.wso2.openbanking.accelerator.consent.extensions.authorize.model.ConsentData;
 import com.wso2.openbanking.accelerator.consent.extensions.common.ConsentException;
+import com.wso2.openbanking.accelerator.consent.mgt.dao.models.AuthorizationResource;
+import com.wso2.openbanking.accelerator.consent.mgt.dao.models.ConsentMappingResource;
 import com.wso2.openbanking.accelerator.consent.mgt.dao.models.ConsentResource;
+import com.wso2.openbanking.accelerator.consent.mgt.dao.models.DetailedConsentResource;
+import com.wso2.openbanking.accelerator.consent.mgt.service.impl.ConsentCoreServiceImpl;
 import com.wso2.openbanking.accelerator.identity.push.auth.extension.request.validator.util.PushAuthRequestValidatorUtils;
 import com.wso2.openbanking.cds.consent.extensions.authorize.utils.CDSDataRetrievalUtil;
 import com.wso2.openbanking.cds.consent.extensions.util.CDSConsentAuthorizeTestConstants;
@@ -31,6 +35,11 @@ import org.wso2.carbon.identity.oauth.cache.SessionDataCache;
 import org.wso2.carbon.identity.oauth.cache.SessionDataCacheEntry;
 import org.wso2.carbon.identity.oauth2.model.OAuth2Parameters;
 
+import java.time.LocalDateTime;
+import java.time.ZoneOffset;
+import java.util.ArrayList;
+
+import static org.mockito.Mockito.anyString;
 import static org.powermock.api.mockito.PowerMockito.doReturn;
 import static org.powermock.api.mockito.PowerMockito.mock;
 import static org.powermock.api.mockito.PowerMockito.mockStatic;
@@ -198,5 +207,107 @@ public class CDSConsentRetrievalStepTests extends PowerMockTestCase {
         doReturn(scopeString).when(consentDataMock).getScopeString();
         when(consentDataMock.isRegulatory()).thenReturn(true);
         cdsConsentRetrievalStep.execute(consentDataMock, jsonObject);
+    }
+
+    @Test(priority = 2)
+    public void testConsentRetrievalWithConsentAmendment() throws OpenBankingException {
+
+        JSONObject jsonObject = new JSONObject();
+        String request = "request=" + CDSConsentAuthorizeTestConstants.VALID_AMENDMENT_REQUEST_OBJECT;
+        String redirectUri = "redirect_uri=https://www.google.com/redirects/redirect1&";
+        String scopeString = "common:customer.basic:read common:customer.detail:read openid profile";
+        String clientId = "client-id";
+        String spFullName = "sp-full-name";
+        String sampleQueryParams =  redirectUri + request;
+        final String userId = "mark@gold.com";
+        when(consentDataMock.getSpQueryParams()).thenReturn(sampleQueryParams);
+        when(consentDataMock.getScopeString()).thenReturn(scopeString);
+        when(consentDataMock.getClientId()).thenReturn(clientId);
+        PowerMockito.stub(PowerMockito.method(CDSDataRetrievalUtil.class, "getServiceProviderFullName"))
+                .toReturn(spFullName);
+        when(consentDataMock.isRegulatory()).thenReturn(true);
+        when(consentDataMock.getUserId()).thenReturn(userId);
+
+        final String receipt = "{\"accountData\":{\"permissions\":[\"CDRREADACCOUNTSBASIC\"], " +
+                "\"expirationDateTime\": \"" + LocalDateTime.now(ZoneOffset.UTC).plusDays(1L) + "Z\"}}";
+        AuthorizationResource authorizationResource = new AuthorizationResource();
+        authorizationResource.setUserID(userId);
+        authorizationResource.setAuthorizationID("AUTH_123");
+        authorizationResource.setAuthorizationStatus("authorized");
+        ArrayList<AuthorizationResource> authResourceList = new ArrayList<>();
+        authResourceList.add(authorizationResource);
+
+        ConsentMappingResource consentMappingResource = new ConsentMappingResource();
+        consentMappingResource.setMappingStatus("active");
+        consentMappingResource.setAccountID("ACCOUNT_123");
+        ArrayList<ConsentMappingResource> mappingResourceList = new ArrayList<>();
+        mappingResourceList.add(consentMappingResource);
+
+        DetailedConsentResource detailedConsentResource = new DetailedConsentResource();
+        detailedConsentResource.setReceipt(receipt);
+        detailedConsentResource.setAuthorizationResources(authResourceList);
+        detailedConsentResource.setConsentMappingResources(mappingResourceList);
+
+        ConsentCoreServiceImpl consentCoreServiceMock = mock(ConsentCoreServiceImpl.class);
+        when(consentCoreServiceMock.getDetailedConsent(anyString())).thenReturn(detailedConsentResource);
+
+        new CDSConsentRetrievalStep(consentCoreServiceMock).execute(consentDataMock, jsonObject);
+        Assert.assertTrue(!jsonObject.isEmpty());
+    }
+
+    @Test(expectedExceptions = ConsentException.class, priority = 2)
+    public void testConsentRetrievalWithConsentAmendmentAndExpiredConsent() throws OpenBankingException {
+
+        JSONObject jsonObject = new JSONObject();
+        String request = "request=" + CDSConsentAuthorizeTestConstants.VALID_AMENDMENT_REQUEST_OBJECT;
+        String redirectUri = "redirect_uri=https://www.google.com/redirects/redirect1&";
+        String scopeString = "common:customer.basic:read common:customer.detail:read openid profile";
+        String clientId = "client-id";
+        String spFullName = "sp-full-name";
+        String sampleQueryParams =  redirectUri + request;
+        final String userId = "mark@gold.com";
+        when(consentDataMock.getSpQueryParams()).thenReturn(sampleQueryParams);
+        when(consentDataMock.getScopeString()).thenReturn(scopeString);
+        when(consentDataMock.getClientId()).thenReturn(clientId);
+        PowerMockito.stub(PowerMockito.method(CDSDataRetrievalUtil.class, "getServiceProviderFullName"))
+                .toReturn(spFullName);
+        when(consentDataMock.isRegulatory()).thenReturn(true);
+        when(consentDataMock.getUserId()).thenReturn(userId);
+
+        final String receipt = "{\"accountData\":{\"permissions\":[\"CDRREADACCOUNTSBASIC\"], " +
+                "\"expirationDateTime\": \"" + LocalDateTime.now(ZoneOffset.UTC).minusDays(1L) + "Z\"}}";
+
+        DetailedConsentResource detailedConsentResource = new DetailedConsentResource();
+        detailedConsentResource.setReceipt(receipt);
+
+        ConsentCoreServiceImpl consentCoreServiceMock = mock(ConsentCoreServiceImpl.class);
+        when(consentCoreServiceMock.getDetailedConsent(anyString())).thenReturn(detailedConsentResource);
+
+        new CDSConsentRetrievalStep(consentCoreServiceMock).execute(consentDataMock, jsonObject);
+    }
+
+    @Test(expectedExceptions = ConsentException.class, priority = 2)
+    public void testConsentRetrievalWithConsentAmendmentAndInvalidConsentId() throws OpenBankingException {
+
+        JSONObject jsonObject = new JSONObject();
+        String request = "request=" + CDSConsentAuthorizeTestConstants.VALID_AMENDMENT_REQUEST_OBJECT;
+        String redirectUri = "redirect_uri=https://www.google.com/redirects/redirect1&";
+        String scopeString = "common:customer.basic:read common:customer.detail:read openid profile";
+        String clientId = "client-id";
+        String spFullName = "sp-full-name";
+        String sampleQueryParams =  redirectUri + request;
+        final String userId = "mark@gold.com";
+        when(consentDataMock.getSpQueryParams()).thenReturn(sampleQueryParams);
+        when(consentDataMock.getScopeString()).thenReturn(scopeString);
+        when(consentDataMock.getClientId()).thenReturn(clientId);
+        PowerMockito.stub(PowerMockito.method(CDSDataRetrievalUtil.class, "getServiceProviderFullName"))
+                .toReturn(spFullName);
+        when(consentDataMock.isRegulatory()).thenReturn(true);
+        when(consentDataMock.getUserId()).thenReturn(userId);
+
+        ConsentCoreServiceImpl consentCoreServiceMock = mock(ConsentCoreServiceImpl.class);
+        when(consentCoreServiceMock.getDetailedConsent(anyString())).thenReturn(null);
+
+        new CDSConsentRetrievalStep(consentCoreServiceMock).execute(consentDataMock, jsonObject);
     }
 }
