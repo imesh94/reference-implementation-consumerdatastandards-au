@@ -23,7 +23,9 @@
             </method-selector>
         </method-selectors>
         <classes>
-            <class name="com.wso2.openbanking.toolkit.cds.integration.tests.client_registration.DynamicClientRegistrationFlowTest" />
+            <class name="com.wso2.openbanking.toolkit.cds.integration.tests.client_registration.DynamicClientRegistrationCreateTest" />
+            <class name="com.wso2.openbanking.toolkit.cds.integration.tests.client_registration.DynamicClientRegistrationRetrievalTest" />
+            <class name="com.wso2.openbanking.toolkit.cds.integration.tests.client_registration.DynamicClientRegistrationUpdateTest" />
         </classes>
     </test>
     <test name="Accounts Integration Tests" parallel="false" enabled="false">
@@ -121,7 +123,7 @@
             </method-selector>
         </method-selectors>
         <classes>
-            <class name="com.wso2.openbanking.toolkit.cds.integration.tests.client_registration.DeleteClientRegistration" />
+            <class name="com.wso2.openbanking.toolkit.cds.integration.tests.client_registration.DynamicClientRegistrationDeleteTest" />
         </classes>
     </test>
 </suite>

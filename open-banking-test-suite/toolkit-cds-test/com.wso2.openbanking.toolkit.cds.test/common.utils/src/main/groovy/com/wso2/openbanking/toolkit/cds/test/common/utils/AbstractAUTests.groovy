@@ -222,4 +222,17 @@ class AbstractAUTests {
 
         return TestUtil.getHybridCodeFromUrl(automation.currentUrl.get())
     }
+
+    void deleteApplicationIfExists(List<String> scopes, String clientId = AppConfigReader.getClientId()) {
+        if (clientId) {
+            String token = AURequestBuilder.getApplicationToken(scopes, clientId)
+
+            if (token) {
+                def deletionResponse = AURegistrationRequestBuilder.buildBasicRequest(token)
+                        .when()
+                        .delete(AUDCRConstants.REGISTRATION_ENDPOINT + clientId)
+                Assert.assertEquals(deletionResponse.statusCode(), AUConstants.STATUS_CODE_204)
+            }
+        }
+    }
 }
