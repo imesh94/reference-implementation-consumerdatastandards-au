@@ -22,15 +22,22 @@ public class InfoSecDataPublishingConstants {
     public static final String JWKS_ENDPOINT = "/jwks";
     public static final String USERINFO_ENDPOINT = "/userinfo";
     public static final String REVOKE_ENDPOINT = "/revoke";
-    public static final String TOKEN_INTROSPECTION_ENDPOINT = "/token/introspect";
+    public static final String INTROSPECTION_ENDPOINT = "/introspect";
     public static final String PAR_ENDPOINT = "/par";
     public static final String WELL_KNOWN_ENDPOINT = "/.well-known/openid-configuration";
 
-    public static final String REST_API_CONTEXT = "REST_API_CONTEXT";
+    public static final String TOKEN_REQUEST_URI = "/oauth2/token";
+    public static final String AUTHORIZE_REQUEST_URI = "/oauth2/authorize";
+    public static final String JWKS_REQUEST_URI = "/oauth2/jwks";
+    public static final String USERINFO_REQUEST_URI = "/oauth2/userinfo";
+    public static final String REVOKE_REQUEST_URI = "/oauth2/revoke";
+    public static final String INTROSPECTION_REQUEST_URI = "/oauth2/introspect";
+    public static final String PAR_REQUEST_URI = "/api/openbanking/push-authorization/par";
+    public static final String WELL_KNOWN_REQUEST_URI = "/oauth2/token/.well-known/openid-configuration";
+
     public static final String CLIENT_ASSSERTION = "client_assertion";
     public static final String CLIENT_CREDENTIALS = "client_credentials";
     public static final String CLIENT_SECRET = "client_secret";
-    public static final String TRANSPORT_HEADERS = "TRANSPORT_HEADERS";
     public static final String AUTHORIZATION = "Authorization";
 
     public static final String TOKEN_API = "TokenAPI";

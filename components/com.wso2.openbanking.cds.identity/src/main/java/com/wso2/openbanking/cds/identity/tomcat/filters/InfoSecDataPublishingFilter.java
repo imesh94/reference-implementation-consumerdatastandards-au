@@ -113,7 +113,7 @@ public class InfoSecDataPublishingFilter implements Filter {
             Map<String, Object> requestData = generateInvocationDataMap(request, responseWrapper, messageId);
             CDSDataPublishingService.getCDSDataPublishingService().publishApiInvocationData(requestData);
 
-            // publish api endpoint invocation latency data
+            // publish api endpoint latency data
             Map<String, Object> latencyData = generateLatencyDataMap(request, responseWrapper, messageId);
             CDSDataPublishingService.getCDSDataPublishingService().publishApiLatencyData(latencyData);
         }
@@ -143,8 +143,11 @@ public class InfoSecDataPublishingFilter implements Filter {
         //need to check
         requestData.put("responsePayloadSize",
                 Long.parseLong(String.valueOf(responseWrapper.getContentLength())));
-        requestData.put("electedResource", request.getRequestURI());
-        requestData.put("apiName", getAPIName(request.getRequestURI()));
+
+        String[] apiData = getApiData(request.getRequestURI());
+        requestData.put("electedResource", apiData[0]);
+        requestData.put("apiName", apiData[1]);
+
         // apiSpecVersion is not applicable to infoSec endpoints, hence publishing as null
         requestData.put("apiSpecVersion", null);
         requestData.put("timestamp", Instant.now().getEpochSecond());
@@ -180,44 +183,57 @@ public class InfoSecDataPublishingFilter implements Filter {
 
     }
 
-    private String getAPIName(String requestUri) {
+    private String[] getApiData(String requestUri) {
 
+        String[] apiData = new String[2];
         String apiName;
+        String electedResource;
         switch(StringUtils.lowerCase(requestUri)) {
-            case InfoSecDataPublishingConstants.TOKEN_ENDPOINT:
+            case InfoSecDataPublishingConstants.TOKEN_REQUEST_URI:
+                electedResource = InfoSecDataPublishingConstants.TOKEN_ENDPOINT;
                 apiName = InfoSecDataPublishingConstants.TOKEN_API;
                 break;
-            case InfoSecDataPublishingConstants.AUTHORIZE_ENDPOINT:
+            case InfoSecDataPublishingConstants.AUTHORIZE_REQUEST_URI:
                /* clientId = (String) messageContext.getProperty(AUTHORIZE_CONSUMER_KEY);
                 oAuthConsumerAppDTO = OBIdentityUtil.getOAuthConsumerAppDTO(clientId);
                 if (oAuthConsumerAppDTO != null) {
                     tppId = oAuthConsumerAppDTO.getUsername();
                 }*/
+                electedResource = InfoSecDataPublishingConstants.AUTHORIZE_ENDPOINT;
                 apiName = InfoSecDataPublishingConstants.AUTHORIZE_API;
                 break;
-            case InfoSecDataPublishingConstants.USERINFO_ENDPOINT:
+            case InfoSecDataPublishingConstants.USERINFO_REQUEST_URI:
+                electedResource = InfoSecDataPublishingConstants.USERINFO_ENDPOINT;
                 apiName = InfoSecDataPublishingConstants.USERINFO_API;
                 break;
-            case InfoSecDataPublishingConstants.TOKEN_INTROSPECTION_ENDPOINT:
+            case InfoSecDataPublishingConstants.INTROSPECTION_REQUEST_URI:
+                electedResource = InfoSecDataPublishingConstants.INTROSPECTION_ENDPOINT;
                 apiName = InfoSecDataPublishingConstants.INTROSPECT_API;
                 break;
-            case InfoSecDataPublishingConstants.JWKS_ENDPOINT:
+            case InfoSecDataPublishingConstants.JWKS_REQUEST_URI:
+                electedResource = InfoSecDataPublishingConstants.JWKS_ENDPOINT;
                 apiName = InfoSecDataPublishingConstants.JWKS_API;
                 break;
-            case InfoSecDataPublishingConstants.REVOKE_ENDPOINT:
+            case InfoSecDataPublishingConstants.REVOKE_REQUEST_URI:
                 // todo: check if this logic has any impact from arrangement revoke
+                electedResource = InfoSecDataPublishingConstants.REVOKE_ENDPOINT;
                 apiName = InfoSecDataPublishingConstants.TOKEN_REVOCATION_API;
                 break;
-            case InfoSecDataPublishingConstants.WELL_KNOWN_ENDPOINT:
+            case InfoSecDataPublishingConstants.WELL_KNOWN_REQUEST_URI:
+                electedResource = InfoSecDataPublishingConstants.WELL_KNOWN_ENDPOINT;
                 apiName = InfoSecDataPublishingConstants.WELL_KNOWN_API;
                 break;
-            case InfoSecDataPublishingConstants.PAR_ENDPOINT:
+            case InfoSecDataPublishingConstants.PAR_REQUEST_URI:
+                electedResource = InfoSecDataPublishingConstants.PAR_ENDPOINT;
                 apiName = InfoSecDataPublishingConstants.PAR_API;
                 break;
             default:
                 apiName = StringUtils.EMPTY;
+                electedResource = requestUri;
         }
-        return apiName;
+        apiData[0] = electedResource;
+        apiData[1] = apiName;
+        return apiData;
     }
 
     /**
