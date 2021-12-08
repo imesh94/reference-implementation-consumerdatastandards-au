@@ -73,7 +73,7 @@ public class InfoSecDataPublishingFilter implements Filter {
      * Publish reporting data related to infoSec endpoints
      *
      * @param request HttpServletRequest
-     * @param response ResponseWrapper
+     * @param response HttpServletResponse
      */
     public void publishReportingData(HttpServletRequest request, HttpServletResponse response) {
 
@@ -96,7 +96,7 @@ public class InfoSecDataPublishingFilter implements Filter {
      * Create the APIInvocation data map
      *
      * @param request HttpServletRequest
-     * @param response ResponseWrapper
+     * @param response HttpServletResponse
      * @param messageId Unique Id for the request
      * @return requestData Map
      */
