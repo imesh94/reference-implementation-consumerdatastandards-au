@@ -15,7 +15,6 @@ package com.wso2.openbanking.cds.identity.tomcat.filters;
 import com.nimbusds.jwt.SignedJWT;
 import com.wso2.openbanking.accelerator.common.config.OpenBankingConfigParser;
 import com.wso2.openbanking.accelerator.data.publisher.common.constants.DataPublishingConstants;
-import com.wso2.openbanking.accelerator.identity.token.util.TokenFilterException;
 import com.wso2.openbanking.accelerator.identity.util.IdentityCommonConstants;
 import com.wso2.openbanking.cds.common.data.publisher.CDSDataPublishingService;
 import com.wso2.openbanking.cds.identity.tomcat.filters.constants.InfoSecDataPublishingConstants;
@@ -134,8 +133,7 @@ public class InfoSecDataPublishingFilter implements Filter {
         requestData.put("consentId", null);
         // consumerId is not required for metrics calculations, hence set as null
         requestData.put("consumerId", null);
-        //need to check
-        requestData.put("clientId", request.getParameter(IdentityCommonConstants.CLIENT_ID));
+        requestData.put("clientId", extractClientId(request));
         requestData.put("userAgent", null);
         //need to check
         requestData.put("statusCode", responseWrapper.getStatus());
@@ -239,30 +237,27 @@ public class InfoSecDataPublishingFilter implements Filter {
     /**
      * Extracts the client id from the request parameter or from the assertion.
      *
-     * @param request servlet request containing the request data
+     * @param request HttpServlet request containing the request data
      * @return clientId
-     * @throws ParseException
      */
-    private String extractClientId(ServletRequest request) throws TokenFilterException {
+    private String extractClientId(HttpServletRequest request) {
 
-        try {
-            Optional<String> signedObject =
-                    Optional.ofNullable(request.getParameter(IdentityCommonConstants.OAUTH_JWT_ASSERTION));
-            Optional<String> clientIdAsReqParam =
-                    Optional.ofNullable(request.getParameter(IdentityCommonConstants.CLIENT_ID));
-            if (signedObject.isPresent()) {
-                SignedJWT signedJWT = SignedJWT.parse(signedObject.get());
+        Optional<String> signedObject = Optional.ofNullable(request
+                .getParameter(IdentityCommonConstants.OAUTH_JWT_ASSERTION));
+        Optional<String> clientIdAsReqParam = Optional.ofNullable(request
+                .getParameter(IdentityCommonConstants.CLIENT_ID));
+        if (signedObject.isPresent()) {
+            SignedJWT signedJWT = null;
+            try {
+                signedJWT = SignedJWT.parse(signedObject.get());
                 return signedJWT.getJWTClaimsSet().getIssuer();
-            } else if (clientIdAsReqParam.isPresent()) {
-                return clientIdAsReqParam.get();
-            } else {
-                throw new TokenFilterException(HttpServletResponse.SC_BAD_REQUEST, "Client ID not retrieved",
-                        "Unable to find client id in the request");
+            } catch (ParseException e) {
+                LOG.error("Invalid assertion found in the request", e);
             }
-        } catch (ParseException e) {
-            throw new TokenFilterException(HttpServletResponse.SC_UNAUTHORIZED, "Invalid assertion", "Error " +
-                    "occurred while parsing the signed assertion", e);
+        } else if (clientIdAsReqParam.isPresent()) {
+            return clientIdAsReqParam.get();
         }
+        return null;
     }
 
     @Override
