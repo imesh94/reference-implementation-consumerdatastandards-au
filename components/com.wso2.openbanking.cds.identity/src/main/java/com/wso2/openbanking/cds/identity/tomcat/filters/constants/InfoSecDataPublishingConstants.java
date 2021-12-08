@@ -54,4 +54,7 @@ public class InfoSecDataPublishingConstants {
     public static final String IS_TOKEN_REQUEST_FROM_DCR = "IsTokenRequestFromDCR";
     public static final String ARRANGEMENT = "arrangement";
 
+    public static final String REQUEST_IN_TIME = "REQUEST_IN_TIME";
+    public static final String UNDEFINED = "undefined";
+
 }

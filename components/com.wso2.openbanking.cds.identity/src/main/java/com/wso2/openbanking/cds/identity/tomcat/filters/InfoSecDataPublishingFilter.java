@@ -46,9 +46,7 @@ import javax.servlet.http.HttpServletResponse;
  */
 public class InfoSecDataPublishingFilter implements Filter {
 
-    public static final Log LOG = LogFactory.getLog(InfoSecDataPublishingFilter.class);
-    public static final String REQUEST_IN_TIME = "REQUEST_IN_TIME";
-    public static final String UNDEFINED = "undefined";
+    private static final Log LOG = LogFactory.getLog(InfoSecDataPublishingFilter.class);
 
     @Override
     public void init(FilterConfig filterConfig) {
@@ -61,7 +59,7 @@ public class InfoSecDataPublishingFilter implements Filter {
         if (request instanceof HttpServletRequest && response instanceof HttpServletResponse) {
 
             // Record the request-in time to be used when calculating response latency for APILatency data publishing
-            request.setAttribute(REQUEST_IN_TIME, System.currentTimeMillis());
+            request.setAttribute(InfoSecDataPublishingConstants.REQUEST_IN_TIME, System.currentTimeMillis());
             chain.doFilter(request, response);
 
             // Publish the reporting data before returning the response
@@ -121,7 +119,7 @@ public class InfoSecDataPublishingFilter implements Filter {
         requestData.put("apiSpecVersion", null);
         requestData.put("timestamp", Instant.now().getEpochSecond());
         requestData.put("messageId", messageId);
-        requestData.put("customerStatus", UNDEFINED);
+        requestData.put("customerStatus", InfoSecDataPublishingConstants.UNDEFINED);
         requestData.put("accessToken", null);
         return requestData;
     }
@@ -136,7 +134,7 @@ public class InfoSecDataPublishingFilter implements Filter {
     public Map<String, Object> generateLatencyDataMap(HttpServletRequest request, String messageId) {
 
         Map<String, Object> latencyData = new HashMap<>();
-        long requestInTime = (long) request.getAttribute(REQUEST_IN_TIME);
+        long requestInTime = (long) request.getAttribute(InfoSecDataPublishingConstants.REQUEST_IN_TIME);
         long requestLatency = System.currentTimeMillis() - requestInTime;
 
         latencyData.put("correlationId", messageId);
@@ -144,7 +142,6 @@ public class InfoSecDataPublishingFilter implements Filter {
         latencyData.put("backendLatency", 0L);
         latencyData.put("requestMediationLatency", 0L);
         latencyData.put("responseLatency", requestLatency >= 0 ? requestLatency : 0L);
-        latencyData.put("responseLatency", requestLatency);
         latencyData.put("responseMediationLatency", 0L);
         return latencyData;
 
