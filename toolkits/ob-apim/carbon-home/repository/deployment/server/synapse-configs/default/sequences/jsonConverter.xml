@@ -18,7 +18,11 @@
             <property name="NO_ENTITY_BODY" value="true" scope="axis2" type="BOOLEAN"/>
         </then>
         <else>
-            <class name="com.wso2.openbanking.cds.gateway.mediators.GatewayErrorMediator"/>
+            <filter source="$axis2:HTTP_SC" regex="^(?!2.*$).*">
+                <then>
+                    <class name="com.wso2.openbanking.cds.gateway.mediators.GatewayErrorMediator"/>
+                </then>
+            </filter>
         </else>
     </filter>
 </sequence>
