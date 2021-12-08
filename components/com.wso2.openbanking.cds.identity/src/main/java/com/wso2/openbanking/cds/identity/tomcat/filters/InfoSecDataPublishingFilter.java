@@ -38,7 +38,6 @@ import javax.servlet.ServletRequest;
 import javax.servlet.ServletResponse;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
-import javax.servlet.http.HttpServletResponseWrapper;
 
 /**
  * Tomcat filter to publish data related to infoSec endpoints
@@ -61,37 +60,12 @@ public class InfoSecDataPublishingFilter implements Filter {
 
         if (request instanceof HttpServletRequest && response instanceof HttpServletResponse) {
 
-            ResponseWrapper responseWrapper = new ResponseWrapper((HttpServletResponse) response);
             // Record the request-in time to be used when calculating response latency for APILatency data publishing
             request.setAttribute(REQUEST_IN_TIME, System.currentTimeMillis());
-
             chain.doFilter(request, response);
+
             // Publish the reporting data before returning the response
-            publishReportingData((HttpServletRequest) request, responseWrapper);
-        }
-    }
-
-    /**
-     * Response wrapper class
-     */
-    public static class ResponseWrapper extends HttpServletResponseWrapper {
-
-        public int contentLength;
-
-        public ResponseWrapper(HttpServletResponse response) {
-
-            super(response);
-        }
-
-        public int getContentLength() {
-
-            return contentLength;
-        }
-
-        public void setContentLength(int length) {
-
-            this.contentLength = length;
-            super.setContentLength(length);
+            publishReportingData((HttpServletRequest) request, (HttpServletResponse) response);
         }
     }
 
@@ -99,9 +73,9 @@ public class InfoSecDataPublishingFilter implements Filter {
      * Publish reporting data related to infoSec endpoints
      *
      * @param request HttpServletRequest
-     * @param responseWrapper ResponseWrapper
+     * @param response ResponseWrapper
      */
-    public void publishReportingData(HttpServletRequest request, ResponseWrapper responseWrapper) {
+    public void publishReportingData(HttpServletRequest request, HttpServletResponse response) {
 
         if (Boolean.parseBoolean((String) OpenBankingConfigParser.getInstance().getConfiguration()
                 .get(DataPublishingConstants.DATA_PUBLISHING_ENABLED))) {
@@ -109,11 +83,11 @@ public class InfoSecDataPublishingFilter implements Filter {
             String messageId = UUID.randomUUID().toString();
 
             // publish api endpoint invocation data
-            Map<String, Object> requestData = generateInvocationDataMap(request, responseWrapper, messageId);
+            Map<String, Object> requestData = generateInvocationDataMap(request, response, messageId);
             CDSDataPublishingService.getCDSDataPublishingService().publishApiInvocationData(requestData);
 
             // publish api endpoint latency data
-            Map<String, Object> latencyData = generateLatencyDataMap(request, responseWrapper, messageId);
+            Map<String, Object> latencyData = generateLatencyDataMap(request, messageId);
             CDSDataPublishingService.getCDSDataPublishingService().publishApiLatencyData(latencyData);
         }
     }
@@ -122,30 +96,27 @@ public class InfoSecDataPublishingFilter implements Filter {
      * Create the APIInvocation data map
      *
      * @param request HttpServletRequest
-     * @param responseWrapper ResponseWrapper
+     * @param response ResponseWrapper
      * @param messageId Unique Id for the request
      * @return requestData Map
      */
-    public Map<String, Object> generateInvocationDataMap(HttpServletRequest request, ResponseWrapper responseWrapper,
-                                            String messageId) {
+    public Map<String, Object> generateInvocationDataMap(HttpServletRequest request, HttpServletResponse response,
+                                                         String messageId) {
 
         Map<String, Object> requestData = new HashMap<>();
-        requestData.put("consentId", null);
-        // consumerId is not required for metrics calculations, hence set as null
-        requestData.put("consumerId", null);
-        requestData.put("clientId", extractClientId(request));
-        requestData.put("userAgent", null);
-        //need to check
-        requestData.put("statusCode", responseWrapper.getStatus());
-        requestData.put("httpMethod", request.getMethod());
-        //need to check
-        requestData.put("responsePayloadSize",
-                Long.parseLong(String.valueOf(responseWrapper.getContentLength())));
 
+        requestData.put("consentId", null);
+        requestData.put("clientId", extractClientId(request));
+        // consumerId is not required for metrics calculations, hence publishing as null
+        requestData.put("consumerId", null);
+        requestData.put("userAgent", null);
+        requestData.put("statusCode", response.getStatus());
+        requestData.put("httpMethod", request.getMethod());
+        requestData.put("responsePayloadSize",
+                Long.parseLong(String.valueOf(response.getHeader("Content-Length"))));
         String[] apiData = getApiData(request.getRequestURI());
         requestData.put("electedResource", apiData[0]);
         requestData.put("apiName", apiData[1]);
-
         // apiSpecVersion is not applicable to infoSec endpoints, hence publishing as null
         requestData.put("apiSpecVersion", null);
         requestData.put("timestamp", Instant.now().getEpochSecond());
@@ -159,12 +130,10 @@ public class InfoSecDataPublishingFilter implements Filter {
      * Create the APIInvocation Latency data map
      *
      * @param request HttpServletRequest
-     * @param responseWrapper ResponseWrapper
      * @param messageId Unique Id for the request
      * @return latencyData Map
      */
-    public Map<String, Object> generateLatencyDataMap(HttpServletRequest request, ResponseWrapper responseWrapper,
-                                                          String messageId) {
+    public Map<String, Object> generateLatencyDataMap(HttpServletRequest request, String messageId) {
 
         Map<String, Object> latencyData = new HashMap<>();
         long requestInTime = (long) request.getAttribute(REQUEST_IN_TIME);
