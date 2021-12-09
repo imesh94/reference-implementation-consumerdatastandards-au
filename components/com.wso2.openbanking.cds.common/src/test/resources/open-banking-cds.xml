@@ -54,4 +54,11 @@
     <Headers>
         <HolderIdentifier>HID</HolderIdentifier>
     </Headers>
+    <JWTAuthentication>
+        <Enabled>true</Enabled>
+        <Issuer>DummyIssuer</Issuer>
+        <Subject>DummySubject</Subject>
+        <Audience>DummyAudience</Audience>
+        <JWKSUrl>DummyJWKS</JWKSUrl>
+    </JWTAuthentication>
 </Server>
