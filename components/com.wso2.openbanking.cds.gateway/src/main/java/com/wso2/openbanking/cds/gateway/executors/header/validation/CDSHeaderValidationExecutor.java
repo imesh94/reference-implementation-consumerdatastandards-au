@@ -81,11 +81,13 @@ public class CDSHeaderValidationExecutor implements OpenBankingGatewayExecutor {
 
         Map<String, String> headers = obapiRequestContext.getMsgInfo().getHeaders();
         if (!headers.isEmpty()) {
-            if (!isValidConditionalHeaders(obapiRequestContext, headers)) {
-                return;
-            }
-            if (!isValidOptionalHeaders(obapiRequestContext, headers)) {
-                return;
+            if (!obapiRequestContext.getMsgInfo().getResource().contains("/admin")) {
+                if (!isValidConditionalHeaders(obapiRequestContext, headers)) {
+                    return;
+                }
+                if (!isValidOptionalHeaders(obapiRequestContext, headers)) {
+                    return;
+                }
             }
             if (!isValidRequestedVersions(obapiRequestContext, headers)) {
                 return;
