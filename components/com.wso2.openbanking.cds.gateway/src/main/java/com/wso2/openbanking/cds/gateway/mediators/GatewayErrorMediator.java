@@ -273,20 +273,14 @@ public class GatewayErrorMediator extends AbstractMediator {
                 errorCode == GatewayConstants.API_AUTH_FORBIDDEN ||
                 errorCode == GatewayConstants.INVALID_SCOPE) {
             status = 403;
-            errorList.add(ErrorUtil.getErrorObject(ErrorConstants.AUErrorEnum.EXPECTED_GENERAL_ERROR, errorMessage,
-                    new CDSErrorMeta()));
-            errorResponse = ErrorUtil.getErrorJson(errorList);
+            errorResponse = getOAuthErrorResponse("insufficient_scope", errorMessage);
         } else if (errorCode == GatewayConstants.API_AUTH_MISSING_CREDENTIALS ||
                 errorCode == GatewayConstants.API_AUTH_INVALID_CREDENTIALS) {
             status = ErrorConstants.AUErrorEnum.CLIENT_AUTH_FAILED.getHttpCode();
-            errorList.add(ErrorUtil.getErrorObject(ErrorConstants.AUErrorEnum.CLIENT_AUTH_FAILED, errorMessage,
-                    new CDSErrorMeta()));
-            errorResponse = ErrorUtil.getErrorJson(errorList);
+            errorResponse = getOAuthErrorResponse("invalid_client", errorMessage);
         } else {
             status = ErrorConstants.AUErrorEnum.CLIENT_AUTH_FAILED.getHttpCode();
-            errorList.add(ErrorUtil.getErrorObject(ErrorConstants.AUErrorEnum.CLIENT_AUTH_FAILED, errorMessage,
-                    new CDSErrorMeta()));
-            errorResponse = ErrorUtil.getErrorJson(errorList);
+            errorResponse = getOAuthErrorResponse("invalid_client", errorMessage);
         }
         errorData.put(GatewayConstants.STATUS_CODE, status);
         errorData.put(GatewayConstants.ERROR_RESPONSE, errorResponse);
@@ -372,6 +366,21 @@ public class GatewayErrorMediator extends AbstractMediator {
         errorData.put(GatewayConstants.STATUS_CODE, HttpStatus.SC_INTERNAL_SERVER_ERROR);
         errorData.put(GatewayConstants.ERROR_RESPONSE, errorResponse);
         return errorData;
+    }
+
+    /**
+     * Method to get the oauth error response
+     *
+     * @param errorCode
+     * @param errorMessage
+     * @return Error String
+     */
+    private static String getOAuthErrorResponse(String errorCode, String errorMessage) {
+
+        JSONObject errorObject = new JSONObject();
+        errorObject.put(ErrorConstants.ERROR, errorCode);
+        errorObject.put(ErrorConstants.ERROR_DESCRIPTION, errorMessage);
+        return errorObject.toString();
     }
 }
 

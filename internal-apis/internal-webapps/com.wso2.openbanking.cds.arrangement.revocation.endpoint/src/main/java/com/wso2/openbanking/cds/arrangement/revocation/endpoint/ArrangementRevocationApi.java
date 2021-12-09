@@ -26,6 +26,7 @@ import com.wso2.openbanking.cds.common.metadata.domain.MetadataValidationRespons
 import com.wso2.openbanking.cds.common.metadata.status.validator.service.MetadataService;
 import io.swagger.annotations.Api;
 import net.minidev.json.JSONArray;
+import net.minidev.json.JSONObject;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -69,8 +70,7 @@ public class ArrangementRevocationApi {
 
         // Check if the client authentication is successful
         if (!clientAuthnContext.isAuthenticated()) {
-            return handleErrorResponse(ErrorConstants.AUErrorEnum.CLIENT_AUTH_FAILED,
-                    clientAuthnContext.getErrorMessage(), 401);
+            return handleOAuthErrorResponse("invalid_client", clientAuthnContext.getErrorMessage(), 401);
         }
         List<String> objList = paramMap.get(Constants.CDR_ARRANGEMENT_ID);
 
@@ -157,6 +157,23 @@ public class ArrangementRevocationApi {
         errorList.add(ErrorUtil.getErrorObject(errorCode, errorMessage, new CDSErrorMeta()));
         Response.ResponseBuilder respBuilder = Response.status(httpCode);
         return respBuilder.entity(ErrorUtil.getErrorJson(errorList)).build();
+    }
+
+    /**
+     * Return CDS specific error response
+     *
+     * @param errorCode    - CDS error code
+     * @param errorMessage - CDS error message
+     * @param httpCode     - Http code
+     * @return - Response
+     */
+    private Response handleOAuthErrorResponse(String errorCode, String errorMessage, int httpCode) {
+
+        JSONObject errorObj = new JSONObject();
+        errorObj.put(ErrorConstants.ERROR, errorCode);
+        errorObj.put(ErrorConstants.ERROR_DESCRIPTION, errorMessage);
+        Response.ResponseBuilder respBuilder = Response.status(httpCode);
+        return respBuilder.entity(errorObj.toString()).build();
     }
 
     /**
