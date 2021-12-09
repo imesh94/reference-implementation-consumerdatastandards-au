@@ -73,7 +73,7 @@ class SharingDurationValidationTest {
         TestSuite.init()
     }
 
-    @Test (priority = 1)
+    @Test
     void "TC0202002_Initiate authorisation consent flow with no sharing duration"() {
 
         authorisationCode = doAuthorization(AUConstants.SINGLE_ACCESS_CONSENT, false, "Single use consent")
@@ -115,9 +115,7 @@ class SharingDurationValidationTest {
         Assert.assertNotNull(authorisationCode)
     }
 
-    @Test(groups = "SmokeTest",
-            dependsOnMethods = "TC0202004_Initiate authorisation consent flow with sharing duration greater than one year",
-            priority = 3)
+    @Test(groups = "SmokeTest",dependsOnMethods = "TC0202004_Initiate authorisation consent flow with sharing duration greater than one year",priority = 3)
     void "TC0203004_Check refresh token issued for sharing duration greater than one year"() {
 
         userAccessToken = AURequestBuilder.getUserToken(authorisationCode)

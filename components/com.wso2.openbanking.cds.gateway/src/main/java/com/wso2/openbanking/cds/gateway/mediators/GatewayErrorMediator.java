@@ -29,6 +29,7 @@ import org.apache.axis2.AxisFault;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.apache.http.HttpStatus;
 import org.apache.synapse.MessageContext;
 import org.apache.synapse.commons.json.JsonUtil;
 import org.apache.synapse.core.axis2.Axis2MessageContext;
@@ -74,15 +75,19 @@ public class GatewayErrorMediator extends AbstractMediator {
             String errorMessage = (String) messageContext.getProperty(GatewayConstants.ERROR_MSG);
             String errorDetail = (String) messageContext.getProperty(GatewayConstants.ERROR_DETAIL);
 
-
             if (Integer.toString(errorCode).startsWith("9")) {
                 errorData = getAuthFailureResponse(errorCode, errorMessage);
             } else if (Integer.toString(errorCode).startsWith("4") && StringUtils.isEmpty(errorDetail)) {
                 errorData = getResourceFailureResponse(errorCode, errorMessage);
+            } else if (Integer.toString(errorCode).startsWith("4") &&
+                    errorDetail.contains(GatewayConstants.SCHEMA_FAIL_MSG)) {
+                errorData = getRequestSchemaValidationFailureResponse(errorCode, errorDetail);
+            } else if (Integer.toString(errorCode).startsWith("5") &&
+                    errorDetail.contains(GatewayConstants.SCHEMA_FAIL_MSG)) {
+                errorData = getResponseSchemaValidationFailureResponse(errorDetail);
             } else {
                 return true;
             }
-
         } else if (StringUtils.isNotBlank(restApiName) && (restApiName.equals("CDRDynamicClientRegistrationAPI")
                 || restApiName.equals("CDRArrangementManagementAPI")
                 || restApiName.equals("ConsumerDataStandardsAdminAPI"))) {
@@ -268,20 +273,14 @@ public class GatewayErrorMediator extends AbstractMediator {
                 errorCode == GatewayConstants.API_AUTH_FORBIDDEN ||
                 errorCode == GatewayConstants.INVALID_SCOPE) {
             status = 403;
-            errorList.add(ErrorUtil.getErrorObject(ErrorConstants.AUErrorEnum.EXPECTED_GENERAL_ERROR, errorMessage,
-                    new CDSErrorMeta()));
-            errorResponse = ErrorUtil.getErrorJson(errorList);
+            errorResponse = getOAuthErrorResponse("insufficient_scope", errorMessage);
         } else if (errorCode == GatewayConstants.API_AUTH_MISSING_CREDENTIALS ||
                 errorCode == GatewayConstants.API_AUTH_INVALID_CREDENTIALS) {
             status = ErrorConstants.AUErrorEnum.CLIENT_AUTH_FAILED.getHttpCode();
-            errorList.add(ErrorUtil.getErrorObject(ErrorConstants.AUErrorEnum.CLIENT_AUTH_FAILED, errorMessage,
-                    new CDSErrorMeta()));
-            errorResponse = ErrorUtil.getErrorJson(errorList);
+            errorResponse = getOAuthErrorResponse("invalid_client", errorMessage);
         } else {
             status = ErrorConstants.AUErrorEnum.CLIENT_AUTH_FAILED.getHttpCode();
-            errorList.add(ErrorUtil.getErrorObject(ErrorConstants.AUErrorEnum.CLIENT_AUTH_FAILED, errorMessage,
-                    new CDSErrorMeta()));
-            errorResponse = ErrorUtil.getErrorJson(errorList);
+            errorResponse = getOAuthErrorResponse("invalid_client", errorMessage);
         }
         errorData.put(GatewayConstants.STATUS_CODE, status);
         errorData.put(GatewayConstants.ERROR_RESPONSE, errorResponse);
@@ -300,22 +299,88 @@ public class GatewayErrorMediator extends AbstractMediator {
             status = ErrorConstants.AUErrorEnum.RESOURCE_NOT_FOUND.getHttpCode();
             errorList.add(ErrorUtil.getErrorObject(ErrorConstants.AUErrorEnum.RESOURCE_NOT_FOUND, errorMessage,
                     new CDSErrorMeta()));
-            errorResponse = ErrorUtil.getErrorJson(errorList);
-        } else if (errorCode == 422) {
-            status = ErrorConstants.AUErrorEnum.RESOURCE_UNAVAILABLE_BODY.getHttpCode();
-            errorList.add(ErrorUtil.getErrorObject(ErrorConstants.AUErrorEnum.RESOURCE_UNAVAILABLE_BODY, errorMessage,
-                    new CDSErrorMeta()));
-            errorResponse = ErrorUtil.getErrorJson(errorList);
         } else {
             status = errorCode;
             errorList.add(ErrorUtil.getErrorObject(ErrorConstants.AUErrorEnum.EXPECTED_GENERAL_ERROR, errorMessage,
+                    new CDSErrorMeta()));
+        }
+        errorResponse = ErrorUtil.getErrorJson(errorList);
+        errorData.put(GatewayConstants.STATUS_CODE, status);
+        errorData.put(GatewayConstants.ERROR_RESPONSE, errorResponse);
+        return errorData;
+    }
+
+    /**
+     * Method to get the error response for schema validation failures
+     *
+     * @param errorCode
+     * @param errorDetail
+     * @return
+     */
+    private static JSONObject getRequestSchemaValidationFailureResponse(int errorCode, String errorDetail) {
+
+        JSONObject errorData = new JSONObject();
+        JSONArray errorList = new JSONArray();
+        int status;
+        String errorResponse;
+
+        if (errorCode == 400) {
+            if (errorDetail.contains(GatewayConstants.CONTENT_TYPE_TAG) ||
+                    errorDetail.contains(GatewayConstants.ACCEPT_HEADER)) {
+                status = HttpStatus.SC_BAD_REQUEST;
+                errorList.add(ErrorUtil.getErrorObject(ErrorConstants.AUErrorEnum.INVALID_HEADER, errorDetail,
+                        new CDSErrorMeta()));
+                errorResponse = ErrorUtil.getErrorJson(errorList);
+            } else {
+                status = HttpStatus.SC_BAD_REQUEST;
+                errorList.add(ErrorUtil.getErrorObject(ErrorConstants.AUErrorEnum.EXPECTED_GENERAL_ERROR, errorDetail,
+                        new CDSErrorMeta()));
+                errorResponse = ErrorUtil.getErrorJson(errorList);
+            }
+        } else {
+            status = errorCode;
+            errorList.add(ErrorUtil.getErrorObject(ErrorConstants.AUErrorEnum.EXPECTED_GENERAL_ERROR, errorDetail,
                     new CDSErrorMeta()));
             errorResponse = ErrorUtil.getErrorJson(errorList);
         }
         errorData.put(GatewayConstants.STATUS_CODE, status);
         errorData.put(GatewayConstants.ERROR_RESPONSE, errorResponse);
-
         return errorData;
+    }
+
+    /**
+     * Method to get the error response for response schema validation failures
+     *
+     * @param errorDetail
+     * @return
+     */
+    private static JSONObject getResponseSchemaValidationFailureResponse(String errorDetail) {
+
+        JSONObject errorData = new JSONObject();
+        JSONArray errorList = new JSONArray();
+
+        errorList.add(ErrorUtil.getErrorObject(ErrorConstants.AUErrorEnum.UNEXPECTED_ERROR, errorDetail,
+                new CDSErrorMeta()));
+        String errorResponse = ErrorUtil.getErrorJson(errorList);
+
+        errorData.put(GatewayConstants.STATUS_CODE, HttpStatus.SC_INTERNAL_SERVER_ERROR);
+        errorData.put(GatewayConstants.ERROR_RESPONSE, errorResponse);
+        return errorData;
+    }
+
+    /**
+     * Method to get the oauth error response
+     *
+     * @param errorCode
+     * @param errorMessage
+     * @return Error String
+     */
+    private static String getOAuthErrorResponse(String errorCode, String errorMessage) {
+
+        JSONObject errorObject = new JSONObject();
+        errorObject.put(ErrorConstants.ERROR, errorCode);
+        errorObject.put(ErrorConstants.ERROR_DESCRIPTION, errorMessage);
+        return errorObject.toString();
     }
 }
 

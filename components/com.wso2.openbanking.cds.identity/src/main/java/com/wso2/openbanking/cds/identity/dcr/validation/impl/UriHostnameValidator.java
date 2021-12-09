@@ -19,6 +19,7 @@ import com.wso2.openbanking.cds.identity.dcr.constants.CDSValidationConstants;
 import com.wso2.openbanking.cds.identity.dcr.validation.annotation.ValidateUriHostnames;
 import org.apache.commons.beanutils.BeanUtils;
 import org.apache.commons.beanutils.PropertyUtilsBean;
+import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
@@ -92,10 +93,20 @@ public class UriHostnameValidator implements ConstraintValidator<ValidateUriHost
         String policyURIHost;
         String termsOfServiceURIHost;
         try {
-            logoURIHost = new URI(logoURI).getHost();
-            clientURIHost = new URI(clientURI).getHost();
-            policyURIHost = new URI(policyURI).getHost();
-            termsOfServiceURIHost = new URI(termOfServiceURI).getHost();
+            if (StringUtils.isNotBlank(logoURI) && StringUtils.isNotBlank(clientURI)) {
+                logoURIHost = new URI(logoURI).getHost();
+                clientURIHost = new URI(clientURI).getHost();
+            } else {
+                return false;
+            }
+            if (StringUtils.isNotBlank(policyURI) && StringUtils.isNotBlank(termOfServiceURI)) {
+                policyURIHost = new URI(policyURI).getHost();
+                termsOfServiceURIHost = new URI(termOfServiceURI).getHost();
+
+            } else {
+                policyURIHost = StringUtils.EMPTY;
+                termsOfServiceURIHost = StringUtils.EMPTY;
+            }
             //check whether the hostnames of policy,logo,client and terms of service uris match with redirect uri
             //hostname if the validation is set to true
             String isHostNameValidationEnabled = (String) OpenBankingCDSConfigParser.getInstance().getConfiguration()

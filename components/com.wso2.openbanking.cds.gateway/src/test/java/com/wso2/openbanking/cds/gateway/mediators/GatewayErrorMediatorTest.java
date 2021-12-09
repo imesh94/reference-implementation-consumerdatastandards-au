@@ -39,10 +39,11 @@ import static org.powermock.api.mockito.PowerMockito.when;
 @PrepareForTest({OpenBankingConfigParser.class, OBDataPublisherUtil.class, JsonUtil.class})
 public class GatewayErrorMediatorTest extends PowerMockTestCase {
 
+    GatewayErrorMediator gatewayErrorMediator = new GatewayErrorMediator();
+
     @Test
     public void testMediatorForGeneralAuthError() throws Exception {
 
-        GatewayErrorMediator gatewayErrorMediator = new GatewayErrorMediator();
         MessageContext messageContext = getData();
         messageContext.setProperty(GatewayConstants.ERROR_CODE, 900900);
         Assert.assertTrue(gatewayErrorMediator.mediate(messageContext));
@@ -51,7 +52,6 @@ public class GatewayErrorMediatorTest extends PowerMockTestCase {
     @Test
     public void testMediatorForForbiddenAuthError() throws Exception {
 
-        GatewayErrorMediator gatewayErrorMediator = new GatewayErrorMediator();
         MessageContext messageContext = getData();
         messageContext.setProperty(GatewayConstants.ERROR_CODE, 900906);
         Assert.assertTrue(gatewayErrorMediator.mediate(messageContext));
@@ -60,7 +60,6 @@ public class GatewayErrorMediatorTest extends PowerMockTestCase {
     @Test
     public void testMediatorForUnauthenticatedError() throws Exception {
 
-        GatewayErrorMediator gatewayErrorMediator = new GatewayErrorMediator();
         MessageContext messageContext = getData();
         messageContext.setProperty(GatewayConstants.ERROR_CODE, 900902);
         Assert.assertTrue(gatewayErrorMediator.mediate(messageContext));
@@ -69,7 +68,6 @@ public class GatewayErrorMediatorTest extends PowerMockTestCase {
     @Test
     public void testMediatorForOtherError() throws Exception {
 
-        GatewayErrorMediator gatewayErrorMediator = new GatewayErrorMediator();
         MessageContext messageContext = getData();
         messageContext.setProperty(GatewayConstants.ERROR_CODE, 900980);
         Assert.assertTrue(gatewayErrorMediator.mediate(messageContext));
@@ -78,30 +76,51 @@ public class GatewayErrorMediatorTest extends PowerMockTestCase {
     @Test
     public void testMediatorNotFoundResourceFailureError() throws Exception {
 
-        GatewayErrorMediator gatewayErrorMediator = new GatewayErrorMediator();
         MessageContext messageContext = getData();
         messageContext.setProperty(GatewayConstants.ERROR_CODE, 404);
         Assert.assertTrue(gatewayErrorMediator.mediate(messageContext));
     }
 
     @Test
-    public void testMediatorUnProcessableEntityResourceFailureError() throws Exception {
-
-        GatewayErrorMediator gatewayErrorMediator = new GatewayErrorMediator();
-        MessageContext messageContext = getData();
-        messageContext.setProperty(GatewayConstants.ERROR_CODE, 422);
-        Assert.assertTrue(gatewayErrorMediator.mediate(messageContext));
-    }
-
-    @Test
     public void testMediatorForGeneralResourceFailureError() throws Exception {
 
-        GatewayErrorMediator gatewayErrorMediator = new GatewayErrorMediator();
         MessageContext messageContext = getData();
         messageContext.setProperty(GatewayConstants.ERROR_CODE, 400);
         Assert.assertTrue(gatewayErrorMediator.mediate(messageContext));
     }
 
+    @Test
+    public void testErrorCodeNullScenario() throws Exception {
+
+        MessageContext messageContext = getData();
+        Assert.assertTrue(gatewayErrorMediator.mediate(messageContext));
+    }
+
+    @Test(priority = 1)
+    public void testErrorCodeNullScenarioWithExpectedErrors() throws Exception {
+
+        MessageContext messageContext = getData();
+        messageContext.setProperty(GatewayConstants.HTTP_RESPONSE_STATUS_CODE, 400);
+        Assert.assertTrue(gatewayErrorMediator.mediate(messageContext));
+    }
+
+    @Test()
+    public void testGeneralSchemaErrors() throws Exception {
+
+        MessageContext messageContext = getData();
+        messageContext.setProperty(GatewayConstants.ERROR_CODE, 400);
+        messageContext.setProperty(GatewayConstants.ERROR_DETAIL, GatewayConstants.SCHEMA_FAIL_MSG);
+        Assert.assertTrue(gatewayErrorMediator.mediate(messageContext));
+    }
+
+    @Test()
+    public void testServerSchemaErrors() throws Exception {
+
+        MessageContext messageContext = getData();
+        messageContext.setProperty(GatewayConstants.ERROR_CODE, 500);
+        messageContext.setProperty(GatewayConstants.ERROR_DETAIL, GatewayConstants.SCHEMA_FAIL_MSG);
+        Assert.assertTrue(gatewayErrorMediator.mediate(messageContext));
+    }
 
     private MessageContext getData() throws Exception {
 

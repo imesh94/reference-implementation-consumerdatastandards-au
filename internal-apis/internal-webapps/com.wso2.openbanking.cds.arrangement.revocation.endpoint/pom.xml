@@ -11,6 +11,8 @@
     <modelVersion>4.0.0</modelVersion>
 
     <artifactId>com.wso2.openbanking.cds.arrangement.revocation</artifactId>
+    <name>WSO2 Open Banking CDS Toolkit - Arrangement Endpoint</name>
+    <description>WSO2 Open Banking CDS Toolkit - Arrangement Endpoint</description>
     <packaging>war</packaging>
 
     <dependencies>
