@@ -18,10 +18,11 @@
             <property name="NO_ENTITY_BODY" value="true" scope="axis2" type="BOOLEAN"/>
         </then>
         <else>
-            <filter source="$axis2:HTTP_SC" regex="^(?!2.*$).*">
-                <then>
+            <filter source="$axis2:HTTP_SC" regex="200|201|203|204|205|206|207|208|226">
+                <then/>
+                <else>
                     <class name="com.wso2.openbanking.cds.gateway.mediators.GatewayErrorMediator"/>
-                </then>
+                </else>
             </filter>
         </else>
     </filter>
