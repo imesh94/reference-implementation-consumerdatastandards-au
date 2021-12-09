@@ -4,10 +4,10 @@
  * This software is the property of WSO2 Inc. and its suppliers, if any.
  * Dissemination of any information or reproduction of any material contained
  * herein is strictly forbidden, unless permitted by WSO2 in accordance with
- * the WSO2 Commercial License available at http://wso2.com/licenses.
- * For specific language governing the permissions and limitations under this
- * license, please see the license as well as any agreement you’ve entered into
- * with WSO2 governing the purchase of this software and any associated services.
+ * the WSO2 Software License available at https://wso2.com/licenses/eula/3.1. For specific
+ * language governing the permissions and limitations under this license,
+ * please see the license as well as any agreement you’ve entered into with
+ * WSO2 governing the purchase of this software and any associated services.
  */
 
 @App:name("APIRawDataSubmissionApp")
@@ -62,6 +62,6 @@ insert into APIInputStreamDelayWindow;
 from APIInputStreamDelayWindow as apiInputStream
 left outer join API_LATENCY_RAW_DATA as latencyRawData
     on apiInputStream.MESSAGE_ID == latencyRawData.MESSAGE_ID
-select UUID() as id, STATUS_CODE as statusCode, ifThenElse(RESPONSE_LATENCY is null, 0L, RESPONSE_LATENCY) as respTime, ELECTED_RESOURCE as electedResource,
+select apiInputStream.MESSAGE_ID as id, STATUS_CODE as statusCode, ifThenElse(RESPONSE_LATENCY is null, 0L, RESPONSE_LATENCY) as respTime, ELECTED_RESOURCE as electedResource,
        TIMESTAMP as timestamp, CUSTOMER_STATUS as customerStatus
 insert into CDSMetricsRawStream;
