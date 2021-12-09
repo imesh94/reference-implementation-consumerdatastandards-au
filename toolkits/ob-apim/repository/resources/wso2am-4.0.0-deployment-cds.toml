@@ -706,3 +706,11 @@ api_self_link = "https://APIM_HOSTNAME:8243/cds-au/v2/admin/"
 
 [open_banking_cds.headers]
 holder_identifier="HID"
+
+[open_banking_cds.jwt_authentication]
+enabled = true
+issuer = "cdr-register"
+subject = "cdr-register"
+audience = "https://wso2ob.com"
+jwks_url = "https://keystore.openbankingtest.org.uk/0015800001HQQrZAAX/ykNOgWd2RgnuoLRRyWBkaY.jwks"
+cache_expiry_time = "1440"

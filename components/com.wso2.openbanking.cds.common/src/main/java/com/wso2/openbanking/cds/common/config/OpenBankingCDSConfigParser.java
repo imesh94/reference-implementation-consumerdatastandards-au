@@ -432,4 +432,64 @@ public class OpenBankingCDSConfigParser {
         Object config = getConfigElementFromKey(CommonConstants.HOLDER_SPECIFIC_IDENTIFIER);
         return (config != null) ? (String) config : "";
     }
+
+    /**
+     * Get jwt authentication enabled status.
+     *
+     * @return boolean
+     */
+    public boolean getJWTAuthEnabled() {
+
+        Object config = getConfigElementFromKey(CommonConstants.JWT_AUTH_ENABLED);
+        if (config != null) {
+            return Boolean.parseBoolean((String) config);
+        } else {
+            return false;
+        }
+    }
+
+    /**
+     * Get issuer claim for jwt authentication.
+     *
+     * @return issuer claim
+     */
+    public String getJWTAuthIssuer() {
+
+        String value = (String) getConfigElementFromKey(CommonConstants.JWT_AUTH_ISS);
+        return value == null ? "" : value;
+    }
+
+    /**
+     * Get sub claim for jwt authentication.
+     *
+     * @return sub claim
+     */
+    public String getJWTAuthSubject() {
+
+        String value = (String) getConfigElementFromKey(CommonConstants.JWT_AUTH_SUB);
+        return value == null ? "" : value;
+    }
+
+    /**
+     * Get aud claim for jwt authentication.
+     *
+     * @return sub claim
+     */
+    public String getJWTAuthAudience() {
+
+        String value = (String) getConfigElementFromKey(CommonConstants.JWT_AUTH_AUD);
+        return value == null ? "" : value;
+    }
+
+    /**
+     * Get JWKS Url for jwt signature verification.
+     *
+     * @return aud claim
+     */
+    public String getJWTAuthJWKSUrl() {
+
+        String value = (String) getConfigElementFromKey(CommonConstants.JWT_AUTH_JWKS_URL);
+        return value == null ? "" : value;
+    }
+
 }
