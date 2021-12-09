@@ -243,7 +243,7 @@ public class CDSErrorHandlerTest extends PowerMockTestCase {
     @Test
     public void testGetDCRErrorJson() {
 
-        JSONObject errorJson = CDSErrorHandler.getDCRErrorJSON(dcrErrors);
+        JSONObject errorJson = CDSErrorHandler.getOAuthErrorJSON(dcrErrors);
         Assert.assertNotNull(errorJson);
         Assert.assertEquals(errorJson.get(ErrorConstants.ERROR), "invalid_software_statement");
         Assert.assertEquals(errorJson.get(ErrorConstants.ERROR_DESCRIPTION),
@@ -253,7 +253,7 @@ public class CDSErrorHandlerTest extends PowerMockTestCase {
     @Test
     public void testGetEmptyDCRErrorJson() {
 
-        JSONObject errorJson = CDSErrorHandler.getDCRErrorJSON(emptyErrors);
+        JSONObject errorJson = CDSErrorHandler.getOAuthErrorJSON(emptyErrors);
         Assert.assertTrue(errorJson.isEmpty());
     }
 
