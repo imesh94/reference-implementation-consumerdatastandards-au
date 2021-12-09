@@ -118,8 +118,8 @@ public class JWTAuthenticationExecutor implements OpenBankingGatewayExecutor {
 
             if (jwtHeader == null || jwtBody == null) {
                 LOG.error("Unsupported JWT token format found");
-                setError(obapiRequestContext, ErrorConstants.AUErrorEnum.CLIENT_AUTH_FAILED,
-                        "Unsupported JWT token format found");
+                setOAuthError(obapiRequestContext, "invalid_token",
+                        "Unsupported JWT token format found", ErrorConstants.HTTP_UNAUTHORIZED);
                 return false;
             }
 
@@ -127,14 +127,14 @@ public class JWTAuthenticationExecutor implements OpenBankingGatewayExecutor {
             String jtiValue = jwtBody.getAsString("jti");
             if (jtiValue == null) {
                 LOG.error("jti claim is not found in the JWT token");
-                setError(obapiRequestContext, ErrorConstants.AUErrorEnum.CLIENT_AUTH_FAILED,
-                        "Mandatory claim 'jti' is missing from the jwt token");
+                setOAuthError(obapiRequestContext, "invalid_token",
+                        "Mandatory claim 'jti' is missing from the jwt token", ErrorConstants.HTTP_UNAUTHORIZED);
                 return false;
             }
             if (getJtiFromCache(jtiValue) != null) {
                 LOG.error(String.format("Rejected replayed jti: %s", jtiValue));
-                setError(obapiRequestContext, ErrorConstants.AUErrorEnum.CLIENT_AUTH_FAILED,
-                        String.format("jti value %s has been replayed", jtiValue));
+                setOAuthError(obapiRequestContext, "invalid_token",
+                        String.format("jti value %s has been replayed", jtiValue), ErrorConstants.HTTP_UNAUTHORIZED);
                 return false;
             }
 
@@ -147,7 +147,8 @@ public class JWTAuthenticationExecutor implements OpenBankingGatewayExecutor {
             String claimValidationError = validateClaims(jwtBody);
             if (StringUtils.isNotBlank(claimValidationError)) {
                 LOG.error(claimValidationError);
-                setError(obapiRequestContext, ErrorConstants.AUErrorEnum.CLIENT_AUTH_FAILED, claimValidationError);
+                setOAuthError(obapiRequestContext, "invalid_token", claimValidationError,
+                        ErrorConstants.HTTP_UNAUTHORIZED);
                 return false;
             }
 
@@ -157,14 +158,15 @@ public class JWTAuthenticationExecutor implements OpenBankingGatewayExecutor {
                     LOG.debug(String.format("Validating the JWT %s using the JWKS Url %s",
                             jwtString, configuredJwksUrl));
                 }
-                setError(obapiRequestContext, ErrorConstants.AUErrorEnum.CLIENT_AUTH_FAILED,
-                        "JWT Signature validation failed");
+                setOAuthError(obapiRequestContext, "invalid_token",
+                        "JWT Signature validation failed", ErrorConstants.HTTP_UNAUTHORIZED);
                 return false;
             }
         } catch (ParseException | BadJOSEException | JOSEException |
                 MalformedURLException e) {
             LOG.error("Error occurred while validating JWT Token", e);
-            setError(obapiRequestContext, ErrorConstants.AUErrorEnum.CLIENT_AUTH_FAILED, e.getMessage());
+            setOAuthError(obapiRequestContext, "invalid_token", e.getMessage(),
+                    ErrorConstants.HTTP_UNAUTHORIZED);
             return false;
         }
         return true;
@@ -274,6 +276,22 @@ public class JWTAuthenticationExecutor implements OpenBankingGatewayExecutor {
 
         obapiRequestContext.setErrors(executorErrors);
         obapiRequestContext.setError(true);
+    }
+
+    /**
+     * Set the error as required by the OAuth Standard
+     *
+     * @param obapiRequestContext OBAPIRequestContext
+     * @param errorTitle errorTitle
+     * @param errorDescription errorDescription
+     */
+    private void setOAuthError(OBAPIRequestContext obapiRequestContext, String errorTitle,
+                               String errorDescription, String httpStatusCode) {
+
+        obapiRequestContext.setError(true);
+        ArrayList<OpenBankingExecutorError> executorErrors = obapiRequestContext.getErrors();
+        executorErrors.add(new OpenBankingExecutorError(errorTitle, errorTitle, errorDescription, httpStatusCode));
+        obapiRequestContext.setErrors(executorErrors);
     }
 
 }
