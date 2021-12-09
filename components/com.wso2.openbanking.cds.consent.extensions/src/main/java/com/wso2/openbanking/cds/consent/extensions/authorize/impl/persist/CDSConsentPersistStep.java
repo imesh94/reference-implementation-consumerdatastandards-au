@@ -93,8 +93,16 @@ public class CDSConsentPersistStep implements ConsentPersistStep {
                     // Revoke existing tokens
                     revokeTokens(cdrArrangementId, userId);
                     // Amend consent data
-                    long validityPeriod = ((OffsetDateTime) consentData.getMetaDataMap()
-                            .get(CDSConsentExtensionConstants.EXPIRATION_DATE_TIME)).toEpochSecond();
+                    String expirationDateTime = consentData.getMetaDataMap().get(
+                            CDSConsentExtensionConstants.EXPIRATION_DATE_TIME).toString();
+                    long validityPeriod;
+                    if (StringUtils.isNotBlank(expirationDateTime) && !CDSConsentExtensionConstants.
+                            ZERO.equals(expirationDateTime)) {
+                        validityPeriod = ((OffsetDateTime) consentData.getMetaDataMap()
+                                .get(CDSConsentExtensionConstants.EXPIRATION_DATE_TIME)).toEpochSecond();
+                    } else {
+                        validityPeriod = 0;
+                    }
                     consentCoreService.amendConsentData(cdrArrangementId, consentResource.getReceipt(),
                             validityPeriod, userId);
                     // Reauthorize consent
