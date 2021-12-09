@@ -19,10 +19,12 @@ import com.wso2.openbanking.accelerator.gateway.executor.model.OBAPIRequestConte
 import com.wso2.openbanking.accelerator.gateway.executor.model.OBAPIResponseContext;
 import com.wso2.openbanking.accelerator.gateway.executor.model.OpenBankingExecutorError;
 import com.wso2.openbanking.cds.common.config.OpenBankingCDSConfigParser;
+import com.wso2.openbanking.cds.common.error.handling.util.ErrorConstants;
 import com.wso2.openbanking.cds.common.utils.CommonConstants;
 import com.wso2.openbanking.cds.gateway.executors.idpermanence.model.IdPermanenceValidationResponse;
 import com.wso2.openbanking.cds.gateway.executors.idpermanence.utils.IdPermanenceConstants;
 import com.wso2.openbanking.cds.gateway.executors.idpermanence.utils.IdPermanenceUtils;
+import com.wso2.openbanking.cds.gateway.utils.GatewayConstants;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.apache.http.HttpStatus;
@@ -56,9 +58,20 @@ public class IDPermanenceExecutor implements OpenBankingGatewayExecutor {
         // Handle requests with a body
         if (CommonConstants.POST_METHOD.equals(obApiRequestContext.getMsgInfo().getHttpMethod())) {
             Gson gson = new Gson();
-            JsonObject payloadJson = gson.fromJson(obApiRequestContext.getRequestPayload(), JsonObject.class);
-            IdPermanenceValidationResponse idPermanenceValidationResponse =
-                    IdPermanenceUtils.unmaskRequestBodyAccountIDs(payloadJson, SECRET_KEY);
+            JsonObject payloadJson;
+            IdPermanenceValidationResponse idPermanenceValidationResponse;
+            if (!GatewayConstants.NULL_STRING.equals(obApiRequestContext.getRequestPayload())) {
+                payloadJson = gson.fromJson(obApiRequestContext.getRequestPayload(), JsonObject.class);
+                idPermanenceValidationResponse = IdPermanenceUtils.unmaskRequestBodyAccountIDs(payloadJson, SECRET_KEY);
+            } else {
+                idPermanenceValidationResponse = new IdPermanenceValidationResponse();
+                idPermanenceValidationResponse.setValid(false);
+                idPermanenceValidationResponse.setError(new OpenBankingExecutorError(
+                        ErrorConstants.AUErrorEnum.INVALID_BANK_ACCOUNT_BODY.getCode(),
+                        ErrorConstants.AUErrorEnum.INVALID_BANK_ACCOUNT_BODY.getTitle(),
+                        ErrorConstants.AUErrorEnum.INVALID_BANK_ACCOUNT_BODY.getDetail(),
+                        String.valueOf(ErrorConstants.AUErrorEnum.INVALID_BANK_ACCOUNT_BODY.getHttpCode())));
+            }
             if (!idPermanenceValidationResponse.isValid()) {
                 handleError(obApiRequestContext, idPermanenceValidationResponse);
                 return;

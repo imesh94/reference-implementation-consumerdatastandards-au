@@ -141,8 +141,8 @@ public class ErrorConstants {
         RESOURCE_NOT_IMPLEMENTED(404, "AU.CDR.Resource.NotImplemented", "Resource Not Implemented",
                 "Requested resource %s is available in the specification but not implemented"),
         //Requested resource is not available in the spec
-        RESOURCE_NOT_FOUND(404, "AU.CDR.Resource.NotFound", "Resource Not Found",
-                "Requested resource is not " + "available in the specification"),
+        RESOURCE_NOT_FOUND(404, "urn:au-cds:error:cds-all:Resource/NotFound", "Resource Not Found",
+                "Requested resource is not available in the specification"),
         //Resource requested is invalid, does not exist or will not be disclosed
         INVALID_RESOURCE_PATH(404, "urn:au-cds:error:cds-all:Resource/Invalid", "Invalid Resource",
                 "Resource requested is invalid, does not exist or will not be disclosed at the moment"),
