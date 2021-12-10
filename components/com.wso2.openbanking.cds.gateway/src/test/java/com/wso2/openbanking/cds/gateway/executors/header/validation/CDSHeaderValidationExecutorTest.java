@@ -199,6 +199,8 @@ public class CDSHeaderValidationExecutorTest extends PowerMockTestCase {
         when(msgInfoDTOMock.getHeaders()).thenReturn(headers);
         when(msgInfoDTOMock.getElectedResource())
                 .thenReturn("/test-endpoint");
+        when(msgInfoDTOMock.getResource())
+                .thenReturn("/");
         when(msgInfoDTOMock.getHttpMethod())
                 .thenReturn(GatewayConstants.HTTP_GET)
                 .thenReturn(GatewayConstants.HTTP_POST);

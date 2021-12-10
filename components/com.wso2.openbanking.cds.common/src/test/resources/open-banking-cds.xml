@@ -67,4 +67,11 @@
             <Validator>ValidatorClassName</Validator>
         </ParFilterValidators>
     </FilterValidators>
+    <JWTAuthentication>
+        <Enabled>true</Enabled>
+        <Issuer>DummyIssuer</Issuer>
+        <Subject>DummySubject</Subject>
+        <Audience>DummyAudience</Audience>
+        <JWKSUrl>DummyJWKS</JWKSUrl>
+    </JWTAuthentication>
 </Server>

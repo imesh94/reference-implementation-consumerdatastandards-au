@@ -43,6 +43,31 @@
         <APISelfLink>https://localhost:8243/cds-au/v2/admin/</APISelfLink>
         {% endif %}
     </Admin>
+    <JWTAuthentication>
+        {% if open_banking_cds.jwt_authentication.enabled is defined %}
+        <Enabled>{{open_banking_cds.jwt_authentication.enabled}}</Enabled>
+        {% else %}
+        <Enabled>false</Enabled>
+        {% endif %}
+        {% if open_banking_cds.jwt_authentication.issuer is defined %}
+        <Issuer>{{open_banking_cds.jwt_authentication.issuer}}</Issuer>
+        {% endif %}
+        {% if open_banking_cds.jwt_authentication.subject is defined %}
+        <Subject>{{open_banking_cds.jwt_authentication.subject}}</Subject>
+        {% endif %}
+        {% if open_banking_cds.jwt_authentication.audience is defined %}
+        <Audience>{{open_banking_cds.jwt_authentication.audience}}</Audience>
+        {% endif %}
+        {% if open_banking_cds.jwt_authentication.jwks_url is defined %}
+        <JWKSUrl>{{open_banking_cds.jwt_authentication.jwks_url}}</JWKSUrl>
+        {% endif %}
+        {% if open_banking_cds.jwt_authentication.cache_expiry_time is defined %}
+        <CacheExpiryTime>{{open_banking_cds.jwt_authentication.cache_expiry_time}}</CacheExpiryTime>
+        {% endif %}
+        {% if open_banking_cds.jwt_authentication.cache_modified_expiry_time is defined %}
+        <CacheModifiedExpiry>{{open_banking_cds.jwt_authentication.cache_modified_expiry_time}}</CacheModifiedExpiry>
+        {% endif %}
+    </JWTAuthentication>
     <Headers>
         {% if open_banking_cds.headers.holder_identifier is defined %}
         <HolderIdentifier>{{open_banking_cds.headers.holder_identifier}}</HolderIdentifier>
