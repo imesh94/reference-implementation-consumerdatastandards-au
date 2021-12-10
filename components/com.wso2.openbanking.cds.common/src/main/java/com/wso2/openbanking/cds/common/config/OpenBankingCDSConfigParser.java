@@ -30,8 +30,10 @@ import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Iterator;
+import java.util.List;
 import java.util.Map;
 import java.util.Stack;
 import javax.xml.stream.XMLStreamException;
@@ -431,5 +433,59 @@ public class OpenBankingCDSConfigParser {
     public String getHolderSpecificIdentifier() {
         Object config = getConfigElementFromKey(CommonConstants.HOLDER_SPECIFIC_IDENTIFIER);
         return (config != null) ? (String) config : "";
+    }
+
+    /** Get CDSIntrospectFilter validators.
+     *
+     * @return - List of configured validators
+     */
+    public List getIntrospectFilterValidators() {
+
+        Object validators = configuration.get(CommonConstants.INTROSPECT_FILTER_VALIDATORS);
+        if (validators != null) {
+            if (validators instanceof List) {
+                return (List) configuration.get(CommonConstants.INTROSPECT_FILTER_VALIDATORS);
+            } else {
+                return Arrays.asList(validators);
+            }
+        } else {
+            return new ArrayList<>();
+        }
+    }
+
+    /** Get CDSIntrospectFilter validators.
+     *
+     * @return - List of configured validators
+     */
+    public List getRevokeFilterValidators() {
+
+        Object validators = configuration.get(CommonConstants.REVOKE_FILTER_VALIDATORS);
+        if (validators != null) {
+            if (validators instanceof List) {
+                return (List) configuration.get(CommonConstants.REVOKE_FILTER_VALIDATORS);
+            } else {
+                return Arrays.asList(validators);
+            }
+        } else {
+            return new ArrayList<>();
+        }
+    }
+
+    /** Get CDSIntrospectFilter validators.
+     *
+     * @return - List of configured validators
+     */
+    public List getParFilterValidators() {
+
+        Object validators = configuration.get(CommonConstants.PAR_FILTER_VALIDATORS);
+        if (validators != null) {
+            if (validators instanceof List) {
+                return (List) configuration.get(CommonConstants.PAR_FILTER_VALIDATORS);
+            } else {
+                return Arrays.asList(validators);
+            }
+        } else {
+            return new ArrayList<>();
+        }
     }
 }

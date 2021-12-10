@@ -327,7 +327,7 @@ http_method="GET"
 
 [[resource.access_control]]
 context = "(.*)/api/openbanking/push-authorization/(.*)"
-secure="true"
+secure="false"
 http_method="all"
 permissions=["/permission/admin"]
 
@@ -347,6 +347,9 @@ secure="true"
 http_method="POST"
 permissions=["/permission/admin"]
 allowed_auth_handlers = ["BasicAuthentication"]
+
+[resource_access_control.introspect]
+secured="false"
 
 [authentication.adaptive.event_publisher]
 url = "http://IS_HOSTNAME:8006/"
@@ -563,6 +566,30 @@ class = "com.wso2.openbanking.accelerator.identity.token.TokenFilter"
 name = "TokenFilter"
 url_pattern = "/token"
 
+[[tomcat.filter]]
+name = "TokenRevocationFilter"
+class = "com.wso2.openbanking.cds.identity.filter.CDSTokenRevocationFilter"
+
+[[tomcat.filter_mapping]]
+name = "TokenRevocationFilter"
+url_pattern = "/revoke"
+
+[[tomcat.filter]]
+name = "IntrospectionFilter"
+class = "com.wso2.openbanking.cds.identity.filter.CDSIntrospectionFilter"
+
+[[tomcat.filter_mapping]]
+name = "IntrospectionFilter"
+url_pattern = "/introspect"
+
+[[tomcat.filter]]
+name = "ParFilter"
+class = "com.wso2.openbanking.cds.identity.filter.CDSParFilter"
+
+[[tomcat.filter_mapping]]
+name = "ParFilter"
+url_pattern = "/par"
+
 #================consent management==============
 [[open_banking.consent.authorize_steps.retrieve]]
 class = "com.wso2.openbanking.accelerator.consent.extensions.authorize.impl.NonRegulatoryConsentStep"
@@ -665,3 +692,15 @@ enable=false
 
 [open_banking_cds.data_holder]
 client_id = "dataholderbrand"
+
+[[open_banking_cds.filter_validators.introspect_filter_validators]]
+class = "com.wso2.openbanking.accelerator.identity.token.validators.MTLSEnforcementValidator"
+
+[[open_banking_cds.filter_validators.introspect_filter_validators]]
+class = "com.wso2.openbanking.cds.identity.filter.validator.CDSIntrospectionPrivateKeyJWTFilterValidator"
+
+[[open_banking_cds.filter_validators.revoke_filter_validators]]
+class = "com.wso2.openbanking.accelerator.identity.token.validators.MTLSEnforcementValidator"
+
+[[open_banking_cds.filter_validators.par_filter_validators]]
+class = "com.wso2.openbanking.accelerator.identity.token.validators.MTLSEnforcementValidator"
