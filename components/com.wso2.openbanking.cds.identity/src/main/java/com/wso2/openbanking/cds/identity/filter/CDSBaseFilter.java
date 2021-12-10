@@ -12,13 +12,18 @@
 package com.wso2.openbanking.cds.identity.filter;
 
 import com.nimbusds.jwt.SignedJWT;
+import com.wso2.openbanking.accelerator.common.exception.OpenBankingException;
 import com.wso2.openbanking.accelerator.common.util.Generated;
+import com.wso2.openbanking.accelerator.identity.token.util.TokenFilterException;
+import com.wso2.openbanking.accelerator.identity.token.validators.OBIdentityFilterValidator;
 import com.wso2.openbanking.accelerator.identity.token.wrapper.RequestWrapper;
 import com.wso2.openbanking.accelerator.identity.util.IdentityCommonConstants;
 import com.wso2.openbanking.accelerator.identity.util.IdentityCommonHelper;
 import com.wso2.openbanking.accelerator.identity.util.IdentityCommonUtil;
 import com.wso2.openbanking.cds.identity.filter.exception.CDSFilterException;
 import org.apache.commons.codec.binary.Base64;
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 import org.json.JSONObject;
 
 import java.io.IOException;
@@ -27,6 +32,8 @@ import java.nio.charset.StandardCharsets;
 import java.security.cert.CertificateEncodingException;
 import java.security.cert.X509Certificate;
 import java.text.ParseException;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Optional;
 import javax.servlet.Filter;
 import javax.servlet.FilterChain;
@@ -42,9 +49,48 @@ import javax.ws.rs.core.MediaType;
  */
 public class CDSBaseFilter implements Filter {
 
+    private static final Log log = LogFactory.getLog(CDSBaseFilter.class);
+    protected static List<OBIdentityFilterValidator> validators = new ArrayList<>();
+
     @Override
+    @Generated(message = "Excluding from code coverage since it requires a service call")
     public void doFilter(ServletRequest servletRequest, ServletResponse servletResponse, FilterChain filterChain)
             throws IOException, ServletException {
+
+        String clientId;
+        try {
+            clientId = this.extractClientId(servletRequest);
+        } catch (CDSFilterException e) {
+            log.error("Error occurred while extracting client id from the request");
+            handleValidationFailure((HttpServletResponse) servletResponse, e.getErrorCode(),
+                    e.getMessage(), e.getErrorDescription());
+            return;
+        }
+
+        try {
+            if (IdentityCommonUtil.getRegulatoryFromSPMetaData(clientId)) {
+                servletRequest = setTransportCertAsHeader(servletRequest, servletResponse);
+                for (OBIdentityFilterValidator validator : validators) {
+                    validator.validate(servletRequest, clientId);
+                }
+            }
+            filterChain.doFilter(servletRequest, servletResponse);
+        } catch (TokenFilterException e) {
+            log.error(String.format("Validation failure occurred. %s", e.getErrorDescription()));
+            handleValidationFailure((HttpServletResponse) servletResponse,
+                    e.getErrorCode(), e.getMessage(), e.getErrorDescription());
+        } catch (OpenBankingException e) {
+            log.error(String.format("Validation failure occurred. %s", e.getMessage()));
+            if (e.getMessage().contains("Error occurred while retrieving OAuth2 application data")) {
+                handleValidationFailure((HttpServletResponse) servletResponse,
+                        HttpServletResponse.SC_INTERNAL_SERVER_ERROR, "OAuth2 application data retrieval failed",
+                        e.getMessage());
+            } else {
+                handleValidationFailure((HttpServletResponse) servletResponse,
+                        HttpServletResponse.SC_BAD_REQUEST, "Service provider metadata retrieval failed",
+                        e.getMessage());
+            }
+        }
 
     }
 
@@ -56,7 +102,7 @@ public class CDSBaseFilter implements Filter {
      * @return ServletRequest
      * @throws ServletException
      */
-    protected ServletRequest appendTransportHeader(ServletRequest request, ServletResponse response) throws
+    protected ServletRequest setTransportCertAsHeader(ServletRequest request, ServletResponse response) throws
             ServletException, IOException {
 
         if (request instanceof HttpServletRequest) {
@@ -65,15 +111,23 @@ public class CDSBaseFilter implements Filter {
             if (certAttribute != null) {
                 RequestWrapper requestWrapper = new RequestWrapper((HttpServletRequest) request);
                 X509Certificate certificate = getCertificateFromAttribute(certAttribute);
-                requestWrapper.setHeader(IdentityCommonUtil.getMTLSAuthHeader(),
-                        getCertificateContent(certificate));
-                return requestWrapper;
+                if (certificate != null) {
+                    requestWrapper.setHeader(IdentityCommonUtil.getMTLSAuthHeader(),
+                            getCertificateContent(certificate));
+                    return requestWrapper;
+                } else {
+                    String errorMessage = "Transport certificate not found in the request";
+                    log.error(errorMessage);
+                    handleValidationFailure((HttpServletResponse) response,
+                            HttpServletResponse.SC_BAD_REQUEST, "Transport certificate not found", errorMessage);
+                }
             } else if (new IdentityCommonHelper().isTransportCertAsHeaderEnabled() && x509Certificate != null) {
                 return request;
             } else {
+                String errorMessage = "Transport certificate not found in the request";
+                log.error(errorMessage);
                 handleValidationFailure((HttpServletResponse) response,
-                        HttpServletResponse.SC_BAD_REQUEST, "Transport certificate not found",
-                        "Transport certificate not found in the request");
+                        HttpServletResponse.SC_BAD_REQUEST, "Transport certificate not found", errorMessage);
             }
         } else {
             throw new ServletException("Error occurred when handling the request, passed request is not a " +
@@ -91,6 +145,7 @@ public class CDSBaseFilter implements Filter {
                 return IdentityCommonConstants.BEGIN_CERT + new String(encoder.encode(encodedContent),
                         StandardCharsets.UTF_8) + IdentityCommonConstants.END_CERT;
             } catch (CertificateEncodingException e) {
+                log.error(String.format("Certificate not valid. %s", e.getMessage()));
                 throw new ServletException("Certificate not valid", e);
             }
         } else {
@@ -134,6 +189,7 @@ public class CDSBaseFilter implements Filter {
                         "Unable to find client id in the request");
             }
         } catch (ParseException e) {
+            log.error(String.format("Error occurred while parsing the JWT. %s", e.getMessage()));
             throw new CDSFilterException(HttpServletResponse.SC_UNAUTHORIZED, "Invalid assertion", "Error " +
                     "occurred while parsing the signed assertion", e);
         }
