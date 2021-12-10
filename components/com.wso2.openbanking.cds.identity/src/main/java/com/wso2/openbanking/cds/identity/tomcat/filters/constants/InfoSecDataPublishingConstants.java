@@ -35,11 +35,6 @@ public class InfoSecDataPublishingConstants {
     public static final String PAR_REQUEST_URI = "/api/openbanking/push-authorization/par";
     public static final String WELL_KNOWN_REQUEST_URI = "/oauth2/token/.well-known/openid-configuration";
 
-    public static final String CLIENT_ASSSERTION = "client_assertion";
-    public static final String CLIENT_CREDENTIALS = "client_credentials";
-    public static final String CLIENT_SECRET = "client_secret";
-    public static final String AUTHORIZATION = "Authorization";
-
     public static final String TOKEN_API = "TokenAPI";
     public static final String AUTHORIZE_API = "AuthorizeAPI";
     public static final String USERINFO_API = "UserInfoAPI";
@@ -48,13 +43,9 @@ public class InfoSecDataPublishingConstants {
     public static final String TOKEN_REVOCATION_API = "TokenRevocationAPI";
     public static final String WELL_KNOWN_API = "WellKnownAPI";
     public static final String PAR_API = "PAR";
-    public static final String API_SPEC_VERSION = "SYNAPSE_REST_API_VERSION";
-    public static final String CLIENT_USER_AGENT = "User-Agent";
-    public static final String CUSTOMER_STATUS = "CustomerStatus";
-    public static final String IS_TOKEN_REQUEST_FROM_DCR = "IsTokenRequestFromDCR";
-    public static final String ARRANGEMENT = "arrangement";
 
     public static final String REQUEST_IN_TIME = "REQUEST_IN_TIME";
     public static final String UNDEFINED = "undefined";
+    public static final String CONTENT_LENGTH = "Content-Length";
 
 }

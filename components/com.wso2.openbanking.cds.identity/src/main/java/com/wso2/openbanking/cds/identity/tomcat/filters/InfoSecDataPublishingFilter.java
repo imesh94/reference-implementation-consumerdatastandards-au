@@ -111,7 +111,7 @@ public class InfoSecDataPublishingFilter implements Filter {
         requestData.put("statusCode", response.getStatus());
         requestData.put("httpMethod", request.getMethod());
         requestData.put("responsePayloadSize",
-                Long.parseLong(String.valueOf(response.getHeader("Content-Length"))));
+                Long.parseLong(String.valueOf(response.getHeader(InfoSecDataPublishingConstants.CONTENT_LENGTH))));
         String[] apiData = getApiData(request.getRequestURI());
         requestData.put("electedResource", apiData[0]);
         requestData.put("apiName", apiData[1]);
@@ -158,11 +158,6 @@ public class InfoSecDataPublishingFilter implements Filter {
                 apiName = InfoSecDataPublishingConstants.TOKEN_API;
                 break;
             case InfoSecDataPublishingConstants.AUTHORIZE_REQUEST_URI:
-               /* clientId = (String) messageContext.getProperty(AUTHORIZE_CONSUMER_KEY);
-                oAuthConsumerAppDTO = OBIdentityUtil.getOAuthConsumerAppDTO(clientId);
-                if (oAuthConsumerAppDTO != null) {
-                    tppId = oAuthConsumerAppDTO.getUsername();
-                }*/
                 electedResource = InfoSecDataPublishingConstants.AUTHORIZE_ENDPOINT;
                 apiName = InfoSecDataPublishingConstants.AUTHORIZE_API;
                 break;
@@ -179,7 +174,6 @@ public class InfoSecDataPublishingFilter implements Filter {
                 apiName = InfoSecDataPublishingConstants.JWKS_API;
                 break;
             case InfoSecDataPublishingConstants.REVOKE_REQUEST_URI:
-                // todo: check if this logic has any impact from arrangement revoke
                 electedResource = InfoSecDataPublishingConstants.REVOKE_ENDPOINT;
                 apiName = InfoSecDataPublishingConstants.TOKEN_REVOCATION_API;
                 break;
