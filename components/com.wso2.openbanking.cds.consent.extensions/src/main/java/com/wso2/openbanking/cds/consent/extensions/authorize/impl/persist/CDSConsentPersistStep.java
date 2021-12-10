@@ -19,6 +19,7 @@ import com.wso2.openbanking.accelerator.consent.extensions.authorize.model.Conse
 import com.wso2.openbanking.accelerator.consent.extensions.authorize.model.ConsentPersistStep;
 import com.wso2.openbanking.accelerator.consent.extensions.common.ConsentException;
 import com.wso2.openbanking.accelerator.consent.extensions.common.ResponseStatus;
+import com.wso2.openbanking.accelerator.consent.mgt.dao.constants.ConsentMgtDAOConstants;
 import com.wso2.openbanking.accelerator.consent.mgt.dao.models.AuthorizationResource;
 import com.wso2.openbanking.accelerator.consent.mgt.dao.models.ConsentResource;
 import com.wso2.openbanking.accelerator.consent.mgt.dao.models.DetailedConsentResource;
@@ -34,7 +35,10 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.wso2.carbon.identity.oauth2.IdentityOAuth2Exception;
 
+import java.time.Instant;
 import java.time.OffsetDateTime;
+import java.time.ZoneOffset;
+import java.time.ZonedDateTime;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -228,7 +232,8 @@ public class CDSConsentPersistStep implements ConsentPersistStep {
                 consentPersistData.getBrowserCookies().get(CDSConsentExtensionConstants.COMMON_AUTH_ID));
         consentAttributes.put(CDSConsentExtensionConstants.SHARING_DURATION_VALUE, consentData.getMetaDataMap()
                 .get(CDSConsentExtensionConstants.SHARING_DURATION_VALUE).toString());
-
+        consentAttributes.put(ConsentMgtDAOConstants.CONSENT_EXPIRY_TIME_ATTRIBUTE,
+                getExpirationTimestampAttribute(consentData));
         final Object jointAccountsPayload = consentPersistData.getMetadata()
                 .get(CDSConsentExtensionConstants.JOINT_ACCOUNTS_PAYLOAD);
         if (jointAccountsPayload != null && StringUtils.isNotBlank(jointAccountsPayload.toString())) {
@@ -403,5 +408,25 @@ public class CDSConsentPersistStep implements ConsentPersistStep {
             log.error(String.format("Error occurred while revoking tokens. %s", e.getMessage()));
             throw new ConsentManagementException("Error occurred while revoking tokens.", e);
         }
+    }
+
+    /**
+     * Method to append the consent expiration time (UTC) as a consent attribute.
+     *
+     * @param consentData ConsentData
+     */
+    private String getExpirationTimestampAttribute(ConsentData consentData) {
+
+        Object expireTime = consentData.getMetaDataMap().get(CDSConsentExtensionConstants.EXPIRATION_DATE_TIME);
+        long expireTimestamp;
+        if (expireTime != null && !CDSConsentExtensionConstants.ZERO.equals(expireTime.toString())) {
+            ZonedDateTime zonedDateTime = ZonedDateTime.parse(expireTime.toString());
+            // Retrieve the UTC timestamp in long from expiry time.
+            expireTimestamp = Instant.from(zonedDateTime).getEpochSecond();
+        } else {
+            OffsetDateTime currentTime = OffsetDateTime.now(ZoneOffset.UTC);
+            expireTimestamp = currentTime.plusSeconds(CDSConsentExtensionConstants.CDS_DEFAULT_EXPIRY).toEpochSecond();
+        }
+        return Long.toString(expireTimestamp);
     }
 }

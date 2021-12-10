@@ -125,6 +125,8 @@ public class CDSConsentExtensionConstants {
     public static final String DATA_HOLDER_ID = "DataHolder.ClientId";
     public static final String RECIPIENT_BASE_URI = "recipient_base_uri";
 
+    public static final int CDS_DEFAULT_EXPIRY = 86400; // 1 day
+
     static {
         Map<String, Map<String, List<String>>> dataCluster = new HashMap<>();
 
