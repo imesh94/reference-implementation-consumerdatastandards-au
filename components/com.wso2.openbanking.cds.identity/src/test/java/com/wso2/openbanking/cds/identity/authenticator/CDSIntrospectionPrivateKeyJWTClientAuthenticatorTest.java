@@ -31,8 +31,9 @@ import static org.mockito.Matchers.any;
 import static org.powermock.api.mockito.PowerMockito.when;
 import static org.testng.Assert.assertTrue;
 
-@PrepareForTest({OAuth2Util.class, OAuthServerConfiguration.class, CDSPARPrivateKeyJWTClientAuthenticator.class})
-public class CDSPARPrivateKeyJWTClientAuthenticatorTest extends PowerMockTestCase {
+@PrepareForTest({OAuth2Util.class, OAuthServerConfiguration.class,
+        CDSIntrospectionPrivateKeyJWTClientAuthenticator.class})
+public class CDSIntrospectionPrivateKeyJWTClientAuthenticatorTest extends PowerMockTestCase {
 
     @BeforeClass
     public void beforeClass() {
@@ -42,7 +43,7 @@ public class CDSPARPrivateKeyJWTClientAuthenticatorTest extends PowerMockTestCas
     public void beforeMethod() {
     }
 
-    @Test(description = "Test whether can authenticate is engaged for par request")
+    @Test(description = "Test whether can authenticate is engaged for token introspect request")
     public void canAuthenticateTest() throws Exception {
 
         OAuthClientAuthnContext clientAuthnContext = new OAuthClientAuthnContext();
@@ -51,10 +52,10 @@ public class CDSPARPrivateKeyJWTClientAuthenticatorTest extends PowerMockTestCas
         when(OAuthServerConfiguration.getInstance()).thenReturn(oAuthServerConfigurationMock);
         MockHttpServletRequest request = new MockHttpServletRequest();
         PowerMockito.mockStatic(OAuth2Util.class);
-        CDSPARPrivateKeyJWTClientAuthenticator authenticator =
-                PowerMockito.spy(new CDSPARPrivateKeyJWTClientAuthenticator());
+        CDSIntrospectionPrivateKeyJWTClientAuthenticator authenticator =
+                PowerMockito.spy(new CDSIntrospectionPrivateKeyJWTClientAuthenticator());
         Map<String, List> bodyParams = new HashMap<>();
-        request.setRequestURI("baseUri/par");
+        request.setRequestURI("baseUri/introspect");
         PowerMockito.doReturn(true).when(authenticator, "canSuperAuthenticate",
                 any(MockHttpServletRequest.class), any(Map.class), any(OAuthClientAuthnContext.class));
         boolean response = authenticator.canAuthenticate(request, bodyParams, clientAuthnContext);

@@ -50,7 +50,7 @@ import javax.ws.rs.core.MediaType;
 public class CDSBaseFilter implements Filter {
 
     private static final Log log = LogFactory.getLog(CDSBaseFilter.class);
-    protected static List<OBIdentityFilterValidator> validators = new ArrayList<>();
+    protected List<OBIdentityFilterValidator> validators = new ArrayList<>();
 
     @Override
     @Generated(message = "Excluding from code coverage since it requires a service call")
@@ -91,7 +91,6 @@ public class CDSBaseFilter implements Filter {
                         e.getMessage());
             }
         }
-
     }
 
     /**

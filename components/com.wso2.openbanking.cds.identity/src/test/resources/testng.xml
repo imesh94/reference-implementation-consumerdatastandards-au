@@ -62,6 +62,14 @@
             <class name="com.wso2.openbanking.cds.identity.authenticator.CDSPARPrivateKeyJWTClientAuthenticatorTest"/>
             <class name="com.wso2.openbanking.cds.identity.authenticator.CDSRevocationPrivateKeyJWTClientAuthenticatorTest"/>
             <class name="com.wso2.openbanking.cds.identity.authenticator.CDSTokenPrivateKeyJWTClientAuthenticatorTest"/>
+            <class name="com.wso2.openbanking.cds.identity.authenticator.CDSIntrospectionPrivateKeyJWTClientAuthenticatorTest"/>
+        </classes>
+    </test>
+    <test name="cds-tomcat-filters">
+        <classes>
+            <class name="com.wso2.openbanking.cds.identity.filter.CDSIntrospectionFilterTest"/>
+            <class name="com.wso2.openbanking.cds.identity.filter.CDSParFilterTest"/>
+            <class name="com.wso2.openbanking.cds.identity.filter.CDSTokenRevocationFilterTest"/>
         </classes>
     </test>
 </suite>
