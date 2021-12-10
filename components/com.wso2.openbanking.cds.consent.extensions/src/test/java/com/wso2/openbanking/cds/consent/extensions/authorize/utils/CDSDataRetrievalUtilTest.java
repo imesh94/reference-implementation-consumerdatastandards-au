@@ -12,6 +12,7 @@
 
 package com.wso2.openbanking.cds.consent.extensions.authorize.utils;
 
+import com.wso2.openbanking.accelerator.consent.extensions.common.ConsentException;
 import com.wso2.openbanking.accelerator.identity.push.auth.extension.request.validator.util.PushAuthRequestValidatorUtils;
 import com.wso2.openbanking.cds.consent.extensions.util.CDSConsentAuthorizeTestConstants;
 import org.mockito.Mockito;
@@ -24,6 +25,8 @@ import org.wso2.carbon.identity.oauth.cache.SessionDataCache;
 import org.wso2.carbon.identity.oauth.cache.SessionDataCacheEntry;
 import org.wso2.carbon.identity.oauth2.model.OAuth2Parameters;
 
+import java.time.LocalDateTime;
+import java.time.ZoneOffset;
 import java.util.List;
 
 import static org.powermock.api.mockito.PowerMockito.mock;
@@ -42,7 +45,8 @@ public class CDSDataRetrievalUtilTest extends PowerMockTestCase {
             "redirects/redirect1&" + "request_uri=" + "urn:ietf:params:oauth:request_uri:" +
             "XKnDFSbXJWjuf0AY6gOT1EIuvdP8BQLo";
     private static final String SCOPES = "common:customer.basic:read common:customer.detail:read openid profile";
-
+    private static final String VALID_RECEIPT =  "{\"accountData\":{\"permissions\":[\"CDRREADACCOUNTSBASIC\"]," +
+            "\"expirationDateTime\": \"" + LocalDateTime.now(ZoneOffset.UTC).plusDays(1L) + "Z\"}}";
 
     @BeforeClass
     public void initClass() {
@@ -108,5 +112,55 @@ public class CDSDataRetrievalUtilTest extends PowerMockTestCase {
 
         String requestObject = CDSDataRetrievalUtil.extractRequestObject(SP_QUERY_PARAMS_WITH_REQUEST_URI);
         Assert.assertNotNull(requestObject);
+    }
+
+    @Test
+    public void testGetExpiryFromReceipt() {
+        Assert.assertNotNull(CDSDataRetrievalUtil.getExpiryFromReceipt(VALID_RECEIPT));
+    }
+
+    @Test
+    public void testGetExpiryFromReceiptWithInvalidReceipt() {
+        try {
+            CDSDataRetrievalUtil.getExpiryFromReceipt("{\"Invalid\":\"receipt}");
+            Assert.fail("ConsentException Exception expected.");
+        } catch (ConsentException e) {
+            // ConsentException expected
+        }
+    }
+
+    @Test
+    public void testGetExpiryFromReceiptWithEmptyReceipt() {
+        try {
+            CDSDataRetrievalUtil.getExpiryFromReceipt("[]");
+            Assert.fail("ConsentException Exception expected.");
+        } catch (ConsentException e) {
+            // ConsentException expected
+        }
+    }
+
+    @Test
+    public void testGetPermissionsFromReceipt() {
+        Assert.assertEquals(1, CDSDataRetrievalUtil.getPermissionsFromReceipt(VALID_RECEIPT).size());
+    }
+
+    @Test
+    public void testGetPermissionsFromReceiptWithEmptyReceipt() {
+        try {
+            CDSDataRetrievalUtil.getPermissionsFromReceipt("[]");
+            Assert.fail("ConsentException Exception expected.");
+        } catch (ConsentException e) {
+            // ConsentException expected
+        }
+    }
+
+    @Test
+    public void testGetPermissionsFromReceiptWithInvalidReceipt() {
+        try {
+            CDSDataRetrievalUtil.getPermissionsFromReceipt("{\"Invalid\":\"receipt}");
+            Assert.fail("ConsentException Exception expected.");
+        } catch (ConsentException e) {
+            // ConsentException expected
+        }
     }
 }

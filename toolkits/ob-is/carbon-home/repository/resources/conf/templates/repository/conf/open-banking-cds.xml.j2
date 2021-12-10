@@ -149,4 +149,27 @@
         <Enable>false</Enable>
         {% endif %}
      </RecipientConsentRevocationEndpoint>
+     <FilterValidators>
+         <IntrospectFilterValidators>
+         {% if open_banking_cds.filter_validators.introspect_filter_validators is defined %}
+             {% for validator in open_banking_cds.filter_validators.introspect_filter_validators %}
+             <Validator>{{validator.class}}</Validator>
+             {% endfor %}
+         {% endif %}
+         </IntrospectFilterValidators>
+         <RevokeFilterValidators>
+              {% if open_banking_cds.filter_validators.revoke_filter_validators is defined %}
+                  {% for validator in open_banking_cds.filter_validators.revoke_filter_validators %}
+                  <Validator>{{validator.class}}</Validator>
+                  {% endfor %}
+              {% endif %}
+         </RevokeFilterValidators>
+         <ParFilterValidators>
+             {% if open_banking_cds.filter_validators.par_filter_validators is defined %}
+                 {% for validator in open_banking_cds.filter_validators.par_filter_validators %}
+                 <Validator>{{validator.class}}</Validator>
+                 {% endfor %}
+             {% endif %}
+         </ParFilterValidators>
+     </FilterValidators>
 </Server>

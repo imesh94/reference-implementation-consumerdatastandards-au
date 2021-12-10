@@ -13,7 +13,9 @@
 package com.wso2.openbanking.cds.identity.internal;
 
 import com.wso2.openbanking.cds.identity.authenticator.CDSArrangementPrivateKeyJWTClientAuthenticator;
+import com.wso2.openbanking.cds.identity.authenticator.CDSIntrospectionPrivateKeyJWTClientAuthenticator;
 import com.wso2.openbanking.cds.identity.authenticator.CDSPARPrivateKeyJWTClientAuthenticator;
+import com.wso2.openbanking.cds.identity.authenticator.CDSRevocationPrivateKeyJWTClientAuthenticator;
 import com.wso2.openbanking.cds.identity.authenticator.CDSTokenPrivateKeyJWTClientAuthenticator;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -46,6 +48,10 @@ public class CDSIdentityServiceComponent {
 
         BundleContext bundleContext = context.getBundleContext();
         log.debug("Registering CDS related Identity services.");
+        bundleContext.registerService(OAuthClientAuthenticator.class.getName(),
+                new CDSRevocationPrivateKeyJWTClientAuthenticator(), null);
+        bundleContext.registerService(OAuthClientAuthenticator.class.getName(),
+                new CDSIntrospectionPrivateKeyJWTClientAuthenticator(), null);
         bundleContext.registerService(OAuthClientAuthenticator.class.getName(),
                 new CDSPARPrivateKeyJWTClientAuthenticator(), null);
         bundleContext.registerService(OAuthClientAuthenticator.class.getName(),

@@ -17,6 +17,7 @@ import com.wso2.openbanking.accelerator.consent.extensions.common.ConsentExcepti
 import com.wso2.openbanking.accelerator.identity.util.HTTPClientUtils;
 import com.wso2.openbanking.cds.common.config.OpenBankingCDSConfigParser;
 import com.wso2.openbanking.cds.consent.extensions.common.CDSConsentExtensionConstants;
+import net.minidev.json.JSONArray;
 import net.minidev.json.JSONObject;
 import org.apache.commons.io.FileUtils;
 import org.apache.http.HttpEntity;
@@ -146,4 +147,50 @@ public class CDSAccountListRetrievalStepTests extends PowerMockTestCase {
         cdsAccountListRetrievalStep.execute(consentDataMock, jsonObject);
     }
 
+    @Test
+    public void testAccountDataRetrievalConsentAmendment() throws IOException, OpenBankingException {
+
+        openBankingCDSConfigParserMock = mock(OpenBankingCDSConfigParser.class);
+        doReturn(configMap).when(openBankingCDSConfigParserMock).getConfiguration();
+
+        PowerMockito.mockStatic(OpenBankingCDSConfigParser.class);
+        PowerMockito.when(OpenBankingCDSConfigParser.getInstance()).thenReturn(openBankingCDSConfigParserMock);
+
+        StatusLine statusLineMock = Mockito.mock(StatusLine.class);
+        Mockito.doReturn(HttpStatus.SC_OK).when(statusLineMock).getStatusCode();
+
+        File file = new File("src/test/resources/test-account.json");
+        byte[] crlBytes = FileUtils.readFileToString(file, String.valueOf(StandardCharsets.UTF_8))
+                .getBytes(StandardCharsets.UTF_8);
+        InputStream inStream = new ByteArrayInputStream(crlBytes);
+
+        HttpEntity httpEntityMock = Mockito.mock(HttpEntity.class);
+        Mockito.doReturn(inStream).when(httpEntityMock).getContent();
+
+        CloseableHttpResponse httpResponseMock = Mockito.mock(CloseableHttpResponse.class);
+        Mockito.doReturn(statusLineMock).when(httpResponseMock).getStatusLine();
+        Mockito.doReturn(httpEntityMock).when(httpResponseMock).getEntity();
+
+        CloseableHttpClient closeableHttpClientMock = Mockito.mock(CloseableHttpClient.class);
+        Mockito.doReturn(httpResponseMock).when(closeableHttpClientMock).execute(Mockito.any(HttpGet.class));
+
+        PowerMockito.mockStatic(HTTPClientUtils.class);
+        when(HTTPClientUtils.getHttpsClient()).thenReturn(closeableHttpClientMock);
+
+        JSONObject preSelectedAccount = new JSONObject();
+        preSelectedAccount.appendField(CDSConsentExtensionConstants.ACCOUNT_ID, "123");
+        JSONArray preSelectedAccounts = new JSONArray();
+        preSelectedAccounts.add(preSelectedAccount);
+
+        JSONObject jsonObject = new JSONObject();
+        jsonObject.appendField(CDSConsentExtensionConstants.IS_CONSENT_AMENDMENT, true);
+        jsonObject.appendField(CDSConsentExtensionConstants.PRE_SELECTED_ACCOUNT_LIST, preSelectedAccounts);
+
+        doReturn(CDSConsentExtensionConstants.ACCOUNTS).when(consentDataMock).getType();
+
+        when(consentDataMock.isRegulatory()).thenReturn(true);
+        cdsAccountListRetrievalStep.execute(consentDataMock, jsonObject);
+
+        Assert.assertNotNull(jsonObject.get("accounts"));
+    }
 }

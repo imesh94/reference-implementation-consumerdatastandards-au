@@ -26,6 +26,9 @@ public class CommonConstants {
     public static final String ID_PERMANENCE_SECRET_KEY = "IdPermanence.SecretKey";
     public static final String TOKEN_ENCRYPTION_ENABLED = "TokenEncryption.Enable";
     public static final String TOKEN_ENCRYPTION_SECRETKEY = "TokenEncryption.SecretKey";
+    public static final String INTROSPECT_FILTER_VALIDATORS = "FilterValidators.IntrospectFilterValidators.Validator";
+    public static final String REVOKE_FILTER_VALIDATORS = "FilterValidators.RevokeFilterValidators.Validator";
+    public static final String PAR_FILTER_VALIDATORS = "FilterValidators.ParFilterValidators.Validator";
 
 
     // Http related constants
