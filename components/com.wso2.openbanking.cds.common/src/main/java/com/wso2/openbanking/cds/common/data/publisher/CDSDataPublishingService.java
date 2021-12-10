@@ -49,4 +49,12 @@ public interface CDSDataPublishingService {
      * @param consentData Map containing the data that needs to be published
      */
     void publishConsentData(Map<String, Object> consentData);
+
+    /**
+     * Method to publish API latency related data.
+     *
+     * @param apiLatencyData Map containing the data that needs to be published
+     */
+    void publishApiLatencyData(Map<String, Object> apiLatencyData);
+
 }
