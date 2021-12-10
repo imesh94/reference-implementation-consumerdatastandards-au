@@ -14,6 +14,7 @@ package com.wso2.openbanking.cds.gateway.executors.jwt.authentication;
 
 import com.nimbusds.jose.JOSEException;
 import com.nimbusds.jose.proc.BadJOSEException;
+import com.wso2.openbanking.accelerator.common.util.Generated;
 import com.wso2.openbanking.accelerator.common.util.JWTUtils;
 import com.wso2.openbanking.accelerator.gateway.executor.core.OpenBankingGatewayExecutor;
 import com.wso2.openbanking.accelerator.gateway.executor.model.OBAPIRequestContext;
@@ -81,7 +82,6 @@ public class JWTAuthenticationExecutor implements OpenBankingGatewayExecutor {
                     "not defined correctly.");
             setAuthHeaderValidationError(obapiRequestContext, ErrorConstants.AUErrorEnum.INVALID_HEADER,
                     HttpHeaders.AUTHORIZATION);
-            return;
         }
     }
 
@@ -108,7 +108,7 @@ public class JWTAuthenticationExecutor implements OpenBankingGatewayExecutor {
      * @param configuredJwksUrl the configured jwks endpoint
      * @return
      */
-    private boolean validateJWTToken (OBAPIRequestContext obapiRequestContext, String jwtString,
+    private void validateJWTToken (OBAPIRequestContext obapiRequestContext, String jwtString,
                                       String configuredJwksUrl) {
 
         LOG.debug("Decoding the JWT token found in Authorization header");
@@ -120,7 +120,7 @@ public class JWTAuthenticationExecutor implements OpenBankingGatewayExecutor {
                 LOG.error("Unsupported JWT token format found");
                 setOAuthError(obapiRequestContext, "invalid_token",
                         "Unsupported JWT token format found", ErrorConstants.HTTP_UNAUTHORIZED);
-                return false;
+                return;
             }
 
             // Validate JTI. Continue if jti is not present in cache
@@ -129,13 +129,13 @@ public class JWTAuthenticationExecutor implements OpenBankingGatewayExecutor {
                 LOG.error("jti claim is not found in the JWT token");
                 setOAuthError(obapiRequestContext, "invalid_token",
                         "Mandatory claim 'jti' is missing from the jwt token", ErrorConstants.HTTP_UNAUTHORIZED);
-                return false;
+                return;
             }
             if (getJtiFromCache(jtiValue) != null) {
                 LOG.error(String.format("Rejected replayed jti: %s", jtiValue));
                 setOAuthError(obapiRequestContext, "invalid_token",
                         String.format("jti value %s has been replayed", jtiValue), ErrorConstants.HTTP_UNAUTHORIZED);
-                return false;
+                return;
             }
 
             // Add jti value to cache
@@ -149,27 +149,25 @@ public class JWTAuthenticationExecutor implements OpenBankingGatewayExecutor {
                 LOG.error(claimValidationError);
                 setOAuthError(obapiRequestContext, "invalid_token", claimValidationError,
                         ErrorConstants.HTTP_UNAUTHORIZED);
-                return false;
+                return;
             }
 
             // Validate jwt signature
-            if (!JWTUtils.validateJWTSignature(jwtString, configuredJwksUrl, jwtHeader.getAsString("alg"))) {
+            if (!validateJWTSignature(jwtString, configuredJwksUrl, jwtHeader)) {
                 if (LOG.isDebugEnabled()) {
                     LOG.debug(String.format("Validating the JWT %s using the JWKS Url %s",
                             jwtString, configuredJwksUrl));
                 }
+                LOG.error("Invalid JWT Signature");
                 setOAuthError(obapiRequestContext, "invalid_token",
                         "JWT Signature validation failed", ErrorConstants.HTTP_UNAUTHORIZED);
-                return false;
             }
         } catch (ParseException | BadJOSEException | JOSEException |
                 MalformedURLException e) {
             LOG.error("Error occurred while validating JWT Token", e);
             setOAuthError(obapiRequestContext, "invalid_token", e.getMessage(),
                     ErrorConstants.HTTP_UNAUTHORIZED);
-            return false;
         }
-        return true;
     }
 
     /**
@@ -292,6 +290,13 @@ public class JWTAuthenticationExecutor implements OpenBankingGatewayExecutor {
         ArrayList<OpenBankingExecutorError> executorErrors = obapiRequestContext.getErrors();
         executorErrors.add(new OpenBankingExecutorError(errorTitle, errorTitle, errorDescription, httpStatusCode));
         obapiRequestContext.setErrors(executorErrors);
+    }
+
+    @Generated(message = "Skipped unit tests since its already covered")
+    protected boolean validateJWTSignature(String jwtString, String configuredJwksUrl, JSONObject jwtHeader)
+            throws MalformedURLException, BadJOSEException, ParseException, JOSEException {
+
+        return JWTUtils.validateJWTSignature(jwtString, configuredJwksUrl, jwtHeader.getAsString("alg"));
     }
 
 }
