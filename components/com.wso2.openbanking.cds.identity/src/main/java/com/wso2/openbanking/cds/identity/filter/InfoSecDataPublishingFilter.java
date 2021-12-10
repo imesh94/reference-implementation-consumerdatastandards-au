@@ -10,14 +10,14 @@
  * WSO2 governing the purchase of this software and any associated services.
  */
 
-package com.wso2.openbanking.cds.identity.tomcat.filters;
+package com.wso2.openbanking.cds.identity.filter;
 
 import com.nimbusds.jwt.SignedJWT;
 import com.wso2.openbanking.accelerator.common.config.OpenBankingConfigParser;
 import com.wso2.openbanking.accelerator.data.publisher.common.constants.DataPublishingConstants;
 import com.wso2.openbanking.accelerator.identity.util.IdentityCommonConstants;
 import com.wso2.openbanking.cds.common.data.publisher.CDSDataPublishingService;
-import com.wso2.openbanking.cds.identity.tomcat.filters.constants.InfoSecDataPublishingConstants;
+import com.wso2.openbanking.cds.identity.filter.constants.CDSFilterConstants;
 import org.apache.commons.lang.StringUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -59,7 +59,7 @@ public class InfoSecDataPublishingFilter implements Filter {
         if (request instanceof HttpServletRequest && response instanceof HttpServletResponse) {
 
             // Record the request-in time to be used when calculating response latency for APILatency data publishing
-            request.setAttribute(InfoSecDataPublishingConstants.REQUEST_IN_TIME, System.currentTimeMillis());
+            request.setAttribute(CDSFilterConstants.REQUEST_IN_TIME, System.currentTimeMillis());
             chain.doFilter(request, response);
 
             // Publish the reporting data before returning the response
@@ -111,7 +111,7 @@ public class InfoSecDataPublishingFilter implements Filter {
         requestData.put("statusCode", response.getStatus());
         requestData.put("httpMethod", request.getMethod());
         requestData.put("responsePayloadSize",
-                Long.parseLong(String.valueOf(response.getHeader(InfoSecDataPublishingConstants.CONTENT_LENGTH))));
+                Long.parseLong(String.valueOf(response.getHeader(CDSFilterConstants.CONTENT_LENGTH))));
         String[] apiData = getApiData(request.getRequestURI());
         requestData.put("electedResource", apiData[0]);
         requestData.put("apiName", apiData[1]);
@@ -119,7 +119,7 @@ public class InfoSecDataPublishingFilter implements Filter {
         requestData.put("apiSpecVersion", null);
         requestData.put("timestamp", Instant.now().getEpochSecond());
         requestData.put("messageId", messageId);
-        requestData.put("customerStatus", InfoSecDataPublishingConstants.UNDEFINED);
+        requestData.put("customerStatus", CDSFilterConstants.UNDEFINED);
         requestData.put("accessToken", null);
         return requestData;
     }
@@ -134,7 +134,7 @@ public class InfoSecDataPublishingFilter implements Filter {
     public Map<String, Object> generateLatencyDataMap(HttpServletRequest request, String messageId) {
 
         Map<String, Object> latencyData = new HashMap<>();
-        long requestInTime = (long) request.getAttribute(InfoSecDataPublishingConstants.REQUEST_IN_TIME);
+        long requestInTime = (long) request.getAttribute(CDSFilterConstants.REQUEST_IN_TIME);
         long requestLatency = System.currentTimeMillis() - requestInTime;
 
         latencyData.put("correlationId", messageId);
@@ -153,37 +153,37 @@ public class InfoSecDataPublishingFilter implements Filter {
         String apiName;
         String electedResource;
         switch(StringUtils.lowerCase(requestUri)) {
-            case InfoSecDataPublishingConstants.TOKEN_REQUEST_URI:
-                electedResource = InfoSecDataPublishingConstants.TOKEN_ENDPOINT;
-                apiName = InfoSecDataPublishingConstants.TOKEN_API;
+            case CDSFilterConstants.TOKEN_REQUEST_URI:
+                electedResource = CDSFilterConstants.TOKEN_ENDPOINT;
+                apiName = CDSFilterConstants.TOKEN_API;
                 break;
-            case InfoSecDataPublishingConstants.AUTHORIZE_REQUEST_URI:
-                electedResource = InfoSecDataPublishingConstants.AUTHORIZE_ENDPOINT;
-                apiName = InfoSecDataPublishingConstants.AUTHORIZE_API;
+            case CDSFilterConstants.AUTHORIZE_REQUEST_URI:
+                electedResource = CDSFilterConstants.AUTHORIZE_ENDPOINT;
+                apiName = CDSFilterConstants.AUTHORIZE_API;
                 break;
-            case InfoSecDataPublishingConstants.USERINFO_REQUEST_URI:
-                electedResource = InfoSecDataPublishingConstants.USERINFO_ENDPOINT;
-                apiName = InfoSecDataPublishingConstants.USERINFO_API;
+            case CDSFilterConstants.USERINFO_REQUEST_URI:
+                electedResource = CDSFilterConstants.USERINFO_ENDPOINT;
+                apiName = CDSFilterConstants.USERINFO_API;
                 break;
-            case InfoSecDataPublishingConstants.INTROSPECTION_REQUEST_URI:
-                electedResource = InfoSecDataPublishingConstants.INTROSPECTION_ENDPOINT;
-                apiName = InfoSecDataPublishingConstants.INTROSPECT_API;
+            case CDSFilterConstants.INTROSPECTION_REQUEST_URI:
+                electedResource = CDSFilterConstants.INTROSPECTION_ENDPOINT;
+                apiName = CDSFilterConstants.INTROSPECT_API;
                 break;
-            case InfoSecDataPublishingConstants.JWKS_REQUEST_URI:
-                electedResource = InfoSecDataPublishingConstants.JWKS_ENDPOINT;
-                apiName = InfoSecDataPublishingConstants.JWKS_API;
+            case CDSFilterConstants.JWKS_REQUEST_URI:
+                electedResource = CDSFilterConstants.JWKS_ENDPOINT;
+                apiName = CDSFilterConstants.JWKS_API;
                 break;
-            case InfoSecDataPublishingConstants.REVOKE_REQUEST_URI:
-                electedResource = InfoSecDataPublishingConstants.REVOKE_ENDPOINT;
-                apiName = InfoSecDataPublishingConstants.TOKEN_REVOCATION_API;
+            case CDSFilterConstants.REVOKE_REQUEST_URI:
+                electedResource = CDSFilterConstants.REVOKE_ENDPOINT;
+                apiName = CDSFilterConstants.TOKEN_REVOCATION_API;
                 break;
-            case InfoSecDataPublishingConstants.WELL_KNOWN_REQUEST_URI:
-                electedResource = InfoSecDataPublishingConstants.WELL_KNOWN_ENDPOINT;
-                apiName = InfoSecDataPublishingConstants.WELL_KNOWN_API;
+            case CDSFilterConstants.WELL_KNOWN_REQUEST_URI:
+                electedResource = CDSFilterConstants.WELL_KNOWN_ENDPOINT;
+                apiName = CDSFilterConstants.WELL_KNOWN_API;
                 break;
-            case InfoSecDataPublishingConstants.PAR_REQUEST_URI:
-                electedResource = InfoSecDataPublishingConstants.PAR_ENDPOINT;
-                apiName = InfoSecDataPublishingConstants.PAR_API;
+            case CDSFilterConstants.PAR_REQUEST_URI:
+                electedResource = CDSFilterConstants.PAR_ENDPOINT;
+                apiName = CDSFilterConstants.PAR_API;
                 break;
             default:
                 apiName = StringUtils.EMPTY;

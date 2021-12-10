@@ -649,7 +649,7 @@ type="long"
 #================custom filters and filter-mappings==============
 [[tomcat.filter]]
 name = "InfoSecDataPublishingFilter"
-class = "com.wso2.openbanking.cds.identity.tomcat.filters.InfoSecDataPublishingFilter"
+class = "com.wso2.openbanking.cds.identity.filter.InfoSecDataPublishingFilter"
 
 [[tomcat.filter_mapping]]
 name = "InfoSecDataPublishingFilter"

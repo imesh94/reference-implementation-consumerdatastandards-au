@@ -10,7 +10,7 @@
  * WSO2 governing the purchase of this software and any associated services.
  */
 
-package com.wso2.openbanking.cds.identity.tomcat.filters;
+package com.wso2.openbanking.cds.identity.filter;
 
 import org.mockito.Mockito;
 import org.powermock.modules.testng.PowerMockTestCase;

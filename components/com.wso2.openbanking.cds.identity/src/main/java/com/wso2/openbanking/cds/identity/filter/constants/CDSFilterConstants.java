@@ -10,12 +10,12 @@
  * WSO2 governing the purchase of this software and any associated services.
  */
 
-package com.wso2.openbanking.cds.identity.tomcat.filters.constants;
+package com.wso2.openbanking.cds.identity.filter.constants;
 
 /**
  * Field names used for data publishing related to InfoSec endpoints.
  */
-public class InfoSecDataPublishingConstants {
+public class CDSFilterConstants {
 
     public static final String TOKEN_ENDPOINT = "/token";
     public static final String AUTHORIZE_ENDPOINT = "/authorize";
