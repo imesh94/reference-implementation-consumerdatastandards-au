@@ -11,6 +11,7 @@
  */
 package com.wso2.openbanking.cds.identity.filter;
 
+import com.wso2.openbanking.accelerator.common.util.Generated;
 import com.wso2.openbanking.accelerator.common.util.OpenBankingUtils;
 import com.wso2.openbanking.accelerator.identity.token.validators.OBIdentityFilterValidator;
 import com.wso2.openbanking.cds.common.config.OpenBankingCDSConfigParser;
@@ -36,13 +37,16 @@ public class CDSIntrospectionFilter extends CDSBaseFilter {
     /**
      * Load filter validators form configuration.
      */
+    @Generated(message = "Excluded from code coverage")
     private void initializeFilterValidators() {
         if (validators.isEmpty()) {
-            log.info("Adding CDSIntrospectionFilter validators");
+            log.debug("Adding CDSIntrospectionFilter validators");
             for (Object element : OpenBankingCDSConfigParser.getInstance().getIntrospectFilterValidators()) {
                 validators.add((OBIdentityFilterValidator) OpenBankingUtils.
                         getClassInstanceFromFQN(element.toString()));
-                log.info(String.format("Added %s as an CDSIntrospectionFilter validator", element));
+                if (log.isDebugEnabled()) {
+                    log.debug(String.format("Added %s as a CDSIntrospectionFilter validator", element));
+                }
             }
         }
     }
