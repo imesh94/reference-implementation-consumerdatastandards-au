@@ -164,6 +164,27 @@ public class OpenBankingCDSConfigParserTest {
         Assert.assertEquals(openBankingCDSConfigParser.getHolderSpecificIdentifier(), "HID");
     }
 
+    @Test(priority = 7)
+    public void testGetIntrospectFilterValidators() {
+        String dummyConfigFile = absolutePathForTestResources + "/open-banking-cds.xml";
+        OpenBankingCDSConfigParser openBankingCDSConfigParser = OpenBankingCDSConfigParser.getInstance(dummyConfigFile);
+        Assert.assertNotNull(openBankingCDSConfigParser.getIntrospectFilterValidators());
+    }
+
+    @Test(priority = 7)
+    public void testGetRevokeFilterValidators() {
+        String dummyConfigFile = absolutePathForTestResources + "/open-banking-cds.xml";
+        OpenBankingCDSConfigParser openBankingCDSConfigParser = OpenBankingCDSConfigParser.getInstance(dummyConfigFile);
+        Assert.assertNotNull(openBankingCDSConfigParser.getRevokeFilterValidators());
+    }
+
+    @Test(priority = 7)
+    public void testGetParFilterValidators() {
+        String dummyConfigFile = absolutePathForTestResources + "/open-banking-cds.xml";
+        OpenBankingCDSConfigParser openBankingCDSConfigParser = OpenBankingCDSConfigParser.getInstance(dummyConfigFile);
+        Assert.assertNotNull(openBankingCDSConfigParser.getParFilterValidators());
+    }
+
     private void injectEnvironmentVariable(String key, String value)
             throws ReflectiveOperationException {
 
