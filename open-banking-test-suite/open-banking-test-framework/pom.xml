@@ -19,7 +19,7 @@
   <parent>
     <groupId>com.wso2</groupId>
     <artifactId>open-banking-test-suite</artifactId>
-    <version>1.0.0-ALPHA</version>
+    <version>1.0.0-RC</version>
     <relativePath>../pom.xml</relativePath>
   </parent>
   <packaging>jar</packaging>
