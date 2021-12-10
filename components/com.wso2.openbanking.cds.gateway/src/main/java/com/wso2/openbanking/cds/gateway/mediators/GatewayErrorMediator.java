@@ -42,7 +42,6 @@ import java.time.Instant;
 import java.util.HashMap;
 import java.util.Map;
 
-
 /**
  * CDS Gateway error mediator.
  * This mediator is used for gateway error mediation and data publishing.
@@ -61,10 +60,16 @@ public class GatewayErrorMediator extends AbstractMediator {
         if (Boolean.parseBoolean((String) OpenBankingConfigParser.getInstance().getConfiguration()
                 .get(DataPublishingConstants.DATA_PUBLISHING_ENABLED))) {
 
-            log.debug("Publishing invocation error data from CDS error mediator.");
             if ((messageContext.getProperty(GatewayConstants.ERROR_CODE)) != null) {
-                Map<String, Object> invocationErrorData = getApiInvocationErrorDataToPublish(messageContext);
-                CDSDataPublishingService.getCDSDataPublishingService().publishApiInvocationData(invocationErrorData);
+                log.debug("Publishing invocation error data from CDS error mediator.");
+                // Reporting is exempted for notFound/incorrect API calls
+                // as they are not considered part of metrics reporting
+                if (!(String.valueOf(HttpStatus.SC_NOT_FOUND).equals(extractStatusCode(messageContext)) &&
+                        messageContext.getProperty(APIConstants.API_ELECTED_RESOURCE) == null)) {
+                    Map<String, Object> invocationErrorData = getApiInvocationErrorDataToPublish(messageContext);
+                    CDSDataPublishingService.getCDSDataPublishingService()
+                            .publishApiInvocationData(invocationErrorData);
+                }
             }
         }
         // Error handling logic.
@@ -91,37 +96,29 @@ public class GatewayErrorMediator extends AbstractMediator {
         } else if (StringUtils.isNotBlank(restApiName) && (restApiName.equals("CDRDynamicClientRegistrationAPI")
                 || restApiName.equals("CDRArrangementManagementAPI")
                 || restApiName.equals("ConsumerDataStandardsAdminAPI"))) {
+            // Assume the errors thrown from the relevant internal webapps of these APIs are
+            // already formatted according to the CDS format
             return true;
         } else {
-            // The status code values may pass as int or String format
-            String errorCode;
-            org.apache.axis2.context.MessageContext axis2MessageContext = ((Axis2MessageContext) messageContext)
-                    .getAxis2MessageContext();
-
-            if (axis2MessageContext.getProperty(GatewayConstants.HTTP_SC) != null) {
-                errorCode = String.valueOf(axis2MessageContext.getProperty(GatewayConstants.HTTP_SC));
-            } else if (messageContext.getProperty(GatewayConstants.HTTP_RESPONSE_STATUS_CODE) != null) {
-                errorCode = String.valueOf(messageContext.getProperty(GatewayConstants
-                        .HTTP_RESPONSE_STATUS_CODE));
-            } else if (messageContext.getProperty(GatewayConstants.CUSTOM_HTTP_SC) != null) {
-                errorCode = String.valueOf(messageContext.getProperty(GatewayConstants.CUSTOM_HTTP_SC));
-            } else {
+            String statusCodeString  = extractStatusCode(messageContext);
+            if (StringUtils.isBlank(statusCodeString)) {
                 return true;
             }
+            int statusCode = Integer.parseInt(statusCodeString);
             JSONArray errorList = new JSONArray();
             String errorResponse;
             errorData = new JSONObject();
-            if (errorCode.startsWith("4")) {
+            if (statusCodeString.startsWith("4")) {
                 errorList.add(ErrorUtil.getErrorObject(ErrorConstants.AUErrorEnum.EXPECTED_GENERAL_ERROR,
                         ErrorConstants.AUErrorEnum.EXPECTED_GENERAL_ERROR.getDetail(), new CDSErrorMeta()));
                 errorResponse = ErrorUtil.getErrorJson(errorList);
-                errorData.put(GatewayConstants.STATUS_CODE, Integer.parseInt(errorCode));
+                errorData.put(GatewayConstants.STATUS_CODE, statusCode);
                 errorData.put(GatewayConstants.ERROR_RESPONSE, errorResponse);
-            } else if (errorCode.startsWith("5")) {
+            } else if (statusCodeString.startsWith("5")) {
                 errorList.add(ErrorUtil.getErrorObject(ErrorConstants.AUErrorEnum.UNEXPECTED_ERROR,
                         ErrorConstants.AUErrorEnum.UNEXPECTED_ERROR.getDetail(), new CDSErrorMeta()));
                 errorResponse = ErrorUtil.getErrorJson(errorList);
-                errorData.put(GatewayConstants.STATUS_CODE, Integer.parseInt(errorCode));
+                errorData.put(GatewayConstants.STATUS_CODE, statusCode);
                 errorData.put(GatewayConstants.ERROR_RESPONSE, errorResponse);
             } else {
                 return true;
@@ -172,7 +169,14 @@ public class GatewayErrorMediator extends AbstractMediator {
 
         String consumerId = (String) axis2MessageContext.getProperty(GatewayConstants.USER_NAME);
         String clientId = (String) axis2MessageContext.getProperty(GatewayConstants.CONSUMER_KEY);
-        String httpMethod = (String) axis2MessageContext.getProperty(GatewayConstants.HTTP_METHOD);
+
+        String httpMethod;
+        if (axis2MessageContext.getProperty(GatewayConstants.HTTP_METHOD) != null) {
+            httpMethod = (String) axis2MessageContext.getProperty(GatewayConstants.HTTP_METHOD);
+        } else {
+            httpMethod = GatewayConstants.UNKNOWN;
+        }
+
         String apiName = (String) axis2MessageContext.getProperty(GatewayConstants.API_NAME);
         // Get api name from SYNAPSE_REST_API if not available in axis2 message context.
         if (apiName == null && messageContext.getProperty(GatewayConstants.SYNAPSE_REST_API) != null) {
@@ -185,7 +189,11 @@ public class GatewayErrorMediator extends AbstractMediator {
             apiSpecVersion = (String) messageContext.getProperty(GatewayConstants.API_SPEC_VERSION);
         }
 
-        int statusCode = (int) messageContext.getProperty(GatewayConstants.HTTP_RESPONSE_STATUS_CODE);
+        String statusCodeString  = extractStatusCode(messageContext);
+        int statusCode = 0;
+        if (StringUtils.isNotBlank(statusCodeString)) {
+            statusCode = Integer.parseInt(statusCodeString);
+        }
         String messageId = (String) messageContext.getProperty(GatewayConstants.CORRELATION_ID);
 
         String authorizationHeader = (String) headers.get(GatewayConstants.AUTHORIZATION);
@@ -269,11 +277,14 @@ public class GatewayErrorMediator extends AbstractMediator {
             errorList.add(ErrorUtil.getErrorObject(ErrorConstants.AUErrorEnum.UNEXPECTED_ERROR, errorMessage,
                     new CDSErrorMeta()));
             errorResponse = ErrorUtil.getErrorJson(errorList);
-        } else if (errorCode == GatewayConstants.API_AUTH_INCORRECT_API_RESOURCE ||
-                errorCode == GatewayConstants.API_AUTH_FORBIDDEN ||
-                errorCode == GatewayConstants.INVALID_SCOPE) {
-            status = 403;
+        } else if (errorCode == GatewayConstants.INVALID_SCOPE) {
+            status = HttpStatus.SC_FORBIDDEN;
             errorResponse = getOAuthErrorResponse("insufficient_scope", errorMessage);
+        } else if (errorCode == GatewayConstants.API_AUTH_FORBIDDEN) {
+            status = HttpStatus.SC_FORBIDDEN;
+            errorList.add(ErrorUtil.getErrorObject(ErrorConstants.AUErrorEnum.EXPECTED_GENERAL_ERROR, errorMessage,
+                    new CDSErrorMeta()));
+            errorResponse = ErrorUtil.getErrorJson(errorList);
         } else if (errorCode == GatewayConstants.API_AUTH_MISSING_CREDENTIALS ||
                 errorCode == GatewayConstants.API_AUTH_INVALID_CREDENTIALS) {
             status = ErrorConstants.AUErrorEnum.CLIENT_AUTH_FAILED.getHttpCode();
@@ -381,6 +392,24 @@ public class GatewayErrorMediator extends AbstractMediator {
         errorObject.put(ErrorConstants.ERROR, errorCode);
         errorObject.put(ErrorConstants.ERROR_DESCRIPTION, errorMessage);
         return errorObject.toString();
+    }
+
+    private static String extractStatusCode(MessageContext messageContext) {
+
+        org.apache.axis2.context.MessageContext axis2MessageContext =
+                ((Axis2MessageContext) messageContext).getAxis2MessageContext();
+
+        //The status code values may pass as int or String format
+        String statusCode = null;
+        if (axis2MessageContext.getProperty(GatewayConstants.HTTP_SC) != null) {
+            statusCode = String.valueOf(axis2MessageContext.getProperty(GatewayConstants.HTTP_SC));
+        } else if (messageContext.getProperty(GatewayConstants.HTTP_RESPONSE_STATUS_CODE) != null) {
+            statusCode = String.valueOf(messageContext.getProperty(GatewayConstants
+                    .HTTP_RESPONSE_STATUS_CODE));
+        } else if (messageContext.getProperty(GatewayConstants.CUSTOM_HTTP_SC) != null) {
+            statusCode = String.valueOf(messageContext.getProperty(GatewayConstants.CUSTOM_HTTP_SC));
+        }
+        return statusCode;
     }
 }
 

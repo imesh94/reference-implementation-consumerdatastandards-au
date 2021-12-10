@@ -164,6 +164,62 @@ public class OpenBankingCDSConfigParserTest {
         Assert.assertEquals(openBankingCDSConfigParser.getHolderSpecificIdentifier(), "HID");
     }
 
+    @Test(priority = 7)
+    public void testGetIntrospectFilterValidators() {
+        String dummyConfigFile = absolutePathForTestResources + "/open-banking-cds.xml";
+        OpenBankingCDSConfigParser openBankingCDSConfigParser = OpenBankingCDSConfigParser.getInstance(dummyConfigFile);
+        Assert.assertNotNull(openBankingCDSConfigParser.getIntrospectFilterValidators());
+    }
+
+    @Test(priority = 7)
+    public void testGetRevokeFilterValidators() {
+        String dummyConfigFile = absolutePathForTestResources + "/open-banking-cds.xml";
+        OpenBankingCDSConfigParser openBankingCDSConfigParser = OpenBankingCDSConfigParser.getInstance(dummyConfigFile);
+        Assert.assertNotNull(openBankingCDSConfigParser.getRevokeFilterValidators());
+    }
+
+    @Test(priority = 7)
+    public void testGetParFilterValidators() {
+        String dummyConfigFile = absolutePathForTestResources + "/open-banking-cds.xml";
+        OpenBankingCDSConfigParser openBankingCDSConfigParser = OpenBankingCDSConfigParser.getInstance(dummyConfigFile);
+        Assert.assertNotNull(openBankingCDSConfigParser.getParFilterValidators());
+    }
+
+    @Test(priority = 8)
+    public void testGetJWTAuthEnabled() {
+        String dummyConfigFile = absolutePathForTestResources + "/open-banking-cds.xml";
+        OpenBankingCDSConfigParser openBankingCDSConfigParser = OpenBankingCDSConfigParser.getInstance(dummyConfigFile);
+        Assert.assertTrue(openBankingCDSConfigParser.getJWTAuthEnabled());
+    }
+
+    @Test(priority = 8)
+    public void testGetJWTIssuer() {
+        String dummyConfigFile = absolutePathForTestResources + "/open-banking-cds.xml";
+        OpenBankingCDSConfigParser openBankingCDSConfigParser = OpenBankingCDSConfigParser.getInstance(dummyConfigFile);
+        Assert.assertEquals(openBankingCDSConfigParser.getJWTAuthIssuer(), "DummyIssuer");
+    }
+
+    @Test(priority = 8)
+    public void testGetJWTSubject() {
+        String dummyConfigFile = absolutePathForTestResources + "/open-banking-cds.xml";
+        OpenBankingCDSConfigParser openBankingCDSConfigParser = OpenBankingCDSConfigParser.getInstance(dummyConfigFile);
+        Assert.assertEquals(openBankingCDSConfigParser.getJWTAuthSubject(), "DummySubject");
+    }
+
+    @Test(priority = 8)
+    public void testGetJWTAudience() {
+        String dummyConfigFile = absolutePathForTestResources + "/open-banking-cds.xml";
+        OpenBankingCDSConfigParser openBankingCDSConfigParser = OpenBankingCDSConfigParser.getInstance(dummyConfigFile);
+        Assert.assertEquals(openBankingCDSConfigParser.getJWTAuthAudience(), "DummyAudience");
+    }
+
+    @Test(priority = 8)
+    public void testGetJWTJWKS() {
+        String dummyConfigFile = absolutePathForTestResources + "/open-banking-cds.xml";
+        OpenBankingCDSConfigParser openBankingCDSConfigParser = OpenBankingCDSConfigParser.getInstance(dummyConfigFile);
+        Assert.assertEquals(openBankingCDSConfigParser.getJWTAuthJWKSUrl(), "DummyJWKS");
+    }
+
     private void injectEnvironmentVariable(String key, String value)
             throws ReflectiveOperationException {
 

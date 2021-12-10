@@ -30,8 +30,10 @@ import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Iterator;
+import java.util.List;
 import java.util.Map;
 import java.util.Stack;
 import javax.xml.stream.XMLStreamException;
@@ -432,4 +434,118 @@ public class OpenBankingCDSConfigParser {
         Object config = getConfigElementFromKey(CommonConstants.HOLDER_SPECIFIC_IDENTIFIER);
         return (config != null) ? (String) config : "";
     }
+
+    /** Get CDSIntrospectFilter validators.
+     *
+     * @return - List of configured validators
+     */
+    public List getIntrospectFilterValidators() {
+
+        Object validators = configuration.get(CommonConstants.INTROSPECT_FILTER_VALIDATORS);
+        if (validators != null) {
+            if (validators instanceof List) {
+                return (List) configuration.get(CommonConstants.INTROSPECT_FILTER_VALIDATORS);
+            } else {
+                return Arrays.asList(validators);
+            }
+        } else {
+            return new ArrayList<>();
+        }
+    }
+
+    /** Get CDSIntrospectFilter validators.
+     *
+     * @return - List of configured validators
+     */
+    public List getRevokeFilterValidators() {
+
+        Object validators = configuration.get(CommonConstants.REVOKE_FILTER_VALIDATORS);
+        if (validators != null) {
+            if (validators instanceof List) {
+                return (List) configuration.get(CommonConstants.REVOKE_FILTER_VALIDATORS);
+            } else {
+                return Arrays.asList(validators);
+            }
+        } else {
+            return new ArrayList<>();
+        }
+    }
+
+    /** Get CDSIntrospectFilter validators.
+     *
+     * @return - List of configured validators
+     */
+    public List getParFilterValidators() {
+
+        Object validators = configuration.get(CommonConstants.PAR_FILTER_VALIDATORS);
+        if (validators != null) {
+            if (validators instanceof List) {
+                return (List) configuration.get(CommonConstants.PAR_FILTER_VALIDATORS);
+            } else {
+                return Arrays.asList(validators);
+            }
+        } else {
+            return new ArrayList<>();
+        }
+    }
+
+    /**
+     * Get jwt authentication enabled status.
+     *
+     * @return boolean
+     */
+    public boolean getJWTAuthEnabled() {
+
+        Object config = getConfigElementFromKey(CommonConstants.JWT_AUTH_ENABLED);
+        if (config != null) {
+            return Boolean.parseBoolean((String) config);
+        } else {
+            return false;
+        }
+    }
+
+    /**
+     * Get issuer claim for jwt authentication.
+     *
+     * @return issuer claim
+     */
+    public String getJWTAuthIssuer() {
+
+        String value = (String) getConfigElementFromKey(CommonConstants.JWT_AUTH_ISS);
+        return value == null ? "" : value;
+    }
+
+    /**
+     * Get sub claim for jwt authentication.
+     *
+     * @return sub claim
+     */
+    public String getJWTAuthSubject() {
+
+        String value = (String) getConfigElementFromKey(CommonConstants.JWT_AUTH_SUB);
+        return value == null ? "" : value;
+    }
+
+    /**
+     * Get aud claim for jwt authentication.
+     *
+     * @return sub claim
+     */
+    public String getJWTAuthAudience() {
+
+        String value = (String) getConfigElementFromKey(CommonConstants.JWT_AUTH_AUD);
+        return value == null ? "" : value;
+    }
+
+    /**
+     * Get JWKS Url for jwt signature verification.
+     *
+     * @return aud claim
+     */
+    public String getJWTAuthJWKSUrl() {
+
+        String value = (String) getConfigElementFromKey(CommonConstants.JWT_AUTH_JWKS_URL);
+        return value == null ? "" : value;
+    }
+
 }

@@ -489,6 +489,9 @@ priority = 3
 name = "com.wso2.openbanking.accelerator.gateway.executor.impl.common.reporting.data.executor.CommonReportingDataExecutor"
 priority = 4
 [[open_banking.gateway.openbanking_gateway_executors.type.executors]]
+name = "com.wso2.openbanking.cds.gateway.executors.reporting.CDSCommonDataReportingExecutor"
+priority = 5
+[[open_banking.gateway.openbanking_gateway_executors.type.executors]]
 name = "com.wso2.openbanking.cds.gateway.executors.error.handler.CDSErrorHandler"
 priority = 1000
 
@@ -518,6 +521,45 @@ priority = 7
 [[open_banking.gateway.openbanking_gateway_executors.type.executors]]
 name = "com.wso2.openbanking.cds.gateway.executors.reporting.CDSCommonDataReportingExecutor"
 priority = 8
+[[open_banking.gateway.openbanking_gateway_executors.type.executors]]
+name = "com.wso2.openbanking.cds.gateway.executors.error.handler.CDSErrorHandler"
+priority = 1000
+
+[[open_banking.gateway.openbanking_gateway_executors.type]]
+name = "Admin"
+[[open_banking.gateway.openbanking_gateway_executors.type.executors]]
+name = "com.wso2.openbanking.cds.gateway.executors.jwt.authentication.JWTAuthenticationExecutor"
+priority = 1
+[[open_banking.gateway.openbanking_gateway_executors.type.executors]]
+name = "com.wso2.openbanking.cds.gateway.executors.header.validation.CDSHeaderValidationExecutor"
+priority = 2
+[[open_banking.gateway.openbanking_gateway_executors.type.executors]]
+name = "com.wso2.openbanking.accelerator.gateway.executor.impl.common.reporting.data.executor.CommonReportingDataExecutor"
+priority = 3
+[[open_banking.gateway.openbanking_gateway_executors.type.executors]]
+name = "com.wso2.openbanking.cds.gateway.executors.reporting.CDSCommonDataReportingExecutor"
+priority = 4
+[[open_banking.gateway.openbanking_gateway_executors.type.executors]]
+name = "com.wso2.openbanking.cds.gateway.executors.error.handler.CDSErrorHandler"
+priority = 1000
+
+[[open_banking.gateway.openbanking_gateway_executors.type]]
+name = "Arrangement"
+[[open_banking.gateway.openbanking_gateway_executors.type.executors]]
+name = "com.wso2.openbanking.accelerator.gateway.executor.impl.mtls.cert.validation.executor.MTLSEnforcementExecutor"
+priority = 1
+[[open_banking.gateway.openbanking_gateway_executors.type.executors]]
+name = "com.wso2.openbanking.accelerator.gateway.executor.impl.mtls.cert.validation.executor.CertRevocationValidationExecutor"
+priority = 2
+[[open_banking.gateway.openbanking_gateway_executors.type.executors]]
+name = "com.wso2.openbanking.accelerator.gateway.executor.impl.api.resource.access.validation.APIResourceAccessValidationExecutor"
+priority = 3
+[[open_banking.gateway.openbanking_gateway_executors.type.executors]]
+name = "com.wso2.openbanking.accelerator.gateway.executor.impl.common.reporting.data.executor.CommonReportingDataExecutor"
+priority = 4
+[[open_banking.gateway.openbanking_gateway_executors.type.executors]]
+name = "com.wso2.openbanking.cds.gateway.executors.reporting.CDSCommonDataReportingExecutor"
+priority = 5
 [[open_banking.gateway.openbanking_gateway_executors.type.executors]]
 name = "com.wso2.openbanking.cds.gateway.executors.error.handler.CDSErrorHandler"
 priority = 1000
@@ -706,3 +748,11 @@ api_self_link = "https://APIM_HOSTNAME:8243/cds-au/v2/admin/"
 
 [open_banking_cds.headers]
 holder_identifier="HID"
+
+[open_banking_cds.jwt_authentication]
+enabled = true
+issuer = "cdr-register"
+subject = "cdr-register"
+audience = "https://wso2ob.com"
+jwks_url = "https://keystore.openbankingtest.org.uk/0015800001HQQrZAAX/ykNOgWd2RgnuoLRRyWBkaY.jwks"
+cache_expiry_time = "1440"

@@ -102,7 +102,9 @@ public class CDSErrorHandler implements OpenBankingGatewayExecutor {
             statusCodes.add(error.getHttpStatusCode());
         }
 
-        if (obapiRequestContext.getMsgInfo().getResource().contains("/register")) {
+        // handle DCR and Unauthorized errors according to oAuth2 format
+        if (statusCodes.contains("401") || (obapiRequestContext.getMsgInfo().getResource().contains("/register") &&
+                !obapiRequestContext.getMsgInfo().getResource().contains("/metadata"))) {
             if (errors.isEmpty() && obapiRequestContext.getContextProperty(GatewayConstants.ERROR_STATUS_PROP) != null
                     && OpenBankingErrorCodes.UNAUTHORIZED_CODE.equals(obapiRequestContext
                     .getContextProperty(GatewayConstants.ERROR_STATUS_PROP))) {
@@ -111,8 +113,8 @@ public class CDSErrorHandler implements OpenBankingGatewayExecutor {
                         OpenBankingErrorCodes.UNAUTHORIZED_CODE);
                 errors.add(error);
             }
-            JSONObject dcrErrorPayload = getDCRErrorJSON(errors);
-            obapiRequestContext.setModifiedPayload(dcrErrorPayload.toString());
+            JSONObject oAuthErrorPayload = getOAuthErrorJSON(errors);
+            obapiRequestContext.setModifiedPayload(oAuthErrorPayload.toString());
         } else {
             String memberId = obapiRequestContext.getApiRequestInfo().getUsername();
             String appId = obapiRequestContext.getApiRequestInfo().getConsumerKey();
@@ -156,8 +158,8 @@ public class CDSErrorHandler implements OpenBankingGatewayExecutor {
         }
 
         if (obapiResponseContext.getMsgInfo().getResource().contains("/register")) {
-            JSONObject dcrErrorPayload = getDCRErrorJSON(errors);
-            obapiResponseContext.setModifiedPayload(dcrErrorPayload.toString());
+            JSONObject oAuthErrorPayload = getOAuthErrorJSON(errors);
+            obapiResponseContext.setModifiedPayload(oAuthErrorPayload.toString());
         } else {
             String memberId = obapiResponseContext.getApiRequestInfo().getUsername();
             String appId = obapiResponseContext.getApiRequestInfo().getConsumerKey();
@@ -188,7 +190,7 @@ public class CDSErrorHandler implements OpenBankingGatewayExecutor {
         obapiResponseContext.setAnalyticsData(analyticsData);
     }
 
-    public static JSONObject getDCRErrorJSON(ArrayList<OpenBankingExecutorError> errors) {
+    public static JSONObject getOAuthErrorJSON(ArrayList<OpenBankingExecutorError> errors) {
 
         JSONObject errorObj = new JSONObject();
         for (OpenBankingExecutorError error : errors) {

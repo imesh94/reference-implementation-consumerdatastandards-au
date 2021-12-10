@@ -54,4 +54,24 @@
     <Headers>
         <HolderIdentifier>HID</HolderIdentifier>
     </Headers>
+
+    <FilterValidators>
+        <IntrospectFilterValidators>
+            <Validator>ValidatorClassName</Validator>
+            <Validator>ValidatorClassName</Validator>
+        </IntrospectFilterValidators>
+        <RevokeFilterValidators>
+            <Validator>ValidatorClassName</Validator>
+        </RevokeFilterValidators>
+        <ParFilterValidators>
+            <Validator>ValidatorClassName</Validator>
+        </ParFilterValidators>
+    </FilterValidators>
+    <JWTAuthentication>
+        <Enabled>true</Enabled>
+        <Issuer>DummyIssuer</Issuer>
+        <Subject>DummySubject</Subject>
+        <Audience>DummyAudience</Audience>
+        <JWKSUrl>DummyJWKS</JWKSUrl>
+    </JWTAuthentication>
 </Server>

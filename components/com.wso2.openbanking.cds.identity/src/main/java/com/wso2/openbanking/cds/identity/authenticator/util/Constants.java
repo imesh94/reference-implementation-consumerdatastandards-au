@@ -39,6 +39,7 @@ public class Constants {
     public static final String TOKEN = "token";
     public static final String REVOKE = "oauth2/revoke";
     public static final String PAR = "par";
+    public static final String INTROSPECT = "introspect";
 
 
 }

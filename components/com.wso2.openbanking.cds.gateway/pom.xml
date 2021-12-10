@@ -80,6 +80,8 @@
                     <excludes>
                         <!--Excluding them in coverage reports-->
                         <exclude>**/*Constants.class</exclude>
+                        <exclude>**/JwtJtiCache.class</exclude>
+                        <exclude>**/JwtJtiCacheKey.class</exclude>
                     </excludes>
                 </configuration>
                 <executions>

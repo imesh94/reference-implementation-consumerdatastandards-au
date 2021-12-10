@@ -26,6 +26,9 @@ public class CommonConstants {
     public static final String ID_PERMANENCE_SECRET_KEY = "IdPermanence.SecretKey";
     public static final String TOKEN_ENCRYPTION_ENABLED = "TokenEncryption.Enable";
     public static final String TOKEN_ENCRYPTION_SECRETKEY = "TokenEncryption.SecretKey";
+    public static final String INTROSPECT_FILTER_VALIDATORS = "FilterValidators.IntrospectFilterValidators.Validator";
+    public static final String REVOKE_FILTER_VALIDATORS = "FilterValidators.RevokeFilterValidators.Validator";
+    public static final String PAR_FILTER_VALIDATORS = "FilterValidators.ParFilterValidators.Validator";
 
 
     // Http related constants
@@ -60,7 +63,7 @@ public class CommonConstants {
             ".DataHolderResponsibilities.BulkExecutionHour";
     public static final String HOLDER_SPECIFIC_IDENTIFIER = "Headers.HolderIdentifier";
 
-    // Admin API constants
+    // Admin API config constants
     public static final String ADMIN_API_SELF_LINK = "Admin.APISelfLink";
 
     // DCR configs
@@ -68,6 +71,15 @@ public class CommonConstants {
     public static final String ENABLE_SSA_JTI_VALIDATION = "DCR.EnableSSAJTIValidation";
     public static final String JTI_CACHE_ACCESS_EXPIRY = "DCR.JTICache.CacheAccessExpiry";
     public static final String JTI_CACHE_MODIFY_EXPIRY = "DCR.JTICache.CacheModifiedExpiry";
+
+    // Self-signed JWT Authentication config constants
+    public static final String JWT_AUTH_ENABLED = "JWTAuthentication.Enabled";
+    public static final String JWT_AUTH_ISS = "JWTAuthentication.Issuer";
+    public static final String JWT_AUTH_SUB = "JWTAuthentication.Subject";
+    public static final String JWT_AUTH_AUD = "JWTAuthentication.Audience";
+    public static final String JWT_AUTH_JWKS_URL = "JWTAuthentication.JWKSUrl";
+    public static final String JWT_AUTH_CACHE_EXPIRY_TIME = "JWTAuthentication.CacheExpiryTime";
+    public static final String JWT_AUTH_CACHE_MODIFY_EXPIRY = "JWTAuthentication.CacheModifiedExpiry";
 
     private CommonConstants() {}
 }
