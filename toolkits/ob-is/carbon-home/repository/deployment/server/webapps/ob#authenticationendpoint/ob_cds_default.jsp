@@ -94,6 +94,8 @@
                     <input type="hidden" name="type" id="type" value="accounts"/>
                     <input type="hidden" name="consent-expiry-date" id="consentExp" value="${consent_expiration}"/>
                     <input type="hidden" name="accountMaskingEnabled" id="accountMaskingEnabled" value="${account_masking_enabled}"/>
+                    <input type="hidden" name="isConsentAmendment" id="isConsentAmendment" value="${isConsentAmendment}"/>
+                    <input type="hidden" name="isSharingDurationUpdated" id="isSharingDurationUpdated" value="${isSharingDurationUpdated}"/>
                 </div>
             </div>
 

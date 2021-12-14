@@ -32,6 +32,7 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
 import java.nio.charset.StandardCharsets;
+import java.time.Instant;
 import java.time.OffsetDateTime;
 import java.time.ZoneOffset;
 import java.util.ArrayList;
@@ -76,8 +77,17 @@ public class CDSConsentRetrievalStep implements ConsentRetrievalStep {
 
                     if (consentResource != null) {
                         // Check if the consent is expired
-                        OffsetDateTime existingConsentExpiry = OffsetDateTime.parse(CDSDataRetrievalUtil.
-                                getExpiryFromReceipt(consentResource.getReceipt()));
+                        OffsetDateTime existingConsentExpiry;
+                        String consentExpiryString = CDSDataRetrievalUtil.getExpiryFromReceipt(
+                                consentResource.getReceipt());
+                        if (CDSConsentExtensionConstants.ZERO.equals(consentExpiryString)) {
+                            // Use 24h from created time for once off consents (default token validity period)
+                            long onceOffConsentExpiry = consentResource.getCreatedTime() + 60 * 60 * 24; //24 hours
+                            existingConsentExpiry =
+                                    Instant.ofEpochSecond(onceOffConsentExpiry).atOffset(ZoneOffset.UTC);
+                        } else {
+                            existingConsentExpiry = OffsetDateTime.parse(consentExpiryString);
+                        }
                         OffsetDateTime currentDateTime = OffsetDateTime.now(ZoneOffset.UTC);
                         if (existingConsentExpiry.isAfter(currentDateTime)) {
                             // Add required data for the persistence step
