@@ -168,7 +168,7 @@ public class SPJsonProcessorUtil {
         for (Object object : recordsArray) {
             countArray = (JSONArray) object;
             currentElement = Long.parseLong(countArray.get(0).toString());
-            long currentTimestamp = (Long.parseLong (countArray.get(1).toString())) / 1000;
+            long currentTimestamp = (Long.parseLong (countArray.get(1).toString()));
             validity = (String) countArray.get(2);
             currentDay = DateTimeUtil.getDaysAgo(currentTimestamp);
             if (!MetricsConstants.CDS_REJECTION_METRICS_APP_VALIDITY.equals(validity)) { //authenticated user
