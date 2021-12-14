@@ -176,7 +176,8 @@ public class SPJsonProcessorUtil {
                     if (log.isDebugEnabled()) {
                         log.debug(String.format("Adding metrics data for day %s", currentDay));
                     }
-                    elementListAuthenticated.set(currentDay - 1, BigDecimal.valueOf(currentElement));
+                    elementListAuthenticated.set(currentDay - 1,
+                            elementListAuthenticated.get(currentDay - 1).add(BigDecimal.valueOf(currentElement)));
                 }
             }
             if (MetricsConstants.CDS_REJECTION_METRICS_APP_VALIDITY.equals(validity)) { //unauthenticated user
@@ -184,7 +185,8 @@ public class SPJsonProcessorUtil {
                     if (log.isDebugEnabled()) {
                         log.debug(String.format("Adding metrics data for day %s", currentDay));
                     }
-                    elementListUnauthenticated.set(currentDay - 1, BigDecimal.valueOf(currentElement));
+                    elementListUnauthenticated.set(currentDay - 1,
+                            elementListAuthenticated.get(currentDay - 1).add(BigDecimal.valueOf(currentElement)));
                 }
             }
         }
