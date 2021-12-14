@@ -191,7 +191,12 @@ public class ArrangementRevocationApi {
 
         String consentUserID = StringUtils.EMPTY;
         if (authorizationResources != null && !authorizationResources.isEmpty()) {
-            consentUserID = authorizationResources.get(0).getUserID();
+            for (AuthorizationResource authorizationResource : detailedConsentResource.getAuthorizationResources()) {
+                if (Constants.AUTH_RESOURCE_TYPE_PRIMARY.equals(authorizationResource.getAuthorizationType())) {
+                    consentUserID = authorizationResource.getUserID();
+                    break;
+                }
+            }
         }
 
         if (StringUtils.isBlank(consentUserID)) {

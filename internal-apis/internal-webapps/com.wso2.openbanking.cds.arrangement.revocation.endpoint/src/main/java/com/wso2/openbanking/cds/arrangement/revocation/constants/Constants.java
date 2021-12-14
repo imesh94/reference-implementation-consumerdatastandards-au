@@ -24,5 +24,6 @@ public class Constants {
     public static final String AUTHORIZED_CONSENT_STATUS = "authorized";
     public static final String REVOKED_CONSENT_STATUS = "Revoked";
     public static final String CONSENT_REVOKE_REASON = "Revoke the consent";
+    public static final String AUTH_RESOURCE_TYPE_PRIMARY = "primary_member";
 
 }
