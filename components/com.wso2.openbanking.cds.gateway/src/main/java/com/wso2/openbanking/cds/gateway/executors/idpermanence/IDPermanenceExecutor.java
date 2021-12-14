@@ -67,10 +67,10 @@ public class IDPermanenceExecutor implements OpenBankingGatewayExecutor {
                 idPermanenceValidationResponse = new IdPermanenceValidationResponse();
                 idPermanenceValidationResponse.setValid(false);
                 idPermanenceValidationResponse.setError(new OpenBankingExecutorError(
-                        ErrorConstants.AUErrorEnum.INVALID_BANK_ACCOUNT_BODY.getCode(),
-                        ErrorConstants.AUErrorEnum.INVALID_BANK_ACCOUNT_BODY.getTitle(),
-                        ErrorConstants.AUErrorEnum.INVALID_BANK_ACCOUNT_BODY.getDetail(),
-                        String.valueOf(ErrorConstants.AUErrorEnum.INVALID_BANK_ACCOUNT_BODY.getHttpCode())));
+                        ErrorConstants.AUErrorEnum.FIELD_MISSING.getCode(),
+                        ErrorConstants.AUErrorEnum.FIELD_MISSING.getTitle(),
+                        IdPermanenceConstants.REQUEST_BODY,
+                        String.valueOf(ErrorConstants.AUErrorEnum.FIELD_MISSING.getHttpCode())));
             }
             if (!idPermanenceValidationResponse.isValid()) {
                 handleError(obApiRequestContext, idPermanenceValidationResponse);

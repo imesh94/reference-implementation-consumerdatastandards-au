@@ -33,6 +33,7 @@ public class IdPermanenceConstants {
     public static final String FROM = "from";
     public static final String PAYMENT_SET = "paymentSet";
     public static final String TO = "to";
+    public static final String REQUEST_BODY = "request body";
 
     // Header Parameters
     public static final String DECRYPTED_SUB_REQUEST_PATH = "decrypted-sub-req-path";
