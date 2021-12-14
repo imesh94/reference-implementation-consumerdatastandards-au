@@ -40,7 +40,7 @@ public class CDSTokenRevocationFilter extends CDSBaseFilter {
     @Generated(message = "Excluded from code coverage")
     private void initializeFilterValidators() {
         if (validators.isEmpty()) {
-            log.info("Adding CDSTokenRevocationFilter validators");
+            log.debug("Adding CDSTokenRevocationFilter validators");
             for (Object element : OpenBankingCDSConfigParser.getInstance().getRevokeFilterValidators()) {
                 validators.add((OBIdentityFilterValidator) OpenBankingUtils.
                         getClassInstanceFromFQN(element.toString()));

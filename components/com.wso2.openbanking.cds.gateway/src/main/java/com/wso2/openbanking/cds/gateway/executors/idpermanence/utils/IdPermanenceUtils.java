@@ -252,10 +252,10 @@ public class IdPermanenceUtils {
         } else {
             idPermanenceValidationResponse.setValid(false);
             idPermanenceValidationResponse.setError(new OpenBankingExecutorError(
-                    ErrorConstants.AUErrorEnum.INVALID_BANK_ACCOUNT_BODY.getCode(),
-                    ErrorConstants.AUErrorEnum.INVALID_BANK_ACCOUNT_BODY.getTitle(),
-                    ErrorConstants.AUErrorEnum.INVALID_BANK_ACCOUNT_BODY.getDetail(),
-                    String.valueOf(ErrorConstants.AUErrorEnum.INVALID_BANK_ACCOUNT_BODY.getHttpCode()))
+                    ErrorConstants.AUErrorEnum.INVALID_FIELD.getCode(),
+                    ErrorConstants.AUErrorEnum.INVALID_FIELD.getTitle(),
+                    IdPermanenceConstants.DATA,
+                    String.valueOf(ErrorConstants.AUErrorEnum.INVALID_FIELD.getHttpCode()))
             );
             return idPermanenceValidationResponse;
         }

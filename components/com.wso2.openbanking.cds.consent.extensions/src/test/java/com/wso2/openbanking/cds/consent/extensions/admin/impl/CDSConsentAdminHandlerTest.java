@@ -19,7 +19,7 @@ import com.wso2.openbanking.accelerator.consent.extensions.common.ResponseStatus
 import com.wso2.openbanking.accelerator.consent.mgt.dao.models.AuthorizationResource;
 import com.wso2.openbanking.accelerator.consent.mgt.dao.models.ConsentMappingResource;
 import com.wso2.openbanking.accelerator.consent.mgt.dao.models.DetailedConsentResource;
-import com.wso2.openbanking.accelerator.consent.mgt.service.ConsentCoreService;
+import com.wso2.openbanking.accelerator.consent.mgt.service.impl.ConsentCoreServiceImpl;
 import org.mockito.ArgumentCaptor;
 import org.testng.annotations.BeforeClass;
 import org.testng.annotations.Test;
@@ -56,12 +56,12 @@ public class CDSConsentAdminHandlerTest {
     public static final String MAPPING_ID_3 = "test-mapping-id-3";
 
     private CDSConsentAdminHandler uut;
-    private ConsentCoreService consentCoreServiceMock;
+    private ConsentCoreServiceImpl consentCoreServiceMock;
 
     @BeforeClass
     public void setUp() throws ConsentManagementException {
         //mock
-        consentCoreServiceMock = mock(ConsentCoreService.class);
+        consentCoreServiceMock = mock(ConsentCoreServiceImpl.class);
 
         //when
         AuthorizationResource authResource1 = new AuthorizationResource();

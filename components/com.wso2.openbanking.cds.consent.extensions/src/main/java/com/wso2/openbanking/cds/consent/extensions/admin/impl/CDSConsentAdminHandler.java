@@ -21,12 +21,12 @@ import com.wso2.openbanking.accelerator.consent.extensions.common.ResponseStatus
 import com.wso2.openbanking.accelerator.consent.mgt.dao.models.AuthorizationResource;
 import com.wso2.openbanking.accelerator.consent.mgt.dao.models.ConsentMappingResource;
 import com.wso2.openbanking.accelerator.consent.mgt.dao.models.DetailedConsentResource;
-import com.wso2.openbanking.accelerator.consent.mgt.service.ConsentCoreService;
 import com.wso2.openbanking.accelerator.consent.mgt.service.constants.ConsentCoreServiceConstants;
 import com.wso2.openbanking.accelerator.consent.mgt.service.impl.ConsentCoreServiceImpl;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.wso2.carbon.identity.oauth2.IdentityOAuth2Exception;
 
 import java.util.ArrayList;
 import java.util.Map;
@@ -41,7 +41,7 @@ public class CDSConsentAdminHandler implements ConsentAdminHandler {
     protected static final String CONSENT_ID = "consentID";
     protected static final String USER_ID = "userID";
     private static final Log log = LogFactory.getLog(CDSConsentAdminHandler.class);
-    private final ConsentCoreService consentCoreService;
+    private final ConsentCoreServiceImpl consentCoreService;
     private final ConsentAdminHandler defaultConsentAdminHandler;
 
     public CDSConsentAdminHandler() {
@@ -49,7 +49,7 @@ public class CDSConsentAdminHandler implements ConsentAdminHandler {
         this.defaultConsentAdminHandler = new DefaultConsentAdminHandler();
     }
 
-    public CDSConsentAdminHandler(ConsentCoreService consentCoreService, ConsentAdminHandler consentAdminHandler) {
+    public CDSConsentAdminHandler(ConsentCoreServiceImpl consentCoreService, ConsentAdminHandler consentAdminHandler) {
         this.consentCoreService = consentCoreService;
         this.defaultConsentAdminHandler = consentAdminHandler;
     }
@@ -79,7 +79,7 @@ public class CDSConsentAdminHandler implements ConsentAdminHandler {
                             log.debug("Revoke consent for consentID " + consentID);
                         }
                         // Revoke consent as primary consent holder
-                        revokeConsentAsPrimaryUser(consentID);
+                        revokeConsentAsPrimaryUser(detailedConsentResource, userID);
                     }
                 }
             }
@@ -153,8 +153,18 @@ public class CDSConsentAdminHandler implements ConsentAdminHandler {
         }
     }
 
-    private void revokeConsentAsPrimaryUser(String consentID) throws ConsentManagementException {
+    private void revokeConsentAsPrimaryUser(DetailedConsentResource detailedConsentResource, String userId)
+            throws ConsentManagementException {
+
+        String consentID = detailedConsentResource.getConsentID();
         this.consentCoreService.revokeConsentWithReason(consentID, CONSENT_STATUS_REVOKED, null,
                 ConsentCoreServiceConstants.CONSENT_REVOKE_FROM_DASHBOARD_REASON);
+        // revoke access tokens
+        try {
+            consentCoreService.revokeTokens(detailedConsentResource, userId);
+        } catch (IdentityOAuth2Exception e) {
+            log.error(String.format("Error occurred while revoking tokens. Only the consent was revoked " +
+                    "successfully. %s", e.getMessage()));
+        }
     }
 }
