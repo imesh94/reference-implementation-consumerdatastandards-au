@@ -167,8 +167,18 @@ public class GatewayErrorMediator extends AbstractMediator {
             customerStatus = GatewayConstants.CUSTOMER_PRESENT;
         }
 
-        String consumerId = (String) axis2MessageContext.getProperty(GatewayConstants.USER_NAME);
-        String clientId = (String) axis2MessageContext.getProperty(GatewayConstants.CONSUMER_KEY);
+        String consumerId;
+        if (axis2MessageContext.getProperty(GatewayConstants.USER_NAME) != null) {
+            consumerId = (String) axis2MessageContext.getProperty(GatewayConstants.USER_NAME);
+        } else {
+            consumerId = (String) messageContext.getProperty(GatewayConstants.USER_NAME);
+        }
+        String clientId;
+        if (axis2MessageContext.getProperty(GatewayConstants.CONSUMER_KEY) != null) {
+            clientId = (String) axis2MessageContext.getProperty(GatewayConstants.CONSUMER_KEY);
+        } else {
+            clientId = (String) messageContext.getProperty(GatewayConstants.CONSUMER_KEY);
+        }
 
         String httpMethod;
         if (axis2MessageContext.getProperty(GatewayConstants.HTTP_METHOD) != null) {

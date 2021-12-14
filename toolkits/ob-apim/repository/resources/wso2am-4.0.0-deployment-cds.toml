@@ -570,9 +570,6 @@ name = "Consent"
 name = "com.wso2.openbanking.accelerator.gateway.executor.impl.selfcare.portal.UserPermissionValidationExecutor"
 priority = 1
 
-[open_banking.apim.analytics]
-enable=false
-
 [open_banking.data_publishing]
 enable = false
 username="$ref{super_admin.username}@carbon.super"

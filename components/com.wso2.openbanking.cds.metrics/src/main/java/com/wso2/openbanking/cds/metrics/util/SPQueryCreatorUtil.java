@@ -155,8 +155,8 @@ public class SPQueryCreatorUtil {
         String[] timeRangeArray = getTimeGapForDays(7, TimeFormatEnum.EPOCH);
 
         return String.format("from API_INVOCATION_RAW_DATA on str:contains(API_NAME, 'ConsumerDataStandards') " +
-                        "select count(STATUS_CODE) as throttledOutCount group by TIMESTAMP " +
-                        "having STATUS_CODE == 429 and TIMESTAMP > %s and TIMESTAMP < %s;",
+                        "select count(STATUS_CODE) as throttledOutCount, TIMESTAMP, CONSUMER_ID group by TIMESTAMP, " +
+                        "CONSUMER_ID having STATUS_CODE == 429 and TIMESTAMP > %s and TIMESTAMP < %s;",
                 timeRangeArray[0], timeRangeArray[1]);
     }
 
@@ -171,7 +171,7 @@ public class SPQueryCreatorUtil {
         String[] timeRangeArray = getTimeGapForDays(0, TimeFormatEnum.EPOCH);
         // Rejected invocations for Consumer data standards will only be considered.
         return String.format("from API_INVOCATION_RAW_DATA on str:contains(API_NAME, 'ConsumerDataStandards') " +
-                        "select count(STATUS_CODE) as throttleOutCount group by TIMESTAMP " +
+                        "select count(STATUS_CODE) as throttleOutCount, CONSUMER_ID group by TIMESTAMP, CONSUMER_ID " +
                         "having STATUS_CODE == 429 and TIMESTAMP > %s and TIMESTAMP < %s;",
                 timeRangeArray[0], timeRangeArray[1]);
     }
