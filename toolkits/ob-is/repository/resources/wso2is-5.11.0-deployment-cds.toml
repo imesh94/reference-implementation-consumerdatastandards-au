@@ -207,6 +207,23 @@ password = "${admin.password}"
 'header.X-WSO2-KEY-MANAGER' = "WSO2-IS"
 
 [[event_listener]]
+id = "ob_token_revocation_listener"
+type = "org.wso2.carbon.identity.core.handler.AbstractIdentityHandler"
+name = "com.wso2.openbanking.accelerator.identity.listener.TokenRevocationListener"
+order = "893"
+enable = true
+
+[[event_listener]]
+id = "cds_introspect_private_key_jwt_authenticator"
+type = "org.wso2.carbon.identity.core.handler.AbstractIdentityHandler"
+name = "com.wso2.openbanking.cds.identity.authenticator.CDSIntrospectionPrivateKeyJWTClientAuthenticator"
+order = "894"
+enable = true
+
+[event_listener.properties]
+EndpointAlias = "https://localhost:9446/oauth2/introspect"
+
+[[event_listener]]
 id = "cds_par_private_key_jwt_authenticator"
 type = "org.wso2.carbon.identity.core.handler.AbstractIdentityHandler"
 name = "com.wso2.openbanking.cds.identity.authenticator.CDSPARPrivateKeyJWTClientAuthenticator"
@@ -323,7 +340,7 @@ allowed_auth_handlers = ["BasicAuthentication"]
 [[resource.access_control]]
 context = "(.*)/consentmgr(.*)"
 secure="false"
-http_method="GET"
+http_method="GET,DELETE"
 
 [[resource.access_control]]
 context = "(.*)/api/openbanking/push-authorization/(.*)"
