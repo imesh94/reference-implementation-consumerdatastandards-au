@@ -451,12 +451,14 @@ paths:
           description: Constrain the transaction history request to transactions with effective time at or after this date/time. If absent defaults to newest-time minus 90 days.  Format is aligned to DateTimeString common type
           required: false
           type: string
+          format: date-time
           x-cds-type: DateTimeString
         - name: newest-time
           in: query
           description: Constrain the transaction history request to transactions with effective time at or before this date/time.  If absent defaults to today.  Format is aligned to DateTimeString common type
           required: false
           type: string
+          format: date-time
           x-cds-type: DateTimeString
         - name: min-amount
           in: query
@@ -1313,6 +1315,7 @@ paths:
           description: Only include products that have been updated after the specified date and time. If absent defaults to include all products
           required: false
           type: string
+          format: date-time
           x-cds-type: DateTimeString
         - name: brand
           in: query
@@ -4089,6 +4092,7 @@ parameters:
     description: Constrain the transaction history request to transactions with effective time at or before this date/time.  If absent defaults to today.  Format is aligned to DateTimeString common type
     required: false
     type: string
+    format: date-time
     x-cds-type: DateTimeString
   ParamTransactionOldestTime:
     name: oldest-time
@@ -4096,6 +4100,7 @@ parameters:
     description: Constrain the transaction history request to transactions with effective time at or after this date/time. If absent defaults to newest-time minus 90 days.  Format is aligned to DateTimeString common type
     required: false
     type: string
+    format: date-time
     x-cds-type: DateTimeString
   ParamTransactionMinAmount:
     name: min-amount
