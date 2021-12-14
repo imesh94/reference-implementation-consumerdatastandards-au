@@ -564,9 +564,6 @@ priority = 5
 name = "com.wso2.openbanking.cds.gateway.executors.error.handler.CDSErrorHandler"
 priority = 1000
 
-[open_banking.apim.analytics]
-enable=false
-
 [open_banking.data_publishing]
 enable = false
 username="$ref{super_admin.username}@carbon.super"
