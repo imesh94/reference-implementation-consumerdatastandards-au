@@ -36,10 +36,10 @@ import java.util.List;
         groups = MandatoryChecks.class)
 @ValidateUriHostnames(registrationRequestProperty = "registrationRequest", ssa = "softwareStatement",
         message = "Host names of logo_uri/tos_uri/policy_uri/client_uri does not match with the redirect_uris:"
-                + CDSValidationConstants.INVALID_REDIRECT_URI, groups = AttributeChecks.class)
+                + DCRCommonConstants.INVALID_META_DATA, groups = AttributeChecks.class)
 @ValidateUriConnection(registrationRequestProperty = "registrationRequest", ssa = "softwareStatement",
         message = "Provided logo_uri/client_uri/policy_uri/tos_uri in the request does not resolve" +
-                " to a valid web page:" + CDSValidationConstants.INVALID_REDIRECT_URI, groups = AttributeChecks.class)
+                " to a valid web page:" + DCRCommonConstants.INVALID_META_DATA, groups = AttributeChecks.class)
 @ValidateJTI(registrationRequestProperty = "registrationRequest", ssa = "softwareStatement",
         message = CDSValidationConstants.JTI_REPLAYED + ":" + DCRCommonConstants.INVALID_META_DATA,
         groups = AttributeChecks.class)
