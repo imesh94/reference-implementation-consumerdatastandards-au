@@ -31,9 +31,13 @@ import org.openqa.selenium.By
 import org.testng.Assert
 import org.testng.annotations.Test
 
+import java.nio.charset.Charset
+
 class ConcurrentConsentTest extends AbstractAUTests {
 
     static final String CDS_PATH = AUConstants.CDS_PATH
+    def cdsClient = "${AppConfigReader.getClientId()}:${AppConfigReader.getClientSecret()}"
+    def clientHeader = "${Base64.encoder.encodeToString(cdsClient.getBytes(Charset.defaultCharset()))}"
     static final String CDR_ARRANGEMENT_ENDPOINT = AUConstants.CDR_ARRANGEMENT_ENDPOINT
     def authorisationCode = ""
 
@@ -153,6 +157,9 @@ class ConcurrentConsentTest extends AbstractAUTests {
         Response response = AURequestBuilder
                 .buildBasicRequest(userAccessToken.tokens.accessToken.toString(),
                 AUConstants.CDR_ENDPOINT_VERSION)
+                .header(AUConstants.X_FAPI_AUTH_DATE, AUConstants.DATE)
+                .header(AUConstants.X_FAPI_CUSTOMER_IP_ADDRESS , AUConstants.IP)
+                .header(AUConstants.X_CDS_CLIENT_HEADERS , clientHeader)
                 .baseUri(AUTestUtil.getBaseUrl(AUConstants.BASE_PATH_TYPE_ACCOUNT))
                 .get("${CDS_PATH}${AUConstants.BULK_ACCOUNT_PATH}")
 
@@ -167,6 +174,7 @@ class ConcurrentConsentTest extends AbstractAUTests {
         //revoke sharing arrangement
         def responsemg = TestSuite.buildRequest()
                 .header(AUConstants.X_V_HEADER, AUConstants.CDR_ENDPOINT_VERSION)
+
                 .header(TestConstants.AUTHORIZATION_HEADER_KEY, "Bearer ${applicationToken}")
                 .baseUri(AUTestUtil.getBaseUrl(AUConstants.BASE_PATH_TYPE_CDR_ARRANGEMENT))
                 .delete("${CDR_ARRANGEMENT_ENDPOINT}/${cdrArrangementId}")
@@ -209,6 +217,9 @@ class ConcurrentConsentTest extends AbstractAUTests {
         Response response = AURequestBuilder
                 .buildBasicRequest(userAccessToken.tokens.accessToken.toString(),
                 AUConstants.CDR_ENDPOINT_VERSION)
+                .header(AUConstants.X_FAPI_AUTH_DATE, AUConstants.DATE)
+                .header(AUConstants.X_FAPI_CUSTOMER_IP_ADDRESS , AUConstants.IP)
+                .header(AUConstants.X_CDS_CLIENT_HEADERS , clientHeader)
                 .baseUri(AUTestUtil.getBaseUrl(AUConstants.BASE_PATH_TYPE_ACCOUNT))
                 .get("${CDS_PATH}${AUConstants.BULK_ACCOUNT_PATH}")
 
@@ -223,6 +234,9 @@ class ConcurrentConsentTest extends AbstractAUTests {
         //revoke sharing arrangement
         response = TestSuite.buildRequest()
                 .header(AUConstants.X_V_HEADER, AUConstants.CDR_ENDPOINT_VERSION)
+                .header(AUConstants.X_FAPI_AUTH_DATE, AUConstants.DATE)
+                .header(AUConstants.X_FAPI_CUSTOMER_IP_ADDRESS , AUConstants.IP)
+                .header(AUConstants.X_CDS_CLIENT_HEADERS , clientHeader)
                 .header(TestConstants.AUTHORIZATION_HEADER_KEY, "Bearer ${applicationToken}")
                 .baseUri(AUTestUtil.getBaseUrl(AUConstants.BASE_PATH_TYPE_CDR_ARRANGEMENT))
                 .delete("${CDR_ARRANGEMENT_ENDPOINT}/${cdrArrangementId}")

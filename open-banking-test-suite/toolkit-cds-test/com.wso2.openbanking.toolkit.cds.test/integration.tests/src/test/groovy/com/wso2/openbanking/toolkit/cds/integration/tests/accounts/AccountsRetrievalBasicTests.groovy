@@ -75,11 +75,11 @@ class AccountsRetrievalBasicTests extends AbstractAUTests {
         Assert.assertEquals(response.statusCode(), AUConstants.STATUS_CODE_404)
         if (TestConstants.SOLUTION_VERSION_200.equalsIgnoreCase(AUTestUtil.solutionVersion)) {
             Assert.assertEquals(TestUtil.parseResponseBody(response, AUConstants.ERROR_CODE),
-                    AUConstants.ERROR_CODE_INVALID_RESOURCE)
-            Assert.assertEquals(TestUtil.parseResponseBody(response, AUConstants.ERROR_SOURCE_POINTER),
-                    "/banking/accountz")
+                    AUConstants.ERROR_CODE_RESOURCE_NOTFOUND )
+            //Assert.assertEquals(TestUtil.parseResponseBody(response, AUConstants.ERROR_SOURCE_POINTER),
+                    //"/banking/accountz")
             Assert.assertEquals(TestUtil.parseResponseBody(response, AUConstants.ERROR_TITLE), AUConstants
-                    .INVALID_RESOURCE)
+                    .RESOURCE_NOT_FOUND)
         } else {
             Assert.assertTrue(TestUtil.parseResponseBody(response, "fault.description").contains(
                     "No matching resource found for given API Request"))

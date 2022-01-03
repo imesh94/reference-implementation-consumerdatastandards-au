@@ -14,6 +14,7 @@ package com.wso2.openbanking.toolkit.cds.integration.tests.accounts
 
 import com.wso2.openbanking.test.framework.automation.AUBasicAuthAutomationStep
 import com.wso2.openbanking.test.framework.automation.BrowserAutomation
+import com.wso2.openbanking.test.framework.util.AppConfigReader
 import com.wso2.openbanking.test.framework.util.ConfigParser
 import com.wso2.openbanking.test.framework.util.TestConstants
 import com.wso2.openbanking.test.framework.util.TestUtil
@@ -31,6 +32,8 @@ import org.testng.annotations.BeforeClass
 import org.testng.annotations.Test
 import org.testng.asserts.SoftAssert
 
+import java.nio.charset.Charset
+
 /**
  *  AU ID Permanence Tests
  */
@@ -45,6 +48,8 @@ class AccountsIdPermanenceTest extends AbstractAUTests{
     private String encryptedTransactionId
     private String encryptedPayeeId
     private String userId = configuration.getKeyManagerAdminUsername() + "@" + configuration.getTenantDomain()
+    def cdsClient = "${AppConfigReader.getClientId()}:${AppConfigReader.getClientSecret()}"
+    def clientHeader = "${Base64.encoder.encodeToString(cdsClient.getBytes(Charset.defaultCharset()))}"
 
     @BeforeClass
     void "Get User Access Token"() {
@@ -59,14 +64,17 @@ class AccountsIdPermanenceTest extends AbstractAUTests{
 
         def response = AURequestBuilder
                 .buildBasicRequest(userAccessToken, AUConstants.X_V_HEADER_ACCOUNTS)
+                .header(AUConstants.X_FAPI_AUTH_DATE, AUConstants.DATE)
+                .header(AUConstants.X_FAPI_CUSTOMER_IP_ADDRESS , AUConstants.IP)
+                .header(AUConstants.X_CDS_CLIENT_HEADERS , clientHeader)
                 .baseUri(AUTestUtil.getBaseUrl(AUConstants.BASE_PATH_TYPE_ACCOUNT))
                 .get(requestUrl)
 
         SoftAssert softAssertion= new SoftAssert()
         softAssertion.assertEquals(response.statusCode(), AUConstants.STATUS_CODE_200)
 
-        encryptedAccount1Id = TestUtil.parseResponseBody(response, "data.accounts.accountId[0]")
-        encryptedAccount2Id = TestUtil.parseResponseBody(response, "data.accounts.accountId[1]")
+        encryptedAccount1Id = TestUtil.parseResponseBody(response, "data.accounts.accountId[1]")
+        encryptedAccount2Id = TestUtil.parseResponseBody(response, "data.accounts.accountId[0]")
 
         softAssertion.assertEquals(consentedAccount, AUIdEncryptorDecryptor.
                 decrypt(encryptedAccount1Id, secretKey).split(":")[2])
@@ -107,6 +115,9 @@ class AccountsIdPermanenceTest extends AbstractAUTests{
 
         def response = AURequestBuilder
                 .buildBasicRequest(userAccessToken, AUConstants.X_V_HEADER_ACCOUNTS)
+                .header(AUConstants.X_FAPI_AUTH_DATE, AUConstants.DATE)
+                .header(AUConstants.X_FAPI_CUSTOMER_IP_ADDRESS , AUConstants.IP)
+                .header(AUConstants.X_CDS_CLIENT_HEADERS , clientHeader)
                 .contentType(ContentType.JSON)
                 .body(requestBody)
                 .baseUri(AUTestUtil.getBaseUrl(AUConstants.BASE_PATH_TYPE_BALANCES))
@@ -143,6 +154,9 @@ class AccountsIdPermanenceTest extends AbstractAUTests{
 
         def response = AURequestBuilder
                 .buildBasicRequest(userAccessToken, AUConstants.X_V_HEADER_ACCOUNTS)
+                .header(AUConstants.X_FAPI_AUTH_DATE, AUConstants.DATE)
+                .header(AUConstants.X_FAPI_CUSTOMER_IP_ADDRESS , AUConstants.IP)
+                .header(AUConstants.X_CDS_CLIENT_HEADERS , clientHeader)
                 .baseUri(AUTestUtil.getBaseUrl(AUConstants.BASE_PATH_TYPE_BALANCES))
                 .get(requestUrl)
 
@@ -166,6 +180,9 @@ class AccountsIdPermanenceTest extends AbstractAUTests{
 
         def response = AURequestBuilder
                 .buildBasicRequest(userAccessToken, AUConstants.X_V_HEADER_ACCOUNTS)
+                .header(AUConstants.X_FAPI_AUTH_DATE, AUConstants.DATE)
+                .header(AUConstants.X_FAPI_CUSTOMER_IP_ADDRESS , AUConstants.IP)
+                .header(AUConstants.X_CDS_CLIENT_HEADERS , clientHeader)
                 .baseUri(AUTestUtil.getBaseUrl(AUConstants.BASE_PATH_TYPE_ACCOUNT))
                 .get(requestUrl)
 
@@ -216,6 +233,9 @@ class AccountsIdPermanenceTest extends AbstractAUTests{
 
         def response = AURequestBuilder
                 .buildBasicRequest(user2AccessToken, AUConstants.X_V_HEADER_ACCOUNTS)
+                .header(AUConstants.X_FAPI_AUTH_DATE, AUConstants.DATE)
+                .header(AUConstants.X_FAPI_CUSTOMER_IP_ADDRESS , AUConstants.IP)
+                .header(AUConstants.X_CDS_CLIENT_HEADERS , clientHeader)
                 .baseUri(AUTestUtil.getBaseUrl(AUConstants.BASE_PATH_TYPE_ACCOUNT))
                 .get("${CDS_PATH}${AUConstants.BULK_ACCOUNT_PATH}/${encryptedAccount2Id}")
 
@@ -260,6 +280,9 @@ class AccountsIdPermanenceTest extends AbstractAUTests{
 
         Response response = AURequestBuilder
                 .buildBasicRequest(userAccessToken, AUConstants.X_V_HEADER_ACCOUNTS)
+                .header(AUConstants.X_FAPI_AUTH_DATE, AUConstants.DATE)
+                .header(AUConstants.X_FAPI_CUSTOMER_IP_ADDRESS , AUConstants.IP)
+                .header(AUConstants.X_CDS_CLIENT_HEADERS , clientHeader)
                 .baseUri(AUTestUtil.getBaseUrl(AUConstants.BASE_PATH_TYPE_DIRECT_DEBIT))
                 .get(requestUrl)
 
@@ -323,6 +346,9 @@ class AccountsIdPermanenceTest extends AbstractAUTests{
 
         def response = AURequestBuilder
                 .buildBasicRequest(userAccessToken, AUConstants.X_V_HEADER_ACCOUNTS)
+                .header(AUConstants.X_FAPI_AUTH_DATE, AUConstants.DATE)
+                .header(AUConstants.X_FAPI_CUSTOMER_IP_ADDRESS , AUConstants.IP)
+                .header(AUConstants.X_CDS_CLIENT_HEADERS , clientHeader)
                 .contentType(ContentType.JSON)
                 .body(requestBody)
                 .baseUri(AUTestUtil.getBaseUrl(AUConstants.BASE_PATH_TYPE_DIRECT_DEBIT))
@@ -356,6 +382,9 @@ class AccountsIdPermanenceTest extends AbstractAUTests{
 
         Response response = AURequestBuilder
                 .buildBasicRequest(userAccessToken, AUConstants.X_V_HEADER_ACCOUNTS)
+                .header(AUConstants.X_FAPI_AUTH_DATE, AUConstants.DATE)
+                .header(AUConstants.X_FAPI_CUSTOMER_IP_ADDRESS , AUConstants.IP)
+                .header(AUConstants.X_CDS_CLIENT_HEADERS , clientHeader)
                 .baseUri(AUTestUtil.getBaseUrl(AUConstants.BASE_PATH_TYPE_SCHEDULED_PAYMENT))
                 .get(requestUrl)
 
@@ -407,6 +436,9 @@ class AccountsIdPermanenceTest extends AbstractAUTests{
 
         def response = AURequestBuilder
                 .buildBasicRequest(userAccessToken, AUConstants.X_V_HEADER_ACCOUNTS)
+                .header(AUConstants.X_FAPI_AUTH_DATE, AUConstants.DATE)
+                .header(AUConstants.X_FAPI_CUSTOMER_IP_ADDRESS , AUConstants.IP)
+                .header(AUConstants.X_CDS_CLIENT_HEADERS , clientHeader)
                 .contentType(ContentType.JSON)
                 .body(requestBody)
                 .baseUri(AUTestUtil.getBaseUrl(AUConstants.BASE_PATH_TYPE_SCHEDULED_PAYMENT))
@@ -449,6 +481,9 @@ class AccountsIdPermanenceTest extends AbstractAUTests{
 
         Response response = AURequestBuilder
                 .buildBasicRequest(userAccessToken, AUConstants.X_V_HEADER_ACCOUNTS)
+                .header(AUConstants.X_FAPI_AUTH_DATE, AUConstants.DATE)
+                .header(AUConstants.X_FAPI_CUSTOMER_IP_ADDRESS , AUConstants.IP)
+                .header(AUConstants.X_CDS_CLIENT_HEADERS , clientHeader)
                 .baseUri(AUTestUtil.getBaseUrl(AUConstants.BASE_PATH_TYPE_TRANSACTIONS))
                 .get(requestUrl)
 
@@ -511,6 +546,9 @@ class AccountsIdPermanenceTest extends AbstractAUTests{
 
         def response = AURequestBuilder
                 .buildBasicRequest(userAccessToken, AUConstants.X_V_HEADER_ACCOUNTS)
+                .header(AUConstants.X_FAPI_AUTH_DATE, AUConstants.DATE)
+                .header(AUConstants.X_FAPI_CUSTOMER_IP_ADDRESS , AUConstants.IP)
+                .header(AUConstants.X_CDS_CLIENT_HEADERS , clientHeader)
                 .baseUri(AUTestUtil.getBaseUrl(AUConstants.BASE_PATH_TYPE_BALANCES))
                 .get(requestUrl)
 
@@ -518,10 +556,10 @@ class AccountsIdPermanenceTest extends AbstractAUTests{
         softAssertion.assertEquals(response.statusCode(), AUConstants.STATUS_CODE_200)
 
         softAssertion.assertEquals(consentedAccount, AUIdEncryptorDecryptor.decrypt(
-                TestUtil.parseResponseBody(response, "data.balances.accountId[0]"), secretKey).
+                TestUtil.parseResponseBody(response, "data.balances.accountId[1]"), secretKey).
                 split(":")[2])
         softAssertion.assertEquals(secondConsentedAccount, AUIdEncryptorDecryptor.decrypt(
-                TestUtil.parseResponseBody(response, "data.balances.accountId[1]"), secretKey).
+                TestUtil.parseResponseBody(response, "data.balances.accountId[0]"), secretKey).
                 split(":")[2])
 
         softAssertion.assertTrue(TestUtil.parseResponseBody(response, "links.self")
@@ -645,6 +683,9 @@ class AccountsIdPermanenceTest extends AbstractAUTests{
 
         Response response = AURequestBuilder
                 .buildBasicRequest(userAccessToken, AUConstants.X_V_HEADER_ACCOUNTS)
+                .header(AUConstants.X_FAPI_AUTH_DATE, AUConstants.DATE)
+                .header(AUConstants.X_FAPI_CUSTOMER_IP_ADDRESS , AUConstants.IP)
+                .header(AUConstants.X_CDS_CLIENT_HEADERS , clientHeader)
                 .baseUri(AUTestUtil.getBaseUrl(AUConstants.BASE_PATH_TYPE_DIRECT_DEBIT))
                 .get(requestUrl)
 
@@ -652,10 +693,10 @@ class AccountsIdPermanenceTest extends AbstractAUTests{
         softAssertion.assertEquals(response.statusCode(), AUConstants.STATUS_CODE_200)
 
         softAssertion.assertEquals(consentedAccount, AUIdEncryptorDecryptor.decrypt(
-                TestUtil.parseResponseBody(response, "data.directDebitAuthorisations.accountId[0]"), secretKey).
+                TestUtil.parseResponseBody(response, "data.directDebitAuthorisations.accountId[1]"), secretKey).
                 split(":")[2])
         softAssertion.assertEquals(secondConsentedAccount, AUIdEncryptorDecryptor.decrypt(
-                TestUtil.parseResponseBody(response, "data.directDebitAuthorisations.accountId[1]"), secretKey).
+                TestUtil.parseResponseBody(response, "data.directDebitAuthorisations.accountId[0]"), secretKey).
                 split(":")[2])
 
         softAssertion.assertTrue(TestUtil.parseResponseBody(response, "links.self")
@@ -737,6 +778,9 @@ class AccountsIdPermanenceTest extends AbstractAUTests{
 
         Response response = AURequestBuilder
                 .buildBasicRequest(userAccessToken, AUConstants.X_V_HEADER_ACCOUNTS)
+                .header(AUConstants.X_FAPI_AUTH_DATE, AUConstants.DATE)
+                .header(AUConstants.X_FAPI_CUSTOMER_IP_ADDRESS , AUConstants.IP)
+                .header(AUConstants.X_CDS_CLIENT_HEADERS , clientHeader)
                 .baseUri(AUTestUtil.getBaseUrl(AUConstants.BASE_PATH_TYPE_SCHEDULED_PAYMENT))
                 .get(requestUrl)
 
@@ -849,6 +893,9 @@ class AccountsIdPermanenceTest extends AbstractAUTests{
 
         Response response = AURequestBuilder
                 .buildBasicRequest(userAccessToken, AUConstants.X_V_HEADER_ACCOUNTS)
+                .header(AUConstants.X_FAPI_AUTH_DATE, AUConstants.DATE)
+                .header(AUConstants.X_FAPI_CUSTOMER_IP_ADDRESS , AUConstants.IP)
+                .header(AUConstants.X_CDS_CLIENT_HEADERS , clientHeader)
                 .baseUri(AUTestUtil.getBaseUrl(AUConstants.BASE_PATH_TYPE_PAYEES))
                 .get(requestUrl)
 

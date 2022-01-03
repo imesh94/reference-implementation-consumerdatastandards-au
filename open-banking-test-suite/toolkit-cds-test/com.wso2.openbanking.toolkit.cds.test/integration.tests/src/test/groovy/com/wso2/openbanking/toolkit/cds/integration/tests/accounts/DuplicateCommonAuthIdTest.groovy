@@ -72,10 +72,10 @@ class DuplicateCommonAuthIdTest {
                     // Submit consent
                     driver.findElement(By.xpath(AUConstants.CONSENT_SUBMIT_XPATH)).click()
 
-                    // Extra step for OB-2.0 AU Authentication flow.
-                    if (TestConstants.SOLUTION_VERSION_200.equals(ConfigParser.getInstance().getSolutionVersion())) {
-                        driver.findElement(By.xpath(AUConstants.CONSENT_SUBMIT_XPATH)).click()
-                    }
+                    //Extra step for OB-2.0 AU Authentication flow.
+                   if (TestConstants.SOLUTION_VERSION_200.equals(ConfigParser.getInstance().getSolutionVersion())) {
+                       driver.findElement(By.xpath(AUConstants.CONSENT_SUBMIT_XPATH)).click()
+                  }
                 }
                 .addStep(new WaitForRedirectAutomationStep())
                 .execute(false)

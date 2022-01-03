@@ -13,6 +13,7 @@
 package com.wso2.openbanking.toolkit.cds.integration.tests.banking_products
 
 import com.wso2.openbanking.test.framework.TestSuite
+import com.wso2.openbanking.test.framework.util.AppConfigReader
 import com.wso2.openbanking.test.framework.util.TestConstants
 import com.wso2.openbanking.test.framework.util.TestUtil
 import com.wso2.openbanking.toolkit.cds.test.common.utils.AUConstants
@@ -23,12 +24,16 @@ import io.restassured.response.Response
 import org.testng.Assert
 import org.testng.annotations.Test
 
+import java.nio.charset.Charset
+
 /**
  * Accounts Retrieval Tests.
  */
 class ProductRetrievalValidationTest extends AbstractAUTests {
 
     static final String CDS_PATH = AUConstants.CDS_PATH
+    def cdsClient = "${AppConfigReader.getClientId()}:${AppConfigReader.getClientSecret()}"
+    def clientHeader = "${Base64.encoder.encodeToString(cdsClient.getBytes(Charset.defaultCharset()))}"
 
     @Test (priority = 1, groups = "SmokeTest")
     void "TC1101001_Retrieve banking products"() {
@@ -36,6 +41,9 @@ class ProductRetrievalValidationTest extends AbstractAUTests {
         Response response = TestSuite.buildRequest()
                 .accept(AUConstants.ACCEPT)
                 .header(AUConstants.X_V_HEADER, AUConstants.X_V_HEADER_PRODUCTS)
+                .header(AUConstants.X_FAPI_AUTH_DATE, AUConstants.DATE)
+                .header(AUConstants.X_FAPI_CUSTOMER_IP_ADDRESS , AUConstants.IP)
+                .header(AUConstants.X_CDS_CLIENT_HEADERS , clientHeader)
                 .baseUri(AUTestUtil.getBaseUrl(AUConstants.BASE_PATH_TYPE_PRODUCTS))
                 .get("${CDS_PATH}${AUConstants.BANKING_PRODUCT_PATH}")
 
@@ -98,6 +106,9 @@ class ProductRetrievalValidationTest extends AbstractAUTests {
         Response response = TestSuite.buildRequest()
                 .accept(AUConstants.ACCEPT)
                 .header(AUConstants.X_V_HEADER, AUConstants.X_V_HEADER_PRODUCTS)
+                .header(AUConstants.X_FAPI_AUTH_DATE, AUConstants.DATE)
+                .header(AUConstants.X_FAPI_CUSTOMER_IP_ADDRESS , AUConstants.IP)
+                .header(AUConstants.X_CDS_CLIENT_HEADERS , clientHeader)
                 .baseUri(AUTestUtil.getBaseUrl(AUConstants.BASE_PATH_TYPE_PRODUCTS))
                 .get("${CDS_PATH}${AUConstants.BANKING_PRODUCT_PATH}/12345")
 
