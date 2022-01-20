@@ -17,15 +17,15 @@ import com.wso2.openbanking.test.framework.automation.AUBasicAuthAutomationStep
 import com.wso2.openbanking.test.framework.automation.BrowserAutomation
 import com.wso2.openbanking.test.framework.automation.WaitForRedirectAutomationStep
 import com.wso2.openbanking.test.framework.model.AccessTokenJwtDto
-import com.wso2.openbanking.test.framework.util.ConfigParser
 import com.wso2.openbanking.test.framework.util.AppConfigReader
+import com.wso2.openbanking.test.framework.util.ConfigParser
 import com.wso2.openbanking.test.framework.util.TestConstants
 import com.wso2.openbanking.test.framework.util.TestUtil
+import io.restassured.response.Response
 import org.openqa.selenium.By
 import org.openqa.selenium.WebElement
 import org.testng.Assert
 import org.testng.annotations.BeforeClass
-import io.restassured.response.Response
 
 import java.nio.charset.Charset
 
@@ -52,6 +52,7 @@ class AbstractAUTests {
     public String productId
     public String payeeId
     public Response parResponse
+    public Response revocationResponse
 
     @BeforeClass(alwaysRun = true)
     void "Initialize Test Suite"() {
@@ -235,4 +236,96 @@ class AbstractAUTests {
             }
         }
     }
+
+  /**
+   * Push Authorisation Request with private_key_jwt authentication method.
+   * @param scopes
+   * @param sharingDuration
+   * @param sendSharingDuration
+   * @param cdrArrangementId
+   * @param clientId
+   * @return
+   */
+  Response doPushAuthorisationRequestWithPkjwt(List<AUConstants.SCOPES> scopes, long sharingDuration,
+                                               boolean sendSharingDuration, String cdrArrangementId,
+                                               String clientId = AppConfigReader.getClientId()) {
+
+    String scopeString = "openid ${String.join(" ", scopes.collect({ it.scopeString }))}"
+
+    String assertionString = new AccessTokenJwtDto().getJwt(AppConfigReader.getClientId(),
+            ConfigParser.getInstance().getAudienceValue())
+
+    def bodyContent = [(TestConstants.CLIENT_ID_KEY)            : (AppConfigReader.getClientId()),
+                       (TestConstants.CLIENT_ASSERTION_TYPE_KEY): (TestConstants.CLIENT_ASSERTION_TYPE),
+                       (TestConstants.CLIENT_ASSERTION_KEY)     : assertionString,
+                       "cdr_arrangement_id"                     : cdrArrangementId]
+
+    parResponse = TestSuite.buildRequest()
+            .contentType(TestConstants.ACCESS_TOKEN_CONTENT_TYPE)
+            .formParams(bodyContent)
+            .formParams(TestConstants.REQUEST_KEY, AUAuthorisationBuilder.getSignedRequestObject(scopeString,
+                    sharingDuration, sendSharingDuration, cdrArrangementId, AppConfigReader.getRedirectURL(), clientId).serialize())
+            .baseUri(AUConstants.PUSHED_AUTHORISATION_BASE_PATH)
+            .post(AUConstants.PAR_ENDPOINT)
+
+    return parResponse
+  }
+
+  /**
+   * Sharing Arrangement Revocation with private_key_jwt authentication method.
+   * @param applicationAccessToken
+   * @param cdrArrangementId
+   * @param clientId
+   * @return
+   */
+  Response doArrangementRevocationWithPkjwt(String applicationAccessToken, String cdrArrangementId,
+                                            String clientId = AppConfigReader.getClientId()) {
+
+    String assertionString = new AccessTokenJwtDto().getJwt(AppConfigReader.getClientId(),
+            ConfigParser.getInstance().getAudienceValue())
+
+    def bodyContent = [(TestConstants.CLIENT_ID_KEY)            : (clientId),
+                       (TestConstants.CLIENT_ASSERTION_TYPE_KEY): (TestConstants.CLIENT_ASSERTION_TYPE),
+                       (TestConstants.CLIENT_ASSERTION_KEY)     : assertionString,
+                       "cdr_arrangement_id"                     : cdrArrangementId]
+
+    revocationResponse = TestSuite.buildRequest()
+            .contentType(TestConstants.ACCESS_TOKEN_CONTENT_TYPE)
+            .header(AUConstants.X_V_HEADER, AUConstants.CDR_ENDPOINT_VERSION)
+            .header(TestConstants.AUTHORIZATION_HEADER_KEY, "Bearer ${applicationAccessToken}")
+            .formParams(bodyContent)
+            .baseUri(AUTestUtil.getBaseUrl(AUConstants.BASE_PATH_TYPE_CDR_ARRANGEMENT))
+            .delete("${AUConstants.CDR_ARRANGEMENT_ENDPOINT}/${cdrArrangementId}")
+
+    return revocationResponse
+  }
+
+  /**
+   * Basic TPP Registration Method.
+   * @return response.
+   */
+  static Response tppRegistration() {
+
+    def registrationResponse = AURegistrationRequestBuilder
+            .buildRegistrationRequest(AURegistrationRequestBuilder.getRegularClaims())
+            .when()
+            .post(AUDCRConstants.REGISTRATION_ENDPOINT)
+
+    return registrationResponse
+  }
+
+  /**
+   * Basic TPP Deletion Method.
+   * @param clientId
+   * @param accessToken
+   * @return response.
+   */
+  static Response tppDeletion(String clientId, String accessToken) {
+
+    def registrationResponse = AURegistrationRequestBuilder.buildBasicRequest(accessToken)
+            .when()
+            .delete(AUDCRConstants.REGISTRATION_ENDPOINT + clientId)
+
+    return registrationResponse
+  }
 }

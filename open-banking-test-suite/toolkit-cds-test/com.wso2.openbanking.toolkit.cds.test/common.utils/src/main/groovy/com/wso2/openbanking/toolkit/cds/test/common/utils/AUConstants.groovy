@@ -78,6 +78,7 @@ class AUConstants {
     static final String CONSENT_AUTHORIZE_FLOW_BACK_XPATH = "//input[@id='back']"
     static final String CODE = "code"
     static final String ERROR_DESCRIPTION = "error_description"
+    static final String ERROR = "error"
     static final String ERROR_INVALID_SOFTWARE_PRODUCT = "Invalid Software Product"
 
     static final CONSENT_EXPIRY_XPATH = "//button[@id='consent-expiry-date']"
