@@ -742,7 +742,7 @@ public class TestUtil {
      * @param tppNumber  index of tpp
      */
     public static void writeXMLContent(String xmlFile, String parentNode, String childNode,
-                                       String value, int tppNumber) {
+                                       String value, Integer tppNumber) {
         try {
             DocumentBuilderFactory documentBuilderFactory = DocumentBuilderFactory.newInstance();
             DocumentBuilder documentBuilder = null;
@@ -762,7 +762,10 @@ public class TestUtil {
             log.error("Error while parsing the content of the given URI as an XML document.");
         } catch (IOException e) {
             log.error("Failed or interrupted I/O operations.");
+        } catch (NullPointerException ex) {
+            log.error("Null Value for TPP");
         }
+
 
     }
 

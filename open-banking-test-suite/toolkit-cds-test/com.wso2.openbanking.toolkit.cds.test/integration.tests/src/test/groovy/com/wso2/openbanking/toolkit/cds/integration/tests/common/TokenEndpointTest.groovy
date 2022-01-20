@@ -32,6 +32,8 @@ import org.testng.annotations.BeforeClass
 import org.testng.annotations.Test
 import org.testng.asserts.SoftAssert
 
+import java.nio.charset.Charset
+
 /**
  * Token Endpoint Testing.
  */
@@ -48,6 +50,9 @@ class TokenEndpointTest {
 
     private String authorisationCode
     private AccessTokenResponse userAccessToken
+
+    def cdsClient = "${AppConfigReader.getClientId()}:${AppConfigReader.getClientSecret()}"
+    def clientHeader = "${Base64.encoder.encodeToString(cdsClient.getBytes(Charset.defaultCharset()))}"
 
     @BeforeClass (alwaysRun = true)
     void "Initialize Test Suite"() {
@@ -87,7 +92,7 @@ class TokenEndpointTest {
 
         def errorObject = AURequestBuilder.getUserTokenErrorResponse(authorisationCode,
                 AppConfigReader.getRedirectURL(), false)
-        Assert.assertEquals(errorObject.toJSONObject().get("error_description"), "Client Authentication failed.")
+        Assert.assertEquals(errorObject.toJSONObject().get("error_description"), "Request does not follow the registered token endpoint auth method private_key_jwt")
     }
 
     @Test
@@ -98,7 +103,7 @@ class TokenEndpointTest {
 
         def errorObject = AURequestBuilder.getUserTokenErrorResponse(authorisationCode,
                 AppConfigReader.getRedirectURL(), true, false)
-        Assert.assertEquals(errorObject.toJSONObject().get("error_description"), "Certificate not found in the request")
+        Assert.assertEquals(errorObject.toJSONObject().get("error_description"), "Transport certificate not found in the request")
     }
 
     @Test
@@ -120,7 +125,7 @@ class TokenEndpointTest {
 
         def errorObject = AURequestBuilder.getUserTokenErrorResponse(authorisationCode, AppConfigReader.getRedirectURL(),
                 true, true, "RS256")
-        Assert.assertEquals(errorObject.toJSONObject().get("error_description"), "Signature Algorithm not supported : RS256")
+        Assert.assertEquals(errorObject.toJSONObject().get("error_description"), "Registered algorithm does not match with the token signed algorithm")
 
     }
 
@@ -132,7 +137,7 @@ class TokenEndpointTest {
 
         def errorObject = AURequestBuilder.getUserTokenErrorResponse(authorisationCode, AppConfigReader.getRedirectURL(),
                 true, true, "PS512")
-        Assert.assertEquals(errorObject.toJSONObject().get("error_description"), "Signature Algorithm not supported : PS512")
+        Assert.assertEquals(errorObject.toJSONObject().get("error_description"), "Registered algorithm does not match with the token signed algorithm")
 
     }
 
@@ -163,6 +168,9 @@ class TokenEndpointTest {
 
         def response = AURequestBuilder
                 .buildBasicRequest(userAccessToken.tokens.accessToken.toString(), AUConstants.X_V_HEADER_ACCOUNTS)
+                .header(AUConstants.X_FAPI_AUTH_DATE, AUConstants.DATE)
+                .header(AUConstants.X_FAPI_CUSTOMER_IP_ADDRESS , AUConstants.IP)
+                .header(AUConstants.X_CDS_CLIENT_HEADERS , clientHeader)
                 .baseUri(AUTestUtil.getBaseUrl(AUConstants.BASE_PATH_TYPE_ACCOUNT))
                 .get("${AUConstants.CDS_PATH}${AUConstants.BULK_ACCOUNT_PATH}")
 
@@ -199,7 +207,7 @@ class TokenEndpointTest {
     }
 
     //Todo: enable after fixing issue https://github.com/wso2-enterprise/financial-open-banking/issues/6646
-    //@Test
+    @Test
     void "OB-1270_Invoke token endpoint for user access token with a unauthorized scope"() {
 
         scopes = [
@@ -216,7 +224,7 @@ class TokenEndpointTest {
         userAccessToken = AURequestBuilder.getUserToken(authorisationCode, scopes)
         Assert.assertNotNull(userAccessToken.tokens.accessToken)
         Assert.assertNotNull(userAccessToken.tokens.refreshToken)
-        Assert.assertEquals(userAccessToken.toJSONObject().get("scope"), "openid")
+        Assert.assertEquals(userAccessToken.toJSONObject().get("scope"), "bank:accounts.basic:read openid")
     }
 
     @Test

@@ -53,7 +53,7 @@ class DynamicClientRegistrationCreateTest extends AbstractAUTests {
         TestSuite.init()
         AUMockCDRIntegrationUtil.loadMetaDataToCDRRegister()
         AURegistrationRequestBuilder.retrieveADRInfo()
-        deleteApplicationIfExists(scopes)
+        deleteApplicationIfExists(scopes, clientId)
     }
 
     @Test(groups = "SmokeTest")
@@ -373,7 +373,7 @@ class DynamicClientRegistrationCreateTest extends AbstractAUTests {
         Assert.assertEquals(TestUtil.parseResponseBody(registrationResponse, TestConstants.ERROR),
                 AUDCRConstants.INVALID_CLIENT_METADATA)
         Assert.assertEquals(TestUtil.parseResponseBody(registrationResponse, TestConstants.ERROR_DESCRIPTION),
-                "Provided SSA is malformed or unsupported by the specification")
+                "Malformed request JWT")
     }
 
     @Test(priority = 4)
@@ -412,6 +412,6 @@ class DynamicClientRegistrationCreateTest extends AbstractAUTests {
 
     @AfterClass(alwaysRun = true)
     void tearDown() {
-        deleteApplicationIfExists(scopes, clientId)
+      //  deleteApplicationIfExists(scopes, clientId)
     }
 }

@@ -34,7 +34,6 @@ import java.nio.charset.Charset
 class AccountsRetrievalTest extends AbstractAUTests {
 
     static final String CDS_PATH = AUConstants.CDS_PATH
-    def cdsClient = "${AppConfigReader.getClientId()}:${AppConfigReader.getClientSecret()}"
     def clientHeader = "${Base64.encoder.encodeToString(cdsClient.getBytes(Charset.defaultCharset()))}"
 
     @BeforeClass(alwaysRun = true)
@@ -79,7 +78,6 @@ class AccountsRetrievalTest extends AbstractAUTests {
                 .header(AUConstants.X_FAPI_CUSTOMER_IP_ADDRESS , AUConstants.IP)
                 .header(AUConstants.X_CDS_CLIENT_HEADERS , clientHeader)
                 .baseUri(AUTestUtil.getBaseUrl(AUConstants.BASE_PATH_TYPE_ACCOUNT))
-                //TODO
                 .get("${CDS_PATH}${AUConstants.BULK_ACCOUNT_PATH}/${AUConstants.accountID}")
 
         SoftAssert softAssertion = new SoftAssert()
@@ -106,8 +104,8 @@ class AccountsRetrievalTest extends AbstractAUTests {
         softAssertion.assertEquals(response.statusCode(), AUConstants.STATUS_CODE_404)
         softAssertion.assertNotNull(response.getHeader(AUConstants.X_V_HEADER))
         softAssertion.assertNotNull(response.getHeader(AUConstants.X_FAPI_INTERACTION_ID))
-        softAssertion.assertEquals(response.jsonPath().get("errors[0].code"), "urn:au-cds:error:cds-banking:Authorisation/InvalidBankingAccount")
-        softAssertion.assertAll()
+        softAssertion.assertEquals(TestUtil.parseResponseBody(response, AUConstants.ERROR_CODE),
+                AUConstants.ERROR_CODE_INVALID_BANK_ACC)
     }
 
     @Test
@@ -178,8 +176,6 @@ class AccountsRetrievalTest extends AbstractAUTests {
         if (TestConstants.SOLUTION_VERSION_200.equalsIgnoreCase(AUTestUtil.solutionVersion)) {
             softAssertion.assertEquals(TestUtil.parseResponseBody(response, AUConstants.ERROR_CODE),
                     AUConstants.ERROR_CODE_INVALID_BANK_ACC)
-            //softAssertion.assertTrue(TestUtil.parseResponseBody(response, AUConstants.ERROR_SOURCE_POINTER)
-                    //.contains(AUConstants.BULK_BALANCES_PATH))
             softAssertion.assertEquals(TestUtil.parseResponseBody(response, AUConstants.ERROR_TITLE), AUConstants
                     .INVALID_BANK_ACC)
             softAssertion.assertEquals(TestUtil.parseResponseBody(response, AUConstants.ERROR_DETAIL), AUConstants

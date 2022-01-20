@@ -50,7 +50,6 @@ class AUConstants {
     public static final String X_FAPI_CUSTOMER_IP_ADDRESS = "x-fapi-customer-ip-address"
     static final String UUID = AUTestUtil.generateUUID()
     static final String DATE = AUTestUtil.getDateAndTime()
-    static final String DATE1 = "Thu, 16 Nov 2021 16:50:15 GMT"
     static final String DATE_FORMAT = AUTestUtil.getDate()
     static final String CONSENT_EXPIRE_DATE = AUTestUtil.getTommorowDateAndTime()
     static final String IP = "2001:0db8:85a3:0000:0000:8a2e:0370:7334"
@@ -72,6 +71,7 @@ class AUConstants {
     public static final int X_V_HEADER_METRICS = 1
     public static final int X_V_HEADER_CUSTOMER = 1
     public static final int X_V_HEADER_PRODUCTS = getProductEndpointVersion()
+    public static final int UNSUPPORTED_X_V_VERSION= 5
     static final String USERNAME = "admin@wso2.com"
     static final String PASSWORD = "wso2123"
     static final String ACCESS_TOKEN = "token"
@@ -301,9 +301,9 @@ class AUConstants {
     static final ERROR_SOURCE_POINTER = "errors[0].source.pointer"
     static final ERROR_TITLE = "errors[0].title"
     static final ERROR_CODE = "errors[0].code"
-//    static final ERROR_X_V_INVALID = "x-v header in the request is invalid"
-//    static final ERROR_X_V_MISSING = "Mandatory header x-v is missing"
-//    static final ERROR_X_MIN_V_INVALID = "x-min-v header in the request is invalid"
+//   static final ERROR_X_V_INVALID = "x-v header in the request is invalid"
+//   static final ERROR_X_V_MISSING = "Mandatory header x-v is missing"
+    static final ERROR_X_MIN_V_INVALID = "x-min-v header in the request is invalid"
 
     static final ERROR_X_V_INVALID = "Requested x-v version is not supported"
     static final ERROR_X_V_MISSING = "Mandatory header x-v is missing"

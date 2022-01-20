@@ -48,7 +48,6 @@ class AccountsIdPermanenceTest extends AbstractAUTests{
     private String encryptedTransactionId
     private String encryptedPayeeId
     private String userId = configuration.getKeyManagerAdminUsername() + "@" + configuration.getTenantDomain()
-    def cdsClient = "${AppConfigReader.getClientId()}:${AppConfigReader.getClientSecret()}"
     def clientHeader = "${Base64.encoder.encodeToString(cdsClient.getBytes(Charset.defaultCharset()))}"
 
     @BeforeClass

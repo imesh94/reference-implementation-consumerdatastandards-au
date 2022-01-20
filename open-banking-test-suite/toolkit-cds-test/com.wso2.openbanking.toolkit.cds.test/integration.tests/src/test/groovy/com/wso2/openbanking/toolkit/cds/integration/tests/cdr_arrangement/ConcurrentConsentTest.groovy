@@ -36,7 +36,6 @@ import java.nio.charset.Charset
 class ConcurrentConsentTest extends AbstractAUTests {
 
     static final String CDS_PATH = AUConstants.CDS_PATH
-    def cdsClient = "${AppConfigReader.getClientId()}:${AppConfigReader.getClientSecret()}"
     def clientHeader = "${Base64.encoder.encodeToString(cdsClient.getBytes(Charset.defaultCharset()))}"
     static final String CDR_ARRANGEMENT_ENDPOINT = AUConstants.CDR_ARRANGEMENT_ENDPOINT
     def authorisationCode = ""
@@ -239,7 +238,7 @@ class ConcurrentConsentTest extends AbstractAUTests {
                 .header(AUConstants.X_CDS_CLIENT_HEADERS , clientHeader)
                 .header(TestConstants.AUTHORIZATION_HEADER_KEY, "Bearer ${applicationToken}")
                 .baseUri(AUTestUtil.getBaseUrl(AUConstants.BASE_PATH_TYPE_CDR_ARRANGEMENT))
-                .delete("${CDR_ARRANGEMENT_ENDPOINT}/${cdrArrangementId}")
+                .post("${CDR_ARRANGEMENT_ENDPOINT}${AUConstants.REVOKE_PATH}")
 
         Assert.assertEquals(response.statusCode(), AUConstants.STATUS_CODE_204)
 

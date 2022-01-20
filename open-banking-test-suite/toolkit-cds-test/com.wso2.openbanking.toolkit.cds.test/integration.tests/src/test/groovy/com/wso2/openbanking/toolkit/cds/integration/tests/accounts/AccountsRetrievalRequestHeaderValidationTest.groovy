@@ -32,7 +32,6 @@ import java.nio.charset.Charset
 class AccountsRetrievalRequestHeaderValidationTest extends AbstractAUTests {
 
     static final String CDS_PATH = AUConstants.CDS_PATH
-    def cdsClient = "${AppConfigReader.getClientId()}:${AppConfigReader.getClientSecret()}"
     def clientHeader = "${Base64.encoder.encodeToString(cdsClient.getBytes(Charset.defaultCharset()))}"
 
 
@@ -107,8 +106,6 @@ class AccountsRetrievalRequestHeaderValidationTest extends AbstractAUTests {
             Assert.assertEquals(response.statusCode(), AUConstants.STATUS_CODE_400)
             Assert.assertEquals(TestUtil.parseResponseBody(response, AUConstants.ERROR_CODE),
                     AUConstants.ERROR_CODE_INVALID_VERSION)
-            //Assert.assertEquals(TestUtil.parseResponseBody(response, AUConstants.ERROR_SOURCE_PARAMETER), AUConstants
-                    //.PARAM_X_V)
             Assert.assertEquals(TestUtil.parseResponseBody(response, AUConstants.ERROR_TITLE), AUConstants
                     .INVALID_VERSION)
         } else {
@@ -134,8 +131,6 @@ class AccountsRetrievalRequestHeaderValidationTest extends AbstractAUTests {
             Assert.assertEquals(response.statusCode(), AUConstants.STATUS_CODE_400)
             Assert.assertEquals(TestUtil.parseResponseBody(response, AUConstants.ERROR_CODE),
                     AUConstants.ERROR_CODE_INVALID_VERSION)
-            //Assert.assertEquals(TestUtil.parseResponseBody(response, AUConstants.ERROR_SOURCE_PARAMETER), AUConstants
-                    //.PARAM_X_V)
             Assert.assertEquals(TestUtil.parseResponseBody(response, AUConstants.ERROR_TITLE), AUConstants
                     .INVALID_VERSION)
         } else {
@@ -161,8 +156,6 @@ class AccountsRetrievalRequestHeaderValidationTest extends AbstractAUTests {
             Assert.assertEquals(response.statusCode(), AUConstants.STATUS_CODE_400)
             Assert.assertEquals(TestUtil.parseResponseBody(response, AUConstants.ERROR_CODE),
                     AUConstants.ERROR_CODE_INVALID_VERSION)
-            //Assert.assertEquals(TestUtil.parseResponseBody(response, AUConstants.ERROR_SOURCE_PARAMETER), AUConstants
-                    //.PARAM_X_V)
             Assert.assertEquals(TestUtil.parseResponseBody(response, AUConstants.ERROR_TITLE), AUConstants
                     .INVALID_VERSION)
         } else {
@@ -189,8 +182,6 @@ class AccountsRetrievalRequestHeaderValidationTest extends AbstractAUTests {
             Assert.assertEquals(response.statusCode(), AUConstants.STATUS_CODE_400)
             Assert.assertEquals(TestUtil.parseResponseBody(response, AUConstants.ERROR_CODE),
                     AUConstants.ERROR_CODE_INVALID_VERSION)
-            //Assert.assertEquals(TestUtil.parseResponseBody(response, AUConstants.ERROR_SOURCE_PARAMETER), AUConstants
-                    //.PARAM_X_MIN_V)
             Assert.assertEquals(TestUtil.parseResponseBody(response, AUConstants.ERROR_TITLE), AUConstants
                     .INVALID_VERSION)
         } else {
@@ -218,8 +209,6 @@ class AccountsRetrievalRequestHeaderValidationTest extends AbstractAUTests {
             Assert.assertEquals(response.statusCode(), AUConstants.STATUS_CODE_400)
             Assert.assertEquals(TestUtil.parseResponseBody(response, AUConstants.ERROR_CODE),
                     AUConstants.ERROR_CODE_INVALID_VERSION)
-           // Assert.assertEquals(TestUtil.parseResponseBody(response, AUConstants.ERROR_SOURCE_PARAMETER), AUConstants
-                    //.PARAM_X_MIN_V)
             Assert.assertEquals(TestUtil.parseResponseBody(response, AUConstants.ERROR_TITLE), AUConstants
                     .INVALID_VERSION)
         } else {
@@ -356,8 +345,6 @@ class AccountsRetrievalRequestHeaderValidationTest extends AbstractAUTests {
                     AUConstants.ERROR_CODE_UNSUPPORTED_VERSION)
             Assert.assertTrue(TestUtil.parseResponseBody(response, AUConstants.ERROR_DETAIL)
                     .contains(AUConstants.ERROR_ENDPOINT_VERSION5))
-            //Assert.assertEquals(TestUtil.parseResponseBody(response, AUConstants.ERROR_SOURCE_PARAMETER), AUConstants
-                    //.PARAM_X_V)
             Assert.assertEquals(TestUtil.parseResponseBody(response, AUConstants.ERROR_TITLE), AUConstants
                     .UNSUPPORTED_VERSION)
         }

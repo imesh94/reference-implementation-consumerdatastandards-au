@@ -76,8 +76,6 @@ class AccountsRetrievalBasicTests extends AbstractAUTests {
         if (TestConstants.SOLUTION_VERSION_200.equalsIgnoreCase(AUTestUtil.solutionVersion)) {
             Assert.assertEquals(TestUtil.parseResponseBody(response, AUConstants.ERROR_CODE),
                     AUConstants.ERROR_CODE_RESOURCE_NOTFOUND )
-            //Assert.assertEquals(TestUtil.parseResponseBody(response, AUConstants.ERROR_SOURCE_POINTER),
-                    //"/banking/accountz")
             Assert.assertEquals(TestUtil.parseResponseBody(response, AUConstants.ERROR_TITLE), AUConstants
                     .RESOURCE_NOT_FOUND)
         } else {
@@ -113,7 +111,7 @@ class AccountsRetrievalBasicTests extends AbstractAUTests {
         Assert.assertTrue(TestUtil.parseResponseBody(response, "error").contains(
                     "invalid_client"))
         Assert.assertTrue(TestUtil.parseResponseBody(response, "error_description").contains(
-                "Valid certificate not found in request"))
+                "Invalid mutual TLS request. Client certificate is missing"))
     }
 
     //Todo: enable after fixing issue https://github.com/wso2-enterprise/financial-open-banking/issues/6640

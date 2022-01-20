@@ -32,7 +32,6 @@ import java.nio.charset.Charset
 class ProductRetrievalValidationTest extends AbstractAUTests {
 
     static final String CDS_PATH = AUConstants.CDS_PATH
-    def cdsClient = "${AppConfigReader.getClientId()}:${AppConfigReader.getClientSecret()}"
     def clientHeader = "${Base64.encoder.encodeToString(cdsClient.getBytes(Charset.defaultCharset()))}"
 
     @Test (priority = 1, groups = "SmokeTest")
