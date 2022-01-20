@@ -12,6 +12,7 @@
 
 package com.wso2.openbanking.toolkit.cds.integration.tests.accounts
 
+import com.wso2.openbanking.test.framework.util.AppConfigReader
 import com.wso2.openbanking.test.framework.util.TestConstants
 import com.wso2.openbanking.test.framework.util.TestUtil
 import com.wso2.openbanking.toolkit.cds.test.common.utils.AUConstants
@@ -25,12 +26,15 @@ import org.testng.annotations.BeforeClass
 import org.testng.annotations.Test
 import org.testng.asserts.SoftAssert
 
+import java.nio.charset.Charset
+
 /**
  * Accounts Retrieval Tests.
  */
 class AccountsRetrievalTest extends AbstractAUTests {
 
     static final String CDS_PATH = AUConstants.CDS_PATH
+    def clientHeader = "${Base64.encoder.encodeToString(cdsClient.getBytes(Charset.defaultCharset()))}"
 
     @BeforeClass(alwaysRun = true)
     void "Get User Access Token"() {
@@ -43,6 +47,9 @@ class AccountsRetrievalTest extends AbstractAUTests {
 
         def response = AURequestBuilder
                 .buildBasicRequest(userAccessToken, AUConstants.X_V_HEADER_ACCOUNTS)
+                .header(AUConstants.X_FAPI_AUTH_DATE, AUConstants.DATE)
+                .header(AUConstants.X_FAPI_CUSTOMER_IP_ADDRESS , AUConstants.IP)
+                .header(AUConstants.X_CDS_CLIENT_HEADERS , clientHeader)
                 .baseUri(AUTestUtil.getBaseUrl(AUConstants.BASE_PATH_TYPE_ACCOUNT))
                 .get("${CDS_PATH}${AUConstants.BULK_ACCOUNT_PATH}")
 
@@ -67,8 +74,11 @@ class AccountsRetrievalTest extends AbstractAUTests {
 
         def response = AURequestBuilder
                 .buildBasicRequest(userAccessToken, AUConstants.X_V_HEADER_ACCOUNTS)
+                .header(AUConstants.X_FAPI_AUTH_DATE, AUConstants.DATE)
+                .header(AUConstants.X_FAPI_CUSTOMER_IP_ADDRESS , AUConstants.IP)
+                .header(AUConstants.X_CDS_CLIENT_HEADERS , clientHeader)
                 .baseUri(AUTestUtil.getBaseUrl(AUConstants.BASE_PATH_TYPE_ACCOUNT))
-                .get("${CDS_PATH}${AUConstants.BULK_ACCOUNT_PATH}/${consentedAccount}")
+                .get("${CDS_PATH}${AUConstants.BULK_ACCOUNT_PATH}/${AUConstants.accountID}")
 
         SoftAssert softAssertion = new SoftAssert()
         softAssertion.assertEquals(response.statusCode(), AUConstants.STATUS_CODE_200)
@@ -94,8 +104,8 @@ class AccountsRetrievalTest extends AbstractAUTests {
         softAssertion.assertEquals(response.statusCode(), AUConstants.STATUS_CODE_404)
         softAssertion.assertNotNull(response.getHeader(AUConstants.X_V_HEADER))
         softAssertion.assertNotNull(response.getHeader(AUConstants.X_FAPI_INTERACTION_ID))
-        softAssertion.assertEquals(response.jsonPath().get("errors[0].code"), "AU.CDR.Resource.InvalidBankingAccount")
-        softAssertion.assertAll()
+        softAssertion.assertEquals(TestUtil.parseResponseBody(response, AUConstants.ERROR_CODE),
+                AUConstants.ERROR_CODE_INVALID_BANK_ACC)
     }
 
     @Test
@@ -105,7 +115,7 @@ class AccountsRetrievalTest extends AbstractAUTests {
             {
               "data": {
                 "accountIds": [
-                  "${consentedAccount}", "${secondConsentedAccount}"
+                  "${AUConstants.accountID}", "${AUConstants.accountID}"
                 ]
               },
               "meta": {}
@@ -114,7 +124,11 @@ class AccountsRetrievalTest extends AbstractAUTests {
 
         def response = AURequestBuilder
                 .buildBasicRequest(userAccessToken, AUConstants.X_V_HEADER_ACCOUNTS)
+
                 .contentType(ContentType.JSON)
+                .header(AUConstants.X_FAPI_AUTH_DATE, AUConstants.DATE)
+                .header(AUConstants.X_FAPI_CUSTOMER_IP_ADDRESS , AUConstants.IP)
+                .header(AUConstants.X_CDS_CLIENT_HEADERS , clientHeader)
                 .body(requestBody)
                 .baseUri(AUTestUtil.getBaseUrl(AUConstants.BASE_PATH_TYPE_BALANCES))
                 .post("${CDS_PATH}${AUConstants.BULK_BALANCES_PATH}")
@@ -141,7 +155,7 @@ class AccountsRetrievalTest extends AbstractAUTests {
             {
               "data": {
                 "accountIds": [
-                  "${consentedAccount}", "1234"
+                  "${AUConstants.accountID}", "1234"
                 ]
               },
               "meta": {}
@@ -162,8 +176,6 @@ class AccountsRetrievalTest extends AbstractAUTests {
         if (TestConstants.SOLUTION_VERSION_200.equalsIgnoreCase(AUTestUtil.solutionVersion)) {
             softAssertion.assertEquals(TestUtil.parseResponseBody(response, AUConstants.ERROR_CODE),
                     AUConstants.ERROR_CODE_INVALID_BANK_ACC)
-            softAssertion.assertTrue(TestUtil.parseResponseBody(response, AUConstants.ERROR_SOURCE_POINTER)
-                    .contains(AUConstants.BULK_BALANCES_PATH))
             softAssertion.assertEquals(TestUtil.parseResponseBody(response, AUConstants.ERROR_TITLE), AUConstants
                     .INVALID_BANK_ACC)
             softAssertion.assertEquals(TestUtil.parseResponseBody(response, AUConstants.ERROR_DETAIL), AUConstants
@@ -180,6 +192,9 @@ class AccountsRetrievalTest extends AbstractAUTests {
 
         def response = AURequestBuilder
                 .buildBasicRequest(userAccessToken, AUConstants.X_V_HEADER_ACCOUNTS)
+                .header(AUConstants.X_FAPI_AUTH_DATE, AUConstants.DATE)
+                .header(AUConstants.X_FAPI_CUSTOMER_IP_ADDRESS , AUConstants.IP)
+                .header(AUConstants.X_CDS_CLIENT_HEADERS , clientHeader)
                 .baseUri(AUTestUtil.getBaseUrl(AUConstants.BASE_PATH_TYPE_BALANCES))
                 .get("${CDS_PATH}${AUConstants.BULK_BALANCES_PATH}")
 
@@ -203,8 +218,11 @@ class AccountsRetrievalTest extends AbstractAUTests {
 
         def response = AURequestBuilder
                 .buildBasicRequest(userAccessToken, AUConstants.X_V_HEADER_ACCOUNTS)
+                .header(AUConstants.X_FAPI_AUTH_DATE, AUConstants.DATE)
+                .header(AUConstants.X_FAPI_CUSTOMER_IP_ADDRESS , AUConstants.IP)
+                .header(AUConstants.X_CDS_CLIENT_HEADERS , clientHeader)
                 .baseUri(AUTestUtil.getBaseUrl(AUConstants.BASE_PATH_TYPE_BALANCES))
-                .get("${CDS_PATH}${AUConstants.BULK_ACCOUNT_PATH}/${consentedAccount}/balance")
+                    .get("${CDS_PATH}${AUConstants.BULK_ACCOUNT_PATH}/${AUConstants.accountID}/balance")
 
         SoftAssert softAssertion = new SoftAssert()
         softAssertion.assertEquals(response.statusCode(), AUConstants.STATUS_CODE_200)
@@ -221,8 +239,11 @@ class AccountsRetrievalTest extends AbstractAUTests {
 
         Response response = AURequestBuilder
                 .buildBasicRequest(userAccessToken, AUConstants.X_V_HEADER_ACCOUNTS)
+                .header(AUConstants.X_FAPI_AUTH_DATE, AUConstants.DATE)
+                .header(AUConstants.X_FAPI_CUSTOMER_IP_ADDRESS , AUConstants.IP)
+                .header(AUConstants.X_CDS_CLIENT_HEADERS , clientHeader)
                 .baseUri(AUTestUtil.getBaseUrl(AUConstants.BASE_PATH_TYPE_TRANSACTIONS))
-                .get("${CDS_PATH}${AUConstants.BULK_ACCOUNT_PATH}/${consentedAccount}/transactions")
+                .get("${CDS_PATH}${AUConstants.BULK_ACCOUNT_PATH}/${AUConstants.accountID}/transactions")
 
         transactionId = TestUtil.parseResponseBody(response, "data.transactions.transactionId[0]")
 
@@ -245,8 +266,11 @@ class AccountsRetrievalTest extends AbstractAUTests {
 
         Response response = AURequestBuilder
                 .buildBasicRequest(userAccessToken, AUConstants.X_V_HEADER_ACCOUNTS)
+                .header(AUConstants.X_FAPI_AUTH_DATE, AUConstants.DATE)
+                .header(AUConstants.X_FAPI_CUSTOMER_IP_ADDRESS , AUConstants.IP)
+                .header(AUConstants.X_CDS_CLIENT_HEADERS , clientHeader)
                 .baseUri(AUTestUtil.getBaseUrl(AUConstants.BASE_PATH_TYPE_TRANSACTIONS))
-                .get("${CDS_PATH}${AUConstants.BULK_ACCOUNT_PATH}/${consentedAccount}/transactions/$transactionId")
+                .get("${CDS_PATH}${AUConstants.getBULK_ACCOUNT_PATH()}/${AUConstants.accountID}/transactions/$transactionId")
 
         SoftAssert softAssertion = new SoftAssert()
         softAssertion.assertEquals(response.statusCode(), AUConstants.STATUS_CODE_200)
@@ -265,7 +289,7 @@ class AccountsRetrievalTest extends AbstractAUTests {
             {
               "data": {
                 "accountIds": [
-                  "${consentedAccount}", "${secondConsentedAccount}"
+                  "${AUConstants.accountID}", "${AUConstants.accountID2}"
                 ]
               },
               "meta": {}
@@ -274,6 +298,9 @@ class AccountsRetrievalTest extends AbstractAUTests {
 
         def response = AURequestBuilder
                 .buildBasicRequest(userAccessToken, AUConstants.X_V_HEADER_ACCOUNTS)
+                .header(AUConstants.X_FAPI_AUTH_DATE, AUConstants.DATE)
+                .header(AUConstants.X_FAPI_CUSTOMER_IP_ADDRESS , AUConstants.IP)
+                .header(AUConstants.X_CDS_CLIENT_HEADERS , clientHeader)
                 .contentType(ContentType.JSON)
                 .body(requestBody)
                 .baseUri(AUTestUtil.getBaseUrl(AUConstants.BASE_PATH_TYPE_DIRECT_DEBIT))
@@ -301,6 +328,9 @@ class AccountsRetrievalTest extends AbstractAUTests {
 
         Response response = AURequestBuilder
                 .buildBasicRequest(userAccessToken, AUConstants.X_V_HEADER_ACCOUNTS)
+                .header(AUConstants.X_FAPI_AUTH_DATE, AUConstants.DATE)
+                .header(AUConstants.X_FAPI_CUSTOMER_IP_ADDRESS , AUConstants.IP)
+                .header(AUConstants.X_CDS_CLIENT_HEADERS , clientHeader)
                 .baseUri(AUTestUtil.getBaseUrl(AUConstants.BASE_PATH_TYPE_DIRECT_DEBIT))
                 .get("${CDS_PATH}${AUConstants.BULK_DIRECT_DEBITS_PATH}")
 
@@ -330,8 +360,11 @@ class AccountsRetrievalTest extends AbstractAUTests {
 
         Response response = AURequestBuilder
                 .buildBasicRequest(userAccessToken, AUConstants.X_V_HEADER_ACCOUNTS)
+                .header(AUConstants.X_FAPI_AUTH_DATE, AUConstants.DATE)
+                .header(AUConstants.X_FAPI_CUSTOMER_IP_ADDRESS , AUConstants.IP)
+                .header(AUConstants.X_CDS_CLIENT_HEADERS , clientHeader)
                 .baseUri(AUTestUtil.getBaseUrl(AUConstants.BASE_PATH_TYPE_DIRECT_DEBIT))
-                .get("${CDS_PATH}${AUConstants.BULK_ACCOUNT_PATH}/${consentedAccount}/direct-debits")
+                .get("${CDS_PATH}${AUConstants.BULK_ACCOUNT_PATH}/${AUConstants.accountID}/direct-debits")
 
         SoftAssert softAssertion = new SoftAssert()
         softAssertion.assertEquals(response.statusCode(), AUConstants.STATUS_CODE_200)
@@ -357,7 +390,7 @@ class AccountsRetrievalTest extends AbstractAUTests {
             {
               "data": {
                 "accountIds": [
-                    "${consentedAccount}", "${secondConsentedAccount}"
+                    "${AUConstants.accountID}", "${AUConstants.accountID2}"
                 ]
               },
               "meta": {}
@@ -369,6 +402,9 @@ class AccountsRetrievalTest extends AbstractAUTests {
                 .contentType(ContentType.JSON)
                 .body(requestBody)
                 .baseUri(AUTestUtil.getBaseUrl(AUConstants.BASE_PATH_TYPE_SCHEDULED_PAYMENT))
+                .header(AUConstants.X_FAPI_AUTH_DATE, AUConstants.DATE)
+                .header(AUConstants.X_FAPI_CUSTOMER_IP_ADDRESS , AUConstants.IP)
+                .header(AUConstants.X_CDS_CLIENT_HEADERS , clientHeader)
                 .post("${CDS_PATH}${AUConstants.BULK_SCHEDULE_PAYMENTS_PATH}")
 
         SoftAssert softAssertion = new SoftAssert()
@@ -394,6 +430,9 @@ class AccountsRetrievalTest extends AbstractAUTests {
 
         Response response = AURequestBuilder
                 .buildBasicRequest(userAccessToken, AUConstants.X_V_HEADER_ACCOUNTS)
+                .header(AUConstants.X_FAPI_AUTH_DATE, AUConstants.DATE)
+                .header(AUConstants.X_FAPI_CUSTOMER_IP_ADDRESS , AUConstants.IP)
+                .header(AUConstants.X_CDS_CLIENT_HEADERS , clientHeader)
                 .baseUri(AUTestUtil.getBaseUrl(AUConstants.BASE_PATH_TYPE_SCHEDULED_PAYMENT))
                 .get("${CDS_PATH}${AUConstants.BULK_SCHEDULE_PAYMENTS_PATH}")
 
@@ -427,8 +466,11 @@ class AccountsRetrievalTest extends AbstractAUTests {
 
         Response response = AURequestBuilder
                 .buildBasicRequest(userAccessToken, AUConstants.X_V_HEADER_ACCOUNTS)
+                .header(AUConstants.X_FAPI_AUTH_DATE, AUConstants.DATE)
+                .header(AUConstants.X_FAPI_CUSTOMER_IP_ADDRESS , AUConstants.IP)
+                .header(AUConstants.X_CDS_CLIENT_HEADERS , clientHeader)
                 .baseUri(AUTestUtil.getBaseUrl(AUConstants.BASE_PATH_TYPE_SCHEDULED_PAYMENT))
-                .get("${CDS_PATH}${AUConstants.BULK_ACCOUNT_PATH}/${consentedAccount}/payments/scheduled")
+                .get("${CDS_PATH}${AUConstants.BULK_ACCOUNT_PATH}/${AUConstants.accountID}/payments/scheduled")
 
         SoftAssert softAssertion = new SoftAssert()
         softAssertion.assertEquals(response.statusCode(), AUConstants.STATUS_CODE_200)
@@ -455,6 +497,9 @@ class AccountsRetrievalTest extends AbstractAUTests {
 
         Response response = AURequestBuilder
                 .buildBasicRequest(userAccessToken, AUConstants.X_V_HEADER_ACCOUNTS)
+                .header(AUConstants.X_FAPI_AUTH_DATE, AUConstants.DATE)
+                .header(AUConstants.X_FAPI_CUSTOMER_IP_ADDRESS , AUConstants.IP)
+                .header(AUConstants.X_CDS_CLIENT_HEADERS , clientHeader)
                 .baseUri(AUTestUtil.getBaseUrl(AUConstants.BASE_PATH_TYPE_PAYEES))
                 .get("${CDS_PATH}${AUConstants.BULK_PAYEES}")
 
@@ -483,6 +528,9 @@ class AccountsRetrievalTest extends AbstractAUTests {
 
         Response response = AURequestBuilder
                 .buildBasicRequest(userAccessToken, AUConstants.X_V_HEADER_ACCOUNTS)
+                .header(AUConstants.X_FAPI_AUTH_DATE, AUConstants.DATE)
+                .header(AUConstants.X_FAPI_CUSTOMER_IP_ADDRESS , AUConstants.IP)
+                .header(AUConstants.X_CDS_CLIENT_HEADERS , clientHeader)
                 .baseUri(AUTestUtil.getBaseUrl(AUConstants.BASE_PATH_TYPE_PAYEES))
                 .get("${CDS_PATH}${AUConstants.BULK_PAYEES}/${payeeId}")
 
@@ -630,6 +678,9 @@ class AccountsRetrievalTest extends AbstractAUTests {
 
         Response response = AURequestBuilder
                 .buildBasicRequest(userAccessToken, AUConstants.X_V_HEADER_ACCOUNTS)
+                .header(AUConstants.X_FAPI_AUTH_DATE, AUConstants.DATE)
+                .header(AUConstants.X_FAPI_CUSTOMER_IP_ADDRESS , AUConstants.IP)
+                .header(AUConstants.X_CDS_CLIENT_HEADERS , clientHeader)
                 .baseUri(AUTestUtil.getBaseUrl(AUConstants.SINGLE_ACCOUNT_PATH))
                 .get("${CDS_PATH}${AUConstants.GET_TRANSACTIONS}")
 

@@ -44,6 +44,8 @@ class AbstractAUTests {
             AUConstants.SCOPES.BANK_CUSTOMER_DETAIL_READ
     ]
 
+    public String cdsClient = "${AppConfigReader.getClientId()}:${AppConfigReader.getClientSecret()}"
+
     public String authorisationCode
     public String userAccessToken
     public String consentedAccount

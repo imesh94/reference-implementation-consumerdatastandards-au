@@ -46,7 +46,13 @@ class AUTestUtil {
      */
     static String getDateAndTime() {
 
-        return LocalDateTime.now().format(DateTimeFormatter.ISO_LOCAL_DATE)
+        TimeZone.setDefault(TimeZone.getTimeZone("GMT"));
+        Calendar cal = Calendar.getInstance();
+        SimpleDateFormat simpleformat = new SimpleDateFormat("E, dd MMM yyyy HH:mm:ss z");
+        String date = simpleformat.format(cal.getTime());
+
+        return date;
+
     }
     /**
      * Generate X_FAPI_INTERACTION_ID

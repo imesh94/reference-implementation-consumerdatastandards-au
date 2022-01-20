@@ -38,7 +38,7 @@ class WithdrawalFlowUIValidationTest extends AbstractAUTests {
 
     //TODO:Need to change Created on phrase to Consent granted phrase.Need to enable Test true after issue fix.
     // git issue:https://github.com/wso2-enterprise/financial-open-banking/issues/5610
-    @Test(enabled = false)
+    @Test(enabled = true)
     void "TC0303001_Validate DH use the term ‘consent’ instead of ‘authorisation’"() {
 
         def automation = new BrowserAutomation(BrowserAutomation.DEFAULT_DELAY)
@@ -63,7 +63,7 @@ class WithdrawalFlowUIValidationTest extends AbstractAUTests {
 
     //TODO:Need to enable Test true after issue fix.
     // git issue:https://github.com/wso2-enterprise/financial-open-banking/issues/5610
-    @Test(enabled = false)
+    @Test(enabled = true)
     void "TC0303002_Validate consumer dashboard show details of the CDR data that has been authorised to be disclosed"() {
 
        def automation = new BrowserAutomation(BrowserAutomation.DEFAULT_DELAY)

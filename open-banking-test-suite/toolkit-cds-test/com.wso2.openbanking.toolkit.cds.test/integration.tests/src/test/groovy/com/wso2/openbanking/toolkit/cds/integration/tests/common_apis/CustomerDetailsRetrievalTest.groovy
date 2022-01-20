@@ -13,6 +13,7 @@
 package com.wso2.openbanking.toolkit.cds.integration.tests.common_apis
 
 import com.wso2.openbanking.test.framework.TestSuite
+import com.wso2.openbanking.test.framework.util.AppConfigReader
 import com.wso2.openbanking.test.framework.util.ConfigParser
 import com.wso2.openbanking.test.framework.util.TestConstants
 import com.wso2.openbanking.test.framework.util.TestUtil
@@ -26,12 +27,15 @@ import org.testng.annotations.BeforeClass
 import org.testng.annotations.Test
 import org.testng.asserts.SoftAssert
 
+import java.nio.charset.Charset
+
 /**
  * Accounts Retrieval Tests.
  */
 class CustomerDetailsRetrievalTest extends AbstractAUTests {
 
     static final String CDS_PATH = AUConstants.CDS_PATH
+    def clientHeader = "${Base64.encoder.encodeToString(cdsClient.getBytes(Charset.defaultCharset()))}"
 
     @BeforeClass (alwaysRun = true)
     void "Get User Access Token"() {
@@ -44,6 +48,9 @@ class CustomerDetailsRetrievalTest extends AbstractAUTests {
 
         Response response = AURequestBuilder
                 .buildBasicRequest(userAccessToken, AUConstants.X_V_HEADER_CUSTOMER)
+                .header(AUConstants.X_FAPI_AUTH_DATE, AUConstants.DATE)
+                .header(AUConstants.X_FAPI_CUSTOMER_IP_ADDRESS , AUConstants.IP)
+                .header(AUConstants.X_CDS_CLIENT_HEADERS , clientHeader)
                 .baseUri(AUTestUtil.getBaseUrl(AUConstants.BASE_PATH_TYPE_CUSTOMER))
                 .get("${CDS_PATH}${AUConstants.BULK_CUSTOMER}")
 
@@ -61,6 +68,9 @@ class CustomerDetailsRetrievalTest extends AbstractAUTests {
 
         Response response = AURequestBuilder
                 .buildBasicRequest(userAccessToken, AUConstants.X_V_HEADER_CUSTOMER)
+                .header(AUConstants.X_FAPI_AUTH_DATE, AUConstants.DATE)
+                .header(AUConstants.X_FAPI_CUSTOMER_IP_ADDRESS , AUConstants.IP)
+                .header(AUConstants.X_CDS_CLIENT_HEADERS , clientHeader)
                 .baseUri(AUTestUtil.getBaseUrl(AUConstants.BASE_PATH_TYPE_CUSTOMER))
                 .get("${CDS_PATH}${AUConstants.CUSTOMER_DETAILS}")
 
@@ -124,12 +134,7 @@ class CustomerDetailsRetrievalTest extends AbstractAUTests {
                 AUConstants.SCOPES.BANK_CUSTOMER_DETAIL_READ
         ]
 
-        if (TestConstants.SOLUTION_VERSION_200.equals(ConfigParser.getInstance().getSolutionVersion())) {
-            doConsentAuthorisationWithoutAccountSelection()
-        } else {
-            doConsentAuthorisation()
-        }
-
+        doConsentAuthorisation()
         generateUserAccessToken()
 
         def response = TestSuite.buildRequest()
@@ -151,12 +156,7 @@ class CustomerDetailsRetrievalTest extends AbstractAUTests {
                 AUConstants.SCOPES.BANK_CUSTOMER_BASIC_READ
         ]
 
-        if (TestConstants.SOLUTION_VERSION_200.equals(ConfigParser.getInstance().getSolutionVersion())) {
-            doConsentAuthorisationWithoutAccountSelection()
-        } else {
-            doConsentAuthorisation()
-        }
-
+        doConsentAuthorisation()
         generateUserAccessToken()
 
         def response = TestSuite.buildRequest()

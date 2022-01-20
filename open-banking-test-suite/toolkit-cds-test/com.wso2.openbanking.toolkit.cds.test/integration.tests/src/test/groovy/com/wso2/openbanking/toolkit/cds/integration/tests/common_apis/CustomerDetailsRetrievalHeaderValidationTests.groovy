@@ -33,6 +33,7 @@ import java.nio.charset.Charset
 class CustomerDetailsRetrievalHeaderValidationTests extends AbstractAUTests {
 
     static final String CDS_PATH = AUConstants.CDS_PATH
+    def clientHeader = "${Base64.encoder.encodeToString(cdsClient.getBytes(Charset.defaultCharset()))}"
 
     @BeforeClass (alwaysRun = true)
     void "Get User Access Token"() {
@@ -45,6 +46,9 @@ class CustomerDetailsRetrievalHeaderValidationTests extends AbstractAUTests {
 
         def response = TestSuite.buildRequest()
                 .header(AUConstants.X_MIN_HEADER , AUConstants.X_V_HEADER_CUSTOMER)
+                .header(AUConstants.X_FAPI_AUTH_DATE, AUConstants.DATE)
+                .header(AUConstants.X_FAPI_CUSTOMER_IP_ADDRESS , AUConstants.IP)
+                .header(AUConstants.X_CDS_CLIENT_HEADERS , clientHeader)
                 .header(TestConstants.AUTHORIZATION_HEADER_KEY, "Bearer ${userAccessToken}")
                 .baseUri(AUTestUtil.getBaseUrl(AUConstants.BASE_PATH_TYPE_CUSTOMER))
                 .get("${CDS_PATH}${AUConstants.BULK_CUSTOMER}")
@@ -55,8 +59,8 @@ class CustomerDetailsRetrievalHeaderValidationTests extends AbstractAUTests {
         if (TestConstants.SOLUTION_VERSION_200.equalsIgnoreCase(AUTestUtil.solutionVersion)) {
             Assert.assertEquals(TestUtil.parseResponseBody(response, AUConstants.ERROR_CODE),
                     AUConstants.ERROR_CODE_MISSING_HEADER)
-            Assert.assertEquals(TestUtil.parseResponseBody(response, AUConstants.ERROR_SOURCE_PARAMETER), AUConstants
-                    .PARAM_X_V)
+           // Assert.assertEquals(TestUtil.parseResponseBody(response, AUConstants.ERROR_SOURCE_PARAMETER), AUConstants
+                  //  .PARAM_X_V)
             Assert.assertEquals(TestUtil.parseResponseBody(response, AUConstants.ERROR_TITLE), AUConstants
                     .MISSING_HEADER)
         }
@@ -67,6 +71,9 @@ class CustomerDetailsRetrievalHeaderValidationTests extends AbstractAUTests {
 
         def response = TestSuite.buildRequest()
                 .header(AUConstants.X_V_HEADER, AUConstants.X_V_HEADER_CUSTOMER)
+                .header(AUConstants.X_FAPI_AUTH_DATE, AUConstants.DATE)
+                .header(AUConstants.X_FAPI_CUSTOMER_IP_ADDRESS , AUConstants.IP)
+                .header(AUConstants.X_CDS_CLIENT_HEADERS , clientHeader)
                 .header(TestConstants.AUTHORIZATION_HEADER_KEY, "Bearer ${userAccessToken}")
                 .baseUri(AUTestUtil.getBaseUrl(AUConstants.BASE_PATH_TYPE_CUSTOMER))
                 .get("${CDS_PATH}${AUConstants.BULK_CUSTOMER}")
@@ -85,16 +92,19 @@ class CustomerDetailsRetrievalHeaderValidationTests extends AbstractAUTests {
 
         def response = TestSuite.buildRequest()
                 .header(AUConstants.X_V_HEADER, -1)
+                .header(AUConstants.X_FAPI_AUTH_DATE, AUConstants.DATE)
+                .header(AUConstants.X_FAPI_CUSTOMER_IP_ADDRESS , AUConstants.IP)
+                .header(AUConstants.X_CDS_CLIENT_HEADERS , clientHeader)
                 .header(TestConstants.AUTHORIZATION_HEADER_KEY, "Bearer ${userAccessToken}")
                 .baseUri(AUTestUtil.getBaseUrl(AUConstants.BASE_PATH_TYPE_CUSTOMER))
                 .get("${CDS_PATH}${AUConstants.BULK_CUSTOMER}")
 
         if (TestConstants.SOLUTION_VERSION_200.equalsIgnoreCase(AUTestUtil.solutionVersion)) {
-            Assert.assertEquals(response.statusCode(), AUConstants.STATUS_CODE_422)
+            Assert.assertEquals(response.statusCode(), AUConstants.STATUS_CODE_400)
             Assert.assertEquals(TestUtil.parseResponseBody(response, AUConstants.ERROR_CODE),
                     AUConstants.ERROR_CODE_INVALID_VERSION)
-            Assert.assertEquals(TestUtil.parseResponseBody(response, AUConstants.ERROR_SOURCE_PARAMETER), AUConstants
-                    .PARAM_X_V)
+           //Assert.assertEquals(TestUtil.parseResponseBody(response, AUConstants.ERROR_SOURCE_PARAMETER), AUConstants
+                    //.PARAM_X_V)
             Assert.assertEquals(TestUtil.parseResponseBody(response, AUConstants.ERROR_TITLE), AUConstants
                     .INVALID_VERSION)
         } else {
@@ -109,16 +119,17 @@ class CustomerDetailsRetrievalHeaderValidationTests extends AbstractAUTests {
 
         def response = TestSuite.buildRequest()
                 .header(AUConstants.X_V_HEADER, 1.2)
+                .header(AUConstants.X_FAPI_AUTH_DATE, AUConstants.DATE)
+                .header(AUConstants.X_FAPI_CUSTOMER_IP_ADDRESS , AUConstants.IP)
+                .header(AUConstants.X_CDS_CLIENT_HEADERS , clientHeader)
                 .header(TestConstants.AUTHORIZATION_HEADER_KEY, "Bearer ${userAccessToken}")
                 .baseUri(AUTestUtil.getBaseUrl(AUConstants.BASE_PATH_TYPE_CUSTOMER))
                 .get("${CDS_PATH}${AUConstants.BULK_CUSTOMER}")
 
         if (TestConstants.SOLUTION_VERSION_200.equalsIgnoreCase(AUTestUtil.solutionVersion)) {
-            Assert.assertEquals(response.statusCode(), AUConstants.STATUS_CODE_422)
+            Assert.assertEquals(response.statusCode(), AUConstants.STATUS_CODE_400)
             Assert.assertEquals(TestUtil.parseResponseBody(response, AUConstants.ERROR_CODE),
                     AUConstants.ERROR_CODE_INVALID_VERSION)
-            Assert.assertEquals(TestUtil.parseResponseBody(response, AUConstants.ERROR_SOURCE_PARAMETER), AUConstants
-                    .PARAM_X_V)
             Assert.assertEquals(TestUtil.parseResponseBody(response, AUConstants.ERROR_TITLE), AUConstants
                     .INVALID_VERSION)
         } else {
@@ -133,16 +144,17 @@ class CustomerDetailsRetrievalHeaderValidationTests extends AbstractAUTests {
 
         def response = TestSuite.buildRequest()
                 .header(AUConstants.X_V_HEADER, 0)
+                .header(AUConstants.X_FAPI_AUTH_DATE, AUConstants.DATE)
+                .header(AUConstants.X_FAPI_CUSTOMER_IP_ADDRESS , AUConstants.IP)
+                .header(AUConstants.X_CDS_CLIENT_HEADERS , clientHeader)
                 .header(TestConstants.AUTHORIZATION_HEADER_KEY, "Bearer ${userAccessToken}")
                 .baseUri(AUTestUtil.getBaseUrl(AUConstants.BASE_PATH_TYPE_CUSTOMER))
                 .get("${CDS_PATH}${AUConstants.BULK_CUSTOMER}")
 
         if (TestConstants.SOLUTION_VERSION_200.equalsIgnoreCase(AUTestUtil.solutionVersion)) {
-            Assert.assertEquals(response.statusCode(), AUConstants.STATUS_CODE_422)
+            Assert.assertEquals(response.statusCode(), AUConstants.STATUS_CODE_400)
             Assert.assertEquals(TestUtil.parseResponseBody(response, AUConstants.ERROR_CODE),
                     AUConstants.ERROR_CODE_INVALID_VERSION)
-            Assert.assertEquals(TestUtil.parseResponseBody(response, AUConstants.ERROR_SOURCE_PARAMETER), AUConstants
-                    .PARAM_X_V)
             Assert.assertEquals(TestUtil.parseResponseBody(response, AUConstants.ERROR_TITLE), AUConstants
                     .INVALID_VERSION)
         } else {
@@ -158,16 +170,17 @@ class CustomerDetailsRetrievalHeaderValidationTests extends AbstractAUTests {
         def response = TestSuite.buildRequest()
                 .header(AUConstants.X_V_HEADER, AUConstants.X_V_HEADER_CUSTOMER)
                 .header(AUConstants.X_MIN_HEADER, -1)
+                .header(AUConstants.X_FAPI_AUTH_DATE, AUConstants.DATE)
+                .header(AUConstants.X_FAPI_CUSTOMER_IP_ADDRESS , AUConstants.IP)
+                .header(AUConstants.X_CDS_CLIENT_HEADERS , clientHeader)
                 .header(TestConstants.AUTHORIZATION_HEADER_KEY, "Bearer ${userAccessToken}")
                 .baseUri(AUTestUtil.getBaseUrl(AUConstants.BASE_PATH_TYPE_CUSTOMER))
                 .get("${CDS_PATH}${AUConstants.BULK_CUSTOMER}")
 
         if (TestConstants.SOLUTION_VERSION_200.equalsIgnoreCase(AUTestUtil.solutionVersion)) {
-            Assert.assertEquals(response.statusCode(), AUConstants.STATUS_CODE_422)
+            Assert.assertEquals(response.statusCode(), AUConstants.STATUS_CODE_400)
             Assert.assertEquals(TestUtil.parseResponseBody(response, AUConstants.ERROR_CODE),
                     AUConstants.ERROR_CODE_INVALID_VERSION)
-            Assert.assertEquals(TestUtil.parseResponseBody(response, AUConstants.ERROR_SOURCE_PARAMETER), AUConstants
-                    .PARAM_X_MIN_V)
             Assert.assertEquals(TestUtil.parseResponseBody(response, AUConstants.ERROR_TITLE), AUConstants
                     .INVALID_VERSION)
         } else {
@@ -182,17 +195,18 @@ class CustomerDetailsRetrievalHeaderValidationTests extends AbstractAUTests {
 
         def response = TestSuite.buildRequest()
                 .header(AUConstants.X_V_HEADER, AUConstants.X_V_HEADER_CUSTOMER)
+                .header(AUConstants.X_FAPI_AUTH_DATE, AUConstants.DATE)
+                .header(AUConstants.X_FAPI_CUSTOMER_IP_ADDRESS , AUConstants.IP)
+                .header(AUConstants.X_CDS_CLIENT_HEADERS , clientHeader)
                 .header(AUConstants.X_MIN_HEADER, 1.2)
                 .header(TestConstants.AUTHORIZATION_HEADER_KEY, "Bearer ${userAccessToken}")
                 .baseUri(AUTestUtil.getBaseUrl(AUConstants.BASE_PATH_TYPE_CUSTOMER))
                 .get("${CDS_PATH}${AUConstants.BULK_CUSTOMER}")
 
         if (TestConstants.SOLUTION_VERSION_200.equalsIgnoreCase(AUTestUtil.solutionVersion)) {
-            Assert.assertEquals(response.statusCode(), AUConstants.STATUS_CODE_422)
+            Assert.assertEquals(response.statusCode(), AUConstants.STATUS_CODE_400)
             Assert.assertEquals(TestUtil.parseResponseBody(response, AUConstants.ERROR_CODE),
                     AUConstants.ERROR_CODE_INVALID_VERSION)
-            Assert.assertEquals(TestUtil.parseResponseBody(response, AUConstants.ERROR_SOURCE_PARAMETER), AUConstants
-                    .PARAM_X_MIN_V)
             Assert.assertEquals(TestUtil.parseResponseBody(response, AUConstants.ERROR_TITLE), AUConstants
                     .INVALID_VERSION)
         } else {
@@ -207,6 +221,9 @@ class CustomerDetailsRetrievalHeaderValidationTests extends AbstractAUTests {
 
         def response = TestSuite.buildRequest()
                 .header(AUConstants.X_V_HEADER, AUConstants.X_V_HEADER_CUSTOMER)
+                .header(AUConstants.X_FAPI_AUTH_DATE, AUConstants.DATE)
+                .header(AUConstants.X_FAPI_CUSTOMER_IP_ADDRESS , AUConstants.IP)
+                .header(AUConstants.X_CDS_CLIENT_HEADERS , clientHeader)
                 .header(AUConstants.X_MIN_HEADER, 3)
                 .header(TestConstants.AUTHORIZATION_HEADER_KEY, "Bearer ${userAccessToken}")
                 .baseUri(AUTestUtil.getBaseUrl(AUConstants.BASE_PATH_TYPE_CUSTOMER))
@@ -226,6 +243,9 @@ class CustomerDetailsRetrievalHeaderValidationTests extends AbstractAUTests {
 
         def response = TestSuite.buildRequest()
                 .header(AUConstants.X_V_HEADER, AUConstants.X_V_HEADER_CUSTOMER)
+                .header(AUConstants.X_FAPI_AUTH_DATE, AUConstants.DATE)
+                .header(AUConstants.X_FAPI_CUSTOMER_IP_ADDRESS , AUConstants.IP)
+                .header(AUConstants.X_CDS_CLIENT_HEADERS , clientHeader)
                 .header(AUConstants.X_MIN_HEADER, AUConstants.X_V_HEADER_CUSTOMER)
                 .header(TestConstants.AUTHORIZATION_HEADER_KEY, "Bearer ${userAccessToken}")
                 .baseUri(AUTestUtil.getBaseUrl(AUConstants.BASE_PATH_TYPE_CUSTOMER))
@@ -245,6 +265,9 @@ class CustomerDetailsRetrievalHeaderValidationTests extends AbstractAUTests {
 
         def response = TestSuite.buildRequest()
                 .header(AUConstants.X_V_HEADER, 3)
+                .header(AUConstants.X_FAPI_AUTH_DATE, AUConstants.DATE)
+                .header(AUConstants.X_FAPI_CUSTOMER_IP_ADDRESS , AUConstants.IP)
+                .header(AUConstants.X_CDS_CLIENT_HEADERS , clientHeader)
                 .header(AUConstants.X_MIN_HEADER, 1)
                 .header(TestConstants.AUTHORIZATION_HEADER_KEY, "Bearer ${userAccessToken}")
                 .baseUri(AUTestUtil.getBaseUrl(AUConstants.BASE_PATH_TYPE_CUSTOMER))
@@ -264,6 +287,9 @@ class CustomerDetailsRetrievalHeaderValidationTests extends AbstractAUTests {
 
         def response = TestSuite.buildRequest()
                 .header(AUConstants.X_V_HEADER, 5)
+                .header(AUConstants.X_FAPI_AUTH_DATE, AUConstants.DATE)
+                .header(AUConstants.X_FAPI_CUSTOMER_IP_ADDRESS , AUConstants.IP)
+                .header(AUConstants.X_CDS_CLIENT_HEADERS , clientHeader)
                 .header(AUConstants.X_MIN_HEADER, 4)
                 .header(TestConstants.AUTHORIZATION_HEADER_KEY, "Bearer ${userAccessToken}")
                 .baseUri(AUTestUtil.getBaseUrl(AUConstants.BASE_PATH_TYPE_CUSTOMER))
@@ -273,8 +299,6 @@ class CustomerDetailsRetrievalHeaderValidationTests extends AbstractAUTests {
         if (TestConstants.SOLUTION_VERSION_200.equalsIgnoreCase(AUTestUtil.solutionVersion)) {
             Assert.assertEquals(TestUtil.parseResponseBody(response, AUConstants.ERROR_CODE),
                     AUConstants.ERROR_CODE_UNSUPPORTED_VERSION)
-            Assert.assertEquals(TestUtil.parseResponseBody(response, AUConstants.ERROR_SOURCE_PARAMETER), AUConstants
-                    .PARAM_X_V)
             Assert.assertEquals(TestUtil.parseResponseBody(response, AUConstants.ERROR_TITLE), AUConstants
                     .UNSUPPORTED_VERSION)
         }
@@ -287,6 +311,9 @@ class CustomerDetailsRetrievalHeaderValidationTests extends AbstractAUTests {
 
         def response = TestSuite.buildRequest()
                 .header(AUConstants.X_V_HEADER, 5)
+                .header(AUConstants.X_FAPI_AUTH_DATE, AUConstants.DATE)
+                .header(AUConstants.X_FAPI_CUSTOMER_IP_ADDRESS , AUConstants.IP)
+                .header(AUConstants.X_CDS_CLIENT_HEADERS , clientHeader)
                 .header("x-${holderID}-v", 4)
                 .header(TestConstants.AUTHORIZATION_HEADER_KEY, "Bearer ${userAccessToken}")
                 .baseUri(AUTestUtil.getBaseUrl(AUConstants.BASE_PATH_TYPE_CUSTOMER))
@@ -296,8 +323,6 @@ class CustomerDetailsRetrievalHeaderValidationTests extends AbstractAUTests {
         if (TestConstants.SOLUTION_VERSION_200.equalsIgnoreCase(AUTestUtil.solutionVersion)) {
             Assert.assertEquals(TestUtil.parseResponseBody(response, AUConstants.ERROR_CODE),
                     AUConstants.ERROR_CODE_UNSUPPORTED_VERSION)
-            Assert.assertEquals(TestUtil.parseResponseBody(response, AUConstants.ERROR_SOURCE_PARAMETER), AUConstants
-                    .PARAM_X_V)
             Assert.assertEquals(TestUtil.parseResponseBody(response, AUConstants.ERROR_TITLE), AUConstants
                     .UNSUPPORTED_VERSION)
         }
@@ -311,6 +336,9 @@ class CustomerDetailsRetrievalHeaderValidationTests extends AbstractAUTests {
 
         def response = TestSuite.buildRequest()
                 .header(AUConstants.X_V_HEADER, 3)
+                .header(AUConstants.X_FAPI_AUTH_DATE, AUConstants.DATE)
+                .header(AUConstants.X_FAPI_CUSTOMER_IP_ADDRESS , AUConstants.IP)
+                .header(AUConstants.X_CDS_CLIENT_HEADERS , clientHeader)
                 .header("x-${holderID}-v", 1)
                 .header(TestConstants.AUTHORIZATION_HEADER_KEY, "Bearer ${userAccessToken}")
                 .baseUri(AUTestUtil.getBaseUrl(AUConstants.BASE_PATH_TYPE_CUSTOMER))
@@ -391,8 +419,6 @@ class CustomerDetailsRetrievalHeaderValidationTests extends AbstractAUTests {
         if (TestConstants.SOLUTION_VERSION_200.equalsIgnoreCase(AUTestUtil.solutionVersion)) {
             Assert.assertEquals(TestUtil.parseResponseBody(response, AUConstants.ERROR_CODE),
                     AUConstants.ERROR_CODE_INVALID_HEADER)
-            Assert.assertEquals(TestUtil.parseResponseBody(response, AUConstants.ERROR_SOURCE_PARAMETER), AUConstants
-                    .PARAM_FAPI_AUTH_DATE)
             Assert.assertEquals(TestUtil.parseResponseBody(response, AUConstants.ERROR_TITLE), AUConstants
                     .INVALID_HEADER)
         }
@@ -414,8 +440,6 @@ class CustomerDetailsRetrievalHeaderValidationTests extends AbstractAUTests {
         if (TestConstants.SOLUTION_VERSION_200.equalsIgnoreCase(AUTestUtil.solutionVersion)) {
             Assert.assertEquals(TestUtil.parseResponseBody(response, AUConstants.ERROR_CODE),
                     AUConstants.ERROR_CODE_INVALID_HEADER)
-            Assert.assertEquals(TestUtil.parseResponseBody(response, AUConstants.ERROR_SOURCE_PARAMETER), AUConstants
-                    .PARAM_FAPI_CUSTOMER_IP_ADDRESS)
             Assert.assertEquals(TestUtil.parseResponseBody(response, AUConstants.ERROR_TITLE), AUConstants
                     .INVALID_HEADER)
         }
@@ -438,8 +462,6 @@ class CustomerDetailsRetrievalHeaderValidationTests extends AbstractAUTests {
         if (TestConstants.SOLUTION_VERSION_200.equalsIgnoreCase(AUTestUtil.solutionVersion)) {
             Assert.assertEquals(TestUtil.parseResponseBody(response, AUConstants.ERROR_CODE),
                     AUConstants.ERROR_CODE_INVALID_HEADER)
-            Assert.assertEquals(TestUtil.parseResponseBody(response, AUConstants.ERROR_SOURCE_PARAMETER), AUConstants
-                    .PARAM_CDS_CLIENT_HEADER)
             Assert.assertEquals(TestUtil.parseResponseBody(response, AUConstants.ERROR_TITLE), AUConstants
                     .INVALID_HEADER)
         }
@@ -450,6 +472,9 @@ class CustomerDetailsRetrievalHeaderValidationTests extends AbstractAUTests {
 
         Response response = AURequestBuilder
                 .buildBasicRequest(userAccessToken, AUConstants.X_V_HEADER_CUSTOMER)
+                .header(AUConstants.X_FAPI_AUTH_DATE, AUConstants.DATE)
+                .header(AUConstants.X_FAPI_CUSTOMER_IP_ADDRESS , AUConstants.IP)
+                .header(AUConstants.X_CDS_CLIENT_HEADERS , clientHeader)
                 .baseUri(AUTestUtil.getBaseUrl(AUConstants.BASE_PATH_TYPE_DISCOVERY))
                 .get("${CDS_PATH}${AUConstants.DISCOVERY_STATUS}")
 
@@ -467,6 +492,9 @@ class CustomerDetailsRetrievalHeaderValidationTests extends AbstractAUTests {
 
         Response response = AURequestBuilder
                 .buildBasicRequest(userAccessToken, AUConstants.X_V_HEADER_CUSTOMER)
+                .header(AUConstants.X_FAPI_AUTH_DATE, AUConstants.DATE)
+                .header(AUConstants.X_FAPI_CUSTOMER_IP_ADDRESS , AUConstants.IP)
+                .header(AUConstants.X_CDS_CLIENT_HEADERS , clientHeader)
                 .baseUri(AUTestUtil.getBaseUrl(AUConstants.BASE_PATH_TYPE_DISCOVERY))
                 .get("${CDS_PATH}${AUConstants.DISCOVERY_OUTAGES}")
 
