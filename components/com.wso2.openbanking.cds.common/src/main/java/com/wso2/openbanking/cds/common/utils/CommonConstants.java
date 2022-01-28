@@ -81,5 +81,13 @@ public class CommonConstants {
     public static final String JWT_AUTH_CACHE_EXPIRY_TIME = "JWTAuthentication.CacheExpiryTime";
     public static final String JWT_AUTH_CACHE_MODIFY_EXPIRY = "JWTAuthentication.CacheModifiedExpiry";
 
+    // Default value constants
+    public static final String DEFAULT_DATA_RECIPIENT_DISCOVERY_URL =
+            "https://api.cdr.gov.au/cdr-register/v1/banking/data-recipients";
+    public static final int DEFAULT_META_DATA_CACHE_UPDATE_PERIOD = 5;
+    public static final int DEFAULT_CACHE_EXPIRY = 2;
+    public static final int DEFAULT_RETRY_COUNT = 2;
+    public static final int DEFAULT_BULK_EXECUTION_HOUR_2AM = 2;
+
     private CommonConstants() {}
 }
