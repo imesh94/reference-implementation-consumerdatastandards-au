@@ -159,7 +159,7 @@ public class CDSJointAccountConsentPersistenceStep implements ConsentPersistStep
             return (JSONArray) accountsObj;
         } else {
             return new JSONArray();
-    }
+        }
     }
 
     /**
