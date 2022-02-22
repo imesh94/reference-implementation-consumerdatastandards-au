@@ -23,12 +23,17 @@ import com.wso2.openbanking.accelerator.consent.mgt.dao.models.ConsentMappingRes
 import com.wso2.openbanking.accelerator.consent.mgt.dao.models.DetailedConsentResource;
 import com.wso2.openbanking.accelerator.consent.mgt.service.constants.ConsentCoreServiceConstants;
 import com.wso2.openbanking.accelerator.consent.mgt.service.impl.ConsentCoreServiceImpl;
+import net.minidev.json.JSONArray;
+import net.minidev.json.JSONObject;
+import net.minidev.json.parser.JSONParser;
+import net.minidev.json.parser.ParseException;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.wso2.carbon.identity.oauth2.IdentityOAuth2Exception;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.Map;
 
 import static com.wso2.openbanking.cds.consent.extensions.common.CDSConsentExtensionConstants.AUTH_RESOURCE_TYPE_PRIMARY;
@@ -88,6 +93,54 @@ public class CDSConsentAdminHandler implements ConsentAdminHandler {
             throw new ConsentException(ResponseStatus.INTERNAL_SERVER_ERROR,
                     "Exception occurred while revoking consents");
         }
+    }
+
+    @Override
+    public void handleConsentAmendmentHistoryRetrieval(ConsentAdminData consentAdminData) throws ConsentException {
+        //this.defaultConsentAdminHandler.handleConsentAmendmentHistoryRetrieval(consentAdminData);
+        JSONObject response = new JSONObject();
+        String consentID = null;
+        Map queryParams = consentAdminData.getQueryParams();
+
+        if (validateAndGetQueryParam(queryParams, "cdrArrangementId") != null) {
+            consentID = validateAndGetQueryParam(queryParams, "cdrArrangementId");
+        }
+
+        if (StringUtils.isBlank(consentID)) {
+            throw new ConsentException(ResponseStatus.BAD_REQUEST, "Mandatory query parameter cdrArrangementId " +
+                    "not available");
+        }
+        int count = 0;
+
+        try {
+            Map<String, DetailedConsentResource> results =
+                    this.consentCoreService.getConsentAmendmentHistoryData(consentID);
+
+            DetailedConsentResource currentConsentResource = results.get("currentConsent");
+            results.remove("currentConsent");
+
+            JSONArray consentHistory = new JSONArray();
+            for (Map.Entry<String, DetailedConsentResource> result : results.entrySet()) {
+                JSONObject consentResourceJSON = new JSONObject();
+                consentResourceJSON.appendField("historyId", result.getKey());
+                consentResourceJSON.appendField("amendedTime", result.getValue().getUpdatedTime());
+                consentResourceJSON.appendField("consentData",
+                        this.detailedConsentToJSON(result.getValue()));
+                consentHistory.add(consentResourceJSON);
+            }
+            response.appendField("cdrArrangementId", currentConsentResource.getConsentID());
+            response.appendField("currentConsent",  this.detailedConsentToJSON(currentConsentResource));
+            response.appendField("consentAmendmentHistory", consentHistory);
+            count = consentHistory.size();
+        } catch (ConsentManagementException e) {
+            throw new ConsentException(ResponseStatus.INTERNAL_SERVER_ERROR, e.getMessage());
+        }
+
+        JSONObject metadata = new JSONObject();
+        metadata.appendField("amendmentCount", count);
+        response.appendField("metadata", metadata);
+        consentAdminData.setResponseStatus(ResponseStatus.OK);
+        consentAdminData.setResponsePayload(response);
     }
 
     private String validateAndGetQueryParam(Map queryParams, String key) {
@@ -166,5 +219,64 @@ public class CDSConsentAdminHandler implements ConsentAdminHandler {
             log.error(String.format("Error occurred while revoking tokens. Only the consent was revoked " +
                     "successfully. %s", e.getMessage()));
         }
+    }
+
+    private JSONObject detailedConsentToJSON(DetailedConsentResource detailedConsentResource) {
+        JSONObject consentResource = new JSONObject();
+
+        consentResource.appendField("clientId", detailedConsentResource.getClientID());
+        try {
+            JSONObject receipt = (JSONObject) (new JSONParser(JSONParser.MODE_PERMISSIVE))
+                    .parse(detailedConsentResource.getReceipt());
+            JSONArray permissions = (JSONArray) ((JSONObject) receipt.get("accountData")).get("permissions");
+            consentResource.appendField("Permission", permissions);
+        } catch (ParseException e) {
+            throw new ConsentException(ResponseStatus.INTERNAL_SERVER_ERROR, "Exception occurred while parsing" +
+                    " receipt");
+        }
+        consentResource.appendField("consentType", detailedConsentResource.getConsentType());
+        consentResource.appendField("currentStatus", detailedConsentResource.getCurrentStatus());
+        consentResource.appendField("consentFrequency", detailedConsentResource.getConsentFrequency());
+        consentResource.appendField("validityPeriod", detailedConsentResource.getValidityPeriod());
+        consentResource.appendField("createdTimestamp", detailedConsentResource.getCreatedTime());
+        consentResource.appendField("updatedTimestamp", detailedConsentResource.getUpdatedTime());
+
+        Map<String, String> attMap = detailedConsentResource.getConsentAttributes();
+        String sharingDuration = attMap.get("sharing_duration_value");
+        String expirationDataTime = attMap.get("ExpirationDateTime");
+
+        consentResource.appendField("SharingDuration", sharingDuration);
+        consentResource.appendField("ExpirationDateTime", expirationDataTime);
+
+        ArrayList<AuthorizationResource> authArray = detailedConsentResource.getAuthorizationResources();
+        ArrayList<ConsentMappingResource> mappingArray = detailedConsentResource.getConsentMappingResources();
+
+        Map<String, AuthorizationResource> authResourceMap = new HashMap<>();
+        for (AuthorizationResource resource : authArray) {
+            authResourceMap.put(resource.getAuthorizationID(), resource);
+        }
+        Map<String, JSONArray> userAccountsDataMap = new HashMap<>();
+        for (ConsentMappingResource resource : mappingArray) {
+            if (resource.getMappingStatus().equalsIgnoreCase("active")) {
+                String userId = authResourceMap.get(resource.getAuthorizationID()).getUserID();
+                JSONArray accountsArray;
+                if (userAccountsDataMap.containsKey(userId)) {
+                    accountsArray = userAccountsDataMap.get(userId);
+                } else {
+                    accountsArray = new JSONArray();
+                }
+                accountsArray.add(resource.getAccountID());
+                userAccountsDataMap.put(userId, accountsArray);
+            }
+        }
+
+        JSONArray userList = new JSONArray();
+        for (Map.Entry<String, JSONArray> userAccountsData : userAccountsDataMap.entrySet()) {
+            JSONObject user = new JSONObject();
+            user.appendField("UserId", userAccountsData.getKey());
+            user.appendField("AccountList", userAccountsData.getValue());
+            userList.add(user);
+        }
+        return consentResource;
     }
 }
