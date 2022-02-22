@@ -115,7 +115,7 @@ public class CDSConsentPersistStep implements ConsentPersistStep {
                     } else {
                         validityPeriod = 0;
                     }
-                    consentCoreService.amendConsentData(cdrArrangementId, consentResource.getReceipt(),
+/*                    consentCoreService.amendConsentData(cdrArrangementId, consentResource.getReceipt(),
                             validityPeriod, userId);
                     // Reauthorize consent
                     consentCoreService.reAuthorizeExistingAuthResource(cdrArrangementId, authResorceId,
@@ -124,8 +124,10 @@ public class CDSConsentPersistStep implements ConsentPersistStep {
                     // Update consent attributes
                     ArrayList<String> consentAttributesKeyList = new ArrayList<>(consentAttributes.keySet());
                     consentCoreService.deleteConsentAttributes(cdrArrangementId, consentAttributesKeyList);
-                    consentCoreService.storeConsentAttributes(cdrArrangementId, consentAttributes);
-
+                    consentCoreService.storeConsentAttributes(cdrArrangementId, consentAttributes);*/
+                    consentCoreService.amendConsentData(cdrArrangementId, consentResource.getReceipt(), validityPeriod,
+                            authResorceId, accountIdsMap, CDSConsentExtensionConstants.AUTHORIZED_STATUS,
+                            consentAttributes, userId);
                 } else {
                     // create authorizable consent using the consent resource above
                     DetailedConsentResource createdConsent = null;
