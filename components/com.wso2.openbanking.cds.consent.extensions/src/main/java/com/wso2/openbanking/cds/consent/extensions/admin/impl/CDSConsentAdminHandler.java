@@ -23,6 +23,7 @@ import com.wso2.openbanking.accelerator.consent.mgt.dao.models.ConsentMappingRes
 import com.wso2.openbanking.accelerator.consent.mgt.dao.models.DetailedConsentResource;
 import com.wso2.openbanking.accelerator.consent.mgt.service.constants.ConsentCoreServiceConstants;
 import com.wso2.openbanking.accelerator.consent.mgt.service.impl.ConsentCoreServiceImpl;
+import com.wso2.openbanking.cds.consent.extensions.authorize.utils.PermissionsEnum;
 import net.minidev.json.JSONArray;
 import net.minidev.json.JSONObject;
 import net.minidev.json.parser.JSONParser;
@@ -229,14 +230,18 @@ public class CDSConsentAdminHandler implements ConsentAdminHandler {
             JSONObject receipt = (JSONObject) (new JSONParser(JSONParser.MODE_PERMISSIVE))
                     .parse(detailedConsentResource.getReceipt());
             JSONArray permissions = (JSONArray) ((JSONObject) receipt.get("accountData")).get("permissions");
-            consentResource.appendField("Permission", permissions);
+            JSONArray cdsPermissions = new JSONArray();
+            for (Object scope : permissions) {
+                cdsPermissions.add(PermissionsEnum.fromName(scope.toString()));
+            }
+            consentResource.appendField("permissions", cdsPermissions);
         } catch (ParseException e) {
             throw new ConsentException(ResponseStatus.INTERNAL_SERVER_ERROR, "Exception occurred while parsing" +
                     " receipt");
         }
+        
         consentResource.appendField("consentType", detailedConsentResource.getConsentType());
         consentResource.appendField("currentStatus", detailedConsentResource.getCurrentStatus());
-        consentResource.appendField("consentFrequency", detailedConsentResource.getConsentFrequency());
         consentResource.appendField("validityPeriod", detailedConsentResource.getValidityPeriod());
         consentResource.appendField("createdTimestamp", detailedConsentResource.getCreatedTime());
         consentResource.appendField("updatedTimestamp", detailedConsentResource.getUpdatedTime());
@@ -245,8 +250,8 @@ public class CDSConsentAdminHandler implements ConsentAdminHandler {
         String sharingDuration = attMap.get("sharing_duration_value");
         String expirationDataTime = attMap.get("ExpirationDateTime");
 
-        consentResource.appendField("SharingDuration", sharingDuration);
-        consentResource.appendField("ExpirationDateTime", expirationDataTime);
+        consentResource.appendField("sharingDuration", sharingDuration);
+        consentResource.appendField("expirationDateTime", expirationDataTime);
 
         ArrayList<AuthorizationResource> authArray = detailedConsentResource.getAuthorizationResources();
         ArrayList<ConsentMappingResource> mappingArray = detailedConsentResource.getConsentMappingResources();
@@ -273,10 +278,11 @@ public class CDSConsentAdminHandler implements ConsentAdminHandler {
         JSONArray userList = new JSONArray();
         for (Map.Entry<String, JSONArray> userAccountsData : userAccountsDataMap.entrySet()) {
             JSONObject user = new JSONObject();
-            user.appendField("UserId", userAccountsData.getKey());
-            user.appendField("AccountList", userAccountsData.getValue());
+            user.appendField("userId", userAccountsData.getKey());
+            user.appendField("accountList", userAccountsData.getValue());
             userList.add(user);
         }
+        consentResource.appendField("userList", userList);
         return consentResource;
     }
 }
