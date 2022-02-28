@@ -57,6 +57,7 @@
             <modules>
                 <module>components</module>
                 <module>internal-apis</module>
+                <module>react-apps</module>
                 <module>toolkits</module>
             </modules>
             <properties>
@@ -389,6 +390,11 @@
                 <version>${spring-web.version}</version>
                 <scope>test</scope>
             </dependency>
+            <dependency>
+                <groupId>org.json.wso2</groupId>
+                <artifactId>json</artifactId>
+                <version>${org.json.version}</version>
+            </dependency>
         </dependencies>
     </dependencyManagement>
 
@@ -432,6 +438,7 @@
         <osgi.service.component.imp.pkg.version.range>[1.2.0, 2.0.0)</osgi.service.component.imp.pkg.version.range>
         <carbon.kernel.version>4.6.0</carbon.kernel.version>
         <carbon.identity.clientauth.jwt.version>2.2.0</carbon.identity.clientauth.jwt.version>
+        <org.json.version>3.0.0.wso2v1</org.json.version>
     </properties>
 
 </project>
