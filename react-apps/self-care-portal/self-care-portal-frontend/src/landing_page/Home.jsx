@@ -28,7 +28,7 @@ export const Home = (user) => {
     const error = useSelector(state => state.currentUser.error);
     // Default consent type to view : accounts
     // We are only supporting the account consents in SCP.
-    const consentTypes = "accounts";
+    const consentTypes = "CDR_ACCOUNTS";
 
     useEffect(() => {
         dispatch(getConsents(user, consentTypes));

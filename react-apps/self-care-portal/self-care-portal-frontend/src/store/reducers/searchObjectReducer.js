@@ -27,7 +27,7 @@ const initialState = {
     userIDs: "",
     clientIDs: "",
     consentStatuses: specConfigurations.status.authorised,
-    consentTypes: "accounts", // Accelerator only supporting the account consents type in SCP.
+    consentTypes: "CDR_ACCOUNTS", // Accelerator only supporting the account consents type in SCP.
     hideAdvanceSearchOptions: true
 };
 
