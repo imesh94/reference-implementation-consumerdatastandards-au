@@ -12,6 +12,7 @@
 
 package com.wso2.openbanking.cds.consent.extensions.admin.impl;
 
+import com.wso2.openbanking.accelerator.common.config.OpenBankingConfigParser;
 import com.wso2.openbanking.accelerator.common.exception.ConsentManagementException;
 import com.wso2.openbanking.accelerator.consent.extensions.admin.impl.DefaultConsentAdminHandler;
 import com.wso2.openbanking.accelerator.consent.extensions.admin.model.ConsentAdminData;
@@ -19,6 +20,7 @@ import com.wso2.openbanking.accelerator.consent.extensions.admin.model.ConsentAd
 import com.wso2.openbanking.accelerator.consent.extensions.common.ConsentException;
 import com.wso2.openbanking.accelerator.consent.extensions.common.ResponseStatus;
 import com.wso2.openbanking.accelerator.consent.mgt.dao.models.AuthorizationResource;
+import com.wso2.openbanking.accelerator.consent.mgt.dao.models.ConsentHistoryResource;
 import com.wso2.openbanking.accelerator.consent.mgt.dao.models.ConsentMappingResource;
 import com.wso2.openbanking.accelerator.consent.mgt.dao.models.DetailedConsentResource;
 import com.wso2.openbanking.accelerator.consent.mgt.service.constants.ConsentCoreServiceConstants;
@@ -46,6 +48,7 @@ import static com.wso2.openbanking.cds.consent.extensions.common.CDSConsentExten
 public class CDSConsentAdminHandler implements ConsentAdminHandler {
     protected static final String CONSENT_ID = "consentID";
     protected static final String USER_ID = "userID";
+    protected static final String AMENDMENT_REASON_ACCOUNT_WITHDRAWAL = "JAMAccountWithdrawal";
     private static final Log log = LogFactory.getLog(CDSConsentAdminHandler.class);
     private final ConsentCoreServiceImpl consentCoreService;
     private final ConsentAdminHandler defaultConsentAdminHandler;
@@ -98,7 +101,7 @@ public class CDSConsentAdminHandler implements ConsentAdminHandler {
 
     @Override
     public void handleConsentAmendmentHistoryRetrieval(ConsentAdminData consentAdminData) throws ConsentException {
-        //this.defaultConsentAdminHandler.handleConsentAmendmentHistoryRetrieval(consentAdminData);
+
         JSONObject response = new JSONObject();
         String consentID = null;
         Map queryParams = consentAdminData.getQueryParams();
@@ -111,34 +114,48 @@ public class CDSConsentAdminHandler implements ConsentAdminHandler {
             throw new ConsentException(ResponseStatus.BAD_REQUEST, "Mandatory query parameter cdrArrangementId " +
                     "not available");
         }
-        int count = 0;
+        int count, amendmentCount = 0;
 
         try {
-            Map<String, DetailedConsentResource> results =
+            Map<String, ConsentHistoryResource> results =
                     this.consentCoreService.getConsentAmendmentHistoryData(consentID);
 
-            DetailedConsentResource currentConsentResource = results.get("currentConsent");
-            results.remove("currentConsent");
+            DetailedConsentResource currentConsentResource = this.consentCoreService.getDetailedConsent(consentID);
 
             JSONArray consentHistory = new JSONArray();
-            for (Map.Entry<String, DetailedConsentResource> result : results.entrySet()) {
+            for (Map.Entry<String, ConsentHistoryResource> result : results.entrySet()) {
                 JSONObject consentResourceJSON = new JSONObject();
+                ConsentHistoryResource consentHistoryResource  = result.getValue();
+                DetailedConsentResource detailedConsentResource = consentHistoryResource.getDetailedConsentResource();
                 consentResourceJSON.appendField("historyId", result.getKey());
-                consentResourceJSON.appendField("amendedTime", result.getValue().getUpdatedTime());
+                consentResourceJSON.appendField("amendedReason", consentHistoryResource.getReason());
+                consentResourceJSON.appendField("amendedTime", detailedConsentResource.getUpdatedTime());
                 consentResourceJSON.appendField("consentData",
-                        this.detailedConsentToJSON(result.getValue()));
+                        this.detailedConsentToJSON(detailedConsentResource));
                 consentHistory.add(consentResourceJSON);
             }
             response.appendField("cdrArrangementId", currentConsentResource.getConsentID());
             response.appendField("currentConsent",  this.detailedConsentToJSON(currentConsentResource));
             response.appendField("consentAmendmentHistory", consentHistory);
             count = consentHistory.size();
+            amendmentCount = count;
+
+            String currentConsentStatus = currentConsentResource.getCurrentStatus();
+            if (CONSENT_STATUS_REVOKED.equalsIgnoreCase(currentConsentStatus) || OpenBankingConfigParser.getInstance()
+                    .getStatusWordingForExpiredConsents().equalsIgnoreCase(currentConsentStatus)) {
+                // remove the consent history entry due consent expiration or consent revocation as it is not
+                // lying under the consent amendments nomenclature in CDS
+                amendmentCount = count - 1;
+            }
+
         } catch (ConsentManagementException e) {
-            throw new ConsentException(ResponseStatus.INTERNAL_SERVER_ERROR, e.getMessage());
+            throw new ConsentException(ResponseStatus.INTERNAL_SERVER_ERROR, "Error occurred while retrieving " +
+                    "consent amendment history data");
         }
 
         JSONObject metadata = new JSONObject();
-        metadata.appendField("amendmentCount", count);
+        metadata.appendField("totalCount", count);
+        metadata.appendField("totalAmendmentCount", amendmentCount);
         response.appendField("metadata", metadata);
         consentAdminData.setResponseStatus(ResponseStatus.OK);
         consentAdminData.setResponsePayload(response);
@@ -205,6 +222,8 @@ public class CDSConsentAdminHandler implements ConsentAdminHandler {
 
             this.consentCoreService.deactivateAccountMappings(mappingIds);
         }
+        //store joint account withdrawal from the consent to consent amendment history
+        this.storeJointAccountWithdrawalHistory(detailedConsentResource);
     }
 
     private void revokeConsentAsPrimaryUser(DetailedConsentResource detailedConsentResource, String userId)
@@ -239,7 +258,7 @@ public class CDSConsentAdminHandler implements ConsentAdminHandler {
             throw new ConsentException(ResponseStatus.INTERNAL_SERVER_ERROR, "Exception occurred while parsing" +
                     " receipt");
         }
-        
+
         consentResource.appendField("consentType", detailedConsentResource.getConsentType());
         consentResource.appendField("currentStatus", detailedConsentResource.getCurrentStatus());
         consentResource.appendField("validityPeriod", detailedConsentResource.getValidityPeriod());
@@ -284,5 +303,19 @@ public class CDSConsentAdminHandler implements ConsentAdminHandler {
         }
         consentResource.appendField("userList", userList);
         return consentResource;
+    }
+
+    private void storeJointAccountWithdrawalHistory(DetailedConsentResource detailedConsentResource)
+            throws ConsentManagementException {
+
+        if (OpenBankingConfigParser.getInstance().isConsentAmendmentHistoryEnabled()) {
+            ConsentHistoryResource consentHistoryResource = new ConsentHistoryResource();
+            consentHistoryResource.setTimestamp(System.currentTimeMillis() / 1000);
+            consentHistoryResource.setReason(AMENDMENT_REASON_ACCOUNT_WITHDRAWAL);
+            consentHistoryResource.setDetailedConsentResource(detailedConsentResource);
+
+            this.consentCoreService.storeConsentAmendmentHistory(detailedConsentResource.getConsentID(),
+                    consentHistoryResource, null);
+        }
     }
 }
