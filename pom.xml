@@ -57,6 +57,7 @@
             <modules>
                 <module>components</module>
                 <module>internal-apis</module>
+                <module>react-apps</module>
                 <module>toolkits</module>
             </modules>
             <properties>
@@ -388,6 +389,11 @@
                 <artifactId>spring-core</artifactId>
                 <version>${spring-web.version}</version>
                 <scope>test</scope>
+            </dependency>
+            <dependency>
+                <groupId>org.json.wso2</groupId>
+                <artifactId>json</artifactId>
+                <version>${org.json.version}</version>
             </dependency>
         </dependencies>
     </dependencyManagement>
