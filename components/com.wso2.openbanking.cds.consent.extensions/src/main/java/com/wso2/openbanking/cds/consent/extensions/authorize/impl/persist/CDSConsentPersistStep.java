@@ -122,16 +122,6 @@ public class CDSConsentPersistStep implements ConsentPersistStep {
                     } else {
                         validityPeriod = 0;
                     }
-/*                    consentCoreService.amendConsentData(cdrArrangementId, consentResource.getReceipt(),
-                            validityPeriod, userId);
-                    // Reauthorize consent
-                    consentCoreService.reAuthorizeExistingAuthResource(cdrArrangementId, authResorceId,
-                            userId, accountIdsMap, authResourceStatus,
-                            CDSConsentExtensionConstants.AUTHORIZED_STATUS);
-                    // Update consent attributes
-                    ArrayList<String> consentAttributesKeyList = new ArrayList<>(consentAttributes.keySet());
-                    consentCoreService.deleteConsentAttributes(cdrArrangementId, consentAttributesKeyList);
-                    consentCoreService.storeConsentAttributes(cdrArrangementId, consentAttributes);*/
 
                     // get the amendments related to user consented joint accounts
                     Map<String, Object> additionalAmendmentData = new HashMap<>();
