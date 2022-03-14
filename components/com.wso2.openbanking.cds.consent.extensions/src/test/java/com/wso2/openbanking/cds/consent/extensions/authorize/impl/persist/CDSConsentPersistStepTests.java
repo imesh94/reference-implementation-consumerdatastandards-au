@@ -170,12 +170,10 @@ public class CDSConsentPersistStepTests {
     @Test
     public void testConsentPersistWithAmendment() throws Exception {
 
-        doReturn(null).when(consentCoreServiceMock).amendConsentData(anyString(), anyString(), anyLong(), anyString());
-        doReturn(true).when(consentCoreServiceMock).reAuthorizeExistingAuthResource(anyString(), anyString(),
-                anyString(), any(HashMap.class), anyString(), anyString());
-        doReturn(true).when(consentCoreServiceMock).deleteConsentAttributes(anyString(), any(ArrayList.class));
-        doReturn(true).when(consentCoreServiceMock)
-                .storeConsentAttributes(anyString(), any(HashMap.class));
+        doReturn(null).when(consentCoreServiceMock).amendDetailedConsent(anyString(), anyString(),
+                anyLong(), anyString(), any(HashMap.class), anyString(), any(HashMap.class),
+                anyString(), any(HashMap.class));
+
         doReturn(new DetailedConsentResource()).when(consentCoreServiceMock).getDetailedConsent(anyString());
         doNothing().when(consentCoreServiceMock).revokeTokens(any(DetailedConsentResource.class), anyString());
 
