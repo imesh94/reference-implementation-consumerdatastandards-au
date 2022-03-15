@@ -364,7 +364,7 @@ public class CDSConsentPersistStep implements ConsentPersistStep {
     }
 
     @Generated(message = "Excluding from code coverage since it requires a service call")
-        private  Map<String, Object> createNewAuthResources(String consentId, ConsentResource consentResource,
+    private  Map<String, Object> createNewAuthResources(String consentId, ConsentResource consentResource,
                                         Set<String> authorizableResources,
                                         Map<String, ArrayList<String>> usersWithMultipleJointAccounts,
                                         boolean isConsentAmendment)

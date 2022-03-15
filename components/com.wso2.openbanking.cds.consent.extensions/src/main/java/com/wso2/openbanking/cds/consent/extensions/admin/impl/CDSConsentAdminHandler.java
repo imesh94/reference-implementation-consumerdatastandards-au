@@ -49,6 +49,7 @@ public class CDSConsentAdminHandler implements ConsentAdminHandler {
     protected static final String CONSENT_ID = "consentID";
     protected static final String USER_ID = "userID";
     protected static final String AMENDMENT_REASON_ACCOUNT_WITHDRAWAL = "JAMAccountWithdrawal";
+    protected static final String CDR_ARRANGEMENT_ID = "cdrArrangementId";
     private static final Log log = LogFactory.getLog(CDSConsentAdminHandler.class);
     private final ConsentCoreServiceImpl consentCoreService;
     private final ConsentAdminHandler defaultConsentAdminHandler;
@@ -106,8 +107,8 @@ public class CDSConsentAdminHandler implements ConsentAdminHandler {
         String consentID = null;
         Map queryParams = consentAdminData.getQueryParams();
 
-        if (validateAndGetQueryParam(queryParams, "cdrArrangementId") != null) {
-            consentID = validateAndGetQueryParam(queryParams, "cdrArrangementId");
+        if (validateAndGetQueryParam(queryParams, CDR_ARRANGEMENT_ID) != null) {
+            consentID = validateAndGetQueryParam(queryParams, CDR_ARRANGEMENT_ID);
         }
 
         if (StringUtils.isBlank(consentID)) {
@@ -149,6 +150,7 @@ public class CDSConsentAdminHandler implements ConsentAdminHandler {
             }
 
         } catch (ConsentManagementException e) {
+            log.error(String.format("Error occurred while retrieving consent history data. %s", e.getMessage()));
             throw new ConsentException(ResponseStatus.INTERNAL_SERVER_ERROR, "Error occurred while retrieving " +
                     "consent amendment history data");
         }
@@ -255,6 +257,7 @@ public class CDSConsentAdminHandler implements ConsentAdminHandler {
             }
             consentResource.appendField("permissions", cdsPermissions);
         } catch (ParseException e) {
+            log.error(String.format("Error occurred while parsing receipt in consent history. %s", e.getMessage()));
             throw new ConsentException(ResponseStatus.INTERNAL_SERVER_ERROR, "Exception occurred while parsing" +
                     " receipt");
         }
