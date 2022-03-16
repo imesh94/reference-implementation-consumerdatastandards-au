@@ -1,0 +1,21 @@
+.consentHistoryActionBtnDiv {
+    margin-top: 1rem;
+    display: flex;
+    justify-content: left;
+    flex-wrap: wrap;
+}
+
+.consentHistoryBody {
+    padding-left: 1em;
+    padding-right: 1em;
+    margin-top: 1.5rem;
+    margin-bottom: 1.5rem;
+}
+
+.read-more-link{
+    color: blue;
+    text-decoration: underline;
+    letter-spacing: 1px;
+    cursor: pointer;
+}
+

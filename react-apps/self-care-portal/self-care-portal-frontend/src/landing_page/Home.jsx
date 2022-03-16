@@ -21,6 +21,7 @@ import {getConsents} from "../store/actions";
 import {getAppInfo} from "../store/actions";
 import {BrowserRouter as Router} from "react-router-dom";
 import {ResponseError} from "../errorPage";
+import {ConsentHistory} from "../ConsentHistory/ConsentHistory";
 
 export const Home = (user) => {
     const dispatch = useDispatch();
@@ -57,6 +58,7 @@ export const Home = (user) => {
                     <Switch>
                         <Route path="/consentmgr" exact component={Body}/>
                         <Route path="/consentmgr/:id" exact component={DetailedAgreement}/>
+                        <Route path="/consentmgr/consent-history/:id" exact component={ConsentHistory}/>
                         <Route path="/consentmgr/:id/withdrawal-step-1" exact component={WithdrawStep1}/>
                         <ProtectedWithdrawRoute path="/consentmgr/:id/withdrawal-step-2" exact
                                                 component={WithdrawStep2}/>

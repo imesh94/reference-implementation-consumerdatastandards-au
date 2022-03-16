@@ -10,7 +10,17 @@
  * WSO2 governing the purchase of this software and any associated services.
  */
 
-export * from './consent-api'
-export * from './applicationInfo-api'
-export * from './deviceRegistration-api'
-export * from './consent-history-api'
+export const ConsentHistoryTableHeader = ({ headerLang }) => {
+    return (
+      <thead>
+        <tr>
+            <>
+            <th>{headerLang.historyUpdatedTime}</th>
+            <th>{headerLang.previousSharingDuration}</th>
+            <th>{headerLang.amendedPermissions}</th>
+            <th>{headerLang.accounts}</th>
+            </>
+        </tr>
+      </thead>
+    );
+};

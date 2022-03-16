@@ -35,6 +35,16 @@ export const specConfigurations_CDS =
             logoURLAttribute: "logo_uri",
             displayNameAttribute: "software_client_name",
             failOverDisplayNameAttribute: "software_id"
+        },
+        consentHistory: {
+            consentHistoryLabel: "Consent Amendments History",
+            consentHistoryView: "View Details >",
+            consentHistoryTableHeaders: {
+                historyUpdatedTime: "Amendment Time",
+                previousSharingDuration: "Sharing Duration",
+                amendedPermissions: "Permissions",
+                accounts: "Accounts"
+            }
         }
     };
 
