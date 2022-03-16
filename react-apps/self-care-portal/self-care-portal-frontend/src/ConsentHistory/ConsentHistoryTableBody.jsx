@@ -51,23 +51,28 @@ export const ConsentHistoryTableBody = ({ consentHistory, consentHistoryLang}) =
               consentHistory.map((consent) => (
                   <tr key={(id = id + 1)}>
                     <td key={(id = id + 1)}>
-                      {moment(consent.amendedTime).format(
-                          "DD MMM YYYY HH:mm:ss"
-                      )}
+                      <div className="dataClusters">
+                        {getAccountList(consent.consentData).map((account) => (
+                                <div>{account}</div>
+                            )
+                        )}
+                      </div>
+                    </td>
+                    <td key={(id = id + 1)}>
+                      <PermissionView AmendedPermissions={consent.consentData.permissions}/>
                     </td>
                     <td key={(id = id + 1)}>
                       {getSharingDurationDays(consent.consentData.sharingDuration)} Days &nbsp;
                       {getSharingDurationHours(consent.consentData.sharingDuration)} Hours
                     </td>
                     <td key={(id = id + 1)}>
-                      <PermissionView AmendedPermissions={consent.consentData.permissions}/>
+                      {moment((consent.amendedTime * 1000)).format(
+                          "DD MMM YYYY HH:mm:ss"
+                      )}
                     </td>
                     <td key={(id = id + 1)}>
                       <div className="dataClusters">
-                        {getAccountList(consent.consentData).map((account) => (
-                                <div>{account}</div>
-                            )
-                        )}
+                            <div>{consent.amendedReason}</div>
                       </div>
                     </td>
                   </tr>

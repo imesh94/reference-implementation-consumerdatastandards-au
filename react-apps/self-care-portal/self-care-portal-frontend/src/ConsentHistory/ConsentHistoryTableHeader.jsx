@@ -15,10 +15,11 @@ export const ConsentHistoryTableHeader = ({ headerLang }) => {
       <thead>
         <tr>
             <>
-            <th>{headerLang.historyUpdatedTime}</th>
-            <th>{headerLang.previousSharingDuration}</th>
-            <th>{headerLang.amendedPermissions}</th>
             <th>{headerLang.accounts}</th>
+            <th>{headerLang.amendedPermissions}</th>
+            <th>{headerLang.sharingDuration}</th>
+            <th>{headerLang.historyUpdatedTime}</th>
+            <th>{headerLang.reason}</th>
             </>
         </tr>
       </thead>
