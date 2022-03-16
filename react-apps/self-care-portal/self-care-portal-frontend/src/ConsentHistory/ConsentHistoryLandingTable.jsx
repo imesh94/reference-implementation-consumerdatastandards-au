@@ -21,7 +21,7 @@ import {lang, specConfigurations} from "../specConfigs/specConfigurations";
 export const ConsentHistoryLandingTable = (props) => {
 
   var consentHistoryResponse = useSelector((state) => state.consentHistory.consentHistory);
-  const consentHistory = consentHistoryResponse.ConsentHistory;
+  const consentHistory = consentHistoryResponse.consentAmendmentHistory;
 
   const consentHistoryLang = specConfigurations.consentHistory;
 

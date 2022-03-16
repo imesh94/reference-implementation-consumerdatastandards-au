@@ -173,7 +173,6 @@ export const setConsentHistory = (consentHistory) => {
 
 export const getConsentHistory = (consentId) => {
     // Received dispatch method as argument
-    console.log("calling to get consent history")
     return (dispatch) => {
         //set loadings to true
         dispatch(setConsentHistoryGetRequestLoadingStatus(true));
@@ -186,7 +185,6 @@ export const getConsentHistory = (consentId) => {
             })
             .finally(() => dispatch(setConsentHistoryGetRequestLoadingStatus(false)));
     };
-    console.log("received consent history")
 };
 
 export const setConsentHistoryGetRequestLoadingStatus = (isLoading) => {

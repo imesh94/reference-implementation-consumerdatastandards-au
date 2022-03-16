@@ -17,12 +17,10 @@ import {PermissionView} from "./PermissionView";
 let id = 0;
 export const ConsentHistoryTableBody = ({ consentHistory, consentHistoryLang}) => {
 
-/*  var id = 0;*/
-
   function getAccountList(consent) {
     const accounts = [];
-    consent.UserList.map((userList) => (
-        userList.AccountList.map((account) => (
+    consent.userList.map((userList) => (
+        userList.accountList.map((account) => (
             accounts.push(account)
         ))
     ))
@@ -41,41 +39,41 @@ export const ConsentHistoryTableBody = ({ consentHistory, consentHistoryLang}) =
   }
 
   return (
-    <tbody key={id = id + 1}>
-      {
-        consentHistory.length === 0 ? (
-          <tr id="noConsentsLbl" key={(id = id + 1)}>
-            <td id="lbl" colSpan={4} key={(id = id + 1)}>
-              No {consentHistoryLang.consentHistoryLabel} to display
-            </td>
-          </tr>
-        ) : (
-            consentHistory.map((consent) => (
-            <tr key={(id = id + 1)}>
-              <td key={(id = id + 1)}>
-                {moment(consent.HistoryUpdatedAt).format(
-                    "DD MMM YYYY HH:mm:ss"
-                )}
-              </td>
-              <td key={(id = id + 1)}>
-                {getSharingDurationDays(consent.PreviousSharingDuration)} Days &nbsp;
-                {getSharingDurationHours(consent.PreviousSharingDuration)} Hours
-              </td>
-              <td key={(id = id + 1)}>
-                  <PermissionView AmendedPermissions={consent.AmendedPermissions}/>
-              </td>
-                <td key={(id = id + 1)}>
-                    <div className="dataClusters">
-                        {getAccountList(consent).map((account) => (
+      <tbody key={id = id + 1}>
+      {(
+          consentHistory.length === 0 ? (
+                  <tr id="noConsentsLbl" key={(id = id + 1)}>
+                    <td id="lbl" colSpan={4} key={(id = id + 1)}>
+                      No {consentHistoryLang.consentHistoryLabel} to display
+                    </td>
+                  </tr>
+              ):(
+              consentHistory.map((consent) => (
+                  <tr key={(id = id + 1)}>
+                    <td key={(id = id + 1)}>
+                      {moment(consent.amendedTime).format(
+                          "DD MMM YYYY HH:mm:ss"
+                      )}
+                    </td>
+                    <td key={(id = id + 1)}>
+                      {getSharingDurationDays(consent.consentData.sharingDuration)} Days &nbsp;
+                      {getSharingDurationHours(consent.consentData.sharingDuration)} Hours
+                    </td>
+                    <td key={(id = id + 1)}>
+                      <PermissionView AmendedPermissions={consent.consentData.permissions}/>
+                    </td>
+                    <td key={(id = id + 1)}>
+                      <div className="dataClusters">
+                        {getAccountList(consent.consentData).map((account) => (
                                 <div>{account}</div>
                             )
                         )}
-                    </div>
-                </td>
-            </tr>
-          ))
-        )
-     }
-    </tbody>
+                      </div>
+                    </td>
+                  </tr>
+              ))
+          )
+      )}
+      </tbody>
   );
 };
