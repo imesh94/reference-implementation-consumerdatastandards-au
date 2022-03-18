@@ -131,7 +131,7 @@ public class CDSConsentAdminHandler implements ConsentAdminHandler {
                 consentResourceJSON.appendField("historyId", result.getKey());
                 consentResourceJSON.appendField("amendedReason", consentHistoryResource.getReason());
                 consentResourceJSON.appendField("amendedTime", detailedConsentResource.getUpdatedTime());
-                consentResourceJSON.appendField("consentData",
+                consentResourceJSON.appendField("previousConsentData",
                         this.detailedConsentToJSON(detailedConsentResource));
                 consentHistory.add(consentResourceJSON);
             }
@@ -279,8 +279,10 @@ public class CDSConsentAdminHandler implements ConsentAdminHandler {
         ArrayList<ConsentMappingResource> mappingArray = detailedConsentResource.getConsentMappingResources();
 
         Map<String, AuthorizationResource> authResourceMap = new HashMap<>();
+        Map<String, String> userAuthTypeMap = new HashMap<>();
         for (AuthorizationResource resource : authArray) {
             authResourceMap.put(resource.getAuthorizationID(), resource);
+            userAuthTypeMap.put(resource.getUserID(), resource.getAuthorizationType());
         }
         Map<String, JSONArray> userAccountsDataMap = new HashMap<>();
         for (ConsentMappingResource resource : mappingArray) {
@@ -300,7 +302,9 @@ public class CDSConsentAdminHandler implements ConsentAdminHandler {
         JSONArray userList = new JSONArray();
         for (Map.Entry<String, JSONArray> userAccountsData : userAccountsDataMap.entrySet()) {
             JSONObject user = new JSONObject();
-            user.appendField("userId", userAccountsData.getKey());
+            String userId = userAccountsData.getKey();
+            user.appendField("userId", userId);
+            user.appendField("authType", userAuthTypeMap.get(userId));
             user.appendField("accountList", userAccountsData.getValue());
             userList.add(user);
         }
