@@ -42,9 +42,9 @@ export const specConfigurations_CDS =
             consentHistoryTableHeaders: {
                 historyUpdatedTime: "Amended At",
                 reason: "Reason",
-                sharingDuration: "Sharing Duration",
-                amendedPermissions: "Permissions",
-                accounts: "Accounts"
+                sharingDuration: "Previous Sharing Duration",
+                amendedPermissions: "Previous Permissions",
+                accounts: "Previous Accounts"
             }
         }
     };
