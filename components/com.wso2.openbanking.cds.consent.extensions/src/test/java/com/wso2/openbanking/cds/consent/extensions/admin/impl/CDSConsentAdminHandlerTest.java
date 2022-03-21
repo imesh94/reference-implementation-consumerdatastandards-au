@@ -194,8 +194,10 @@ public class CDSConsentAdminHandlerTest extends PowerMockTestCase {
                 .getDetailedConsent(anyString());
 
         Map<String, List<String>> queryParams = new HashMap<>();
-        queryParams.put("cdrArrangementId",
+        queryParams.put(CDSConsentAdminHandler.CDR_ARRANGEMENT_ID,
                 new ArrayList<>(Collections.singletonList("test-id")));
+        queryParams.put(CDSConsentAdminHandler.USER_ID,
+                new ArrayList<>(Collections.singletonList(USER_ID_PRIMARY)));
 
         ConsentAdminData consentAdminDataMock = mock(ConsentAdminData.class);
         when(consentAdminDataMock.getQueryParams()).thenReturn(queryParams);

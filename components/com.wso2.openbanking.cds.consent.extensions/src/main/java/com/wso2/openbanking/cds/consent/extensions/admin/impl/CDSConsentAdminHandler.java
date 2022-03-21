@@ -49,7 +49,7 @@ public class CDSConsentAdminHandler implements ConsentAdminHandler {
     protected static final String CONSENT_ID = "consentID";
     protected static final String USER_ID = "userID";
     protected static final String AMENDMENT_REASON_ACCOUNT_WITHDRAWAL = "JAMAccountWithdrawal";
-    protected static final String CDR_ARRANGEMENT_ID = "cdrArrangementId";
+    protected static final String CDR_ARRANGEMENT_ID = "cdrArrangementID";
     private static final Log log = LogFactory.getLog(CDSConsentAdminHandler.class);
     private final ConsentCoreServiceImpl consentCoreService;
     private final ConsentAdminHandler defaultConsentAdminHandler;
@@ -105,16 +105,28 @@ public class CDSConsentAdminHandler implements ConsentAdminHandler {
 
         JSONObject response = new JSONObject();
         String consentID = null;
+        String userID = null;
         Map queryParams = consentAdminData.getQueryParams();
 
         if (validateAndGetQueryParam(queryParams, CDR_ARRANGEMENT_ID) != null) {
             consentID = validateAndGetQueryParam(queryParams, CDR_ARRANGEMENT_ID);
         }
+        if (validateAndGetQueryParam(queryParams, USER_ID) != null) {
+            userID = validateAndGetQueryParam(queryParams, USER_ID);
+        }
 
         if (StringUtils.isBlank(consentID)) {
+            log.error("Request missing the mandatory query parameter cdrArrangementId");
             throw new ConsentException(ResponseStatus.BAD_REQUEST, "Mandatory query parameter cdrArrangementId " +
                     "not available");
         }
+
+        if (StringUtils.isBlank(userID)) {
+            log.error("Request missing the mandatory query parameter userID");
+            throw new ConsentException(ResponseStatus.BAD_REQUEST, "Mandatory query parameter userID " +
+                    "not available");
+        }
+
         int count, amendmentCount = 0;
 
         try {
@@ -123,44 +135,51 @@ public class CDSConsentAdminHandler implements ConsentAdminHandler {
 
             DetailedConsentResource currentConsentResource = this.consentCoreService.getDetailedConsent(consentID);
 
-            JSONArray consentHistory = new JSONArray();
-            for (Map.Entry<String, ConsentHistoryResource> result : results.entrySet()) {
-                JSONObject consentResourceJSON = new JSONObject();
-                ConsentHistoryResource consentHistoryResource  = result.getValue();
-                DetailedConsentResource detailedConsentResource = consentHistoryResource.getDetailedConsentResource();
-                consentResourceJSON.appendField("historyId", result.getKey());
-                consentResourceJSON.appendField("amendedReason", consentHistoryResource.getReason());
-                consentResourceJSON.appendField("amendedTime", detailedConsentResource.getUpdatedTime());
-                consentResourceJSON.appendField("previousConsentData",
-                        this.detailedConsentToJSON(detailedConsentResource));
-                consentHistory.add(consentResourceJSON);
-            }
-            response.appendField("cdrArrangementId", currentConsentResource.getConsentID());
-            response.appendField("currentConsent",  this.detailedConsentToJSON(currentConsentResource));
-            response.appendField("consentAmendmentHistory", consentHistory);
-            count = consentHistory.size();
-            amendmentCount = count;
+            if (isActionByPrimaryUser(currentConsentResource, userID)) {
 
-            String currentConsentStatus = currentConsentResource.getCurrentStatus();
-            if (CONSENT_STATUS_REVOKED.equalsIgnoreCase(currentConsentStatus) || OpenBankingConfigParser.getInstance()
-                    .getStatusWordingForExpiredConsents().equalsIgnoreCase(currentConsentStatus)) {
-                // remove the consent history entry due consent expiration or consent revocation as it is not
-                // lying under the consent amendments nomenclature in CDS
-                amendmentCount = count - 1;
-            }
+                JSONArray consentHistory = new JSONArray();
+                for (Map.Entry<String, ConsentHistoryResource> result : results.entrySet()) {
+                    JSONObject consentResourceJSON = new JSONObject();
+                    ConsentHistoryResource consentHistoryResource = result.getValue();
+                    DetailedConsentResource detailedConsentResource =
+                            consentHistoryResource.getDetailedConsentResource();
+                    consentResourceJSON.appendField("historyId", result.getKey());
+                    consentResourceJSON.appendField("amendedReason", consentHistoryResource.getReason());
+                    consentResourceJSON.appendField("amendedTime", detailedConsentResource.getUpdatedTime());
+                    consentResourceJSON.appendField("previousConsentData",
+                            this.detailedConsentToJSON(detailedConsentResource));
+                    consentHistory.add(consentResourceJSON);
+                }
+                response.appendField("cdrArrangementId", currentConsentResource.getConsentID());
+                response.appendField("currentConsent", this.detailedConsentToJSON(currentConsentResource));
+                response.appendField("consentAmendmentHistory", consentHistory);
+                count = consentHistory.size();
+                amendmentCount = count;
 
+                String currentConsentStatus = currentConsentResource.getCurrentStatus();
+                if (CONSENT_STATUS_REVOKED.equalsIgnoreCase(currentConsentStatus)
+                        || OpenBankingConfigParser.getInstance().getStatusWordingForExpiredConsents()
+                        .equalsIgnoreCase(currentConsentStatus)) {
+                    // remove the consent history entry due consent expiration or consent revocation as it is not
+                    // lying under the consent amendments nomenclature in CDS
+                    amendmentCount = count - 1;
+                }
+                JSONObject metadata = new JSONObject();
+                metadata.appendField("totalCount", count);
+                metadata.appendField("totalAmendmentCount", amendmentCount);
+                response.appendField("metadata", metadata);
+                consentAdminData.setResponseStatus(ResponseStatus.OK);
+                consentAdminData.setResponsePayload(response);
+            } else {
+                consentAdminData.setResponseStatus(ResponseStatus.FORBIDDEN);
+            }
         } catch (ConsentManagementException e) {
             log.error(String.format("Error occurred while retrieving consent history data. %s", e.getMessage()));
             throw new ConsentException(ResponseStatus.INTERNAL_SERVER_ERROR, "Error occurred while retrieving " +
                     "consent amendment history data");
         }
 
-        JSONObject metadata = new JSONObject();
-        metadata.appendField("totalCount", count);
-        metadata.appendField("totalAmendmentCount", amendmentCount);
-        response.appendField("metadata", metadata);
-        consentAdminData.setResponseStatus(ResponseStatus.OK);
-        consentAdminData.setResponsePayload(response);
+
     }
 
     private String validateAndGetQueryParam(Map queryParams, String key) {
@@ -325,4 +344,14 @@ public class CDSConsentAdminHandler implements ConsentAdminHandler {
                     consentHistoryResource, null);
         }
     }
+
+    private boolean isActionByPrimaryUser(DetailedConsentResource detailedConsentResource, String userID) {
+        for (AuthorizationResource authorizationResource : detailedConsentResource.getAuthorizationResources()) {
+            if (userID.equals(authorizationResource.getUserID())) {
+                return AUTH_RESOURCE_TYPE_PRIMARY.equals(authorizationResource.getAuthorizationType());
+            }
+        }
+        return false;
+    }
+
 }
