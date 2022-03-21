@@ -171,14 +171,14 @@ export const setConsentHistory = (consentHistory) => {
     };
 };
 
-export const getConsentHistory = (consentId) => {
+export const getConsentHistory = (consentId, userId) => {
     // Received dispatch method as argument
     return (dispatch) => {
         //set loadings to true
         dispatch(setConsentHistoryGetRequestLoadingStatus(true));
 
         //getConsentHistoryFromAPI
-        getConsentHistoryFromAPI(consentId)
+        getConsentHistoryFromAPI(consentId, userId)
             .then((response) => dispatch(setConsentHistory(response.data)))
             .catch((error) => {
                 /* Log the error */

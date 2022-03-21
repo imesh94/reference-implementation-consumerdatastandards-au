@@ -13,30 +13,42 @@
 import React, {useEffect} from "react";
 import "../css/Buttons.css";
 import {Link} from "react-router-dom";
-import {useDispatch} from "react-redux";
+import {useDispatch, useSelector} from "react-redux";
 import {getConsentHistory} from "../store/actions";
-import {lang, specConfigurations} from "../specConfigs/specConfigurations";
+import {specConfigurations} from "../specConfigs/specConfigurations";
 import {getValueFromConsent} from "../services";
 
 export const ConsentHistoryViewButton = ({consent}) => {
 
     const dispatch = useDispatch();
+    const user = useSelector(state => state.currentUser.user);
+    const userId = (user.email.endsWith("@carbon.super") ? (user.email) : user.email + '@carbon.super');
+
     useEffect(() => {
-        dispatch(getConsentHistory(getValueFromConsent("consentId", consent)));
+        dispatch(getConsentHistory(getValueFromConsent("consentId", consent), userId));
     }, []);
+
+    var consentHistoryResponse = useSelector((state) => state.consentHistory.consentHistory);
+    const consentHistory = consentHistoryResponse.consentAmendmentHistory;
 
     return (
         <>
-            <div>
-                <h5>{specConfigurations.consentHistory.consentHistoryLabel}</h5>
-                <div className="consentHistoryActionBtnDiv">
-                    <Link
-                        to={`/consentmgr/consent-history/${getValueFromConsent("consentId", consent)}`}
-                        className="comButton">
-                        {specConfigurations.consentHistory.consentHistoryView}
-                    </Link>
+        {(
+            (typeof(consentHistory) !== 'undefined' && consentHistory != null) ? (
+                <div>
+                    <h5>{specConfigurations.consentHistory.consentHistoryLabel}</h5>
+                    <div className="consentHistoryActionBtnDiv">
+                        <Link
+                            to={`/consentmgr/consent-history/${getValueFromConsent("consentId", consent)}`}
+                            className="comButton">
+                            {specConfigurations.consentHistory.consentHistoryView}
+                        </Link>
+                    </div>
                 </div>
-            </div>
+            ):(
+                <div/>
+            )
+        )}
         </>
     );
 };
