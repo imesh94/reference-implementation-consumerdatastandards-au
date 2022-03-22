@@ -12,21 +12,22 @@
 
 import axios from "axios";
 import { CONFIG } from "../config";
+import Cookies from "js-cookie";
+import User from "../data/User";
 
 /**
  * Get the consent amendments history of a consent from the API.
  */
-export const getConsentHistoryFromAPI = (consentId) => {
-  var serverURL = CONFIG.SERVER_URL;
+export const getConsentHistoryFromAPI = (consentId, userId) => {
   var consentHistoryUrl;
 
   consentHistoryUrl =
-      `${serverURL}/api/openbanking/consent/admin/consent-amendment-history?cdrArrangementId=${consentId}`;
+      `${CONFIG.BACKEND_URL}/admin/consent-amendment-history?cdrArrangementID=${consentId}&userID=${userId}`;
 
   const requestConfig = {
     headers: {
       "Content-Type": "application/json",
-      Authorization: "Basic YWRtaW5Ad3NvMi5jb206d3NvMjEyMw=="
+      "Authorization": "Bearer " + Cookies.get(User.CONST.OB_SCP_ACC_TOKEN_P1),
     },
     method: "GET",
     url: `${consentHistoryUrl}`

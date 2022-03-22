@@ -117,12 +117,19 @@ public class Utils {
         throw new TokenGenerationException("Invalid response received for token request");
     }
 
-    public static HttpUriRequest getHttpUriRequest(String apimBaseUrl, String requestMethod, String queryParams) {
+    public static HttpUriRequest getHttpUriRequest(String apimBaseUrl, String requestMethod, String requestURI,
+                                                   String queryParams) {
         switch (requestMethod) {
             case HttpDelete.METHOD_NAME:
                 return new HttpDelete(apimBaseUrl + Constants.PATH_APIM_CONSENT_REVOKE_V1 + "?" + queryParams);
             default:
-                return new HttpGet(apimBaseUrl + Constants.PATH_APIM_CONSENT_SEARCH_V1 + "?" + queryParams);
+                if (requestURI.contains("/consent-amendment-history")) {
+                    return new HttpGet(apimBaseUrl + Constants.PATH_APIM_CONSENT_AMENDMENT_HISTORY_V1 + "?" +
+                            queryParams);
+                } else {
+                    return new HttpGet(apimBaseUrl + Constants.PATH_APIM_CONSENT_SEARCH_V1 + "?" + queryParams);
+                }
+
         }
     }
 

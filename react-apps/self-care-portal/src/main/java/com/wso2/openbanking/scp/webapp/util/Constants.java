@@ -57,4 +57,6 @@ public class Constants {
     public static final String PATH_AUTHORIZE = "/oauth2/authorize";
     public static final String PATH_APIM_CONSENT_SEARCH_V1 = "/ob_consent/v1/admin/search";
     public static final String PATH_APIM_CONSENT_REVOKE_V1 = "/ob_consent/v1/admin/revoke";
+    public static final String PATH_APIM_CONSENT_AMENDMENT_HISTORY_V1 =
+            "/ob_consent/v1/admin/consent-amendment-history";
 }

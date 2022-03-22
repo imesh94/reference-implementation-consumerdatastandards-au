@@ -165,10 +165,10 @@ public class UtilsTest extends PowerMockTestCase {
 
     @Test
     public void testGetHttpUriRequest() {
-        Assert.assertTrue(Utils
-                .getHttpUriRequest(REQUEST_URL, "GET", "?query=query") instanceof HttpGet);
-        Assert.assertTrue(Utils
-                .getHttpUriRequest(REQUEST_URL, "DELETE", "?query=query") instanceof HttpDelete);
+        Assert.assertTrue(Utils.getHttpUriRequest(REQUEST_URL,
+                "GET", "/search", "?query=query") instanceof HttpGet);
+        Assert.assertTrue(Utils.getHttpUriRequest(REQUEST_URL,
+                "DELETE", "/revoke", "?query=query") instanceof HttpDelete);
     }
 
     @Test
