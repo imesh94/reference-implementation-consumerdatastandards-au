@@ -45,6 +45,11 @@ export const specConfigurations_CDS =
                 sharingDuration: "Previous Sharing Duration",
                 amendedPermissions: "Previous Permissions",
                 accounts: "Previous Accounts"
+            },
+            consentAmendmentReasonLabels: {
+                ConsentAmendmentFlow: "Consent Amendment",
+                ConsentRevocation: "Consent Revocation",
+                JAMAccountWithdrawal: "Joint Account Withdrawal"
             }
         }
     };

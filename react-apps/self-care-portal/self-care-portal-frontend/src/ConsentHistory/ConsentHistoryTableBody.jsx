@@ -38,6 +38,17 @@ export const ConsentHistoryTableBody = ({ consentHistory, consentHistoryLang}) =
     return Math.round(sharingDuration/3600 * 10) / 10;
   }
 
+  function getReason(amendedReason){
+    let reason;
+    Object.keys(consentHistoryLang.consentAmendmentReasonLabels).forEach(key => {
+            if (key == amendedReason) {
+              reason = consentHistoryLang.consentAmendmentReasonLabels[key];
+            }
+        }
+    );
+    return reason;
+  }
+
   return (
       <tbody key={id = id + 1}>
       {(
@@ -57,7 +68,7 @@ export const ConsentHistoryTableBody = ({ consentHistory, consentHistoryLang}) =
                     </td>
                     <td key={(id = id + 1)}>
                       <div className="dataClusters">
-                        <div>{consent.amendedReason}</div>
+                        <div>{getReason(consent.amendedReason)}</div>
                       </div>
                     </td>
                     <td key={(id = id + 1)}>
