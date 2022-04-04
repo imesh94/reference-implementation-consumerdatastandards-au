@@ -10,14 +10,14 @@
  * WSO2 governing the purchase of this software and any associated services.
  */
 
-export const ConsentHistoryTableHeader = ({ headerLang }) => {
+export const PreviousConsentTableHeader = ({ headerLang }) => {
     return (
-      <thead>
+      <thead className="consentDataTableHeader">
         <tr>
             <>
-            <th>{headerLang.historyUpdatedTime}</th>
-            <th>{headerLang.reason}</th>
-            <th>{headerLang.previousConsent}</th>
+            <th>{headerLang.accounts}</th>
+            <th>{headerLang.amendedPermissions}</th>
+            <th>{headerLang.sharingDuration}</th>
             </>
         </tr>
       </thead>

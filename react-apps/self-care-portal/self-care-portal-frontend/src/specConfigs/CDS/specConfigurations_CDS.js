@@ -42,9 +42,10 @@ export const specConfigurations_CDS =
             consentHistoryTableHeaders: {
                 historyUpdatedTime: "Amended At",
                 reason: "Reason",
-                sharingDuration: "Previous Sharing Duration",
-                amendedPermissions: "Previous Permissions",
-                accounts: "Previous Accounts"
+                previousConsent: "Consent prior to Amendment",
+                sharingDuration: "Sharing Duration",
+                amendedPermissions: "Permissions",
+                accounts: "Accounts"
             },
             consentAmendmentReasonLabels: {
                 ConsentAmendmentFlow: "Consent Amendment",

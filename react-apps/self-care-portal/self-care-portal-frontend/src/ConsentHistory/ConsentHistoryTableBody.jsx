@@ -12,31 +12,10 @@
 
 import moment from "moment";
 import React from "react";
-import {PermissionView} from "./PermissionView";
+import {PreviousConsentDataItem} from "./PreviousConsentDataItem";
 
 let id = 0;
 export const ConsentHistoryTableBody = ({ consentHistory, consentHistoryLang}) => {
-
-  function getAccountList(consent) {
-    const accounts = [];
-    consent.userList.map((userList) => (
-        userList.accountList.map((account) => (
-            accounts.push(account)
-        ))
-    ))
-    return Array.from(new Set(accounts))
-  }
-
-  function getSharingDurationDays(sharingDuration) {
-    return Math.floor(sharingDuration / 86400)
-  }
-
-  function getSharingDurationHours(sharingDuration) {
-    // reduce the of days and calculate the remaining hours
-    const days = getSharingDurationDays(sharingDuration)
-    sharingDuration -= days * 86400;
-    return Math.round(sharingDuration/3600 * 10) / 10;
-  }
 
   function getReason(amendedReason){
     let reason;
@@ -73,18 +52,10 @@ export const ConsentHistoryTableBody = ({ consentHistory, consentHistoryLang}) =
                     </td>
                     <td key={(id = id + 1)}>
                       <div className="dataClusters">
-                        {getAccountList(consent.previousConsentData).map((account) => (
-                                <div>{account}</div>
-                            )
-                        )}
+                          <PreviousConsentDataItem permissionScope={consent.previousConsentData.permissions[0]}
+                                                   consent = {consent}
+                                                   headerLang={consentHistoryLang.consentHistoryTableHeaders}/>
                       </div>
-                    </td>
-                    <td key={(id = id + 1)}>
-                      <PermissionView AmendedPermissions={consent.previousConsentData.permissions}/>
-                    </td>
-                    <td key={(id = id + 1)}>
-                      {getSharingDurationDays(consent.previousConsentData.sharingDuration)} Days &nbsp;
-                      {getSharingDurationHours(consent.previousConsentData.sharingDuration)} Hours
                     </td>
                   </tr>
               ))
