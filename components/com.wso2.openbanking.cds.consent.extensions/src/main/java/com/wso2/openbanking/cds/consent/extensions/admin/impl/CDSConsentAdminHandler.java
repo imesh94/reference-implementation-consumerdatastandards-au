@@ -116,8 +116,8 @@ public class CDSConsentAdminHandler implements ConsentAdminHandler {
         }
 
         if (StringUtils.isBlank(consentID)) {
-            log.error("Request missing the mandatory query parameter cdrArrangementId");
-            throw new ConsentException(ResponseStatus.BAD_REQUEST, "Mandatory query parameter cdrArrangementId " +
+            log.error("Request missing the mandatory query parameter cdrArrangementID");
+            throw new ConsentException(ResponseStatus.BAD_REQUEST, "Mandatory query parameter cdrArrangementID " +
                     "not available");
         }
 
