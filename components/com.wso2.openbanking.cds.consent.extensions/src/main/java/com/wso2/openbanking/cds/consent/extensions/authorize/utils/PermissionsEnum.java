@@ -51,4 +51,14 @@ public enum PermissionsEnum {
         }
         return null;
     }
+
+    public static String fromName(String text) {
+
+        for (PermissionsEnum enumValue : PermissionsEnum.values()) {
+            if (enumValue.name().equals(text)) {
+                return enumValue.value;
+            }
+        }
+        return null;
+    }
 }

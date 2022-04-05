@@ -21,8 +21,10 @@ import com.wso2.openbanking.accelerator.consent.extensions.common.ConsentExcepti
 import com.wso2.openbanking.accelerator.consent.extensions.common.ResponseStatus;
 import com.wso2.openbanking.accelerator.consent.mgt.dao.constants.ConsentMgtDAOConstants;
 import com.wso2.openbanking.accelerator.consent.mgt.dao.models.AuthorizationResource;
+import com.wso2.openbanking.accelerator.consent.mgt.dao.models.ConsentMappingResource;
 import com.wso2.openbanking.accelerator.consent.mgt.dao.models.ConsentResource;
 import com.wso2.openbanking.accelerator.consent.mgt.dao.models.DetailedConsentResource;
+import com.wso2.openbanking.accelerator.consent.mgt.service.constants.ConsentCoreServiceConstants;
 import com.wso2.openbanking.accelerator.consent.mgt.service.impl.ConsentCoreServiceImpl;
 import com.wso2.openbanking.cds.consent.extensions.authorize.impl.model.AccountConsentRequest;
 import com.wso2.openbanking.cds.consent.extensions.authorize.utils.CDSDataRetrievalUtil;
@@ -72,7 +74,6 @@ public class CDSConsentPersistStep implements ConsentPersistStep {
                 JSONObject payloadData = consentPersistData.getPayload();
                 String userId = consentData.getUserId();
                 ArrayList<String> accountIdList = getAccountIdList(payloadData);
-                boolean isConsentAmendment = false;
                 // get the consent model to be created
                 AccountConsentRequest accountConsentRequest = CDSDataRetrievalUtil
                         .getAccountConsent(consentData, consentData.getMetaDataMap().
@@ -90,11 +91,17 @@ public class CDSConsentPersistStep implements ConsentPersistStep {
                 ConsentResource consentResource = createConsentAndSetAttributes(consentData, requestString,
                         consentAttributes);
 
+                // Get joint account data from consentPersistData
+                Object jointAccountIdWithUsersObj = consentPersistData.
+                        getMetadata().get(CDSConsentExtensionConstants.MAP_JOINT_ACCOUNTS_ID_WITH_USERS);
+                Object usersWithMultipleJointAccountsObj = consentPersistData.
+                        getMetadata().get(CDSConsentExtensionConstants.MAP_USER_ID_WITH_JOINT_ACCOUNTS);
+
                 // Consent amendment flow
                 if (consentData.getMetaDataMap().containsKey(CDSConsentExtensionConstants.IS_CONSENT_AMENDMENT) &&
                         Boolean.parseBoolean(consentData.getMetaDataMap().get(
                                 CDSConsentExtensionConstants.IS_CONSENT_AMENDMENT).toString())) {
-                    isConsentAmendment = true;
+
                     String cdrArrangementId = consentData.getMetaDataMap().get(CDSConsentExtensionConstants.
                             CDR_ARRANGEMENT_ID).toString();
                     String authResorceId = consentData.getMetaDataMap().get(CDSConsentExtensionConstants.
@@ -115,17 +122,18 @@ public class CDSConsentPersistStep implements ConsentPersistStep {
                     } else {
                         validityPeriod = 0;
                     }
-                    consentCoreService.amendConsentData(cdrArrangementId, consentResource.getReceipt(),
-                            validityPeriod, userId);
-                    // Reauthorize consent
-                    consentCoreService.reAuthorizeExistingAuthResource(cdrArrangementId, authResorceId,
-                            userId, accountIdsMap, authResourceStatus,
-                            CDSConsentExtensionConstants.AUTHORIZED_STATUS);
-                    // Update consent attributes
-                    ArrayList<String> consentAttributesKeyList = new ArrayList<>(consentAttributes.keySet());
-                    consentCoreService.deleteConsentAttributes(cdrArrangementId, consentAttributesKeyList);
-                    consentCoreService.storeConsentAttributes(cdrArrangementId, consentAttributes);
 
+                    // get the amendments related to user consented joint accounts
+                    Map<String, Object> additionalAmendmentData = new HashMap<>();
+                    if (jointAccountIdWithUsersObj != null && usersWithMultipleJointAccountsObj != null) {
+                        additionalAmendmentData = bindJointAccountUsersToConsent(consentResource, consentData,
+                                (Map<String, List<String>>) jointAccountIdWithUsersObj,
+                                (Map<String, ArrayList<String>>) usersWithMultipleJointAccountsObj, true);
+                    }
+                    consentCoreService.amendDetailedConsent(cdrArrangementId, consentResource.getReceipt(),
+                            validityPeriod, authResorceId, accountIdsMap,
+                            CDSConsentExtensionConstants.AUTHORIZED_STATUS, consentAttributes, userId,
+                            additionalAmendmentData);
                 } else {
                     // create authorizable consent using the consent resource above
                     DetailedConsentResource createdConsent = null;
@@ -153,20 +161,15 @@ public class CDSConsentPersistStep implements ConsentPersistStep {
                     }
                     // bind user consented accounts with the create consent
                     bindUserAccountsToConsent(consentCoreService, consentResource, consentData, accountIdList);
+
+                    // bind user consented joint accounts with the created consent
+                    if (jointAccountIdWithUsersObj != null && usersWithMultipleJointAccountsObj != null) {
+                        bindJointAccountUsersToConsent(consentResource, consentData,
+                                (Map<String, List<String>>) jointAccountIdWithUsersObj,
+                                (Map<String, ArrayList<String>>) usersWithMultipleJointAccountsObj, false);
+                    }
                 }
 
-                // Get joint account data from consentPersistData
-                Object jointAccountIdWithUsersObj = consentPersistData.
-                        getMetadata().get(CDSConsentExtensionConstants.MAP_JOINT_ACCOUNTS_ID_WITH_USERS);
-                Object usersWithMultipleJointAccountsObj = consentPersistData.
-                        getMetadata().get(CDSConsentExtensionConstants.MAP_USER_ID_WITH_JOINT_ACCOUNTS);
-
-                // bind user consented joint accounts with the created consent
-                if (jointAccountIdWithUsersObj != null && usersWithMultipleJointAccountsObj != null) {
-                    bindJointAccountUsersToConsent(consentResource, consentData,
-                            (Map<String, List<String>>) jointAccountIdWithUsersObj,
-                            (Map<String, ArrayList<String>>) usersWithMultipleJointAccountsObj, isConsentAmendment);
-                }
                 // TODO: Data reporting
             } catch (ConsentManagementException e) {
                 throw new ConsentException(ResponseStatus.INTERNAL_SERVER_ERROR,
@@ -315,7 +318,7 @@ public class CDSConsentPersistStep implements ConsentPersistStep {
     }
 
     @Generated(message = "Excluding from code coverage since it requires a service call")
-    private void bindJointAccountUsersToConsent(ConsentResource consentResource, ConsentData consentData,
+    private Map<String, Object> bindJointAccountUsersToConsent(ConsentResource consentResource, ConsentData consentData,
                                                   Map<String, List<String>> jointAccountIdWithUsers,
                                                   Map<String, ArrayList<String>> usersWithMultipleJointAccounts,
                                                   boolean isConsentAmendment)
@@ -356,25 +359,50 @@ public class CDSConsentPersistStep implements ConsentPersistStep {
             }
         }
 
-        createNewAuthResources(consentId, consentResource, authorizableResources, usersWithMultipleJointAccounts);
+        return createNewAuthResources(consentId, consentResource, authorizableResources, usersWithMultipleJointAccounts,
+                isConsentAmendment);
     }
 
     @Generated(message = "Excluding from code coverage since it requires a service call")
-    private void createNewAuthResources(String consentId, ConsentResource consentResource,
+    private  Map<String, Object> createNewAuthResources(String consentId, ConsentResource consentResource,
                                         Set<String> authorizableResources,
-                                        Map<String, ArrayList<String>> usersWithMultipleJointAccounts)
+                                        Map<String, ArrayList<String>> usersWithMultipleJointAccounts,
+                                        boolean isConsentAmendment)
             throws ConsentManagementException {
+
+        Map<String, Object> additionalAmendmentData = new HashMap<>();
+        Map<String, AuthorizationResource> secondaryUserAuthResources = new HashMap<>();
+        Map<String, ArrayList<ConsentMappingResource>> secondaryUserAccountMappings = new HashMap<>();
 
         consentResource.setConsentID(consentId);
         for (String userId : authorizableResources) {
-            AuthorizationResource authorizationResource = consentCoreService
-                    .createConsentAuthorization(getSecondaryAuthorizationResource(consentId, userId));
+            AuthorizationResource secondaryAuthResource = getSecondaryAuthorizationResource(consentId, userId);
+            if (isConsentAmendment) {
+                // if the flow is a consent amendment, the new joint accounts details are mapped to
+                // AuthorizationResources, ConsentMappingResources against the userId and returned.
+                secondaryUserAuthResources.put(userId, secondaryAuthResource);
 
-            consentCoreService.bindUserAccountsToConsent(consentResource, userId,
-                    authorizationResource.getAuthorizationID(), usersWithMultipleJointAccounts.get(userId),
-                    CDSConsentExtensionConstants.AUTHORIZED_STATUS,
-                    CDSConsentExtensionConstants.AUTHORIZED_STATUS);
+                ArrayList<ConsentMappingResource> mappingResources = new ArrayList<>();
+                for (String accountId : usersWithMultipleJointAccounts.get(userId)) {
+                    mappingResources.add(getSecondaryConsentMappingResource(accountId));
+                }
+                secondaryUserAccountMappings.put(userId, mappingResources);
+            } else {
+                AuthorizationResource authorizationResource = consentCoreService
+                        .createConsentAuthorization(secondaryAuthResource);
+                consentCoreService.bindUserAccountsToConsent(consentResource, userId,
+                        authorizationResource.getAuthorizationID(), usersWithMultipleJointAccounts.get(userId),
+                        CDSConsentExtensionConstants.AUTHORIZED_STATUS,
+                        CDSConsentExtensionConstants.AUTHORIZED_STATUS);
+            }
         }
+        if (!secondaryUserAuthResources.isEmpty() && !secondaryUserAccountMappings.isEmpty()) {
+            additionalAmendmentData
+                    .put(ConsentCoreServiceConstants.ADDITIONAL_AUTHORIZATION_RESOURCES, secondaryUserAuthResources);
+            additionalAmendmentData
+                    .put(ConsentCoreServiceConstants.ADDITIONAL_MAPPING_RESOURCES, secondaryUserAccountMappings);
+        }
+        return additionalAmendmentData;
     }
 
     @Generated(message = "Excluding from code coverage since method does not have a logic")
@@ -387,6 +415,16 @@ public class CDSConsentPersistStep implements ConsentPersistStep {
         newAuthResource.setAuthorizationType(CDSConsentExtensionConstants.AUTH_RESOURCE_TYPE_LINKED);
 
         return newAuthResource;
+    }
+
+    @Generated(message = "Excluding from code coverage since method does not have a logic")
+    private ConsentMappingResource getSecondaryConsentMappingResource(String accountId) {
+
+        ConsentMappingResource consentMappingResource = new ConsentMappingResource();
+        consentMappingResource.setAccountID(accountId);
+        consentMappingResource.setPermission("n/a");
+        consentMappingResource.setMappingStatus(ConsentCoreServiceConstants.ACTIVE_MAPPING_STATUS);
+        return consentMappingResource;
     }
 
     @Generated(message = "Excluding from code coverage since method does not have a logic")

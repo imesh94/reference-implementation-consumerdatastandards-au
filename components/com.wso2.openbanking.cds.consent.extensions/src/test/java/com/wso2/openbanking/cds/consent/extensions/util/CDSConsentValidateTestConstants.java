@@ -18,6 +18,8 @@ import com.wso2.openbanking.accelerator.consent.mgt.dao.models.DetailedConsentRe
 
 import java.time.Instant;
 import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.Map;
 
 /**
  * Constant class for consent validate tests
@@ -77,4 +79,10 @@ public class CDSConsentValidateTestConstants {
             "        },\n" +
             "  \"meta\": {}\n" +
             "}";
+
+    public static final Map<String, String> SAMPLE_CONSENT_ATTRIBUTES_MAP = new HashMap<String, String>() {
+        {
+            put("sharing_duration_value", "sample_value");
+        }
+    };
 }
