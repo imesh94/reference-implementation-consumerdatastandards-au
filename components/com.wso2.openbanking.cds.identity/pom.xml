@@ -263,6 +263,7 @@
                             org.wso2.carbon.identity.oauth2.keyidprovider;version="${identity.inbound.auth.oauth.version}",
                             org.wso2.carbon.identity.openidconnect;version="${identity.inbound.auth.oauth.version}",
                             org.wso2.carbon.user.core.service;version="${carbon.kernel.version}",
+                            com.google.gson.*;version="${gson.version}",
                             com.wso2.openbanking.accelerator.common.config;version="${accelerator.project.version.range}",
                             com.wso2.openbanking.accelerator.common.util;version="${accelerator.project.version.range}",
                             com.wso2.openbanking.accelerator.identity.auth.extensions.request.validator;version="${accelerator.project.version.range}",
