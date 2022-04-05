@@ -14,9 +14,9 @@ import moment from "moment";
 import React from "react";
 import {PreviousConsentDataItem} from "./PreviousConsentDataItem";
 
-let id = 0;
 export const ConsentHistoryTableBody = ({ consentHistory, consentHistoryLang}) => {
 
+  let id = 0;
   function getReason(amendedReason){
     let reason;
     Object.keys(consentHistoryLang.consentAmendmentReasonLabels).forEach(key => {
@@ -41,9 +41,9 @@ export const ConsentHistoryTableBody = ({ consentHistory, consentHistoryLang}) =
               consentHistory.map((consent) => (
                   <tr key={(id = id + 1)}>
                     <td key={(id = id + 1)}>
-                      {moment((consent.amendedTime * 1000)).format(
-                          "DD MMM YYYY HH:mm:ss"
-                      )}
+                        {(consent.amendedTime !== "") ? moment((consent.amendedTime * 1000)).format(
+                        "DD MMM YYYY HH:mm:ss"
+                        ) : ""}
                     </td>
                     <td key={(id = id + 1)}>
                       <div className="dataClusters">
