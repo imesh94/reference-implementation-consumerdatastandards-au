@@ -105,7 +105,6 @@ export const DetailedAgreement = ({match}) => {
                 <ConsentHistoryViewButton consent={props.consentInfo}/>
             </div>
         </div>;
-        return <div/>;
     }
 
     return (
