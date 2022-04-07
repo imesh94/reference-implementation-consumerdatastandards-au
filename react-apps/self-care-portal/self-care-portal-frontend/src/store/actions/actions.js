@@ -17,13 +17,15 @@ import {
     SET_APPINFO_REQUEST_LOADING_STATUS,
     SET_USER,
     SET_RESPONSE_ERROR, SET_SEARCH_OBJECT, SET_CONSENTS_METADATA, SET_SEARCH_ON_CLICK,
-    SET_DEVICE_REGISTRATION_INFO
+    SET_DEVICE_REGISTRATION_INFO,
+    SET_CONSENTS_HISTORY_REQUEST_LOADING_STATUS, SET_CONSENT_HISTORY
 } from "./action-types";
 import {
     getConsentsFromAPI,
     getApplicationInfo,
     getConsentsFromAPIForSearch,
-    getDeviceRegistrationData
+    getDeviceRegistrationData,
+    getConsentHistoryFromAPI
 } from "../../api";
 
 export const setConsents = (consents) => {
@@ -159,5 +161,35 @@ export const getDeviceRegistrationInfo = (accessToken) => {
             .catch((error) => {
                 dispatch(setResponseError(error.response.data))
             })
+    };
+};
+
+export const setConsentHistory = (consentHistory) => {
+    return {
+        payload: consentHistory,
+        type: SET_CONSENT_HISTORY
+    };
+};
+
+export const getConsentHistory = (consentId, userId) => {
+    // Received dispatch method as argument
+    return (dispatch) => {
+        //set loadings to true
+        dispatch(setConsentHistoryGetRequestLoadingStatus(true));
+
+        //getConsentHistoryFromAPI
+        getConsentHistoryFromAPI(consentId, userId)
+            .then((response) => dispatch(setConsentHistory(response.data)))
+            .catch((error) => {
+                /* Log the error */
+            })
+            .finally(() => dispatch(setConsentHistoryGetRequestLoadingStatus(false)));
+    };
+};
+
+export const setConsentHistoryGetRequestLoadingStatus = (isLoading) => {
+    return {
+        payload: isLoading,
+        type: SET_CONSENTS_HISTORY_REQUEST_LOADING_STATUS
     };
 };

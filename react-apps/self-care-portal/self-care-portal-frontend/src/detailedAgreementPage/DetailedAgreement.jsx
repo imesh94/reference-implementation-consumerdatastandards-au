@@ -25,6 +25,7 @@ import {lang, specConfigurations} from "../specConfigs/specConfigurations";
 import {getConsentsForSearch} from "../store/actions";
 import {getDisplayName} from "../services";
 import {getLogoURL} from "../services/utils";
+import {ConsentHistoryViewButton} from "./ConsentHistoryViewButton";
 
 export const DetailedAgreement = ({match}) => {
 
@@ -33,7 +34,7 @@ export const DetailedAgreement = ({match}) => {
     const currentUser = useSelector(state => state.currentUser.user);
     const consents = useSelector((state) => state.consent.consents);
     const appInfo = useSelector((state) => state.appInfo.appInfo);
-    
+
     const [consent, setConsent] = useState(() => {
         let search = {
             ...searchObj,
@@ -96,6 +97,16 @@ export const DetailedAgreement = ({match}) => {
         return currentLabel;
     }
 
+    // Display the button to select the option to view Consent History
+    function ConsentHistory(props) {
+        return <div>
+            <hr id="consentHistoryHr" className="horizontalLine" />
+            <div id="consentHistoryBox" className="infoBox">
+                <ConsentHistoryViewButton consent={props.consentInfo}/>
+            </div>
+        </div>;
+    }
+
     return (
         <Container fluid className="body">
             <Row>
@@ -115,6 +126,7 @@ export const DetailedAgreement = ({match}) => {
                 </Col>
                 <Col id="consentDetailCol">
                     <SharingDetails consent={consent} infoLabels={infoLabel} appicationName={applicationName}/>
+                    <ConsentHistory consentInfo={consent} />
                 </Col>
             </Row>
         </Container>

@@ -35,6 +35,23 @@ export const specConfigurations_CDS =
             logoURLAttribute: "logo_uri",
             displayNameAttribute: "software_client_name",
             failOverDisplayNameAttribute: "software_id"
+        },
+        consentHistory: {
+            consentHistoryLabel: "Consent Amendments History",
+            consentHistoryView: "View Details >",
+            consentHistoryTableHeaders: {
+                historyUpdatedTime: "Amended At",
+                reason: "Reason",
+                previousConsent: "Consent prior to Amendment",
+                sharingDuration: "Sharing Duration",
+                amendedPermissions: "Permissions",
+                accounts: "Accounts"
+            },
+            consentAmendmentReasonLabels: {
+                ConsentAmendmentFlow: "Consent Amendment",
+                ConsentRevocation: "Consent Revocation",
+                JAMAccountWithdrawal: "Joint Account Withdrawal"
+            }
         }
     };
 

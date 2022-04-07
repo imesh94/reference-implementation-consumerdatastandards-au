@@ -13,6 +13,7 @@
 import {combineReducers} from "redux";
 import {consentReducer, appInfoReducer, userReducer, deviceRegistrationReducer} from "./reducers";
 import {searchObjectReducer, searchUtilStateReducer} from "./reducers/searchObjectReducer";
+import {consentHistoryReducer} from "./reducers/consentHistoryReducer";
 
 /**
  * Combines all the reducers.
@@ -24,4 +25,5 @@ export const reducers = combineReducers({
     appInfo: appInfoReducer,
     currentUser: userReducer,
     device: deviceRegistrationReducer,
+    consentHistory: consentHistoryReducer
 });
