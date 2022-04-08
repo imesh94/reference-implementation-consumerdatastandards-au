@@ -41,6 +41,7 @@
             <modules>
                 <module>components</module>
                 <module>internal-apis</module>
+                <module>react-apps</module>
             </modules>
             <properties>
                 <npm.executable>npm</npm.executable>
