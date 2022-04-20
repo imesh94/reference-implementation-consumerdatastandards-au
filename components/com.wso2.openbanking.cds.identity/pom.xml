@@ -277,8 +277,7 @@
                             com.wso2.openbanking.accelerator.identity.push.auth.extension.request.validator;version="${accelerator.project.version.range}",
                             com.wso2.openbanking.accelerator.identity.token;version="${accelerator.project.version.range}",
                             com.wso2.openbanking.accelerator.identity.token.validators;version="${accelerator.project.version.range}",
-                            com.wso2.openbanking.accelerator.throttler.service;version="${accelerator.project.version.range}",
-                            *
+                            com.wso2.openbanking.accelerator.throttler.service;version="${accelerator.project.version.range}"
                         </Import-Package>
                         <Export-Package>
                             !com.wso2.openbanking.cds.identity.internal,

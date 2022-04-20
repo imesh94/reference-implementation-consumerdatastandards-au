@@ -252,6 +252,11 @@
                 <artifactId>com.wso2.openbanking.cds.identity</artifactId>
                 <version>${project.version}</version>
             </dependency>
+            <dependency>
+                <groupId>com.wso2.openbanking</groupId>
+                <artifactId>com.wso2.openbanking.cds.metrics</artifactId>
+                <version>${project.version}</version>
+            </dependency>
             <!--General dependencies-->
             <dependency>
                 <groupId>org.wso2.carbon.identity.inbound.auth.oauth2</groupId>
