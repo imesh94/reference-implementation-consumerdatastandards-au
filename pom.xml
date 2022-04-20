@@ -41,6 +41,7 @@
             <modules>
                 <module>components</module>
                 <module>internal-apis</module>
+                <module>react-apps</module>
             </modules>
             <properties>
                 <npm.executable>npm</npm.executable>
@@ -249,6 +250,11 @@
             <dependency>
                 <groupId>com.wso2.openbanking</groupId>
                 <artifactId>com.wso2.openbanking.cds.identity</artifactId>
+                <version>${project.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>com.wso2.openbanking</groupId>
+                <artifactId>com.wso2.openbanking.cds.metrics</artifactId>
                 <version>${project.version}</version>
             </dependency>
             <!--General dependencies-->
