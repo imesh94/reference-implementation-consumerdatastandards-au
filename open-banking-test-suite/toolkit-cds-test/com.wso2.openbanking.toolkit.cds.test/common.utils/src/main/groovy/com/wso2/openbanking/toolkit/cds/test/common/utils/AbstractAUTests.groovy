@@ -142,21 +142,7 @@ class AbstractAUTests {
         Assert.assertNotNull(userAccessToken)
     }
 
-   /* Response doPushAuthorisationRequest(List<AUConstants.SCOPES> scopes, long sharingDuration,
-                                        boolean sendSharingDuration, String cdrArrangementId,
-                                        String clientId = AppConfigReader.getClientId()) {
 
-        parResponse = TestSuite.buildRequest()
-                .contentType(TestConstants.ACCESS_TOKEN_CONTENT_TYPE)
-                .formParams(TestConstants.REQUEST_KEY, AUAuthorisationBuilder.getSignedRequestObject(
-                        sharingDuration, sendSharingDuration, cdrArrangementId, AppConfigReader.getRedirectURL(), clientId).serialize())
-                .formParams(TestConstants.CLIENT_ASSERTION_TYPE)
-                .formParams()
-                .baseUri(AUConstants.PUSHED_AUTHORISATION_BASE_PATH)
-                .post(AUConstants.PAR_ENDPOINT)
-
-        return parResponse
-    }*/
     /**
      * Push Authorisation Request with private_key_jwt authentication method.
      * @param scopes
