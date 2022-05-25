@@ -64,7 +64,7 @@ class PushedAuthorisationFlowTest extends AbstractAUTests {
     @Test(priority = 1)
     void "TC0205001_Data Recipients Initiate authorisation request using PAR"() {
 
-        def response = doPushAuthorisationRequest(headerString, scopes, AUConstants.DEFAULT_SHARING_DURATION,
+        def response = doPushAuthorisationRequest(scopes, AUConstants.DEFAULT_SHARING_DURATION,
                 true, cdrArrangementId)
 
         requestUri = TestUtil.parseResponseBody(response, "requestUri")
@@ -118,8 +118,8 @@ class PushedAuthorisationFlowTest extends AbstractAUTests {
     @Test
     void "TC0205004_Initiate consent authorisation flow with expired request uri"() {
 
-        def response = doPushAuthorisationRequest(headerString, scopes, AUConstants.DEFAULT_SHARING_DURATION,
-                true, cdrArrangementId)
+        def response = doPushAuthorisationRequest(scopes, AUConstants.DEFAULT_SHARING_DURATION,
+                true)
 
         requestUri = TestUtil.parseResponseBody(response, "requestUri")
 
@@ -142,7 +142,7 @@ class PushedAuthorisationFlowTest extends AbstractAUTests {
     @Test(priority = 2)
     void "TC0205006_Establish a new consent for an existing arrangement by passing existing cdr_arrangement_id"() {
 
-        def response = doPushAuthorisationRequest(headerString, scopes, AUConstants.DEFAULT_SHARING_DURATION,
+        def response = doPushAuthorisationRequest(scopes, AUConstants.DEFAULT_SHARING_DURATION,
                 true, cdrArrangementId)
 
         requestUri = TestUtil.parseResponseBody(response, "requestUri")
@@ -162,7 +162,7 @@ class PushedAuthorisationFlowTest extends AbstractAUTests {
         cdrArrangementId = userAccessToken.getCustomParameters().get("cdr_arrangement_id")
 
         //Re-establish consent arrangement
-        response = doPushAuthorisationRequest(headerString, scopes, AUConstants.DEFAULT_SHARING_DURATION,
+        response = doPushAuthorisationRequest(scopes, AUConstants.DEFAULT_SHARING_DURATION,
                 true, cdrArrangementId)
 
         requestUri = TestUtil.parseResponseBody(response, "requestUri")
@@ -195,8 +195,8 @@ class PushedAuthorisationFlowTest extends AbstractAUTests {
     @Test(priority = 3)
     void "TC0205015_Unable to initiate authorisation if the redirect uri mismatch with the application redirect uri"() {
 
-        def response = doPushAuthorisationRequest(headerString, scopes, AUConstants.DEFAULT_SHARING_DURATION,
-                true, cdrArrangementId)
+        def response = doPushAuthorisationRequest(scopes, AUConstants.DEFAULT_SHARING_DURATION,
+                true)
 
         requestUri = TestUtil.parseResponseBody(response, "requestUri")
 
@@ -215,7 +215,7 @@ class PushedAuthorisationFlowTest extends AbstractAUTests {
         cdrArrangementId = userAccessToken.getCustomParameters().get("cdr_arrangement_id")
 
         //Re-establish consent arrangement
-        response = doPushAuthorisationRequest(headerString, scopes, AUConstants.DEFAULT_SHARING_DURATION,
+        response = doPushAuthorisationRequest(scopes, AUConstants.DEFAULT_SHARING_DURATION,
                 true, cdrArrangementId)
 
         requestUri = TestUtil.parseResponseBody(response, "requestUri")
@@ -317,8 +317,8 @@ class PushedAuthorisationFlowTest extends AbstractAUTests {
         userAccessToken = AURequestBuilder.getUserToken(authorisationCode)
         cdrArrangementId = userAccessToken.getCustomParameters().get("cdr_arrangement_id")
 
-        def response = doPushAuthorisationRequest(headerString, scopes, AUConstants.SINGLE_ACCESS_CONSENT,
-                false, cdrArrangementId)
+        def response = doPushAuthorisationRequest(scopes, AUConstants.SINGLE_ACCESS_CONSENT,
+                false)
 
         requestUri = TestUtil.parseResponseBody(response, "requestUri")
 
@@ -329,6 +329,7 @@ class PushedAuthorisationFlowTest extends AbstractAUTests {
 
         //Generate User Access Token
         userAccessToken = AURequestBuilder.getUserToken(authorisationCode)
+        Assert.assertNull(userAccessToken.tokens.refreshToken)
         Assert.assertNotNull(userAccessToken.tokens.accessToken)
     }
 
@@ -341,8 +342,8 @@ class PushedAuthorisationFlowTest extends AbstractAUTests {
         userAccessToken = AURequestBuilder.getUserToken(authorisationCode)
         cdrArrangementId = userAccessToken.getCustomParameters().get("cdr_arrangement_id")
 
-        def response = doPushAuthorisationRequest(headerString, scopes, AUConstants.SINGLE_ACCESS_CONSENT,
-                true, cdrArrangementId)
+        def response = doPushAuthorisationRequest(scopes, AUConstants.SINGLE_ACCESS_CONSENT,
+                true)
         requestUri = TestUtil.parseResponseBody(response, "requestUri")
 
         Assert.assertEquals(response.statusCode(), AUConstants.STATUS_CODE_201)
@@ -364,8 +365,8 @@ class PushedAuthorisationFlowTest extends AbstractAUTests {
         userAccessToken = AURequestBuilder.getUserToken(authorisationCode)
         cdrArrangementId = userAccessToken.getCustomParameters().get("cdr_arrangement_id")
 
-        def response = doPushAuthorisationRequest(headerString, scopes, AUConstants.ONE_YEAR_DURATION,
-                true, cdrArrangementId)
+        def response = doPushAuthorisationRequest(scopes, AUConstants.ONE_YEAR_DURATION,
+                true)
         requestUri = TestUtil.parseResponseBody(response, "requestUri")
 
         Assert.assertEquals(response.statusCode(), AUConstants.STATUS_CODE_201)
@@ -388,8 +389,8 @@ class PushedAuthorisationFlowTest extends AbstractAUTests {
         userAccessToken = AURequestBuilder.getUserToken(authorisationCode)
         cdrArrangementId = userAccessToken.getCustomParameters().get("cdr_arrangement_id")
 
-        def response = doPushAuthorisationRequest(headerString, scopes, AUConstants.NEGATIVE_DURATION,
-                true, cdrArrangementId)
+        def response = doPushAuthorisationRequest(scopes, AUConstants.NEGATIVE_DURATION,
+                true)
 
         Assert.assertEquals(response.statusCode(), AUConstants.STATUS_CODE_400)
         Assert.assertEquals(TestUtil.parseResponseBody(response, "error_description"),

@@ -27,6 +27,7 @@ import com.nimbusds.oauth2.sdk.id.ClientID
 import com.nimbusds.oauth2.sdk.id.State
 import com.wso2.openbanking.test.framework.util.AppConfigReader
 import com.wso2.openbanking.test.framework.util.ConfigParser
+import com.wso2.openbanking.test.framework.util.TestConstants
 import com.wso2.openbanking.test.framework.util.TestUtil
 import org.apache.commons.lang3.StringUtils
 import org.bouncycastle.jce.provider.BouncyCastleProvider
@@ -217,7 +218,7 @@ class AUAuthorisationBuilder {
 
         if (!StringUtils.isEmpty(cdrArrangementId)) {
             JSONObject claimObj = jsonPayload.get("claims")
-            claimObj.put("cdr_arrangement_id", cdrArrangementId)
+            claimObj.put(TestConstants.CDR_ARRANGEMENT_ID, cdrArrangementId)
         }
 
         Payload payload = new Payload(jsonPayload.toString())

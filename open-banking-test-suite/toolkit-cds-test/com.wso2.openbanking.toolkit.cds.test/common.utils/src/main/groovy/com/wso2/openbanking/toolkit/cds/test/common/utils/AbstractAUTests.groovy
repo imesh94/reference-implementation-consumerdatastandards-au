@@ -12,6 +12,12 @@
 
 package com.wso2.openbanking.toolkit.cds.test.common.utils
 
+import com.nimbusds.jose.JWSAlgorithm
+import com.nimbusds.jose.JWSHeader
+import com.nimbusds.jose.JWSObject
+import com.nimbusds.jose.JWSSigner
+import com.nimbusds.jose.Payload
+import com.nimbusds.jose.crypto.RSASSASigner
 import com.wso2.openbanking.test.framework.TestSuite
 import com.wso2.openbanking.test.framework.automation.AUBasicAuthAutomationStep
 import com.wso2.openbanking.test.framework.automation.BrowserAutomation
@@ -22,12 +28,17 @@ import com.wso2.openbanking.test.framework.util.ConfigParser
 import com.wso2.openbanking.test.framework.util.TestConstants
 import com.wso2.openbanking.test.framework.util.TestUtil
 import io.restassured.response.Response
+import org.json.JSONObject
 import org.openqa.selenium.By
 import org.openqa.selenium.WebElement
 import org.testng.Assert
 import org.testng.annotations.BeforeClass
 
 import java.nio.charset.Charset
+import java.security.Key
+import java.security.KeyStore
+import java.security.PrivateKey
+import java.security.cert.Certificate
 
 /**
  * Base Test For Accounts.
@@ -89,7 +100,7 @@ class AbstractAUTests {
                     driver.findElement(By.xpath(AUConstants.CONSENT_SUBMIT_XPATH)).click()
 
                     // Extra step for OB-2.0 AU Authentication flow.
-                    if (TestConstants.SOLUTION_VERSION_200.equals(ConfigParser.getInstance().getSolutionVersion())) {
+                    if (TestConstants.SOLUTION_VERSION_300.equals(ConfigParser.getInstance().getSolutionVersion())) {
                         driver.findElement(By.xpath(AUConstants.CONSENT_SUBMIT_XPATH)).click()
                     }
                 }
@@ -131,22 +142,85 @@ class AbstractAUTests {
         Assert.assertNotNull(userAccessToken)
     }
 
-    Response doPushAuthorisationRequest(String headerString, List<AUConstants.SCOPES> scopes, long sharingDuration,
-                                        boolean sendSharingDuration, String cdrArrangementId,
-                                        String clientId = AppConfigReader.getClientId()) {
+
+    /**
+     * Push Authorisation Request with private_key_jwt authentication method.
+     * @param scopes
+     * @param sharingDuration
+     * @param sendSharingDuration
+     * @param cdrArrangementId
+     * @param clientId
+     * @return
+     */
+    Response doPushAuthorisationRequest(List<AUConstants.SCOPES> scopes, Long sharingDuration,
+                                        boolean sendSharingDuration, String cdrArrangementId = "",
+                                        String clientId = AppConfigReader.getClientId(),
+                                        String redirectUrl = AppConfigReader.getRedirectURL()) {
 
         String scopeString = "openid ${String.join(" ", scopes.collect({ it.scopeString }))}"
 
+        String assertionString = getAssertionString(clientId)
+
+        def bodyContent = [
+                           (TestConstants.CLIENT_ASSERTION_TYPE_KEY): (TestConstants.CLIENT_ASSERTION_TYPE),
+                           (TestConstants.CLIENT_ASSERTION_KEY)     : assertionString,
+                                                ]
+
         parResponse = TestSuite.buildRequest()
                 .contentType(TestConstants.ACCESS_TOKEN_CONTENT_TYPE)
-                .header(TestConstants.AUTHORIZATION_HEADER_KEY, "Basic " + Base64.encoder.encodeToString(
-                        headerString.getBytes(Charset.forName("UTF-8"))))
+                .formParams(bodyContent)
                 .formParams(TestConstants.REQUEST_KEY, AUAuthorisationBuilder.getSignedRequestObject(scopeString,
-                        sharingDuration, sendSharingDuration, cdrArrangementId, AppConfigReader.getRedirectURL(), clientId).serialize())
+                        sharingDuration, sendSharingDuration, cdrArrangementId, redirectUrl, clientId).serialize())
                 .baseUri(AUConstants.PUSHED_AUTHORISATION_BASE_PATH)
                 .post(AUConstants.PAR_ENDPOINT)
 
         return parResponse
+    }
+    /**
+     * create assertion for the PAR endpoint
+     */
+
+    static String getAssertionString(clientId) {
+
+        if (ConfigParser.getInstance().mockCDRRegisterEnabled) {
+
+            KeyStore keyStore = TestUtil.getMockADRApplicationKeyStore()
+            Certificate certificate = TestUtil.getCertificateFromMockADRKeyStore()
+            JWSHeader header = new JWSHeader.Builder(JWSAlgorithm.parse(ConfigParser.instance.signingAlgorithm)).
+                    keyID(TestUtil.getJwkThumbPrintForSHA256(certificate)).build()
+
+            Key signingKey = keyStore.getKey(ConfigParser.getInstance().getMockADRSigningKeystoreAlias(),
+                    ConfigParser.getInstance().getMockADRSigningKeystorePassword().toCharArray())
+
+            long currentTimeInMilliseconds = System.currentTimeMillis();
+            long currentTimeInSeconds = System.currentTimeMillis() / 1000;
+            //expire time is read from configs and converted to milli seconds
+            long expireTime = currentTimeInSeconds + (long)(ConfigParser.getInstance().getAccessTokenExpireTime() * 1000);
+            String aud = ConfigParser.getInstance().getAudienceValue();
+            //String exp = expireTime;
+            long iat = currentTimeInSeconds;
+            String jti = String.valueOf(currentTimeInMilliseconds);
+
+            JSONObject payload = new JSONObject();
+            payload.put(TestConstants.ISSUER_KEY, clientId);
+            payload.put(TestConstants.SUBJECT_KEY, clientId);
+            payload.put(TestConstants.AUDIENCE_KEY, aud);
+            payload.put(TestConstants.EXPIRE_DATE_KEY, expireTime);
+            payload.put(TestConstants.ISSUED_AT_KEY, iat);
+            payload.put(TestConstants.JTI_KEY, jti);
+
+            JWSSigner signer = new RSASSASigner((PrivateKey) signingKey);
+
+            JWSObject jwsObject = new JWSObject(header, new Payload(payload.toString()));
+            jwsObject.sign(signer);
+
+            return jwsObject.serialize();
+
+        } else {
+            return new AccessTokenJwtDto().getJwt(clientId,
+                    ConfigParser.getInstance().getAudienceValue())
+        }
+
     }
 
     void doConsentAuthorisationViaRequestUri(List<AUConstants.SCOPES> scopes, URI requestUri) {

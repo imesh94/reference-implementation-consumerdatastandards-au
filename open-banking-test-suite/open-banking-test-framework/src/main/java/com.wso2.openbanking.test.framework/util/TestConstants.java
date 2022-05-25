@@ -97,6 +97,7 @@ public class TestConstants {
     public static final String SCOPE_KEY = "scope";
     public static final String CLIENT_ASSERTION_TYPE_KEY = "client_assertion_type";
     public static final String CLIENT_ASSERTION_KEY = "client_assertion";
+    public static final String CDR_ARRANGEMENT_ID = "cdr_arrangement_id";
     public static final String REDIRECT_URI_KEY = "redirect_uri";
     public static final String CODE_KEY = "code";
     public static final String CLIENT_ID = "client_id";
@@ -197,7 +198,7 @@ public class TestConstants {
 
     //Non-Regulatory
     public static final ArrayList<String> SCOPES_OPEN_ID = new ArrayList<>(Arrays.asList("openid"));
-    public static final String SOLUTION_VERSION_200 = "2.0.0";
+    public static final String SOLUTION_VERSION_300 = "3.0.0";
     public static final String OB_SPEC_AU = "AU";
     public static final String AUTH_SIGNIN_XPATH_200 = "/html/body/main/div/div[2]/div/form/div[10]/div[2]/button";
 

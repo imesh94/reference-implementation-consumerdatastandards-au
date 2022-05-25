@@ -131,7 +131,7 @@ class AuthorisationFlowTest {
             driver.findElement(By.xpath(AUTestUtil.getSingleAccountXPath())).click()
 
             // Extra step for OB-2.0 AU Authentication flow.
-            if (TestConstants.SOLUTION_VERSION_200.equals(ConfigParser.getInstance().getSolutionVersion())) {
+            if (TestConstants.SOLUTION_VERSION_300.equals(ConfigParser.getInstance().getSolutionVersion())) {
                 driver.findElement(By.xpath(AUConstants.CONSENT_SUBMIT_XPATH)).click()
                 driver.findElement(By.xpath(AUConstants.CONFIRM_CONSENT_DENY_XPATH)).click()
             } else {
@@ -141,7 +141,7 @@ class AuthorisationFlowTest {
         }
                 .execute()
 
-        if (TestConstants.SOLUTION_VERSION_200.equals(ConfigParser.getInstance().getSolutionVersion())) {
+        if (TestConstants.SOLUTION_VERSION_300.equals(ConfigParser.getInstance().getSolutionVersion())) {
             String url = automation.currentUrl.get()
             def errorMessage = url.split("error_description=")[1].split("&")[0].replaceAll("\\+"," ")
             Assert.assertEquals(errorMessage, "User denied the consent")

@@ -41,7 +41,10 @@ class ConsentAmendmentFlowTest extends AbstractAUTests{
 
     private List<AUConstants.SCOPES> scopes = [
             AUConstants.SCOPES.BANK_ACCOUNT_BASIC_READ,
+            AUConstants.SCOPES.BANK_ACCOUNT_DETAIL_READ,
             AUConstants.SCOPES.BANK_TRANSACTION_READ,
+            AUConstants.SCOPES.BANK_REGULAR_PAYMENTS_READ,
+            AUConstants.SCOPES.BANK_CUSTOMER_BASIC_READ,
             AUConstants.SCOPES.BANK_CUSTOMER_DETAIL_READ
     ]
 

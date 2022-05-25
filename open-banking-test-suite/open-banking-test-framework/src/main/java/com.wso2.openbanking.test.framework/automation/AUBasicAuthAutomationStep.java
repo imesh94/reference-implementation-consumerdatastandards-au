@@ -54,7 +54,7 @@ public class AUBasicAuthAutomationStep implements BrowserAutomationStep {
         webDriver.navigate().to(authorizeUrl);
         WebElement username;
 
-        if (TestConstants.SOLUTION_VERSION_200.equals(ConfigParser.getInstance().getSolutionVersion())) {
+        if (TestConstants.SOLUTION_VERSION_300.equals(ConfigParser.getInstance().getSolutionVersion())) {
             username = webDriver.findElement(By.xpath(TestConstants.USERNAME_FIELD_XPATH_AU_200));
 
         } else {
@@ -64,13 +64,13 @@ public class AUBasicAuthAutomationStep implements BrowserAutomationStep {
         username.clear();
         username.sendKeys(ConfigParser.getInstance().getPsu());
 
-        if (!TestConstants.SOLUTION_VERSION_200.equals(ConfigParser.getInstance().getSolutionVersion())) {
+        if (!TestConstants.SOLUTION_VERSION_300.equals(ConfigParser.getInstance().getSolutionVersion())) {
             WebElement password = webDriver.findElement(By.id(TestConstants.PASSWORD_FIELD_ID));
             password.clear();
             password.sendKeys(ConfigParser.getInstance().getPsuPassword());
         }
 
-        if (TestConstants.SOLUTION_VERSION_200.equals(ConfigParser.getInstance().getSolutionVersion())) {
+        if (TestConstants.SOLUTION_VERSION_300.equals(ConfigParser.getInstance().getSolutionVersion())) {
                 webDriver.findElement(By.xpath(TestConstants.AUTH_SIGNIN_XPATH_AU_200)).click();
 
         } else {
