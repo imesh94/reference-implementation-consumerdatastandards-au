@@ -88,7 +88,7 @@ class AUTestUtil {
      * @return SingleAccountXPath
      */
     static String getSingleAccountXPath() {
-        if (TestConstants.SOLUTION_VERSION_200.equals(ConfigParser.getInstance().getSolutionVersion())) {
+        if (TestConstants.SOLUTION_VERSION_300.equals(ConfigParser.getInstance().getSolutionVersion())) {
             return AUConstants.SINGLE_ACCOUNT_XPATH_200
         } else {
             return AUConstants.SINGLE_ACCOUNT_XPATH
@@ -100,7 +100,7 @@ class AUTestUtil {
      * @return AltSingleAccountXPath
      */
     static String getAltSingleAccountXPath() {
-        if (TestConstants.SOLUTION_VERSION_200.equals(ConfigParser.getInstance().getSolutionVersion())) {
+        if (TestConstants.SOLUTION_VERSION_300.equals(ConfigParser.getInstance().getSolutionVersion())) {
             return AUConstants.ALT_SINGLE_ACCOUNT_XPATH_200
         } else {
             return AUConstants.ALT_SINGLE_ACCOUNT_XPATH

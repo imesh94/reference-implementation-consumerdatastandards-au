@@ -213,7 +213,7 @@ class AUConstants {
             "going to Settings>Data Sharing on the Mock Company Inc.,Mock Software website or app."
 
     static final String SOLUTION_VERSION_150 = "1.5.0"
-    static final String SOLUTION_VERSION_200 = "2.0.0"
+    static final String SOLUTION_VERSION_300 = "2.0.0"
 
     public static LBL_AUTHORISED_STATUS = "//div[@id='heading0acc']//div[@class='p1 consent-status ml-3 ml-auto align-self-center']"
     public static LBL_REVOKED_STATUS = "//div[@id='heading2acc']//div[@class='p1 consent-status ml-3 ml-auto align-self-center']"

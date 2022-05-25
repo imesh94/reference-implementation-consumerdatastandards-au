@@ -49,7 +49,7 @@ class AccountsRetrievalBasicTests extends AbstractAUTests {
                 .get("/cds-au/v0${AUConstants.BULK_ACCOUNT_PATH}")
 
         Assert.assertEquals(response.statusCode(), AUConstants.STATUS_CODE_404)
-        if (TestConstants.SOLUTION_VERSION_200.equalsIgnoreCase(AUTestUtil.solutionVersion)) {
+        if (TestConstants.SOLUTION_VERSION_300.equalsIgnoreCase(AUTestUtil.solutionVersion)) {
             Assert.assertEquals(TestUtil.parseResponseBody(response, AUConstants.ERROR_CODE),
                     AUConstants.ERROR_CODE_RESOURCE_NOTFOUND)
             Assert.assertEquals(TestUtil.parseResponseBody(response, AUConstants.ERROR_SOURCE_POINTER),
@@ -73,7 +73,7 @@ class AccountsRetrievalBasicTests extends AbstractAUTests {
                 .get("${CDS_PATH}/banking/accountz")
 
         Assert.assertEquals(response.statusCode(), AUConstants.STATUS_CODE_404)
-        if (TestConstants.SOLUTION_VERSION_200.equalsIgnoreCase(AUTestUtil.solutionVersion)) {
+        if (TestConstants.SOLUTION_VERSION_300.equalsIgnoreCase(AUTestUtil.solutionVersion)) {
             Assert.assertEquals(TestUtil.parseResponseBody(response, AUConstants.ERROR_CODE),
                     AUConstants.ERROR_CODE_RESOURCE_NOTFOUND )
             Assert.assertEquals(TestUtil.parseResponseBody(response, AUConstants.ERROR_TITLE), AUConstants

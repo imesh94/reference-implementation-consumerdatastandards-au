@@ -261,7 +261,7 @@ public class ConfigParser {
      */
     public String getBaseUrl() {
 
-        return String.valueOf(ConfigParser.getInstance().getConfiguration().get("Server.BaseUrl"));
+        return String.valueOf(ConfigParser.getInstance().getConfiguration().get("Server.BaseURL"));
     }
 
     /**

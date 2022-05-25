@@ -53,7 +53,7 @@ class ConcurrentConsentTest extends AbstractAUTests {
             driver.findElement(By.xpath(AUTestUtil.getSingleAccountXPath())).click()
             driver.findElement(By.xpath(AUConstants.CONSENT_SUBMIT_XPATH)).click()
 
-            if (TestConstants.SOLUTION_VERSION_200.equals(ConfigParser.getInstance().getSolutionVersion())) {
+            if (TestConstants.SOLUTION_VERSION_300.equals(ConfigParser.getInstance().getSolutionVersion())) {
                 driver.findElement(By.xpath(AUConstants.CONSENT_CONFIRM_XPATH)).click()
             }
         }

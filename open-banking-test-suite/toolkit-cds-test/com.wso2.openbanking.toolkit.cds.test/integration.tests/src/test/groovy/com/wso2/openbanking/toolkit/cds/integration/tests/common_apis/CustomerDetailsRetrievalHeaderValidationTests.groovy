@@ -56,7 +56,7 @@ class CustomerDetailsRetrievalHeaderValidationTests extends AbstractAUTests {
         Assert.assertEquals(response.statusCode(), AUConstants.STATUS_CODE_400)
         Assert.assertEquals(TestUtil.parseResponseBody(response, AUConstants.ERROR_DETAIL),
                 AUConstants.ERROR_X_V_MISSING)
-        if (TestConstants.SOLUTION_VERSION_200.equalsIgnoreCase(AUTestUtil.solutionVersion)) {
+        if (TestConstants.SOLUTION_VERSION_300.equalsIgnoreCase(AUTestUtil.solutionVersion)) {
             Assert.assertEquals(TestUtil.parseResponseBody(response, AUConstants.ERROR_CODE),
                     AUConstants.ERROR_CODE_MISSING_HEADER)
            // Assert.assertEquals(TestUtil.parseResponseBody(response, AUConstants.ERROR_SOURCE_PARAMETER), AUConstants
@@ -99,7 +99,7 @@ class CustomerDetailsRetrievalHeaderValidationTests extends AbstractAUTests {
                 .baseUri(AUTestUtil.getBaseUrl(AUConstants.BASE_PATH_TYPE_CUSTOMER))
                 .get("${CDS_PATH}${AUConstants.BULK_CUSTOMER}")
 
-        if (TestConstants.SOLUTION_VERSION_200.equalsIgnoreCase(AUTestUtil.solutionVersion)) {
+        if (TestConstants.SOLUTION_VERSION_300.equalsIgnoreCase(AUTestUtil.solutionVersion)) {
             Assert.assertEquals(response.statusCode(), AUConstants.STATUS_CODE_400)
             Assert.assertEquals(TestUtil.parseResponseBody(response, AUConstants.ERROR_CODE),
                     AUConstants.ERROR_CODE_INVALID_VERSION)
@@ -126,7 +126,7 @@ class CustomerDetailsRetrievalHeaderValidationTests extends AbstractAUTests {
                 .baseUri(AUTestUtil.getBaseUrl(AUConstants.BASE_PATH_TYPE_CUSTOMER))
                 .get("${CDS_PATH}${AUConstants.BULK_CUSTOMER}")
 
-        if (TestConstants.SOLUTION_VERSION_200.equalsIgnoreCase(AUTestUtil.solutionVersion)) {
+        if (TestConstants.SOLUTION_VERSION_300.equalsIgnoreCase(AUTestUtil.solutionVersion)) {
             Assert.assertEquals(response.statusCode(), AUConstants.STATUS_CODE_400)
             Assert.assertEquals(TestUtil.parseResponseBody(response, AUConstants.ERROR_CODE),
                     AUConstants.ERROR_CODE_INVALID_VERSION)
@@ -151,7 +151,7 @@ class CustomerDetailsRetrievalHeaderValidationTests extends AbstractAUTests {
                 .baseUri(AUTestUtil.getBaseUrl(AUConstants.BASE_PATH_TYPE_CUSTOMER))
                 .get("${CDS_PATH}${AUConstants.BULK_CUSTOMER}")
 
-        if (TestConstants.SOLUTION_VERSION_200.equalsIgnoreCase(AUTestUtil.solutionVersion)) {
+        if (TestConstants.SOLUTION_VERSION_300.equalsIgnoreCase(AUTestUtil.solutionVersion)) {
             Assert.assertEquals(response.statusCode(), AUConstants.STATUS_CODE_400)
             Assert.assertEquals(TestUtil.parseResponseBody(response, AUConstants.ERROR_CODE),
                     AUConstants.ERROR_CODE_INVALID_VERSION)
@@ -177,7 +177,7 @@ class CustomerDetailsRetrievalHeaderValidationTests extends AbstractAUTests {
                 .baseUri(AUTestUtil.getBaseUrl(AUConstants.BASE_PATH_TYPE_CUSTOMER))
                 .get("${CDS_PATH}${AUConstants.BULK_CUSTOMER}")
 
-        if (TestConstants.SOLUTION_VERSION_200.equalsIgnoreCase(AUTestUtil.solutionVersion)) {
+        if (TestConstants.SOLUTION_VERSION_300.equalsIgnoreCase(AUTestUtil.solutionVersion)) {
             Assert.assertEquals(response.statusCode(), AUConstants.STATUS_CODE_400)
             Assert.assertEquals(TestUtil.parseResponseBody(response, AUConstants.ERROR_CODE),
                     AUConstants.ERROR_CODE_INVALID_VERSION)
@@ -203,7 +203,7 @@ class CustomerDetailsRetrievalHeaderValidationTests extends AbstractAUTests {
                 .baseUri(AUTestUtil.getBaseUrl(AUConstants.BASE_PATH_TYPE_CUSTOMER))
                 .get("${CDS_PATH}${AUConstants.BULK_CUSTOMER}")
 
-        if (TestConstants.SOLUTION_VERSION_200.equalsIgnoreCase(AUTestUtil.solutionVersion)) {
+        if (TestConstants.SOLUTION_VERSION_300.equalsIgnoreCase(AUTestUtil.solutionVersion)) {
             Assert.assertEquals(response.statusCode(), AUConstants.STATUS_CODE_400)
             Assert.assertEquals(TestUtil.parseResponseBody(response, AUConstants.ERROR_CODE),
                     AUConstants.ERROR_CODE_INVALID_VERSION)
@@ -296,7 +296,7 @@ class CustomerDetailsRetrievalHeaderValidationTests extends AbstractAUTests {
                 .get("${CDS_PATH}${AUConstants.BULK_CUSTOMER}")
 
         Assert.assertEquals(response.statusCode(), AUConstants.STATUS_CODE_406)
-        if (TestConstants.SOLUTION_VERSION_200.equalsIgnoreCase(AUTestUtil.solutionVersion)) {
+        if (TestConstants.SOLUTION_VERSION_300.equalsIgnoreCase(AUTestUtil.solutionVersion)) {
             Assert.assertEquals(TestUtil.parseResponseBody(response, AUConstants.ERROR_CODE),
                     AUConstants.ERROR_CODE_UNSUPPORTED_VERSION)
             Assert.assertEquals(TestUtil.parseResponseBody(response, AUConstants.ERROR_TITLE), AUConstants
@@ -320,7 +320,7 @@ class CustomerDetailsRetrievalHeaderValidationTests extends AbstractAUTests {
                 .get("${CDS_PATH}${AUConstants.BULK_CUSTOMER}")
 
         Assert.assertEquals(response.statusCode(), AUConstants.STATUS_CODE_406)
-        if (TestConstants.SOLUTION_VERSION_200.equalsIgnoreCase(AUTestUtil.solutionVersion)) {
+        if (TestConstants.SOLUTION_VERSION_300.equalsIgnoreCase(AUTestUtil.solutionVersion)) {
             Assert.assertEquals(TestUtil.parseResponseBody(response, AUConstants.ERROR_CODE),
                     AUConstants.ERROR_CODE_UNSUPPORTED_VERSION)
             Assert.assertEquals(TestUtil.parseResponseBody(response, AUConstants.ERROR_TITLE), AUConstants
@@ -393,7 +393,7 @@ class CustomerDetailsRetrievalHeaderValidationTests extends AbstractAUTests {
                 .get("${CDS_PATH}${AUConstants.BULK_CUSTOMER}")
 
         Assert.assertEquals(response.statusCode(), AUConstants.STATUS_CODE_400)
-        if (TestConstants.SOLUTION_VERSION_200.equalsIgnoreCase(AUTestUtil.solutionVersion)) {
+        if (TestConstants.SOLUTION_VERSION_300.equalsIgnoreCase(AUTestUtil.solutionVersion)) {
             Assert.assertEquals(TestUtil.parseResponseBody(response, AUConstants.ERROR_CODE),
                     AUConstants.ERROR_CODE_INVALID_HEADER)
             Assert.assertEquals(TestUtil.parseResponseBody(response, AUConstants.ERROR_SOURCE_PARAMETER), AUConstants
@@ -416,7 +416,7 @@ class CustomerDetailsRetrievalHeaderValidationTests extends AbstractAUTests {
                 .get("${CDS_PATH}${AUConstants.BULK_CUSTOMER}")
 
         Assert.assertEquals(response.statusCode(), AUConstants.STATUS_CODE_400)
-        if (TestConstants.SOLUTION_VERSION_200.equalsIgnoreCase(AUTestUtil.solutionVersion)) {
+        if (TestConstants.SOLUTION_VERSION_300.equalsIgnoreCase(AUTestUtil.solutionVersion)) {
             Assert.assertEquals(TestUtil.parseResponseBody(response, AUConstants.ERROR_CODE),
                     AUConstants.ERROR_CODE_INVALID_HEADER)
             Assert.assertEquals(TestUtil.parseResponseBody(response, AUConstants.ERROR_TITLE), AUConstants
@@ -437,7 +437,7 @@ class CustomerDetailsRetrievalHeaderValidationTests extends AbstractAUTests {
                 .get("${CDS_PATH}${AUConstants.BULK_CUSTOMER}")
 
         Assert.assertEquals(response.statusCode(), AUConstants.STATUS_CODE_400)
-        if (TestConstants.SOLUTION_VERSION_200.equalsIgnoreCase(AUTestUtil.solutionVersion)) {
+        if (TestConstants.SOLUTION_VERSION_300.equalsIgnoreCase(AUTestUtil.solutionVersion)) {
             Assert.assertEquals(TestUtil.parseResponseBody(response, AUConstants.ERROR_CODE),
                     AUConstants.ERROR_CODE_INVALID_HEADER)
             Assert.assertEquals(TestUtil.parseResponseBody(response, AUConstants.ERROR_TITLE), AUConstants
@@ -459,7 +459,7 @@ class CustomerDetailsRetrievalHeaderValidationTests extends AbstractAUTests {
                 .get("${CDS_PATH}${AUConstants.BULK_CUSTOMER}")
 
         Assert.assertEquals(response.statusCode(), AUConstants.STATUS_CODE_400)
-        if (TestConstants.SOLUTION_VERSION_200.equalsIgnoreCase(AUTestUtil.solutionVersion)) {
+        if (TestConstants.SOLUTION_VERSION_300.equalsIgnoreCase(AUTestUtil.solutionVersion)) {
             Assert.assertEquals(TestUtil.parseResponseBody(response, AUConstants.ERROR_CODE),
                     AUConstants.ERROR_CODE_INVALID_HEADER)
             Assert.assertEquals(TestUtil.parseResponseBody(response, AUConstants.ERROR_TITLE), AUConstants

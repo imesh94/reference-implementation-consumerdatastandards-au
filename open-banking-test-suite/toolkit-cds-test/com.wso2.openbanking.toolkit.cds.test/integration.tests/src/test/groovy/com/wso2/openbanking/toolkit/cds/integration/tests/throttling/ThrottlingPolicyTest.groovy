@@ -65,7 +65,7 @@ class ThrottlingPolicyTest extends AbstractAUTests {
 
         if(currentCount > 500) {
             Assert.assertEquals(response.statusCode(), 429)
-            if (TestConstants.SOLUTION_VERSION_200.equalsIgnoreCase(AUTestUtil.solutionVersion)) {
+            if (TestConstants.SOLUTION_VERSION_300.equalsIgnoreCase(AUTestUtil.solutionVersion)) {
                 Assert.assertEquals(TestUtil.parseResponseBody(response, AUConstants.ERROR_CODE),
                         AUConstants.ERROR_CODE_TOO_MANY_REQUESTS)
                 Assert.assertEquals(TestUtil.parseResponseBody(response, AUConstants.ERROR_TITLE), AUConstants
@@ -96,7 +96,7 @@ class ThrottlingPolicyTest extends AbstractAUTests {
         if(currentCount > 500) {
             Assert.assertEquals(response.statusCode(), 429)
             Assert.assertEquals(response.statusCode(), 429)
-            if (TestConstants.SOLUTION_VERSION_200.equalsIgnoreCase(AUTestUtil.solutionVersion)) {
+            if (TestConstants.SOLUTION_VERSION_300.equalsIgnoreCase(AUTestUtil.solutionVersion)) {
                 Assert.assertEquals(TestUtil.parseResponseBody(response, AUConstants.ERROR_CODE),
                         AUConstants.ERROR_CODE_TOO_MANY_REQUESTS)
                 Assert.assertEquals(TestUtil.parseResponseBody(response, AUConstants.ERROR_TITLE), AUConstants
@@ -122,7 +122,7 @@ class ThrottlingPolicyTest extends AbstractAUTests {
         if(currentCount > 40) {
             Assert.assertEquals(response.statusCode(), 429)
             Assert.assertEquals(response.statusCode(), 429)
-            if (TestConstants.SOLUTION_VERSION_200.equalsIgnoreCase(AUTestUtil.solutionVersion)) {
+            if (TestConstants.SOLUTION_VERSION_300.equalsIgnoreCase(AUTestUtil.solutionVersion)) {
                 Assert.assertEquals(TestUtil.parseResponseBody(response, AUConstants.ERROR_CODE),
                         AUConstants.ERROR_CODE_TOO_MANY_REQUESTS)
                 Assert.assertEquals(TestUtil.parseResponseBody(response, AUConstants.ERROR_TITLE), AUConstants
@@ -149,7 +149,7 @@ class ThrottlingPolicyTest extends AbstractAUTests {
         if(currentCount > 150) {
             Assert.assertEquals(response.statusCode(), 429)
             Assert.assertEquals(response.statusCode(), 429)
-            if (TestConstants.SOLUTION_VERSION_200.equalsIgnoreCase(AUTestUtil.solutionVersion)) {
+            if (TestConstants.SOLUTION_VERSION_300.equalsIgnoreCase(AUTestUtil.solutionVersion)) {
                 Assert.assertEquals(TestUtil.parseResponseBody(response, AUConstants.ERROR_CODE),
                         AUConstants.ERROR_CODE_TOO_MANY_REQUESTS)
                 Assert.assertEquals(TestUtil.parseResponseBody(response, AUConstants.ERROR_TITLE), AUConstants
@@ -174,7 +174,7 @@ class ThrottlingPolicyTest extends AbstractAUTests {
         if(currentCount > 150) {
             Assert.assertEquals(response.statusCode(), 429)
             Assert.assertEquals(response.statusCode(), 429)
-            if (TestConstants.SOLUTION_VERSION_200.equalsIgnoreCase(AUTestUtil.solutionVersion)) {
+            if (TestConstants.SOLUTION_VERSION_300.equalsIgnoreCase(AUTestUtil.solutionVersion)) {
                 Assert.assertEquals(TestUtil.parseResponseBody(response, AUConstants.ERROR_CODE),
                         AUConstants.ERROR_CODE_TOO_MANY_REQUESTS)
                 Assert.assertEquals(TestUtil.parseResponseBody(response, AUConstants.ERROR_TITLE), AUConstants
@@ -201,7 +201,7 @@ class ThrottlingPolicyTest extends AbstractAUTests {
         if(currentCount > 150) {
             Assert.assertEquals(response.statusCode(), 429)
             Assert.assertEquals(response.statusCode(), 429)
-            if (TestConstants.SOLUTION_VERSION_200.equalsIgnoreCase(AUTestUtil.solutionVersion)) {
+            if (TestConstants.SOLUTION_VERSION_300.equalsIgnoreCase(AUTestUtil.solutionVersion)) {
                 Assert.assertEquals(TestUtil.parseResponseBody(response, AUConstants.ERROR_CODE),
                         AUConstants.ERROR_CODE_TOO_MANY_REQUESTS)
                 Assert.assertEquals(TestUtil.parseResponseBody(response, AUConstants.ERROR_TITLE), AUConstants
@@ -223,7 +223,7 @@ class ThrottlingPolicyTest extends AbstractAUTests {
         if(currentCount > 30) {
             Assert.assertEquals(response.statusCode(), 429)
             Assert.assertEquals(response.statusCode(), 429)
-            if (TestConstants.SOLUTION_VERSION_200.equalsIgnoreCase(AUTestUtil.solutionVersion)) {
+            if (TestConstants.SOLUTION_VERSION_300.equalsIgnoreCase(AUTestUtil.solutionVersion)) {
                 Assert.assertEquals(TestUtil.parseResponseBody(response, AUConstants.ERROR_CODE),
                         AUConstants.ERROR_CODE_TOO_MANY_REQUESTS)
                 Assert.assertEquals(TestUtil.parseResponseBody(response, AUConstants.ERROR_TITLE), AUConstants
@@ -250,7 +250,7 @@ class ThrottlingPolicyTest extends AbstractAUTests {
         if(currentCount > 40) {
             Assert.assertEquals(response.statusCode(), 429)
             Assert.assertEquals(response.statusCode(), 429)
-            if (TestConstants.SOLUTION_VERSION_200.equalsIgnoreCase(AUTestUtil.solutionVersion)) {
+            if (TestConstants.SOLUTION_VERSION_300.equalsIgnoreCase(AUTestUtil.solutionVersion)) {
                 Assert.assertEquals(TestUtil.parseResponseBody(response, AUConstants.ERROR_CODE),
                         AUConstants.ERROR_CODE_TOO_MANY_REQUESTS)
                 Assert.assertEquals(TestUtil.parseResponseBody(response, AUConstants.ERROR_TITLE), AUConstants

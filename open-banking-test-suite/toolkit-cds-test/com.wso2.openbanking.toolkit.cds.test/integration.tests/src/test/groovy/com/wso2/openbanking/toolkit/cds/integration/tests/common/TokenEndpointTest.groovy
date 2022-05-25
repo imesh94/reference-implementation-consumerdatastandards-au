@@ -72,7 +72,7 @@ class TokenEndpointTest {
                     driver.findElement(By.xpath(AUTestUtil.getSingleAccountXPath())).click()
                     driver.findElement(By.xpath(AUConstants.CONSENT_SUBMIT_XPATH)).click()
 
-                    if (TestConstants.SOLUTION_VERSION_200.equals(ConfigParser.getInstance().getSolutionVersion())) {
+                    if (TestConstants.SOLUTION_VERSION_300.equals(ConfigParser.getInstance().getSolutionVersion())) {
                         driver.findElement(By.xpath(AUConstants.CONSENT_CONFIRM_XPATH)).click()
                     }
                 }
@@ -192,7 +192,7 @@ class TokenEndpointTest {
         softAssertion.assertEquals(response.statusCode(), AUConstants.STATUS_CODE_403)
         softAssertion.assertEquals(response.getHeader(AUConstants.X_V_HEADER).toInteger(), AUConstants.X_V_HEADER_ACCOUNTS)
 
-        if (TestConstants.SOLUTION_VERSION_200.equalsIgnoreCase(AUTestUtil.solutionVersion)) {
+        if (TestConstants.SOLUTION_VERSION_300.equalsIgnoreCase(AUTestUtil.solutionVersion)) {
             Assert.assertEquals(TestUtil.parseResponseBody(response, AUConstants.ERROR_CODE),
                     AUConstants.ERROR_CODE_RESOURCE_FORBIDDEN)
             Assert.assertEquals(TestUtil.parseResponseBody(response, AUConstants.ERROR_SOURCE_POINTER), AUConstants
