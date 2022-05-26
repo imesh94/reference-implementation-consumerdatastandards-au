@@ -237,12 +237,22 @@ class AURequestBuilder {
      * @return Introspection Request Specfication
      */
     static RequestSpecification buildIntrospectionRequest(String token) {
+
+        String assertionString = new AccessTokenJwtDto().getJwt(AppConfigReader.getClientId(),
+                ConfigParser.getInstance().getAudienceValue())
+
+        def bodyContent = [(TestConstants.CLIENT_ID_KEY)            : (AppConfigReader.getClientId()),
+                           (TestConstants.CLIENT_ASSERTION_TYPE_KEY): (TestConstants.CLIENT_ASSERTION_TYPE),
+                           (TestConstants.CLIENT_ASSERTION_KEY)     : assertionString]
+
         return TestSuite.buildRequest()
                 .contentType(ContentType.URLENC)
                 .header(TestConstants.AUTHORIZATION_HEADER_KEY, "Basic ${getBasicAuthorizationHeader()}")
-                .body("token=${token}")
+                .formParams(bodyContent)
+                .formParams("token", token)
                 .baseUri(ConfigParser.instance.authorisationServerUrl)
     }
+
 
     /**
      * Generate Base64(clientID:ClientSectret)
@@ -274,10 +284,19 @@ class AURequestBuilder {
      * @return Introspection Request Specification
      */
     static RequestSpecification buildRevokeIntrospectionRequest(String token) {
+
+        String assertionString = new AccessTokenJwtDto().getJwt(AppConfigReader.getClientId(),
+                ConfigParser.getInstance().getAudienceValue())
+
+        def bodyContent = [(TestConstants.CLIENT_ID_KEY)            : (AppConfigReader.getClientId()),
+                           (TestConstants.CLIENT_ASSERTION_TYPE_KEY): (TestConstants.CLIENT_ASSERTION_TYPE),
+                           (TestConstants.CLIENT_ASSERTION_KEY)     : assertionString]
+
         return TestSuite.buildRequest()
                 .contentType(ContentType.URLENC)
-                .header(TestConstants.AUTHORIZATION_HEADER_KEY, "Basic ${getBasicAuthorizationHeader()}")
-                .body("token=${token}&token_type_hint=access_token")
+                .formParams(bodyContent)
+                .formParams("token", token)
+                .formParams("token_type_hint", "access_token")
                 .baseUri(ConfigParser.instance.authorisationServerUrl)
     }
 }
