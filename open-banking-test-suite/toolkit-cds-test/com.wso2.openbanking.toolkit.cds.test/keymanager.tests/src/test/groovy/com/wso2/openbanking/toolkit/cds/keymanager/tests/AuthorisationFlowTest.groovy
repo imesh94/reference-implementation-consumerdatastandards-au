@@ -101,7 +101,7 @@ class AuthorisationFlowTest {
         AUAuthorisationBuilder authorisationBuilder = new AUAuthorisationBuilder(
                 scopes, AUConstants.DEFAULT_SHARING_DURATION, true, AUConstants.UUID
         )
-        String errorMessage = "cdr_arrangement_id can only be sent through PAR request"
+        String errorMessage = "Request object validation failed.The claim cdr_arrangement_id is only accepted in par initiated requests."
 
         def automation = new BrowserAutomation(BrowserAutomation.DEFAULT_DELAY)
                 .addStep { driver, context -> driver.navigate().to(authorisationBuilder.authoriseUrl)}.execute()

@@ -78,7 +78,7 @@ class ConsentAmendmentFlowTest extends AbstractAUTests{
         scopes.add(AUConstants.SCOPES.BANK_PAYEES_READ)
 
         //Retrieve and assert the request URI from Push Authorization request
-        requestUri = TestUtil.parseResponseBody(doPushAuthorisationRequest(headerString, scopes, AUConstants.AMENDED_SHARING_DURATION,
+        requestUri = TestUtil.parseResponseBody(doPushAuthorisationRequest(scopes, AUConstants.AMENDED_SHARING_DURATION,
                 true, cdrArrangementId), "requestUri")
         Assert.assertNotNull(requestUri)
 
@@ -237,7 +237,7 @@ class ConsentAmendmentFlowTest extends AbstractAUTests{
         scopes.remove(AUConstants.SCOPES.BANK_TRANSACTION_READ)
         scopes.add(AUConstants.SCOPES.BANK_PAYEES_READ)
 
-        requestUri = TestUtil.parseResponseBody(doPushAuthorisationRequest(headerString, scopes, AUConstants.SHORT_SHARING_DURATION,
+        requestUri = TestUtil.parseResponseBody(doPushAuthorisationRequest(scopes, AUConstants.SHORT_SHARING_DURATION,
                 true, cdrArrangementId), "requestUri")
         Assert.assertNotNull(requestUri)
 
@@ -268,7 +268,7 @@ class ConsentAmendmentFlowTest extends AbstractAUTests{
         scopes.add(AUConstants.SCOPES.BANK_PAYEES_READ)
 
         //Retrieve and assert the request URI from Push Authorization request
-        requestUri = TestUtil.parseResponseBody(doPushAuthorisationRequest(headerString, scopes, AUConstants.AMENDED_SHARING_DURATION,
+        requestUri = TestUtil.parseResponseBody(doPushAuthorisationRequest(AUConstants.AMENDED_SHARING_DURATION,
                 true, cdrArrangementId), "requestUri")
         Assert.assertNotNull(requestUri)
         sleep(25000)
@@ -306,7 +306,9 @@ class ConsentAmendmentFlowTest extends AbstractAUTests{
                 .contains("There's no sharing arrangement under the provided consent id " + invalidCDRArrangementID))
     }
 
-    private String doConsentAmendmentAuthorisationViaRequestUri(List<AUConstants.SCOPES> scopes, URI requestUri, boolean verifyNewLabels) {
+    private String doConsentAmendmentAuthorisationViaRequestUri(List<AUConstants.SCOPES> scopes, URI requestUri,
+                                                                boolean verifyNewLabels,
+                                                                boolean isShortSharingDuration = false) {
 
         AUAuthorisationBuilder authorisationBuilder = new AUAuthorisationBuilder(
                 scopes, requestUri)
@@ -318,10 +320,18 @@ class ConsentAmendmentFlowTest extends AbstractAUTests{
                     account1Id = driver.findElement(By.xpath(AUConstants.LBL_ACCOUNT_1_ID_XPATH)).getText()
                     account2Id = driver.findElement(By.xpath(AUConstants.LBL_ACCOUNT_2_ID_XPATH)).getText()
                     driver.findElement(By.xpath(AUConstants.CONSENT_SUBMIT_XPATH)).click()
-                    // Below IF condition is to decide weather to verify the labels of amendment are visible on review page or not
+                    // Below IF condition is to decide weather to verify the labels of amendment are visible on
+                    // review page or not
                     if (verifyNewLabels) {
-                        Assert.assertTrue(driver.findElement(By.xpath(AUConstants.LBL_NEW_PAYEES_INDICATOR_XPATH)).isDisplayed())
-                        Assert.assertTrue(driver.findElement(By.xpath(AUConstants.LBL_NEW_SHARING_DURATION_XPATH)).isDisplayed())
+                        Assert.assertTrue(driver.findElement(By.xpath(AUConstants.LBL_NEW_PAYEES_INDICATOR_XPATH))
+                                .isDisplayed())
+                        if (isShortSharingDuration) {
+                            Assert.assertTrue(driver.findElement(By.xpath(AUConstants.LBL_NEW_SHORT_SHARING_DURATION_XPATH))
+                                    .isDisplayed())
+                        } else {
+                            Assert.assertTrue(driver.findElement(By.xpath(AUConstants.LBL_NEW_SHARING_DURATION_XPATH))
+                                    .isDisplayed())
+                        }
                     }
                     driver.findElement(By.xpath(AUConstants.CONSENT_CONFIRM_XPATH)).click()
                 }
