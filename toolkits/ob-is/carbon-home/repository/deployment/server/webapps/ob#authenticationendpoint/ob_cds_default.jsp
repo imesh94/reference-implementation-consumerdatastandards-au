@@ -117,6 +117,7 @@
 
 <script>
     $(document).ready(function(){
+        updateAcc();
         var accountMaskingEnabled="${account_masking_enabled}";
 
         function maskAccountId(accountId) {
