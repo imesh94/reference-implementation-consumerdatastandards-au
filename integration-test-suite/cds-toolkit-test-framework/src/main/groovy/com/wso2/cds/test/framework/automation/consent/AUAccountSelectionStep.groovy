@@ -43,3 +43,4 @@ class AUAccountSelectionStep implements BrowserAutomationStep {
         driver.clickButtonXpath(AUPageObjects.CONSENT_CONFIRM_XPATH)
     }
 }
+

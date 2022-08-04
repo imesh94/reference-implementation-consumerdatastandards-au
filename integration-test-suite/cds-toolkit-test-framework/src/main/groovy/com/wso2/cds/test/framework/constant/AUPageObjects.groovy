@@ -178,3 +178,4 @@ class AUPageObjects {
     public static String AU_TXT_OTP_CODE_ID = "OTPcode"
     public static String AU_BTN_AUTHENTICATE = "//input[@id='authenticate']"
 }
+

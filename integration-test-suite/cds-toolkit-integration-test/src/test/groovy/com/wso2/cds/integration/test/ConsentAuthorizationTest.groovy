@@ -36,3 +36,4 @@ class ConsentAuthorizationTest extends AUTest {
     }
 
 }
+

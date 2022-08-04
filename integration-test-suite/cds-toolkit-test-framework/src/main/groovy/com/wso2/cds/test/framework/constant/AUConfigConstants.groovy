@@ -66,3 +66,4 @@ class AUConfigConstants {
     public static final String ID_PERMANENCE_SECRET_KEY = "SecretKey"
 
 }
+

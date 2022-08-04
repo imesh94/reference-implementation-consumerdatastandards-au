@@ -54,3 +54,4 @@ class PushedAuthorisationFlowTest extends AUTest{
     }
 
 }
+

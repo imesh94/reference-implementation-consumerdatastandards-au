@@ -57,3 +57,4 @@ class AUBasicAuthAutomationStep implements BrowserAutomationStep {
 
     }
 }
+

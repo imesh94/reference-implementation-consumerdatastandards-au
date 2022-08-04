@@ -50,3 +50,4 @@ class AUCCPortalWithdrawalAutomationStep implements BrowserAutomationStep{
     }
 
 }
+
