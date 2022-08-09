@@ -113,7 +113,7 @@ class AUJWTGenerator {
     String getAppAccessTokenJwt(String clientId = null) throws TestFrameworkException {
 
         JSONObject clientAssertion = new JSONRequestGenerator().addIssuer(clientId)
-                .addSubject(clientId).addAudience().addExpireDate().addIssuedAt().addJti().getClientAssertionAsJson()
+                .addSubject(clientId).addAudience().addExpireDate().addIssuedAt().addJti().getJsonObject()
 
         String payload = getSignedRequestObject(clientAssertion.toString())
         String accessTokenJWT = new PayloadGenerator().addGrantType().addScopes(scopesList).addClientAsType()
@@ -130,7 +130,7 @@ class AUJWTGenerator {
     String getUserAccessTokenJwt(String code = "") throws TestFrameworkException {
 
         JSONObject clientAssertion = new JSONRequestGenerator().addIssuer()
-                .addSubject().addAudience().addExpireDate().addIssuedAt().addJti().getClientAssertionAsJson()
+                .addSubject().addAudience().addExpireDate().addIssuedAt().addJti().getJsonObject()
         String payload = getSignedRequestObject(clientAssertion.toString())
         String accessTokenJWT = new PayloadGenerator().addGrantType().addCode(code).addScopes().addClientAsType()
                 .addClientAssertion(payload).addRedirectUri().addClientID().getPayload()
@@ -176,7 +176,7 @@ class AUJWTGenerator {
                 .addState("suite")
                 .addNonce()
                 .addCustomJson("claims", claimsString)
-                .getClientAssertionAsJson().toString()
+                .getJsonObject().toString()
 
         String payload = getSignedRequestObject(claims)
 

@@ -18,9 +18,10 @@ import org.testng.annotations.BeforeClass
 import org.testng.annotations.Test
 
 /**
- * Test class for test User access token generation when already generated user access token
+ * for testing User access token with the test context
+ * new User access token will be generated if there is no already generated user access token
  */
-class AccountsIDSecondTest extends AUTest {
+class AccessTokenTest extends AUTest {
 
     @BeforeClass(alwaysRun = true)
     void "Initialize Test Suite"(ITestContext context) {

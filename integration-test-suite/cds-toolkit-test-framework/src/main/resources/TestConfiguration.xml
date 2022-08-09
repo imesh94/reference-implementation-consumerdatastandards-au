@@ -13,12 +13,12 @@
 
     <!-- Common Configurations -->
     <Common>
-        <SolutionVersion>3.0.0</SolutionVersion>
-        <ApiVersion>1.3.0</ApiVersion>
+        <SolutionVersion>Common.SolutionVersion</SolutionVersion>
+        <ApiVersion>Common.ApiVersion</ApiVersion>
         <!--Access token expire time in seconds-->
-        <AccessTokenExpireTime>30</AccessTokenExpireTime>
-        <TenantDomain>carbon.super</TenantDomain>
-        <SigningAlgorithm>PS256</SigningAlgorithm>
+        <AccessTokenExpireTime>Common.ApiVersion</AccessTokenExpireTime>
+        <TenantDomain>Common.TenantDomain</TenantDomain>
+        <SigningAlgorithm>Common.SigningAlgorithm</SigningAlgorithm>
     </Common>
 
     <!-- Provisioning Info -->
@@ -29,9 +29,9 @@
 
     <!-- Server Info -->
     <Server>
-        <BaseURL>https://localhost:8243</BaseURL>
-        <GatewayURL>https://localhost:9443</GatewayURL>
-        <AuthorisationServerURL>https://localhost:9446</AuthorisationServerURL>
+        <BaseURL>Server.BaseURL</BaseURL>
+        <GatewayURL>Server.GatewayURL</GatewayURL>
+        <AuthorisationServerURL>Server.AuthorisationServerURL</AuthorisationServerURL>
     </Server>
 
     <!-- Application List -->
@@ -41,49 +41,41 @@
             <!-- Application Keystore -->
             <KeyStore>
                 <!--Absolute path + file name of JKS keystore file-->
-                <Location>Location</Location>
-                <Alias>alias</Alias>
-                <Password>pwd</Password>
-                <DomainName>redirect_uri</DomainName>
-                <SigningKid>signing_kid</SigningKid>
+                <Location>AppConfig1.KeyStore.Location</Location>
+                <Alias>AppConfig1.KeyStore.Alias</Alias>
+                <Password>AppConfig1.KeyStore.Password</Password>
+                <DomainName>AppConfig1.KeyStore.DomainName</DomainName>
+                <SigningKid>AppConfig1.KeyStore.SigningKid</SigningKid>
             </KeyStore>
 
             <!-- Transport Keystore and Truststore -->
             <!--This Keystore and the Truststore will be used during the SSL handshake-->
             <Transport>
-                <MTLSEnabled>true</MTLSEnabled>
+                <MTLSEnabled>AppConfig1.Transport.MTLSEnabled</MTLSEnabled>
                 <!--A keystore and a truststore needs to be configured in the following section if MTLSEnabled is set to
                 true-->
                 <KeyStore>
                     <!--Absolute path + file name of keystore file.
                     (e.g. <location>/home/kasun/Downloads/Certs/keystore.jks</location>)-->
-                    <Location>location</Location>
-                    <Type>jks</Type>
-                    <Password>wso2carbon</Password>
+                    <Location>AppConfig1.Transport.KeyStore.Location</Location>
+                    <Type>AppConfig1.Transport.KeyStore.Type</Type>
+                    <Password>AppConfig1.Transport.KeyStore.Password</Password>
                 </KeyStore>
             </Transport>
 
             <!-- DCR Configurations -->
             <DCR>
-                <SSAPath>ssa path</SSAPath>
-                <!-- Self signed SSA for negative tests (UK)-->
-                <SelfSignedSSAPath>AppConfig.DCR.SelfSignedSSAPath</SelfSignedSSAPath>
-                <!-- SSA SoftwareId (UK)-->
-                <SoftwareId>software_id</SoftwareId>
+                <SSAPath>AppConfig1.DCR.SSAPath</SSAPath>
                 <!-- SSA Redirect Uri -->
-                <RedirectUri>https://wso2.com</RedirectUri>
-                <!-- Version of DCR API (UK)
-                (e.g. 3.2 for DCR v3.2, 3.3.0 for DCR v3.3.0)
-                -->
-                <AlternateRedirectUri>alt_redirect_uri</AlternateRedirectUri>
-                <DCRAPIVersion>version</DCRAPIVersion>
+                <RedirectUri>AppConfig1.DCR.SSAPath</RedirectUri>
+                <AlternateRedirectUri>AppConfig1.DCR.SSAPath</AlternateRedirectUri>
             </DCR>
 
             <!-- Application Info -->
             <Application>
-                <ClientID>client_id</ClientID>
-                <ClientSecret>client_secret</ClientSecret>
-                <RedirectURL>redirect_uri</RedirectURL>
+                <ClientID>AppConfig1.Application.ClientID</ClientID>
+                <ClientSecret>AppConfig1.Application.ClientSecret</ClientSecret>
+                <RedirectURL>AppConfig1.Application.RedirectURL</RedirectURL>
             </Application>
         </AppConfig>
 
@@ -92,49 +84,41 @@
             <!-- Application Keystore -->
             <KeyStore>
                 <!--Absolute path + file name of JKS keystore file-->
-                <Location>Location</Location>
-                <Alias>alias</Alias>
-                <Password>pwd</Password>
-                <DomainName>redirect_uri</DomainName>
-                <SigningKid>signing_kid</SigningKid>
+                <Location>AppConfig2.KeyStore.Location</Location>
+                <Alias>AppConfig2.KeyStore.Alias</Alias>
+                <Password>AppConfig2.KeyStore.Password</Password>
+                <DomainName>AppConfig2.KeyStore.DomainName</DomainName>
+                <SigningKid>AppConfig2.KeyStore.SigningKid</SigningKid>
             </KeyStore>
 
             <!-- Transport Keystore and Truststore -->
             <!--This Keystore and the Truststore will be used during the SSL handshake-->
             <Transport>
-                <MTLSEnabled>true</MTLSEnabled>
+                <MTLSEnabled>AppConfig2.Transport.MTLSEnabled</MTLSEnabled>
                 <!--A keystore and a truststore needs to be configured in the following section if MTLSEnabled is set to
                 true-->
                 <KeyStore>
                     <!--Absolute path + file name of keystore file.
                     (e.g. <location>/home/kasun/Downloads/Certs/keystore.jks</location>)-->
-                    <Location>location</Location>
-                    <Type>jks</Type>
-                    <Password>wso2carbon</Password>
+                    <Location>AppConfig2.Transport.KeyStore.Location</Location>
+                    <Type>AppConfig2.Transport.KeyStore.Type</Type>
+                    <Password>AppConfig2.Transport.KeyStore.Password</Password>
                 </KeyStore>
             </Transport>
 
             <!-- DCR Configurations -->
             <DCR>
-                <SSAPath>ssa path</SSAPath>
-                <!-- Self signed SSA for negative tests (UK)-->
-                <SelfSignedSSAPath>AppConfig.DCR.SelfSignedSSAPath</SelfSignedSSAPath>
-                <!-- SSA SoftwareId (UK)-->
-                <SoftwareId>software_id</SoftwareId>
+                <SSAPath>AppConfig2.DCR.SSAPath</SSAPath>
                 <!-- SSA Redirect Uri -->
-                <RedirectUri>https://wso2.com</RedirectUri>
-                <!-- Version of DCR API (UK)
-                (e.g. 3.2 for DCR v3.2, 3.3.0 for DCR v3.3.0)
-                -->
-                <AlternateRedirectUri>alt_redirect_uri</AlternateRedirectUri>
-                <DCRAPIVersion>version</DCRAPIVersion>
+                <RedirectUri>AppConfig2.DCR.SSAPath</RedirectUri>
+                <AlternateRedirectUri>AppConfig2.DCR.SSAPath</AlternateRedirectUri>
             </DCR>
 
             <!-- Application Info -->
             <Application>
-                <ClientID>client_id</ClientID>
-                <ClientSecret>client_secret</ClientSecret>
-                <RedirectURL>redirect_uri</RedirectURL>
+                <ClientID>AppConfig2.Application.ClientID</ClientID>
+                <ClientSecret>AppConfig2.Application.ClientSecret</ClientSecret>
+                <RedirectURL>AppConfig2.Application.RedirectURL</RedirectURL>
             </Application>
         </AppConfig>
 
@@ -142,13 +126,11 @@
 
     <Transport>
         <Truststore>
-
             <!--Absolute path + file name of truststore file. We can point the product client-truststore.jks here.
-            (e.g. <location>/home/kasun/wso2-obam-1.3.0/repository/resources/security/client-truststore.jks</location>)
-            -->
-            <Location>truststore_location</Location>
-            <Type>jks</Type>
-            <Password>wso2carbon</Password>
+            (Eg: location/home/kasun/wso2-obam-1.3.0/repository/resources/security/client-truststore.jks</location>)-->
+            <Location>Transport.Truststore.Location</Location>
+            <Type>Transport.Truststore.Type</Type>
+            <Password>Transport.Truststore.Password</Password>
         </Truststore>
     </Transport>
 
@@ -156,59 +138,59 @@
     <NonRegulatoryApplication>
         <ClientID>NonRegulatoryApplication.ClientID</ClientID>
         <ClientSecret>NonRegulatoryApplication.ClientSecret</ClientSecret>
-        <RedirectURL>https://www.google.com</RedirectURL>
+        <RedirectURL>NonRegulatoryApplication.RedirectURL</RedirectURL>
     </NonRegulatoryApplication>
 
     <!-- PSU Info -->
     <PSUInfo>
-        <User>user_name</User>
-        <Password>pwd</Password>
+        <User>PSUInfo.User</User>
+        <Password>PSUInfo.Password</Password>
     </PSUInfo>
 
     <!-- Publisher Info -->
     <PublisherInfo>
-        <User>user_name</User>
-        <Password>pwd</Password>
+        <User>PublisherInfo.User</User>
+        <Password>PublisherInfo.Password</Password>
     </PublisherInfo>
     <!-- PSU Info -->
 
     <TPPInfo>
-        <User>user_name</User>
-        <Password>pwd</Password>
+        <User>TPPInfo.user_name</User>
+        <Password>TPPInfo.Password</Password>
     </TPPInfo>
 
     <!-- Customer Care Info -->
     <CustomerCareInfo>
-        <User>user_name</User>
-        <Password>pwd</Password>
+        <User>CustomerCareInfo.User</User>
+        <Password>CustomerCareInfo.Password</Password>
     </CustomerCareInfo>
 
     <!-- Basic Auth Info -->
     <BasicAuthInfo>
-        <User>user_name</User>
-        <Password>pwd</Password>
+        <User>BasicAuthInfo.User</User>
+        <Password>BasicAuthInfo.Password</Password>
     </BasicAuthInfo>
 
     <KeyManagerAdmin>
-        <User>user_name</User>
-        <Password>pwd</Password>
+        <User>KeyManagerAdmin.User</User>
+        <Password>KeyManagerAdmin.Password</Password>
     </KeyManagerAdmin>
 
     <!-- Browser Automation -->
     <BrowserAutomation>
         <!--Eg: chrome/firefox-->
         <BrowserPreference>BrowserAutomation.BrowserPreference</BrowserPreference>
-        <HeadlessEnabled>false</HeadlessEnabled>
-        <WebDriverLocation>webdriver_location</WebDriverLocation>
+        <HeadlessEnabled>BrowserAutomation.HeadlessEnabled</HeadlessEnabled>
+        <WebDriverLocation>BrowserAutomation.WebDriverLocation</WebDriverLocation>
     </BrowserAutomation>
 
     <ConsentApi>
-        <AudienceValue>https://localhost:9446/oauth2/token</AudienceValue>
+        <AudienceValue>ConsentApi.AudienceValue</AudienceValue>
         <RevocationAudienceValue>ConsentApi.RevocationAudienceValue</RevocationAudienceValue>
     </ConsentApi>
 
     <InternalApiContext>
-        <Consent-Mgt>/consent</Consent-Mgt>
+        <Consent-Mgt>InternalApiContext.Consent-Mgt</Consent-Mgt>
         <!-- if 2.0.0 /api/openbanking/consent-mgt -->
     </InternalApiContext>
 
@@ -234,38 +216,48 @@
     <!-- Applies only for AU -->
     <!-- Refer MockCDRRegister/README.md for instructions to proceed with Mock CDR Register Integration -->
     <AUMockCDRRegister>
-        <Enabled>false</Enabled>
-        <!-- eg: localhost-->
-        <HostName>Host running the Mock Register docker image</HostName>
+
+        <Enabled>AUMockCDRRegister.Enabled</Enabled>
+        <!-- Host running the Mock Register docker image. Eg: localhost-->
+        <HostName>AUMockCDRRegister.HostName</HostName>
         <MetaDataFileLocation>AUMockCDRRegister.MetaDataFileLocation</MetaDataFileLocation>
+
         <Transport>
             <KeyStore>
-                <Location>Absolute file path to 'client.pfx' file</Location>
-                <Type>pkcs12</Type>
-                <Password>#M0ckDataRecipient#</Password>
+                <!--Absolute file path to 'client.pfx' file-->
+                <Location>AUMockCDRRegister.Transport.KeyStore.Location</Location>
+                <Type>AUMockCDRRegister.Transport.KeyStore.Type</Type>
+                <Password>AUMockCDRRegister.Transport.KeyStore.Password</Password>
             </KeyStore>
             <Truststore>
-                <Location>Absolute file path to 'ca.pfx' file</Location>
-                <Type>pkcs12</Type>
-                <Password>#M0ckCDRCA#</Password>
+                <!--Absolute file path to 'ca.pfx' file-->
+                <Location>AUMockCDRRegister.Transport.Truststore.Location</Location>
+                <Type>AUMockCDRRegister.Transport.Truststore.Location</Type>
+                <!--Eg: #M0ckCDRCA#-->
+                <Password>AUMockCDRRegister.Transport.Truststore.Location</Password>
             </Truststore>
         </Transport>
+
         <Application>
             <KeyStore>
-                <Location>Absolute file path to 'signingkeystore.jks' file</Location>
-                <Alias>adr-sig</Alias>
-                <Password>wso2carbon</Password>
+                <!--Absolute file path to 'signingkeystore.jks' file-->
+                <Location>AUMockCDRRegister.Application.Location</Location>
+                <Alias>AUMockCDRRegister.Application.Alias</Alias>
+                <Password>AUMockCDRRegister.Application.Password</Password>
             </KeyStore>
         </Application>
+
     </AUMockCDRRegister>
 
+    <!--Rest API Info-->
     <RESTApi>
         <DCRAccessToken>RESTApi.DCRAccessToken</DCRAccessToken>
         <ApiId>RESTApi.ApiId</ApiId>
     </RESTApi>
 
+    <!--ID performance Info-->
     <IdPermanence>
-        <SecretKey>wso2</SecretKey>
+        <SecretKey>IdPermanence.SecretKey</SecretKey>
     </IdPermanence>
 
 </Configurations>

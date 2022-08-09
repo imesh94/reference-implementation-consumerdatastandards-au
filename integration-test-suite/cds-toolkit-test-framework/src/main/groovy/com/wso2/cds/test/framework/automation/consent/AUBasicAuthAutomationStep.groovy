@@ -18,7 +18,10 @@ import com.wso2.openbanking.test.framework.automation.AutomationMethod
 import com.wso2.openbanking.test.framework.automation.BrowserAutomationStep
 import com.wso2.openbanking.test.framework.automation.OBBrowserAutomation
 import com.wso2.cds.test.framework.configuration.AUConfigurationService
+import org.openqa.selenium.By
 import org.openqa.selenium.remote.RemoteWebDriver
+import org.openqa.selenium.support.ui.ExpectedConditions
+import org.openqa.selenium.support.ui.WebDriverWait
 
 /**
  *  AU authorization automation step
@@ -40,6 +43,7 @@ class AUBasicAuthAutomationStep implements BrowserAutomationStep {
 
     @Override
     void execute(RemoteWebDriver webDriver, OBBrowserAutomation.AutomationContext context) {
+        WebDriverWait wait = new WebDriverWait(webDriver, 30)
         AutomationMethod driver = new AutomationMethod(webDriver)
         webDriver.navigate().to(authorizeUrl)
         if (!AUConstants.SOLUTION_VERSION_200.equals(auConfiguration.getCommonSolutionVersion())) {
@@ -53,7 +57,7 @@ class AUBasicAuthAutomationStep implements BrowserAutomationStep {
         driver.waitTimeRange(30)
         driver.executeSMSOTP(AUPageObjects.AU_LBL_SMSOTP_AUTHENTICATOR, AUPageObjects.AU_TXT_OTP_CODE_ID, AUConstants.AU_OTP_CODE)
         driver.clickButtonXpath(AUPageObjects.AU_BTN_AUTHENTICATE)
-        driver.waitTimeRange(30)
+        wait.until(ExpectedConditions.invisibilityOfElementLocated(By.xpath(AUPageObjects.AU_BTN_AUTHENTICATE)))
 
     }
 }

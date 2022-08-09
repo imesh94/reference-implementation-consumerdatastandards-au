@@ -18,6 +18,7 @@ import com.wso2.openbanking.test.framework.automation.BrowserAutomationStep
 import com.wso2.openbanking.test.framework.automation.OBBrowserAutomation
 import com.wso2.cds.test.framework.configuration.AUConfigurationService
 import org.openqa.selenium.remote.RemoteWebDriver
+import java.util.concurrent.TimeUnit
 
 /**
  * AU Portal Withdrawal automation step
@@ -46,7 +47,7 @@ class AUCCPortalWithdrawalAutomationStep implements BrowserAutomationStep{
         driver.executeTextField(AUPageObjects.AU_USERNAME_FIELD_ID,auConfiguration.getUserCustomerCareName())
         driver.executeTextField(AUPageObjects.AU_PASSWORD_FIELD_ID,auConfiguration.getUserCustomerCarePWD())
         driver.submitButtonXpath(AUPageObjects.AU_CCPORTAL_SIGNIN_XPATH)
-        driver.waitTimeRange(100)
+        webDriver.manage().timeouts().implicitlyWait(100,TimeUnit.SECONDS);
     }
 
 }

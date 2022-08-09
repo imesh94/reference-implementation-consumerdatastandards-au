@@ -24,7 +24,7 @@ import com.wso2.cds.test.framework.utility.AUMockCDRIntegrationUtil
 import com.wso2.cds.test.framework.utility.AUTestUtil
 
 /**
- * Test Meta data withdrawal
+ * for testing Meta data withdrawal
  */
 class MetaDataConsentWithdrawal extends AUTest{
 

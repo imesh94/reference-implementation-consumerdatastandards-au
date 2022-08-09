@@ -14,8 +14,8 @@
 <suite name="Consumer Data Standards Integration Suite">
     <test parallel="false" enabled="true" name="consent">
         <classes>
-            <class name="com.wso2.cds.integration.test.AccountsIDTest"/>
-            <class name="com.wso2.cds.integration.test.AccountsIDSecondTest"/>
+            <class name="com.wso2.cds.integration.test.AccessTokenTest"/>
+            <class name="com.wso2.cds.integration.test.AccessTokenRepeatTest"/>
         </classes>
     </test>
 </suite>

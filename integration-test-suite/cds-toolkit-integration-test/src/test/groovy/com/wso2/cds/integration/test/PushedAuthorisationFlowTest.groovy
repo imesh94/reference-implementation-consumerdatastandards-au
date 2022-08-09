@@ -21,7 +21,7 @@ import com.wso2.cds.test.framework.request_builder.AUAuthorisationBuilder
 import com.wso2.cds.test.framework.utility.AUTestUtil
 
 /**
- * Test Pushed authorization flow for given scope
+ * for testing Pushed authorization flow for given scope
  */
 class PushedAuthorisationFlowTest extends AUTest{
 

@@ -25,7 +25,7 @@ import com.wso2.cds.test.framework.utility.AUTestUtil
 import java.nio.charset.Charset
 
 /**
- * Test class for test account retrieval header
+ * for testing account retrieval header
  */
 class AccountsRetrievalRequestHeaderValidationTest extends AUTest {
 

@@ -28,7 +28,6 @@ import org.apache.logging.log4j.LogManager
 import org.apache.logging.log4j.Logger
 import org.openqa.selenium.By
 import org.openqa.selenium.WebElement
-import org.testng.Assert
 import org.testng.ITestContext
 import org.testng.annotations.BeforeClass
 import com.wso2.cds.test.framework.request_builder.AUAuthorisationBuilder
@@ -37,6 +36,11 @@ import com.wso2.cds.test.framework.request_builder.AURequestBuilder
 import com.wso2.cds.test.framework.utility.AURestAsRequestBuilder
 import com.wso2.cds.test.framework.utility.AUTestUtil
 
+/**
+ * Class for defining common methods that needed in test classes.
+ * Every test class in Test layer should extended from this.
+ * Execute test framework initialization process
+ */
 class AUTest extends OBTest {
 
     AUConfigurationService auConfiguration
@@ -138,7 +142,6 @@ class AUTest extends OBTest {
                 .execute()
         // Get Code From URL
         authorisationCode = AUTestUtil.getHybridCodeFromUrl(automation.currentUrl.get())
-        Assert.assertNotNull(authorisationCode)
     }
 
     /**
@@ -163,7 +166,7 @@ class AUTest extends OBTest {
                 .execute()
         // Get Code From URL
         authorisationCode = AUTestUtil.getHybridCodeFromUrl(automation.currentUrl.get())
-        Assert.assertNotNull(authorisationCode)
+
     }
 
     /**
@@ -184,7 +187,6 @@ class AUTest extends OBTest {
                 .execute()
         // Get Code From URL
         String authCode = AUTestUtil.getHybridCodeFromUrl(automation.currentUrl.get())
-        Assert.assertNotNull(authCode)
         return authCode
     }
 
@@ -206,7 +208,6 @@ class AUTest extends OBTest {
      */
     void generateUserAccessToken(String clientId = null) {
         userAccessToken = getUserAccessTokenResponse(clientId).tokens.accessToken
-        Assert.assertNotNull(userAccessToken)
     }
 
     /**
@@ -215,16 +216,16 @@ class AUTest extends OBTest {
      */
     void generateCDRArrangementId(String clientId = null) {
         cdrArrangementId = getUserAccessToken(clientId).getCustomParameters().get("cdr_arrangement_id")
-        Assert.assertNotNull(cdrArrangementId)
     }
 
     /**
-     * Get existing User access token
+     * Get existing User access token if already generated.
+     * otherwise new user access token will be generated
      */
     void getUserAccessToken(ITestContext context) {
         userAccessToken = context.getAttribute(ContextConstants.USER_ACCESS_TKN) as String
         if (userAccessToken == null) {
-            System.out.println("Generate new user access token abcd")
+            System.out.println("Generate new user access token")
             doConsentAuthorisation()
             generateUserAccessToken()
             context.setAttribute(ContextConstants.USER_ACCESS_TKN, userAccessToken)
@@ -245,7 +246,6 @@ class AUTest extends OBTest {
                 def deletionResponse = AURegistrationRequestBuilder.buildBasicRequest(token)
                         .when()
                         .delete(AUConstants.DCR_REGISTRATION_ENDPOINT + clientId)
-                Assert.assertEquals(deletionResponse.statusCode(), AUConstants.STATUS_CODE_204)
             }
         }
     }
@@ -263,7 +263,7 @@ class AUTest extends OBTest {
                 def deletionResponse = AURegistrationRequestBuilder.buildBasicRequest(token)
                         .when()
                         .delete(AUConstants.DCR_REGISTRATION_ENDPOINT + clientId)
-                Assert.assertEquals(deletionResponse.statusCode().toInteger(), AUConstants.STATUS_CODE_204)
+
             }
         }
     }

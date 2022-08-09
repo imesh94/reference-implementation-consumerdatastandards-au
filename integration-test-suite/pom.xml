@@ -65,46 +65,39 @@
             <dependency>
                 <groupId>org.apache.groovy</groupId>
                 <artifactId>groovy-all</artifactId>
-                <version>4.0.0</version>
+                <version>${org.apache.groovy.version}</version>
                 <type>pom</type>
             </dependency>
             <dependency>
                 <groupId>org.testng</groupId>
                 <artifactId>testng</artifactId>
-                <version>6.14.3</version>
-                <!--                <scope>test</scope>-->
+                <version>${org.testng.version}</version>
             </dependency>
             <dependency>
                 <groupId>com.wso2</groupId>
                 <artifactId>open-banking-test-framework</artifactId>
-                <version>1.0.0</version>
+                <version>${com.wso2.openbanking.test}</version>
                 <scope>compile</scope>
             </dependency>
             <dependency>
                 <groupId>org.apache.logging.log4j</groupId>
                 <artifactId>log4j-api</artifactId>
-                <version>2.17.1</version>
+                <version>${org.apache.logging.log4j.version}</version>
             </dependency>
             <dependency>
                 <groupId>org.apache.logging.log4j</groupId>
                 <artifactId>log4j-core</artifactId>
-                <version>2.17.1</version>
+                <version>${org.apache.logging.log4j.version}</version>
             </dependency>
             <dependency>
                 <groupId>org.slf4j</groupId>
                 <artifactId>slf4j-api</artifactId>
-                <version>2.0.0-alpha5</version>
+                <version>${org.slf4j.version}</version>
             </dependency>
             <dependency>
                 <groupId>org.slf4j</groupId>
                 <artifactId>slf4j-simple</artifactId>
-                <version>2.0.0-alpha5</version>
-            </dependency>
-            <dependency>
-                <groupId>com.wso2.openbanking</groupId>
-                <artifactId>bfsi-common</artifactId>
-                <version>1.0.0</version>
-                <scope>compile</scope>
+                <version>${org.slf4j.version}</version>
             </dependency>
             <dependency>
                 <groupId>org.apache.ws.commons.axiom.wso2</groupId>
@@ -114,61 +107,89 @@
             <dependency>
                 <groupId>org.apache.axis2.wso2</groupId>
                 <artifactId>axis2-client</artifactId>
-                <version>1.6.1-wso2v77</version>
+                <version>${org.apache.axis2.wso2.version}</version>
                 <scope>compile</scope>
             </dependency>
             <dependency>
                 <groupId>javax.activation</groupId>
                 <artifactId>activation</artifactId>
-                <version>1.1.1</version>
+                <version>${javax.activation.version}</version>
             </dependency>
             <dependency>
                 <groupId>org.json.wso2</groupId>
                 <artifactId>json</artifactId>
-                <version>3.0.0.wso2v1</version>
+                <version>${org.json.wso2.version}</version>
                 <scope>compile</scope>
             </dependency>
             <dependency>
                 <groupId>org.wso2.orbit.com.nimbusds</groupId>
                 <artifactId>nimbus-jose-jwt</artifactId>
-                <version>9.18.0.wso2v1</version>
+                <version>${org.wso2.orbit.com.nimbusds.jose.version}</version>
                 <scope>compile</scope>
             </dependency>
             <!-- https://mvnrepository.com/artifact/net.minidev/json-smart -->
             <dependency>
                 <groupId>net.minidev</groupId>
                 <artifactId>json-smart</artifactId>
-                <version>2.4.8</version>
+                <version>${net.minidev.json.smart.version}</version>
             </dependency>
             <!-- https://mvnrepository.com/artifact/net.minidev/asm -->
             <dependency>
                 <groupId>net.minidev</groupId>
                 <artifactId>asm</artifactId>
-                <version>1.0.2</version>
+                <version>${net.minidev.asm.version}</version>
             </dependency>
             <dependency>
                 <groupId>io.rest-assured</groupId>
                 <artifactId>rest-assured</artifactId>
-                <version>5.0.0</version>
+                <version>${io.rest-assured.version}</version>
                 <scope>compile</scope>
             </dependency>
             <dependency>
                 <groupId>org.seleniumhq.selenium</groupId>
                 <artifactId>selenium-chrome-driver</artifactId>
-                <version>3.141.59</version>
+                <version>${org.seleniumhq.selenium.chrome.version}</version>
                 <scope>compile</scope>
             </dependency>
             <dependency>
                 <groupId>org.seleniumhq.selenium</groupId>
                 <artifactId>selenium-firefox-driver</artifactId>
-                <version>3.141.59</version>
+                <version>${org.seleniumhq.selenium.firefox.version}</version>
                 <scope>compile</scope>
             </dependency>
             <dependency>
                 <groupId>org.seleniumhq.selenium</groupId>
                 <artifactId>selenium-support</artifactId>
-                <version>3.141.59</version>
+                <version>${org.seleniumhq.selenium.support.version}</version>
                 <scope>compile</scope>
+            </dependency>
+            <dependency>
+                <groupId>bouncycastle</groupId>
+                <artifactId>bcprov-jdk14</artifactId>
+                <version>${bouncycastle.version}</version>
+                <scope>compile</scope>
+            </dependency>
+            <dependency>
+                <groupId>com.nimbusds</groupId>
+                <artifactId>oauth2-oidc-sdk</artifactId>
+                <version>${com.nimbus.oauth2-oidc-sdk.version}</version>
+                <scope>compile</scope>
+            </dependency>
+            <dependency>
+                <groupId>com.google.guava</groupId>
+                <artifactId>guava</artifactId>
+                <version>${com.google.guava.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>com.google.inject</groupId>
+                <artifactId>guice</artifactId>
+                <version>${com.google.inject.guice.version}</version>
+                <exclusions>
+                    <exclusion>
+                        <groupId>com.google.guava</groupId>
+                        <artifactId>guava</artifactId>
+                    </exclusion>
+                </exclusions>
             </dependency>
         </dependencies>
     </dependencyManagement>
@@ -282,7 +303,32 @@
         <surefire.plugin.version>2.22.2</surefire.plugin.version>
         <org.apache.ws.commons.axiom.wso2.version>1.2.11.wso2v9</org.apache.ws.commons.axiom.wso2.version>
         <org.codehaus.gmavenplus.version>1.13.1</org.codehaus.gmavenplus.version>
+        <org.apache.groovy.version>4.0.0</org.apache.groovy.version>
+        <org.testng.version>6.14.3</org.testng.version>
+        <org.apache.logging.log4j.version>2.17.1</org.apache.logging.log4j.version>
+        <org.slf4j.version>2.0.0-alpha5</org.slf4j.version>
+        <org.apache.axis2.wso2.version>1.6.1-wso2v77</org.apache.axis2.wso2.version>
+        <javax.activation.version>1.1.1</javax.activation.version>
+        <org.json.wso2.version>3.0.0.wso2v1</org.json.wso2.version>
+        <org.wso2.orbit.com.nimbusds.jose.version>9.18.0.wso2v1</org.wso2.orbit.com.nimbusds.jose.version>
+        <net.minidev.json.smart.version>2.4.8</net.minidev.json.smart.version>
+        <net.minidev.asm.version>1.0.2</net.minidev.asm.version>
+        <io.rest-assured.version>5.0.0</io.rest-assured.version>
+        <org.seleniumhq.selenium.chrome.version>3.141.59</org.seleniumhq.selenium.chrome.version>
+        <org.seleniumhq.selenium.firefox.version>3.141.59</org.seleniumhq.selenium.firefox.version>
+        <org.seleniumhq.selenium.support.version>3.141.59</org.seleniumhq.selenium.support.version>
+        <com.fasterxml.uuid.version>3.1.4</com.fasterxml.uuid.version>
+        <bouncycastle.version>140</bouncycastle.version>
+        <org.bitbucket.b_c.verion>0.6.0</org.bitbucket.b_c.verion>
+        <org.wso2.securevault.version>1.1.4</org.wso2.securevault.version>
+        <maven.findbugsplugin.version>3.0.2</maven.findbugsplugin.version>
         <findsecbugs-plugin.version>1.10.1</findsecbugs-plugin.version>
+        <maven.spotbugsplugin.version>4.2.3</maven.spotbugsplugin.version>
+        <maven.checkstyleplugin.version>3.1.0</maven.checkstyleplugin.version>
+        <com.google.guava.version>31.0.1-jre</com.google.guava.version>
+        <com.google.inject.guice.version>4.2.3</com.google.inject.guice.version>
+        <com.nimbus.oauth2-oidc-sdk.version>9.35</com.nimbus.oauth2-oidc-sdk.version>
+        <com.wso2.openbanking.test>1.0.0</com.wso2.openbanking.test>
     </properties>
 
 </project>

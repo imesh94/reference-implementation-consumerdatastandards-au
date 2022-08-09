@@ -18,7 +18,7 @@ import org.testng.annotations.BeforeClass
 import org.testng.annotations.Test
 
 /**
- * test consent authorization using basic functions
+ * for testing consent authorization using basic functions
  * user access token will not be saved in context
  */
 class ConsentAuthorizationTest extends AUTest {

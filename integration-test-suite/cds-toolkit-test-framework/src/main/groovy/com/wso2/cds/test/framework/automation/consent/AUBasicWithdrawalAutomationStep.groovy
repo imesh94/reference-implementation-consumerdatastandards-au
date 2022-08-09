@@ -12,13 +12,14 @@
 
 package com.wso2.cds.test.framework.automation.consent
 
-import com.wso2.cds.test.framework.constant.AUConstants
 import com.wso2.cds.test.framework.constant.AUPageObjects
 import com.wso2.openbanking.test.framework.automation.AutomationMethod
 import com.wso2.openbanking.test.framework.automation.BrowserAutomationStep
 import com.wso2.openbanking.test.framework.automation.OBBrowserAutomation
 import com.wso2.cds.test.framework.configuration.AUConfigurationService
 import org.openqa.selenium.remote.RemoteWebDriver
+
+import java.util.concurrent.TimeUnit
 
 /**
  * AU Basic Withdrawal automation step
@@ -52,7 +53,7 @@ class AUBasicWithdrawalAutomationStep implements BrowserAutomationStep {
         driver.executeTextField(AUPageObjects.AU_USERNAME_FIELD_ID, auConfiguration.getUserPSUName())
         driver.executeTextField(AUPageObjects.AU_PASSWORD_FIELD_ID, auConfiguration.getUserPSUPWD())
         driver.submitButtonXpath(AUPageObjects.AU_AUTH_SIGNIN_XPATH)
-        driver.waitTimeRange(100)
+        webDriver.manage().timeouts().implicitlyWait(100, TimeUnit.SECONDS);
 
     }
 

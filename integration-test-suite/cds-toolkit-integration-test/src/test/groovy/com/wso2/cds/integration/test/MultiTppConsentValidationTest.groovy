@@ -25,7 +25,7 @@ import com.wso2.cds.test.framework.request_builder.AURequestBuilder
 import com.wso2.cds.test.framework.utility.AUTestUtil
 
 /**
- * Test Multiple tpp consents
+ * for testing Multiple tpp consents
  */
 class MultiTppConsentValidationTest extends AUTest{
 

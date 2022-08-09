@@ -23,7 +23,7 @@ import com.wso2.cds.test.framework.request_builder.AURegistrationRequestBuilder
 import com.wso2.cds.test.framework.utility.AUTestUtil
 
 /**
- * Test DCR function
+ * for testing DCR function
  */
 class DCRTest extends AUTest{
 

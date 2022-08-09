@@ -12,6 +12,9 @@
 
 package com.wso2.cds.test.framework.constant
 
+/**
+ * Enum class for keeping account scopes
+ */
 enum AUAccountScope {
 
     BANK_ACCOUNT_BASIC_READ("bank:accounts.basic:read"),

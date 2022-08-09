@@ -23,20 +23,20 @@
         <groupId>com.wso2.openbanking</groupId>
         <artifactId>integration-test-suite</artifactId>
         <version>1.0.0</version>
+        <relativePath>../pom.xml</relativePath>
     </parent>
 
     <dependencies>
         <dependency>
             <groupId>org.apache.groovy</groupId>
             <artifactId>groovy-all</artifactId>
-            <version>4.0.0</version>
+            <version>${org.apache.groovy.version}</version>
             <type>pom</type>
         </dependency>
         <dependency>
             <groupId>com.wso2.openbanking</groupId>
             <artifactId>cds-toolkit-test-framework</artifactId>
-            <version>1.0.0</version>
-            <scope>test</scope>
+            <version>${com.wso2.openbanking.test.cds.version}</version>
         </dependency>
         <dependency>
             <groupId>org.testng</groupId>
@@ -45,7 +45,6 @@
         <dependency>
             <groupId>com.google.inject</groupId>
             <artifactId>guice</artifactId>
-            <version>4.2.3</version>
             <exclusions>
                 <exclusion>
                     <groupId>com.google.guava</groupId>
@@ -56,7 +55,6 @@
         <dependency>
             <groupId>com.google.guava</groupId>
             <artifactId>guava</artifactId>
-            <version>31.0.1-jre</version>
         </dependency>
         <dependency>
             <groupId>org.apache.logging.log4j</groupId>
@@ -88,7 +86,7 @@
                     <dependency>
                         <groupId>org.apache.groovy</groupId>
                         <artifactId>groovy</artifactId>
-                        <version>4.0.0</version>
+                        <version>${org.apache.groovy.version}</version>
                         <scope>runtime</scope>
                     </dependency>
                 </dependencies>
@@ -115,8 +113,38 @@
                     </suiteXmlFiles>
                 </configuration>
             </plugin>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-checkstyle-plugin</artifactId>
+                <version>${maven.checkstyleplugin.version}</version>
+                <executions>
+                    <execution>
+                        <id>validate</id>
+                        <phase>validate</phase>
+                        <configuration>
+                            <configLocation>
+                                https://raw.githubusercontent.com/wso2/code-quality-tools/v1.3/checkstyle/checkstyle.xml
+                            </configLocation>
+                            <suppressionsLocation>
+                                https://raw.githubusercontent.com/wso2/code-quality-tools/v1.3/checkstyle/suppressions.xml
+                            </suppressionsLocation>
+                            <encoding>UTF-8</encoding>
+                            <consoleOutput>true</consoleOutput>
+                            <failsOnError>true</failsOnError>
+                            <includeTestSourceDirectory>true</includeTestSourceDirectory>
+                        </configuration>
+                        <goals>
+                            <goal>check</goal>
+                        </goals>
+                    </execution>
+                </executions>
+            </plugin>
         </plugins>
     </build>
+
+    <properties>
+        <com.wso2.openbanking.test.cds.version>1.0.0</com.wso2.openbanking.test.cds.version>
+    </properties>
 
 </project>
 

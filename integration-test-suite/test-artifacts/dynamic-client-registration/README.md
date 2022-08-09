@@ -1,6 +1,6 @@
 #Using Sample Resources
 
-Following configs can be used in test-config.xml to use sample SSA and keystores for DCR tests.
+Following configs can be used in TestConfiguration.xml to use sample SSA and keystores for DCR tests.
 
     <DCR>
         <SSAPath>Path.To.Directory/ssa.txt</SSAPath>
