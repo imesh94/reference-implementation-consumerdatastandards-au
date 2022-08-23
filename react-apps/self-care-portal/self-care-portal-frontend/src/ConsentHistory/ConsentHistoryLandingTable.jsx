@@ -10,17 +10,17 @@
  * WSO2 governing the purchase of this software and any associated services.
  */
 
-import React from "react";
-import {useSelector } from "react-redux";
+import React,{useContext} from "react";
 import "../css/LandingTable.css";
 import Table from "react-bootstrap/Table";
 import {ConsentHistoryTableHeader} from "./ConsentHistoryTableHeader";
 import {ConsentHistoryTableBody} from "./ConsentHistoryTableBody";
 import {lang, specConfigurations} from "../specConfigs/specConfigurations";
+import { ConsentHistoryContext } from "../context/ConsentHistoryContext";
 
 export const ConsentHistoryLandingTable = (props) => {
-
-  var consentHistoryResponse = useSelector((state) => state.consentHistory.consentHistory);
+  const {contextConsentHistory} = useContext(ConsentHistoryContext);
+  var consentHistoryResponse = contextConsentHistory.consentHistory;
   const consentHistory = consentHistoryResponse.consentAmendmentHistory;
 
   const consentHistoryLang = specConfigurations.consentHistory;

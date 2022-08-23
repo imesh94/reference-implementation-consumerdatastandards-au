@@ -40,7 +40,7 @@ export const getConsentsFromAPI = (user, consentTypes) => {
     const requestConfig = {
         headers: {
             "Content-Type": "application/json",
-            "Authorization": "Bearer " + Cookies.get(User.CONST.OB_SCP_ACC_TOKEN_P1),
+                "Authorization": "Bearer " + Cookies.get(User.CONST.OB_SCP_ACC_TOKEN_P1),
         },
         method: "GET",
         url: `${selectedUrl}`,
