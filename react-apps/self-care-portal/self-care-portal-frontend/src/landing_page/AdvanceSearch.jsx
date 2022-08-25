@@ -85,7 +85,6 @@ export const AdvanceSearch = () => {
 
 
     function doSearchConsents(search) {
-        // dispatch(getConsentsForSearch(search, currentUser, appInfo));
         getContextConsentsForSearch(search, currentUser, appInfo);
     }
 

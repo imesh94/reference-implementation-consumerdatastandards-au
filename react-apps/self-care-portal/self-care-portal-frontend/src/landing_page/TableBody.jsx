@@ -13,7 +13,6 @@
 import {ManageButton} from "../landing_page";
 import {dataOrigins, dataTypes, lang} from "../specConfigs";
 import moment from "moment";
-import {useSelector} from "react-redux";
 import {getValueFromApplicationInfoWithFailOver, getValueFromConsentWithFailOver} from "../services/utils";
 import { useContext } from "react";
 import { ConsentContext } from "../context/ConsentContext";

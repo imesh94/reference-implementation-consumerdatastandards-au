@@ -18,7 +18,6 @@ import "../css/DetailedAgreement.css";
 import "../css/withdrawal.css";
 import {FontAwesomeIcon} from "@fortawesome/react-fontawesome";
 import {faExclamationTriangle} from "@fortawesome/free-solid-svg-icons";
-import {useSelector} from "react-redux";
 import {withdrawLang, specConfigurations} from "../specConfigs";
 import ProgressBar from "react-bootstrap/ProgressBar";
 import {FourOhFourError} from "../errorPage";
