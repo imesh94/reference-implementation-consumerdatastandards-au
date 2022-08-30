@@ -26,9 +26,9 @@ if (!CONFIG.IS_DEV_TOOLS_ENABLE) {
 
 ReactDOM.render(
   <React.StrictMode>
-      <AppContextProvider>
-        <App />
-      </AppContextProvider>
+    <AppContextProvider>
+      <App />
+    </AppContextProvider>
   </React.StrictMode>,
   document.getElementById("root")
 );
