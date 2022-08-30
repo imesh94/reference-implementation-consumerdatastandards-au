@@ -10,8 +10,9 @@
  * with WSO2 governing the purchase of this software and any associated services.
  */
 
-import React, { useState ,createContext} from 'react'
+import React, { useState ,createContext, useContext} from 'react'
 import { getConsentHistoryFromAPI } from '../api';
+import { UserContext } from './UserContext';
 
 export const ConsentHistoryContext = createContext();
 
@@ -35,12 +36,14 @@ const ConsentHistoryContextProvider = (props) => {
         }))
     };
 
+    const {setResponseError} = useContext(UserContext);
+
     const getContextConsentHistory = (consentId,userId)=>{
         setConsentHistoryRequestLoadingStatus(true);
         getConsentHistoryFromAPI(consentId,userId)
             .then((response)=>setConsentHistory(response.data))
             .catch((error)=>{
-                /* Log the error */
+                setResponseError(error.response.data)
             })
             .finally(()=>setConsentHistoryRequestLoadingStatus(false));
         };
