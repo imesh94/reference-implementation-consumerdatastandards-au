@@ -25,7 +25,7 @@ const SearchObjectContextProvider = (props) => {
         userIDs: "",
         clientIDs: "",
         consentStatuses: specConfigurations.status.authorised,
-        consentTypes: "CDR_ACCOUNTS", // Accelerator only supporting the account consents type in SCP.
+        consentTypes: "CDR_ACCOUNTS", 
         hideAdvanceSearchOptions: true
     });
     const [contextSearchUtilState,setContextSearchUtilState] = useState({
