@@ -21,5 +21,6 @@ export const CONFIG = {
     BACKEND_URL: window.env.SERVER_URL + "/consentmgr/scp",
     NUMBER_OF_CONSENTS: window.env.NUMBER_OF_CONSENTS,
     VERSION: window.env.VERSION,
-    DEVICE_REGISTRATION_URL: window.env.SERVER_URL + "/api/openbanking/ciba/push-auth/discovery-data"
+    DEVICE_REGISTRATION_URL: window.env.SERVER_URL + "/api/openbanking/ciba/push-auth/discovery-data",
+    IS_DEV_TOOLS_ENABLE: window.env.IS_DEV_TOOLS_ENABLE
 };

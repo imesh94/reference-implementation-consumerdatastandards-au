@@ -17,8 +17,9 @@ import { App } from "./App";
 import * as serviceWorker from "./serviceWorker";
 import AppContextProvider from "./context/AppContext";
 import {disableReactDevTools} from "@fvilers/disable-react-devtools";
+import {CONFIG} from "./config";
 
-if (process.env.NODE_ENV === 'production') {
+if (!CONFIG.IS_DEV_TOOLS_ENABLE) {
   disableReactDevTools();
 }
 
