@@ -10,7 +10,7 @@
  * WSO2 governing the purchase of this software and any associated services.
  */
 
-import React, {useEffect, useState} from "react";
+import React, {useEffect, useState, useContext} from "react";
 import {Link} from "react-router-dom";
 import Container from "react-bootstrap/Container";
 import Row from "react-bootstrap/Row";
@@ -20,20 +20,27 @@ import "../css/Buttons.css";
 import "../css/DetailedAgreement.css";
 import {FontAwesomeIcon} from "@fortawesome/react-fontawesome";
 import {faCaretSquareLeft} from "@fortawesome/free-solid-svg-icons";
-import {useDispatch, useSelector} from "react-redux";
 import {lang, specConfigurations} from "../specConfigs/specConfigurations";
-import {getConsentsForSearch} from "../store/actions";
 import {getDisplayName} from "../services";
 import {getLogoURL} from "../services/utils";
 import {ConsentHistoryViewButton} from "./ConsentHistoryViewButton";
+import { ConsentContext } from "../context/ConsentContext";
+import { SearchObjectContext } from "../context/SearchObjectContext";
+import { UserContext } from "../context/UserContext";
+import { AppInfoContext } from "../context/AppInfoContext";
 
 export const DetailedAgreement = ({match}) => {
+    const {allContextConsents,getContextConsentForSearch} = useContext(ConsentContext);
+    const {contextSearchObject} = useContext(SearchObjectContext)
+    const {currentContextUser} = useContext(UserContext)
+    const {contextAppInfo} = useContext(AppInfoContext)
 
-    const dispatch = useDispatch()
-    let searchObj = useSelector(state => state.searchObject);
-    const currentUser = useSelector(state => state.currentUser.user);
-    const consents = useSelector((state) => state.consent.consents);
-    const appInfo = useSelector((state) => state.appInfo.appInfo);
+
+    let searchObj = contextSearchObject;
+    const currentUser = currentContextUser.user;
+    const consents = allContextConsents.consents;
+    const appInfo = contextAppInfo.appInfo;
+
 
     const [consent, setConsent] = useState(() => {
         let search = {
@@ -46,7 +53,7 @@ export const DetailedAgreement = ({match}) => {
             clientIDs: "",
             consentStatuses: ""
         }
-        dispatch(getConsentsForSearch(search, currentUser, appInfo));
+        getContextConsentForSearch(search,currentUser,appInfo);
         const matchedConsentId = match.params.id;
         let matchedConsent = consents.data.filter(
             (consent) => consent.consentId === matchedConsentId

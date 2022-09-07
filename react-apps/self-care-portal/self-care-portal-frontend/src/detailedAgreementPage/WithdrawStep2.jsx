@@ -10,7 +10,7 @@
  * WSO2 governing the purchase of this software and any associated services.
  */
 
-import React, {useState} from "react";
+import React, {useContext, useState} from "react";
 import {Link} from "react-router-dom";
 import Container from "react-bootstrap/Container";
 import "../css/Buttons.css";
@@ -18,7 +18,6 @@ import "../css/DetailedAgreement.css";
 import "../css/withdrawal.css";
 import {FontAwesomeIcon} from "@fortawesome/react-fontawesome";
 import {faCheckCircle, faExclamationCircle, faExclamationTriangle,} from "@fortawesome/free-solid-svg-icons";
-import {useSelector} from "react-redux";
 import {withdrawLang, specConfigurations} from "../specConfigs";
 import ProgressBar from "react-bootstrap/ProgressBar";
 import {FourOhFourError} from "../errorPage";
@@ -29,6 +28,9 @@ import {CONFIG} from "../config";
 import Cookies from "js-cookie";
 import User from "../data/User";
 import {getDisplayName, getValueFromConsent} from "../services";
+import { ConsentContext } from "../context/ConsentContext";
+import { AppInfoContext } from "../context/AppInfoContext";
+import { UserContext } from "../context/UserContext";
 
 export const WithdrawStep2 = ({ match }) => {
   const [show, setShow] = useState(false);
@@ -37,9 +39,13 @@ export const WithdrawStep2 = ({ match }) => {
   const [withdrawIconId, setWithdrawIconId] = useState("");
   const handleClose = () => setShow(false);
 
-  const consents = useSelector((state) => state.consent.consents);
-  const appInfo = useSelector((state) => state.appInfo.appInfo);
-  const user = useSelector(state => state.currentUser.user);
+  const {allContextConsents} = useContext(ConsentContext);
+  const {contextAppInfo} = useContext(AppInfoContext);
+  const {currentContextUser} = useContext(UserContext);
+
+  const consents = allContextConsents.consents;
+  const appInfo = contextAppInfo.appInfo;
+  const user = currentContextUser.user;
 
   const consentId = match.params.id;
 

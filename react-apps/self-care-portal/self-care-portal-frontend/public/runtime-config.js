@@ -4,6 +4,7 @@ window.env = {
     SPEC: 'CDS',
     TENANT_DOMAIN: 'carbon.super',
     NUMBER_OF_CONSENTS: 20,
-    VERSION: '3.0.0'
+    VERSION: '3.0.0',
+    IS_DEV_TOOLS_ENABLE: false
   };
 

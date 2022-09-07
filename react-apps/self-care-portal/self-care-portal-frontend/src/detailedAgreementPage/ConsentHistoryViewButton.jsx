@@ -10,25 +10,26 @@
  * WSO2 governing the purchase of this software and any associated services.
  */
 
-import React, {useEffect} from "react";
+import React, {useContext, useEffect} from "react";
 import "../css/Buttons.css";
 import {Link} from "react-router-dom";
-import {useDispatch, useSelector} from "react-redux";
-import {getConsentHistory} from "../store/actions";
 import {specConfigurations} from "../specConfigs/specConfigurations";
 import {getValueFromConsent} from "../services";
+import { ConsentHistoryContext } from "../context/ConsentHistoryContext";
+import { UserContext } from "../context/UserContext";
 
 export const ConsentHistoryViewButton = ({consent}) => {
+    const {contextConsentHistory,getContextConsentHistory} = useContext(ConsentHistoryContext)
+    const {currentContextUser} = useContext(UserContext)
 
-    const dispatch = useDispatch();
-    const user = useSelector(state => state.currentUser.user);
+    const user = currentContextUser.user;
     const userId = (user.email.endsWith("@carbon.super") ? (user.email) : user.email + '@carbon.super');
 
     useEffect(() => {
-        dispatch(getConsentHistory(getValueFromConsent("consentId", consent), userId));
+        getContextConsentHistory(getValueFromConsent("consentId",consent),userId);
     }, []);
 
-    var consentHistoryResponse = useSelector((state) => state.consentHistory.consentHistory);
+    var consentHistoryResponse = contextConsentHistory.consentHistory;
     const consentHistory = consentHistoryResponse.consentAmendmentHistory;
 
     return (

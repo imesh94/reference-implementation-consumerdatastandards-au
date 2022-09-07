@@ -10,7 +10,7 @@
  * WSO2 governing the purchase of this software and any associated services.
  */
 
-import React, {useEffect, useState} from "react";
+import React, {useContext, useEffect, useState} from "react";
 import { Link } from "react-router-dom";
 import Container from "react-bootstrap/Container";
 import Row from "react-bootstrap/Row";
@@ -22,19 +22,24 @@ import {ConsentHistoryLandingTable} from "./ConsentHistoryLandingTable";
 import Col from "react-bootstrap/Col";
 import {Profile} from "../detailedAgreementPage";
 import {lang, specConfigurations} from "../specConfigs/specConfigurations";
-import {useDispatch, useSelector} from "react-redux";
-import {getConsentsForSearch} from "../store/actions";
 import {getDisplayName} from "../services";
 import {getLogoURL} from "../services/utils";
-
+import { ConsentContext } from "../context/ConsentContext";
+import { SearchObjectContext } from "../context/SearchObjectContext";
+import { UserContext } from "../context/UserContext";
+import { AppInfoContext } from "../context/AppInfoContext";
 
 export const ConsentHistory = ({ match }) => {
+        const {allContextConsents,getContextConsentsForSearch} = useContext(ConsentContext);
+        const {contextSearchObject} = useContext(SearchObjectContext);
+        const {currentContextUser} = useContext(UserContext);
+        const {contextAppInfo} = useContext(AppInfoContext)
 
-        const dispatch = useDispatch()
-        let searchObj = useSelector(state => state.searchObject);
-        const currentUser = useSelector(state => state.currentUser.user);
-        const consents = useSelector((state) => state.consent.consents);
-        const appInfo = useSelector((state) => state.appInfo.appInfo);
+        const searchObj = contextSearchObject;
+        const currentUser = currentContextUser.user;
+        const consents = allContextConsents.consents;
+        const appInfo = contextAppInfo.appInfo;
+
 
         const [consent, setConsent] = useState(() => {
             let search = {
@@ -47,7 +52,7 @@ export const ConsentHistory = ({ match }) => {
                 clientIDs: "",
                 consentStatuses: ""
             }
-            dispatch(getConsentsForSearch(search, currentUser, appInfo));
+            getContextConsentsForSearch(search,currentUser,appInfo)
             const matchedConsentId = match.params.id;
             let matchedConsent = consents.data.filter(
                 (consent) => consent.consentId === matchedConsentId
