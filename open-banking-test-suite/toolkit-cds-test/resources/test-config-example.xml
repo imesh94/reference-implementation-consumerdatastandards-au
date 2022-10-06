@@ -12,28 +12,45 @@
 -->
 
 <Configurations>
+    <!--Sample Values: 3.0.0 -->
     <SolutionVersion>Solution.Version</SolutionVersion>
-    <!--OBSpec accepts values AU-->
+
+    <!--Sample Values: AU -->
     <OBSpec>OB.Spec</OBSpec>
+
+    <!--Sample Value: 1.2.0/1.3.0 -->
     <ApiVersion>Api.Version</ApiVersion>
     <!-- Provisioning Info -->
     <Provisioning>
+
+        <!--Sample Value: true/false (Enable if you want to publish and subscribe API via test cases in
+           common.integration.test package.)-->
         <Enabled>Provisioning.Enabled</Enabled>
+
+        <!--Sample Value: <Path to ob-compliance-toolkit-cds>/open-banking-test-suite/toolkit-uk-test/com.wso2.openbanking.toolkit.cds.test/
+         common.integration.test/src/test/resources/provisioningFiles/api-config-provisioning.yaml -->
         <ProvisionFilePath>Provisioning.ProvisionFilePath</ProvisionFilePath>
     </Provisioning>
     <!-- Server Info -->
     <Server>
+        <!--Sample Value: https://<AM_HOST>:8243 -->
         <BaseURL>Server.BaseURL</BaseURL>
+
+        <!--Sample Value: https://<AM_HOST>:9443 -->
         <GatewayURL>Server.GatewayURL</GatewayURL>
+
+        <!--Sample Value: https://<IS_HOST>:9446 -->
         <AuthorisationServerURL>Server.AuthorisationServerURL</AuthorisationServerURL>
 
         <!--Micro Gateway Specific Server Urls.
         In MG the ports should be the corresponding port of the docker image.-->
         <MicroGateway>
+            <!--Sample Value: true/false (This should be configured only for AU Micro Gateway testing)-->
             <MicroGatewayEnabled>MicroGateway.MicroGatewayEnabled</MicroGatewayEnabled>
 
             <!--Configure the Urls only for Micro Gateway Testing-->
             <AU>
+                <!--Sample Value: https://<AM_HOST>:<port> for all the URLs below. port: Port of the docker container -->
                 <DcrURL>Server.MicroGateway.AU.DcrURL</DcrURL>
                 <CdsAuAccountsURL>Server.MicroGateway.AU.CdsAuAccountsURL</CdsAuAccountsURL>
                 <CdsAuBalancesURL>Server.MicroGateway.AU.CdsAuBalancesURL</CdsAuBalancesURL>
@@ -57,42 +74,61 @@
             <!-- Application Keystore -->
             <Application.KeyStore>
                 <!--Absolute path + file name of JKS keystore file-->
+                <!--Sample Value: <Path to ob-compliance-toolkit-cds>/open-banking-test-suite/test-artifacts/
+                DynamicClientRegistration/AU/sample-client-resources/signing-keystore/signing-obseal.jks -->
                 <Location>AppConfig.Application.KeyStore.Location</Location>
+
+                <!--Sample Value: tpp4-sig -->
                 <Alias>AppConfig.Application.KeyStore.Alias</Alias>
+
+                <!--Sample Value: wso2carbon -->
                 <Password>AppConfig.Application.KeyStore.Password</Password>
                 <DomainName>https://wso2.com</DomainName>
+
+                <!--Sample Value: W_TcnQVcHAy20q8zCMcdByrootw -->
                 <SigningKid>AppConfig.Application.KeyStore.SigningKid</SigningKid>
             </Application.KeyStore>
 
             <!-- Transport Keystore and Truststore -->
             <!--This Keystore and the Truststore will be used during the SSL handshake-->
             <Transport>
+                <!--Sample Value: true -->
                 <MTLSEnabled>AppConfig.Transport.MTLSEnabled</MTLSEnabled>
                 <!--A keystore and a truststore needs to be configured in the following section if MTLSEnabled is set to
                 true-->
                 <KeyStore>
-                    <!--Absolute path + file name of keystore file.
-                    (e.g. <location>/home/kasun/Downloads/Certs/keystore.jks</location>)-->
+                    <!--Absolute path + file name of keystore file.-->
+                    <!--Sample Value: <Path to ob-compliance-toolkit-cds>/open-banking-test-suite/test-artifacts/
+                    DynamicClientRegistration/AU/sample-client-resources/transport-keystore/transport-obwac.jks -->
                     <Location>AppConfig.Transport.KeyStore.Location</Location>
                     <Type>jks</Type>
+
+                    <!--Sample Value: wso2carbon -->
                     <Password>AppConfig.Transport.KeyStore.Password</Password>
                 </KeyStore>
             </Transport>
 
             <!-- DCR Configurations -->
             <DCR>
+                <!--Sample Value: <Path to ob-compliance-toolkit-cds>/open-banking-test-suite/test-artifacts/
+                DynamicClientRegistration/AU/sample-client-resources/ssa.txt -->
                 <SSAPath>AppConfig.DCR.SSAPath</SSAPath>
+
                 <!-- Self signed SSA for negative tests (UK)-->
                 <SelfSignedSSAPath>AppConfig.DCR.SelfSignedSSAPath</SelfSignedSSAPath>
                 <!-- SSA SoftwareId (UK)-->
                 <SoftwareId>AppConfig.DCR.SoftwareId</SoftwareId>
+
                 <!-- SSA Redirect Uri -->
+                <!--Sample Value: https://www.google.com/redirects/redirect1 -->
                 <RedirectUri>AppConfig.DCR.RedirectUri</RedirectUri>
                 <!-- SSA Alternate Redirect Uri (AU)-->
+
+                <!--Sample Value: https://www.google.com/redirects/redirect2 -->
                 <AlternateRedirectUri>AppConfig.DCR.AlternateRedirectUri</AlternateRedirectUri>
-                <!-- Version of DCR API (UK)
-                (e.g. 3.2 for DCR v3.2, 3.3.0 for DCR v3.3.0)
-                -->
+
+                <!-- Version of DCR API-->
+                <!--Sample Value: 0.1/0.2 -->
                 <DCRAPIVersion>AppConfig.DCR.DCRAPIVersion</DCRAPIVersion>
             </DCR>
 
@@ -100,6 +136,7 @@
             <Application>
                 <ClientID>AppConfig.Application.ClientID</ClientID>
                 <ClientSecret>AppConfig.Application.ClientSecret</ClientSecret>
+                <!--Sample Value: https://www.google.com/redirects/redirect1 -->
                 <RedirectURL>AppConfig.Application.RedirectURL</RedirectURL>
             </Application>
         </AppConfig>
@@ -109,40 +146,59 @@
             <!-- Application Keystore -->
             <Application.KeyStore>
                 <!--Absolute path + file name of JKS keystore file-->
+                <!--Sample Value: <Path to ob-compliance-toolkit-cds>/open-banking-test-suite/test-artifacts/
+                DynamicClientRegistration/AU/sample-client-resources2/signing-keystore/signing.jks -->
                 <Location>AppConfig2.Application.KeyStore.Location</Location>
+
+                <!--Sample Value: tpp4-sig -->
                 <Alias>AppConfig2.Application.KeyStore.Alias</Alias>
+
+                <!--Sample Value: wso2carbon -->
                 <Password>AppConfig2.Application.KeyStore.Password</Password>
                 <DomainName>https://wso2.com</DomainName>
+
+                <!--Sample Value: W_TcnQVcHAy20q8zCMcdByrootw -->
                 <SigningKid>AppConfig2.Application.KeyStore.SigningKid</SigningKid>
             </Application.KeyStore>
 
             <!-- Transport Keystore and Truststore -->
             <!--This Keystore and the Truststore will be used during the SSL handshake-->
             <Transport>
+                <!--Sample Value: true -->
                 <MTLSEnabled>AppConfig2.Transport.MTLSEnabled</MTLSEnabled>
                 <!--A keystore and a truststore needs to be configured in the following section if MTLSEnabled is set to
                 true-->
                 <KeyStore>
-                    <!--Absolute path + file name of keystore file.
-                    (e.g. <location>/home/kasun/Downloads/Certs/keystore.jks</location>)-->
+                    <!--Absolute path + file name of keystore file.-->
+                    <!--Sample Value: <Path to ob-compliance-toolkit-cds>/open-banking-test-suite/test-artifacts/
+                    DynamicClientRegistration/AU/sample-client-resources2/transport-keystore/transport.jks -->
                     <Location>AppConfig2.Transport.KeyStore.Location</Location>
                     <Type>jks</Type>
+
+                    <!--Sample Value: wso2carbon -->
                     <Password>AppConfig2.Transport.KeyStore.Password</Password>
                 </KeyStore>
             </Transport>
 
             <!-- DCR Configurations -->
             <DCR>
+                <!--Sample Value: <Path to ob-compliance-toolkit-cds>/open-banking-test-suite/test-artifacts/
+                DynamicClientRegistration/AU/sample-client-resources2/ssa.txt -->
                 <SSAPath>AppConfig2.DCR.SSAPath</SSAPath>
+
                 <!-- SSA SoftwareId (UK)-->
                 <SoftwareId>AppConfig2.DCR.SoftwareId</SoftwareId>
+
                 <!-- SSA Redirect Uri -->
+                <!--Sample Value: https://www.google.com/redirects/redirect1 -->
                 <RedirectUri>AppConfig2.DCR.RedirectUri</RedirectUri>
+
                 <!-- SSA Alternate Redirect Uri (AU)-->
+                <!--Sample Value: https://www.google.com/redirects/redirect2 -->
                 <AlternateRedirectUri>AppConfig2.DCR.AlternateRedirectUri</AlternateRedirectUri>
-                <!-- Version of DCR API (UK)
-                (e.g. 3.2 for DCR v3.2, 3.3.0 for DCR v3.3.0)
-                -->
+
+                <!-- Version of DCR API-->
+                <!--Sample Value: 0.1/0.2 -->
                 <DCRAPIVersion>AppConfig2.DCR.DCRAPIVersion</DCRAPIVersion>
             </DCR>
 
@@ -150,6 +206,7 @@
             <Application>
                 <ClientID>AppConfig2.Application.ClientID</ClientID>
                 <ClientSecret>AppConfig2.Application.ClientSecret</ClientSecret>
+                <!--Sample Value: https://www.google.com/redirects/redirect1 -->
                 <RedirectURL>AppConfig2.Application.RedirectURL</RedirectURL>
             </Application>
         </AppConfig>
@@ -158,10 +215,14 @@
     <Transport>
         <Truststore>
             <!--Absolute path + file name of truststore file. We can point the product client-truststore.jks here.
-            (e.g. <location>/home/kasun/wso2-obam-1.3.0/repository/resources/security/client-truststore.jks</location>)
-            -->
+            (Copy the client-truststore.jks in <AM_HOME>/repository/resources/security to
+               <Path to ob-compliance-toolkit-cds>/open-banking-test-suite/test-artifacts/client-truststore) -->
+            <!--Sample Value: <Path to ob-compliance-toolkit-cds>/open-banking-test-suite/test-artifacts/client-truststore/
+            client-truststore.jks-->
             <Location>Transport.Truststore.Location</Location>
             <Type>jks</Type>
+
+            <!--Sample Value: wso2carbon -->
             <Password>Transport.Truststore.Password</Password>
         </Truststore>
     </Transport>
@@ -199,8 +260,14 @@
     <!-- Browser Automation -->
     <BrowserAutomation>
         <!--Eg: chrome/firefox-->
+        <!--Sample Value: firefox/chrome-->
         <BrowserPreference>BrowserAutomation.BrowserPreference</BrowserPreference>
+
+        <!--Sample Value: true/false-->
         <HeadlessEnabled>BrowserAutomation.HeadlessEnabled</HeadlessEnabled>
+
+        <!--Sample Value from firefox: <Path to ob-compliance-toolkit-cds>/open-banking-test-suite/test-artifacts/selenium-libs/geckodriver -->
+        <!--Sample Value from chrome: <Path to ob-compliance-toolkit-cds>/open-banking-test-suite/test-artifacts/selenium-libs/chromedriver -->
         <WebDriverLocation>BrowserAutomation.WebDriverLocation</WebDriverLocation>
     </BrowserAutomation>
     <!-- Common Configurations -->
@@ -208,6 +275,8 @@
         <!--Access token expire time in seconds-->
         <AccessTokenExpireTime>30</AccessTokenExpireTime>
         <TenantDomain>carbon.super</TenantDomain>
+
+        <!--Sample Value: PS256 -->
         <SigningAlgorithm>Common.SigningAlgorithm</SigningAlgorithm>
         <KeyManager.Admin>
             <Username>admin@wso2.com</Username>
@@ -219,7 +288,9 @@
         <ApiId>RESTApi.ApiId</ApiId>
     </RESTApi>
     <ConsentApi>
+        <!--Sample Value: https://<IS_HOST>:9446/oauth2/token -->
         <AudienceValue>ConsentApi.AudienceValue</AudienceValue>
+        <!--Sample Value: https://<IS_HOST>:9446/oauth2/revoke -->
         <RevocationAudienceValue>ConsentApi.RevocationAudienceValue</RevocationAudienceValue>
     </ConsentApi>
     <InternalApiContext>
@@ -234,17 +305,27 @@
     <!-- Applies only for AU -->
     <!-- Refer MockCDRRegister/README.md for instructions to proceed with Mock CDR Register Integration -->
     <AUMockCDRRegister>
+
+        <!--Sample Value: false/true -->
         <Enabled>AUMockCDRRegister.Enabled</Enabled>
-        <!-- eg: localhost-->
+
+        <!--Sample Value: localhost -->
         <HostName>Host running the Mock Register docker image</HostName>
+
+        <!--Sample Value: <Path to ob-compliance-toolkit-cds>/open-banking-test-suite/toolkit-cds-test/resources/
+        MockCDRRegister/MockCDRRegisterMetaData.json -->
         <MetaDataFileLocation>AUMockCDRRegister.MetaDataFileLocation</MetaDataFileLocation>
         <Transport>
             <KeyStore>
+                <!--Sample Value: <Path to ob-compliance-toolkit-cds>/open-banking-test-suite/toolkit-cds-test/resources/
+                MockCDRRegister/client.pfx -->
                 <Location>Absolute file path to 'client.pfx' file</Location>
                 <Type>pkcs12</Type>
                 <Password>#M0ckDataRecipient#</Password>
             </KeyStore>
             <Truststore>
+                <!--Sample Value: <Path to ob-compliance-toolkit-cds>/open-banking-test-suite/toolkit-cds-test/
+                resources/MockCDRRegister/ca.pfx -->
                 <Location>Absolute file path to 'ca.pfx' file</Location>
                 <Type>pkcs12</Type>
                 <Password>#M0ckCDRCA#</Password>
@@ -252,6 +333,8 @@
         </Transport>
         <Application>
             <KeyStore>
+                <!--Sample Value: <Path to ob-compliance-toolkit-cds>/open-banking-test-suite/toolkit-cds-test/resources/
+                MockCDRRegister/signingkeystore.jks -->
                 <Location>Absolute file path to 'signingkeystore.jks' file</Location>
                 <Alias>adr-sig</Alias>
                 <Password>wso2carbon</Password>
