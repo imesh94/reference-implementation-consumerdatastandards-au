@@ -20,6 +20,7 @@ import com.wso2.openbanking.cds.common.metadata.periodical.updater.utils.Softwar
 import com.wso2.openbanking.cds.identity.metadata.periodical.updater.internal.ServiceHolder;
 import org.mockito.Mockito;
 import org.powermock.api.mockito.PowerMockito;
+import org.powermock.core.classloader.annotations.PowerMockIgnore;
 import org.powermock.core.classloader.annotations.PrepareForTest;
 import org.powermock.modules.testng.PowerMockTestCase;
 import org.testng.Assert;
@@ -34,6 +35,7 @@ import org.wso2.carbon.identity.application.common.model.User;
  * Test class for InvalidateConsentsResponsibility
  */
 @PrepareForTest({ServiceHolder.class})
+@PowerMockIgnore("jdk.internal.reflect.*")
 public class InvalidateConsentsResponsibilityTest extends PowerMockTestCase {
 
     private InvalidateConsentsResponsibility uut;

@@ -22,6 +22,7 @@ import org.json.JSONArray;
 import org.json.JSONObject;
 import org.mockito.Mockito;
 import org.powermock.api.mockito.PowerMockito;
+import org.powermock.core.classloader.annotations.PowerMockIgnore;
 import org.powermock.core.classloader.annotations.PrepareForTest;
 import org.powermock.modules.testng.PowerMockTestCase;
 import org.testng.Assert;
@@ -45,6 +46,7 @@ import static com.wso2.openbanking.cds.common.metadata.periodical.updater.consta
  * Test class for PeriodicalMetaDataUpdateJob
  */
 @PrepareForTest({ServiceHolder.class})
+@PowerMockIgnore("jdk.internal.reflect.*")
 public class PeriodicalMetaDataUpdateJobTest extends PowerMockTestCase {
 
     private static final String DUMMY_SOFTWARE_PRODUCT_ID_1 = "af9f578f-3d96-ea11-a831-000d3a8842e1";

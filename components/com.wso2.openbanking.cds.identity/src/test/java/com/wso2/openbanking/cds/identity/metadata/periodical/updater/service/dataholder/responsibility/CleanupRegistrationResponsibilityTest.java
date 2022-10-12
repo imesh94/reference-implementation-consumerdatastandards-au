@@ -30,6 +30,7 @@ import org.json.JSONArray;
 import org.json.JSONObject;
 import org.mockito.Mockito;
 import org.powermock.api.mockito.PowerMockito;
+import org.powermock.core.classloader.annotations.PowerMockIgnore;
 import org.powermock.core.classloader.annotations.PrepareForTest;
 import org.powermock.modules.testng.PowerMockTestCase;
 import org.testng.Assert;
@@ -49,6 +50,7 @@ import java.util.Collections;
  * Test class for CleanupRegistrationResponsibility
  */
 @PrepareForTest({OpenBankingCDSConfigParser.class, HTTPClientUtils.class})
+@PowerMockIgnore("jdk.internal.reflect.*")
 public class CleanupRegistrationResponsibilityTest extends PowerMockTestCase {
 
     OpenBankingCDSConfigParser obCDSConfigParserMock;

@@ -29,6 +29,7 @@ import org.apache.http.impl.client.CloseableHttpClient;
 import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.powermock.api.mockito.PowerMockito;
+import org.powermock.core.classloader.annotations.PowerMockIgnore;
 import org.powermock.core.classloader.annotations.PrepareForTest;
 import org.powermock.modules.testng.PowerMockTestCase;
 import org.testng.Assert;
@@ -53,6 +54,7 @@ import static org.mockito.Mockito.when;
  * Test class for CDS Data Cluster Retrieval
  */
 @PrepareForTest({OpenBankingCDSConfigParser.class, HTTPClientUtils.class})
+@PowerMockIgnore("jdk.internal.reflect.*")
 public class CDSDataClusterRetrievalStepTests extends PowerMockTestCase {
 
     @Mock

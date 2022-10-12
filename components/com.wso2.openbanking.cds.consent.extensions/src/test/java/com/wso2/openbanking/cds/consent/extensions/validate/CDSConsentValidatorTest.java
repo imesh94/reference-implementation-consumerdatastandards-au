@@ -27,6 +27,7 @@ import net.minidev.json.parser.ParseException;
 import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.powermock.api.mockito.PowerMockito;
+import org.powermock.core.classloader.annotations.PowerMockIgnore;
 import org.powermock.core.classloader.annotations.PrepareForTest;
 import org.powermock.modules.testng.PowerMockTestCase;
 import org.testng.Assert;
@@ -44,6 +45,7 @@ import static org.mockito.Mockito.when;
  * Test class for CDS consent Validator
  */
 @PrepareForTest({OpenBankingCDSConfigParser.class, MetadataService.class})
+@PowerMockIgnore("jdk.internal.reflect.*")
 public class CDSConsentValidatorTest extends PowerMockTestCase {
 
     CDSConsentValidator cdsConsentValidator;

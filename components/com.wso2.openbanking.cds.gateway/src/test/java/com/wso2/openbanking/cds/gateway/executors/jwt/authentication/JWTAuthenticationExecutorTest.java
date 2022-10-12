@@ -22,6 +22,7 @@ import org.apache.http.HttpHeaders;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.mockito.Mockito;
+import org.powermock.core.classloader.annotations.PowerMockIgnore;
 import org.powermock.core.classloader.annotations.PrepareForTest;
 import org.powermock.modules.testng.PowerMockTestCase;
 import org.testng.Assert;
@@ -39,6 +40,7 @@ import static org.powermock.api.mockito.PowerMockito.mockStatic;
 import static org.powermock.api.mockito.PowerMockito.when;
 
 @PrepareForTest({ JWTUtils.class, OpenBankingCDSConfigParser.class, JwtJtiCache.class})
+@PowerMockIgnore("jdk.internal.reflect.*")
 public class JWTAuthenticationExecutorTest extends PowerMockTestCase {
 
     JWTAuthenticationExecutor jwtAuthenticationExecutor;

@@ -26,7 +26,7 @@ import static org.mockito.Mockito.doReturn;
  * Test class for CDSCommonUtils
  */
 @PrepareForTest({OpenBankingCDSConfigParser.class})
-@PowerMockIgnore("javax.crypto.*")
+@PowerMockIgnore({"javax.crypto.*", "jdk.internal.reflect.*"})
 public class CDSCommonUtilsTest extends PowerMockTestCase {
 
     private static final String STRING_TO_ENCRYPT = "sample-access-token";

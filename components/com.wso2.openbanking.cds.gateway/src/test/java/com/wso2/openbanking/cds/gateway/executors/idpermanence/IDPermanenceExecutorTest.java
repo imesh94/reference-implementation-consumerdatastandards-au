@@ -23,6 +23,7 @@ import org.apache.commons.io.FileUtils;
 import org.apache.http.HttpStatus;
 import org.mockito.Mockito;
 import org.powermock.api.mockito.PowerMockito;
+import org.powermock.core.classloader.annotations.PowerMockIgnore;
 import org.powermock.core.classloader.annotations.PrepareForTest;
 import org.powermock.modules.testng.PowerMockTestCase;
 import org.testng.annotations.BeforeClass;
@@ -45,6 +46,7 @@ import static org.mockito.Mockito.times;
  * Test class for IDPermanenceExecutor
  */
 @PrepareForTest({IdEncryptorDecryptor.class, OpenBankingCDSConfigParser.class})
+@PowerMockIgnore("jdk.internal.reflect.*")
 public class IDPermanenceExecutorTest extends PowerMockTestCase {
 
     private static final String API_CONTEXT = "/cds-au/version";

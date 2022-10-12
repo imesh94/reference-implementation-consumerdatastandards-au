@@ -55,7 +55,7 @@ import static org.powermock.api.mockito.PowerMockito.mockStatic;
  * Test class for CDSConsentAdminHandler.
  */
 @PrepareForTest({OpenBankingConfigParser.class})
-@PowerMockIgnore({"com.wso2.openbanking.accelerator.consent.extensions.common.*"})
+@PowerMockIgnore({"com.wso2.openbanking.accelerator.consent.extensions.common.*", "jdk.internal.reflect.*"})
 public class CDSConsentAdminHandlerTest extends PowerMockTestCase {
 
     public static final String USER_ID_SECONDARY = "test-secondary-user-id";

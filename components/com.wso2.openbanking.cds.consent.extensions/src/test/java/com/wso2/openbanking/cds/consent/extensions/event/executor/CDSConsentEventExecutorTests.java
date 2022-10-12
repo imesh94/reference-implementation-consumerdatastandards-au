@@ -27,6 +27,7 @@ import org.apache.http.impl.client.CloseableHttpClient;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.mockito.Mockito;
+import org.powermock.core.classloader.annotations.PowerMockIgnore;
 import org.powermock.core.classloader.annotations.PrepareForTest;
 import org.powermock.modules.testng.PowerMockTestCase;
 import org.testng.Assert;
@@ -48,6 +49,7 @@ import static org.powermock.api.mockito.PowerMockito.when;
 
 @PrepareForTest({OpenBankingCDSConfigParser.class, HTTPClientUtils.class, ServerConfiguration.class,
         CDSIdentityUtil.class, OBDataPublisherUtil.class})
+@PowerMockIgnore("jdk.internal.reflect.*")
 public class CDSConsentEventExecutorTests extends PowerMockTestCase {
 
     private static ByteArrayOutputStream outContent;

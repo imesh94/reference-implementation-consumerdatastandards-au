@@ -14,6 +14,7 @@ package com.wso2.openbanking.cds.identity.grant.type.handlers;
 
 import com.wso2.openbanking.cds.identity.utils.CDSIdentityUtil;
 import org.mockito.Mockito;
+import org.powermock.core.classloader.annotations.PowerMockIgnore;
 import org.powermock.core.classloader.annotations.PrepareForTest;
 import org.powermock.modules.testng.PowerMockTestCase;
 import org.testng.Assert;
@@ -29,6 +30,7 @@ import static org.powermock.api.mockito.PowerMockito.mockStatic;
 import static org.powermock.api.mockito.PowerMockito.when;
 
 @PrepareForTest({CDSIdentityUtil.class, OAuthServerConfiguration.class, OAuthCache.class})
+@PowerMockIgnore("jdk.internal.reflect.*")
 public class CDSRefreshGrantHandlerTest extends PowerMockTestCase {
 
     @Test

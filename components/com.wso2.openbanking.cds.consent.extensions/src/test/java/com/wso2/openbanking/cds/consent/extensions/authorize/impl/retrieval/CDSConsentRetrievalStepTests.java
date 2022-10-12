@@ -50,7 +50,7 @@ import static org.powermock.api.mockito.PowerMockito.when;
  */
 @PrepareForTest({SessionDataCacheEntry.class, SessionDataCache.class, PushAuthRequestValidatorUtils.class,
         CDSDataRetrievalUtil.class})
-@PowerMockIgnore({"com.wso2.openbanking.accelerator.consent.extensions.common.*"})
+@PowerMockIgnore({"com.wso2.openbanking.accelerator.consent.extensions.common.*", "jdk.internal.reflect.*"})
 public class CDSConsentRetrievalStepTests extends PowerMockTestCase {
 
     private CDSConsentRetrievalStep cdsConsentRetrievalStep;

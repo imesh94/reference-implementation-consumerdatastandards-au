@@ -20,6 +20,7 @@ import com.wso2.openbanking.cds.gateway.executors.idpermanence.model.IdPermanenc
 import org.apache.commons.io.FileUtils;
 import org.mockito.Mockito;
 import org.powermock.api.mockito.PowerMockito;
+import org.powermock.core.classloader.annotations.PowerMockIgnore;
 import org.powermock.core.classloader.annotations.PrepareForTest;
 import org.powermock.modules.testng.PowerMockTestCase;
 import org.testng.Assert;
@@ -38,6 +39,7 @@ import java.nio.charset.StandardCharsets;
  * Test class for IDPermanenceUtils
  */
 @PrepareForTest({IdEncryptorDecryptor.class, OpenBankingCDSConfigParser.class})
+@PowerMockIgnore("jdk.internal.reflect.*")
 public class IDPermanenceUtilsTest extends PowerMockTestCase {
 
     private static final String ACCOUNTS_URL = "/banking/accounts";

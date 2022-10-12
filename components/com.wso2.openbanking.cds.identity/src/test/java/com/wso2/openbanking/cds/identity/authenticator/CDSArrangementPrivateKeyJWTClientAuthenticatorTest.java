@@ -13,6 +13,7 @@ package com.wso2.openbanking.cds.identity.authenticator;
 
 import org.mockito.Mockito;
 import org.powermock.api.mockito.PowerMockito;
+import org.powermock.core.classloader.annotations.PowerMockIgnore;
 import org.powermock.core.classloader.annotations.PrepareForTest;
 import org.powermock.modules.testng.PowerMockTestCase;
 import org.springframework.mock.web.MockHttpServletRequest;
@@ -33,6 +34,7 @@ import static org.testng.Assert.assertTrue;
 
 @PrepareForTest({OAuth2Util.class, OAuthServerConfiguration.class,
         CDSArrangementPrivateKeyJWTClientAuthenticator.class})
+@PowerMockIgnore("jdk.internal.reflect.*")
 public class CDSArrangementPrivateKeyJWTClientAuthenticatorTest extends PowerMockTestCase {
 
     @BeforeClass

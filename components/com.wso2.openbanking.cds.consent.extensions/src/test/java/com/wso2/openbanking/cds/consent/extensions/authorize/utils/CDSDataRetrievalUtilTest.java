@@ -16,6 +16,7 @@ import com.wso2.openbanking.accelerator.consent.extensions.common.ConsentExcepti
 import com.wso2.openbanking.accelerator.identity.push.auth.extension.request.validator.util.PushAuthRequestValidatorUtils;
 import com.wso2.openbanking.cds.consent.extensions.util.CDSConsentAuthorizeTestConstants;
 import org.mockito.Mockito;
+import org.powermock.core.classloader.annotations.PowerMockIgnore;
 import org.powermock.core.classloader.annotations.PrepareForTest;
 import org.powermock.modules.testng.PowerMockTestCase;
 import org.testng.Assert;
@@ -37,6 +38,7 @@ import static org.powermock.api.mockito.PowerMockito.when;
  * Test class for CDSDataRetrievalUtil
  */
 @PrepareForTest({SessionDataCacheEntry.class, SessionDataCache.class, PushAuthRequestValidatorUtils.class})
+@PowerMockIgnore("jdk.internal.reflect.*")
 public class CDSDataRetrievalUtilTest extends PowerMockTestCase {
 
     private static final String SP_QUERY_PARAMS = "redirect_uri=https://www.google.com/redirects/redirect1&" +

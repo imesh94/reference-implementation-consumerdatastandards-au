@@ -23,6 +23,7 @@ import com.wso2.openbanking.cds.gateway.executors.idpermanence.utils.IdPermanenc
 import net.minidev.json.JSONObject;
 import org.mockito.Mockito;
 import org.powermock.api.mockito.PowerMockito;
+import org.powermock.core.classloader.annotations.PowerMockIgnore;
 import org.powermock.core.classloader.annotations.PrepareForTest;
 import org.powermock.modules.testng.PowerMockTestCase;
 import org.testng.Assert;
@@ -39,6 +40,7 @@ import java.util.Map;
  * Test class for CDS Error Handler class
  */
 @PrepareForTest({IdPermanenceUtils.class, OpenBankingCDSConfigParser.class})
+@PowerMockIgnore("jdk.internal.reflect.*")
 public class CDSErrorHandlerTest extends PowerMockTestCase {
 
     OBAPIRequestContext obApiRequestContextMock;

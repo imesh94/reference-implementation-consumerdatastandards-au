@@ -19,6 +19,7 @@ import com.wso2.openbanking.cds.common.metadata.status.validator.cache.MetadataC
 import com.wso2.openbanking.cds.common.metadata.status.validator.cache.MetadataCacheKey;
 import org.mockito.Mockito;
 import org.powermock.api.mockito.PowerMockito;
+import org.powermock.core.classloader.annotations.PowerMockIgnore;
 import org.powermock.core.classloader.annotations.PrepareForTest;
 import org.powermock.modules.testng.PowerMockTestCase;
 import org.testng.Assert;
@@ -31,6 +32,7 @@ import java.util.HashMap;
  * Test class for MetadataService
  */
 @PrepareForTest({MetadataCache.class})
+@PowerMockIgnore("jdk.internal.reflect.*")
 public class MetadataServiceTest extends PowerMockTestCase {
     private static final String CLIENT_ID_ACTIVE_ACTIVE = "client-id-active-active";
     private static final String CLIENT_ID_ACTIVE_INACTIVE = "client-id-active-inactive";

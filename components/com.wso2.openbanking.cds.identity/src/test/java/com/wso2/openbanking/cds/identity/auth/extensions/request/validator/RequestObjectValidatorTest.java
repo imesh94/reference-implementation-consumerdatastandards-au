@@ -26,6 +26,7 @@ import com.wso2.openbanking.cds.identity.auth.extensions.request.validator.model
 import com.wso2.openbanking.cds.identity.auth.extensions.request.validator.util.ReqObjectTestDataProvider;
 import org.apache.commons.lang3.StringUtils;
 import org.mockito.Mockito;
+import org.powermock.core.classloader.annotations.PowerMockIgnore;
 import org.powermock.core.classloader.annotations.PrepareForTest;
 import org.powermock.modules.testng.PowerMockTestCase;
 import org.testng.Assert;
@@ -49,6 +50,7 @@ import static org.powermock.api.mockito.PowerMockito.when;
  * Test class for Request Object Validator functionality.
  */
 @PrepareForTest({OpenBankingValidator.class, OpenBankingCDSConfigParser.class, MetadataService.class})
+@PowerMockIgnore("jdk.internal.reflect.*")
 public class RequestObjectValidatorTest extends PowerMockTestCase {
 
     private CDSRequestObjectValidator cdsRequestObjectValidator = new CDSRequestObjectValidator();

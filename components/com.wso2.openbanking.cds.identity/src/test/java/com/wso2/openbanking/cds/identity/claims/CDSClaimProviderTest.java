@@ -13,6 +13,7 @@ package com.wso2.openbanking.cds.identity.claims;
 
 import com.wso2.openbanking.cds.identity.claims.utils.CDSClaimProviderUtil;
 import org.mockito.Mockito;
+import org.powermock.core.classloader.annotations.PowerMockIgnore;
 import org.powermock.core.classloader.annotations.PrepareForTest;
 import org.powermock.modules.testng.PowerMockTestCase;
 import org.testng.Assert;
@@ -35,6 +36,7 @@ import static org.powermock.api.mockito.PowerMockito.mockStatic;
 import static org.powermock.api.mockito.PowerMockito.when;
 
 @PrepareForTest({SessionDataCache.class, CDSClaimProviderUtil.class})
+@PowerMockIgnore("jdk.internal.reflect.*")
 public class CDSClaimProviderTest extends PowerMockTestCase {
 
     private CDSClaimProvider cdsClaimProvider;

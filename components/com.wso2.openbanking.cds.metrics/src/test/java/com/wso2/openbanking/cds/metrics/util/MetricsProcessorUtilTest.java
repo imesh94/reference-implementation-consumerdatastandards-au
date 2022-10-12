@@ -21,6 +21,7 @@ import org.osgi.framework.Bundle;
 import org.osgi.framework.BundleContext;
 import org.osgi.framework.FrameworkUtil;
 import org.osgi.framework.ServiceReference;
+import org.powermock.core.classloader.annotations.PowerMockIgnore;
 import org.powermock.core.classloader.annotations.PrepareForTest;
 import org.powermock.modules.testng.PowerMockTestCase;
 import org.testng.Assert;
@@ -42,6 +43,7 @@ import static org.powermock.api.mockito.PowerMockito.mockStatic;
 import static org.powermock.api.mockito.PowerMockito.when;
 
 @PrepareForTest({SPQueryExecutorUtil.class, FrameworkUtil.class})
+@PowerMockIgnore("jdk.internal.reflect.*")
 public class MetricsProcessorUtilTest extends PowerMockTestCase {
 
     JSONObject jsonObject = new JSONObject();

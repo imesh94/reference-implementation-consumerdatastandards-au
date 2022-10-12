@@ -18,6 +18,7 @@ import com.wso2.openbanking.cds.common.config.OpenBankingCDSConfigParser;
 import com.wso2.openbanking.cds.common.utils.CDSCommonUtils;
 import org.mockito.Mockito;
 import org.powermock.api.mockito.PowerMockito;
+import org.powermock.core.classloader.annotations.PowerMockIgnore;
 import org.powermock.core.classloader.annotations.PrepareForTest;
 import org.powermock.modules.testng.PowerMockTestCase;
 import org.testng.Assert;
@@ -36,6 +37,7 @@ import static org.mockito.Mockito.doReturn;
  * CDSThrottleDataPublisherImpl Test
  */
 @PrepareForTest({OpenBankingCDSConfigParser.class, CDSCommonUtils.class})
+@PowerMockIgnore("jdk.internal.reflect.*")
 public class CDSThrottleDataPublisherImplTest extends PowerMockTestCase {
 
     private static final String X_FAPI_CUSTOMER_IP_ADDRESS = "x-fapi-customer-ip-address";

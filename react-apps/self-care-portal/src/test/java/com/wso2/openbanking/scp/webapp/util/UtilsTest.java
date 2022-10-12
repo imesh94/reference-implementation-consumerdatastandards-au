@@ -28,6 +28,7 @@ import org.apache.http.impl.client.CloseableHttpClient;
 import org.json.JSONObject;
 import org.mockito.Mockito;
 import org.powermock.api.mockito.PowerMockito;
+import org.powermock.core.classloader.annotations.PowerMockIgnore;
 import org.powermock.core.classloader.annotations.PrepareForTest;
 import org.powermock.modules.testng.PowerMockTestCase;
 import org.testng.Assert;
@@ -46,6 +47,7 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 @PrepareForTest(HTTPClientUtils.class)
+@PowerMockIgnore("jdk.internal.reflect.*")
 public class UtilsTest extends PowerMockTestCase {
 
 
@@ -196,7 +198,12 @@ public class UtilsTest extends PowerMockTestCase {
 
     @Test
     public void testParseEncodedStringToDate() {
-        LocalDateTime expectedDate = LocalDateTime.now();
+        LocalDateTime expectedDate = LocalDateTime.parse(
+                LocalDateTime.now()
+                        .format(DateTimeFormatter.ofPattern(Constants.SCP_TOKEN_VALIDITY_DATE_FORMAT)),
+                DateTimeFormatter.ofPattern(Constants.SCP_TOKEN_VALIDITY_DATE_FORMAT)
+        );
+
         String encodedDate = Utils.formatDateToEncodedString(expectedDate);
 
         Assert.assertEquals(Utils.parseEncodedStringToDate(encodedDate), expectedDate);

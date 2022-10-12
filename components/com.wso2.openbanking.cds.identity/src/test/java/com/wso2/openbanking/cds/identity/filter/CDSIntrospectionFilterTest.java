@@ -23,6 +23,7 @@ import com.wso2.openbanking.cds.identity.filter.validator.CDSIntrospectionPrivat
 import org.apache.http.HttpStatus;
 import org.mockito.Mockito;
 import org.powermock.api.mockito.PowerMockito;
+import org.powermock.core.classloader.annotations.PowerMockIgnore;
 import org.powermock.core.classloader.annotations.PrepareForTest;
 import org.powermock.modules.testng.PowerMockTestCase;
 import org.springframework.mock.web.MockHttpServletRequest;
@@ -41,6 +42,7 @@ import javax.servlet.ServletException;
 import static org.testng.Assert.assertEquals;
 
 @PrepareForTest({IdentityCommonUtil.class})
+@PowerMockIgnore("jdk.internal.reflect.*")
 public class CDSIntrospectionFilterTest extends PowerMockTestCase {
 
     MockHttpServletRequest request;

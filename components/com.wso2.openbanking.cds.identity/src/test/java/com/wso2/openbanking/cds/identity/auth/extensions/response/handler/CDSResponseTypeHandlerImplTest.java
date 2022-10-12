@@ -18,6 +18,7 @@ import com.wso2.openbanking.accelerator.identity.util.IdentityCommonUtil;
 import com.wso2.openbanking.cds.identity.utils.CDSIdentityUtil;
 import org.mockito.Mockito;
 import org.powermock.api.mockito.PowerMockito;
+import org.powermock.core.classloader.annotations.PowerMockIgnore;
 import org.powermock.core.classloader.annotations.PrepareForTest;
 import org.powermock.modules.testng.PowerMockTestCase;
 import org.testng.Assert;
@@ -36,6 +37,7 @@ import static org.powermock.api.mockito.PowerMockito.mockStatic;
 import static org.powermock.api.mockito.PowerMockito.when;
 
 @PrepareForTest({CDSIdentityUtil.class, IdentityCommonUtil.class, OpenBankingConfigParser.class})
+@PowerMockIgnore("jdk.internal.reflect.*")
 public class CDSResponseTypeHandlerImplTest extends PowerMockTestCase {
 
     private CDSResponseTypeHandlerImpl cdsResponseTypeHandler;

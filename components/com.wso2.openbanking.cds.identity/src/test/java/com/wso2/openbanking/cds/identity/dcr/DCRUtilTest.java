@@ -65,8 +65,8 @@ import static org.powermock.api.mockito.PowerMockito.when;
 /**
  * Test class for DCR functionalities.
  */
-@PowerMockIgnore({"javax.net.ssl.*"})
 @PrepareForTest({JWTUtils.class, OpenBankingCDSConfigParser.class, HTTPClientUtils.class})
+@PowerMockIgnore({"javax.net.ssl.*", "jdk.internal.reflect.*"})
 public class DCRUtilTest {
 
     private static final Log log = LogFactory.getLog(DCRUtilTest.class);
