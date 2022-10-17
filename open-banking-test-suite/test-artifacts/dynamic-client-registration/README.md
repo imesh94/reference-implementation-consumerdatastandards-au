@@ -9,12 +9,12 @@ Following configs can be used in test-config.xml to use sample SSA and keystores
          <!-- SSA Alternate Redirect Uri (Use the available uri if not present)-->
          <AlternateRedirectUri>https://www.google.com/redirects/redirect2</AlternateRedirectUri>
     </DCR>
-    
-Use signing.jks in 'signing-keystore' directory as the Application Keystore, and transport.jks in 'transport-keystore' 
+
+Use signing.jks in 'signing-keystore' directory as the Application Keystore, and transport.jks in 'transport-keystore'
 directory as the Transport Keystore.
 
 Sample Keystore information:
-    Signing key alias = tpp4-sig
-    Signing keystore password = wso2carbon
-    Transport keystore password = wso2carbon
-
+- Signing key alias = 1
+- Signing keystore password = wso2carbon
+- Transport key alias = 1
+- Transport keystore password = wso2carbon
