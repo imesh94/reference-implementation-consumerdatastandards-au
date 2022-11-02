@@ -14,7 +14,7 @@ Use signing.jks in 'signing-keystore' directory as the Application Keystore, and
 directory as the Transport Keystore.
 
 Sample Keystore information:
-- Signing key alias = 1
+- Signing key alias = tpp6-signing
 - Signing keystore password = wso2carbon
-- Transport key alias = 1
+- Transport key alias = tpp6-transport
 - Transport keystore password = wso2carbon
