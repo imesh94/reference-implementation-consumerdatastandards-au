@@ -43,6 +43,8 @@ class AURegistrationRequestBuilder extends OBRegistrationRequestBuilder {
      * Helper function for other functions
      * @return
      */
+
+
     String getSoftwareID() {
         if (softwareProductId == null) {
             softwareProductId = ((auConfiguration.getMockCDREnabled())
@@ -249,7 +251,7 @@ class AURegistrationRequestBuilder extends OBRegistrationRequestBuilder {
     static RequestSpecification buildBasicRequest(String accessToken) {
 
         return AURestAsRequestBuilder.buildRequest()
-                .contentType("application/jwt")
+//                .contentType("application/jwt")
                 .header("charset", "UTF-8")
                 .header(AUConstants.AUTHORIZATION_HEADER_KEY, "Bearer ${accessToken}")
                 .accept("application/json")

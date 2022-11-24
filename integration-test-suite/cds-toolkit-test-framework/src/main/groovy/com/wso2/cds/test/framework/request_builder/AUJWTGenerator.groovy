@@ -120,6 +120,13 @@ class AUJWTGenerator {
                 .addClientAssertion(payload).addRedirectUri().getPayload()
         return accessTokenJWT
     }
+     String getClientAssertionJwt(String clientId=null) {
+        JSONObject clientAssertion = new JSONRequestGenerator().addIssuer(clientId)
+                .addSubject(clientId).addAudience().addExpireDate().addIssuedAt().addJti().getJsonObject()
+
+        String payload = getSignedRequestObject(clientAssertion.toString())
+        return payload
+    }
 
     /**
      * Return JWT for user access token generation

@@ -16,6 +16,8 @@
         <classes>
             <class name="com.wso2.cds.integration.test.AccessTokenTest"/>
             <class name="com.wso2.cds.integration.test.AccessTokenRepeatTest"/>
+            <class name="com.wso2.cds.integration.test.DCRTest"/>
+            <class name="com.wso2.cds.integration.test.tokenEndpoint.AccessTokenTest"/>
         </classes>
     </test>
 </suite>

@@ -8,17 +8,16 @@
  ~ For specific language governing the permissions and limitations under this
  ~ license, please see the license as well as any agreement you?ve entered into
  ~ with WSO2 governing the purchase of this software and any associated services.
--->
-<Configurations>
+--><Configurations>
 
     <!-- Common Configurations -->
     <Common>
-        <SolutionVersion>Common.SolutionVersion</SolutionVersion>
-        <ApiVersion>Common.ApiVersion</ApiVersion>
+        <SolutionVersion>3.0.0</SolutionVersion>
+        <ApiVersion>1.3.0</ApiVersion>
         <!--Access token expire time in seconds-->
-        <AccessTokenExpireTime>Common.ApiVersion</AccessTokenExpireTime>
-        <TenantDomain>Common.TenantDomain</TenantDomain>
-        <SigningAlgorithm>Common.SigningAlgorithm</SigningAlgorithm>
+        <AccessTokenExpireTime>30</AccessTokenExpireTime>
+        <TenantDomain>carbon.super</TenantDomain>
+        <SigningAlgorithm>PS256</SigningAlgorithm>
     </Common>
 
     <!-- Provisioning Info -->
@@ -29,9 +28,9 @@
 
     <!-- Server Info -->
     <Server>
-        <BaseURL>Server.BaseURL</BaseURL>
-        <GatewayURL>Server.GatewayURL</GatewayURL>
-        <AuthorisationServerURL>Server.AuthorisationServerURL</AuthorisationServerURL>
+        <BaseURL>https://localhost:8243</BaseURL>
+        <GatewayURL>https://localhost:9443</GatewayURL>
+        <AuthorisationServerURL>https://localhost:9446</AuthorisationServerURL>
     </Server>
 
     <!-- Application List -->
@@ -41,41 +40,55 @@
             <!-- Application Keystore -->
             <KeyStore>
                 <!--Absolute path + file name of JKS keystore file-->
-                <Location>AppConfig1.KeyStore.Location</Location>
-                <Alias>AppConfig1.KeyStore.Alias</Alias>
-                <Password>AppConfig1.KeyStore.Password</Password>
-                <DomainName>AppConfig1.KeyStore.DomainName</DomainName>
-                <SigningKid>AppConfig1.KeyStore.SigningKid</SigningKid>
+                <Location>/home/wso2/ob-compliance-toolkit-cds/integration-test-suite/test-artifacts/DynamicClientRegistration/AU/sample-client-resources/signing-keystore/signing.jks</Location>
+                <Alias>tpp6-signing</Alias>
+                <Password>wso2carbon</Password>
+                <DomainName>https://wso2.com</DomainName>
+                <SigningKid>w7NFeMODzCMOZen_WECAlG9N8gg</SigningKid>
+                <!-- Hza9v5bgDJcOnhcUZ7BMwbSL_4NV0gSFvIjaSXdC-1c= -->
             </KeyStore>
 
             <!-- Transport Keystore and Truststore -->
             <!--This Keystore and the Truststore will be used during the SSL handshake-->
             <Transport>
-                <MTLSEnabled>AppConfig1.Transport.MTLSEnabled</MTLSEnabled>
+                <MTLSEnabled>true</MTLSEnabled>
                 <!--A keystore and a truststore needs to be configured in the following section if MTLSEnabled is set to
                 true-->
                 <KeyStore>
                     <!--Absolute path + file name of keystore file.
                     (e.g. <location>/home/kasun/Downloads/Certs/keystore.jks</location>)-->
-                    <Location>AppConfig1.Transport.KeyStore.Location</Location>
-                    <Type>AppConfig1.Transport.KeyStore.Type</Type>
-                    <Password>AppConfig1.Transport.KeyStore.Password</Password>
+                    <Location>/home/wso2/ob-compliance-toolkit-cds/integration-test-suite/test-artifacts/DynamicClientRegistration/AU/sample-client-resources/transport-keystore/transport.jks</Location>
+                    <Type>jks</Type>
+                    <Password>wso2carbon</Password>
                 </KeyStore>
             </Transport>
 
             <!-- DCR Configurations -->
             <DCR>
-                <SSAPath>AppConfig1.DCR.SSAPath</SSAPath>
+                <!--Sample Value for UK: <Path to financial-open-banking>/product-scenarios/test-artifacts/
+DynamicClientRegistration/UK/sample-client-resources/ssa.txt -->
+                <!--Sample Value for AU: <Path to financial-open-banking>/product-scenarios/test-artifacts/
+                DynamicClientRegistration/AU/sample-client-resources/ssa.txt -->
+                <SSAPath>/home/wso2/ob-compliance-toolkit-cds/integration-test-suite/test-artifacts/DynamicClientRegistration/AU/sample-client-resources/ssa.txt</SSAPath>
+
+                <!-- Self signed SSA for negative tests (UK)-->
+                <!--Sample Value for UK: <Path to financial-open-banking>/product-scenarios/test-artifacts/
+                DynamicClientRegistration/UK/sample-client-resources/self_ssa.txt -->
+                <SelfSignedSSAPath>/home/wso2/ob-compliance-toolkit-cds/integration-test-suite/test-artifacts/DynamicClientRegistration/AU/sample-client-resources/self_ssa.txt</SelfSignedSSAPath>
+
+                <!-- SSA SoftwareId-->
+                <!--Sample Value for AU: oQ4KoaavpOuoE7rvQsZEOV -->
+                <SoftwareId>oQ4KoaavpOuoE7rvQsZEOV</SoftwareId>
                 <!-- SSA Redirect Uri -->
-                <RedirectUri>AppConfig1.DCR.SSAPath</RedirectUri>
-                <AlternateRedirectUri>AppConfig1.DCR.SSAPath</AlternateRedirectUri>
+                <RedirectUri>https://www.google.com/redirects/redirect1</RedirectUri>
+                <AlternateRedirectUri>https://www.google.com/redirects/redirect2</AlternateRedirectUri>
             </DCR>
 
             <!-- Application Info -->
             <Application>
-                <ClientID>AppConfig1.Application.ClientID</ClientID>
+                <ClientID>rUKmp_qfneyBdwf1wWMMfomY8YAa</ClientID>
                 <ClientSecret>AppConfig1.Application.ClientSecret</ClientSecret>
-                <RedirectURL>AppConfig1.Application.RedirectURL</RedirectURL>
+                <RedirectURL>https://www.google.com/redirects/redirect1</RedirectURL>
             </Application>
         </AppConfig>
 
@@ -128,9 +141,9 @@
         <Truststore>
             <!--Absolute path + file name of truststore file. We can point the product client-truststore.jks here.
             (Eg: location/home/kasun/wso2-obam-1.3.0/repository/resources/security/client-truststore.jks</location>)-->
-            <Location>Transport.Truststore.Location</Location>
-            <Type>Transport.Truststore.Type</Type>
-            <Password>Transport.Truststore.Password</Password>
+            <Location>/home/wso2/Desktop/accelerator/wso2am-4.0.0/repository/resources/security/client-truststore.jks</Location>
+            <Type>jks</Type>
+            <Password>wso2carbon</Password>
         </Truststore>
     </Transport>
 
@@ -143,61 +156,62 @@
 
     <!-- PSU Info -->
     <PSUInfo>
-        <User>PSUInfo.User</User>
-        <Password>PSUInfo.Password</Password>
+        <User>admin@wso2.com</User>
+        <Password>wso2123</Password>
     </PSUInfo>
 
     <!-- Publisher Info -->
     <PublisherInfo>
-        <User>PublisherInfo.User</User>
-        <Password>PublisherInfo.Password</Password>
+        <User>admin@wso2.com</User>
+        <Password>wso2123</Password>
     </PublisherInfo>
     <!-- PSU Info -->
 
     <TPPInfo>
-        <User>TPPInfo.user_name</User>
-        <Password>TPPInfo.Password</Password>
+        <User>admin@wso2.com</User>
+        <Password>wso2123</Password>
     </TPPInfo>
 
     <!-- Customer Care Info -->
     <CustomerCareInfo>
-        <User>CustomerCareInfo.User</User>
-        <Password>CustomerCareInfo.Password</Password>
+        <User>ann@gold.com</User>
+        <Password>wso2123</Password>
     </CustomerCareInfo>
 
     <!-- Basic Auth Info -->
     <BasicAuthInfo>
-        <User>BasicAuthInfo.User</User>
-        <Password>BasicAuthInfo.Password</Password>
+        <User>admin@wso2.com</User>
+        <Password>wso2123</Password>
     </BasicAuthInfo>
 
     <KeyManagerAdmin>
-        <User>KeyManagerAdmin.User</User>
-        <Password>KeyManagerAdmin.Password</Password>
+        <User>admin@wso2.com</User>
+        <Password>wso2123</Password>
     </KeyManagerAdmin>
 
     <!-- Browser Automation -->
     <BrowserAutomation>
         <!--Eg: chrome/firefox-->
-        <BrowserPreference>BrowserAutomation.BrowserPreference</BrowserPreference>
-        <HeadlessEnabled>BrowserAutomation.HeadlessEnabled</HeadlessEnabled>
-        <WebDriverLocation>BrowserAutomation.WebDriverLocation</WebDriverLocation>
+        <BrowserPreference>firefox</BrowserPreference>
+        <HeadlessEnabled>false</HeadlessEnabled>
+        <WebDriverLocation>/home/wso2/ob-compliance-toolkit-cds/integration-test-suite/test-artifacts/selenium-libs/ubuntu/geckodriver</WebDriverLocation>
     </BrowserAutomation>
 
     <ConsentApi>
-        <AudienceValue>ConsentApi.AudienceValue</AudienceValue>
-        <RevocationAudienceValue>ConsentApi.RevocationAudienceValue</RevocationAudienceValue>
+        <AudienceValue>https://localhost:9446/oauth2/token</AudienceValue>
+        <RevocationAudienceValue>https://localhost:9446/oauth2/revoke</RevocationAudienceValue>
     </ConsentApi>
 
+    <!--**-->
     <InternalApiContext>
-        <Consent-Mgt>InternalApiContext.Consent-Mgt</Consent-Mgt>
+        <Consent-Mgt>/api/openbanking/consent-mgt</Consent-Mgt>
         <!-- if 2.0.0 /api/openbanking/consent-mgt -->
     </InternalApiContext>
 
     <!--Micro Gateway Specific Server Urls.
     In MG the ports should be the corresponding port of the docker image.-->
     <MicroGateway>
-        <MicroGatewayEnabled>MicroGateway.MicroGatewayEnabled</MicroGatewayEnabled>
+        <MicroGatewayEnabled>false</MicroGatewayEnabled>
         <!--Configure the Urls only for Micro Gateway Testing-->
         <DcrURL>Server.MicroGateway.AU.DcrURL</DcrURL>
         <CdsAuAccountsURL>Server.MicroGateway.AU.CdsAuAccountsURL</CdsAuAccountsURL>
@@ -217,7 +231,7 @@
     <!-- Refer MockCDRRegister/README.md for instructions to proceed with Mock CDR Register Integration -->
     <AUMockCDRRegister>
 
-        <Enabled>AUMockCDRRegister.Enabled</Enabled>
+        <Enabled>false</Enabled>
         <!-- Host running the Mock Register docker image. Eg: localhost-->
         <HostName>AUMockCDRRegister.HostName</HostName>
         <MetaDataFileLocation>AUMockCDRRegister.MetaDataFileLocation</MetaDataFileLocation>
@@ -257,8 +271,7 @@
 
     <!--ID performance Info-->
     <IdPermanence>
-        <SecretKey>IdPermanence.SecretKey</SecretKey>
+        <SecretKey>wso2</SecretKey>
     </IdPermanence>
 
 </Configurations>
-

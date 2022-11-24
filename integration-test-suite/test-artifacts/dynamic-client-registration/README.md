@@ -1,6 +1,6 @@
 #Using Sample Resources
 
-Following configs can be used in TestConfiguration.xml to use sample SSA and keystores for DCR tests.
+Following configs can be used in test-config.xml to use sample SSA and keystores for DCR tests.
 
     <DCR>
         <SSAPath>Path.To.Directory/ssa.txt</SSAPath>
@@ -14,7 +14,7 @@ Use signing.jks in 'signing-keystore' directory as the Application Keystore, and
 directory as the Transport Keystore.
 
 Sample Keystore information:
-    Signing key alias = tpp4-sig
+    Signing key alias = tpp6-signing
     Signing keystore password = wso2carbon
     Transport keystore password = wso2carbon
 

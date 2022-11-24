@@ -69,6 +69,19 @@
 
     <repositories>
         <repository>
+            <id>wso2-nexus-2</id>
+            <name>WSO2 internal Repository</name>
+            <url>https://support-maven.wso2.org/nexus/content/repositories/updates-2.0/</url>
+            <releases>
+                <enabled>true</enabled>
+                <updatePolicy>daily</updatePolicy>
+                <checksumPolicy>ignore</checksumPolicy>
+            </releases>
+            <snapshots>
+                <enabled>false</enabled>
+            </snapshots>
+        </repository>
+        <repository>
             <id>wso2-nexus</id>
             <name>WSO2 internal Repository</name>
             <url>https://maven.wso2.org/nexus/content/groups/wso2-public/</url>
@@ -77,6 +90,9 @@
                 <updatePolicy>daily</updatePolicy>
                 <checksumPolicy>ignore</checksumPolicy>
             </releases>
+            <snapshots>
+                <enabled>false</enabled>
+            </snapshots>
         </repository>
         <repository>
             <id>wso2.releases</id>
@@ -87,13 +103,16 @@
                 <updatePolicy>daily</updatePolicy>
                 <checksumPolicy>ignore</checksumPolicy>
             </releases>
+            <snapshots>
+                <enabled>false</enabled>
+            </snapshots>
         </repository>
         <repository>
             <id>wso2.snapshots</id>
             <name>Apache Snapshot Repository</name>
             <url>https://maven.wso2.org/nexus/content/repositories/snapshots/</url>
             <snapshots>
-                <enabled>true</enabled>
+                <enabled>false</enabled>
                 <updatePolicy>daily</updatePolicy>
             </snapshots>
             <releases>
@@ -434,7 +453,7 @@
         <gson.version>[2.8.5, 3.0.0)</gson.version>
         <commons-codec.wso2.osgi.version.range>[1.4.0,2.0.0)</commons-codec.wso2.osgi.version.range>
         <org.wso2.carbon.apimgt.keymgt.version>9.0.35</org.wso2.carbon.apimgt.keymgt.version>
-        <org.wso2.carbon.apimgt.version>[9.0.174, 10.0.0)</org.wso2.carbon.apimgt.version>
+        <org.wso2.carbon.apimgt.version>[9.0.174, 9.20.75)</org.wso2.carbon.apimgt.version>
         <swagger-jaxrs.version>1.6.2</swagger-jaxrs.version>
         <spring-web-dev.version>5.3.3</spring-web-dev.version>
         <cxf-bundle-jaxrs.version>2.7.18</cxf-bundle-jaxrs.version>

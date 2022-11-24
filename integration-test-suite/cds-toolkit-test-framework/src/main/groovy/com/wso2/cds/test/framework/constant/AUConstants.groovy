@@ -109,6 +109,11 @@ class AUConstants extends OBConstants {
     public static String BANK_CUSTOMER_BASIC_READ_INDIVIDUAL = "Name and occupation"
     public static String BANK_CUSTOMER_BASIC_DETAIL_INDIVIDUAL = "Name, occupation, contact details ‡"
 
+    public static final String LBL_OTP_TIMEOUT = "//div[@id='otpTimeout']";
+    public static final String LBL_FOOTER_DESCRIPTION = "//div[@class='ui segment']/div/form/div/div";
+    public static final String ELE_CONSENT_PAGE = "//form[@id='oauth2_authz_consent']";
+    public static final String LBL_INCORRECT_USERNAME = "//div[@id='error-msg']";
+    public static final String LBL_AUTHENTICATION_FAILURE = "//div[@id='failed-msg']";
     public static String LBL_AGENT_NAME_AND_ROLE = "Agent name and role"
     public static String LBL_ORGANISATION_NAME = "Organisation name"
     public static String LBL_ORGANISATION_NUMBER = "Organisation numbers (ABN or ACN)"
@@ -161,6 +166,8 @@ class AUConstants extends OBConstants {
     public static String OAUTH2_INTROSPECT_URL = auConfiguration.getServerAuthorisationServerURL() + "/oauth2/introspect"
     public static String CCPORTAL_URL = auConfiguration.getServerAuthorisationServerURL() + "/ccportal"
 
+    public static final String ERROR = "error";
+    public static final String ERROR_DESCRIPTION = "error_description";
     public static String ERROR_DETAIL = "errors[0].detail"
     public static String ERROR_SOURCE_PARAMETER = "errors[0].source.parameter"
     public static String ERROR_SOURCE_POINTER = "errors[0].source.pointer"
@@ -287,6 +294,22 @@ class AUConstants extends OBConstants {
     public static String MOCK_ADR_BRAND_ID_2 = "ebbcc2f2-817e-42b8-8a28-cd45902159e0";
     public static String MOCK_ADR_BRAND_ID_2_SOFTWARE_PRODUCT_1 = "5d03d1a6-b83b-4176-a2f4-d0074a205695"
     public static String MOCK_ADR_BRAND_ID_2_SOFTWARE_PRODUCT_2 = "dafa09db-4433-4203-907a-bdf797c8cd21"
+
+    //status code added
+
+    static final int STATUS_CODE_200 = 200
+    static final int STATUS_CODE_201 = 201
+    static final int STATUS_CODE_400 = 400
+    static final int STATUS_CODE_401 = 401
+    static final int STATUS_CODE_404 = 404
+    static final int STATUS_CODE_405 = 405
+    static final int STATUS_CODE_406 = 406
+    static final int STATUS_CODE_422 = 422
+    static final int STATUS_CODE_409 = 409
+    static final int STATUS_CODE_204 = 204
+    static final int STATUS_CODE_403 = 403
+    static final int NOCONTENT = 204
+    static final int STATUS_CODE_500 = 500
 
     /**
      * Get the Product Endpoint Version

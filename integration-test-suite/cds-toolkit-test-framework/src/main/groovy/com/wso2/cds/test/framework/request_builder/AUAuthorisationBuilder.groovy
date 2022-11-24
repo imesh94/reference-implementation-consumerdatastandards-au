@@ -43,7 +43,7 @@ class AUAuthorisationBuilder {
     private int tppNumber
 
     AUAuthorisationBuilder() {
-        auConfiguration = new AUConfigurationService()
+                 auConfiguration = new AUConfigurationService()
     }
 
     /**
@@ -129,17 +129,29 @@ class AUAuthorisationBuilder {
         AUJWTGenerator generator = new AUJWTGenerator()
         String scopeString = "openid ${String.join(" ", scopes.collect({ it.scopeString }))}"
 
+        String assertionString = generator.getClientAssertionJwt(clientId)
+
+        def bodyContent = [
+                (AUConstants.CLIENT_ASSERTION_TYPE_KEY): (AUConstants.CLIENT_ASSERTION_TYPE),
+                (AUConstants.CLIENT_ASSERTION_KEY)     : assertionString,
+    ]
         def parResponse = AURestAsRequestBuilder.buildRequest()
                 .contentType(AUConstants.ACCESS_TOKEN_CONTENT_TYPE)
                 .header(AUConstants.AUTHORIZATION_HEADER_KEY, "Basic " + Base64.encoder.encodeToString(
                         headerString.getBytes(Charset.forName("UTF-8"))))
+                .formParams(bodyContent)
                 .formParams(AUConstants.REQUEST_KEY, generator.getSignedAuthRequestObject(scopeString,
                         sharingDuration, sendSharingDuration, cdrArrangementId, auConfiguration.getAppInfoRedirectURL(), clientId).serialize())
+                .formParam(AUConstants.CLIENT_ID_KEY,clientId)
+
+
                 .baseUri(AUConstants.PUSHED_AUTHORISATION_BASE_PATH)
                 .post(AUConstants.PAR_ENDPOINT)
 
         return parResponse
     }
+
+
 
     /**
      * Push Authorisation Request with private_key_jwt authentication method.
@@ -214,6 +226,11 @@ class AUAuthorisationBuilder {
     /**
      * Getter for other functions
      */
+
+    int getTppNumber() {
+        return tppNumber;
+    }
+
     private ResponseType getResponseType() {
         if (responseType == null) {
             responseType = new ResponseType("code id_token")

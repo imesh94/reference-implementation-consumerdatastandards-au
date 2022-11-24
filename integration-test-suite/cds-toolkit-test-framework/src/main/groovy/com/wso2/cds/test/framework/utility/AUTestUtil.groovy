@@ -21,6 +21,7 @@ import com.wso2.openbanking.test.framework.utility.OBTestUtil
 import com.wso2.cds.test.framework.configuration.AUConfigurationService
 import org.apache.http.conn.ssl.SSLSocketFactory
 import org.testng.Assert
+import io.restassured.response.Response;
 
 /**
  * Domain specific AU layer Class to contain utility classes used for Test Framework.
@@ -128,6 +129,13 @@ class AUTestUtil extends OBTestUtil {
         }
 
         return baseUrl
+    }
+
+    //Parse response body
+
+    public static String parseResponseBody(Response response, String jsonPath) {
+
+        return response.jsonPath().getString(jsonPath);
     }
 
 

@@ -12,21 +12,25 @@
 
 package com.wso2.openbanking.toolkit.cds.integration.tests.client_registration
 
-import com.wso2.openbanking.test.framework.TestSuite
-import com.wso2.openbanking.test.framework.util.AppConfigReader
-import com.wso2.openbanking.test.framework.util.ConfigParser
+import com.wso2.cds.test.framework.configuration.AUConfigurationService
+//import com.wso2.openbanking.test.framework.TestSuite
+//import com.wso2.openbanking.test.framework.util.AppConfigReader
+//import com.wso2.openbanking.test.framework.util.ConfigParser
 import com.wso2.openbanking.test.framework.util.TestConstants
-import com.wso2.openbanking.test.framework.util.TestUtil
 import com.wso2.openbanking.toolkit.cds.test.common.utils.*
 import org.testng.Assert
 import org.testng.annotations.AfterClass
 import org.testng.annotations.BeforeClass
 import org.testng.annotations.Test
+import com.wso2.cds.test.framework.AUTest
+import com.wso2.cds.test.framework.utility.AUTestUtil
+
+
 
 /**
  * Dynamic client registration flow tests.
  */
-class DynamicClientRegistrationUpdateTest extends AbstractAUTests {
+class DynamicClientRegistrationUpdateTest extends AUTest{
 
     private List<String> scopes = [
             AUConstants.SCOPES.BANK_ACCOUNT_BASIC_READ.getScopeString(),
@@ -39,26 +43,29 @@ class DynamicClientRegistrationUpdateTest extends AbstractAUTests {
     private String clientId
     private String registrationPath = AUDCRConstants.REGISTRATION_ENDPOINT
     private String invalidClientId = "invalidclientid"
-    File xmlFile = new File(System.getProperty("user.dir").toString()
-            .concat("/../../resources/test-config.xml"))
-    AppConfigReader appConfigReader = new AppConfigReader()
+//    File xmlFile = new File(System.getProperty("user.dir").toString()
+//            .concat("/../../resources/test-config.xml"))
+//    AppConfigReader appConfigReader = new AppConfigReader()
 
     @BeforeClass(alwaysRun = true)
     void "Initialize Test Suite"() {
-        TestSuite.init()
+        //TestSuite.init()
         //AURequestBuilder.getApplicationToken(scopes, null) //to prevent 'connection refused' error
-        AUMockCDRIntegrationUtil.loadMetaDataToCDRRegister()
-        AURegistrationRequestBuilder.retrieveADRInfo()
+//        AUMockCDRIntegrationUtil.loadMetaDataToCDRRegister()
+//        AURegistrationRequestBuilder.retrieveADRInfo()
 
-        deleteApplicationIfExists(scopes)
+//        deleteApplicationIfExists(scopes)
+        AUConfigurationService auConfiguration = new AUConfigurationService()
+
         def registrationResponse = AURegistrationRequestBuilder
                 .buildRegistrationRequest(AURegistrationRequestBuilder.getRegularClaims())
                 .when()
                 .post(registrationPath)
 
-        clientId = TestUtil.parseResponseBody(registrationResponse, "client_id")
-        TestUtil.writeXMLContent(xmlFile.toString(), "Application", "ClientID", clientId,
-                appConfigReader.tppNumber)
+        clientId = AUTestUtil.parseResponseBody(registrationResponse, "client_id")
+        AUTestUtil.writeXMLContent(auConfiguration.getOBXMLFile().toString(), "Application", "ClientID", clientId, auConfiguration.getTppNumber())
+
+
     }
 
     @Test(priority = 1, dependsOnMethods = "TC0101009_Get access token")
@@ -102,7 +109,7 @@ class DynamicClientRegistrationUpdateTest extends AbstractAUTests {
                 .put(registrationPath + clientId)
 
         Assert.assertEquals(registrationResponse.statusCode(), AUConstants.STATUS_CODE_400)
-        Assert.assertEquals(TestUtil.parseResponseBody(registrationResponse, TestConstants.ERROR),
+        Assert.assertEquals(AUTestUtil.parseResponseBody(registrationResponse, TestConstants.ERROR),
                 AUDCRConstants.INVALID_CLIENT_METADATA)
     }
 
@@ -122,7 +129,7 @@ class DynamicClientRegistrationUpdateTest extends AbstractAUTests {
                 .get(registrationPath + clientId)
 
         Assert.assertEquals(retrievalResponse.statusCode(), AUConstants.STATUS_CODE_400)
-        Assert.assertNull(TestUtil.parseResponseBody(retrievalResponse, "adr_name"))
+        Assert.assertNull(AUTestUtil.parseResponseBody(retrievalResponse, "adr_name"))
     }
 
     @Test(priority = 3)
@@ -170,8 +177,8 @@ class DynamicClientRegistrationUpdateTest extends AbstractAUTests {
         Assert.assertEquals(registrationResponse.statusCode(), AUConstants.STATUS_CODE_401)
     }
 
-    @AfterClass(alwaysRun = true)
-    void tearDown() {
-        deleteApplicationIfExists(scopes, clientId)
-    }
+//    @AfterClass(alwaysRun = true)
+//    void tearDown() {
+//        deleteApplicationIfExists(scopes, clientId)
+//    }
 }

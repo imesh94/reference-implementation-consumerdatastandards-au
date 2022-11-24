@@ -43,6 +43,7 @@ import com.wso2.cds.test.framework.utility.AUTestUtil
  */
 class AUTest extends OBTest {
 
+
     AUConfigurationService auConfiguration
     protected static Logger log = LogManager.getLogger(AUTest.class.getName());
 

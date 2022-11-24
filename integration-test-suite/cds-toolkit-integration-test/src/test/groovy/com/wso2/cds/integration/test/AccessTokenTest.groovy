@@ -16,6 +16,16 @@ import com.wso2.cds.test.framework.AUTest
 import org.testng.ITestContext
 import org.testng.annotations.BeforeClass
 import org.testng.annotations.Test
+import com.wso2.cds.test.framework.constant.AUConstants
+import com.wso2.cds.test.framework.constant.AUAccountScope
+import com.wso2.cds.test.framework.request_builder.AUAuthorisationBuilder
+import com.wso2.cds.test.framework.utility.AUMockCDRIntegrationUtil
+import com.wso2.cds.test.framework.constant.ContextConstants
+import org.checkerframework.checker.units.qual.A
+import org.testng.Assert
+import org.testng.annotations.AfterClass
+import com.wso2.cds.test.framework.request_builder.AURegistrationRequestBuilder
+import com.wso2.cds.test.framework.utility.AUTestUtil
 
 /**
  * for testing User access token with the test context
