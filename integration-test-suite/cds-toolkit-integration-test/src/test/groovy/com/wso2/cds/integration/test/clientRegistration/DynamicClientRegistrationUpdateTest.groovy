@@ -1,3 +1,11 @@
+/**
+ * Copyright (c) 2022, WSO2 LLC. (https://www.wso2.com). All Rights Reserved.
+ *
+ * This software is the property of WSO2 LLC. and its suppliers, if any.
+ * Dissemination of any information or reproduction of any material contained
+ * herein in any form is strictly forbidden, unless permitted by WSO2 expressly.
+ * You may not alter or remove any copyright or other notice from copies of this content.
+ */
 package com.wso2.cds.integration.test.clientRegistration
 
 import com.wso2.cds.test.framework.request_builder.AURequestBuilder
@@ -20,52 +28,35 @@ import com.wso2.cds.test.framework.request_builder.AURegistrationRequestBuilder
 import com.wso2.cds.test.framework.utility.AUTestUtil
 
 /**
- * Dynamic client registration flow tests.
+ * Testcases for DCR Update request validation
  */
 
 class DynamicClientRegistrationUpdateTest extends AUTest{
-//    private List<String> scopes = [
-//            AUAccountScope.BANK_ACCOUNT_BASIC_READ.getScopeString(),
-//            AUAccountScope.BANK_TRANSACTION_READ.getScopeString(),
-//            AUAccountScope.BANK_CUSTOMER_DETAIL_READ.getScopeString(),
-//            AUAccountScope.CDR_REGISTRATION.getScopeString()
-//    ]
 
     private String accessToken
-    private String clientId
     private String registrationPath = AUConstants.DCR_REGISTRATION_ENDPOINT
     private String invalidClientId = "invalidclientid"
 
-//    File xmlFile = new File(System.getProperty("user.dir").toString()
-//            .concat("/../../resources/test-config.xml"))
-//    AUAuthorisationBuilder appConfigReader = new AUAuthorisationBuilder()
-//    AURegistrationRequestBuilder dcr = new AURegistrationRequestBuilder() //**
-
     @BeforeClass(alwaysRun = true)
-    void "Initialize Test Suite"() {
-
-//        AUTest."Initialize Test Suite"(); //*
-//        AURestAsRequestBuilder.init()
-//        AUMockCDRIntegrationUtil.loadMetaDataToCDRRegister()
-//        AURegistrationRequestBuilder.retrieveADRInfo()  //**
-//        deleteApplicationIfExists(scopes)
+    void "Initialize Test Suite"(ITestContext context) {
 
         AURegistrationRequestBuilder dcr = new AURegistrationRequestBuilder()
 
         def registrationResponse = AURegistrationRequestBuilder
                 .buildRegistrationRequest(dcr.getAURegularClaims())
-                .when() //*
+                .when()
                 .post(registrationPath)
 
-        clientId = parseResponseBody(registrationResponse, "client_id")  //**
+        clientId = parseResponseBody(registrationResponse, "client_id")
         context.setAttribute(ContextConstants.CLIENT_ID,clientId)
 
 
-        AUTestUtil.writeXMLContent(auConfiguration.getOBXMLFile().toString(), "Application", "ClientID", clientId, auConfiguration.getTppNumber())
+        AUTestUtil.writeXMLContent(auConfiguration.getOBXMLFile().toString(), "Application",
+                "ClientID", clientId, auConfiguration.getTppNumber())
     }
 
-    @Test(priority = 1, dependsOnMethods = "Get access token")
-    void "Update registration details with invalid client id"() {
+    @Test(priority = 1, dependsOnMethods = "TC0101009_Get access token")
+    void "TC0103001_Update registration details with invalid client id"() {
 
         AUJWTGenerator aujwtGenerator=new AUJWTGenerator()
         AURegistrationRequestBuilder auRegistrationRequestBuilder=new AURegistrationRequestBuilder()
@@ -77,8 +68,8 @@ class DynamicClientRegistrationUpdateTest extends AUTest{
         Assert.assertEquals(registrationResponse.statusCode(), AUConstants.STATUS_CODE_401)
     }
 
-    @Test(priority = 1, groups = "SmokeTest", dependsOnMethods = "Get access token")
-    void "Update registration details"() {
+    @Test(priority = 1, groups = "SmokeTest", dependsOnMethods = "TC0101009_Get access token")
+    void "TC0103002_Update registration details"() {
 
         AUJWTGenerator aujwtGenerator=new AUJWTGenerator()
         AURegistrationRequestBuilder auRegistrationRequestBuilder=new AURegistrationRequestBuilder()
@@ -91,14 +82,14 @@ class DynamicClientRegistrationUpdateTest extends AUTest{
     }
 
     @Test(priority = 2, groups = "SmokeTest")
-    void "Get access token"() {
+    void "TC0101009_Get access token"() {
 
         accessToken = AURequestBuilder.getApplicationAccessToken(context.getAttribute(ContextConstants.CLIENT_ID).toString())
         Assert.assertNotNull(accessToken)
     }
 
-    @Test(priority = 2, dependsOnMethods = "Get access token")
-    void "Update registration details without SSA"() {
+    @Test(priority = 2, dependsOnMethods = "TC0101009_Get access token")
+    void "OB-1167_Update registration details without SSA"() {
 
         AUJWTGenerator aujwtGenerator=new AUJWTGenerator()
         AURegistrationRequestBuilder auRegistrationRequestBuilder=new AURegistrationRequestBuilder()
@@ -113,8 +104,8 @@ class DynamicClientRegistrationUpdateTest extends AUTest{
                 AUConstants.INVALID_CLIENT_METADATA)
     }
 
-    @Test(priority = 2, dependsOnMethods = "Get access token")
-    void "Update registration details with fields not supported by data holder brand"() {
+    @Test(priority = 2, dependsOnMethods = "TC0101009_Get access token")
+    void "OB-1168_Update registration details with fields not supported by data holder brand"() {
 
         AUJWTGenerator aujwtGenerator=new AUJWTGenerator()
         AURegistrationRequestBuilder auRegistrationRequestBuilder=new AURegistrationRequestBuilder()
@@ -135,7 +126,7 @@ class DynamicClientRegistrationUpdateTest extends AUTest{
     }
 
     @Test(priority = 3)
-    void "Update registration details with a access token bound only to CDR Authorization scopes"() {
+    void "OB-1169_Update registration details with a access token bound only to CDR Authorization scopes"() {
 
         scopes = [
                 AUAccountScope.BANK_ACCOUNT_BASIC_READ.getScopeString(),
@@ -170,7 +161,7 @@ class DynamicClientRegistrationUpdateTest extends AUTest{
     }
 
     @Test(priority = 3)
-    void "Update registration details with invalid access token"() {
+    void "OB-1171_Update registration details with invalid access token"() {
         AUJWTGenerator aujwtGenerator=new AUJWTGenerator()
         AURegistrationRequestBuilder auRegistrationRequestBuilder=new AURegistrationRequestBuilder()
         def registrationResponse = AURegistrationRequestBuilder.buildBasicRequest("asd")
@@ -182,8 +173,4 @@ class DynamicClientRegistrationUpdateTest extends AUTest{
         Assert.assertEquals(registrationResponse.statusCode(), AUConstants.STATUS_CODE_401)
     }
 
-//    @AfterClass(alwaysRun = true)
-//    void tearDown() {
-//        deleteApplicationIfExists(scopes, clientId)
-//    }
 }

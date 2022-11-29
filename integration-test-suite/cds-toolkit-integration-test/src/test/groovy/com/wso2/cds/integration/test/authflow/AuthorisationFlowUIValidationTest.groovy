@@ -1,15 +1,11 @@
-/*
- * Copyright (c) 2021, WSO2 Inc. (http://www.wso2.com). All Rights Reserved.
+/**
+ * Copyright (c) 2022, WSO2 LLC. (https://www.wso2.com). All Rights Reserved.
  *
- * This software is the property of WSO2 Inc. and its suppliers, if any.
+ * This software is the property of WSO2 LLC. and its suppliers, if any.
  * Dissemination of any information or reproduction of any material contained
- * herein is strictly forbidden, unless permitted by WSO2 in accordance with
- * the WSO2 Software License available at https://wso2.com/licenses/eula/3.1. For specific
- * language governing the permissions and limitations under this license,
- * please see the license as well as any agreement you’ve entered into with
- * WSO2 governing the purchase of this software and any associated services.
+ * herein in any form is strictly forbidden, unless permitted by WSO2 expressly.
+ * You may not alter or remove any copyright or other notice from copies of this content.
  */
-
 package com.wso2.cds.integration.test.authflow
 
 import com.wso2.cds.test.framework.automation.consent.AUBasicAuthAutomationStep
@@ -17,29 +13,21 @@ import com.wso2.cds.test.framework.constant.AUConstants
 import com.wso2.cds.test.framework.constant.AUAccountScope
 import com.wso2.cds.test.framework.constant.AUPageObjects
 import com.wso2.cds.test.framework.request_builder.AUAuthorisationBuilder
-import com.wso2.cds.test.framework.utility.AUMockCDRIntegrationUtil
-import com.wso2.cds.test.framework.constant.ContextConstants
 import com.wso2.cds.test.framework.AUTest
-import com.wso2.cds.test.framework.utility.AURestAsRequestBuilder
-import org.checkerframework.checker.units.qual.A
 import org.openqa.selenium.By
 import org.testng.Assert
-import org.testng.ITestContext
-import org.testng.annotations.AfterClass
-import org.testng.annotations.BeforeClass
 import org.testng.annotations.Test
-import com.wso2.cds.test.framework.request_builder.AURegistrationRequestBuilder
 import com.wso2.cds.test.framework.utility.AUTestUtil
 
 /**
  * Authorisation Flow UI guidelines Tests.
  */
-
 class AuthorisationFlowUIValidationTest extends AUTest {
+
     @Test
     void "TC0203003_Verify the permissions of a consent with common customer basic read scope"() {
-        List<AUAccountScope> scopes = [AUAccountScope.BANK_CUSTOMER_BASIC_READ]
 
+        List<AUAccountScope> scopes = [AUAccountScope.BANK_CUSTOMER_BASIC_READ]
         AUAuthorisationBuilder authorisationBuilder = new AUAuthorisationBuilder()
         String authoriseUrl = authorisationBuilder.getAuthorizationRequest(scopes, AUConstants.DEFAULT_SHARING_DURATION, true)
                 .toURI().toString()
@@ -77,8 +65,8 @@ class AuthorisationFlowUIValidationTest extends AUTest {
 
     @Test
     void "TC0203004_Verify the permissions of a consent with common customer detail read scope"() {
-        List<AUAccountScope> scopes = [AUAccountScope.BANK_CUSTOMER_DETAIL_READ]
 
+        List<AUAccountScope> scopes = [AUAccountScope.BANK_CUSTOMER_DETAIL_READ]
         AUAuthorisationBuilder authorisationBuilder = new AUAuthorisationBuilder()
         String authoriseUrl = authorisationBuilder.getAuthorizationRequest(scopes, AUConstants.DEFAULT_SHARING_DURATION, true)
                 .toURI().toString()
@@ -124,7 +112,6 @@ class AuthorisationFlowUIValidationTest extends AUTest {
     void "TC0203005_Verify the permissions of a consent with bank accounts basic read scope"() {
 
         List<AUAccountScope> scopes = [AUAccountScope.BANK_ACCOUNT_BASIC_READ]
-
         AUAuthorisationBuilder authorisationBuilder = new AUAuthorisationBuilder()
         String authoriseUrl = authorisationBuilder.getAuthorizationRequest(scopes, AUConstants.DEFAULT_SHARING_DURATION, true)
                 .toURI().toString()
@@ -149,11 +136,11 @@ class AuthorisationFlowUIValidationTest extends AUTest {
                 }
                 .execute()
     }
+
     @Test
     void "TC0203006_Verify the permissions of a consent with bank accounts detail read scope"() {
 
         List<AUAccountScope> scopes = [AUAccountScope.BANK_ACCOUNT_DETAIL_READ]
-
         AUAuthorisationBuilder authorisationBuilder = new AUAuthorisationBuilder()
         String authoriseUrl = authorisationBuilder.getAuthorizationRequest(scopes, AUConstants.DEFAULT_SHARING_DURATION, true)
                 .toURI().toString()
@@ -196,7 +183,6 @@ class AuthorisationFlowUIValidationTest extends AUTest {
     void "TC0203007_Verify the permissions of a consent with bank transactions read scope"() {
 
         List<AUAccountScope> scopes = [AUAccountScope.BANK_TRANSACTION_READ]
-
         AUAuthorisationBuilder authorisationBuilder = new AUAuthorisationBuilder()
         String authoriseUrl = authorisationBuilder.getAuthorizationRequest(scopes, AUConstants.DEFAULT_SHARING_DURATION, true)
                 .toURI().toString()
@@ -230,7 +216,6 @@ class AuthorisationFlowUIValidationTest extends AUTest {
     void "TC0203008_Verify the permissions of a consent with bank regular_payments read scope"() {
 
         List<AUAccountScope> scopes = [AUAccountScope.BANK_REGULAR_PAYMENTS_READ]
-
         AUAuthorisationBuilder authorisationBuilder = new AUAuthorisationBuilder()
         String authoriseUrl = authorisationBuilder.getAuthorizationRequest(scopes, AUConstants.DEFAULT_SHARING_DURATION, true)
                 .toURI().toString()
@@ -258,7 +243,6 @@ class AuthorisationFlowUIValidationTest extends AUTest {
     void "TC0203009_Verify the permissions of a consent with bank payees read scope"() {
 
         List<AUAccountScope> scopes = [AUAccountScope.BANK_PAYEES_READ]
-
         AUAuthorisationBuilder authorisationBuilder = new AUAuthorisationBuilder()
         String authoriseUrl = authorisationBuilder.getAuthorizationRequest(scopes, AUConstants.DEFAULT_SHARING_DURATION, true)
                 .toURI().toString()

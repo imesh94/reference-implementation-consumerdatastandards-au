@@ -72,6 +72,8 @@ class AUTest extends OBTest {
     public String consentedAccount
     public String secondConsentedAccount
     public String cdrArrangementId = ""
+    public String jtiVal
+    public String clientId
 
     /**
      * Set Scopes of application

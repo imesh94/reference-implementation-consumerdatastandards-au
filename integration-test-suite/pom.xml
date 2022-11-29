@@ -19,13 +19,6 @@
     <version>1.0.0</version>
     <packaging>pom</packaging>
 
-<!--    <parent>-->
-<!--        <groupId>com.wso2</groupId>-->
-<!--        <artifactId>bfsi-test-framework</artifactId>-->
-<!--        <version>1.0.0</version>-->
-<!--        <relativePath>../pom.xml</relativePath>-->
-<!--    </parent>-->
-
     <modules>
         <module>cds-toolkit-test-framework</module>
         <module>cds-toolkit-integration-test</module>

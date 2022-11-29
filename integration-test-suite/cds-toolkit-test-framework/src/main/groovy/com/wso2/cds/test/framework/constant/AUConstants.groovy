@@ -308,7 +308,6 @@ class AUConstants extends OBConstants {
     static final int STATUS_CODE_409 = 409
     static final int STATUS_CODE_204 = 204
     static final int STATUS_CODE_403 = 403
-    static final int NOCONTENT = 204
     static final int STATUS_CODE_500 = 500
 
     /**

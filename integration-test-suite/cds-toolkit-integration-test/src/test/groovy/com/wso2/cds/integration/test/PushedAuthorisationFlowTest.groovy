@@ -25,7 +25,6 @@ import com.wso2.cds.test.framework.utility.AUTestUtil
  */
 class PushedAuthorisationFlowTest extends AUTest{
 
-    //private String headerString = auConfiguration.getUserBasicAuthName()+ ":" +auConfiguration.getUserBasicAuthPWD()
     AUAuthorisationBuilder authorisationBuilder = new AUAuthorisationBuilder()
     String requestUri
     private List<AUAccountScope> scopeArrayList = [

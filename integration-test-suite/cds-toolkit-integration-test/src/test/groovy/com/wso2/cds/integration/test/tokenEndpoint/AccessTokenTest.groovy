@@ -1,35 +1,23 @@
-/*
- * Copyright (c) 2022, WSO2 Inc. (http://www.wso2.com). All Rights Reserved.
+/**
+ * Copyright (c) 2022, WSO2 LLC. (https://www.wso2.com). All Rights Reserved.
  *
- * This software is the property of WSO2 Inc. and its suppliers, if any.
+ * This software is the property of WSO2 LLC. and its suppliers, if any.
  * Dissemination of any information or reproduction of any material contained
- * herein is strictly forbidden, unless permitted by WSO2 in accordance with
- * the WSO2 Software License available at https://wso2.com/licenses/eula/3.1. For specific
- * language governing the permissions and limitations under this license,
- * please see the license as well as any agreement you’ve entered into with
- * WSO2 governing the purchase of this software and any associated services.
+ * herein in any form is strictly forbidden, unless permitted by WSO2 expressly.
+ * You may not alter or remove any copyright or other notice from copies of this content.
  */
 
 package com.wso2.cds.integration.test.tokenEndpoint
 
 import com.wso2.cds.test.framework.request_builder.AURequestBuilder
-import com.wso2.cds.test.framework.constant.AUPageObjects
 import com.nimbusds.oauth2.sdk.AccessTokenResponse
-import com.wso2.cds.test.framework.automation.consent.AUBasicAuthAutomationStep
 import com.wso2.cds.test.framework.AUTest
-import com.wso2.cds.test.framework.configuration.AUConfigurationService
-import com.wso2.cds.test.framework.utility.AURestAsRequestBuilder
-import io.restassured.response.Response
-import org.openqa.selenium.By
-import org.testng.annotations.BeforeClass
 import org.testng.annotations.Test
 import com.wso2.cds.test.framework.constant.AUConstants
 import com.wso2.cds.test.framework.constant.AUAccountScope
-import com.wso2.cds.test.framework.request_builder.AUAuthorisationBuilder
 import org.testng.Assert
 import com.wso2.cds.test.framework.utility.AUTestUtil
 import org.testng.asserts.SoftAssert
-import com.wso2.openbanking.test.framework.OBTest
 import java.nio.charset.Charset
 
 /**
@@ -45,30 +33,21 @@ class AccessTokenTest extends AUTest {
             AUAccountScope.BANK_CUSTOMER_DETAIL_READ
     ]
 
-    //private final String ACCOUNTS_BASIC_OPENID_SCOPE_LIST = "bank:accounts.basic:read openid"
     private final String ACCOUNTS_BASIC_OPENID_SCOPE_LIST = "bank:accounts.basic:read bank:accounts.detail:read openid profile"
-    //private final String ACCOUNTS_BASIC_OPENID_SCOPE_LIST = "bank:accounts.basic:read bank:accounts.detail:read bank:payees:read bank:regular_payments:read bank:transactions:read common:customer.basic:read common:customer.detail:read openid"
     private final String ACCOUNTS_BASIC_ACCOUNT_DETAIL_OPENID_SCOPE_LIST = "bank:accounts.basic:read bank:accounts.detail:read openid"
-
-
     String requestUri
-   // private String authorisationCode
     private AccessTokenResponse userAccessToken
-
-
-
-
-
 
     @Test
     void "OB-1264-Invoke token endpoint for user access token without private-key JWT client authentication"() {
 
-
         doConsentAuthorisation( auConfiguration.getAppInfoClientID())
         Assert.assertNotNull(authorisationCode)
 
-        def errorObject = AURequestBuilder.getUserTokenErrorResponse(authorisationCode, auConfiguration.getAppInfoRedirectURL(),auConfiguration.getAppInfoClientID(),false)
-        Assert.assertEquals(errorObject.toJSONObject().get("error_description"), "Request does not follow the registered token endpoint auth method private_key_jwt")
+        def errorObject = AURequestBuilder.getUserTokenErrorResponse(authorisationCode,
+                auConfiguration.getAppInfoRedirectURL(),auConfiguration.getAppInfoClientID(),false)
+        Assert.assertEquals(errorObject.toJSONObject().get("error_description"), "Request does not follow the" +
+                " registered token endpoint auth method private_key_jwt")
     }
 
     @Test
@@ -77,8 +56,11 @@ class AccessTokenTest extends AUTest {
         doConsentAuthorisation( auConfiguration.getAppInfoClientID())
         Assert.assertNotNull(authorisationCode)
 
-        def errorObject = AURequestBuilder.getUserTokenErrorResponse(authorisationCode, auConfiguration.getAppInfoRedirectURL(), auConfiguration.getAppInfoClientID(), true,false)
-        Assert.assertEquals(errorObject.toJSONObject().get("error_description"), "Transport certificate not found in the request")
+        def errorObject = AURequestBuilder.getUserTokenErrorResponse(authorisationCode,
+                auConfiguration.getAppInfoRedirectURL(), auConfiguration.getAppInfoClientID(), true,
+                false)
+        Assert.assertEquals(errorObject.toJSONObject().get("error_description"), "Transport certificate not found in" +
+                " the request")
     }
 
     @Test
@@ -87,7 +69,8 @@ class AccessTokenTest extends AUTest {
         doConsentAuthorisation( auConfiguration.getAppInfoClientID())
         Assert.assertNotNull(authorisationCode)
 
-        def errorObject = AURequestBuilder.getUserTokenErrorResponse(authorisationCode, AUConstants.DCR_ALTERNATE_REDIRECT_URI)
+        def errorObject = AURequestBuilder.getUserTokenErrorResponse(authorisationCode,
+                AUConstants.DCR_ALTERNATE_REDIRECT_URI)
         Assert.assertEquals(errorObject.toJSONObject().get("error_description"), "Callback url mismatch")
 
     }
@@ -98,18 +81,25 @@ class AccessTokenTest extends AUTest {
         doConsentAuthorisation( auConfiguration.getAppInfoClientID())
         Assert.assertNotNull(authorisationCode)
 
-        def errorObject = AURequestBuilder.getUserTokenErrorResponse(authorisationCode, auConfiguration.getAppInfoRedirectURL(), auConfiguration.getAppInfoClientID(), true,true,"RS256")
-        Assert.assertEquals(errorObject.toJSONObject().get("error_description"), "Registered algorithm does not match with the token signed algorithm")
+        def errorObject = AURequestBuilder.getUserTokenErrorResponse(authorisationCode,
+                auConfiguration.getAppInfoRedirectURL(), auConfiguration.getAppInfoClientID(), true,
+                true,"RS256")
+        Assert.assertEquals(errorObject.toJSONObject().get("error_description"), "Registered algorithm does not match" +
+                " with the token signed algorithm")
 
     }
+
     @Test
     void "OB-1273_Invoke token endpoint for user access token with 'PS512' as the signature algorithm"() {
 
         doConsentAuthorisation( auConfiguration.getAppInfoClientID())
         Assert.assertNotNull(authorisationCode)
 
-        def errorObject = AURequestBuilder.getUserTokenErrorResponse(authorisationCode, auConfiguration.getAppInfoRedirectURL(), auConfiguration.getAppInfoClientID(), true,true,"PS512")
-        Assert.assertEquals(errorObject.toJSONObject().get("error_description"), "Registered algorithm does not match with the token signed algorithm")
+        def errorObject = AURequestBuilder.getUserTokenErrorResponse(authorisationCode,
+                auConfiguration.getAppInfoRedirectURL(), auConfiguration.getAppInfoClientID(), true,
+                true,"PS512")
+        Assert.assertEquals(errorObject.toJSONObject().get("error_description"), "Registered algorithm does not" +
+                " match with the token signed algorithm")
 
     }
 
@@ -117,7 +107,6 @@ class AccessTokenTest extends AUTest {
     void "OB-1267_Invoke token endpoint for user access token with a subset of authorized scopes"() {
 
         def cdsClient = "${auConfiguration.getAppInfoClientID()}:${auConfiguration.getAppInfoClientSecret()}"
-        //def clientHeader = "${Base64.encoder.encodeToString(cdsClient.getBytes(Charset.defaultCharset()))}"
 
         // scopes authorized for the consent
         scopeArrayList = [
@@ -134,7 +123,6 @@ class AccessTokenTest extends AUTest {
         userAccessToken = AURequestBuilder.getUserToken(authorisationCode, scopeArrayList)
         Assert.assertNotNull(userAccessToken.tokens.accessToken)
         Assert.assertNotNull(userAccessToken.tokens.refreshToken)
-        //Todo : enable this validation after fixing issue https://github.com/wso2-enterprise/financial-open-banking/issues/6646
         Assert.assertEquals(userAccessToken.toJSONObject().get("scope"), ACCOUNTS_BASIC_OPENID_SCOPE_LIST)
     }
 
@@ -201,7 +189,5 @@ class AccessTokenTest extends AUTest {
         Assert.assertNotNull(userAccessToken.getCustomParameters().get("cdr_arrangement_id"))
         Assert.assertEquals(userAccessToken.toJSONObject().get("scope"),ACCOUNTS_BASIC_ACCOUNT_DETAIL_OPENID_SCOPE_LIST)
     }
-
-
 
 }
