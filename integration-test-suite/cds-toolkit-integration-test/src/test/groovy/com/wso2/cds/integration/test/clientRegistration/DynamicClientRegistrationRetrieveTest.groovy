@@ -9,19 +9,18 @@
 
 package com.wso2.cds.integration.test.clientRegistration
 
-import com.wso2.cds.test.framework.constant.ContextConstants
-import com.wso2.openbanking.test.framework.configuration.OBConfigParser
-import com.wso2.openbanking.test.framework.utility.RestAsRequestBuilder
-import com.wso2.openbanking.test.framework.constant.OBConstants
+import com.wso2.cds.test.framework.AUTest
 import com.wso2.cds.test.framework.configuration.AUConfigurationService
 import com.wso2.cds.test.framework.constant.AUConstants
-import com.wso2.cds.test.framework.AUTest
-import org.testng.Assert
-import org.testng.ITestContext
-import org.testng.annotations.Test
+import com.wso2.cds.test.framework.constant.ContextConstants
 import com.wso2.cds.test.framework.request_builder.AURegistrationRequestBuilder
 import com.wso2.cds.test.framework.utility.AUTestUtil
-
+import com.wso2.openbanking.test.framework.configuration.OBConfigParser
+import com.wso2.openbanking.test.framework.constant.OBConstants
+import com.wso2.openbanking.test.framework.utility.RestAsRequestBuilder
+import org.testng.Assert
+import org.testng.annotations.Test
+import org.testng.ITestContext
 
 /**
  * Testcases for DCR retrieve request validation

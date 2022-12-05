@@ -43,7 +43,7 @@ class AUAuthorisationBuilder {
     private int tppNumber
 
     AUAuthorisationBuilder() {
-                 auConfiguration = new AUConfigurationService()
+        auConfiguration = new AUConfigurationService()
     }
 
     /**

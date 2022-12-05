@@ -9,16 +9,17 @@
 
 package com.wso2.cds.integration.test.tokenEndpoint
 
-import com.wso2.cds.test.framework.request_builder.AURequestBuilder
 import com.nimbusds.oauth2.sdk.AccessTokenResponse
 import com.wso2.cds.test.framework.AUTest
-import org.testng.annotations.Test
-import com.wso2.cds.test.framework.constant.AUConstants
 import com.wso2.cds.test.framework.constant.AUAccountScope
-import org.testng.Assert
+import com.wso2.cds.test.framework.constant.AUConstants
+import com.wso2.cds.test.framework.request_builder.AURequestBuilder
 import com.wso2.cds.test.framework.utility.AUTestUtil
-import org.testng.asserts.SoftAssert
 import java.nio.charset.Charset
+import org.testng.Assert
+import org.testng.annotations.Test
+import org.testng.asserts.SoftAssert
+
 
 /**
  * for testing User access token with the test context
@@ -46,7 +47,7 @@ class AccessTokenTest extends AUTest {
 
         def errorObject = AURequestBuilder.getUserTokenErrorResponse(authorisationCode,
                 auConfiguration.getAppInfoRedirectURL(),auConfiguration.getAppInfoClientID(),false)
-        Assert.assertEquals(errorObject.toJSONObject().get("error_description"), "Request does not follow the" +
+        Assert.assertEquals(errorObject.toJSONObject().get(AUConstants.ERROR_DESCRIPTION), "Request does not follow the" +
                 " registered token endpoint auth method private_key_jwt")
     }
 
@@ -59,7 +60,7 @@ class AccessTokenTest extends AUTest {
         def errorObject = AURequestBuilder.getUserTokenErrorResponse(authorisationCode,
                 auConfiguration.getAppInfoRedirectURL(), auConfiguration.getAppInfoClientID(), true,
                 false)
-        Assert.assertEquals(errorObject.toJSONObject().get("error_description"), "Transport certificate not found in" +
+        Assert.assertEquals(errorObject.toJSONObject().get(AUConstants.ERROR_DESCRIPTION), "Transport certificate not found in" +
                 " the request")
     }
 
@@ -71,7 +72,7 @@ class AccessTokenTest extends AUTest {
 
         def errorObject = AURequestBuilder.getUserTokenErrorResponse(authorisationCode,
                 AUConstants.DCR_ALTERNATE_REDIRECT_URI)
-        Assert.assertEquals(errorObject.toJSONObject().get("error_description"), "Callback url mismatch")
+        Assert.assertEquals(errorObject.toJSONObject().get(AUConstants.ERROR_DESCRIPTION), "Callback url mismatch")
 
     }
 
@@ -84,7 +85,7 @@ class AccessTokenTest extends AUTest {
         def errorObject = AURequestBuilder.getUserTokenErrorResponse(authorisationCode,
                 auConfiguration.getAppInfoRedirectURL(), auConfiguration.getAppInfoClientID(), true,
                 true,"RS256")
-        Assert.assertEquals(errorObject.toJSONObject().get("error_description"), "Registered algorithm does not match" +
+        Assert.assertEquals(errorObject.toJSONObject().get(AUConstants.ERROR_DESCRIPTION), "Registered algorithm does not match" +
                 " with the token signed algorithm")
 
     }
@@ -98,7 +99,7 @@ class AccessTokenTest extends AUTest {
         def errorObject = AURequestBuilder.getUserTokenErrorResponse(authorisationCode,
                 auConfiguration.getAppInfoRedirectURL(), auConfiguration.getAppInfoClientID(), true,
                 true,"PS512")
-        Assert.assertEquals(errorObject.toJSONObject().get("error_description"), "Registered algorithm does not" +
+        Assert.assertEquals(errorObject.toJSONObject().get(AUConstants.ERROR_DESCRIPTION), "Registered algorithm does not" +
                 " match with the token signed algorithm")
 
     }

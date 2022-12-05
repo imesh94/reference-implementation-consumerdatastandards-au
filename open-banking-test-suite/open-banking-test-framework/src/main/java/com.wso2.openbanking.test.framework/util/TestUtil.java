@@ -34,7 +34,7 @@ import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 import org.w3c.dom.NodeList;
 import org.xml.sax.SAXException;
-//import sun.misc.BASE64Encoder;
+import sun.misc.BASE64Encoder;
 import sun.security.provider.X509Factory;
 
 import java.io.ByteArrayInputStream;

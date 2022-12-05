@@ -8,24 +8,18 @@
  */
 package com.wso2.cds.integration.test.clientRegistration
 
-import com.wso2.cds.test.framework.request_builder.AURequestBuilder
-import com.wso2.cds.test.framework.utility.AURestAsRequestBuilder
-import com.wso2.openbanking.test.framework.utility.RestAsRequestBuilder
-import com.wso2.cds.test.framework.request_builder.AUJWTGenerator
-import com.wso2.cds.test.framework.constant.AUConstants
-import com.wso2.cds.test.framework.constant.AUAccountScope
-import com.wso2.cds.test.framework.request_builder.AUAuthorisationBuilder
-import com.wso2.cds.test.framework.utility.AUMockCDRIntegrationUtil
-import com.wso2.cds.test.framework.constant.ContextConstants
 import com.wso2.cds.test.framework.AUTest
-import org.checkerframework.checker.units.qual.A
+import com.wso2.cds.test.framework.constant.AUAccountScope
+import com.wso2.cds.test.framework.constant.AUConstants
+import com.wso2.cds.test.framework.constant.ContextConstants
+import com.wso2.cds.test.framework.request_builder.AUJWTGenerator
+import com.wso2.cds.test.framework.request_builder.AURegistrationRequestBuilder
+import com.wso2.cds.test.framework.request_builder.AURequestBuilder
+import com.wso2.cds.test.framework.utility.AUTestUtil
 import org.testng.Assert
-import org.testng.ITestContext
-import org.testng.annotations.AfterClass
 import org.testng.annotations.BeforeClass
 import org.testng.annotations.Test
-import com.wso2.cds.test.framework.request_builder.AURegistrationRequestBuilder
-import com.wso2.cds.test.framework.utility.AUTestUtil
+import org.testng.ITestContext
 
 /**
  * Testcases for DCR Update request validation

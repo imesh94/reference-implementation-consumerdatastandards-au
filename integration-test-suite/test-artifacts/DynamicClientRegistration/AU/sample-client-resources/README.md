@@ -9,8 +9,7 @@ Following configs can be used in TestConfiguration.xml to use sample SSA and key
         <!-- SSA Redirect Uri -->
         <RedirectUri>https://www.google.com/redirects/redirect1</RedirectUri>
     </DCR>
-Use signing.jks in 'signing-keystore' directory as the Application Keystore, and
-directory as the Transport Keystore.
+Use signing.jks in 'signing-keystore' directory as the Application Keystore.
 
 Sample Keystore information:
 Signing key alias = tpp6-signing

@@ -9,16 +9,17 @@
 
 package com.wso2.cds.integration.test.authflow
 
+import com.wso2.cds.test.framework.AUTest
 import com.wso2.cds.test.framework.automation.consent.AUBasicAuthAutomationStep
-import com.wso2.cds.test.framework.constant.AUConstants
 import com.wso2.cds.test.framework.constant.AUAccountScope
+import com.wso2.cds.test.framework.constant.AUConstants
 import com.wso2.cds.test.framework.constant.AUPageObjects
 import com.wso2.cds.test.framework.request_builder.AUAuthorisationBuilder
-import com.wso2.cds.test.framework.AUTest
+import com.wso2.cds.test.framework.utility.AUTestUtil
 import org.openqa.selenium.By
 import org.testng.Assert
 import org.testng.annotations.Test
-import com.wso2.cds.test.framework.utility.AUTestUtil
+
 
 /**
  * Authorisation Flow CX guidelines Tests.
