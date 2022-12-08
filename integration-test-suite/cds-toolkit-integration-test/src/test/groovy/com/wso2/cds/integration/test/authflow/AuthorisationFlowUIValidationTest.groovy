@@ -32,7 +32,7 @@ class AuthorisationFlowUIValidationTest extends AUTest {
         AUAuthorisationBuilder authorisationBuilder = new AUAuthorisationBuilder()
         String authoriseUrl = authorisationBuilder.getAuthorizationRequest(scopes, AUConstants.DEFAULT_SHARING_DURATION, true)
                 .toURI().toString()
-        def automation =getBrowserAutomation(AUConstants.DEFAULT_DELAY)
+        def automation = getBrowserAutomation(AUConstants.DEFAULT_DELAY)
                 .addStep(new AUBasicAuthAutomationStep(authoriseUrl))
                 .addStep { driver, context ->
 
@@ -71,7 +71,7 @@ class AuthorisationFlowUIValidationTest extends AUTest {
         AUAuthorisationBuilder authorisationBuilder = new AUAuthorisationBuilder()
         String authoriseUrl = authorisationBuilder.getAuthorizationRequest(scopes, AUConstants.DEFAULT_SHARING_DURATION, true)
                 .toURI().toString()
-        def automation =getBrowserAutomation(AUConstants.DEFAULT_DELAY)
+        def automation = getBrowserAutomation(AUConstants.DEFAULT_DELAY)
                 .addStep(new AUBasicAuthAutomationStep(authoriseUrl))
                 .addStep { driver, context ->
 
@@ -116,7 +116,7 @@ class AuthorisationFlowUIValidationTest extends AUTest {
         AUAuthorisationBuilder authorisationBuilder = new AUAuthorisationBuilder()
         String authoriseUrl = authorisationBuilder.getAuthorizationRequest(scopes, AUConstants.DEFAULT_SHARING_DURATION, true)
                 .toURI().toString()
-        def automation =getBrowserAutomation(AUConstants.DEFAULT_DELAY)
+        def automation = getBrowserAutomation(AUConstants.DEFAULT_DELAY)
                 .addStep(new AUBasicAuthAutomationStep(authoriseUrl))
                 .addStep { driver, context ->
 
@@ -145,7 +145,7 @@ class AuthorisationFlowUIValidationTest extends AUTest {
         AUAuthorisationBuilder authorisationBuilder = new AUAuthorisationBuilder()
         String authoriseUrl = authorisationBuilder.getAuthorizationRequest(scopes, AUConstants.DEFAULT_SHARING_DURATION, true)
                 .toURI().toString()
-        def automation =getBrowserAutomation(AUConstants.DEFAULT_DELAY)
+        def automation = getBrowserAutomation(AUConstants.DEFAULT_DELAY)
                 .addStep(new AUBasicAuthAutomationStep(authoriseUrl))
                 .addStep { driver, context ->
 
@@ -187,7 +187,7 @@ class AuthorisationFlowUIValidationTest extends AUTest {
         AUAuthorisationBuilder authorisationBuilder = new AUAuthorisationBuilder()
         String authoriseUrl = authorisationBuilder.getAuthorizationRequest(scopes, AUConstants.DEFAULT_SHARING_DURATION, true)
                 .toURI().toString()
-        def automation =getBrowserAutomation(AUConstants.DEFAULT_DELAY)
+        def automation = getBrowserAutomation(AUConstants.DEFAULT_DELAY)
                 .addStep(new AUBasicAuthAutomationStep(authoriseUrl))
                 .addStep { driver, context ->
 
@@ -220,7 +220,7 @@ class AuthorisationFlowUIValidationTest extends AUTest {
         AUAuthorisationBuilder authorisationBuilder = new AUAuthorisationBuilder()
         String authoriseUrl = authorisationBuilder.getAuthorizationRequest(scopes, AUConstants.DEFAULT_SHARING_DURATION, true)
                 .toURI().toString()
-        def automation =getBrowserAutomation(AUConstants.DEFAULT_DELAY)
+        def automation = getBrowserAutomation(AUConstants.DEFAULT_DELAY)
                 .addStep(new AUBasicAuthAutomationStep(authoriseUrl))
                 .addStep { driver, context ->
 
@@ -247,7 +247,7 @@ class AuthorisationFlowUIValidationTest extends AUTest {
         AUAuthorisationBuilder authorisationBuilder = new AUAuthorisationBuilder()
         String authoriseUrl = authorisationBuilder.getAuthorizationRequest(scopes, AUConstants.DEFAULT_SHARING_DURATION, true)
                 .toURI().toString()
-        def automation =getBrowserAutomation(AUConstants.DEFAULT_DELAY)
+        def automation = getBrowserAutomation(AUConstants.DEFAULT_DELAY)
                 .addStep(new AUBasicAuthAutomationStep(authoriseUrl))
                 .addStep { driver, context ->
 

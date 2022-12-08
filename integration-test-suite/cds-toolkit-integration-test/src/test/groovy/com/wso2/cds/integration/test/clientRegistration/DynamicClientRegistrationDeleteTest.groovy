@@ -20,14 +20,13 @@ import org.testng.annotations.Test
 import org.testng.ITestContext
 
 /**
- * Test cases to validate DCR delete request
+ * Test cases to validate DCR delete request.
  */
 class DynamicClientRegistrationDeleteTest extends AUTest {
 
-    private String accessToken
     private String invalidClientId = "invalidclientid"
 
-    @Test(groups = "SmokeTest")
+    @Test(groups = "SmokeTest", priority = 1)
     void "TC0101009_Verify Get Application Access Token"(ITestContext context){
 
         // retrieve from context using key
@@ -59,7 +58,7 @@ class DynamicClientRegistrationDeleteTest extends AUTest {
         Assert.assertEquals(registrationResponse.statusCode(), AUConstants.STATUS_CODE_401)
     }
 
-    @Test(groups = "SmokeTest", dependsOnMethods = "Verify Get Application Access Token", priority = 1)
+    @Test(groups = "SmokeTest", dependsOnMethods = "TC0101009_Verify Get Application Access Token", priority = 2)
     void "TC0104002_Delete application"() {
 
         def registrationResponse = AURegistrationRequestBuilder.buildBasicRequest(accessToken)

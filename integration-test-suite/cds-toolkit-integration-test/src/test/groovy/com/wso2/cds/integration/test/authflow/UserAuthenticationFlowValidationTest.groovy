@@ -24,9 +24,10 @@ import org.testng.annotations.Test
 
 
 /**
- * User Authentication Flow Validation Test
+ * User Authentication Flow Validation Test.
  */
 class UserAuthenticationFlowValidationTest extends AUTest {
+
     List<AUAccountScope> scopes = [AUAccountScope.BANK_CUSTOMER_BASIC_READ]
 
     @Test
@@ -35,8 +36,8 @@ class UserAuthenticationFlowValidationTest extends AUTest {
         AUAuthorisationBuilder authorisationBuilder = new AUAuthorisationBuilder()
         String authoriseUrl = authorisationBuilder.getAuthorizationRequest(scopes, AUConstants.DEFAULT_SHARING_DURATION,
                 true).toURI()
-        AUConfigurationService auConfigurationService=new AUConfigurationService()
-        def automation =getBrowserAutomation(AUConstants.DEFAULT_DELAY)
+        AUConfigurationService auConfigurationService = new AUConfigurationService()
+        def automation = getBrowserAutomation(AUConstants.DEFAULT_DELAY)
                 .addStep(new NavigationAutomationStep(authoriseUrl,AUConstants.DEFAULT_DELAY))
                 .addStep { driver, context ->
 

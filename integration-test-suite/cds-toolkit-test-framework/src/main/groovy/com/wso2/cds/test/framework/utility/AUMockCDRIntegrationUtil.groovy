@@ -158,7 +158,7 @@ class AUMockCDRIntegrationUtil {
 
         RestAssured.baseURI = AUConstants.MOCK_INFO_SEC_BASE_URL;
         def SSAResponse = AURestAsRequestBuilder.buildRequestToMockCDRRegister(true)
-                .header(AUConstants.AUTHORIZATION_HEADER_KEY, "Bearer ${accessToken}")
+                .header(AUConstants.AUTHORIZATION_HEADER_KEY, "${AUConstants.AUTHORIZATION_BEARER_TAG} ${accessToken}")
                 .get("${AUConstants.MOCK_SSA_ENDPOINT}/${ADRBrandId}/software-products/${softwareProductId}/ssa")
 
         return SSAResponse.getBody().asString()

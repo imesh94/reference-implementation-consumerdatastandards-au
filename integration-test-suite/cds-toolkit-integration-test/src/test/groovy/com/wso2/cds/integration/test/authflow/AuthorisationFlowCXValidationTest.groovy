@@ -28,8 +28,8 @@ class AuthorisationFlowCXValidationTest extends AUTest {
 
     @Test(groups = "SmokeTest")
     void "TC0203003_Verify the permissions of a consent with common customer basic read scope"() {
-        List<AUAccountScope> scopes = [AUAccountScope.BANK_CUSTOMER_BASIC_READ]
 
+        List<AUAccountScope> scopes = [AUAccountScope.BANK_CUSTOMER_BASIC_READ]
         AUAuthorisationBuilder authorisationBuilder = new AUAuthorisationBuilder()
         String authoriseUrl = authorisationBuilder.getAuthorizationRequest(scopes, AUConstants.DEFAULT_SHARING_DURATION, true).toURI().toString()
 
@@ -67,8 +67,8 @@ class AuthorisationFlowCXValidationTest extends AUTest {
 
     @Test
     void "TC0203004_Verify the permissions of a consent with common customer detail read scope"() {
-        List<AUAccountScope> scopes = [AUAccountScope.BANK_CUSTOMER_DETAIL_READ]
 
+        List<AUAccountScope> scopes = [AUAccountScope.BANK_CUSTOMER_DETAIL_READ]
         AUAuthorisationBuilder authorisationBuilder = new AUAuthorisationBuilder()
         String authoriseUrl = authorisationBuilder.getAuthorizationRequest(scopes, AUConstants.DEFAULT_SHARING_DURATION, true)
                 .toURI().toString()
@@ -114,11 +114,10 @@ class AuthorisationFlowCXValidationTest extends AUTest {
     void "TC0203005_Verify the permissions of a consent with bank accounts basic read scope"() {
 
         List<AUAccountScope> scopes = [AUAccountScope.BANK_ACCOUNT_BASIC_READ]
-
         AUAuthorisationBuilder authorisationBuilder = new AUAuthorisationBuilder()
         String authoriseUrl = authorisationBuilder.getAuthorizationRequest(scopes, AUConstants.DEFAULT_SHARING_DURATION, true)
                 .toURI().toString()
-        def automation =getBrowserAutomation(AUConstants.DEFAULT_DELAY)
+        def automation = getBrowserAutomation(AUConstants.DEFAULT_DELAY)
                 .addStep(new AUBasicAuthAutomationStep(authoriseUrl))
                 .addStep { driver, context ->
 
@@ -144,11 +143,10 @@ class AuthorisationFlowCXValidationTest extends AUTest {
     void "TC0203006_Verify the permissions of a consent with bank accounts detail read scope"() {
 
         List<AUAccountScope> scopes = [AUAccountScope.BANK_ACCOUNT_DETAIL_READ]
-
         AUAuthorisationBuilder authorisationBuilder = new AUAuthorisationBuilder()
         String authoriseUrl = authorisationBuilder.getAuthorizationRequest(scopes, AUConstants.DEFAULT_SHARING_DURATION, true)
                 .toURI().toString()
-        def automation =getBrowserAutomation(AUConstants.DEFAULT_DELAY)
+        def automation = getBrowserAutomation(AUConstants.DEFAULT_DELAY)
                 .addStep(new AUBasicAuthAutomationStep(authoriseUrl))
                 .addStep { driver, context ->
 
@@ -186,11 +184,10 @@ class AuthorisationFlowCXValidationTest extends AUTest {
     void "TC0203007_Verify the permissions of a consent with bank transactions read scope"() {
 
         List<AUAccountScope> scopes = [AUAccountScope.BANK_TRANSACTION_READ]
-
         AUAuthorisationBuilder authorisationBuilder = new AUAuthorisationBuilder()
         String authoriseUrl = authorisationBuilder.getAuthorizationRequest(scopes, AUConstants.DEFAULT_SHARING_DURATION, true)
                 .toURI().toString()
-        def automation =getBrowserAutomation(AUConstants.DEFAULT_DELAY)
+        def automation = getBrowserAutomation(AUConstants.DEFAULT_DELAY)
                 .addStep(new AUBasicAuthAutomationStep(authoriseUrl))
                 .addStep { driver, context ->
 
@@ -221,11 +218,10 @@ class AuthorisationFlowCXValidationTest extends AUTest {
     void "TC0203008_Verify the permissions of a consent with bank regular_payments read scope"() {
 
         List<AUAccountScope> scopes = [AUAccountScope.BANK_REGULAR_PAYMENTS_READ]
-
         AUAuthorisationBuilder authorisationBuilder = new AUAuthorisationBuilder()
         String authoriseUrl = authorisationBuilder.getAuthorizationRequest(scopes, AUConstants.DEFAULT_SHARING_DURATION, true)
                 .toURI().toString()
-        def automation =getBrowserAutomation(AUConstants.DEFAULT_DELAY)
+        def automation = getBrowserAutomation(AUConstants.DEFAULT_DELAY)
                 .addStep(new AUBasicAuthAutomationStep(authoriseUrl))
                 .addStep { driver, context ->
 
@@ -249,11 +245,10 @@ class AuthorisationFlowCXValidationTest extends AUTest {
     void "TC0203009_Verify the permissions of a consent with bank payees read scope"() {
 
         List<AUAccountScope> scopes = [AUAccountScope.BANK_PAYEES_READ]
-
         AUAuthorisationBuilder authorisationBuilder = new AUAuthorisationBuilder()
         String authoriseUrl = authorisationBuilder.getAuthorizationRequest(scopes, AUConstants.DEFAULT_SHARING_DURATION, true)
                 .toURI().toString()
-        def automation =getBrowserAutomation(AUConstants.DEFAULT_DELAY)
+        def automation = getBrowserAutomation(AUConstants.DEFAULT_DELAY)
                 .addStep(new AUBasicAuthAutomationStep(authoriseUrl))
                 .addStep { driver, context ->
 

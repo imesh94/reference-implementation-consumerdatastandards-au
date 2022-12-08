@@ -19,19 +19,26 @@ import com.wso2.openbanking.test.framework.configuration.OBConfigParser
 import com.wso2.openbanking.test.framework.constant.OBConstants
 import com.wso2.openbanking.test.framework.utility.RestAsRequestBuilder
 import org.testng.Assert
+import org.testng.annotations.AfterClass
 import org.testng.annotations.Test
 import org.testng.ITestContext
 
 /**
- * Testcases for DCR retrieve request validation
+ * Testcases for DCR retrieve request validation.
  */
 class DynamicClientRegistrationRetrieveTest extends AUTest{
 
-    private String accessToken
     private String applicationId
 
     @SuppressWarnings('GroovyAccessibility')
-    @Test(priority = 1, groups = "SmokeTest")
+    @Test(priority = 1)
+    void "TC0101009_Get access token"() {
+
+        accessToken = getApplicationAccessToken(clientId)
+        Assert.assertNotNull(accessToken)
+    }
+
+    @Test(priority = 1)
     void "TC0101018_Retrieve Application"(ITestContext context) {
 
         AURegistrationRequestBuilder registrationRequestBuilder = new AURegistrationRequestBuilder()
@@ -46,13 +53,13 @@ class DynamicClientRegistrationRetrieveTest extends AUTest{
         AUTestUtil.writeXMLContent(auConfiguration.getOBXMLFile().toString(), "Application",
                 "ClientID", clientId, auConfiguration.getTppNumber())
 
-        AUConfigurationService auConfigurationService=new AUConfigurationService()
+        AUConfigurationService auConfigurationService = new AUConfigurationService()
         URI devPortalEndpoint =
                 new URI("${String.valueOf(OBConfigParser.getInstance().getConfigurationMap().get("Server.GatewayURL"))}"
                         + AUConstants.REST_API_STORE_ENDPOINT + "applications");
         def response = RestAsRequestBuilder.buildRequest()
                 .contentType(OBConstants.CONTENT_TYPE_APPLICATION_JSON)
-                .header(OBConstants.AUTHORIZATION_HEADER_KEY, "Bearer "
+                .header(OBConstants.AUTHORIZATION_HEADER_KEY, AUConstants.AUTHORIZATION_BEARER_TAG
                         + auConfigurationService.getRestAPIDCRAccessToken())
                 .get(devPortalEndpoint.toString())
 
@@ -61,11 +68,10 @@ class DynamicClientRegistrationRetrieveTest extends AUTest{
         applicationId = AUTestUtil.parseResponseBody(response, "list[1].applicationId")
     }
 
-    @Test(priority = 1, groups = "SmokeTest", dependsOnMethods = "Retrieve Application")
+    @Test(priority = 2, dependsOnMethods = "TC0101018_Retrieve Application")
     void "TC0101019_Subscribe admin API"() {
 
         AURegistrationRequestBuilder registrationRequestBuilder = new AURegistrationRequestBuilder()
-
 
         def apiID = auConfiguration.getRestAPIID()
         URI devPortalEndpoint =
@@ -73,14 +79,14 @@ class DynamicClientRegistrationRetrieveTest extends AUTest{
                         +  AUConstants.REST_API_STORE_ENDPOINT + "subscriptions");
         def response = RestAsRequestBuilder.buildRequest()
                 .contentType(OBConstants.CONTENT_TYPE_APPLICATION_JSON)
-                .header(OBConstants.AUTHORIZATION_HEADER_KEY,  "Bearer "+ auConfiguration.getRestAPIDCRAccessToken())
+                .header(OBConstants.AUTHORIZATION_HEADER_KEY,  AUConstants.AUTHORIZATION_BEARER_TAG+ auConfiguration.getRestAPIDCRAccessToken())
                 .body(registrationRequestBuilder.getSubscriptionPayload(applicationId, apiID))
                 .post(devPortalEndpoint.toString())
 
         Assert.assertEquals(response.statusCode(), AUConstants.STATUS_CODE_201)
     }
 
-    @Test(priority = 1, dependsOnMethods = "Get access token")
+    @Test(priority = 2, dependsOnMethods = "TC0101009_Get access token")
     void "TC0102001_Get registration details with invalid client id"() {
 
         String invalidClientId = "invalidclientid"
@@ -92,7 +98,7 @@ class DynamicClientRegistrationRetrieveTest extends AUTest{
         Assert.assertEquals(registrationResponse.statusCode(), AUConstants.STATUS_CODE_401)
     }
 
-    @Test(priority = 1, groups = "SmokeTest", dependsOnMethods = "Get access token")
+    @Test(priority = 2, dependsOnMethods = "TC0101009_Get access token")
     void "TC0102002_Get registration details"() {
 
         def registrationResponse = AURegistrationRequestBuilder.buildBasicRequest(accessToken)
@@ -102,10 +108,8 @@ class DynamicClientRegistrationRetrieveTest extends AUTest{
         Assert.assertEquals(registrationResponse.statusCode(), AUConstants.STATUS_CODE_200)
     }
 
-    @Test(priority = 2, groups = "SmokeTest")
-    void "TC0101009_Get access token"() {
-
-        accessToken = getApplicationAccessToken(clientId)
-        Assert.assertNotNull(accessToken)
+    @AfterClass(alwaysRun = true)
+    void tearDown() {
+        deleteApplicationIfExists(clientId)
     }
 }

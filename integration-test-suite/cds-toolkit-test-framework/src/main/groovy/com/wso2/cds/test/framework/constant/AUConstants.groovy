@@ -39,6 +39,7 @@ class AUConstants extends OBConstants {
     public static String CONTENT_TYPE = "Content-Type"
     public static String X_FAPI_AUTH_DATE = "x-fapi-auth-date"
     public static String X_CDS_CLIENT_HEADERS = "x-cds-client-headers"
+    public static final String AUTHORIZATION_BEARER_TAG = "Bearer ";
     public static String X_FAPI_CUSTOMER_IP_ADDRESS = "x-fapi-customer-ip-address"
     public static String UUID = AUTestUtil.generateUUID()
     public static String DATE = AUTestUtil.getDateAndTime()

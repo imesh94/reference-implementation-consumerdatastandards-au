@@ -151,8 +151,6 @@ class AUAuthorisationBuilder {
         return parResponse
     }
 
-
-
     /**
      * Push Authorisation Request with private_key_jwt authentication method.
      * @param scopes
@@ -207,7 +205,7 @@ class AUAuthorisationBuilder {
         def revocationResponse = AURestAsRequestBuilder.buildRequest()
                 .contentType(AUConstants.ACCESS_TOKEN_CONTENT_TYPE)
                 .header(AUConstants.X_V_HEADER, AUConstants.CDR_ENDPOINT_VERSION)
-                .header(AUConstants.AUTHORIZATION_HEADER_KEY, "Bearer ${applicationAccessToken}")
+                .header(AUConstants.AUTHORIZATION_HEADER_KEY, "${AUConstants.AUTHORIZATION_BEARER_TAG} ${applicationAccessToken}")
                 .formParams(bodyContent)
                 .baseUri(AUTestUtil.getBaseUrl(AUConstants.BASE_PATH_TYPE_CDR_ARRANGEMENT))
                 .delete("${AUConstants.CDR_ARRANGEMENT_ENDPOINT}/${cdrArrangementId}")

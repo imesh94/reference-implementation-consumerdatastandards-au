@@ -22,8 +22,8 @@ import org.testng.asserts.SoftAssert
 
 
 /**
- * for testing User access token with the test context
- * new User access token will be generated if there is no already generated user access token
+ * for testing User access token with the test context.
+ * new User access token will be generated if there is no already generated user access token.
  */
 
 class AccessTokenTest extends AUTest {

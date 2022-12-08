@@ -21,7 +21,7 @@
 
         <!--Access token expire time in seconds-->
         <!--Sample Values: 30 -->
-        <AccessTokenExpireTime>Common.ApiVersion</AccessTokenExpireTime>
+        <AccessTokenExpireTime>Common. AccessTokenExpireTime</AccessTokenExpireTime>
 
         <!--Sample Values: carbon.super -->
         <TenantDomain>Common.TenantDomain</TenantDomain>
@@ -36,8 +36,9 @@
            common.integration.test package.)-->
         <Enabled>Provisioning.Enabled</Enabled>
 
-        <!--Sample Value: <Path to ob-compliance-toolkit-cds>/open-banking-test-suite/toolkit-uk-test/com.wso2.openbanking.toolkit.cds.test/
-         common.integration.test/src/test/resources/provisioningFiles/api-config-provisioning.yaml -->
+        <!--Sample Value: <Path to financial-open-banking>/open-banking-test-suite/accelerator-tests/
+        ob-gateway-integration-tests/common.integration.test/src/test/resources/provisioningFiles/
+        api-config-provisioning.yaml-->
         <ProvisionFilePath>Provisioning.ProvisionFilePath</ProvisionFilePath>
     </Provisioning>
 
@@ -60,7 +61,7 @@
             <!-- Application Keystore -->
             <KeyStore>
                 <!--Absolute path + file name of JKS keystore file-->
-                <!--Sample Values: /home/wso2/ob-compliance-toolkit-cds/integration-test-suite/test-artifacts/DynamicClientRegistration/
+                <!--Sample Values: /integration-test-suite/test-artifacts/DynamicClientRegistration/
                 AU/sample-client-resources/signing-keystore/signing.jks -->
                 <Location>AppConfig1.KeyStore.Location</Location>
 
@@ -87,7 +88,7 @@
 
                 <KeyStore>
                     <!--Absolute path + file name of keystore file.-->
-                    <!--Sample Values: /home/wso2/ob-compliance-toolkit-cds/integration-test-suite/test-artifacts/DynamicClientRegistration/
+                    <!--Sample Values: /integration-test-suite/test-artifacts/DynamicClientRegistration/
                     AU/sample-client-resources/transport-keystore/transport.jks-->
                     <Location>AppConfig1.Transport.KeyStore.Location</Location>
 
@@ -101,7 +102,7 @@
 
             <!-- DCR Configurations -->
             <DCR>
-                <!--Sample Values: /home/wso2/ob-compliance-toolkit-cds/integration-test-suite/test-artifacts/DynamicClientRegistration/
+                <!--Sample Values: /integration-test-suite/test-artifacts/DynamicClientRegistration/
                 AU/sample-client-resources/ssa.txt -->
                 <SSAPath>AppConfig1.DCR.SSAPath</SSAPath>
 
@@ -130,7 +131,7 @@
             <!-- Application Keystore -->
             <KeyStore>
                 <!--Absolute path + file name of keystore file.-->
-                <!--Sample Values: /home/wso2/ob-compliance-toolkit-cds/integration-test-suite/test-artifacts/DynamicClientRegistration/
+                <!--Sample Values: /integration-test-suite/test-artifacts/DynamicClientRegistration/
                 AU/sample-client-resources/transport-keystore/transport.jks-->
                 <Location>AppConfig2.KeyStore.Location</Location>
 
@@ -156,7 +157,7 @@
                 true-->
                 <KeyStore>
                     <!--Absolute path + file name of keystore file.-->
-                    <!--Sample Values: /home/wso2/ob-compliance-toolkit-cds/integration-test-suite/test-artifacts/DynamicClientRegistration/
+                    <!--Sample Values: /integration-test-suite/test-artifacts/DynamicClientRegistration/
                AU/sample-client-resources/transport-keystore/transport.jks-->
                     <Location>AppConfig2.Transport.KeyStore.Location</Location>
 
@@ -170,7 +171,7 @@
 
             <!-- DCR Configurations -->
             <DCR>
-                <!--Sample Values: /home/wso2/ob-compliance-toolkit-cds/integration-test-suite/test-artifacts/DynamicClientRegistration/
+                <!--Sample Values:/integration-test-suite/test-artifacts/DynamicClientRegistration/
                 AU/sample-client-resources/ssa.txt -->
                 <SSAPath>AppConfig2.DCR.SSAPath</SSAPath>
 
@@ -197,7 +198,7 @@
     <Transport>
         <Truststore>
             <!--Absolute path + file name of truststore file. We can point the product client-truststore.jks here.-->
-            <!--Sample Values: /home/wso2/Desktop/accelerator/wso2am-4.0.0/repository/resources/security/client-truststore.jk-->
+            <!--Sample Values: /wso2am-4.0.0/repository/resources/security/client-truststore.jk-->
             <Location>Transport.Truststore.Location</Location>
 
             <!--Sample Values: jks -->
@@ -274,7 +275,7 @@
         <BrowserPreference>BrowserAutomation.BrowserPreference</BrowserPreference>
         <!--Sample Values: false -->
         <HeadlessEnabled>BrowserAutomation.HeadlessEnabled</HeadlessEnabled>
-        <!--Sample Values: /home/wso2/ob-compliance-toolkit-cds/integration-test-suite/test-artifacts/selenium-libs/ubuntu/geckodriver -->
+        <!--Sample Values: /integration-test-suite/test-artifacts/selenium-libs/ubuntu/geckodriver -->
         <WebDriverLocation>BrowserAutomation.WebDriverLocation</WebDriverLocation>
     </BrowserAutomation>
 

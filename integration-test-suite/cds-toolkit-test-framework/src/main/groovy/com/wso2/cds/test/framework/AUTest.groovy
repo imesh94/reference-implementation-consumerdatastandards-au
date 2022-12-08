@@ -47,7 +47,6 @@ class AUTest extends OBTest {
     AUConfigurationService auConfiguration
     protected static Logger log = LogManager.getLogger(AUTest.class.getName());
 
-
     @BeforeClass(alwaysRun = true)
     void "Initialize Test Suite"() {
         OBConfigParser.getInstance(AUConfigConstants.CONFIG_FILE_LOCATION)
@@ -74,6 +73,7 @@ class AUTest extends OBTest {
     public String cdrArrangementId = ""
     public String jtiVal
     public String clientId
+    public String accessToken
 
     /**
      * Set Scopes of application

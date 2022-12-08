@@ -22,12 +22,11 @@ import org.testng.annotations.Test
 import org.testng.ITestContext
 
 /**
- * Testcases for DCR Update request validation
+ * Testcases for DCR Update request validation.
  */
 
 class DynamicClientRegistrationUpdateTest extends AUTest{
 
-    private String accessToken
     private String registrationPath = AUConstants.DCR_REGISTRATION_ENDPOINT
     private String invalidClientId = "invalidclientid"
 
@@ -49,11 +48,18 @@ class DynamicClientRegistrationUpdateTest extends AUTest{
                 "ClientID", clientId, auConfiguration.getTppNumber())
     }
 
-    @Test(priority = 1, dependsOnMethods = "TC0101009_Get access token")
+    @Test(priority = 1, groups = "SmokeTest")
+    void "TC0101009_Get access token"() {
+
+        accessToken = AURequestBuilder.getApplicationAccessToken(context.getAttribute(ContextConstants.CLIENT_ID).toString())
+        Assert.assertNotNull(accessToken)
+    }
+
+    @Test(priority = 2, dependsOnMethods = "TC0101009_Get access token")
     void "TC0103001_Update registration details with invalid client id"() {
 
-        AUJWTGenerator aujwtGenerator=new AUJWTGenerator()
-        AURegistrationRequestBuilder auRegistrationRequestBuilder=new AURegistrationRequestBuilder()
+        AUJWTGenerator aujwtGenerator = new AUJWTGenerator()
+        AURegistrationRequestBuilder auRegistrationRequestBuilder = new AURegistrationRequestBuilder()
         def registrationResponse = AURegistrationRequestBuilder.buildBasicRequest(accessToken)
                 .body(aujwtGenerator.getSignedRequestObject(auRegistrationRequestBuilder.getRegularClaimsWithNewRedirectUri()))
                 .when()
@@ -62,11 +68,11 @@ class DynamicClientRegistrationUpdateTest extends AUTest{
         Assert.assertEquals(registrationResponse.statusCode(), AUConstants.STATUS_CODE_401)
     }
 
-    @Test(priority = 1, groups = "SmokeTest", dependsOnMethods = "TC0101009_Get access token")
+    @Test(priority = 2, groups = "SmokeTest", dependsOnMethods = "TC0101009_Get access token")
     void "TC0103002_Update registration details"() {
 
-        AUJWTGenerator aujwtGenerator=new AUJWTGenerator()
-        AURegistrationRequestBuilder auRegistrationRequestBuilder=new AURegistrationRequestBuilder()
+        AUJWTGenerator aujwtGenerator =new AUJWTGenerator()
+        AURegistrationRequestBuilder auRegistrationRequestBuilder = new AURegistrationRequestBuilder()
         def registrationResponse = AURegistrationRequestBuilder.buildBasicRequest(accessToken)
                 .body(aujwtGenerator.getSignedRequestObject(auRegistrationRequestBuilder.getRegularClaims()))
                 .when()
@@ -75,18 +81,11 @@ class DynamicClientRegistrationUpdateTest extends AUTest{
         Assert.assertEquals(registrationResponse.statusCode(), AUConstants.STATUS_CODE_200)
     }
 
-    @Test(priority = 2, groups = "SmokeTest")
-    void "TC0101009_Get access token"() {
-
-        accessToken = AURequestBuilder.getApplicationAccessToken(context.getAttribute(ContextConstants.CLIENT_ID).toString())
-        Assert.assertNotNull(accessToken)
-    }
-
-    @Test(priority = 2, dependsOnMethods = "TC0101009_Get access token")
+    @Test(priority = 3, dependsOnMethods = "TC0101009_Get access token")
     void "OB-1167_Update registration details without SSA"() {
 
-        AUJWTGenerator aujwtGenerator=new AUJWTGenerator()
-        AURegistrationRequestBuilder auRegistrationRequestBuilder=new AURegistrationRequestBuilder()
+        AUJWTGenerator aujwtGenerator = new AUJWTGenerator()
+        AURegistrationRequestBuilder auRegistrationRequestBuilder = new AURegistrationRequestBuilder()
         def registrationResponse = AURegistrationRequestBuilder.buildBasicRequest(accessToken)
                 .body(aujwtGenerator.getSignedRequestObject(auRegistrationRequestBuilder
                         .getClaimsWithoutSSA()))
@@ -98,11 +97,11 @@ class DynamicClientRegistrationUpdateTest extends AUTest{
                 AUConstants.INVALID_CLIENT_METADATA)
     }
 
-    @Test(priority = 2, dependsOnMethods = "TC0101009_Get access token")
+    @Test(priority = 3, dependsOnMethods = "TC0101009_Get access token")
     void "OB-1168_Update registration details with fields not supported by data holder brand"() {
 
-        AUJWTGenerator aujwtGenerator=new AUJWTGenerator()
-        AURegistrationRequestBuilder auRegistrationRequestBuilder=new AURegistrationRequestBuilder()
+        AUJWTGenerator aujwtGenerator = new AUJWTGenerator()
+        AURegistrationRequestBuilder auRegistrationRequestBuilder = new AURegistrationRequestBuilder()
         def registrationResponse = AURegistrationRequestBuilder.buildBasicRequest(accessToken)
                 .body(aujwtGenerator.getSignedRequestObject(auRegistrationRequestBuilder
                         .getRegularClaimsWithFieldsNotSupported()))
@@ -131,7 +130,7 @@ class DynamicClientRegistrationUpdateTest extends AUTest{
         accessToken = AURequestBuilder.getApplicationAccessToken(scopes, clientId)
         Assert.assertNotNull(accessToken)
 
-        AUJWTGenerator aujwtGenerator=new AUJWTGenerator()
+        AUJWTGenerator aujwtGenerator = new AUJWTGenerator()
         def registrationResponse = AURegistrationRequestBuilder.buildBasicRequest(accessToken)
                 .body(aujwtGenerator.getSignedRequestObject(AURegistrationRequestBuilder.getRegularClaims()))
                 .when()
@@ -143,8 +142,8 @@ class DynamicClientRegistrationUpdateTest extends AUTest{
     @Test(priority = 3)
     void "OB-1170_Update registration details without access token"() {
 
-        AUJWTGenerator aujwtGenerator=new AUJWTGenerator()
-        AURegistrationRequestBuilder auRegistrationRequestBuilder=new AURegistrationRequestBuilder()
+        AUJWTGenerator aujwtGenerator= new AUJWTGenerator()
+        AURegistrationRequestBuilder auRegistrationRequestBuilder = new AURegistrationRequestBuilder()
         def registrationResponse = AURegistrationRequestBuilder.buildBasicRequest(null)
                 .body(aujwtGenerator.getSignedRequestObject(auRegistrationRequestBuilder
                         .getRegularClaims()))
@@ -156,8 +155,9 @@ class DynamicClientRegistrationUpdateTest extends AUTest{
 
     @Test(priority = 3)
     void "OB-1171_Update registration details with invalid access token"() {
-        AUJWTGenerator aujwtGenerator=new AUJWTGenerator()
-        AURegistrationRequestBuilder auRegistrationRequestBuilder=new AURegistrationRequestBuilder()
+
+        AUJWTGenerator aujwtGenerator = new AUJWTGenerator()
+        AURegistrationRequestBuilder auRegistrationRequestBuilder = new AURegistrationRequestBuilder()
         def registrationResponse = AURegistrationRequestBuilder.buildBasicRequest("asd")
                 .body(aujwtGenerator.getSignedRequestObject(auRegistrationRequestBuilder
                         .getRegularClaims()))
