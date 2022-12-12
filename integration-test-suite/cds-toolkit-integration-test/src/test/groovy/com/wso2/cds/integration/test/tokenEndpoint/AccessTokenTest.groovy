@@ -36,7 +36,6 @@ class AccessTokenTest extends AUTest {
 
     private final String ACCOUNTS_BASIC_OPENID_SCOPE_LIST = "bank:accounts.basic:read bank:accounts.detail:read openid profile"
     private final String ACCOUNTS_BASIC_ACCOUNT_DETAIL_OPENID_SCOPE_LIST = "bank:accounts.basic:read bank:accounts.detail:read openid"
-    String requestUri
     private AccessTokenResponse userAccessToken
 
     @Test
@@ -106,8 +105,6 @@ class AccessTokenTest extends AUTest {
 
     @Test (priority = 1)
     void "OB-1267_Invoke token endpoint for user access token with a subset of authorized scopes"() {
-
-        def cdsClient = "${auConfiguration.getAppInfoClientID()}:${auConfiguration.getAppInfoClientSecret()}"
 
         // scopes authorized for the consent
         scopeArrayList = [

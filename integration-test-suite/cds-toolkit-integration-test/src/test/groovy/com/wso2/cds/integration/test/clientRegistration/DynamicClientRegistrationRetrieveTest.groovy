@@ -56,7 +56,7 @@ class DynamicClientRegistrationRetrieveTest extends AUTest{
         AUConfigurationService auConfigurationService = new AUConfigurationService()
         URI devPortalEndpoint =
                 new URI("${String.valueOf(OBConfigParser.getInstance().getConfigurationMap().get("Server.GatewayURL"))}"
-                        + AUConstants.REST_API_STORE_ENDPOINT + "applications");
+                        + AUConstants.REST_API_STORE_ENDPOINT + "applications")
         def response = RestAsRequestBuilder.buildRequest()
                 .contentType(OBConstants.CONTENT_TYPE_APPLICATION_JSON)
                 .header(OBConstants.AUTHORIZATION_HEADER_KEY, AUConstants.AUTHORIZATION_BEARER_TAG
@@ -76,7 +76,7 @@ class DynamicClientRegistrationRetrieveTest extends AUTest{
         def apiID = auConfiguration.getRestAPIID()
         URI devPortalEndpoint =
                 new URI("${String.valueOf(OBConfigParser.getInstance().getConfigurationMap().get("Server.GatewayURL"))}"
-                        +  AUConstants.REST_API_STORE_ENDPOINT + "subscriptions");
+                        +  AUConstants.REST_API_STORE_ENDPOINT + "subscriptions")
         def response = RestAsRequestBuilder.buildRequest()
                 .contentType(OBConstants.CONTENT_TYPE_APPLICATION_JSON)
                 .header(OBConstants.AUTHORIZATION_HEADER_KEY,  AUConstants.AUTHORIZATION_BEARER_TAG+ auConfiguration.getRestAPIDCRAccessToken())

@@ -62,7 +62,6 @@ class UserAuthenticationFlowValidationTest extends AUTest {
                     driver.manage().timeouts().implicitlyWait(30, TimeUnit.SECONDS)
                     Assert.assertTrue(driver.findElement(By.xpath(AUConstants.ELE_CONSENT_PAGE)).isDisplayed())
                 }
-                .execute()
-    }
+        automation.execute()    }
 
 }

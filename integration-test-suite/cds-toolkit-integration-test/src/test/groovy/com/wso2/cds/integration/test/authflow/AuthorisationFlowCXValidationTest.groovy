@@ -62,7 +62,7 @@ class AuthorisationFlowCXValidationTest extends AUTest {
                     // Submit consent
                     driver.findElement(By.xpath(AUPageObjects.CONSENT_SUBMIT_XPATH)).click()
                 }
-                .execute()
+        automation.execute()
     }
 
     @Test
@@ -107,7 +107,7 @@ class AuthorisationFlowCXValidationTest extends AUTest {
                     // Submit consent
                     driver.findElement(By.xpath(AUPageObjects.CONSENT_SUBMIT_XPATH)).click()
                 }
-                .execute()
+        automation.execute()
     }
 
     @Test
@@ -136,7 +136,7 @@ class AuthorisationFlowCXValidationTest extends AUTest {
                     // Submit consent
                     driver.findElement(By.xpath(AUPageObjects.CONSENT_SUBMIT_XPATH)).click()
                 }
-                .execute()
+        automation.execute()
     }
 
     @Test
@@ -177,7 +177,7 @@ class AuthorisationFlowCXValidationTest extends AUTest {
                     // Submit consent
                     driver.findElement(By.xpath(AUPageObjects.CONSENT_SUBMIT_XPATH)).click()
                 }
-                .execute()
+        automation.execute()
     }
 
     @Test
@@ -210,7 +210,7 @@ class AuthorisationFlowCXValidationTest extends AUTest {
                     // Submit consent
                     driver.findElement(By.xpath(AUPageObjects.CONSENT_SUBMIT_XPATH)).click()
                 }
-                .execute()
+        automation.execute()
     }
 
 
@@ -238,7 +238,7 @@ class AuthorisationFlowCXValidationTest extends AUTest {
                     // Submit consent
                     driver.findElement(By.xpath(AUPageObjects.CONSENT_SUBMIT_XPATH)).click()
                 }
-                .execute()
+        automation.execute()
     }
 
     @Test
@@ -263,7 +263,7 @@ class AuthorisationFlowCXValidationTest extends AUTest {
                     // Submit consent
                     driver.findElement(By.xpath(AUPageObjects.CONSENT_SUBMIT_XPATH)).click()
                 }
-                .execute()
+        automation.execute()
     }
 
 }
