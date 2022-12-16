@@ -115,7 +115,7 @@ class AUMockCDRIntegrationUtil {
                 .concat(AUConstants.CLIENT_ASSERTION_KEY + "=" + clientAssertion + delimiter)
                 .concat(AUConstants.SCOPE_KEY + "=" + "cdr-register:bank:read")
 
-        RestAssured.baseURI = AUConstants.MOCK_INFO_SEC_BASE_URL;
+        RestAssured.baseURI = AUConstants.MOCK_INFO_SEC_BASE_URL
         def tokenResponse = AURestAsRequestBuilder.buildRequestToMockCDRRegister(true)
                 .contentType(AUConstants.ACCESS_TOKEN_CONTENT_TYPE)
                 .body(payload)
@@ -135,7 +135,7 @@ class AUMockCDRIntegrationUtil {
      */
     static String generateClientAssertionFromMockCDRRegister(String softwareProductId) {
 
-        RestAssured.baseURI = AUConstants.MOCK_ADMIN_BASE_URL;
+        RestAssured.baseURI = AUConstants.MOCK_ADMIN_BASE_URL
         def clientAssertionResponse = AURestAsRequestBuilder.buildRequestToMockCDRRegister(false)
                 .queryParam("iss", softwareProductId)
                 .get("${AUConstants.MOCK_CLIENT_ASSERTION_ENDPOINT}")
@@ -156,9 +156,9 @@ class AUMockCDRIntegrationUtil {
 
         def accessToken = getApplicationTokenFromMockCDRRegister(softwareProductId)
 
-        RestAssured.baseURI = AUConstants.MOCK_INFO_SEC_BASE_URL;
+        RestAssured.baseURI = AUConstants.MOCK_INFO_SEC_BASE_URL
         def SSAResponse = AURestAsRequestBuilder.buildRequestToMockCDRRegister(true)
-                .header(AUConstants.AUTHORIZATION_HEADER_KEY, "${AUConstants.AUTHORIZATION_BEARER_TAG} ${accessToken}")
+                .header(AUConstants.AUTHORIZATION_HEADER_KEY, "${AUConstants.AUTHORIZATION_BEARER_TAG}${accessToken}")
                 .get("${AUConstants.MOCK_SSA_ENDPOINT}/${ADRBrandId}/software-products/${softwareProductId}/ssa")
 
         return SSAResponse.getBody().asString()

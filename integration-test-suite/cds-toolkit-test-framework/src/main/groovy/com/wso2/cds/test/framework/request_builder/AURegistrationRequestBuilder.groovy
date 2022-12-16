@@ -267,7 +267,7 @@ class AURegistrationRequestBuilder extends OBRegistrationRequestBuilder {
 
         return AURestAsRequestBuilder.buildRequest()
                 .header("charset", "UTF-8")
-                .header(AUConstants.AUTHORIZATION_HEADER_KEY, "${AUConstants.AUTHORIZATION_BEARER_TAG} ${accessToken}")
+                .header(AUConstants.AUTHORIZATION_HEADER_KEY, "${AUConstants.AUTHORIZATION_BEARER_TAG}${accessToken}")
                 .accept("application/json")
                 .config(RestAssured.config()
                         .sslConfig(RestAssured.config().getSSLConfig().sslSocketFactory(AUTestUtil.getSslSocketFactory()))
