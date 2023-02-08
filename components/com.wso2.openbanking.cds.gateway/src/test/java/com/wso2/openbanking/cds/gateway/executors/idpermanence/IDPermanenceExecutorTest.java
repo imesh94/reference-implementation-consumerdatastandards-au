@@ -54,7 +54,7 @@ public class IDPermanenceExecutorTest extends PowerMockTestCase {
     private static final String ENCRYPTED_ID = "encrypted-account-id";
     private static final String DECRYPTED_ACCOUNT_STRING = "mark@gold.com@carbon.super@carbon.super:7:30080012343456";
     private static final String ENCRYPTED_ACCOUNT_IDS_JSON = "{\"data\":{\"accountIds\":[\"encrypted-account-id\"," +
-            "\"encrypted-account-id\"]},\"meta\":\"\"}";
+            "\"encrypted-account-id\"]}}";
     public static final String POST_METHOD = "POST";
     OpenBankingCDSConfigParser openBankingCDSConfigParserMock;
 

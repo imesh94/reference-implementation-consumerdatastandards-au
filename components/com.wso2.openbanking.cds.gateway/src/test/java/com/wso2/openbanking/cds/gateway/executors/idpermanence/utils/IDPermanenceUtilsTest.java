@@ -53,7 +53,7 @@ public class IDPermanenceUtilsTest extends PowerMockTestCase {
     private static final String DEC_ACCOUNT_ID = "30080012343456";
     private static final String ENC_ACCOUNT_ID_JSON = "{\"accountId\":encrypted-account-id}";
     private static final String ENC_ACCOUNT_IDS_JSON = "{\"data\":{\"accountIds\":[\"encrypted-account-id\"," +
-            "\"encrypted-account-id\"]},\"meta\":\"\"}";
+            "\"encrypted-account-id\"]}}";
     private static final String ENCRYPTED_ID = "encrypted-account-id";
     private static final String DECRYPTED_ACCOUNT_STRING = "mark@gold.com@carbon.super@carbon.super:7:30080012343456";
     private static final String DECRYPTED_SCHEDULED_PAYMENT_STRING = "mark@gold.com@carbon.super@carbon.super:7:0123";
