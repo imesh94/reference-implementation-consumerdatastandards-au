@@ -12,6 +12,7 @@
 
 package com.wso2.openbanking.toolkit.cds.test.common.utils
 
+import com.nimbusds.jose.JOSEObjectType
 import com.nimbusds.jose.JWSAlgorithm
 import com.nimbusds.jose.JWSHeader
 import com.nimbusds.jose.JWSObject
@@ -34,6 +35,8 @@ import java.security.KeyStore
 import java.security.PrivateKey
 import java.security.Security
 import java.security.cert.Certificate
+import java.time.Instant
+import java.time.temporal.ChronoUnit
 
 class AURegistrationRequestBuilder {
 
@@ -79,6 +82,26 @@ class AURegistrationRequestBuilder {
     }
 
     /**
+     * Get a basic request For With Content Type Json.
+     *
+     * @param accessToken
+     * @return
+     */
+    static RequestSpecification buildBasicRequestWithContentTypeJson(String accessToken) {
+
+        return TestSuite.buildRequest()
+                .contentType("application/json")
+                .header("charset", "UTF-8")
+                .header(TestConstants.AUTHORIZATION_HEADER_KEY, "Bearer ${accessToken}")
+                .accept("application/json")
+                .config(RestAssured.config()
+                        .sslConfig(RestAssured.config().getSSLConfig().sslSocketFactory(TestUtil.getSslSocketFactory()))
+                        .encoderConfig(new EncoderConfig().encodeContentTypeAs(
+                                "application/jwt", ContentType.TEXT)))
+                .baseUri(AUTestUtil.getBaseUrl(AUDCRConstants.BASE_PATH_TYPE_DCR))
+    }
+
+    /**
      * Get a registration request for application creation.
      *
      * @param accessToken
@@ -120,6 +143,7 @@ class AURegistrationRequestBuilder {
             KeyStore keyStore = TestUtil.getApplicationKeyStore()
             Certificate certificate = TestUtil.getCertificateFromKeyStore()
             header = new JWSHeader.Builder(JWSAlgorithm.parse(ConfigParser.instance.signingAlgorithm)).
+                    type(JOSEObjectType.JWT).
                     keyID(TestUtil.getJwkThumbPrint(certificate)).build()
 
             signingKey = keyStore.getKey(AppConfigReader.getApplicationKeystoreAlias(),
@@ -137,36 +161,36 @@ class AURegistrationRequestBuilder {
     static String getRegularClaims() {
 
         long currentTimeInMillis = System.currentTimeMillis()
-        long currentTimeInSeconds = currentTimeInMillis / 1000
+        String time = Instant.now().toEpochMilli()
         return """
-            {
-                "iss": "${softwareProductId}",
-                "iat": ${currentTimeInSeconds},
-                "exp": ${currentTimeInSeconds + 3600},
-                "jti": "${currentTimeInMillis}",
-                 "aud": "${AUDCRConstants.AUD_VALUE}",
-                "redirect_uris": [
-                    "${AUDCRConstants.REDIRECT_URI}",
-                    "${AUDCRConstants.ALTERNATE_REDIRECT_URI}"
-                    ],
-                "token_endpoint_auth_signing_alg": "PS256",
+             {
+               "iss": "${softwareProductId}",
+               "iat": ${time},
+               "exp": ${Instant.now().plus(3, ChronoUnit.DAYS).toEpochMilli()},
+               "jti": "${currentTimeInMillis}",
+               "aud": "${AUDCRConstants.AUD_VALUE}",
+               "redirect_uris": [
+                 "${AppConfigReader.getDcrRedirectUri()}",
+                 "${AppConfigReader.getAlternateRedirectUri()}"
+               ],
+               "token_endpoint_auth_signing_alg": "PS256",
                 "token_endpoint_auth_method": "private_key_jwt",
-                "grant_types": [
-                    "client_credentials",
-                    "authorization_code",
-                    "refresh_token"
-                    ],
-                "response_types": [
-                    "code id_token"
-                    ],
-                "application_type": "web",
-                "id_token_signed_response_alg": "PS256",
+               "grant_types": [
+                  "authorization_code",
+                  "client_credentials",
+                  "refresh_token"
+               ],
+               "response_types": [
+                  "code id_token"
+               ],
+               "application_type": "web",
+               "id_token_signed_response_alg": "PS256",
                 "id_token_encrypted_response_alg": "RSA-OAEP",
                 "id_token_encrypted_response_enc": "A256GCM",
                 "request_object_signing_alg": "PS256",
-                "software_statement": "${SSA}"
-            }
-        """
+               "software_statement": "${SSA}"
+         }
+         """
     }
 
     static String getRegularClaims(String softwareProductId, String SSA) {

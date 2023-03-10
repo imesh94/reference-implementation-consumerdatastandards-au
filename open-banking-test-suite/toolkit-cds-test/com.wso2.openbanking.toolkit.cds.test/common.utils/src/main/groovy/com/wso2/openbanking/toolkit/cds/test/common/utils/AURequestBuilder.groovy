@@ -48,6 +48,8 @@ class AURequestBuilder {
     static log = Logger.getLogger(AURequestBuilder.class.toString())
     private AccessTokenJwtDto accessTokenJWTDTO
     private static ConfigParser configParser = ConfigParser.getInstance()
+    private static cdsClient = "${AppConfigReader.getClientId()}:${AppConfigReader.getClientSecret()}"
+    private static clientHeader = "${Base64.encoder.encodeToString(cdsClient.getBytes(Charset.defaultCharset()))}"
 
     static RequestSpecification buildBasicRequest(String userAccessToken, int version) {
 
@@ -61,6 +63,7 @@ class AURequestBuilder {
 
         return TestSuite.buildRequest()
                 .header(AUConstants.X_V_HEADER, version)
+                .header(AUConstants.X_CDS_CLIENT_HEADERS , clientHeader)
                 .header(AUConstants.X_FAPI_CUSTOMER_IP_ADDRESS, AUConstants.IP)
                 .header(TestConstants.AUTHORIZATION_HEADER_KEY, "Bearer ${userAccessToken}")
                 .baseUri(AUTestUtil.getBaseUrl(AUConstants.BASE_PATH_TYPE_ACCOUNT))
