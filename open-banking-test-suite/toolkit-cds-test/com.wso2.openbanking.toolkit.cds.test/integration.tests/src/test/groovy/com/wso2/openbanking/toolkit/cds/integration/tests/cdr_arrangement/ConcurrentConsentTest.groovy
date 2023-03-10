@@ -171,21 +171,16 @@ class ConcurrentConsentTest extends AbstractAUTests {
         Assert.assertNotNull(applicationToken)
 
         //revoke sharing arrangement
-        def responsemg = TestSuite.buildRequest()
-                .header(AUConstants.X_V_HEADER, AUConstants.CDR_ENDPOINT_VERSION)
+        def responseRevoke = doRevokeConsent(AppConfigReader.getClientId(), cdrArrangementId)
 
-                .header(TestConstants.AUTHORIZATION_HEADER_KEY, "Bearer ${applicationToken}")
-                .baseUri(AUTestUtil.getBaseUrl(AUConstants.BASE_PATH_TYPE_CDR_ARRANGEMENT))
-                .delete("${CDR_ARRANGEMENT_ENDPOINT}/${cdrArrangementId}")
-
-        Assert.assertEquals(responsemg.statusCode(), AUConstants.STATUS_CODE_204)
+        Assert.assertEquals(responseRevoke.statusCode(), AUConstants.STATUS_CODE_204)
 
         Thread.sleep(120000)
 
         //try to retrieve consumer data after revocation
         response = AURequestBuilder
                 .buildBasicRequest(userAccessToken.tokens.accessToken.toString(),
-                AUConstants.CDR_ENDPOINT_VERSION)
+                        AUConstants.CDR_ENDPOINT_VERSION)
                 .baseUri(AUTestUtil.getBaseUrl(AUConstants.BASE_PATH_TYPE_ACCOUNT))
                 .get("${CDS_PATH}${AUConstants.BULK_ACCOUNT_PATH}")
 
@@ -231,15 +226,9 @@ class ConcurrentConsentTest extends AbstractAUTests {
         Assert.assertNotNull(applicationToken)
 
         //revoke sharing arrangement
-        response = TestSuite.buildRequest()
-                .header(AUConstants.X_V_HEADER, AUConstants.CDR_ENDPOINT_VERSION)
-                .header(AUConstants.X_FAPI_AUTH_DATE, AUConstants.DATE)
-                .header(AUConstants.X_FAPI_CUSTOMER_IP_ADDRESS , AUConstants.IP)
-                .header(AUConstants.X_CDS_CLIENT_HEADERS , clientHeader)
-                .header(TestConstants.AUTHORIZATION_HEADER_KEY, "Bearer ${applicationToken}")
-                .baseUri(AUTestUtil.getBaseUrl(AUConstants.BASE_PATH_TYPE_CDR_ARRANGEMENT))
-                .post("${CDR_ARRANGEMENT_ENDPOINT}${AUConstants.REVOKE_PATH}")
+        response = doRevokeConsent(AppConfigReader.getClientId(), cdrArrangementId)
 
+        //Assert the consent revoke status code
         Assert.assertEquals(response.statusCode(), AUConstants.STATUS_CODE_204)
 
         //generate user access token

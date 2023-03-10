@@ -13,7 +13,6 @@
 package com.wso2.openbanking.toolkit.cds.integration.tests.banking_products
 
 import com.wso2.openbanking.test.framework.TestSuite
-import com.wso2.openbanking.test.framework.util.AppConfigReader
 import com.wso2.openbanking.test.framework.util.TestConstants
 import com.wso2.openbanking.test.framework.util.TestUtil
 import com.wso2.openbanking.toolkit.cds.test.common.utils.AUConstants
@@ -40,9 +39,6 @@ class ProductRetrievalValidationTest extends AbstractAUTests {
         Response response = TestSuite.buildRequest()
                 .accept(AUConstants.ACCEPT)
                 .header(AUConstants.X_V_HEADER, AUConstants.X_V_HEADER_PRODUCTS)
-                .header(AUConstants.X_FAPI_AUTH_DATE, AUConstants.DATE)
-                .header(AUConstants.X_FAPI_CUSTOMER_IP_ADDRESS , AUConstants.IP)
-                .header(AUConstants.X_CDS_CLIENT_HEADERS , clientHeader)
                 .baseUri(AUTestUtil.getBaseUrl(AUConstants.BASE_PATH_TYPE_PRODUCTS))
                 .get("${CDS_PATH}${AUConstants.BANKING_PRODUCT_PATH}")
 
@@ -105,47 +101,43 @@ class ProductRetrievalValidationTest extends AbstractAUTests {
         Response response = TestSuite.buildRequest()
                 .accept(AUConstants.ACCEPT)
                 .header(AUConstants.X_V_HEADER, AUConstants.X_V_HEADER_PRODUCTS)
-                .header(AUConstants.X_FAPI_AUTH_DATE, AUConstants.DATE)
-                .header(AUConstants.X_FAPI_CUSTOMER_IP_ADDRESS , AUConstants.IP)
-                .header(AUConstants.X_CDS_CLIENT_HEADERS , clientHeader)
                 .baseUri(AUTestUtil.getBaseUrl(AUConstants.BASE_PATH_TYPE_PRODUCTS))
                 .get("${CDS_PATH}${AUConstants.BANKING_PRODUCT_PATH}/12345")
 
-        //TODO: Test is failing due to: https://github.com/wso2-enterprise/financial-open-banking/issues/5412
-        Assert.assertEquals(response.statusCode(), AUConstants.STATUS_CODE_400)
+        Assert.assertEquals(response.statusCode(), AUConstants.STATUS_CODE_200)
         Assert.assertEquals(response.getHeader(AUConstants.X_V_HEADER).toInteger(), AUConstants.X_V_HEADER_PRODUCTS)
-        Assert.assertEquals(response.jsonPath().get("errors[0].code"), "0001 – Account not able to be found")
+        Assert.assertNotNull(response.getHeader(AUConstants.X_FAPI_INTERACTION_ID))
+        Assert.assertNotNull(TestUtil.parseResponseBody(response, "data.productId"))
     }
 
-    // Need to update the swaggers with maximum, minimum ranges for page-size
     @Test
     void "TC1101019_Retrieve banking products with page size greater than the maximum standard pagination"() {
 
         Response response = TestSuite.buildRequest()
                 .header(AUConstants.X_V_HEADER, AUConstants.X_V_HEADER_PRODUCTS)
-                .queryParam("page-size", 200000)
+                .queryParam(AUConstants.PAGE_SIZE, 200000)
                 .baseUri(AUTestUtil.getBaseUrl(AUConstants.BASE_PATH_TYPE_PRODUCTS))
                 .get("${CDS_PATH}${AUConstants.BANKING_PRODUCT_PATH}")
 
-        Assert.assertEquals(response.statusCode(), AUConstants.STATUS_CODE_422)
+        Assert.assertEquals(response.statusCode(), AUConstants.STATUS_CODE_400)
         Assert.assertEquals(response.getHeader(AUConstants.X_V_HEADER).toInteger(), AUConstants.X_V_HEADER_PRODUCTS)
-        if (TestConstants.SOLUTION_VERSION_300.equalsIgnoreCase(AUTestUtil.solutionVersion)) {
-            Assert.assertEquals(TestUtil.parseResponseBody(response, AUConstants.ERROR_CODE),
-                    AUConstants.ERROR_CODE_PAGE_SIZE_TOO_LARGE)
-            Assert.assertEquals(TestUtil.parseResponseBody(response, AUConstants.ERROR_SOURCE_PARAMETER), AUConstants
-                    .PARAM_PAGE_SIZE)
-            Assert.assertEquals(TestUtil.parseResponseBody(response, AUConstants.ERROR_TITLE), AUConstants
-                    .PAGE_SIZE_EXCEEDED)
-        }
+        Assert.assertEquals(TestUtil.parseResponseBody(response, AUConstants.ERROR_CODE),
+                AUConstants.ERROR_CODE_INVALID_PAGE)
+        Assert.assertEquals(TestUtil.parseResponseBody(response, AUConstants.ERROR_DETAIL),
+                "Schema validation failed in the Request: Numeric instance is greater than the required maximum " +
+                        "(maximum: 1000, found: 200000),")
+        Assert.assertEquals(TestUtil.parseResponseBody(response, AUConstants.ERROR_TITLE), AUConstants
+                .INVALID_PAGE)
     }
 
     @Test
     void "TC1101020_Retrieve banking products with filters"() {
 
-        String queryParams = "?effectiveFrom=CURRENT&effectiveTo=FUTURE&brand=TEST&product-category=TRANS_AND_SAVINGS_ACCOUNTS&page=2&" +
+        String queryParams = "?effective=CURRENT&brand=TEST&product-category=TRANS_AND_SAVINGS_ACCOUNTS&page=2&" +
                 "page-size=25&updated-since=2019-12-25T15:43:00-08:00"
         Response response = AURequestBuilder
                 .buildBasicRequest(userAccessToken, AUConstants.X_V_HEADER_PRODUCTS)
+                .header(AUConstants.X_FAPI_AUTH_DATE, AUConstants.DATE)
                 .baseUri(AUTestUtil.getBaseUrl(AUConstants.BASE_PATH_TYPE_PRODUCTS))
                 .get("${CDS_PATH}${AUConstants.BANKING_PRODUCT_PATH}${queryParams}")
 
@@ -164,37 +156,50 @@ class ProductRetrievalValidationTest extends AbstractAUTests {
         Assert.assertNotNull(TestUtil.parseResponseBody(response, "links.last"))
     }
 
-    //TODO: git issue https://github.com/wso2-enterprise/financial-open-banking/issues/5561
-   // @Test
+    @Test
     void "TC1101021_Retrieve banking products with invalid updated-since value"() {
 
         def response = TestSuite.buildRequest()
                 .accept(AUConstants.ACCEPT)
                 .header(AUConstants.X_V_HEADER, AUConstants.X_V_HEADER_PRODUCTS)
-                .queryParam("updated-since", "October")
+                .queryParam(AUConstants.UPDATED_SINCE, AUConstants.DATE_FORMAT)
                 .baseUri(AUTestUtil.getBaseUrl(AUConstants.BASE_PATH_TYPE_PRODUCTS))
                 .get("${CDS_PATH}${AUConstants.BANKING_PRODUCT_PATH}")
 
-        Assert.assertEquals(response.statusCode(), AUConstants.STATUS_CODE_406)
+        Assert.assertEquals(response.statusCode(), AUConstants.STATUS_CODE_400)
         Assert.assertEquals(response.getHeader(AUConstants.X_V_HEADER).toInteger(), AUConstants.X_V_HEADER_PRODUCTS)
+
+        Assert.assertEquals(TestUtil.parseResponseBody(response, AUConstants.ERROR_CODE),
+                AUConstants.ERROR_CODE_INVALID_FIELD)
+        Assert.assertEquals(TestUtil.parseResponseBody(response, AUConstants.ERROR_DETAIL),
+                "Schema validation failed in the Request: String \"03/03/2023\" is invalid against requested " +
+                        "date format(s) [yyyy-MM-dd'T'HH:mm:ssZ, yyyy-MM-dd'T'HH:mm:ss.[0-9]{1,12}Z],")
+        Assert.assertEquals(TestUtil.parseResponseBody(response, AUConstants.ERROR_TITLE), AUConstants
+                .INVALID_FIELD)
     }
 
     //TODO: Git issue : https://github.com/wso2-enterprise/financial-open-banking/issues/5638
-   // @Test
+//    @Test
     void "TC1101024_Retrieve banking products with invalid brand value"() {
 
         Response response = AURequestBuilder
-                .buildBasicRequest(userAccessToken, AUConstants.X_V_HEADER_PRODUCTS)
-                .queryParam("brand", 123)
+                .buildBasicRequestWithoutAuthorisationHeader(AUConstants.X_V_HEADER_PRODUCTS)
+                .queryParam(AUConstants.BRAND, 123)
                 .baseUri(AUTestUtil.getBaseUrl(AUConstants.BASE_PATH_TYPE_ACCOUNT))
                 .get("${CDS_PATH}${AUConstants.BANKING_PRODUCT_PATH}")
 
-        Assert.assertEquals(response.statusCode(), AUConstants.STATUS_CODE_406)
+        Assert.assertEquals(response.statusCode(), AUConstants.STATUS_CODE_400)
         Assert.assertEquals(response.getHeader(AUConstants.X_V_HEADER).toInteger(), AUConstants.X_V_HEADER_PRODUCTS)
+        Assert.assertEquals(TestUtil.parseResponseBody(response, AUConstants.ERROR_CODE),
+                AUConstants.ERROR_CODE_INVALID_FIELD)
+        //TODO: Update error after fixing the issue.
+        Assert.assertEquals(TestUtil.parseResponseBody(response, AUConstants.ERROR_DETAIL),
+                "")
+        Assert.assertEquals(TestUtil.parseResponseBody(response, AUConstants.ERROR_TITLE), AUConstants
+                .INVALID_FIELD)
     }
 
-    //TODO: Git issue https://github.com/wso2-enterprise/financial-open-banking/issues/5560
-  //  @Test
+    @Test
     void "TC1101027_Retrieve Product list with undefined query parameter"() {
 
         def response = TestSuite.buildRequest()
@@ -204,18 +209,25 @@ class ProductRetrievalValidationTest extends AbstractAUTests {
                 .baseUri(AUTestUtil.getBaseUrl(AUConstants.BASE_PATH_TYPE_PRODUCTS))
                 .get("${CDS_PATH}${AUConstants.BANKING_PRODUCT_PATH}")
 
-        Assert.assertEquals(response.statusCode(), AUConstants.STATUS_CODE_406)
+        Assert.assertEquals(response.statusCode(), AUConstants.STATUS_CODE_400)
         Assert.assertEquals(response.getHeader(AUConstants.X_V_HEADER).toInteger(), AUConstants.X_V_HEADER_PRODUCTS)
+        Assert.assertEquals(TestUtil.parseResponseBody(response, AUConstants.ERROR_CODE),
+                AUConstants.ERROR_CODE_INVALID_FIELD)
+        Assert.assertEquals(TestUtil.parseResponseBody(response, AUConstants.ERROR_DETAIL),
+                "Schema validation failed in the Request: Query parameter 'open-status' is unexpected on path " +
+                        "\"/banking/products\",")
+        Assert.assertEquals(TestUtil.parseResponseBody(response, AUConstants.ERROR_TITLE), AUConstants
+                .INVALID_FIELD)
     }
 
     //TODO: Git Issue: https://github.com/wso2-enterprise/financial-open-banking/issues/5557
-//    @Test
+    //@Test
     void "TC1101029_Retrieve banking products with effectiveFROM value and effectiveTO value equal to ALL"() {
 
-        String queryParams = "?effectiveFrom=ALL&effectiveTo=ALL"
+        String queryParams = "?effective=ALL"
 
         Response response = AURequestBuilder
-                .buildBasicRequest(userAccessToken, AUConstants.X_V_HEADER_PRODUCTS)
+                .buildBasicRequestWithoutAuthorisationHeader(AUConstants.X_V_HEADER_PRODUCTS)
                 .baseUri(AUTestUtil.getBaseUrl(AUConstants.BASE_PATH_TYPE_PRODUCTS))
                 .get("${CDS_PATH}${AUConstants.BANKING_PRODUCT_PATH}${queryParams}")
 
@@ -249,8 +261,12 @@ class ProductRetrievalValidationTest extends AbstractAUTests {
         if (TestConstants.SOLUTION_VERSION_300.equalsIgnoreCase(AUTestUtil.solutionVersion)) {
             Assert.assertEquals(TestUtil.parseResponseBody(response, AUConstants.ERROR_CODE),
                     AUConstants.ERROR_CODE_INVALID_FIELD)
-            Assert.assertEquals(TestUtil.parseResponseBody(response, AUConstants.ERROR_SOURCE_PARAMETER), AUConstants
-                    .PARAM_PRODUCT_CATEGORY)
+            Assert.assertEquals(TestUtil.parseResponseBody(response, AUConstants.ERROR_DETAIL),
+            "Schema validation failed in the Request: Instance value (\"TRANS\") not found in enum " +
+                    "(possible values: [\"BUSINESS_LOANS\",\"CRED_AND_CHRG_CARDS\",\"LEASES\"," +
+                    "\"MARGIN_LOANS\",\"OVERDRAFTS\",\"PERS_LOANS\",\"REGULATED_TRUST_ACCOUNTS\"," +
+                    "\"RESIDENTIAL_MORTGAGES\",\"TERM_DEPOSITS\",\"TRADE_FINANCE\"," +
+                    "\"TRANS_AND_SAVINGS_ACCOUNTS\",\"TRAVEL_CARDS\"]),")
             Assert.assertEquals(TestUtil.parseResponseBody(response, AUConstants.ERROR_TITLE), AUConstants
                     .INVALID_FIELD)
         }

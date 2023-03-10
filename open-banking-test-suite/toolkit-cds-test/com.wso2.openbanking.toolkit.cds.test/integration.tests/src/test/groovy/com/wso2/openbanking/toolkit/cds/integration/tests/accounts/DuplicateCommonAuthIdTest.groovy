@@ -104,7 +104,6 @@ class DuplicateCommonAuthIdTest {
                         driver.findElement(By.xpath(AUConstants.CONSENT_SUBMIT_XPATH)).click()
                     }
                 }
-                .addStep(new WaitForRedirectAutomationStep())
                 .execute(true)
 
         // Get Code From URL

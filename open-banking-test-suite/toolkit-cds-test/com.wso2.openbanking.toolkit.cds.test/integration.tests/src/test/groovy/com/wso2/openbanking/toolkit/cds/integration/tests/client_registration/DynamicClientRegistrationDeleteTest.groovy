@@ -67,7 +67,7 @@ class DynamicClientRegistrationDeleteTest extends AbstractAUTests {
     @Test(dependsOnMethods = "TC0101009_Get access token")
     void "TC0104001_Delete application with invalid client id"() {
 
-        def registrationResponse = AURegistrationRequestBuilder.buildBasicRequest(accessToken)
+        def registrationResponse = AURegistrationRequestBuilder.buildBasicRequestWithContentTypeJson(accessToken)
                 .when()
                 .delete(registrationPath + invalidClientId)
 
@@ -77,7 +77,7 @@ class DynamicClientRegistrationDeleteTest extends AbstractAUTests {
     @Test(groups = "SmokeTest", dependsOnMethods = "TC0101009_Get access token", priority = 1)
     void "TC0104002_Delete application"() {
 
-        def registrationResponse = AURegistrationRequestBuilder.buildBasicRequest(accessToken)
+        def registrationResponse = AURegistrationRequestBuilder.buildBasicRequestWithContentTypeJson(accessToken)
                 .when()
                 .delete(registrationPath + clientId)
 
