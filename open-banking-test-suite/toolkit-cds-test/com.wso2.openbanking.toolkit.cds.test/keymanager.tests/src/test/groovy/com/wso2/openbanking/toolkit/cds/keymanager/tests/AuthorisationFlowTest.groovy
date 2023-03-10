@@ -296,8 +296,7 @@ class AuthorisationFlowTest {
         ]
 
         AUAuthorisationBuilder authorisationBuilder = new AUAuthorisationBuilder(
-                scopes, AUConstants.DEFAULT_SHARING_DURATION, true
-        )
+                scopes, AUConstants.DEFAULT_SHARING_DURATION, true)
 
         def automation = new BrowserAutomation(BrowserAutomation.DEFAULT_DELAY)
                 .addStep(new AUBasicAuthAutomationStep(authorisationBuilder.authoriseUrl))
@@ -325,16 +324,13 @@ class AuthorisationFlowTest {
         String errorMessage = "No valid scopes found in the request"
 
         def automation = new BrowserAutomation(BrowserAutomation.DEFAULT_DELAY)
-                .addStep { driver, context -> driver.navigate().to(authorisationBuilder.authoriseUrl)}.execute()
+                .addStep(new AUBasicAuthAutomationStep(authorisationBuilder.authoriseUrl))
+                .execute()
 
         String url = automation.currentUrl.get()
         String errorUrl
 
-        if (AUConstants.SOLUTION_VERSION_150.equalsIgnoreCase(AUTestUtil.solutionVersion)) {
-            errorUrl = url.split("oauthErrorMsg=")[1].split("&")[0].replaceAll("\\+", " ")
-        } else {
-            errorUrl = url.split("error_description=")[1].split("&")[0].replaceAll("\\+"," ")
-        }
+        errorUrl = url.split("error_description=")[1].split("&")[0].replaceAll("\\+"," ")
         Assert.assertEquals(errorUrl, errorMessage)
 
     }
@@ -353,16 +349,13 @@ class AuthorisationFlowTest {
         String errorMessage = "No valid scopes found in the request"
 
         def automation = new BrowserAutomation(BrowserAutomation.DEFAULT_DELAY)
-                .addStep { driver, context -> driver.navigate().to(authorisationBuilder.authoriseUrl)}.execute()
+                .addStep(new AUBasicAuthAutomationStep(authorisationBuilder.authoriseUrl))
+                .execute()
 
         String url = automation.currentUrl.get()
         String errorUrl
 
-        if (AUConstants.SOLUTION_VERSION_150.equalsIgnoreCase(AUTestUtil.solutionVersion)) {
-            errorUrl = url.split("oauthErrorMsg=")[1].split("&")[0].replaceAll("\\+", " ")
-        } else {
-            errorUrl = url.split("error_description=")[1].split("&")[0].replaceAll("\\+"," ")
-        }
+        errorUrl = url.split("error_description=")[1].split("&")[0].replaceAll("\\+"," ")
         Assert.assertEquals(errorUrl, errorMessage)
 
     }

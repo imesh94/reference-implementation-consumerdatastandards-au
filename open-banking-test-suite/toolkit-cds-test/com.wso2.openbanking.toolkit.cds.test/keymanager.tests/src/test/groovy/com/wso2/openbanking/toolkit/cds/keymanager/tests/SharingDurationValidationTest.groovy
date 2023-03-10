@@ -54,8 +54,16 @@ class SharingDurationValidationTest {
                 .addStep { driver, context ->
                     driver.findElement(By.xpath(AUTestUtil.getSingleAccountXPath())).click()
                     driver.findElement(By.xpath(AUConstants.CONSENT_SUBMIT_XPATH)).click()
-                    Assert.assertTrue(driver.findElement(By.xpath(AUConstants.CONSENT_EXPIRY_XPATH)).getText()
-                            .contains(assertionValue))
+
+                    if(sharingDuration.equals(AUConstants.SINGLE_ACCESS_CONSENT)) {
+                        Assert.assertTrue(driver.findElement(By.xpath(AUConstants.CONSENT_SHARING_XPATH)).getText()
+                                .contains(assertionValue))
+
+                    } else {
+                        Assert.assertTrue(driver.findElement(By.xpath(AUConstants.CONSENT_EXPIRY_DATE_XPATH)).getText()
+                                .contains(assertionValue))
+                    }
+
                     driver.findElement(By.xpath(AUConstants.CONSENT_CONFIRM_XPATH)).click()
                 }
                 .addStep(new WaitForRedirectAutomationStep())
@@ -76,7 +84,8 @@ class SharingDurationValidationTest {
     @Test
     void "TC0202002_Initiate authorisation consent flow with no sharing duration"() {
 
-        authorisationCode = doAuthorization(AUConstants.SINGLE_ACCESS_CONSENT, false, "Single use consent")
+        authorisationCode = doAuthorization(AUConstants.SINGLE_ACCESS_CONSENT, false,
+                "Your data will be shared once.")
         Assert.assertNotNull(authorisationCode)
 
     }
@@ -93,7 +102,8 @@ class SharingDurationValidationTest {
     @Test (priority = 2)
     void "TC0202003_Initiate authorisation consent flow with sharing duration zero"() {
 
-        authorisationCode = doAuthorization(AUConstants.SINGLE_ACCESS_CONSENT, true, "Single use consent")
+        authorisationCode = doAuthorization(AUConstants.SINGLE_ACCESS_CONSENT, true,
+                "Your data will be shared once.")
         Assert.assertNotNull(authorisationCode)
     }
 
