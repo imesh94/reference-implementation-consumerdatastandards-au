@@ -34,7 +34,7 @@ import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 import org.w3c.dom.NodeList;
 import org.xml.sax.SAXException;
-import sun.misc.BASE64Encoder;
+import java.util.Base64;
 import sun.security.provider.X509Factory;
 
 import java.io.ByteArrayInputStream;
@@ -701,10 +701,10 @@ public class TestUtil {
     public static String getPemEncodedString() throws CertificateEncodingException {
 
         StringBuilder certificateBuilder = new StringBuilder();
-        BASE64Encoder encoder = new BASE64Encoder();
+        Base64.Encoder encoder = Base64.getEncoder();
         certificateBuilder.append(X509Factory.BEGIN_CERT);
-        certificateBuilder.append(encoder.encodeBuffer(Objects
-                .requireNonNull(getCertificateFromKeyStore()).getEncoded()));
+        certificateBuilder.append(encoder.encodeToString(Objects.requireNonNull(getCertificateFromKeyStore())
+                .getEncoded()));
         certificateBuilder.append(X509Factory.END_CERT);
 
         return certificateBuilder.toString().replaceAll("\n", "");
