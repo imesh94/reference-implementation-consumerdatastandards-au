@@ -54,9 +54,9 @@ class UserAuthenticationFlowValidationTest extends AUTest {
                     Assert.assertTrue(driver.findElement(By.xpath(AUConstants.LBL_OTP_TIMEOUT)).isDisplayed())
                     driver.findElement(By.id(AUPageObjects.AU_TXT_OTP_CODE_ID)).sendKeys(otpCode)
                     Assert.assertTrue(driver.findElement(By.xpath(AUConstants.LBL_FOOTER_DESCRIPTION)).getText().trim()
-                            .contains("Your Customer ID will not be shared with \"Mock Company Inc.,Mock Software 1\". " +
-                                    "One time passwords are used to share banking data. You will never be asked to provide" +
-                                    " your real password to share banking data."))
+                            .contains("Your Customer ID will not be shared with \"Mock Company Inc.," +
+                                    "Mock Software 1\"One time passwords are used to share banking data. " +
+                                    "You will never be asked to provide your real password to share banking data."))
 
                     driver.findElement(By.xpath(AUPageObjects.AU_BTN_AUTHENTICATE)).click()
                     driver.manage().timeouts().implicitlyWait(30, TimeUnit.SECONDS)
