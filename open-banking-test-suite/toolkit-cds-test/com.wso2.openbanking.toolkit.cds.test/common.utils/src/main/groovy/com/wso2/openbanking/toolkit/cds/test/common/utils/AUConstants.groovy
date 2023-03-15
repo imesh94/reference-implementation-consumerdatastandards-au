@@ -334,6 +334,8 @@ class AUConstants {
     static final INVALID_CDR_ARRANGEMENT_ID = "Invalid cdr_arrangement_id"
     static final INVALID_REQUEST_OBJECT = "invalid_request_object"
     static final INVALID_REQUEST = "invalid_request"
+    static final MISSING_REQUIRED_FIELD = "Missing Required Field"
+    static final TOKEN_NOT_ALLOWED_TO_ACCESS_RESOURCE = "The access token does not allow you to access the requested resource"
 
     static final ERROR_CODE_MISSING_HEADER = "urn:au-cds:error:cds-all:Header/Missing"
     static final ERROR_CODE_INVALID_HEADER = "urn:au-cds:error:cds-all:Header/Invalid"
