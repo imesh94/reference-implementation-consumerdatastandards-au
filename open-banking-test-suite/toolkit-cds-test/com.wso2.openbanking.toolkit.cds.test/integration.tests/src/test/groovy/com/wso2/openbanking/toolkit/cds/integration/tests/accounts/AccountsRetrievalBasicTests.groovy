@@ -114,7 +114,7 @@ class AccountsRetrievalBasicTests extends AbstractAUTests {
         Assert.assertEquals(TestUtil.parseResponseBody(response, AUConstants.ERROR_CODE),
                 AUConstants.ERROR_CODE_MISSING_FIELD)
         Assert.assertEquals(TestUtil.parseResponseBody(response, AUConstants.ERROR_TITLE),
-                "Missing Required Field")
+                AUConstants.MISSING_REQUIRED_FIELD)
 
     }
 

@@ -172,17 +172,12 @@ class AccountsRetrievalTest extends AbstractAUTests {
         softAssertion.assertEquals(response.statusCode(), AUConstants.STATUS_CODE_422)
         softAssertion.assertNotNull(response.getHeader(AUConstants.X_V_HEADER))
 
-        if (TestConstants.SOLUTION_VERSION_300.equalsIgnoreCase(AUTestUtil.solutionVersion)) {
-            softAssertion.assertEquals(TestUtil.parseResponseBody(response, AUConstants.ERROR_CODE),
-                    AUConstants.ERROR_CODE_INVALID_BANK_ACC)
-            softAssertion.assertEquals(TestUtil.parseResponseBody(response, AUConstants.ERROR_TITLE), AUConstants
-                    .INVALID_BANK_ACC)
-            softAssertion.assertEquals(TestUtil.parseResponseBody(response, AUConstants.ERROR_DETAIL), AUConstants
-                    .ACCOUNT_ID_NOT_FOUND)
-        } else {
-            softAssertion.assertEquals(response.jsonPath().get("errors[0].code"), "0001 – Account not able to be found")
-        }
-
+        softAssertion.assertEquals(TestUtil.parseResponseBody(response, AUConstants.ERROR_CODE),
+                AUConstants.ERROR_CODE_INVALID_BANK_ACC)
+        softAssertion.assertEquals(TestUtil.parseResponseBody(response, AUConstants.ERROR_TITLE), AUConstants
+                .INVALID_BANK_ACC)
+        softAssertion.assertEquals(TestUtil.parseResponseBody(response, AUConstants.ERROR_DETAIL), AUConstants
+                .ACCOUNT_ID_NOT_FOUND)
         softAssertion.assertAll()
     }
 
@@ -572,17 +567,12 @@ class AccountsRetrievalTest extends AbstractAUTests {
         softAssertion.assertEquals(response.statusCode(), AUConstants.STATUS_CODE_403)
         softAssertion.assertEquals(response.getHeader(AUConstants.X_V_HEADER).toInteger(), AUConstants.X_V_HEADER_ACCOUNTS)
 
-        if (TestConstants.SOLUTION_VERSION_300.equalsIgnoreCase(AUTestUtil.solutionVersion)) {
-            Assert.assertEquals(TestUtil.parseResponseBody(response, AUConstants.ERROR_CODE),
-                    AUConstants.ERROR_CODE_RESOURCE_FORBIDDEN)
-            Assert.assertEquals(TestUtil.parseResponseBody(response, AUConstants.ERROR_DETAIL),
-            "The access token does not allow you to access the requested resource")
-            Assert.assertEquals(TestUtil.parseResponseBody(response, AUConstants.ERROR_TITLE), AUConstants
-                    .RESOURCE_FORBIDDEN)
-        } else {
-            softAssertion.assertEquals(TestUtil.parseResponseBody(response, "fault.message"),
-                    "The access token does not allow you to access the requested resource")
-        }
+        Assert.assertEquals(TestUtil.parseResponseBody(response, AUConstants.ERROR_CODE),
+                AUConstants.ERROR_CODE_RESOURCE_FORBIDDEN)
+        Assert.assertEquals(TestUtil.parseResponseBody(response, AUConstants.ERROR_DETAIL),
+                AUConstants.TOKEN_NOT_ALLOWED_TO_ACCESS_RESOURCE)
+        Assert.assertEquals(TestUtil.parseResponseBody(response, AUConstants.ERROR_TITLE), AUConstants
+                .RESOURCE_FORBIDDEN)
         softAssertion.assertAll()
     }
 
@@ -609,17 +599,12 @@ class AccountsRetrievalTest extends AbstractAUTests {
         softAssertion.assertEquals(response.statusCode(), AUConstants.STATUS_CODE_403)
         softAssertion.assertEquals(response.getHeader(AUConstants.X_V_HEADER).toInteger(), AUConstants.X_V_HEADER_ACCOUNTS)
 
-        if (TestConstants.SOLUTION_VERSION_300.equalsIgnoreCase(AUTestUtil.solutionVersion)) {
-            Assert.assertEquals(TestUtil.parseResponseBody(response, AUConstants.ERROR_CODE),
-                    AUConstants.ERROR_CODE_RESOURCE_FORBIDDEN)
-            Assert.assertEquals(TestUtil.parseResponseBody(response, AUConstants.ERROR_DETAIL),
-                    "The access token does not allow you to access the requested resource")
-            Assert.assertEquals(TestUtil.parseResponseBody(response, AUConstants.ERROR_TITLE), AUConstants
-                    .RESOURCE_FORBIDDEN)
-        } else {
-            softAssertion.assertEquals(TestUtil.parseResponseBody(response, "fault.message"),
-                    "The access token does not allow you to access the requested resource")
-        }
+        Assert.assertEquals(TestUtil.parseResponseBody(response, AUConstants.ERROR_CODE),
+                AUConstants.ERROR_CODE_RESOURCE_FORBIDDEN)
+        Assert.assertEquals(TestUtil.parseResponseBody(response, AUConstants.ERROR_DETAIL),
+                AUConstants.TOKEN_NOT_ALLOWED_TO_ACCESS_RESOURCE)
+        Assert.assertEquals(TestUtil.parseResponseBody(response, AUConstants.ERROR_TITLE), AUConstants
+                .RESOURCE_FORBIDDEN)
         softAssertion.assertAll()
     }
 
@@ -646,17 +631,12 @@ class AccountsRetrievalTest extends AbstractAUTests {
         SoftAssert softAssertion = new SoftAssert()
         softAssertion.assertEquals(response.statusCode(), AUConstants.STATUS_CODE_403)
         softAssertion.assertEquals(response.getHeader(AUConstants.X_V_HEADER).toInteger(), AUConstants.X_V_HEADER_ACCOUNTS)
-        if (TestConstants.SOLUTION_VERSION_300.equalsIgnoreCase(AUTestUtil.solutionVersion)) {
-            Assert.assertEquals(TestUtil.parseResponseBody(response, AUConstants.ERROR_CODE),
-                    AUConstants.ERROR_CODE_RESOURCE_FORBIDDEN)
-            Assert.assertEquals(TestUtil.parseResponseBody(response, AUConstants.ERROR_DETAIL),
-            "The access token does not allow you to access the requested resource")
-            Assert.assertEquals(TestUtil.parseResponseBody(response, AUConstants.ERROR_TITLE), AUConstants
-                    .RESOURCE_FORBIDDEN)
-        } else {
-            softAssertion.assertEquals(TestUtil.parseResponseBody(response, "fault.message"),
-                    "The access token does not allow you to access the requested resource")
-        }
+        Assert.assertEquals(TestUtil.parseResponseBody(response, AUConstants.ERROR_CODE),
+                AUConstants.ERROR_CODE_RESOURCE_FORBIDDEN)
+        Assert.assertEquals(TestUtil.parseResponseBody(response, AUConstants.ERROR_DETAIL),
+                AUConstants.TOKEN_NOT_ALLOWED_TO_ACCESS_RESOURCE)
+        Assert.assertEquals(TestUtil.parseResponseBody(response, AUConstants.ERROR_TITLE), AUConstants
+                .RESOURCE_FORBIDDEN)
         softAssertion.assertAll()
     }
 
@@ -724,7 +704,7 @@ class AccountsRetrievalTest extends AbstractAUTests {
         Assert.assertEquals(TestUtil.parseResponseBody(response, AUConstants.ERROR_TITLE), AUConstants
                 .RESOURCE_FORBIDDEN)
         Assert.assertEquals(TestUtil.parseResponseBody(response, AUConstants.ERROR_DETAIL),
-        "The access token does not allow you to access the requested resource")
+                AUConstants.TOKEN_NOT_ALLOWED_TO_ACCESS_RESOURCE)
         softAssertion.assertAll()
     }
 
@@ -754,7 +734,7 @@ class AccountsRetrievalTest extends AbstractAUTests {
         Assert.assertEquals(TestUtil.parseResponseBody(response, AUConstants.ERROR_TITLE), AUConstants
                 .RESOURCE_FORBIDDEN)
         Assert.assertEquals(TestUtil.parseResponseBody(response, AUConstants.ERROR_DETAIL),
-                "The access token does not allow you to access the requested resource")
+                AUConstants.TOKEN_NOT_ALLOWED_TO_ACCESS_RESOURCE)
     }
 
     @Test(priority = 3)
@@ -783,7 +763,7 @@ class AccountsRetrievalTest extends AbstractAUTests {
         Assert.assertEquals(TestUtil.parseResponseBody(response, AUConstants.ERROR_TITLE), AUConstants
                 .RESOURCE_FORBIDDEN)
         Assert.assertEquals(TestUtil.parseResponseBody(response, AUConstants.ERROR_DETAIL),
-                "The access token does not allow you to access the requested resource")
+                AUConstants.TOKEN_NOT_ALLOWED_TO_ACCESS_RESOURCE)
         softAssertion.assertAll()
     }
 }
