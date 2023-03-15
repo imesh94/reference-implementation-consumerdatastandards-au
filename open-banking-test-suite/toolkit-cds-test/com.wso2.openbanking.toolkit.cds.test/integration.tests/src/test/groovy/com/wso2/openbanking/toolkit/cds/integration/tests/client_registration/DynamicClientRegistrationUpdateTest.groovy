@@ -59,8 +59,6 @@ class DynamicClientRegistrationUpdateTest extends AbstractAUTests {
         clientId = TestUtil.parseResponseBody(registrationResponse, "client_id")
         TestUtil.writeXMLContent(xmlFile.toString(), "Application", "ClientID", clientId,
                 appConfigReader.tppNumber)
-
-
     }
 
     @Test(priority = 1, dependsOnMethods = "TC0101009_Get access token")

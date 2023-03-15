@@ -54,9 +54,9 @@ class DynamicClientRegistrationCreateTest extends AUTest{
         AUTestUtil.writeXMLContent(auConfiguration.getOBXMLFile().toString(), "Application",
                 "ClientID", clientId, auConfiguration.getTppNumber())
 
-
         Assert.assertEquals(registrationResponse.statusCode(), AUConstants.STATUS_CODE_201)
-        Assert.assertEquals(parseResponseBody(registrationResponse, "software_statement"), registrationRequestBuilder.getSSA())
+        Assert.assertEquals(parseResponseBody(registrationResponse, "software_statement"),
+                registrationRequestBuilder.getSSA())
 
     }
 
@@ -70,10 +70,11 @@ class DynamicClientRegistrationCreateTest extends AUTest{
                 .post(AUConstants.DCR_REGISTRATION_ENDPOINT)
 
         Assert.assertEquals(registrationResponse.statusCode(), AUConstants.STATUS_CODE_400)
-        Assert.assertEquals(parseResponseBody(registrationResponse, AUConstants.ERROR), AUConstants.INVALID_CLIENT_METADATA)
-
-        Assert.assertTrue(parseResponseBody(registrationResponse, AUConstants.ERROR_DESCRIPTION).contains(
-                "Application with the name " + AUConstants.DCR_SOFTWARE_PRODUCT_ID + " already exist in the system"))
+        Assert.assertEquals(parseResponseBody(registrationResponse, AUConstants.ERROR),
+                AUConstants.INVALID_CLIENT_METADATA)
+        Assert.assertTrue(parseResponseBody(registrationResponse, AUConstants.ERROR_DESCRIPTION).
+                contains("Application with the name " + AUConstants.DCR_SOFTWARE_PRODUCT_ID +
+                        " already exist in the system"))
     }
 
     @Test(priority = 5)
@@ -265,8 +266,7 @@ class DynamicClientRegistrationCreateTest extends AUTest{
         AURegistrationRequestBuilder dcr = new AURegistrationRequestBuilder()
 
         deleteApplicationIfExists(clientId)
-
-         def registrationResponse = AURegistrationRequestBuilder
+        def registrationResponse = AURegistrationRequestBuilder
                 .buildRegistrationRequest(dcr.getRegularClaimsWithGivenJti(jtiVal))
                 .when()
                 .post(AUConstants.DCR_REGISTRATION_ENDPOINT)
@@ -301,7 +301,6 @@ class DynamicClientRegistrationCreateTest extends AUTest{
                 .post(AUConstants.DCR_REGISTRATION_ENDPOINT)
 
         Assert.assertEquals(registrationResponse.statusCode(), AUConstants.STATUS_CODE_400)
-
         Assert.assertEquals(parseResponseBody(registrationResponse, AUConstants.ERROR),
                 AUConstants.INVALID_CLIENT_METADATA)
         Assert.assertEquals(parseResponseBody(registrationResponse, AUConstants.ERROR_DESCRIPTION),
@@ -414,7 +413,6 @@ class DynamicClientRegistrationCreateTest extends AUTest{
         clientId = parseResponseBody(registrationResponse, "client_id")
         AUTestUtil.writeXMLContent(auConfiguration.getOBXMLFile().toString(), "Application",
                 "ClientID", clientId, auConfiguration.getTppNumber())
-
 
         Assert.assertEquals(registrationResponse.statusCode(), AUConstants.STATUS_CODE_201)
         Assert.assertNotNull(parseResponseBody(registrationResponse, "redirect_uris"))

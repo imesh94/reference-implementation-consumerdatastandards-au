@@ -43,8 +43,6 @@ class AURegistrationRequestBuilder extends OBRegistrationRequestBuilder {
      * Helper function for other functions
      * @return
      */
-
-
     String getSoftwareID() {
         if (softwareProductId == null) {
             softwareProductId = ((auConfiguration.getMockCDREnabled())
@@ -81,7 +79,6 @@ class AURegistrationRequestBuilder extends OBRegistrationRequestBuilder {
      * Provide subscription payload for DCR
      * @return
      */
-
     static String getSubscriptionPayload(String applicationId, String apiId) {
         return """
             {

@@ -24,7 +24,6 @@ import org.testng.ITestContext
 /**
  * Testcases for DCR Update request validation.
  */
-
 class DynamicClientRegistrationUpdateTest extends AUTest{
 
     private String registrationPath = AUConstants.DCR_REGISTRATION_ENDPOINT
@@ -61,7 +60,8 @@ class DynamicClientRegistrationUpdateTest extends AUTest{
         AUJWTGenerator aujwtGenerator = new AUJWTGenerator()
         AURegistrationRequestBuilder auRegistrationRequestBuilder = new AURegistrationRequestBuilder()
         def registrationResponse = AURegistrationRequestBuilder.buildBasicRequest(accessToken)
-                .body(aujwtGenerator.getSignedRequestObject(auRegistrationRequestBuilder.getRegularClaimsWithNewRedirectUri()))
+                .body(aujwtGenerator.getSignedRequestObject(auRegistrationRequestBuilder
+                        .getRegularClaimsWithNewRedirectUri()))
                 .when()
                 .put(registrationPath + invalidClientId)
 
@@ -87,8 +87,7 @@ class DynamicClientRegistrationUpdateTest extends AUTest{
         AUJWTGenerator aujwtGenerator = new AUJWTGenerator()
         AURegistrationRequestBuilder auRegistrationRequestBuilder = new AURegistrationRequestBuilder()
         def registrationResponse = AURegistrationRequestBuilder.buildBasicRequest(accessToken)
-                .body(aujwtGenerator.getSignedRequestObject(auRegistrationRequestBuilder
-                        .getClaimsWithoutSSA()))
+                .body(aujwtGenerator.getSignedRequestObject(auRegistrationRequestBuilder.getClaimsWithoutSSA()))
                 .when()
                 .put(registrationPath + clientId)
 
@@ -145,8 +144,7 @@ class DynamicClientRegistrationUpdateTest extends AUTest{
         AUJWTGenerator aujwtGenerator= new AUJWTGenerator()
         AURegistrationRequestBuilder auRegistrationRequestBuilder = new AURegistrationRequestBuilder()
         def registrationResponse = AURegistrationRequestBuilder.buildBasicRequest(null)
-                .body(aujwtGenerator.getSignedRequestObject(auRegistrationRequestBuilder
-                        .getRegularClaims()))
+                .body(aujwtGenerator.getSignedRequestObject(auRegistrationRequestBuilder.getRegularClaims()))
                 .when()
                 .put(registrationPath + clientId)
 
@@ -159,8 +157,7 @@ class DynamicClientRegistrationUpdateTest extends AUTest{
         AUJWTGenerator aujwtGenerator = new AUJWTGenerator()
         AURegistrationRequestBuilder auRegistrationRequestBuilder = new AURegistrationRequestBuilder()
         def registrationResponse = AURegistrationRequestBuilder.buildBasicRequest("asd")
-                .body(aujwtGenerator.getSignedRequestObject(auRegistrationRequestBuilder
-                        .getRegularClaims()))
+                .body(aujwtGenerator.getSignedRequestObject(auRegistrationRequestBuilder.getRegularClaims()))
                 .when()
                 .put(registrationPath + clientId)
 

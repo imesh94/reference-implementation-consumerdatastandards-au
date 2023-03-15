@@ -32,13 +32,6 @@ class DynamicClientRegistrationRetrieveTest extends AUTest{
 
     @SuppressWarnings('GroovyAccessibility')
     @Test(priority = 1)
-    void "TC0101009_Get access token"() {
-
-        accessToken = getApplicationAccessToken(clientId)
-        Assert.assertNotNull(accessToken)
-    }
-
-    @Test(priority = 1)
     void "TC0101018_Retrieve Application"(ITestContext context) {
 
         AURegistrationRequestBuilder registrationRequestBuilder = new AURegistrationRequestBuilder()
@@ -55,17 +48,24 @@ class DynamicClientRegistrationRetrieveTest extends AUTest{
 
         AUConfigurationService auConfigurationService = new AUConfigurationService()
         URI devPortalEndpoint =
-                new URI("${String.valueOf(OBConfigParser.getInstance().getConfigurationMap().get("Server.GatewayURL"))}"
-                        + AUConstants.REST_API_STORE_ENDPOINT + "applications")
+                new URI("${String.valueOf(OBConfigParser.getInstance().getConfigurationMap().get("Server.GatewayURL"))}" +
+                        AUConstants.REST_API_STORE_ENDPOINT + "applications")
         def response = RestAsRequestBuilder.buildRequest()
                 .contentType(OBConstants.CONTENT_TYPE_APPLICATION_JSON)
-                .header(OBConstants.AUTHORIZATION_HEADER_KEY, AUConstants.AUTHORIZATION_BEARER_TAG
-                        + auConfigurationService.getRestAPIDCRAccessToken())
+                .header(OBConstants.AUTHORIZATION_HEADER_KEY, AUConstants.AUTHORIZATION_BEARER_TAG +
+                        auConfigurationService.getRestAPIDCRAccessToken())
                 .get(devPortalEndpoint.toString())
 
         Assert.assertEquals(response.statusCode(), AUConstants.STATUS_CODE_200)
         Assert.assertEquals(AUTestUtil.parseResponseBody(response, "count"), "2")
         applicationId = AUTestUtil.parseResponseBody(response, "list[1].applicationId")
+    }
+
+    @Test(priority = 1)
+    void "TC0101009_Get access token"() {
+
+        accessToken = getApplicationAccessToken(clientId)
+        Assert.assertNotNull(accessToken)
     }
 
     @Test(priority = 2, dependsOnMethods = "TC0101018_Retrieve Application")
@@ -75,11 +75,12 @@ class DynamicClientRegistrationRetrieveTest extends AUTest{
 
         def apiID = auConfiguration.getRestAPIID()
         URI devPortalEndpoint =
-                new URI("${String.valueOf(OBConfigParser.getInstance().getConfigurationMap().get("Server.GatewayURL"))}"
-                        +  AUConstants.REST_API_STORE_ENDPOINT + "subscriptions")
+                new URI("${String.valueOf(OBConfigParser.getInstance().getConfigurationMap().get("Server.GatewayURL"))}" +
+                        AUConstants.REST_API_STORE_ENDPOINT + "subscriptions")
         def response = RestAsRequestBuilder.buildRequest()
                 .contentType(OBConstants.CONTENT_TYPE_APPLICATION_JSON)
-                .header(OBConstants.AUTHORIZATION_HEADER_KEY,  AUConstants.AUTHORIZATION_BEARER_TAG+ auConfiguration.getRestAPIDCRAccessToken())
+                .header(OBConstants.AUTHORIZATION_HEADER_KEY,  AUConstants.AUTHORIZATION_BEARER_TAG+
+                        auConfiguration.getRestAPIDCRAccessToken())
                 .body(registrationRequestBuilder.getSubscriptionPayload(applicationId, apiID))
                 .post(devPortalEndpoint.toString())
 

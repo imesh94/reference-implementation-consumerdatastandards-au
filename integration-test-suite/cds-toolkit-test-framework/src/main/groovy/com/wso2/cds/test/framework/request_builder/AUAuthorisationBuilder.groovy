@@ -224,7 +224,6 @@ class AUAuthorisationBuilder {
     /**
      * Getter for other functions
      */
-
     int getTppNumber() {
         return tppNumber;
     }

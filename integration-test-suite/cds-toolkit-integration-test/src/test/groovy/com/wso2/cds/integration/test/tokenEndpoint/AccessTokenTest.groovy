@@ -25,7 +25,6 @@ import org.testng.asserts.SoftAssert
  * for testing User access token with the test context.
  * new User access token will be generated if there is no already generated user access token.
  */
-
 class AccessTokenTest extends AUTest {
 
     private List<AUAccountScope> scopeArrayList = [
@@ -34,8 +33,10 @@ class AccessTokenTest extends AUTest {
             AUAccountScope.BANK_CUSTOMER_DETAIL_READ
     ]
 
-    private final String ACCOUNTS_BASIC_OPENID_SCOPE_LIST = "bank:accounts.basic:read bank:accounts.detail:read openid profile"
-    private final String ACCOUNTS_BASIC_ACCOUNT_DETAIL_OPENID_SCOPE_LIST = "bank:accounts.basic:read bank:accounts.detail:read openid"
+    private final String ACCOUNTS_BASIC_OPENID_SCOPE_LIST = "bank:accounts.basic:read bank:accounts.detail:" +
+            "read openid profile"
+    private final String ACCOUNTS_BASIC_ACCOUNT_DETAIL_OPENID_SCOPE_LIST = "bank:accounts.basic:read bank:" +
+            "accounts.detail:read openid"
     private AccessTokenResponse userAccessToken
 
     @Test
@@ -59,8 +60,8 @@ class AccessTokenTest extends AUTest {
         def errorObject = AURequestBuilder.getUserTokenErrorResponse(authorisationCode,
                 auConfiguration.getAppInfoRedirectURL(), auConfiguration.getAppInfoClientID(), true,
                 false)
-        Assert.assertEquals(errorObject.toJSONObject().get(AUConstants.ERROR_DESCRIPTION), "Transport certificate not found in" +
-                " the request")
+        Assert.assertEquals(errorObject.toJSONObject().get(AUConstants.ERROR_DESCRIPTION), "Transport certificate" +
+                " not found in the request")
     }
 
     @Test
@@ -84,8 +85,8 @@ class AccessTokenTest extends AUTest {
         def errorObject = AURequestBuilder.getUserTokenErrorResponse(authorisationCode,
                 auConfiguration.getAppInfoRedirectURL(), auConfiguration.getAppInfoClientID(), true,
                 true,"RS256")
-        Assert.assertEquals(errorObject.toJSONObject().get(AUConstants.ERROR_DESCRIPTION), "Registered algorithm does not match" +
-                " with the token signed algorithm")
+        Assert.assertEquals(errorObject.toJSONObject().get(AUConstants.ERROR_DESCRIPTION), "Registered algorithm " +
+                "does not match with the token signed algorithm")
 
     }
 
@@ -98,8 +99,8 @@ class AccessTokenTest extends AUTest {
         def errorObject = AURequestBuilder.getUserTokenErrorResponse(authorisationCode,
                 auConfiguration.getAppInfoRedirectURL(), auConfiguration.getAppInfoClientID(), true,
                 true,"PS512")
-        Assert.assertEquals(errorObject.toJSONObject().get(AUConstants.ERROR_DESCRIPTION), "Registered algorithm does not" +
-                " match with the token signed algorithm")
+        Assert.assertEquals(errorObject.toJSONObject().get(AUConstants.ERROR_DESCRIPTION), "Registered algorithm " +
+                "does not match with the token signed algorithm")
 
     }
 
