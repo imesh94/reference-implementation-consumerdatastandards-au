@@ -1,15 +1,11 @@
 /*
- * Copyright (c) 2021, WSO2 Inc. (http://www.wso2.com). All Rights Reserved.
+ * Copyright (c) 2021-2022, WSO2 LLC. (https://www.wso2.com). All Rights Reserved.
  *
- * This software is the property of WSO2 Inc. and its suppliers, if any.
+ * This software is the property of WSO2 LLC. and its suppliers, if any.
  * Dissemination of any information or reproduction of any material contained
- * herein is strictly forbidden, unless permitted by WSO2 in accordance with
- * the WSO2 Software License available at https://wso2.com/licenses/eula/3.1. For specific
- * language governing the permissions and limitations under this license,
- * please see the license as well as any agreement you’ve entered into with
- * WSO2 governing the purchase of this software and any associated services.
+ * herein in any form is strictly forbidden, unless permitted by WSO2 expressly.
+ * You may not alter or remove any copyright or other notice from copies of this content.
  */
-
 package com.wso2.openbanking.cds.gateway.executors.idpermanence;
 
 import com.google.gson.Gson;
@@ -23,6 +19,7 @@ import org.apache.commons.io.FileUtils;
 import org.apache.http.HttpStatus;
 import org.mockito.Mockito;
 import org.powermock.api.mockito.PowerMockito;
+import org.powermock.core.classloader.annotations.PowerMockIgnore;
 import org.powermock.core.classloader.annotations.PrepareForTest;
 import org.powermock.modules.testng.PowerMockTestCase;
 import org.testng.annotations.BeforeClass;
@@ -45,6 +42,7 @@ import static org.mockito.Mockito.times;
  * Test class for IDPermanenceExecutor
  */
 @PrepareForTest({IdEncryptorDecryptor.class, OpenBankingCDSConfigParser.class})
+@PowerMockIgnore("jdk.internal.reflect.*")
 public class IDPermanenceExecutorTest extends PowerMockTestCase {
 
     private static final String API_CONTEXT = "/cds-au/version";
@@ -56,7 +54,7 @@ public class IDPermanenceExecutorTest extends PowerMockTestCase {
     private static final String ENCRYPTED_ID = "encrypted-account-id";
     private static final String DECRYPTED_ACCOUNT_STRING = "mark@gold.com@carbon.super@carbon.super:7:30080012343456";
     private static final String ENCRYPTED_ACCOUNT_IDS_JSON = "{\"data\":{\"accountIds\":[\"encrypted-account-id\"," +
-            "\"encrypted-account-id\"]},\"meta\":\"\"}";
+            "\"encrypted-account-id\"]}}";
     public static final String POST_METHOD = "POST";
     OpenBankingCDSConfigParser openBankingCDSConfigParserMock;
 

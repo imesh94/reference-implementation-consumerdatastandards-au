@@ -1,0 +1,18 @@
+@From(eventtable='rdbms', datasource.name='OB_REPORTING_DB', table.name='CDS_SESSION_RAW_DATA')
+define table CDS_SESSION_RAW_DATA(ID string, ACCESS_TOKEN string, SESSION_TYPE string);
+
+FROM RequestStream
+SELECT regex:find('unattended',cast(map:get(propertiesMap,'customerStatus'),'string')) AND
+regex:find('secured',cast(map:get(propertiesMap,'authorizationStatus'),'string')) AS isEligible,
+str:concat(appId, ':', userId, ':', cast(map:get(propertiesMap,'customerStatus'),'string')) as throttleKey, propertiesMap, cast(map:get(propertiesMap,
+'authorizationHeader'),'string') as accessToken
+INSERT INTO EligibilityStream;
+
+FROM EligibilityStream as e
+left outer join CDS_SESSION_RAW_DATA as t on e.accessToken == t.ACCESS_TOKEN and t.SESSION_TYPE=='unattended'
+select isEligible, throttleKey, accessToken
+INSERT INTO EligibilityStream2;
+
+FROM EligibilityStream2[isEligible==true]#throttler:timeBatch(1 day, 0)
+select throttleKey, (distinctcount(accessToken) > 20) as isThrottled, expiryTimeStamp group by throttleKey
+INSERT ALL EVENTS into ResultStream;
