@@ -354,4 +354,24 @@ public class CDSConsentAdminHandler implements ConsentAdminHandler {
         return false;
     }
 
+    @Override
+    public void handleConsentFileSearch(ConsentAdminData consentAdminData) throws ConsentException {
+        this.defaultConsentAdminHandler.handleConsentFileSearch(consentAdminData);
+    }
+
+    @Override
+    public void handleConsentStatusAuditSearch(ConsentAdminData consentAdminData) throws ConsentException {
+        this.defaultConsentAdminHandler.handleConsentStatusAuditSearch(consentAdminData);
+    }
+
+    @Override
+    public void handleTemporaryRetentionDataSyncing(ConsentAdminData consentAdminData) throws ConsentException {
+        this.defaultConsentAdminHandler.handleTemporaryRetentionDataSyncing(consentAdminData);
+    }
+
+    @Override
+    public void handleConsentExpiry(ConsentAdminData consentAdminData) throws ConsentException {
+        this.defaultConsentAdminHandler.handleConsentExpiry(consentAdminData);
+    }
+
 }
