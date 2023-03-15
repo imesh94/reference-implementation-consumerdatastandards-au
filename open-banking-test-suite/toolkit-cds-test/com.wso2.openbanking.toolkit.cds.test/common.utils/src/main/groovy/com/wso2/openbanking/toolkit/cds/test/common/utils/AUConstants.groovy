@@ -297,7 +297,6 @@ class AUConstants {
 
     static final CONSENT_MANAGER_URL = ConfigParser.getInstance().getAuthorisationServerUrl() + "/consentmgt"
     static final OAUTH2_INTROSPECT_URL = ConfigParser.getInstance().getAuthorisationServerUrl() + "/oauth2/introspect"
-    static final CCPORTAL_URL = ConfigParser.getInstance().getAuthorisationServerUrl() + "/ccportal"
 
     static final ERROR_DETAIL = "errors[0].detail"
     static final ERROR_SOURCE_PARAMETER = "errors[0].source.parameter"
@@ -398,16 +397,6 @@ class AUConstants {
     public static LBL_BANK_CUSTOMER_DETAIL_READ_INDIVIDUAL_PATH = "//div[@id='accordion0']//div[@id='headingNameandoccupation']//h4"
     public static LBL_BANK_CUSTOMER_BASIC_READ_PATH = "//div[@id='accordion0']//div[@id='headingOrganisationprofile']//h4"
     public static LBL_BANK_REGULAR_PAYMENTS_READ_PATH = "//div[@id='accordion0']//div[@id='headingDirectdebitsandscheduledpayments']//h4"
-
-    public static LBL_CCPORTAL_ACCOUNT_NAME_TYPE_TAB = "//div[@id='accordion0']//div[@id='Accountnametypeandbalance']//li"
-    public static LBL_CCPORTAL_ACCOUNT_NUMBER_AND_FEATURES_TAB = "//div[@id='accordion0']//div[@id='Accountnumbersandfeatures']//li"
-    public static LBL_CCPORTAL_SAVED_PAYEES_TAB = "//div[@id='accordion0']//div[@id='Savedpayees']//li"
-    public static LBL_CCPORTAL_TRANSACTIONS_DETAIL_TAB = "//div[@id='accordion0']//div[@id='Transactiondetails']//li"
-    public static LBL_CCPORTAL_CONTACT_DETAILS_TAB = "//div[@id='accordion0']//div[@id='Contactdetails']//li"
-    public static LBL_CCPORTAL_ORGANISATION_CONTACT_DETAILS_TAB = "//div[@id='accordion0']//div[@id='Organisationcontactdetails']//li"
-    public static LBL_CCPORTAL_NAME_AND_OCCUPATION_TAB = "//div[@id='accordion0']//div[@id='Nameandoccupation']//li"
-    public static LBL_CCPORTAL_ORGANISATION_PROFILE_TAB = "//div[@id='accordion0']//div[@id='Organisationprofile']//li"
-    public static LBL_CCPORTAL_DIRECT_DEBITS_TAB = "//div[@id='accordion0']//div[@id='Directdebitsandscheduledpayments']//li"
 
     public static BASE_PATH_TYPE_DCR = "DCR"
     public static BASE_PATH_TYPE_ACCOUNT = "Accounts"
