@@ -49,7 +49,7 @@ import java.nio.charset.Charset
  */
 class AURequestBuilder {
 
-    private static Logger log = LogManager.getLogger(AURequestBuilder.class.getName());
+    private static Logger log = LogManager.getLogger(AURequestBuilder.class.getName())
 
     private static AUConfigurationService auConfiguration = new AUConfigurationService()
 
@@ -102,7 +102,7 @@ class AURequestBuilder {
 
         return AURestAsRequestBuilder.buildRequest()
                 .header(AUConstants.X_V_HEADER, version)
-                .header(AUConstants.AUTHORIZATION_HEADER_KEY, "Bearer ${userAccessToken}")
+                .header(AUConstants.AUTHORIZATION_HEADER_KEY, "${AUConstants.AUTHORIZATION_BEARER_TAG}${userAccessToken}")
 
     }
 
@@ -111,7 +111,7 @@ class AURequestBuilder {
         return AURestAsRequestBuilder.buildRequest()
                 .header(AUConstants.X_V_HEADER, version)
                 .header(AUConstants.X_FAPI_CUSTOMER_IP_ADDRESS, AUConstants.IP)
-                .header(AUConstants.AUTHORIZATION_HEADER_KEY, "Bearer ${userAccessToken}")
+                .header(AUConstants.AUTHORIZATION_HEADER_KEY, "${AUConstants.AUTHORIZATION_BEARER_TAG}${userAccessToken}")
                 .baseUri(AUTestUtil.getBaseUrl(AUConstants.BASE_PATH_TYPE_ACCOUNT))
     }
 
@@ -219,7 +219,7 @@ class AURequestBuilder {
 
         URI tokenEndpoint = new URI("${auConfiguration.getServerAuthorisationServerURL()}${AUConstants.TOKEN_ENDPOINT}")
 
-        TokenRequest request;
+        TokenRequest request
         if (!clientAuthRequired) {
             ClientID clientId = new ClientID(client_id)
             request = new TokenRequest(tokenEndpoint, clientId, codeGrant)
@@ -374,7 +374,7 @@ class AURequestBuilder {
         //Account Retrieval request
         Response response = AURestAsRequestBuilder.buildRequest()
                 .header(AUConstants.X_V_HEADER, 1)
-                .header(AUConstants.AUTHORIZATION_HEADER_KEY, "Bearer " + userAccessToken)
+                .header(AUConstants.AUTHORIZATION_HEADER_KEY, "${AUConstants.AUTHORIZATION_BEARER_TAG}" + userAccessToken)
                 .baseUri(auConfiguration.getServerBaseURL())
                 .get("${AUConstants.CDS_PATH}${AUConstants.BULK_ACCOUNT_PATH}/")
         return response

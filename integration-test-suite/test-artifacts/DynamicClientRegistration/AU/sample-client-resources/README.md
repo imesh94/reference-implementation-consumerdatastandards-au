@@ -4,17 +4,16 @@ Following configs can be used in TestConfiguration.xml to use sample SSA and key
 
     <DCR>
         <SSAPath>Path.To.Directory/ssa.txt</SSAPath>
+        <!-- SSA SoftwareId -->
+        <SoftwareId>oQ4KoaavpOuoE7rvQsZEOV</SoftwareId>
         <!-- SSA Redirect Uri -->
         <RedirectUri>https://www.google.com/redirects/redirect1</RedirectUri>
-         <!-- SSA Alternate Redirect Uri (Use the available uri if not present)-->
-         <AlternateRedirectUri>https://www.google.com/redirects/redirect2</AlternateRedirectUri>
     </DCR>
-    
-Use signing.jks in 'signing-keystore' directory as the Application Keystore, and transport.jks in 'transport-keystore' 
-directory as the Transport Keystore.
+Use signing.jks in 'signing-keystore' directory as the Application Keystore.
 
 Sample Keystore information:
-    Signing key alias = tpp4-sig
-    Signing keystore password = wso2carbon
-    Transport keystore password = wso2carbon
-
+Signing key alias = tpp6-signing
+Signing keystore password = wso2carbon
+Signing Kid = w7NFeMODzCMOZen_WECAlG9N8gg
+Transport keystore password = wso2carbon
+Transport keystore alias = tpp6-transport

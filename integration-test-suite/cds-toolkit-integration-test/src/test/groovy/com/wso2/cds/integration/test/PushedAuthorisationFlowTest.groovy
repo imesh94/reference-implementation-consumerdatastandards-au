@@ -25,7 +25,6 @@ import com.wso2.cds.test.framework.utility.AUTestUtil
  */
 class PushedAuthorisationFlowTest extends AUTest{
 
-    private String headerString = auConfiguration.getUserBasicAuthName()+ ":" +auConfiguration.getUserBasicAuthPWD()
     AUAuthorisationBuilder authorisationBuilder = new AUAuthorisationBuilder()
     String requestUri
     private List<AUAccountScope> scopeArrayList = [
@@ -36,7 +35,7 @@ class PushedAuthorisationFlowTest extends AUTest{
 
     @Test(priority = 1)
     void "TC0205001_Data Recipients Initiate authorisation request using PAR"() {
-
+        String headerString = auConfiguration.getUserBasicAuthName()+ ":" +auConfiguration.getUserBasicAuthPWD()
         def response = authorisationBuilder.doPushAuthorisationRequest(headerString, scopeArrayList, AUConstants.DEFAULT_SHARING_DURATION,
                 true, cdrArrangementId)
 

@@ -64,8 +64,7 @@ class DynamicClientRegistrationRetrievalTest extends AbstractAUTests {
     @Test(priority = 1, groups = "SmokeTest")
     void "TC0101018_Retrieve Application"() {
         URI devPortalEndpoint =
-                new URI("${String.valueOf(ConfigParser.getInstance().getConfiguration().get("Server.GatewayURL"))}"
-                        + baseURL + "applications");
+                new URI("${String.valueOf(ConfigParser.getInstance().getConfiguration().get("Server.GatewayURL"))}" + baseURL + "applications");
         def response = TestSuite.buildRequest()
                 .contentType(TestConstants.CONTENT_TYPE_APPLICATION_JSON)
                 .header(TestConstants.AUTHORIZATION_HEADER_KEY, TestConstants.AUTHORIZATION_BEARER_TAG +

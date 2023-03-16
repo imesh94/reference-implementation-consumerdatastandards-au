@@ -18,7 +18,7 @@ package com.wso2.cds.test.framework.constant
 class AUConfigConstants {
 
     // Absolute path should be provided
-    public static final String CONFIG_FILE_LOCATION = "/cds-toolkit-test-framework/src/main/resources/TestConfiguration.xml";
+    public static final String CONFIG_FILE_LOCATION = "../cds-toolkit-test-framework/src/main/resources/TestConfiguration.xml";
 
     // Micro Gateway config constants
     public static final String MICRO_GATEWAY = "MicroGateway"

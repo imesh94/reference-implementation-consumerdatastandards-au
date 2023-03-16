@@ -76,6 +76,20 @@ class AURegistrationRequestBuilder extends OBRegistrationRequestBuilder {
     }
 
     /**
+     * Provide subscription payload for DCR
+     * @return
+     */
+    static String getSubscriptionPayload(String applicationId, String apiId) {
+        return """
+            {
+              "applicationId": "$applicationId",
+              "apiId": "$apiId",
+              "throttlingPolicy": "Unlimited"
+            }
+            """.stripIndent()
+    }
+
+    /**
      * Provide regular payload for DCR
      * @return
      */
@@ -249,9 +263,8 @@ class AURegistrationRequestBuilder extends OBRegistrationRequestBuilder {
     static RequestSpecification buildBasicRequest(String accessToken) {
 
         return AURestAsRequestBuilder.buildRequest()
-                .contentType("application/jwt")
                 .header("charset", "UTF-8")
-                .header(AUConstants.AUTHORIZATION_HEADER_KEY, "Bearer ${accessToken}")
+                .header(AUConstants.AUTHORIZATION_HEADER_KEY, "${AUConstants.AUTHORIZATION_BEARER_TAG}${accessToken}")
                 .accept("application/json")
                 .config(RestAssured.config()
                         .sslConfig(RestAssured.config().getSSLConfig().sslSocketFactory(AUTestUtil.getSslSocketFactory()))

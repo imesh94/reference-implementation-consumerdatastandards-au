@@ -129,12 +129,22 @@ class AUAuthorisationBuilder {
         AUJWTGenerator generator = new AUJWTGenerator()
         String scopeString = "openid ${String.join(" ", scopes.collect({ it.scopeString }))}"
 
+        String assertionString = generator.getClientAssertionJwt(clientId)
+
+        def bodyContent = [
+                (AUConstants.CLIENT_ASSERTION_TYPE_KEY): (AUConstants.CLIENT_ASSERTION_TYPE),
+                (AUConstants.CLIENT_ASSERTION_KEY)     : assertionString,
+    ]
         def parResponse = AURestAsRequestBuilder.buildRequest()
                 .contentType(AUConstants.ACCESS_TOKEN_CONTENT_TYPE)
                 .header(AUConstants.AUTHORIZATION_HEADER_KEY, "Basic " + Base64.encoder.encodeToString(
                         headerString.getBytes(Charset.forName("UTF-8"))))
+                .formParams(bodyContent)
                 .formParams(AUConstants.REQUEST_KEY, generator.getSignedAuthRequestObject(scopeString,
                         sharingDuration, sendSharingDuration, cdrArrangementId, auConfiguration.getAppInfoRedirectURL(), clientId).serialize())
+                .formParam(AUConstants.CLIENT_ID_KEY,clientId)
+
+
                 .baseUri(AUConstants.PUSHED_AUTHORISATION_BASE_PATH)
                 .post(AUConstants.PAR_ENDPOINT)
 
@@ -195,7 +205,7 @@ class AUAuthorisationBuilder {
         def revocationResponse = AURestAsRequestBuilder.buildRequest()
                 .contentType(AUConstants.ACCESS_TOKEN_CONTENT_TYPE)
                 .header(AUConstants.X_V_HEADER, AUConstants.CDR_ENDPOINT_VERSION)
-                .header(AUConstants.AUTHORIZATION_HEADER_KEY, "Bearer ${applicationAccessToken}")
+                .header(AUConstants.AUTHORIZATION_HEADER_KEY, "${AUConstants.AUTHORIZATION_BEARER_TAG} ${applicationAccessToken}")
                 .formParams(bodyContent)
                 .baseUri(AUTestUtil.getBaseUrl(AUConstants.BASE_PATH_TYPE_CDR_ARRANGEMENT))
                 .delete("${AUConstants.CDR_ARRANGEMENT_ENDPOINT}/${cdrArrangementId}")
@@ -214,6 +224,10 @@ class AUAuthorisationBuilder {
     /**
      * Getter for other functions
      */
+    int getTppNumber() {
+        return tppNumber;
+    }
+
     private ResponseType getResponseType() {
         if (responseType == null) {
             responseType = new ResponseType("code id_token")

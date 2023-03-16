@@ -13,7 +13,6 @@
 package com.wso2.cds.integration.test
 
 import com.wso2.cds.test.framework.AUTest
-import org.testng.ITestContext
 import org.testng.annotations.BeforeClass
 import org.testng.annotations.Test
 

@@ -45,7 +45,7 @@ class AccountsRetrievalRequestHeaderValidationTest extends AUTest {
                 .header(AUConstants.X_FAPI_AUTH_DATE, AUConstants.DATE)
                 .header(AUConstants.X_FAPI_CUSTOMER_IP_ADDRESS, AUConstants.IP)
                 .header(AUConstants.X_CDS_CLIENT_HEADERS, clientHeader)
-                .header(AUConstants.AUTHORIZATION_HEADER_KEY, "Bearer ${userAccessToken}")
+                .header(AUConstants.AUTHORIZATION_HEADER_KEY, "${AUConstants.AUTHORIZATION_BEARER_TAG}${userAccessToken}")
                 .baseUri(AUTestUtil.getBaseUrl(AUConstants.BASE_PATH_TYPE_ACCOUNT))
                 .get("${AUConstants.CDS_PATH}${resourcePath}")
 

@@ -16,6 +16,15 @@
         <classes>
             <class name="com.wso2.cds.integration.test.AccessTokenTest"/>
             <class name="com.wso2.cds.integration.test.AccessTokenRepeatTest"/>
+            <class name="com.wso2.cds.integration.test.DCRTest"/>
+            <class name="com.wso2.cds.integration.test.tokenEndpoint.AccessTokenTest"/>
+            <class name="com.wso2.cds.integration.test.authflow.AuthorisationFlowCXValidationTest"/>
+            <class name="com.wso2.cds.integration.test.authflow.AuthorisationFlowUIValidationTest"/>
+            <class name="com.wso2.cds.integration.test.authflow.UserAuthenticationFlowValidationTest"/>
+            <class name="com.wso2.cds.integration.test.clientRegistration.DynamicClientRegistrationCreateTest"/>
+            <class name="com.wso2.cds.integration.test.clientRegistration.DynamicClientRegistrationDeleteTest"/>
+            <class name="com.wso2.cds.integration.test.clientRegistration.DynamicClientRegistrationRetrieveTest"/>
+            <class name="com.wso2.cds.integration.test.clientRegistration.DynamicClientRegistrationUpdateTest"/>
         </classes>
     </test>
 </suite>
