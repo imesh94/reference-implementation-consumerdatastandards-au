@@ -27,14 +27,14 @@ import java.time.OffsetDateTime;
 import java.time.ZoneOffset;
 
 /**
- * Utility methods used for CDS Claim Provider service
+ * Utility methods used for CDS Claim Provider service.
  */
 public class CDSClaimProviderUtil {
 
     private static Log log = LogFactory.getLog(CDSClaimProviderUtil.class);
 
     /**
-     * Method to obtain Hash Value for a given String
+     * Method to obtain Hash Value for a given String.
      *
      * @param value String value that required to be Hashed
      * @return Hashed String
@@ -69,11 +69,11 @@ public class CDSClaimProviderUtil {
         }
         byte[] leftmost = new byte[leftHalfBytes];
         System.arraycopy(digest, 0, leftmost, 0, leftHalfBytes);
-        return new String(Base64.encodeBase64Chunked(leftmost), Charsets.UTF_8);
+        return Base64.encodeBase64URLSafeString(leftmost);
     }
 
     /**
-     * convert consent expirytime to epoch time
+     * convert consent expirytime to epoch time.
      *
      * @param expiryTime consent expiry time in seconds
      * @return expiry time as an epoch time
