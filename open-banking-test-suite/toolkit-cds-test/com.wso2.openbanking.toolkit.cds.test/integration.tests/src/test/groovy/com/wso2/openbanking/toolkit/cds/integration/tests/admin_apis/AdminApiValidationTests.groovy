@@ -29,7 +29,7 @@ import org.testng.annotations.Test
  */
 class AdminApiValidationTests extends AbstractAUTests {
 
-    static final String CDS_PATH = AUConstants.CDS_PATH
+    static final String CDS_PATH = "/cds-au/v2"
     private String accessToken
     private String clientId
     private AccessTokenJwtDto accessTokenJWTDTO = new AccessTokenJwtDto()
@@ -45,8 +45,7 @@ class AdminApiValidationTests extends AbstractAUTests {
         clientId = AppConfigReader.getClientId()
     }
 
-    //TODO: Git Issue: https://github.com/wso2-enterprise/financial-open-banking/issues/5565
-    //@Test
+    @Test
     void "TC1001001_Retrieve critical update to the metadata for Accredited Data Recipients"() {
 
         accessToken = accessTokenJWTDTO.getJwt(AUConstants.ADMIN_API_ISSUER, AUConstants.ADMIN_API_AUDIENCE)
@@ -75,7 +74,7 @@ class AdminApiValidationTests extends AbstractAUTests {
     @Test
     void "TC1002001_Retrieve operational statistics from the Data Holder"() {
 
-        accessToken = accessTokenJWTDTO.getJwt(AUConstants.ADMIN_API_ISSUER)
+        accessToken = accessTokenJWTDTO.getJwt(AUConstants.ADMIN_API_ISSUER, AUConstants.ADMIN_API_AUDIENCE)
 
         def response = TestSuite.buildRequest()
                 .header(AUConstants.CONTENT_TYPE, "application/json")
@@ -144,7 +143,7 @@ class AdminApiValidationTests extends AbstractAUTests {
     @Test
     void "TC1002002_Metrics Data Current"() {
 
-        accessToken = accessTokenJWTDTO.getJWT(AUConstants.ADMIN_API_ISSUER, AUConstants.ADMIN_API_AUDIENCE)
+        accessToken = accessTokenJWTDTO.getJwt(AUConstants.ADMIN_API_ISSUER, AUConstants.ADMIN_API_AUDIENCE)
 
         def response = TestSuite.buildRequest()
                 .header(AUConstants.CONTENT_TYPE, "application/json")
@@ -228,7 +227,7 @@ class AdminApiValidationTests extends AbstractAUTests {
     @Test(groups = "SmokeTest")
     void "TC1002004_Metrics Data All"() {
 
-        accessToken = accessTokenJWTDTO.getJWT(AUConstants.ADMIN_API_ISSUER, AUConstants.ADMIN_API_AUDIENCE)
+        accessToken = accessTokenJWTDTO.getJwt(AUConstants.ADMIN_API_ISSUER, AUConstants.ADMIN_API_AUDIENCE)
 
         def response = TestSuite.buildRequest()
                 .header(AUConstants.CONTENT_TYPE, "application/json")

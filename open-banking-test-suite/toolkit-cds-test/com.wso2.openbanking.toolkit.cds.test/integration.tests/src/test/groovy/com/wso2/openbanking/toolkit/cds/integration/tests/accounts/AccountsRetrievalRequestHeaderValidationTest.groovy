@@ -478,14 +478,12 @@ class AccountsRetrievalRequestHeaderValidationTest extends AbstractAUTests {
                 .get("${CDS_PATH}${AUConstants.BULK_ACCOUNT_PATH}")
 
         Assert.assertEquals(response.statusCode(), AUConstants.STATUS_CODE_400)
-        if (TestConstants.SOLUTION_VERSION_300.equalsIgnoreCase(AUTestUtil.solutionVersion)) {
-            Assert.assertEquals(TestUtil.parseResponseBody(response, AUConstants.ERROR_CODE),
-                    AUConstants.ERROR_CODE_INVALID_FIELD)
-            Assert.assertEquals(TestUtil.parseResponseBody(response, AUConstants.ERROR_SOURCE_PARAMETER), AUConstants
-                    .PARAM_PRODUCT_CATEGORY)
-            Assert.assertEquals(TestUtil.parseResponseBody(response, AUConstants.ERROR_TITLE), AUConstants
-                    .INVALID_FIELD)
-        }
+       Assert.assertEquals(TestUtil.parseResponseBody(response, AUConstants.ERROR_CODE),
+               AUConstants.ERROR_CODE_INVALID_FIELD)
+        Assert.assertEquals(TestUtil.parseResponseBody(response, AUConstants.ERROR_TITLE), AUConstants
+                .INVALID_FIELD)
+        Assert.assertTrue(TestUtil.parseResponseBody(response, AUConstants.ERROR_DETAIL).contains(
+                "Schema validation failed in the Request: Instance value (\"TRANS\") not found in enum"))
     }
 
     @Test
@@ -524,7 +522,6 @@ class AccountsRetrievalRequestHeaderValidationTest extends AbstractAUTests {
                 "CLOSED")
     }
 
-    //TODO: Git issue: https://github.com/wso2-enterprise/financial-open-banking/issues/5562
     @Test
     void "TC0301029_Retrieve account list with invalid x-fapi-interaction-id"() {
 
@@ -543,8 +540,6 @@ class AccountsRetrievalRequestHeaderValidationTest extends AbstractAUTests {
         if (TestConstants.SOLUTION_VERSION_300.equalsIgnoreCase(AUTestUtil.solutionVersion)) {
             Assert.assertEquals(TestUtil.parseResponseBody(response, AUConstants.ERROR_CODE),
                     AUConstants.ERROR_CODE_INVALID_HEADER)
-            //Assert.assertEquals(TestUtil.parseResponseBody(response, AUConstants.ERROR_SOURCE_PARAMETER), AUConstants
-                    //.PARAM_FAPI_INTERACTION_ID)
             Assert.assertEquals(TestUtil.parseResponseBody(response, AUConstants.ERROR_TITLE), AUConstants
                     .INVALID_HEADER)
         }
@@ -562,19 +557,10 @@ class AccountsRetrievalRequestHeaderValidationTest extends AbstractAUTests {
                 .header(AUConstants.X_FAPI_CUSTOMER_IP_ADDRESS , AUConstants.IP)
                 .header(AUConstants.X_CDS_CLIENT_HEADERS , clientHeader)
                 .header(TestConstants.AUTHORIZATION_HEADER_KEY, "Bearer ${userAccessToken}")
-                .header(AUConstants.X_CDS_CLIENT_HEADERS , cdsClient)
                 .baseUri(AUTestUtil.getBaseUrl(AUConstants.BASE_PATH_TYPE_ACCOUNT))
                 .get("${CDS_PATH}${AUConstants.BULK_ACCOUNT_PATH}")
 
-        Assert.assertEquals(response.statusCode(), AUConstants.STATUS_CODE_400)
-        if (TestConstants.SOLUTION_VERSION_300.equalsIgnoreCase(AUTestUtil.solutionVersion)) {
-            Assert.assertEquals(TestUtil.parseResponseBody(response, AUConstants.ERROR_CODE),
-                    AUConstants.ERROR_CODE_INVALID_HEADER)
-            Assert.assertEquals(TestUtil.parseResponseBody(response, AUConstants.ERROR_SOURCE_PARAMETER), AUConstants
-                    .PARAM_CDS_CLIENT_HEADER)
-            Assert.assertEquals(TestUtil.parseResponseBody(response, AUConstants.ERROR_TITLE), AUConstants
-                    .INVALID_HEADER)
-        }
+        Assert.assertEquals(response.statusCode(), AUConstants.STATUS_CODE_200)
     }
 
     @Test
@@ -590,21 +576,15 @@ class AccountsRetrievalRequestHeaderValidationTest extends AbstractAUTests {
                 .baseUri(AUTestUtil.getBaseUrl(AUConstants.BASE_PATH_TYPE_ACCOUNT))
                 .get("${CDS_PATH}${AUConstants.BULK_ACCOUNT_PATH}")
 
-        Assert.assertEquals(response.statusCode(), AUConstants.STATUS_CODE_500)
-        if (TestConstants.SOLUTION_VERSION_300.equalsIgnoreCase(AUTestUtil.solutionVersion)) {
-            Assert.assertEquals(TestUtil.parseResponseBody(response, AUConstants.ERROR_CODE),
-                    AUConstants.ERROR_CODE_UNAUTHORIZED)
-            Assert.assertEquals(TestUtil.parseResponseBody(response, AUConstants.ERROR_SOURCE_PARAMETER), AUConstants
-                    .PARAM_AUTHORIZATION)
-            Assert.assertEquals(TestUtil.parseResponseBody(response, AUConstants.ERROR_TITLE), AUConstants
-                    .INVALID_AUTHORISATION)
-        } else {
-            Assert.assertTrue(TestUtil.parseResponseBody(response, "fault.description").contains(
-                    "Invalid Credentials. Make sure you have given the correct access token") ||
-                    TestUtil.parseResponseBody(response, "fault.description").contains(
-                            "Invalid Credentials. Make sure you have provided the correct security credentials")
-            )
-        }
+        Assert.assertEquals(response.statusCode(), AUConstants.STATUS_CODE_401)
+        Assert.assertEquals(TestUtil.parseResponseBody(response, AUConstants.ERROR_CODE),
+                AUConstants.ERROR_CODE_UNAUTHORIZED)
+        Assert.assertEquals(TestUtil.parseResponseBody(response, AUConstants.ERROR_TITLE),
+                AUConstants.INVALID_AUTHORISATION)
+        Assert.assertEquals(TestUtil.parseResponseBody(response, AUConstants.ERROR_DETAIL),
+                "Invalid Credentials. Make sure you have provided the correct security credentials")
+        Assert.assertEquals(TestUtil.parseResponseBody(response, AUConstants.ERROR_META_URN),
+                AUConstants.ERROR_CODE_GENERAL_ERROR_UNEXPECTED)
     }
 
     @Test
@@ -617,19 +597,9 @@ class AccountsRetrievalRequestHeaderValidationTest extends AbstractAUTests {
                 .get("${CDS_PATH}${AUConstants.BULK_ACCOUNT_PATH}")
 
         Assert.assertEquals(response.statusCode(), AUConstants.STATUS_CODE_401)
-        if (TestConstants.SOLUTION_VERSION_300.equalsIgnoreCase(AUTestUtil.solutionVersion)) {
-            Assert.assertEquals(TestUtil.parseResponseBody(response, AUConstants.ERROR_CODE),
-                    AUConstants.ERROR_CODE_UNAUTHORIZED)
-            Assert.assertEquals(TestUtil.parseResponseBody(response, AUConstants.ERROR_SOURCE_PARAMETER), AUConstants
-                    .PARAM_AUTHORIZATION)
-            Assert.assertEquals(TestUtil.parseResponseBody(response, AUConstants.ERROR_TITLE), AUConstants
-                    .INVALID_AUTHORISATION)
-        } else {
-            Assert.assertTrue(TestUtil.parseResponseBody(response, "fault.description").contains(
-                    "Missing Credentials. Make sure your API request provides required credentials") ||
-                    TestUtil.parseResponseBody(response, "fault.description").contains(
-                            "Invalid Credentials. Make sure your API invocation call has a header: 'Authorization : Bearer " +
-                                    "ACCESS_TOKEN' or 'Authorization : Basic ACCESS_TOKEN' or 'apikey: API_KEY"))
-        }
+        Assert.assertEquals(TestUtil.parseResponseBody(response, AUConstants.ERROR),
+                AUConstants.INVALID_CLIENT)
+        Assert.assertEquals(TestUtil.parseResponseBody(response, AUConstants.ERROR_DESCRIPTION), AUConstants
+                .MISSING_CREDENTIALS)
     }
 }

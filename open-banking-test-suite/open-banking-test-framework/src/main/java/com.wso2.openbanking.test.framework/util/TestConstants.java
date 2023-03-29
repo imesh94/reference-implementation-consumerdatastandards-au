@@ -70,7 +70,7 @@ public class TestConstants {
     public static final String OAUTH2_REVOKE_ENDPOINT = "/oauth2/revoke";
     public static final String REST_API_CLIENT_REGISTRATION_ENDPOINT = "/client-registration/v0.16/register";
     public static final String REST_API_PUBLISHER_ENDPOINT = "/api/am/publisher/v1.1/apis/";
-    public static final String REST_API_STORE_ENDPOINT = "/api/am/store/v1/";
+    public static final String REST_API_STORE_ENDPOINT = "/api/am/devportal/v3/";
 
     //HTTP Status Codes
     public static final int OK = 200;

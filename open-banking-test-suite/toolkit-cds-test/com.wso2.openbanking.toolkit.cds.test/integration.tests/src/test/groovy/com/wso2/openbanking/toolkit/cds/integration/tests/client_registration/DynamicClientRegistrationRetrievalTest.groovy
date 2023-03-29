@@ -59,6 +59,8 @@ class DynamicClientRegistrationRetrievalTest extends AbstractAUTests {
         clientId = TestUtil.parseResponseBody(registrationResponse, "client_id")
         TestUtil.writeXMLContent(xmlFile.toString(), "Application", "ClientID", clientId,
                 appConfigReader.tppNumber)
+        accessToken = AURequestBuilder.getApplicationToken(scopes, clientId)
+        Assert.assertNotNull(accessToken)
     }
 
     @Test(priority = 1, groups = "SmokeTest")
@@ -68,7 +70,7 @@ class DynamicClientRegistrationRetrievalTest extends AbstractAUTests {
         def response = TestSuite.buildRequest()
                 .contentType(TestConstants.CONTENT_TYPE_APPLICATION_JSON)
                 .header(TestConstants.AUTHORIZATION_HEADER_KEY, TestConstants.AUTHORIZATION_BEARER_TAG +
-                        ConfigParser.getRESTApiDCRAccessToken())
+                        accessToken)
                 .get(devPortalEndpoint.toString())
 
         Assert.assertEquals(response.statusCode(), AUConstants.STATUS_CODE_200)
@@ -97,9 +99,9 @@ class DynamicClientRegistrationRetrievalTest extends AbstractAUTests {
 
         String invalidClientId = "invalidclientid"
 
-        def registrationResponse = AURegistrationRequestBuilder.buildBasicRequest(accessToken)
+        def registrationResponse = AURegistrationRequestBuilder.buildBasicRequestWithContentTypeJson(accessToken)
                 .when()
-                .get(registrationPath + invalidClientId)
+                .get(registrationPath + clientId)
 
         Assert.assertEquals(registrationResponse.statusCode(), AUConstants.STATUS_CODE_401)
     }
@@ -107,7 +109,7 @@ class DynamicClientRegistrationRetrievalTest extends AbstractAUTests {
     @Test(priority = 1, groups = "SmokeTest", dependsOnMethods = "TC0101009_Get access token")
     void "TC0102002_Get registration details"() {
 
-        def registrationResponse = AURegistrationRequestBuilder.buildBasicRequest(accessToken)
+        def registrationResponse = AURegistrationRequestBuilder.buildBasicRequestWithContentTypeJson(accessToken)
                 .when()
                 .get(registrationPath + clientId)
 

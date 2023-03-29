@@ -12,7 +12,6 @@
 
 package com.wso2.openbanking.toolkit.cds.integration.tests.accounts
 
-import com.wso2.openbanking.test.framework.util.AppConfigReader
 import com.wso2.openbanking.test.framework.util.TestConstants
 import com.wso2.openbanking.test.framework.util.TestUtil
 import com.wso2.openbanking.toolkit.cds.test.common.utils.AUConstants
@@ -173,17 +172,12 @@ class AccountsRetrievalTest extends AbstractAUTests {
         softAssertion.assertEquals(response.statusCode(), AUConstants.STATUS_CODE_422)
         softAssertion.assertNotNull(response.getHeader(AUConstants.X_V_HEADER))
 
-        if (TestConstants.SOLUTION_VERSION_300.equalsIgnoreCase(AUTestUtil.solutionVersion)) {
-            softAssertion.assertEquals(TestUtil.parseResponseBody(response, AUConstants.ERROR_CODE),
-                    AUConstants.ERROR_CODE_INVALID_BANK_ACC)
-            softAssertion.assertEquals(TestUtil.parseResponseBody(response, AUConstants.ERROR_TITLE), AUConstants
-                    .INVALID_BANK_ACC)
-            softAssertion.assertEquals(TestUtil.parseResponseBody(response, AUConstants.ERROR_DETAIL), AUConstants
-                    .ACCOUNT_ID_NOT_FOUND)
-        } else {
-            softAssertion.assertEquals(response.jsonPath().get("errors[0].code"), "0001 – Account not able to be found")
-        }
-
+        softAssertion.assertEquals(TestUtil.parseResponseBody(response, AUConstants.ERROR_CODE),
+                AUConstants.ERROR_CODE_INVALID_BANK_ACC)
+        softAssertion.assertEquals(TestUtil.parseResponseBody(response, AUConstants.ERROR_TITLE), AUConstants
+                .INVALID_BANK_ACC)
+        softAssertion.assertEquals(TestUtil.parseResponseBody(response, AUConstants.ERROR_DETAIL), AUConstants
+                .ACCOUNT_ID_NOT_FOUND)
         softAssertion.assertAll()
     }
 
@@ -551,7 +545,7 @@ class AccountsRetrievalTest extends AbstractAUTests {
     }
 
     @Test(priority = 3)
-    void "OB-1146_Get basic accounts data without bank:accounts.basic:read permissions"() {
+    void "OB-1146_Get basic accounts data without bank accounts basic read permissions"() {
 
         scopes = [
                 AUConstants.SCOPES.BANK_ACCOUNT_DETAIL_READ,
@@ -573,22 +567,17 @@ class AccountsRetrievalTest extends AbstractAUTests {
         softAssertion.assertEquals(response.statusCode(), AUConstants.STATUS_CODE_403)
         softAssertion.assertEquals(response.getHeader(AUConstants.X_V_HEADER).toInteger(), AUConstants.X_V_HEADER_ACCOUNTS)
 
-        if (TestConstants.SOLUTION_VERSION_300.equalsIgnoreCase(AUTestUtil.solutionVersion)) {
-            Assert.assertEquals(TestUtil.parseResponseBody(response, AUConstants.ERROR_CODE),
-                    AUConstants.ERROR_CODE_RESOURCE_FORBIDDEN)
-            Assert.assertEquals(TestUtil.parseResponseBody(response, AUConstants.ERROR_SOURCE_POINTER), AUConstants
-                    .BULK_ACCOUNT_PATH)
-            Assert.assertEquals(TestUtil.parseResponseBody(response, AUConstants.ERROR_TITLE), AUConstants
-                    .RESOURCE_FORBIDDEN)
-        } else {
-            softAssertion.assertEquals(TestUtil.parseResponseBody(response, "fault.message"),
-                    "The access token does not allow you to access the requested resource")
-        }
+        Assert.assertEquals(TestUtil.parseResponseBody(response, AUConstants.ERROR_CODE),
+                AUConstants.ERROR_CODE_RESOURCE_FORBIDDEN)
+        Assert.assertEquals(TestUtil.parseResponseBody(response, AUConstants.ERROR_DETAIL),
+                AUConstants.TOKEN_NOT_ALLOWED_TO_ACCESS_RESOURCE)
+        Assert.assertEquals(TestUtil.parseResponseBody(response, AUConstants.ERROR_TITLE), AUConstants
+                .RESOURCE_FORBIDDEN)
         softAssertion.assertAll()
     }
 
     @Test(priority = 3)
-    void "OB-1147_Get detailed account data without bank:accounts.detail:read permissions"() {
+    void "OB-1147_Get detailed account data without bank accounts detail read permissions"() {
 
         scopes = [
                 AUConstants.SCOPES.BANK_ACCOUNT_BASIC_READ,
@@ -610,22 +599,17 @@ class AccountsRetrievalTest extends AbstractAUTests {
         softAssertion.assertEquals(response.statusCode(), AUConstants.STATUS_CODE_403)
         softAssertion.assertEquals(response.getHeader(AUConstants.X_V_HEADER).toInteger(), AUConstants.X_V_HEADER_ACCOUNTS)
 
-        if (TestConstants.SOLUTION_VERSION_300.equalsIgnoreCase(AUTestUtil.solutionVersion)) {
-            Assert.assertEquals(TestUtil.parseResponseBody(response, AUConstants.ERROR_CODE),
-                    AUConstants.ERROR_CODE_RESOURCE_FORBIDDEN)
-            Assert.assertEquals(TestUtil.parseResponseBody(response, AUConstants.ERROR_SOURCE_POINTER), AUConstants
-                    .SINGLE_ACCOUNT_PATH)
-            Assert.assertEquals(TestUtil.parseResponseBody(response, AUConstants.ERROR_TITLE), AUConstants
-                    .RESOURCE_FORBIDDEN)
-        } else {
-            softAssertion.assertEquals(TestUtil.parseResponseBody(response, "fault.message"),
-                    "The access token does not allow you to access the requested resource")
-        }
+        Assert.assertEquals(TestUtil.parseResponseBody(response, AUConstants.ERROR_CODE),
+                AUConstants.ERROR_CODE_RESOURCE_FORBIDDEN)
+        Assert.assertEquals(TestUtil.parseResponseBody(response, AUConstants.ERROR_DETAIL),
+                AUConstants.TOKEN_NOT_ALLOWED_TO_ACCESS_RESOURCE)
+        Assert.assertEquals(TestUtil.parseResponseBody(response, AUConstants.ERROR_TITLE), AUConstants
+                .RESOURCE_FORBIDDEN)
         softAssertion.assertAll()
     }
 
     @Test(priority = 3)
-    void "OB-1148_Get transactions data without bank:transactions:read permission"() {
+    void "OB-1148_Get transactions data without bank transactions read permission"() {
 
         scopes = [
                 AUConstants.SCOPES.BANK_ACCOUNT_BASIC_READ,
@@ -647,22 +631,17 @@ class AccountsRetrievalTest extends AbstractAUTests {
         SoftAssert softAssertion = new SoftAssert()
         softAssertion.assertEquals(response.statusCode(), AUConstants.STATUS_CODE_403)
         softAssertion.assertEquals(response.getHeader(AUConstants.X_V_HEADER).toInteger(), AUConstants.X_V_HEADER_ACCOUNTS)
-        if (TestConstants.SOLUTION_VERSION_300.equalsIgnoreCase(AUTestUtil.solutionVersion)) {
-            Assert.assertEquals(TestUtil.parseResponseBody(response, AUConstants.ERROR_CODE),
-                    AUConstants.ERROR_CODE_RESOURCE_FORBIDDEN)
-            Assert.assertEquals(TestUtil.parseResponseBody(response, AUConstants.ERROR_SOURCE_POINTER), AUConstants
-                    .GET_TRANSACTIONS)
-            Assert.assertEquals(TestUtil.parseResponseBody(response, AUConstants.ERROR_TITLE), AUConstants
-                    .RESOURCE_FORBIDDEN)
-        } else {
-            softAssertion.assertEquals(TestUtil.parseResponseBody(response, "fault.message"),
-                    "The access token does not allow you to access the requested resource")
-        }
+        Assert.assertEquals(TestUtil.parseResponseBody(response, AUConstants.ERROR_CODE),
+                AUConstants.ERROR_CODE_RESOURCE_FORBIDDEN)
+        Assert.assertEquals(TestUtil.parseResponseBody(response, AUConstants.ERROR_DETAIL),
+                AUConstants.TOKEN_NOT_ALLOWED_TO_ACCESS_RESOURCE)
+        Assert.assertEquals(TestUtil.parseResponseBody(response, AUConstants.ERROR_TITLE), AUConstants
+                .RESOURCE_FORBIDDEN)
         softAssertion.assertAll()
     }
 
     @Test(priority = 3)
-    void "OB-1149_Get transactions data with bank:transactions:read and without bank:accounts.basic:read permission"() {
+    void "OB-1149_Get transactions data with bank transactions read and without bank accounts basic read permission"() {
 
         scopes = [
                 AUConstants.SCOPES.BANK_ACCOUNT_DETAIL_READ,
@@ -700,7 +679,7 @@ class AccountsRetrievalTest extends AbstractAUTests {
     }
 
     @Test(priority = 3)
-    void "TC0401004_Get Direct Debits without regular_payments:read permissions"() {
+    void "TC0401004_Get Direct Debits without regular_payments read permissions"() {
 
         scopes = [
                 AUConstants.SCOPES.BANK_ACCOUNT_BASIC_READ,
@@ -720,22 +699,17 @@ class AccountsRetrievalTest extends AbstractAUTests {
         softAssertion.assertEquals(response.statusCode(), AUConstants.STATUS_CODE_403)
         softAssertion.assertEquals(response.getHeader(AUConstants.X_V_HEADER).toInteger(), AUConstants.X_V_HEADER_ACCOUNTS)
 
-        if (TestConstants.SOLUTION_VERSION_300.equalsIgnoreCase(AUTestUtil.solutionVersion)) {
-            Assert.assertEquals(TestUtil.parseResponseBody(response, AUConstants.ERROR_CODE),
-                    AUConstants.ERROR_CODE_RESOURCE_FORBIDDEN)
-            Assert.assertEquals(TestUtil.parseResponseBody(response, AUConstants.ERROR_SOURCE_POINTER), AUConstants
-                    .BULK_DIRECT_DEBITS_PATH)
-            Assert.assertEquals(TestUtil.parseResponseBody(response, AUConstants.ERROR_TITLE), AUConstants
-                    .RESOURCE_FORBIDDEN)
-        } else {
-            softAssertion.assertEquals(TestUtil.parseResponseBody(response, "fault.message"),
-                    "The access token does not allow you to access the requested resource")
-        }
+        Assert.assertEquals(TestUtil.parseResponseBody(response, AUConstants.ERROR_CODE),
+                AUConstants.ERROR_CODE_RESOURCE_FORBIDDEN)
+        Assert.assertEquals(TestUtil.parseResponseBody(response, AUConstants.ERROR_TITLE), AUConstants
+                .RESOURCE_FORBIDDEN)
+        Assert.assertEquals(TestUtil.parseResponseBody(response, AUConstants.ERROR_DETAIL),
+                AUConstants.TOKEN_NOT_ALLOWED_TO_ACCESS_RESOURCE)
         softAssertion.assertAll()
     }
 
     @Test(priority = 3)
-    void "TC0402004_Get Scheduled Payments without regular_payments:read permissions"() {
+    void "TC0402004_Get Scheduled Payments without regular_payments read permissions"() {
 
         scopes = [
                 AUConstants.SCOPES.BANK_ACCOUNT_BASIC_READ,
@@ -755,22 +729,16 @@ class AccountsRetrievalTest extends AbstractAUTests {
         softAssertion.assertEquals(response.statusCode(), AUConstants.STATUS_CODE_403)
         softAssertion.assertEquals(response.getHeader(AUConstants.X_V_HEADER).toInteger(), AUConstants.X_V_HEADER_ACCOUNTS)
 
-        if (TestConstants.SOLUTION_VERSION_300.equalsIgnoreCase(AUTestUtil.solutionVersion)) {
-            Assert.assertEquals(TestUtil.parseResponseBody(response, AUConstants.ERROR_CODE),
-                    AUConstants.ERROR_CODE_RESOURCE_FORBIDDEN)
-            Assert.assertEquals(TestUtil.parseResponseBody(response, AUConstants.ERROR_SOURCE_POINTER), AUConstants
-                    .BULK_SCHEDULE_PAYMENTS_PATH)
-            Assert.assertEquals(TestUtil.parseResponseBody(response, AUConstants.ERROR_TITLE), AUConstants
-                    .RESOURCE_FORBIDDEN)
-        } else {
-            softAssertion.assertEquals(TestUtil.parseResponseBody(response, "fault.message"),
-                    "The access token does not allow you to access the requested resource")
-            softAssertion.assertAll()
-        }
+        Assert.assertEquals(TestUtil.parseResponseBody(response, AUConstants.ERROR_CODE),
+                AUConstants.ERROR_CODE_RESOURCE_FORBIDDEN)
+        Assert.assertEquals(TestUtil.parseResponseBody(response, AUConstants.ERROR_TITLE), AUConstants
+                .RESOURCE_FORBIDDEN)
+        Assert.assertEquals(TestUtil.parseResponseBody(response, AUConstants.ERROR_DETAIL),
+                AUConstants.TOKEN_NOT_ALLOWED_TO_ACCESS_RESOURCE)
     }
 
     @Test(priority = 3)
-    void "TC0503003_Get Payee without payees:read permissions"() {
+    void "TC0503003_Get Payee without payees read permissions"() {
 
         scopes = [
                 AUConstants.SCOPES.BANK_ACCOUNT_BASIC_READ,
@@ -790,17 +758,12 @@ class AccountsRetrievalTest extends AbstractAUTests {
         SoftAssert softAssertion = new SoftAssert()
         softAssertion.assertEquals(response.statusCode(), AUConstants.STATUS_CODE_403)
         softAssertion.assertEquals(response.getHeader(AUConstants.X_V_HEADER).toInteger(), AUConstants.X_V_HEADER_ACCOUNTS)
-        if (TestConstants.SOLUTION_VERSION_300.equalsIgnoreCase(AUTestUtil.solutionVersion)) {
-            Assert.assertEquals(TestUtil.parseResponseBody(response, AUConstants.ERROR_CODE),
-                    AUConstants.ERROR_CODE_RESOURCE_FORBIDDEN)
-            Assert.assertEquals(TestUtil.parseResponseBody(response, AUConstants.ERROR_SOURCE_POINTER), AUConstants
-                    .BULK_PAYEES)
-            Assert.assertEquals(TestUtil.parseResponseBody(response, AUConstants.ERROR_TITLE), AUConstants
-                    .RESOURCE_FORBIDDEN)
-        } else {
-            softAssertion.assertEquals(TestUtil.parseResponseBody(response, "fault.message"),
-                    "The access token does not allow you to access the requested resource")
-        }
+        Assert.assertEquals(TestUtil.parseResponseBody(response, AUConstants.ERROR_CODE),
+                AUConstants.ERROR_CODE_RESOURCE_FORBIDDEN)
+        Assert.assertEquals(TestUtil.parseResponseBody(response, AUConstants.ERROR_TITLE), AUConstants
+                .RESOURCE_FORBIDDEN)
+        Assert.assertEquals(TestUtil.parseResponseBody(response, AUConstants.ERROR_DETAIL),
+                AUConstants.TOKEN_NOT_ALLOWED_TO_ACCESS_RESOURCE)
         softAssertion.assertAll()
     }
 }

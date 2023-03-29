@@ -54,6 +54,7 @@ class DynamicClientRegistrationCreateTest extends AbstractAUTests {
         AUMockCDRIntegrationUtil.loadMetaDataToCDRRegister()
         AURegistrationRequestBuilder.retrieveADRInfo()
         deleteApplicationIfExists(scopes, clientId)
+        appConfigReader.setTppNumber(0)
     }
 
     @Test(groups = "SmokeTest")
@@ -68,7 +69,6 @@ class DynamicClientRegistrationCreateTest extends AbstractAUTests {
 
         TestUtil.writeXMLContent(xmlFile.toString(), "Application", "ClientID", clientId,
                 appConfigReader.tppNumber)
-
         Assert.assertEquals(registrationResponse.statusCode(), AUConstants.STATUS_CODE_201)
         Assert.assertEquals(TestUtil.parseResponseBody(registrationResponse, "software_statement"),
                 AUDCRConstants.SSA)

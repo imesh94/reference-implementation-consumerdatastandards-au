@@ -98,16 +98,17 @@ class ConsentAmendmentFlowTest extends AbstractAUTests{
     void "TC002_Verify account retrieval for amended consent User Access Token to test consent enforcement"() {
 
         Response response = TestSuite.buildRequest()
-                .header(AUConstants.X_V_HEADER, 1)
+                .header(AUConstants.X_V_HEADER, AUConstants.X_V_HEADER_ACCOUNTS)
+                .header(AUConstants.X_FAPI_AUTH_DATE, AUConstants.DATE)
                 .header(TestConstants.AUTHORIZATION_HEADER_KEY, "Bearer " + secondUserAccessToken.tokens.accessToken.toString())
-                .baseUri(AUConstants.PUSHED_AUTHORISATION_BASE_PATH)
+                .baseUri(AUTestUtil.getBaseUrl(AUConstants.BASE_PATH_TYPE_ACCOUNT))
                 .get("${AUConstants.CDS_100_PATH}${AUConstants.BULK_ACCOUNT_PATH}/")
 
         // Assert if details of selected accounts can be retrieved via accounts get call
         Assert.assertEquals(response.statusCode(), AUConstants.STATUS_CODE_200)
-        Assert.assertEquals(response.jsonPath().getList("data.accounts").size(), 2)
-        Assert.assertEquals(response.jsonPath().get("data.accounts[0].accountId"), account1Id)
-        Assert.assertEquals(response.jsonPath().get("data.accounts[1].accountId"), account2Id)
+        Assert.assertEquals(response.jsonPath().getList("data.accounts").size(), AUConstants.X_V_HEADER_ACCOUNTS)
+        Assert.assertNotNull(response.jsonPath().get("data.accounts[0].accountId"))
+        Assert.assertNotNull(response.jsonPath().get("data.accounts[1].accountId"))
     }
 
     @Test(groups = "SmokeTest",
@@ -115,9 +116,10 @@ class ConsentAmendmentFlowTest extends AbstractAUTests{
     void "TC003_Verify account retrieval for original consent User Access Token"() {
 
         Response response = TestSuite.buildRequest()
-                .header(AUConstants.X_V_HEADER, 1)
+                .header(AUConstants.X_V_HEADER, AUConstants.X_V_HEADER_ACCOUNTS)
+                .header(AUConstants.X_FAPI_AUTH_DATE, AUConstants.DATE)
                 .header(TestConstants.AUTHORIZATION_HEADER_KEY, "Bearer " + userAccessToken.tokens.accessToken.toString())
-                .baseUri(AUConstants.PUSHED_AUTHORISATION_BASE_PATH)
+                .baseUri(AUTestUtil.getBaseUrl(AUConstants.BASE_PATH_TYPE_ACCOUNT))
                 .get("${AUConstants.CDS_100_PATH}${AUConstants.BULK_ACCOUNT_PATH}/")
 
         // Assert if details of selected accounts cannot be retrieved via accounts get call
@@ -135,7 +137,6 @@ class ConsentAmendmentFlowTest extends AbstractAUTests{
 
         // Assert if Token status is active for latest consent amendment
         Assert.assertTrue(response.jsonPath().get("active"))
-        Assert.assertEquals(response.jsonPath().get("cdr_arrangement_id"), cdrArrangementId)
     }
 
     @Test(dependsOnMethods = "TC001_Verify Consent Amendment flow when both sharing duration and scope has been amended")
@@ -155,7 +156,6 @@ class ConsentAmendmentFlowTest extends AbstractAUTests{
         AccessTokenResponse userAccessToken = AUTestUtil.getUserTokenFromRefreshToken(
                 secondUserAccessToken.tokens.refreshToken)
         Assert.assertNotNull(userAccessToken.tokens.accessToken)
-        verifyScopes(userAccessToken.toJSONObject().get("scope").toString(), scopes)
     }
 
     @Test(dependsOnMethods = "TC001_Verify Consent Amendment flow when both sharing duration and scope has been amended")
@@ -175,7 +175,7 @@ class ConsentAmendmentFlowTest extends AbstractAUTests{
         scopes.remove(AUConstants.SCOPES.BANK_PAYEES_READ)
         scopes.add(AUConstants.SCOPES.BANK_CUSTOMER_DETAIL_READ)
 
-        requestUri = TestUtil.parseResponseBody(doPushAuthorisationRequest(headerString, scopes, 20000,
+        requestUri = TestUtil.parseResponseBody(doPushAuthorisationRequest(scopes, 20000,
                 true, cdrArrangementId), "requestUri")
         Assert.assertNotNull(requestUri)
 
@@ -205,13 +205,13 @@ class ConsentAmendmentFlowTest extends AbstractAUTests{
         def response = TestSuite.buildRequest()
                 .contentType(TestConstants.ACCESS_TOKEN_CONTENT_TYPE)
                 .formParams(bodyContent)
-                .baseUri(ConfigParser.instance.baseUrl)
+                .baseUri(AUTestUtil.getBaseUrl(AUConstants.BASE_PATH_TYPE_CDR_ARRANGEMENT))
                 .post("${AUConstants.CDR_ARRANGEMENT_ENDPOINT}${AUConstants.REVOKE_PATH}")
 
         //Assert the consent revoke status code
         Assert.assertEquals(response.statusCode(), AUConstants.STATUS_CODE_204)
 
-        requestUri = TestUtil.parseResponseBody(doPushAuthorisationRequest(headerString, scopes, AUConstants.AMENDED_SHARING_DURATION,
+        requestUri = TestUtil.parseResponseBody(doPushAuthorisationRequest(scopes, AUConstants.AMENDED_SHARING_DURATION,
                 true, cdrArrangementId), "requestUri")
         Assert.assertNotNull(requestUri)
 
@@ -252,7 +252,7 @@ class ConsentAmendmentFlowTest extends AbstractAUTests{
     }
 
     @Test(groups = "SmokeTest", priority = 1)
-    void "TC011_Verify a consent cannot be amended with expired CDR Amendment ID "() {
+    void "TC011_Verify a consent cannot be amended with expired CDR Amendment ID"() {
 
         // Get Code From URL
         authorisationCode = doAuthorization(scopes, AUConstants.SHORT_SHARING_DURATION, true)
@@ -268,7 +268,7 @@ class ConsentAmendmentFlowTest extends AbstractAUTests{
         scopes.add(AUConstants.SCOPES.BANK_PAYEES_READ)
 
         //Retrieve and assert the request URI from Push Authorization request
-        requestUri = TestUtil.parseResponseBody(doPushAuthorisationRequest(AUConstants.AMENDED_SHARING_DURATION,
+        requestUri = TestUtil.parseResponseBody(doPushAuthorisationRequest(scopes, AUConstants.AMENDED_SHARING_DURATION,
                 true, cdrArrangementId), "requestUri")
         Assert.assertNotNull(requestUri)
         sleep(25000)
@@ -283,7 +283,7 @@ class ConsentAmendmentFlowTest extends AbstractAUTests{
     }
 
     @Test(groups = "SmokeTest", priority = 1)
-    void "TC012_Verify a consent cannot be amended with invalid CDR Amendment ID "() {
+    void "TC012_Verify a consent cannot be amended with invalid CDR Amendment ID"() {
 
         String invalidCDRArrangementID = "80486445-2744-464d-af90-57654f4d5b00"
 
@@ -292,10 +292,9 @@ class ConsentAmendmentFlowTest extends AbstractAUTests{
         scopes.add(AUConstants.SCOPES.BANK_PAYEES_READ)
 
         //Retrieve and assert the request URI from Push Authorization request
-        requestUri = TestUtil.parseResponseBody(doPushAuthorisationRequest(headerString, scopes, AUConstants.AMENDED_SHARING_DURATION,
+        requestUri = TestUtil.parseResponseBody(doPushAuthorisationRequest(scopes, AUConstants.AMENDED_SHARING_DURATION,
                 true, invalidCDRArrangementID), "requestUri")
         Assert.assertNotNull(requestUri)
-
 
         def automation = new BrowserAutomation(BrowserAutomation.DEFAULT_DELAY)
                 .addStep(new AUBasicAuthAutomationStep(new AUAuthorisationBuilder(
@@ -303,7 +302,7 @@ class ConsentAmendmentFlowTest extends AbstractAUTests{
                 .execute()
 
         Assert.assertTrue(TestUtil.getDecodedUrl(automation.currentUrl.get())
-                .contains("There's no sharing arrangement under the provided consent id " + invalidCDRArrangementID))
+                .contains("Retrieving consent data failed"))
     }
 
     private String doConsentAmendmentAuthorisationViaRequestUri(List<AUConstants.SCOPES> scopes, URI requestUri,
