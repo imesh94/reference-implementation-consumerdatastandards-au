@@ -12,6 +12,7 @@ package com.wso2.openbanking.cds.identity.push.auth.extension.request.validator;
 import com.wso2.openbanking.accelerator.identity.push.auth.extension.request.validator.PushAuthRequestValidator;
 import com.wso2.openbanking.accelerator.identity.push.auth.extension.request.validator.constants.PushAuthRequestConstants;
 import com.wso2.openbanking.accelerator.identity.push.auth.extension.request.validator.exception.PushAuthRequestValidatorException;
+import com.wso2.openbanking.cds.identity.utils.CDSIdentityConstants;
 import net.minidev.json.JSONObject;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.logging.Log;
@@ -39,24 +40,24 @@ public class CDSPushAuthRequestValidator  extends PushAuthRequestValidator {
 
             requestObjectJsonBody = (JSONObject) parameters.get(PushAuthRequestConstants.DECODED_JWT_BODY);
         } else {
-            log.error("Invalid push authorisation request");
+            log.error(CDSIdentityConstants.INVALID_PUSH_AUTH_REQUEST);
             throw new PushAuthRequestValidatorException(HttpStatus.SC_BAD_REQUEST,
-                    PushAuthRequestConstants.INVALID_REQUEST, "Invalid push authorisation request");
+                    PushAuthRequestConstants.INVALID_REQUEST, CDSIdentityConstants.INVALID_PUSH_AUTH_REQUEST);
         }
 
         if (!isValidSharingDuration(requestObjectJsonBody)) {
-            log.error("Invalid sharing_duration value");
+            log.error(CDSIdentityConstants.INVALID_SHARING_DURATION);
             throw new PushAuthRequestValidatorException(HttpStatus.SC_BAD_REQUEST,
                     PushAuthRequestConstants.INVALID_REQUEST,
-                    "Invalid sharing_duration value");
+                    CDSIdentityConstants.INVALID_SHARING_DURATION);
         }
 
         // Sending an error for empty cdr_arrangement_id(A null cdr_arrangement_id should be ignored)
         if (isCDRArrangementIdEmpty(requestObjectJsonBody)) {
-            log.error("Empty cdr-arrangement-id sent in the request");
+            log.error(CDSIdentityConstants.EMPTY_CDR_ARRANGEMENT_ID);
             throw new PushAuthRequestValidatorException(HttpStatus.SC_BAD_REQUEST,
                     PushAuthRequestConstants.INVALID_REQUEST,
-                    "Empty cdr-arrangement-id sent in the request");
+                    CDSIdentityConstants.EMPTY_CDR_ARRANGEMENT_ID);
         }
     }
 
