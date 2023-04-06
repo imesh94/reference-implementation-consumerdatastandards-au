@@ -6,10 +6,10 @@
  * herein in any form is strictly forbidden, unless permitted by WSO2 expressly.
  * You may not alter or remove any copyright or other notice from copies of this content.
  */
-package com.wso2.openbanking.cds.account.metadata.endpoint.nominated.representative.impl;
+package com.wso2.openbanking.cds.account.type.management.endpoint.nominated.representative.impl;
 
 
-import com.wso2.openbanking.cds.account.metadata.endpoint.nominated.representative.api.NominatedRepresentativeAPI;
+import com.wso2.openbanking.cds.account.type.management.endpoint.nominated.representative.api.NominatedRepresentativeAPI;
 
 import javax.ws.rs.core.Response;
 
@@ -18,21 +18,20 @@ import javax.ws.rs.core.Response;
  */
 public class NominatedRepresentativeAPIImpl implements NominatedRepresentativeAPI {
 
-    public Response auUpdateBusinessStakeholderDetails(String requestBody) {
+    public Response updateNominatedRepresentativePermissions(String requestBody) {
         return null;
     }
 
-
-    public Response auRemoveBusinessStakeholder(String requestBody) {
+    public Response revokeNominatedRepresentativePermissions(String requestBody) {
         return null;
     }
 
-
-    public Response auBusinessStakeholderPermissionGet(String userId, String accountIds) {
+    public Response retrieveNominatedRepresentativePermissions(String userId, String accountIds) {
         return null;
     }
 
-    public Response auBusinessStakeholderPermissionGet(String userId) {
+    public Response retrieveNominatedRepresentativeProfiles(String userId) {
         return null;
     }
+
 }

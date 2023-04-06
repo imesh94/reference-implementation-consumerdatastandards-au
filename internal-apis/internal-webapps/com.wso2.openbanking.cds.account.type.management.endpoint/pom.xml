@@ -10,9 +10,9 @@
         <relativePath>../../pom.xml</relativePath>
     </parent>
 
-    <artifactId>com.wso2.openbanking.cds.account.metadata.endpoint</artifactId>
-    <name>WSO2 Open Banking CDS Toolkit - Account Metadata Endpoint</name>
-    <description>WSO2 Open Banking CDS Toolkit - Account Metadata Endpoint</description>
+    <artifactId>com.wso2.openbanking.cds.account.type.management.endpoint</artifactId>
+    <name>WSO2 Open Banking CDS Toolkit - Account Type Management Endpoint</name>
+    <description>WSO2 Open Banking CDS Toolkit - Account Type Management Endpoint</description>
     <packaging>war</packaging>
 
     <dependencies>

@@ -14,8 +14,8 @@
          xsi:schemaLocation="http://java.sun.com/xml/ns/javaee
 	http://java.sun.com/xml/ns/javaee/web-app_2_5.xsd">
 
-    <display-name>WSO2 Open Banking CDS Toolkit - Account Metadata API</display-name>
-    <description>WSO2 Open Banking CDS Toolkit - Account Metadata API</description>
+    <display-name>WSO2 Open Banking CDS Toolkit - Account Type Management API</display-name>
+    <description>WSO2 Open Banking CDS Toolkit - Account Type Management API</description>
 
     <context-param>
         <param-name>contextConfigLocation</param-name>

@@ -20,7 +20,7 @@
     <bean class="org.springframework.context.support.PropertySourcesPlaceholderConfigurer"/>
     <jaxrs:server id="services" address="/">
         <jaxrs:serviceBeans>
-            <bean class="com.wso2.openbanking.cds.account.metadata.endpoint.nominated.representative.impl.NominatedRepresentativeAPIImpl"/>
+            <bean class="com.wso2.openbanking.cds.account.type.management.endpoint.nominated.representative.impl.NominatedRepresentativeAPIImpl"/>
         </jaxrs:serviceBeans>
         <jaxrs:providers>
             <bean class="com.fasterxml.jackson.jaxrs.json.JacksonJsonProvider"/>
