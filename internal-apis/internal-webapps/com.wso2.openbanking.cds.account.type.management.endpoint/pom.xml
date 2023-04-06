@@ -79,7 +79,7 @@
                             <directory>src/main/webapp</directory>
                         </resource>
                     </webResources>
-                    <warName>api#openbanking#metricsendpoint</warName>
+                    <warName>api#openbanking#account-type-mgt</warName>
                 </configuration>
             </plugin>
         </plugins>
