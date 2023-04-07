@@ -18,19 +18,43 @@ import javax.ws.rs.core.Response;
  */
 public class NominatedRepresentativeAPIImpl implements NominatedRepresentativeAPI {
 
+    /**
+     * {@inheritDoc}
+     */
+    @Override
     public Response updateNominatedRepresentativePermissions(String requestBody) {
+
+        //ToDo: Implement this method
         return null;
     }
 
+    /**
+     * {@inheritDoc}
+     */
+    @Override
     public Response revokeNominatedRepresentativePermissions(String requestBody) {
+
+        //ToDo: Implement this method
         return null;
     }
 
+    /**
+     * {@inheritDoc}
+     */
+    @Override
     public Response retrieveNominatedRepresentativePermissions(String userId, String accountIds) {
+
+        //ToDo: Implement this method
         return null;
     }
 
+    /**
+     * {@inheritDoc}
+     */
+    @Override
     public Response retrieveNominatedRepresentativeProfiles(String userId) {
+
+        //ToDo: Implement this method
         return null;
     }
 
