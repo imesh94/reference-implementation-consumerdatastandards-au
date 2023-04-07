@@ -41,12 +41,12 @@ public class CDSApplicationUpdaterImpl extends ApplicationUpdaterImpl {
         if (spMetaData.get(CDSValidationConstants.ID_TOKEN_ENCRYPTION_RESPONSE_ALG) != null &&
                 spMetaData.get(CDSValidationConstants.ID_TOKEN_ENCRYPTION_RESPONSE_ENC) != null) {
             oauthApplication.setIdTokenEncryptionEnabled(true);
-            oauthApplication.setPkceMandatory(true); // Make PKCE mandatory feature for all applications.
             oauthApplication.setIdTokenEncryptionAlgorithm(spMetaData
                     .get(CDSValidationConstants.ID_TOKEN_ENCRYPTION_RESPONSE_ALG).toString());
             oauthApplication.setIdTokenEncryptionMethod(spMetaData
                     .get(CDSValidationConstants.ID_TOKEN_ENCRYPTION_RESPONSE_ENC).toString());
         }
+        oauthApplication.setPkceMandatory(true); // Make PKCE mandatory feature for all applications.
     }
     @Override
     public void doPostDeleteApplication(ServiceProvider serviceProvider, String tenantDomain, String userName)
