@@ -95,30 +95,73 @@ class AURequestBuilder {
     /**
      * Return Basic Request with given user token
      * @param userAccessToken
-     * @param version
+     * @param xv_header
      * @return
      */
-    static RequestSpecification buildBasicRequest(String userAccessToken, int version) {
+    static RequestSpecification buildBasicRequest(String userAccessToken, int xv_header) {
 
         return AURestAsRequestBuilder.buildRequest()
-                .header(AUConstants.X_V_HEADER, version)
+                .header(AUConstants.X_V_HEADER, xv_header)
                 .header(AUConstants.AUTHORIZATION_HEADER_KEY, "${AUConstants.AUTHORIZATION_BEARER_TAG}${userAccessToken}")
 
     }
 
-    static RequestSpecification buildBasicRequestWithCustomerIP(String userAccessToken, int version) {
+    static RequestSpecification buildBasicRequestWithCustomerIP(String userAccessToken, int xv_header) {
 
         return AURestAsRequestBuilder.buildRequest()
-                .header(AUConstants.X_V_HEADER, version)
+                .header(AUConstants.X_V_HEADER, xv_header)
                 .header(AUConstants.X_FAPI_CUSTOMER_IP_ADDRESS, AUConstants.IP)
                 .header(AUConstants.AUTHORIZATION_HEADER_KEY, "${AUConstants.AUTHORIZATION_BEARER_TAG}${userAccessToken}")
                 .baseUri(AUTestUtil.getBaseUrl(AUConstants.BASE_PATH_TYPE_ACCOUNT))
     }
 
-    static RequestSpecification buildBasicRequestWithoutAuthorisationHeader(int version) {
+    static RequestSpecification buildBasicRequestWithoutAuthorisationHeader(int xv_header) {
 
         return AURestAsRequestBuilder.buildRequest()
-                .header(AUConstants.X_V_HEADER, version)
+                .header(AUConstants.X_V_HEADER, xv_header)
+    }
+
+    /**
+     * Return Basic Request with given user token and custom headers.
+     * @param userAccessToken
+     * @param xv_header
+     * @param clientHeader
+     * @param authDate
+     * @param customerIpAddress
+     * @return RequestSpecification
+     */
+    static RequestSpecification buildBasicRequestWithCustomHeaders(String userAccessToken, def xv_header, clientHeader,
+                                                                   String authDate = AUConstants.DATE,
+                                                                   String customerIpAddress = AUConstants.IP) {
+
+        return AURestAsRequestBuilder.buildRequest()
+                .header(AUConstants.X_V_HEADER, xv_header)
+                .header(AUConstants.AUTHORIZATION_HEADER_KEY, "${AUConstants.AUTHORIZATION_BEARER_TAG}${userAccessToken}")
+                .header(AUConstants.X_FAPI_AUTH_DATE, authDate)
+                .header(AUConstants.X_CDS_CLIENT_HEADERS , clientHeader)
+    }
+
+    /**
+     * Return Basic Request with given user token and custom headers.
+     * @param userAccessToken
+     * @param xv_header
+     * @param clientHeader
+     * @param authDate
+     * @param customerIpAddress
+     * @return RequestSpecification
+     */
+    static RequestSpecification buildBasicRequestWithOptionalHeaders(String userAccessToken, def xv_header, clientHeader,
+                                                                     String authDate = AUConstants.DATE,
+                                                                     String customerIpAddress = AUConstants.IP,
+                                                                     String fapiInteractionId = UUID.randomUUID()) {
+
+        return AURestAsRequestBuilder.buildRequest()
+                .header(AUConstants.X_V_HEADER, xv_header)
+                .header(AUConstants.AUTHORIZATION_HEADER_KEY, "${AUConstants.AUTHORIZATION_BEARER_TAG}${userAccessToken}")
+                .header(AUConstants.X_FAPI_AUTH_DATE, authDate)
+                .header(AUConstants.X_FAPI_CUSTOMER_IP_ADDRESS , customerIpAddress)
+                .header(AUConstants.X_CDS_CLIENT_HEADERS , clientHeader)
+                .header(AUConstants.X_FAPI_INTERACTION_ID, fapiInteractionId)
     }
 
     /**
