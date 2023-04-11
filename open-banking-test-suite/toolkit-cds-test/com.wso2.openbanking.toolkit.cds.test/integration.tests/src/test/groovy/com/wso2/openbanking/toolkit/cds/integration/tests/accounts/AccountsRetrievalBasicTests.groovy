@@ -44,22 +44,14 @@ class AccountsRetrievalBasicTests extends AbstractAUTests {
                 .accept(AUConstants.ACCEPT)
                 .header(AUConstants.X_V_HEADER, AUConstants.X_V_HEADER_ACCOUNTS)
                 .header(TestConstants.AUTHORIZATION_HEADER_KEY, "Bearer ${userAccessToken}")
-                .header(TestConstants.AUTHORIZATION_HEADER_KEY, "Bearer asd")
                 .baseUri(AUTestUtil.getBaseUrl(AUConstants.BASE_PATH_TYPE_ACCOUNT))
                 .get("/cds-au/v0${AUConstants.BULK_ACCOUNT_PATH}")
 
         Assert.assertEquals(response.statusCode(), AUConstants.STATUS_CODE_404)
-        if (TestConstants.SOLUTION_VERSION_300.equalsIgnoreCase(AUTestUtil.solutionVersion)) {
-            Assert.assertEquals(TestUtil.parseResponseBody(response, AUConstants.ERROR_CODE),
-                    AUConstants.ERROR_CODE_RESOURCE_NOTFOUND)
-            Assert.assertEquals(TestUtil.parseResponseBody(response, AUConstants.ERROR_SOURCE_POINTER),
-                    "/cds-au/v0${AUConstants.BULK_ACCOUNT_PATH}")
-            Assert.assertEquals(TestUtil.parseResponseBody(response, AUConstants.ERROR_TITLE), AUConstants
-                    .RESOURCE_NOT_FOUND)
-        } else {
-            Assert.assertTrue(TestUtil.parseResponseBody(response, "fault.description").contains(
-                    "No matching resource found for given API Request"))
-        }
+        Assert.assertEquals(TestUtil.parseResponseBody(response, AUConstants.ERROR_CODE),
+                AUConstants.ERROR_CODE_RESOURCE_NOTFOUND)
+        Assert.assertEquals(TestUtil.parseResponseBody(response, AUConstants.ERROR_TITLE),
+                AUConstants.RESOURCE_NOT_FOUND)
     }
 
     @Test
@@ -73,15 +65,10 @@ class AccountsRetrievalBasicTests extends AbstractAUTests {
                 .get("${CDS_PATH}/banking/accountz")
 
         Assert.assertEquals(response.statusCode(), AUConstants.STATUS_CODE_404)
-        if (TestConstants.SOLUTION_VERSION_300.equalsIgnoreCase(AUTestUtil.solutionVersion)) {
-            Assert.assertEquals(TestUtil.parseResponseBody(response, AUConstants.ERROR_CODE),
-                    AUConstants.ERROR_CODE_RESOURCE_NOTFOUND )
-            Assert.assertEquals(TestUtil.parseResponseBody(response, AUConstants.ERROR_TITLE), AUConstants
-                    .RESOURCE_NOT_FOUND)
-        } else {
-            Assert.assertTrue(TestUtil.parseResponseBody(response, "fault.description").contains(
-                    "No matching resource found for given API Request"))
-        }
+        Assert.assertEquals(TestUtil.parseResponseBody(response, AUConstants.ERROR_CODE),
+                AUConstants.ERROR_CODE_RESOURCE_NOTFOUND )
+        Assert.assertEquals(TestUtil.parseResponseBody(response, AUConstants.ERROR_TITLE), AUConstants
+                .RESOURCE_NOT_FOUND)
     }
 
     @Test
@@ -114,8 +101,7 @@ class AccountsRetrievalBasicTests extends AbstractAUTests {
                 "Invalid mutual TLS request. Client certificate is missing"))
     }
 
-    //Todo: enable after fixing issue https://github.com/wso2-enterprise/financial-open-banking/issues/6640
-    //@Test
+    @Test
     void "OB-1162_Invoke bulk balances POST without request body"() {
 
         def response = AURequestBuilder
@@ -126,16 +112,13 @@ class AccountsRetrievalBasicTests extends AbstractAUTests {
 
         Assert.assertEquals(response.statusCode(), AUConstants.STATUS_CODE_400)
         Assert.assertEquals(TestUtil.parseResponseBody(response, AUConstants.ERROR_CODE),
-                AUConstants.ERROR_CODE_INVALID_FIELD)
-        Assert.assertEquals(TestUtil.parseResponseBody(response, AUConstants.ERROR_SOURCE_POINTER),
-                "/banking/accounts/balances")
-        Assert.assertEquals(TestUtil.parseResponseBody(response, AUConstants.ERROR_TITLE), AUConstants
-                .INVALID_FIELD)
+                AUConstants.ERROR_CODE_MISSING_FIELD)
+        Assert.assertEquals(TestUtil.parseResponseBody(response, AUConstants.ERROR_TITLE),
+                AUConstants.MISSING_REQUIRED_FIELD)
 
     }
 
-    //Todo: enable after fixing issue https://github.com/wso2-enterprise/financial-open-banking/issues/6639
-    //@Test
+    @Test
     void "OB-1263_Invoke bulk balances POST with invalid request body"() {
 
         // sending 'accountIds' as a string instead of the mandated String array format
@@ -155,12 +138,12 @@ class AccountsRetrievalBasicTests extends AbstractAUTests {
                 .baseUri(AUTestUtil.getBaseUrl(AUConstants.BASE_PATH_TYPE_BALANCES))
                 .post("${CDS_PATH}${AUConstants.BULK_BALANCES_PATH}")
 
-        Assert.assertEquals(response.statusCode(), AUConstants.STATUS_CODE_400)
+        Assert.assertEquals(response.statusCode(), AUConstants.STATUS_CODE_422)
         Assert.assertEquals(TestUtil.parseResponseBody(response, AUConstants.ERROR_CODE),
-                AUConstants.ERROR_CODE_INVALID_FIELD)
-        Assert.assertEquals(TestUtil.parseResponseBody(response, AUConstants.ERROR_SOURCE_POINTER),
-                "/banking/accounts/balances")
-        Assert.assertEquals(TestUtil.parseResponseBody(response, AUConstants.ERROR_TITLE), AUConstants
-                .INVALID_FIELD)
+                AUConstants.ERROR_CODE_INVALID_BANK_ACC)
+        Assert.assertEquals(TestUtil.parseResponseBody(response, AUConstants.ERROR_TITLE), AUConstants.INVALID_BANK_ACC)
+        Assert.assertEquals(TestUtil.parseResponseBody(response, AUConstants.ERROR_DETAIL),
+                "ID of the account not found or invalid")
+
     }
 }

@@ -55,9 +55,9 @@ class ThrottlingPolicyTest extends AbstractAUTests {
     @Test(invocationCount = 600, threadPoolSize = 100, enabled = true)
     void "TC0306001_Throttle requests by AllConsumers policy - Unattended"() {
 
-
         def response = AURequestBuilder
                 .buildBasicRequest(userAccessToken, AUConstants.X_V_HEADER_ACCOUNTS)
+                .header(AUConstants.X_FAPI_AUTH_DATE, AUConstants.DATE)
                 .baseUri(AUTestUtil.getBaseUrl(AUConstants.BASE_PATH_TYPE_ACCOUNT))
                 .get("${CDS_PATH}${AUConstants.BULK_ACCOUNT_PATH}")
 
@@ -89,6 +89,7 @@ class ThrottlingPolicyTest extends AbstractAUTests {
 
         def response = AURequestBuilder
                 .buildBasicRequestWithCustomerIP(userAccessToken, AUConstants.X_V_HEADER_ACCOUNTS)
+                .header(AUConstants.X_FAPI_AUTH_DATE, AUConstants.DATE)
                 .get("${CDS_PATH}${AUConstants.BULK_ACCOUNT_PATH}")
 
         int currentCount =  sequence.addAndGet(1)
@@ -115,6 +116,7 @@ class ThrottlingPolicyTest extends AbstractAUTests {
 
         def response = AURequestBuilder
                 .buildBasicRequestWithCustomerIP(userAccessToken, AUConstants.X_V_HEADER_ACCOUNTS)
+                .header(AUConstants.X_FAPI_AUTH_DATE, AUConstants.DATE)
                 .get("${CDS_PATH}${AUConstants.BULK_ACCOUNT_PATH}")
 
         int currentCount =  sequence.addAndGet(1)
@@ -141,6 +143,7 @@ class ThrottlingPolicyTest extends AbstractAUTests {
 
         def response = AURequestBuilder
                 .buildBasicRequest(userAccessToken, AUConstants.X_V_HEADER_ACCOUNTS)
+                .header(AUConstants.X_FAPI_AUTH_DATE, AUConstants.DATE)
                 .baseUri(AUTestUtil.getBaseUrl(AUConstants.BASE_PATH_TYPE_ACCOUNT))
                 .get("${CDS_PATH}${AUConstants.BULK_ACCOUNT_PATH}")
 
@@ -168,6 +171,7 @@ class ThrottlingPolicyTest extends AbstractAUTests {
 
         def response = AURequestBuilder
                 .buildBasicRequestWithCustomerIP(userAccessToken, AUConstants.X_V_HEADER_ACCOUNTS)
+                .header(AUConstants.X_FAPI_AUTH_DATE, AUConstants.DATE)
                 .get("${CDS_PATH}${AUConstants.BULK_ACCOUNT_PATH}")
 
         int currentCount =  sequence.addAndGet(1)
@@ -193,6 +197,7 @@ class ThrottlingPolicyTest extends AbstractAUTests {
 
         def response = AURequestBuilder
                 .buildBasicRequest(userAccessToken, AUConstants.X_V_HEADER_ACCOUNTS)
+                .header(AUConstants.X_FAPI_AUTH_DATE, AUConstants.DATE)
                 .baseUri(AUTestUtil.getBaseUrl(AUConstants.BASE_PATH_TYPE_ACCOUNT))
                 .get("${CDS_PATH}${AUConstants.BULK_ACCOUNT_PATH}")
 
@@ -242,6 +247,7 @@ class ThrottlingPolicyTest extends AbstractAUTests {
 
         def response = AURequestBuilder
                 .buildBasicRequest(userAccessToken, AUConstants.X_V_HEADER_ACCOUNTS)
+                .header(AUConstants.X_FAPI_AUTH_DATE, AUConstants.DATE)
                 .baseUri(AUTestUtil.getBaseUrl(AUConstants.BASE_PATH_TYPE_ACCOUNT))
                 .get("${CDS_PATH}${AUConstants.BULK_ACCOUNT_PATH}")
 

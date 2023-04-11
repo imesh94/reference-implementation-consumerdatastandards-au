@@ -84,7 +84,7 @@ class CustomerDetailsRetrievalTest extends AbstractAUTests {
     }
 
     @Test (priority = 1)
-    void "TC0601021_Retrieve Customer info with a consent without common:customer.basic:read scope"() {
+    void "TC0601021_Retrieve Customer info with a consent without common customer basic read scope"() {
 
         scopes = [
                 AUConstants.SCOPES.BANK_ACCOUNT_BASIC_READ
@@ -106,7 +106,7 @@ class CustomerDetailsRetrievalTest extends AbstractAUTests {
     }
 
     @Test (priority = 1)
-    void "TC0601022_Retrieve Customer Details with a consent without common:customer.detail:read scope"() {
+    void "TC0601022_Retrieve Customer Details with a consent without common customer detail read scope"() {
 
         scopes = [
                 AUConstants.SCOPES.BANK_ACCOUNT_BASIC_READ
@@ -128,7 +128,7 @@ class CustomerDetailsRetrievalTest extends AbstractAUTests {
     }
 
     @Test (priority = 1)
-    void "TC0601023_Retrieve Customer info with a consent with only common:customer.detail:read scope"() {
+    void "TC0601023_Retrieve Customer info with a consent with only common customer detail read scope"() {
 
         scopes = [
                 AUConstants.SCOPES.BANK_CUSTOMER_DETAIL_READ
@@ -150,7 +150,7 @@ class CustomerDetailsRetrievalTest extends AbstractAUTests {
     }
 
     @Test (priority = 1)
-    void "TC0601024_Retrieve Customer info with a consent with only common:customer.basic:read scope"() {
+    void "TC0601024_Retrieve Customer info with a consent with only common customer basic read scope"() {
 
         scopes = [
                 AUConstants.SCOPES.BANK_CUSTOMER_BASIC_READ

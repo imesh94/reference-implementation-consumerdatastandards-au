@@ -1,13 +1,10 @@
 /*
- * Copyright (c) 2021, WSO2 Inc. (http://www.wso2.com). All Rights Reserved.
+ * Copyright (c) 2021-2023, WSO2 LLC. (https://www.wso2.com). All Rights Reserved.
  *
- * This software is the property of WSO2 Inc. and its suppliers, if any.
+ * This software is the property of WSO2 LLC. and its suppliers, if any.
  * Dissemination of any information or reproduction of any material contained
- * herein is strictly forbidden, unless permitted by WSO2 in accordance with
- * the WSO2 Software License available at https://wso2.com/licenses/eula/3.1. For specific
- * language governing the permissions and limitations under this license,
- * please see the license as well as any agreement you’ve entered into with
- * WSO2 governing the purchase of this software and any associated services.
+ * herein in any form is strictly forbidden, unless permitted by WSO2 expressly.
+ * You may not alter or remove any copyright or other notice from copies of this content.
  */
 package com.wso2.openbanking.cds.identity.claims.utils;
 
@@ -27,14 +24,14 @@ import java.time.OffsetDateTime;
 import java.time.ZoneOffset;
 
 /**
- * Utility methods used for CDS Claim Provider service
+ * Utility methods used for CDS Claim Provider service.
  */
 public class CDSClaimProviderUtil {
 
     private static Log log = LogFactory.getLog(CDSClaimProviderUtil.class);
 
     /**
-     * Method to obtain Hash Value for a given String
+     * Method to obtain Hash Value for a given String.
      *
      * @param value String value that required to be Hashed
      * @return Hashed String
@@ -69,11 +66,11 @@ public class CDSClaimProviderUtil {
         }
         byte[] leftmost = new byte[leftHalfBytes];
         System.arraycopy(digest, 0, leftmost, 0, leftHalfBytes);
-        return new String(Base64.encodeBase64Chunked(leftmost), Charsets.UTF_8);
+        return Base64.encodeBase64URLSafeString(leftmost);
     }
 
     /**
-     * convert consent expirytime to epoch time
+     * convert consent expirytime to epoch time.
      *
      * @param expiryTime consent expiry time in seconds
      * @return expiry time as an epoch time

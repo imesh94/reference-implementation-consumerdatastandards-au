@@ -117,7 +117,7 @@ class DynamicClientRegistrationUpdateTest extends AbstractAUTests {
 
         Assert.assertEquals(registrationResponse.statusCode(), AUConstants.STATUS_CODE_200)
 
-        def retrievalResponse = AURegistrationRequestBuilder.buildBasicRequest(accessToken)
+        def retrievalResponse = AURegistrationRequestBuilder.buildBasicRequestWithContentTypeJson(accessToken)
                 .when()
                 .get(registrationPath + clientId)
 
@@ -149,7 +149,7 @@ class DynamicClientRegistrationUpdateTest extends AbstractAUTests {
     @Test(priority = 3)
     void "OB-1170_Update registration details without access token"() {
 
-        def registrationResponse = AURegistrationRequestBuilder.buildBasicRequest(null)
+        def registrationResponse = AURegistrationRequestBuilder.buildBasicRequest("")
                 .body(AURegistrationRequestBuilder.getSignedRequestObject(AURegistrationRequestBuilder
                         .getRegularClaims()))
                 .when()

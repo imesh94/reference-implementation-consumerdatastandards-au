@@ -91,8 +91,8 @@ class MetaDataConsentAmendment extends AbstractAUTests {
         scopes.add(AUConstants.SCOPES.BANK_PAYEES_READ)
 
         //Retrieve and assert the request URI from Push Authorization request
-        requestUri = TestUtil.parseResponseBody(doPushAuthorisationRequest(headerString, scopes, AUConstants.AMENDED_SHARING_DURATION,
-                true, cdrArrangementId, clientId), "request_uri")
+        requestUri = TestUtil.parseResponseBody(doPushAuthorisationRequest(scopes, AUConstants.AMENDED_SHARING_DURATION,
+                true, cdrArrangementId, clientId), "requestUri")
         Assert.assertNotNull(requestUri)
 
         def automation = new BrowserAutomation(BrowserAutomation.DEFAULT_DELAY)

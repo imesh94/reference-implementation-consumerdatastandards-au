@@ -365,6 +365,13 @@ http_method="POST"
 permissions=["/permission/admin"]
 allowed_auth_handlers = ["BasicAuthentication"]
 
+[[resource.access_control]]
+context = "(.*)/api/openbanking/account-type-mgt/(.*)"
+secure="true"
+http_method="all"
+permissions=["/permission/admin"]
+allowed_auth_handlers = ["BasicAuthentication"]
+
 [resource_access_control.introspect]
 secured="false"
 

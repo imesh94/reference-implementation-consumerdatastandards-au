@@ -217,8 +217,7 @@ class AbstractAUTests {
             return jwsObject.serialize();
 
         } else {
-            return new AccessTokenJwtDto().getJwt(clientId,
-                    ConfigParser.getInstance().getAudienceValue())
+            return new AccessTokenJwtDto().getJwt(clientId, ConfigParser.getInstance().getAudienceValue())
         }
 
     }
@@ -250,7 +249,8 @@ class AbstractAUTests {
     Response getAccountRetrieval(String userAccessToken) {
         //Account Retrieval request
         Response response = TestSuite.buildRequest()
-                .header(AUConstants.X_V_HEADER, 1)
+                .header(AUConstants.X_V_HEADER, AUConstants.X_V_HEADER_ACCOUNTS)
+                .header(AUConstants.X_FAPI_AUTH_DATE, AUConstants.DATE)
                 .header(TestConstants.AUTHORIZATION_HEADER_KEY, "Bearer " + userAccessToken)
                 .baseUri(ConfigParser.instance.baseUrl)
                 .get("${AUConstants.CDS_PATH}${AUConstants.BULK_ACCOUNT_PATH}/")
@@ -267,19 +267,20 @@ class AbstractAUTests {
 
     Response doRevokeConsent(String clientId, String cdrArrangementId) {
 
-        String assertionString = new AccessTokenJwtDto().getJwt(clientId)
+        String assertionString = getAssertionString(clientId)
 
         def bodyContent = [(TestConstants.CLIENT_ID_KEY)            : (clientId),
                            (TestConstants.CLIENT_ASSERTION_TYPE_KEY): (TestConstants.CLIENT_ASSERTION_TYPE),
                            (TestConstants.CLIENT_ASSERTION_KEY)     : assertionString,
                            "cdr_arrangement_id"                     : cdrArrangementId]
 
-        def response = TestSuite.buildRequest()
+        revocationResponse = TestSuite.buildRequest()
                 .contentType(TestConstants.ACCESS_TOKEN_CONTENT_TYPE)
                 .formParams(bodyContent)
-                .baseUri(ConfigParser.instance.baseUrl)
+                .baseUri(AUTestUtil.getBaseUrl(AUConstants.BASE_PATH_TYPE_CDR_ARRANGEMENT))
                 .post("${AUConstants.CDR_ARRANGEMENT_ENDPOINT}${AUConstants.REVOKE_PATH}")
-        return response
+
+        return revocationResponse
     }
 
     String doAuthorization(List<AUConstants.SCOPES> scopes, long sharingDuration, boolean sendSharingDuration) {
@@ -305,7 +306,7 @@ class AbstractAUTests {
             String token = AURequestBuilder.getApplicationToken(scopes, clientId)
 
             if (token) {
-                def deletionResponse = AURegistrationRequestBuilder.buildBasicRequest(token)
+                def deletionResponse = AURegistrationRequestBuilder.buildBasicRequestWithContentTypeJson(token)
                         .when()
                         .delete(AUDCRConstants.REGISTRATION_ENDPOINT + clientId)
                 Assert.assertEquals(deletionResponse.statusCode(), AUConstants.STATUS_CODE_204)

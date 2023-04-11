@@ -14,6 +14,7 @@ package com.wso2.openbanking.toolkit.cds.keymanager.tests
 
 import com.nimbusds.oauth2.sdk.AccessTokenResponse
 import com.wso2.openbanking.test.framework.TestSuite
+import com.wso2.openbanking.test.framework.automation.AUBasicAuthAutomationStep
 import com.wso2.openbanking.test.framework.automation.BasicAuthErrorStep
 import com.wso2.openbanking.test.framework.automation.BrowserAutomation
 import com.wso2.openbanking.test.framework.util.AppConfigReader
@@ -176,7 +177,7 @@ class PushedAuthorisationFlowTest extends AbstractAUTests {
     }
 
     //TODO: Enabling as False until revocation and Introspection implemented on toolkit
-    @Test(enabled = false, priority = 2,
+    @Test(enabled = true, priority = 2,
             dependsOnMethods = "TC0205006_Establish a new consent for an existing arrangement by passing existing cdr_arrangement_id")
     void "TC0203014_Tokens get revoked upon successful reestablishment of new consent via PAR model"() {
 
@@ -262,7 +263,7 @@ class PushedAuthorisationFlowTest extends AbstractAUTests {
 
         def invalidCdrArrangementId = "db638818-be86-42fc-bdb8-1e2a1011866d"
 
-        def response = doPushAuthorisationRequest(headerString, scopes, AUConstants.DEFAULT_SHARING_DURATION,
+        def response = doPushAuthorisationRequest(scopes, AUConstants.DEFAULT_SHARING_DURATION,
                 true, invalidCdrArrangementId)
 
         requestUri = TestUtil.parseResponseBody(response, "requestUri")
@@ -282,13 +283,12 @@ class PushedAuthorisationFlowTest extends AbstractAUTests {
         Assert.assertEquals(errorMessage, clientId)
     }
 
-    //TODO: Enable test after fixing: https://github.com/wso2-enterprise/financial-open-banking/issues/6779
-    @Test(enabled = false)
+    @Test
     void "TC0205008_Reject consent authorisation flow when the cdr_arrangement_id is unrecognized by the Data Holder"() {
 
         def cdrArrangementId = "abcd1234"
 
-        def response = doPushAuthorisationRequest(headerString, scopes, AUConstants.DEFAULT_SHARING_DURATION,
+        def response = doPushAuthorisationRequest(scopes, AUConstants.DEFAULT_SHARING_DURATION,
                 true, cdrArrangementId)
 
         requestUri = TestUtil.parseResponseBody(response, "requestUri")
@@ -300,12 +300,12 @@ class PushedAuthorisationFlowTest extends AbstractAUTests {
         AUAuthorisationBuilder authorisationBuilder = new AUAuthorisationBuilder(scopes, requestUri.toURI())
 
         def automation = new BrowserAutomation(BrowserAutomation.DEFAULT_DELAY)
-                .addStep(new BasicAuthErrorStep(authorisationBuilder.authoriseUrl))
+                .addStep(new AUBasicAuthAutomationStep(authorisationBuilder.authoriseUrl))
                 .execute()
 
         def errorMessage = URLDecoder.decode(automation.currentUrl.get().split("&")[1]
                 .split("=")[1].toString(), "UTF8")
-        Assert.assertEquals(errorMessage, clientId)
+        Assert.assertEquals(errorMessage, "Retrieving consent data failed")
     }
 
     @Test
@@ -407,13 +407,19 @@ class PushedAuthorisationFlowTest extends AbstractAUTests {
         userAccessToken = AURequestBuilder.getUserToken(authorisationCode)
         cdrArrangementId = userAccessToken.getCustomParameters().get("cdr_arrangement_id")
 
+        String assertionString = getAssertionString(clientId)
+
+        def bodyContent = [
+                (TestConstants.CLIENT_ASSERTION_TYPE_KEY): (TestConstants.CLIENT_ASSERTION_TYPE),
+                (TestConstants.CLIENT_ASSERTION_KEY)     : assertionString,
+        ]
+
         String scopeString = "openid ${String.join(" ", scopes.collect({ it.scopeString }))}"
         def incorrectRedirectUrl = "https://www.google.com"
 
         def response = TestSuite.buildRequest()
                 .contentType(TestConstants.ACCESS_TOKEN_CONTENT_TYPE)
-                .header(TestConstants.AUTHORIZATION_HEADER_KEY, "Basic " + Base64.encoder.encodeToString(
-                        headerString.getBytes(Charset.forName("UTF-8"))))
+                .formParams(bodyContent)
                 .formParams(TestConstants.REQUEST_KEY, AUAuthorisationBuilder.getSignedRequestObject(scopeString,
                         AUConstants.DEFAULT_SHARING_DURATION, true, cdrArrangementId,
                         incorrectRedirectUrl, clientId).serialize())
@@ -421,8 +427,10 @@ class PushedAuthorisationFlowTest extends AbstractAUTests {
                 .post(AUConstants.PAR_ENDPOINT)
 
         Assert.assertEquals(response.statusCode(), AUConstants.STATUS_CODE_400)
-        Assert.assertEquals(TestUtil.parseResponseBody(response, "error_description"),
-                "Registered callback does not match with the provided url.")
+        Assert.assertEquals(TestUtil.parseResponseBody(response, AUConstants.ERROR_DESCRIPTION),
+                "callback.not.match")
+        Assert.assertEquals(TestUtil.parseResponseBody(response, AUConstants.ERROR),
+                AUConstants.INVALID_REQUEST)
     }
 
     @Test
@@ -434,13 +442,19 @@ class PushedAuthorisationFlowTest extends AbstractAUTests {
         userAccessToken = AURequestBuilder.getUserToken(authorisationCode)
         cdrArrangementId = userAccessToken.getCustomParameters().get("cdr_arrangement_id")
 
+        String assertionString = getAssertionString(clientId)
+
+        def bodyContent = [
+                (TestConstants.CLIENT_ASSERTION_TYPE_KEY): (TestConstants.CLIENT_ASSERTION_TYPE),
+                (TestConstants.CLIENT_ASSERTION_KEY)     : assertionString,
+        ]
+
         String scopeString = "openid ${String.join(" ", scopes.collect({ it.scopeString }))}"
         def incorrectClientId = "YwSmCUteklf0T3MJdW8IQeM1kLga"
 
         def parResponse = TestSuite.buildRequest()
                 .contentType(TestConstants.ACCESS_TOKEN_CONTENT_TYPE)
-                .header(TestConstants.AUTHORIZATION_HEADER_KEY, "Basic " + Base64.encoder.encodeToString(
-                        headerString.getBytes(Charset.forName("UTF-8"))))
+                .formParams(bodyContent)
                 .formParams(TestConstants.REQUEST_KEY, AUAuthorisationBuilder.getSignedRequestObject(scopeString,
                         6000, true, cdrArrangementId, AppConfigReader.getRedirectURL(),
                         incorrectClientId).getAt("parsedString"))
@@ -448,12 +462,13 @@ class PushedAuthorisationFlowTest extends AbstractAUTests {
                 .post(AUConstants.PAR_ENDPOINT)
 
         Assert.assertEquals(parResponse.statusCode(), AUConstants.STATUS_CODE_400)
-        Assert.assertEquals(TestUtil.parseResponseBody(parResponse, "error_description"),
-                "Cannot find an application associated with the given consumer key : " + incorrectClientId)
+        Assert.assertEquals(TestUtil.parseResponseBody(parResponse, AUConstants.ERROR_DESCRIPTION),
+                "application.not.found")
+        Assert.assertEquals(TestUtil.parseResponseBody(parResponse, AUConstants.ERROR),
+                AUConstants.INVALID_REQUEST)
     }
 
-    //TODO: Enable and update test after fixing: https://github.com/wso2-enterprise/financial-open-banking/issues/6778
-    @Test(enabled = false)
+    @Test
     void "TC0205017_Initiate authorisation flow by passing cdr_arrangement_id without PAR"() {
 
         doConsentAuthorisation()
@@ -469,20 +484,25 @@ class PushedAuthorisationFlowTest extends AbstractAUTests {
                 .addStep(new BasicAuthErrorStep(authorisationBuilder.authoriseUrl))
                 .execute()
 
-        def errorMessage = URLDecoder.decode(automation.currentUrl.get().split("&")[1]
-                .split("=")[1].toString(), "UTF8")
-        Assert.assertEquals(errorMessage, clientId)
+        def errorMessage = automation.currentUrl.get().split("error_description=")[1]
+                .split("&")[0].replaceAll("\\+"," ")
+        Assert.assertTrue(errorMessage.contains("The claim cdr_arrangement_id is only accepted in par initiated requests."))
     }
 
     @Test
     void "TC0205018_Unable pass request_uri in the body of PAR request"() {
 
         def request_uri = "urn::bK4mreEMpZ42Ot4xxMOQdM2OvqhA66Rn"
+        String assertionString = getAssertionString(clientId)
+
+        def bodyContent = [
+                (TestConstants.CLIENT_ASSERTION_TYPE_KEY): (TestConstants.CLIENT_ASSERTION_TYPE),
+                (TestConstants.CLIENT_ASSERTION_KEY)     : assertionString,
+        ]
 
         def parResponse = TestSuite.buildRequest()
                 .contentType(TestConstants.ACCESS_TOKEN_CONTENT_TYPE)
-                .header(TestConstants.AUTHORIZATION_HEADER_KEY, "Basic " + Base64.encoder.encodeToString(
-                        headerString.getBytes(Charset.forName("UTF-8"))))
+                .formParams(bodyContent)
                 .formParams(TestConstants.REQUEST_URI_KEY, request_uri)
                 .baseUri(AUConstants.PUSHED_AUTHORISATION_BASE_PATH)
                 .post(AUConstants.PAR_ENDPOINT)

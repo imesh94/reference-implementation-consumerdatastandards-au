@@ -49,7 +49,8 @@ class ConsentAmendmentFlowUIValidationTest extends AbstractAUTests{
             AUConstants.SCOPES.BANK_TRANSACTION_READ,
             AUConstants.SCOPES.BANK_REGULAR_PAYMENTS_READ,
             AUConstants.SCOPES.BANK_CUSTOMER_BASIC_READ,
-            AUConstants.SCOPES.BANK_CUSTOMER_DETAIL_READ
+            AUConstants.SCOPES.BANK_CUSTOMER_DETAIL_READ,
+            AUConstants.SCOPES.CDR_REGISTRATION
     ]
 
     private String authorisationCode, secondAuthorisationCode = null
@@ -78,8 +79,8 @@ class ConsentAmendmentFlowUIValidationTest extends AbstractAUTests{
     void "TC001 Verify the account selection page should show the pre selected account"() {
 
         //Retrieve Request URI via Push request
-        requestUri = TestUtil.parseResponseBody(doPushAuthorisationRequest(headerString, scopes, AUConstants.AMENDED_SHARING_DURATION,
-                true, cdrArrangementId), "request_uri")
+        requestUri = TestUtil.parseResponseBody(doPushAuthorisationRequest(scopes, AUConstants.AMENDED_SHARING_DURATION,
+                true, cdrArrangementId), "requestUri")
         Assert.assertNotNull(requestUri)
 
         //Verification of the pre selected accounts
@@ -93,22 +94,25 @@ class ConsentAmendmentFlowUIValidationTest extends AbstractAUTests{
                 .execute()
     }
 
+
     @Test()
     void "TC002 Verify the consumer can view the name of the relevant accredited data recipient"() {
 
         // Data recipient name extracted from DCR GET call
-        def registrationResponse = AURegistrationRequestBuilder.buildBasicRequest(
+        def registrationResponse = AURegistrationRequestBuilder.buildBasicRequestWithContentTypeJson(
                 AURequestBuilder.getApplicationToken(scopes.collect({ it.scopeString }),
                         AppConfigReader.getClientId()))
                 .when()
                 .get(AUDCRConstants.REGISTRATION_ENDPOINT + AppConfigReader.getClientId())
 
+        Assert.assertEquals(registrationResponse.statusCode(), AUConstants.STATUS_CODE_200)
+
         Assert.assertNotNull(registrationResponse)
         String adrName = registrationResponse.jsonPath().get("org_name") + "," + registrationResponse.jsonPath().get("client_name")
 
         //Retrieve Request URI via Push request
-        requestUri = TestUtil.parseResponseBody(doPushAuthorisationRequest(headerString, scopes, AUConstants.AMENDED_SHARING_DURATION,
-                true, cdrArrangementId), "request_uri")
+        requestUri = TestUtil.parseResponseBody(doPushAuthorisationRequest(scopes, AUConstants.AMENDED_SHARING_DURATION,
+                true, cdrArrangementId), "requestUri")
         Assert.assertNotNull(requestUri)
 
         AUAuthorisationBuilder authorisationBuilder = new AUAuthorisationBuilder(
@@ -126,8 +130,8 @@ class ConsentAmendmentFlowUIValidationTest extends AbstractAUTests{
     void "TC003 Verify the System should display the review page to reflect the amended attributes"() {
 
 
-        requestUri = TestUtil.parseResponseBody(doPushAuthorisationRequest(headerString, scopes, AUConstants.AMENDED_SHARING_DURATION,
-                true, cdrArrangementId), "request_uri")
+        requestUri = TestUtil.parseResponseBody(doPushAuthorisationRequest(scopes, AUConstants.AMENDED_SHARING_DURATION,
+                true, cdrArrangementId), "requestUri")
         Assert.assertNotNull(requestUri)
 
         String sharingPeriod = new SimpleDateFormat("YYYY-MM-dd").format(new Date()) + " - " +
@@ -140,9 +144,10 @@ class ConsentAmendmentFlowUIValidationTest extends AbstractAUTests{
                     driver.findElement(By.xpath(AUTestUtil.getAltSingleAccountXPath())).click()
                     driver.findElement(By.xpath(AUConstants.CONSENT_SUBMIT_XPATH)).click()
 
+                    //Xpath change
                     Assert.assertTrue(driver.findElement(By.xpath(AUConstants.LBL_NEW_PAYEES_INDICATOR_XPATH)).isDisplayed())
                     Assert.assertTrue(driver.findElement(By.xpath(AUConstants.LBL_NEW_SHARING_DURATION_XPATH)).isDisplayed())
-                    Assert.assertTrue(driver.findElement(By.xpath(AUConstants.CONSENT_EXPIRY_XPATH)).getText().contains(sharingPeriod))
+                    Assert.assertTrue(driver.findElement(By.xpath(AUConstants.CONSENT_SHARING_XPATH)).getText().contains(sharingPeriod))
                 }
                 .execute()
     }
@@ -150,8 +155,8 @@ class ConsentAmendmentFlowUIValidationTest extends AbstractAUTests{
     @Test(dependsOnMethods = "TC003 Verify the System should display the review page to reflect the amended attributes")
     void "TC004 Verify the consent amendment of multiple accounts"() {
 
-        requestUri = TestUtil.parseResponseBody(doPushAuthorisationRequest(headerString, scopes, AUConstants.AMENDED_SHARING_DURATION,
-                true, cdrArrangementId), "request_uri")
+        requestUri = TestUtil.parseResponseBody(doPushAuthorisationRequest(scopes, AUConstants.AMENDED_SHARING_DURATION,
+                true, cdrArrangementId), "requestUri")
         Assert.assertNotNull(requestUri)
 
         def automation = new BrowserAutomation(BrowserAutomation.DEFAULT_DELAY)
@@ -183,8 +188,8 @@ class ConsentAmendmentFlowUIValidationTest extends AbstractAUTests{
     @Test(dependsOnMethods = "TC003 Verify the System should display the review page to reflect the amended attributes")
     void "TC005 Verify the instruction on how to manage the data-sharing agreements"() {
 
-        requestUri = TestUtil.parseResponseBody(doPushAuthorisationRequest(headerString, scopes, AUConstants.AMENDED_SHARING_DURATION,
-                true, cdrArrangementId), "request_uri")
+        requestUri = TestUtil.parseResponseBody(doPushAuthorisationRequest(scopes, AUConstants.AMENDED_SHARING_DURATION,
+                true, cdrArrangementId), "requestUri")
         Assert.assertNotNull(requestUri)
 
         new BrowserAutomation(BrowserAutomation.DEFAULT_DELAY)
@@ -202,8 +207,8 @@ class ConsentAmendmentFlowUIValidationTest extends AbstractAUTests{
     @Test(priority = 1)
     void "TC006 Verify back button on the CDR policy page at consent amendment"() {
 
-        requestUri = TestUtil.parseResponseBody(doPushAuthorisationRequest(headerString, scopes, AUConstants.AMENDED_SHARING_DURATION,
-                true, cdrArrangementId), "request_uri")
+        requestUri = TestUtil.parseResponseBody(doPushAuthorisationRequest(scopes, AUConstants.AMENDED_SHARING_DURATION,
+                true, cdrArrangementId), "requestUri")
         Assert.assertNotNull(requestUri)
 
         new BrowserAutomation(BrowserAutomation.DEFAULT_DELAY)
@@ -222,8 +227,8 @@ class ConsentAmendmentFlowUIValidationTest extends AbstractAUTests{
     @Test(priority = 1)
     void "TC007 Verify deny flow for consent amendment  at consent amendment"() {
 
-        requestUri = TestUtil.parseResponseBody(doPushAuthorisationRequest(headerString, scopes, AUConstants.AMENDED_SHARING_DURATION,
-                true, cdrArrangementId), "request_uri")
+        requestUri = TestUtil.parseResponseBody(doPushAuthorisationRequest(scopes, AUConstants.AMENDED_SHARING_DURATION,
+                true, cdrArrangementId), "requestUri")
         Assert.assertNotNull(requestUri)
 
         def automation = new BrowserAutomation(BrowserAutomation.DEFAULT_DELAY)
@@ -243,8 +248,8 @@ class ConsentAmendmentFlowUIValidationTest extends AbstractAUTests{
     @Test(priority = 1)
     void "TC008 Verify an initiate Authorization request for consent Amendment with a expired request_uri from PAR"() {
 
-        requestUri = TestUtil.parseResponseBody(doPushAuthorisationRequest(headerString, scopes, AUConstants.AMENDED_SHARING_DURATION,
-                true, cdrArrangementId), "request_uri")
+        requestUri = TestUtil.parseResponseBody(doPushAuthorisationRequest(scopes, AUConstants.AMENDED_SHARING_DURATION,
+                true, cdrArrangementId), "requestUri")
         Assert.assertNotNull(requestUri)
         sleep(65000)
 

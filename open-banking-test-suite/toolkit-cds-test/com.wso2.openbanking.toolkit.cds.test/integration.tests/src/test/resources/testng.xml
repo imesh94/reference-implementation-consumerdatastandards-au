@@ -65,12 +65,6 @@
             <class name="com.wso2.openbanking.toolkit.cds.integration.tests.cx.authflow.UserAuthenticationFlowValidationTest"/>
         </classes>
     </test>
-    <test name="Customer Experience Test - CCPortal" parallel="false" enabled="false">
-        <classes>
-            <class name="com.wso2.openbanking.toolkit.cds.integration.tests.cx.ccportal.WithdrawalFlowUIValidationTest" />
-            <class name="com.wso2.openbanking.toolkit.cds.integration.tests.cx.ccportal.WithdrawalFlowValidationTest" />
-        </classes>
-    </test>
     <test name="Customer Experience Test - Consent Mgt App" parallel="false" enabled="false">
         <classes>
             <class name="com.wso2.openbanking.toolkit.cds.integration.tests.cx.consentmgt.WithdrawalFlowUIValidationTest" />

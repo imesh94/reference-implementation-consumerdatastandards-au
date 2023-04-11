@@ -91,7 +91,7 @@ class TokenEndpointTest {
         Assert.assertNotNull(authorisationCode)
 
         def errorObject = AURequestBuilder.getUserTokenErrorResponse(authorisationCode,
-                AppConfigReader.getRedirectURL(), false)
+                AppConfigReader.getRedirectURL(), AppConfigReader.getClientId(),false)
         Assert.assertEquals(errorObject.toJSONObject().get("error_description"), "Request does not follow the registered token endpoint auth method private_key_jwt")
     }
 
@@ -102,7 +102,7 @@ class TokenEndpointTest {
         Assert.assertNotNull(authorisationCode)
 
         def errorObject = AURequestBuilder.getUserTokenErrorResponse(authorisationCode,
-                AppConfigReader.getRedirectURL(), true, false)
+                AppConfigReader.getRedirectURL(), AppConfigReader.getClientId(),true, false)
         Assert.assertEquals(errorObject.toJSONObject().get("error_description"), "Transport certificate not found in the request")
     }
 
@@ -124,7 +124,7 @@ class TokenEndpointTest {
         Assert.assertNotNull(authorisationCode)
 
         def errorObject = AURequestBuilder.getUserTokenErrorResponse(authorisationCode, AppConfigReader.getRedirectURL(),
-                true, true, "RS256")
+                AppConfigReader.getClientId(), true, true, "RS256")
         Assert.assertEquals(errorObject.toJSONObject().get("error_description"), "Registered algorithm does not match with the token signed algorithm")
 
     }
@@ -136,7 +136,7 @@ class TokenEndpointTest {
         Assert.assertNotNull(authorisationCode)
 
         def errorObject = AURequestBuilder.getUserTokenErrorResponse(authorisationCode, AppConfigReader.getRedirectURL(),
-                true, true, "PS512")
+                AppConfigReader.getClientId(),true, true, "PS512")
         Assert.assertEquals(errorObject.toJSONObject().get("error_description"), "Registered algorithm does not match with the token signed algorithm")
 
     }

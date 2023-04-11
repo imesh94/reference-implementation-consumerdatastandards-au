@@ -19,8 +19,8 @@ import com.wso2.openbanking.test.framework.util.ConfigParser
  */
 class AUConstants {
 
-    static config = ConfigParser.getInstance()
-    static API_VERSION = config.getApiVersion()
+    static final config = ConfigParser.getInstance()
+    static final API_VERSION = config.getApiVersion()
 
     static final CONSENT_SUBMIT_XPATH = "//*[@id='approve']"
     static final CONSENT_DENY_XPATH = "//*[@value='Deny']"
@@ -32,11 +32,11 @@ class AUConstants {
     static final ALT_SINGLE_ACCOUNT_XPATH = "//option[contains(text(),'account_2')]"
     static final ALT_SINGLE_ACCOUNT_XPATH_200 = "//input[@id='account_2']"
     static final LBL_WHERE_TO_MANAGE_INSTRUCTION_XPATH = "//div[contains(text(),'Where to manage this arrangement')]//h5"
-    static final LBL_NEW_PAYEES_INDICATOR_XPATH = "//b[contains(text(),'Saved payees')]/following-sibling::span[contains(text(),'New')]"
-    static final LBL_NEW_SHARING_DURATION_XPATH = "//button[@id='consent-expiry-date']/span[contains(text(),'New')]"
+    static final LBL_NEW_PAYEES_INDICATOR_XPATH = "//button[contains(text(),'Saved payees')]//following-sibling::span[text()='New']"
+    static final LBL_NEW_SHARING_DURATION_XPATH = "//h4[contains(text(),'Sharing Period')]/following-sibling::div//span[contains(text(),'New')]"
     static final LBL_NEW_SHORT_SHARING_DURATION_XPATH = "//span[@id='consentExpiryTime']/following-sibling::span[contains(text(),'New')]"
-    static final LBL_ACCOUNT_1_ID_XPATH = "//input[@id='account_1']//following::small[1]"
-    static final LBL_ACCOUNT_2_ID_XPATH = "//input[@id='account_2']//following::small[1]"
+    static final LBL_ACCOUNT_1_ID_XPATH = "//label[@for='account_1']"
+    static final LBL_ACCOUNT_2_ID_XPATH = "//label[@for='account_2']"
     static final LBL_SELECT_THE_ACCOUNTS_XPATH = "//h5[contains(text(),'Select the accounts you wish to authorise')]"
     public static final String X_V_HEADER = "x-v"
     public static final String X_MIN_HEADER = "x-min-v"
@@ -69,7 +69,7 @@ class AUConstants {
     static final String GET_STAT = "/admin/metrics"
     static final String X_FAPI_FINANCIAL_ID = "x-fapi-financial-id"
     public static final int X_V_HEADER_ACCOUNTS = 1
-    public static final int X_V_HEADER_METRICS = 1
+    public static final int X_V_HEADER_METRICS = 2
     public static final int X_V_HEADER_CUSTOMER = 1
     public static final int X_V_HEADER_PRODUCTS = getProductEndpointVersion()
     public static final int UNSUPPORTED_X_V_VERSION= 5
@@ -84,7 +84,8 @@ class AUConstants {
     static final String ERROR = "error"
     static final String ERROR_INVALID_SOFTWARE_PRODUCT = "Invalid Software Product"
 
-    static final CONSENT_EXPIRY_XPATH = "//button[@id='consent-expiry-date']"
+    static final CONSENT_SHARING_XPATH = "//span[@id='consentExpiryTime']"
+    static final CONSENT_EXPIRY_DATE_XPATH = "//button[@id='consent-expiry-date']"
     static final NEGATIVE_SHARING_DURATION_ERROR_PATH = "//td[contains(text(),'Negative sharing_duration')]"
     static final long DEFAULT_SHARING_DURATION = 60000
     static final long SINGLE_ACCESS_CONSENT = 0
@@ -296,13 +297,13 @@ class AUConstants {
 
     static final CONSENT_MANAGER_URL = ConfigParser.getInstance().getAuthorisationServerUrl() + "/consentmgt"
     static final OAUTH2_INTROSPECT_URL = ConfigParser.getInstance().getAuthorisationServerUrl() + "/oauth2/introspect"
-    static final CCPORTAL_URL = ConfigParser.getInstance().getAuthorisationServerUrl() + "/ccportal"
 
     static final ERROR_DETAIL = "errors[0].detail"
     static final ERROR_SOURCE_PARAMETER = "errors[0].source.parameter"
     static final ERROR_SOURCE_POINTER = "errors[0].source.pointer"
     static final ERROR_TITLE = "errors[0].title"
     static final ERROR_CODE = "errors[0].code"
+    static final ERROR_META_URN = "errors[0].meta.urn"
 //   static final ERROR_X_V_INVALID = "x-v header in the request is invalid"
 //   static final ERROR_X_V_MISSING = "Mandatory header x-v is missing"
     static final ERROR_X_MIN_V_INVALID = "x-min-v header in the request is invalid"
@@ -315,7 +316,7 @@ class AUConstants {
     static final INVALID_HEADER = "Invalid Header"
     static final UNSUPPORTED_VERSION = "Unsupported Version"
     static final INVALID_VERSION = "Invalid Version"
-    static final PAGE_SIZE_EXCEEDED = "Page Size Exceeded"
+    static final INVALID_PAGE = "Invalid Page"
     static final MISSING_HEADER = "Missing Required Header"
     static final INVALID_BANK_ACC = "Invalid Banking Account"
     static final ACCOUNT_ID_NOT_FOUND = "ID of the account not found or invalid"
@@ -327,11 +328,17 @@ class AUConstants {
     static final UNAPPROVED_SOFTWARE_STATEMENT = "unapproved_software_statement"
     static final RESOURCE_NOT_FOUND = "Resource Not Found"
     static final MESSAGE_THROTTLED_OUT = "Message throttled out"
-
+    static final INVALID_CLIENT = "invalid_client"
+    static final MISSING_CREDENTIALS = "Missing Credentials"
+    static final INVALID_CDR_ARRANGEMENT_ID = "Invalid cdr_arrangement_id"
+    static final INVALID_REQUEST_OBJECT = "invalid_request_object"
+    static final INVALID_REQUEST = "invalid_request"
+    static final MISSING_REQUIRED_FIELD = "Missing Required Field"
+    static final TOKEN_NOT_ALLOWED_TO_ACCESS_RESOURCE = "The access token does not allow you to access the requested resource"
 
     static final ERROR_CODE_MISSING_HEADER = "urn:au-cds:error:cds-all:Header/Missing"
     static final ERROR_CODE_INVALID_HEADER = "urn:au-cds:error:cds-all:Header/Invalid"
-    static final ERROR_CODE_INVALID_FIELD = "AU.CDR.Invalid.Field"
+    static final ERROR_CODE_INVALID_FIELD = "urn:au-cds:error:cds-all:Field/Invalid"
     static final ERROR_CODE_UNSUPPORTED_VERSION = "urn:au-cds:error:cds-all:Header/UnsupportedVersion"
     static final ERROR_CODE_INVALID_VERSION = "urn:au-cds:error:cds-all:Header/InvalidVersion"
     static final ERROR_CODE_INVALID_BANK_ACC = "urn:au-cds:error:cds-banking:Authorisation/InvalidBankingAccount"
@@ -345,6 +352,9 @@ class AUConstants {
     static final ERROR_TITLE_INVALID_SP_STATUS = "ADR Software Product Status Is Invalid"
     static final ERROR_CODE_INVALID_ADR_STATUS = "AU.CDR.Entitlements.InvalidAdrStatus"
     static final ERROR_TITLE_INVALID_ADR_STATUS = "ADR Status Is Invalid"
+    static final ERROR_CODE_GENERAL_ERROR_UNEXPECTED = "urn:au-cds:error:cds-all:GeneralError/Unexpected"
+    static final ERROR_CODE_MISSING_FIELD = "urn:au-cds:error:cds-all:Field/Missing"
+    static final ERROR_CODE_INVALID_PAGE = "urn:au-cds:error:cds-all:Field/InvalidPage"
 
     static final PARAM_X_V = "x-v"
     static final PARAM_X_MIN_V = "x-min-v"
@@ -388,16 +398,6 @@ class AUConstants {
     public static LBL_BANK_CUSTOMER_BASIC_READ_PATH = "//div[@id='accordion0']//div[@id='headingOrganisationprofile']//h4"
     public static LBL_BANK_REGULAR_PAYMENTS_READ_PATH = "//div[@id='accordion0']//div[@id='headingDirectdebitsandscheduledpayments']//h4"
 
-    public static LBL_CCPORTAL_ACCOUNT_NAME_TYPE_TAB = "//div[@id='accordion0']//div[@id='Accountnametypeandbalance']//li"
-    public static LBL_CCPORTAL_ACCOUNT_NUMBER_AND_FEATURES_TAB = "//div[@id='accordion0']//div[@id='Accountnumbersandfeatures']//li"
-    public static LBL_CCPORTAL_SAVED_PAYEES_TAB = "//div[@id='accordion0']//div[@id='Savedpayees']//li"
-    public static LBL_CCPORTAL_TRANSACTIONS_DETAIL_TAB = "//div[@id='accordion0']//div[@id='Transactiondetails']//li"
-    public static LBL_CCPORTAL_CONTACT_DETAILS_TAB = "//div[@id='accordion0']//div[@id='Contactdetails']//li"
-    public static LBL_CCPORTAL_ORGANISATION_CONTACT_DETAILS_TAB = "//div[@id='accordion0']//div[@id='Organisationcontactdetails']//li"
-    public static LBL_CCPORTAL_NAME_AND_OCCUPATION_TAB = "//div[@id='accordion0']//div[@id='Nameandoccupation']//li"
-    public static LBL_CCPORTAL_ORGANISATION_PROFILE_TAB = "//div[@id='accordion0']//div[@id='Organisationprofile']//li"
-    public static LBL_CCPORTAL_DIRECT_DEBITS_TAB = "//div[@id='accordion0']//div[@id='Directdebitsandscheduledpayments']//li"
-
     public static BASE_PATH_TYPE_DCR = "DCR"
     public static BASE_PATH_TYPE_ACCOUNT = "Accounts"
     public static BASE_PATH_TYPE_BALANCES = "Balances"
@@ -413,6 +413,9 @@ class AUConstants {
 
     static final String ADMIN_API_ISSUER = "cdr-register"
     static final String ADMIN_API_AUDIENCE = "https://wso2ob.com"
+    static final String UPDATED_SINCE = "updated-since"
+    static final String PAGE_SIZE = "page-size"
+    static final String BRAND = "brand"
 
     /**
      * Get the Product Endpoint Version
@@ -420,14 +423,10 @@ class AUConstants {
      */
     static int getProductEndpointVersion() {
 
-        def productEndpoint
+        def productEndpoint = 0
 
-        if (API_VERSION.equalsIgnoreCase("1.2.0")) {
-            productEndpoint = 2
-
-        } else if (API_VERSION.equalsIgnoreCase("1.3.0")) {
+        if (API_VERSION.equalsIgnoreCase("1.8.0")) {
             productEndpoint = 3
-
         }
         return productEndpoint
     }

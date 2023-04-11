@@ -27,7 +27,7 @@ import org.testng.annotations.Test
 class AuthorisationFlowCXValidationTest {
 
     @Test(groups = "SmokeTest")
-    void "TC0203003_Verify the permissions of a consent with common:customer.basic:read scope"() {
+    void "TC0203003_Verify the permissions of a consent with common customer basic read scope"() {
         List<AUConstants.SCOPES> scopes = [AUConstants.SCOPES.BANK_CUSTOMER_BASIC_READ]
 
       AUAuthorisationBuilder authorisationBuilder = new AUAuthorisationBuilder(
@@ -66,7 +66,7 @@ class AuthorisationFlowCXValidationTest {
     }
 
    @Test
-    void "TC0203004_Verify the permissions of a consent with common:customer.detail:read scope"() {
+    void "TC0203004_Verify the permissions of a consent with common customer detail read scope"() {
         List<AUConstants.SCOPES> scopes = [AUConstants.SCOPES.BANK_CUSTOMER_DETAIL_READ]
 
         AUAuthorisationBuilder authorisationBuilder = new AUAuthorisationBuilder(
@@ -111,7 +111,7 @@ class AuthorisationFlowCXValidationTest {
     }
 
     @Test
-    void "TC0203005_Verify the permissions of a consent with bank:accounts.basic:read scope"() {
+    void "TC0203005_Verify the permissions of a consent with bank accounts basic read scope"() {
 
         List<AUConstants.SCOPES> scopes = [AUConstants.SCOPES.BANK_ACCOUNT_BASIC_READ]
 
@@ -141,7 +141,7 @@ class AuthorisationFlowCXValidationTest {
     }
 
     @Test
-    void "TC0203006_Verify the permissions of a consent with bank:accounts.detail:read scope"() {
+    void "TC0203006_Verify the permissions of a consent with bank accounts detail read scope"() {
 
         List<AUConstants.SCOPES> scopes = [AUConstants.SCOPES.BANK_ACCOUNT_DETAIL_READ]
 
@@ -184,7 +184,7 @@ class AuthorisationFlowCXValidationTest {
     }
 
     @Test
-    void "TC0203007_Verify the permissions of a consent with bank:transactions:read scope"() {
+    void "TC0203007_Verify the permissions of a consent with bank transactions read scope"() {
 
         List<AUConstants.SCOPES> scopes = [AUConstants.SCOPES.BANK_TRANSACTION_READ]
 
@@ -219,7 +219,7 @@ class AuthorisationFlowCXValidationTest {
     }
 
     @Test
-    void "TC0203008_Verify the permissions of a consent with bank:regular_payments:read scope"() {
+    void "TC0203008_Verify the permissions of a consent with bank regular_payments read scope"() {
 
         List<AUConstants.SCOPES> scopes = [AUConstants.SCOPES.BANK_REGULAR_PAYMENTS_READ]
 
@@ -248,7 +248,7 @@ class AuthorisationFlowCXValidationTest {
     }
 
     @Test
-    void "TC0203009_Verify the permissions of a consent with bank:payees:read scope"() {
+    void "TC0203009_Verify the permissions of a consent with bank payees read scope"() {
 
         List<AUConstants.SCOPES> scopes = [AUConstants.SCOPES.BANK_PAYEES_READ]
 
