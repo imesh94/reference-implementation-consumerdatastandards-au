@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2022, WSO2 Inc. (http://www.wso2.com). All Rights Reserved.
+ * Copyright (c) 2022-2023, WSO2 Inc. (http://www.wso2.com). All Rights Reserved.
  *
  * This software is the property of WSO2 Inc. and its suppliers, if any.
  * Dissemination of any information or reproduction of any material contained
@@ -18,6 +18,8 @@ import com.wso2.openbanking.test.framework.automation.AutomationMethod
 import com.wso2.openbanking.test.framework.automation.BrowserAutomationStep
 import com.wso2.openbanking.test.framework.automation.OBBrowserAutomation
 import com.wso2.cds.test.framework.configuration.AUConfigurationService
+import org.apache.commons.logging.Log
+import org.apache.commons.logging.LogFactory
 import org.openqa.selenium.By
 import org.openqa.selenium.remote.RemoteWebDriver
 import org.openqa.selenium.support.ui.ExpectedConditions
@@ -30,6 +32,7 @@ class AUBasicAuthAutomationStep implements BrowserAutomationStep {
 
     private String authorizeUrl
     private AUConfigurationService auConfiguration
+    private static final Log log = LogFactory.getLog(AUBasicAuthAutomationStep.class);
 
     /**
      * Initialize Basic Auth Flow.
@@ -46,19 +49,23 @@ class AUBasicAuthAutomationStep implements BrowserAutomationStep {
         WebDriverWait wait = new WebDriverWait(webDriver, 30)
         AutomationMethod driver = new AutomationMethod(webDriver)
         webDriver.navigate().to(authorizeUrl)
-        if (!AUConstants.SOLUTION_VERSION_200.equals(auConfiguration.getCommonSolutionVersion())) {
-            driver.executeTextFieldXpath(AUPageObjects.AU_USERNAME_FIELD_XPATH_200, auConfiguration.getUserPSUName())
-            driver.clickButtonXpath(AUPageObjects.AU_AUTH_SIGNIN_XPATH_200)
-        } else {
-            driver.executeTextField(AUPageObjects.AU_USERNAME_FIELD_ID, auConfiguration.getUserPSUName())
-            driver.executeTextField(AUPageObjects.AU_PASSWORD_FIELD_ID, auConfiguration.getUserPSUPWD())
-            driver.submitButtonXpath(AUPageObjects.AU_AUTH_SIGNIN_XPATH)
-        }
-        driver.waitTimeRange(30)
-        driver.executeSMSOTP(AUPageObjects.AU_LBL_SMSOTP_AUTHENTICATOR, AUPageObjects.AU_TXT_OTP_CODE_ID, AUConstants.AU_OTP_CODE)
-        driver.clickButtonXpath(AUPageObjects.AU_BTN_AUTHENTICATE)
-        wait.until(ExpectedConditions.invisibilityOfElementLocated(By.xpath(AUPageObjects.AU_BTN_AUTHENTICATE)))
+        //Enter User Name
+        driver.executeTextField(AUPageObjects.AU_USERNAME_FIELD_ID, auConfiguration.getUserPSUName())
 
+        //Click on SignIn Button
+        driver.submitButtonXpath(AUPageObjects.AU_AUTH_SIGNIN_XPATH)
+        driver.waitTimeRange(30)
+
+        //Second Factor Authentication Step
+        try{
+            if (driver.isElementDisplayed(AUPageObjects.AU_BTN_AUTHENTICATE)) {
+                driver.executeSMSOTP(AUPageObjects.AU_LBL_SMSOTP_AUTHENTICATOR, AUPageObjects.AU_TXT_OTP_CODE_ID, AUConstants.AU_OTP_CODE)
+                driver.clickButtonXpath(AUPageObjects.AU_BTN_AUTHENTICATE)
+                wait.until(ExpectedConditions.invisibilityOfElementLocated(By.xpath(AUPageObjects.AU_BTN_AUTHENTICATE)))
+            }
+        } catch (NoSuchElementException e) {
+            log.info("Second Factor Authentication Step is not required")
+        }
     }
 }
 
