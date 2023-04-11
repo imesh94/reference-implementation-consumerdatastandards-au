@@ -16,7 +16,6 @@ import com.wso2.cds.test.framework.constant.AUAccountScope
 import com.wso2.cds.test.framework.constant.AUConstants
 import com.wso2.bfsi.test.framework.exception.TestFrameworkException
 import com.wso2.cds.test.framework.constant.AUPageObjects
-import com.wso2.cds.test.framework.utility.AUSSLSocketFactoryCreator
 import com.wso2.openbanking.test.framework.utility.OBTestUtil
 import com.wso2.cds.test.framework.configuration.AUConfigurationService
 import org.apache.http.conn.ssl.SSLSocketFactory
@@ -53,27 +52,19 @@ class AUTestUtil extends OBTestUtil {
     }
 
     /**
-     * Get SingleAccountXPath based on OB Version
+     * Get SingleAccountXPath
      * @return SingleAccountXPath
      */
     static String getSingleAccountXPath() {
-        if (!AUConstants.SOLUTION_VERSION_200.equals(auConfiguration.getCommonSolutionVersion())) {
-            return AUPageObjects.SINGLE_ACCOUNT_XPATH_200
-        } else {
-            return AUPageObjects.SINGLE_ACCOUNT_XPATH
-        }
+        return AUPageObjects.SINGLE_ACCOUNT_XPATH
     }
 
     /**
-     * Get AltSingleAccountXPath based on OB Version
+     * Get AltSingleAccountXPath
      * @return AltSingleAccountXPath
      */
     static String getAltSingleAccountXPath() {
-        if (!AUConstants.SOLUTION_VERSION_200.equals(auConfiguration.getCommonSolutionVersion())) {
-            return AUPageObjects.ALT_SINGLE_ACCOUNT_XPATH_200
-        } else {
-            return AUPageObjects.ALT_SINGLE_ACCOUNT_XPATH
-        }
+        return AUPageObjects.ALT_SINGLE_ACCOUNT_XPATH
     }
 
     /**
@@ -148,6 +139,38 @@ class AUTestUtil extends OBTestUtil {
         for (AUAccountScope scope : scopes) {
             Assert.assertTrue(scopesString.contains(scope.getScopeString()))
         }
+    }
+
+    /**
+     * Get Business Account 1 XPath
+     * @return SingleAccountXPath
+     */
+    static String getBusinessAccount1XPath() {
+        return AUPageObjects.BUSINESS_ACCOUNT_1
+    }
+
+    /**
+     * Get Business Account 2 XPath
+     * @return SingleAccountXPath
+     */
+    static String getBusinessAccount2XPath() {
+        return AUPageObjects.BUSINESS_ACCOUNT_2
+    }
+
+    /**
+     * Get Secondary Account 1 XPath
+     * @return SecondaryAccountXPath
+     */
+    static String getSecondaryAccount1XPath() {
+        return AUPageObjects.SECONDARY_ACCOUNT_1
+    }
+
+    /**
+     * Get Secondary Account 2 XPath
+     * @return SecondaryAccount2XPath
+     */
+    static String getSecondaryAccount2XPath() {
+        return AUPageObjects.SECONDARY_ACCOUNT_2
     }
 
 }

@@ -44,7 +44,7 @@ class DynamicClientRegistrationCreateTest extends AUTest{
         jtiVal = String.valueOf(System.currentTimeMillis())
         AURegistrationRequestBuilder registrationRequestBuilder = new AURegistrationRequestBuilder()
         def registrationResponse = AURegistrationRequestBuilder
-                .buildRegistrationRequest(registrationRequestBuilder.getRegularClaimsWithGivenJti(jtiVal))
+                .buildRegistrationRequest(registrationRequestBuilder.getAURegularClaims())
                 .when()
                 .post(AUConstants.DCR_REGISTRATION_ENDPOINT)
 
@@ -418,7 +418,7 @@ class DynamicClientRegistrationCreateTest extends AUTest{
         Assert.assertNotNull(parseResponseBody(registrationResponse, "redirect_uris"))
     }
 
-    @AfterClass(alwaysRun = true)
+//    @AfterClass(alwaysRun = true)
     void tearDown() {
         deleteApplicationIfExists(clientId)
     }
