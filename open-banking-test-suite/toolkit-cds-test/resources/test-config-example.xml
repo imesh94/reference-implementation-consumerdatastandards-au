@@ -78,14 +78,14 @@
                 DynamicClientRegistration/AU/sample-client-resources/signing-keystore/signing-obseal.jks -->
                 <Location>AppConfig.Application.KeyStore.Location</Location>
 
-                <!--Sample Value: tpp4-sig -->
+                <!--Sample Value: tpp6-signing -->
                 <Alias>AppConfig.Application.KeyStore.Alias</Alias>
 
                 <!--Sample Value: wso2carbon -->
                 <Password>AppConfig.Application.KeyStore.Password</Password>
                 <DomainName>https://wso2.com</DomainName>
 
-                <!--Sample Value: W_TcnQVcHAy20q8zCMcdByrootw -->
+                <!--Sample Value: h3ZCF0VrzgXgnHCqbHbKXzzfjTg -->
                 <SigningKid>AppConfig.Application.KeyStore.SigningKid</SigningKid>
             </Application.KeyStore>
 
