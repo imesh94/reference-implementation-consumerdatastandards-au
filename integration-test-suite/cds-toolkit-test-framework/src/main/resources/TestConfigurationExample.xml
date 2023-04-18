@@ -74,7 +74,7 @@
                 <!--Sample Values: https://wso2.com -->
                 <DomainName>AppConfig1.KeyStore.DomainName</DomainName>
 
-                <!--Sample Values: w7NFeMODzCMOZen_WECAlG9N8gg -->
+                <!--Sample Values: h3ZCF0VrzgXgnHCqbHbKXzzfjTg -->
                 <SigningKid>AppConfig1.KeyStore.SigningKid</SigningKid>
             </KeyStore>
 
