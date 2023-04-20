@@ -18,6 +18,7 @@ import javax.ws.rs.DELETE;
 import javax.ws.rs.GET;
 import javax.ws.rs.PUT;
 import javax.ws.rs.Path;
+import javax.ws.rs.Produces;
 import javax.ws.rs.QueryParam;
 import javax.ws.rs.core.Response;
 
@@ -37,6 +38,7 @@ public interface NominatedRepresentativeAPI {
     @PUT
     @Path("/business-stakeholders")
     @Consumes({"application/json; charset=utf-8"})
+    @Produces({"application/json; charset=utf-8"})
     @ApiOperation(value = "Update Business Nominated Representative Permissions\n",
             notes = "This API is used to update the CDS Business Nominated Representative Permissions.\n")
     @ApiResponses(value = {
