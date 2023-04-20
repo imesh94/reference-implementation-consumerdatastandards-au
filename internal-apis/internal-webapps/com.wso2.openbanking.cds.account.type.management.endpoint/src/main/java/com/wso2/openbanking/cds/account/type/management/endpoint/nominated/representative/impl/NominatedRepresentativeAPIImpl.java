@@ -8,20 +8,14 @@
  */
 package com.wso2.openbanking.cds.account.type.management.endpoint.nominated.representative.impl;
 
-
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.wso2.openbanking.cds.account.type.management.endpoint.nominated.representative.api.NominatedRepresentativeAPI;
-import com.wso2.openbanking.cds.account.type.management.endpoint.nominated.representative.model.BusinessStakeholderListDTO;
+import com.wso2.openbanking.cds.account.type.management.endpoint.nominated.representative.model.AccountListDTO;
 import com.wso2.openbanking.cds.account.type.management.endpoint.nominated.representative.model.ErrorDTO;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
-import java.util.Set;
-import javax.validation.ConstraintViolation;
-import javax.validation.Validation;
-import javax.validation.Validator;
-import javax.validation.ValidatorFactory;
 import javax.ws.rs.core.Response;
 
 /**
@@ -30,6 +24,8 @@ import javax.ws.rs.core.Response;
 public class NominatedRepresentativeAPIImpl implements NominatedRepresentativeAPI {
 
     private static final Log log = LogFactory.getLog(NominatedRepresentativeAPIImpl.class);
+    private static final String INVALID_REQUEST = "invalid_request";
+    private static final String INTERNAL_SERVER_ERROR = "internal_server_error";
 
     /**
      * {@inheritDoc}
@@ -38,20 +34,31 @@ public class NominatedRepresentativeAPIImpl implements NominatedRepresentativeAP
     public Response updateNominatedRepresentativePermissions(String requestBody) {
 
         ObjectMapper objectMapper = new ObjectMapper();
-        BusinessStakeholderListDTO businessNominatedUserPermissions;
+        AccountListDTO accountListDTO;
 
         try {
-            businessNominatedUserPermissions = objectMapper.readValue(requestBody, BusinessStakeholderListDTO.class);
-            String validationError = validateBusinessStakeholderListDTO(businessNominatedUserPermissions);
+            accountListDTO = objectMapper.readValue(requestBody, AccountListDTO.class);
+            // Validate the request body
+            String validationError = NominatedRepresentativeUtil.validateAccountListDTO(accountListDTO);
             if (validationError.isEmpty()) {
-                return Response.ok().entity("Success").build();
+                // Proceed with persisting nominated representative data if there are no violations.
+                boolean successfullyPersisted = NominatedRepresentativeUtil.persistNominatedRepresentativeData
+                        (accountListDTO);
+                if (successfullyPersisted) {
+                    return Response.status(Response.Status.OK).build();
+                } else {
+                    // Return internal server error if an error occurred in the accelerator account metadata service.
+                    ErrorDTO errorDTO = new ErrorDTO(INTERNAL_SERVER_ERROR, "Error occurred while " +
+                            "persisting nominated representative data");
+                    return Response.status(Response.Status.INTERNAL_SERVER_ERROR).entity(errorDTO).build();
+                }
             } else {
-                ErrorDTO errorDTO = new ErrorDTO("invalid_request", validationError);
+                ErrorDTO errorDTO = new ErrorDTO(INVALID_REQUEST, validationError);
                 return Response.status(Response.Status.BAD_REQUEST).entity(errorDTO).build();
             }
         } catch (JsonProcessingException e) {
             log.error(e.getMessage());
-            ErrorDTO errorDTO = new ErrorDTO("invalid_request", "Error occurred while parsing " +
+            ErrorDTO errorDTO = new ErrorDTO(INVALID_REQUEST, "Error occurred while parsing " +
                     "the request body");
             return Response.status(Response.Status.BAD_REQUEST).entity(errorDTO).build();
         }
@@ -85,27 +92,6 @@ public class NominatedRepresentativeAPIImpl implements NominatedRepresentativeAP
 
         //ToDo: Implement this method
         return null;
-    }
-
-    /**
-     * Validate the BusinessStakeholderListDTO object and return the first violation message.
-     *
-     * @param businessStakeholderListDTO BusinessStakeholderListDTO object
-     * @return first violation message
-     */
-    private String validateBusinessStakeholderListDTO(BusinessStakeholderListDTO businessStakeholderListDTO) {
-
-        String firstViolationMessage = "";
-        ValidatorFactory factory = Validation.buildDefaultValidatorFactory();
-        Validator validator = factory.getValidator();
-        Set<ConstraintViolation<BusinessStakeholderListDTO>> violations = validator.validate(
-                businessStakeholderListDTO);
-        if (!violations.isEmpty()) {
-            ConstraintViolation<BusinessStakeholderListDTO> firstViolation = violations.iterator().next();
-            firstViolationMessage = firstViolation.getMessage().replaceAll("\\.$", "") +
-                    ". Error path :" + firstViolation.getPropertyPath();
-        }
-        return firstViolationMessage;
     }
 
 }

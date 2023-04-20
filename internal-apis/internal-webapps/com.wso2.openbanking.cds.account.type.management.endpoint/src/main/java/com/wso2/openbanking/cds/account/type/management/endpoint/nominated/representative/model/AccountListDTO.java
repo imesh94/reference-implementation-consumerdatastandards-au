@@ -8,24 +8,22 @@
  */
 package com.wso2.openbanking.cds.account.type.management.endpoint.nominated.representative.model;
 
+import java.util.List;
+import javax.validation.Valid;
+
 /**
- * ErrorDTO
+ * AccountListDTO
  */
-public class ErrorDTO {
+public class AccountListDTO {
 
-    private String error;
-    private String errorDescription;
+    @Valid
+    private List<AccountDataDTO> data;
 
-    public ErrorDTO(String error, String errorDescription) {
-        this.error = error;
-        this.errorDescription = errorDescription;
+    public List<AccountDataDTO> getData() {
+        return data;
     }
 
-    public String getError() {
-        return error;
-    }
-
-    public String getErrorDescription() {
-        return errorDescription;
+    public void setData(List<AccountDataDTO> data) {
+        this.data = data;
     }
 }
