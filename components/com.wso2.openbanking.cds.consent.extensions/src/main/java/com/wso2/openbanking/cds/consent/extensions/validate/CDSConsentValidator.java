@@ -12,6 +12,9 @@
 
 package com.wso2.openbanking.cds.consent.extensions.validate;
 
+import com.wso2.openbanking.accelerator.account.metadata.service.service.AccountMetadataService;
+import com.wso2.openbanking.accelerator.account.metadata.service.service.AccountMetadataServiceImpl;
+import com.wso2.openbanking.accelerator.common.identity.retriever.sp.CommonServiceProviderRetriever;
 import com.wso2.openbanking.accelerator.consent.extensions.common.ConsentException;
 import com.wso2.openbanking.accelerator.consent.extensions.common.ResponseStatus;
 import com.wso2.openbanking.accelerator.consent.extensions.validate.model.ConsentValidateData;
@@ -44,6 +47,7 @@ import static com.wso2.openbanking.accelerator.consent.mgt.service.constants.Con
 public class CDSConsentValidator implements ConsentValidator {
 
     private static final Log log = LogFactory.getLog(CDSConsentValidator.class);
+    AccountMetadataService accountMetadataService = AccountMetadataServiceImpl.getInstance();
 
     @Override
     public void validate(ConsentValidateData consentValidateData, ConsentValidationResult consentValidationResult)
@@ -150,6 +154,32 @@ public class CDSConsentValidator implements ConsentValidator {
                     duplicateAccountIds.add(distinctMapping.getAccountID());
                     distinctMappingResources.add(distinctMapping);
                 });
+
+        // Filter accounts based on the sharing status of legal entity
+        try {
+            CommonServiceProviderRetriever commonServiceProviderRetriever = new CommonServiceProviderRetriever();
+
+
+            String secondaryUserId = consentValidateData.getUserId().replace("@carbon.super", "");
+            String legalEntityId = commonServiceProviderRetriever.
+                    getAppPropertyFromSPMetaData(consentValidateData.getClientId(), "legal_entity_id");
+
+
+            for (ConsentMappingResource consentMappingResource : consentValidateData.
+                    getComprehensiveConsent().getConsentMappingResources()) {
+                log.info(consentMappingResource.getAccountID());
+            }
+
+
+//            String responseLegalEntities = accountMetadataService.getAccountMetadataByKey
+//                    (accountId, secondaryUserId, "BLOCKED_LEGAL_ENTITIES");
+
+
+            log.info("----- PAUSE -----");
+        } catch (Exception e) {
+            log.info(e.getMessage());
+        }
+
 
         consentValidateData.getComprehensiveConsent().setConsentMappingResources(distinctMappingResources);
     }

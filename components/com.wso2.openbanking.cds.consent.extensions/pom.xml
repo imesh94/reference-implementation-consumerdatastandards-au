@@ -86,6 +86,11 @@
             <classifier>runtime</classifier>
             <scope>test</scope>
         </dependency>
+        <dependency>
+            <groupId>com.wso2</groupId>
+            <artifactId>com.wso2.openbanking.accelerator.account.metadata.service</artifactId>
+            <scope>provided</scope>
+        </dependency>
     </dependencies>
 
     <build>
