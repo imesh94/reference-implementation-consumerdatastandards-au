@@ -103,7 +103,6 @@ class AURequestBuilder {
         return AURestAsRequestBuilder.buildRequest()
                 .header(AUConstants.X_V_HEADER, xv_header)
                 .header(AUConstants.AUTHORIZATION_HEADER_KEY, "${AUConstants.AUTHORIZATION_BEARER_TAG}${userAccessToken}")
-
     }
 
     static RequestSpecification buildBasicRequestWithCustomerIP(String userAccessToken, int xv_header) {

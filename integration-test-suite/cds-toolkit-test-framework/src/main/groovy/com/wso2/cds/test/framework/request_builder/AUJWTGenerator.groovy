@@ -12,6 +12,7 @@
 
 package com.wso2.cds.test.framework.request_builder
 
+import com.nimbusds.oauth2.sdk.id.State
 import com.wso2.bfsi.test.framework.exception.TestFrameworkException
 import com.nimbusds.jose.JOSEObjectType
 import com.nimbusds.jose.JWSAlgorithm
@@ -155,9 +156,11 @@ class AUJWTGenerator {
      * @return
      */
     JWT getSignedAuthRequestObject(String scopeString, Long sharingDuration, Boolean sendSharingDuration,
-                                   String cdrArrangementId, String redirect_uri, String clientId, String responseType) {
+                                   String cdrArrangementId, String redirect_uri, String clientId, String responseType,
+                                   boolean isStateRequired = true, String state) {
 
         def expiryDate = Instant.now().plus(1, ChronoUnit.DAYS)
+        String claims
 
         JSONObject acr = new JSONObject().put("essential", true).put("values", new ArrayList<String>() {
             {
@@ -172,18 +175,33 @@ class AUJWTGenerator {
         if (!StringUtils.isEmpty(cdrArrangementId)) {
             claimsString.put("cdr_arrangement_id", cdrArrangementId)
         }
-        String claims = new JSONRequestGenerator()
-                .addAudience()
-                .addResponseType(responseType)
-                .addExpireDate(expiryDate.getEpochSecond().toLong())
-                .addClientID(clientId)
-                .addIssuer(clientId)
-                .addRedirectURI(redirect_uri)
-                .addScope(scopeString)
-                .addState("suite")
-                .addNonce()
-                .addCustomJson("claims", claimsString)
-                .getJsonObject().toString()
+
+        if (isStateRequired) {
+            claims = new JSONRequestGenerator()
+                    .addAudience()
+                    .addResponseType(responseType)
+                    .addExpireDate(expiryDate.getEpochSecond().toLong())
+                    .addClientID(clientId)
+                    .addIssuer(clientId)
+                    .addRedirectURI(redirect_uri)
+                    .addScope(scopeString)
+                    .addState(state)
+                    .addNonce()
+                    .addCustomJson("claims", claimsString)
+                    .getJsonObject().toString()
+        } else {
+            claims = new JSONRequestGenerator()
+                    .addAudience()
+                    .addResponseType(responseType)
+                    .addExpireDate(expiryDate.getEpochSecond().toLong())
+                    .addClientID(clientId)
+                    .addIssuer(clientId)
+                    .addRedirectURI(redirect_uri)
+                    .addScope(scopeString)
+                    .addNonce()
+                    .addCustomJson("claims", claimsString)
+                    .getJsonObject().toString()
+        }
 
         String payload = getSignedRequestObject(claims)
 

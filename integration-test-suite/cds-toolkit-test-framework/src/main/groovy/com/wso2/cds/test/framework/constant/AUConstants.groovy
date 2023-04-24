@@ -97,8 +97,13 @@ class AUConstants extends OBConstants {
     public static final String PAR_ENDPOINT = "/par"
     public static final String REVOKE_PATH = "/revoke"
     public static final String STATUS_PATH = "/account-confirmation"
+    public static final String CONSENT_STATUS_AU_ENDPOINT = "/api/openbanking/consent-mgt/au"
+    public static final String UPDATE_BUSINESS_USER  = "/account-access-consents/business-stakeholders"
+    public static final String SHARABLE_BANK_ACCOUNT_SERVICE= "/api/openbanking/backend-uk"
+    public static final String BANK_ACCOUNT_SERVICE  = "/services/bankaccounts/bankaccountservice/sharable-accounts"
+    public static final String BUSINESS_USER_PERMISSION  = "/account-access-consents/business-stakeholders/permission"
 
-    public static final String BANK_CUSTOMER_BASIC_READ = "Organisation profile*"
+    public static final String BANK_CUSTOMER_BASIC_READ = "Organisation profile and contact details"
     public static final String BANK_CUSTOMER_DETAIL_READ = "Organisation profile and contact details*‡"
     public static final String BANK_ACCOUNT_BASIC_READ = "Account name, type, and balance"
     public static final String BANK_ACCOUNT_DETAIL_READ = "Account balance and details‡"
@@ -229,9 +234,18 @@ class AUConstants extends OBConstants {
     public static final String PARAM_FAPI_INTERACTION_ID = "x-fapi-interaction-id"
     public static final String PARAM_FAPI_CUSTOMER_IP_ADDRESS = "x-fapi-customer-ip-address"
     public static final String PARAM_FAPI_AUTH_DATE = "x-fapi-auth-date"
-    public static final String PARAM_ACCOUNT_ID = "accountId"
+    public static final String PARAM_ACCOUNT_ID = "accountID"
     public static final String PARAM_PAGE_SIZE = "page-size"
     public static final String PARAM_AUTHORIZATION = "Authorization"
+    public static final String ACCOUNT_OWNER_USER_ID = "accountOwnerUserID"
+    public static final String NOMINATED_REP_USER_ID = "nominatedRepUserID"
+    public static final String ACCOUNT_OWNER_USER_ID2 = "accountOwnerUserID2"
+    public static final String NOMINATED_REP_USER_ID2 = "nominatedRepUserID2"
+    public static final String ACCOUNT_ID = "account_id"
+    public static final String BUSINESS_ACCOUNT_INFO = "businessAccountInfo"
+    public static final String ACCOUNT_OWNERS = "AccountOwners"
+    public static final String NOMINATED_REPRESENTATIVES = "NominatedRepresentatives"
+    public static final String MEMBER_ID = "memberId"
 
     public static final String VALUE_FAPI_AUTH_DATE = "Tue, 78 Jan 1312 80:05:73 GMT"
 
@@ -351,5 +365,17 @@ class AUConstants extends OBConstants {
     public static final String RESPONSE_DATA_PAYEE = "data.payees"
     public static final String RESPONSE_DATA_TRANSACTIONID = "data.transactionId"
     public static final String RESPONSE_DATA_PAYEEID = "data.payeeId"
+
+    public static final String PARAM_CUSTOMER_ACCOUNT_TYPE = "customerAccountType"
+    public static final String INCORRECT_ACC_ID = "1234567"
+    public static final String QUERY_PARAM_USERID = "userId"
+    public static final String QUERY_PARAM_ACCID = "accountId"
+    public static final String PARAM_PERMISSION_STATUS = "PermissionStatus"
+
+    public static final String TPP_ERROR_CATEGORY = "tppMessages[0].category"
+    public static final String TPP_ERROR_CODE = "tppMessages[0].code"
+    public static final String TPP_ERROR_CODE_FORMAT_ERROR = "FORMAT_ERROR"
+    public static final String TPP_ERROR_CODE_VALUE = "ERROR"
+    public static final String TPP_ERROR_CODE_FORMAT_INVALID= "REQUESTED_FORMATS_INVALID"
 }
 

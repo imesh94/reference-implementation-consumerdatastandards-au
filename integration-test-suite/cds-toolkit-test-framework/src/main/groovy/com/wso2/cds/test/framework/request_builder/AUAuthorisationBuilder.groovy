@@ -128,10 +128,13 @@ class AUAuthorisationBuilder {
                                         boolean sendSharingDuration, String cdrArrangementId,
                                         String clientId = getClientID().getValue(),
                                         String redirectUrl = getRedirectURI().toString(),
-                                        String responseType = getResponseType().toString()) {
+                                        String responseType = getResponseType().toString(),
+                                        String state = getState().toString(),
+                                        boolean isStateParamRequired = true) {
 
         AUJWTGenerator generator = new AUJWTGenerator()
         String scopeString = "openid ${String.join(" ", scopes.collect({ it.scopeString }))}"
+        Response parResponse
 
         String assertionString = generator.getClientAssertionJwt(clientId)
 
@@ -140,13 +143,26 @@ class AUAuthorisationBuilder {
                 (AUConstants.CLIENT_ASSERTION_TYPE_KEY): (AUConstants.CLIENT_ASSERTION_TYPE),
                 (AUConstants.CLIENT_ASSERTION_KEY)     : assertionString,
         ]
-        Response parResponse = AURestAsRequestBuilder.buildRequest()
-                .contentType(AUConstants.ACCESS_TOKEN_CONTENT_TYPE)
-                .formParams(bodyContent)
-                .formParams(AUConstants.REQUEST_KEY, generator.getSignedAuthRequestObject(scopeString,
-                        sharingDuration, sendSharingDuration, cdrArrangementId, redirectUrl, clientId, responseType).serialize())
-                .baseUri(AUConstants.PUSHED_AUTHORISATION_BASE_PATH)
-                .post(AUConstants.PAR_ENDPOINT)
+
+        if(isStateParamRequired) {
+            parResponse = AURestAsRequestBuilder.buildRequest()
+                    .contentType(AUConstants.ACCESS_TOKEN_CONTENT_TYPE)
+                    .formParams(bodyContent)
+                    .formParams(AUConstants.REQUEST_KEY, generator.getSignedAuthRequestObject(scopeString,
+                            sharingDuration, sendSharingDuration, cdrArrangementId, redirectUrl, clientId, responseType,
+                            true, state).serialize())
+                    .baseUri(AUConstants.PUSHED_AUTHORISATION_BASE_PATH)
+                    .post(AUConstants.PAR_ENDPOINT)
+        } else {
+            parResponse = AURestAsRequestBuilder.buildRequest()
+                    .contentType(AUConstants.ACCESS_TOKEN_CONTENT_TYPE)
+                    .formParams(bodyContent)
+                    .formParams(AUConstants.REQUEST_KEY, generator.getSignedAuthRequestObject(scopeString,
+                            sharingDuration, sendSharingDuration, cdrArrangementId, redirectUrl, clientId, responseType,
+                            false).serialize())
+                    .baseUri(AUConstants.PUSHED_AUTHORISATION_BASE_PATH)
+                    .post(AUConstants.PAR_ENDPOINT)
+        }
 
         return parResponse
     }

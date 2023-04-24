@@ -13,20 +13,21 @@
 package com.wso2.cds.test.framework.constant
 
 /**
- * Enum class for keeping account Profiles Eg: Business and Individual.
+ * Enum class for keeping Permissions of Business Users.
  */
-enum AUAccountProfile {
+enum AUBusinessUserPermission {
 
-    BUSINESS("business"),
-    INDIVIDUAL("individual"),
+    AUTHORIZE("AUTHORIZE"),
+    VIEW("VIEW"),
+    REVOKE("REVOKE")
 
     private String value
 
-    AUAccountProfile(String value) {
+    AUBusinessUserPermission(String value) {
         this.value = value
     }
 
-    String getProfileString() {
+    String getPermissionString() {
         return this.value
     }
 }
