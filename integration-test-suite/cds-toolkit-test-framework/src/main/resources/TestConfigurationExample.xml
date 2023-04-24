@@ -189,7 +189,7 @@
                 <!--Sample Values: https://www.google.com/redirects/redirect2 -->
                 <AlternateRedirectUri>AppConfig1.DCR.AlternateRedirectUri</AlternateRedirectUri>
 
-                <!--Sample Value: https://<SHARAEBALE_ACCOUNT_ENDPOINT>:9763 -->
+                <!--Sample Value: http://<SHARAEBALE_ACCOUNT_ENDPOINT>:9763 -->
                 <SharableAccountsURL>Server.SharableAccountsURL</SharableAccountsURL>
             </DCR>
 
