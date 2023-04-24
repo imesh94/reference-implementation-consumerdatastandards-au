@@ -1,14 +1,12 @@
-<%--
-  ~ Copyright (c) 2021, WSO2 Inc. (http://www.wso2.com). All Rights Reserved.
-  ~
-  ~ This software is the property of WSO2 Inc. and its suppliers, if any.
-  ~ Dissemination of any information or reproduction of any material contained
-  ~ herein is strictly forbidden, unless permitted by WSO2 in accordance with
-  ~ the WSO2 Commercial License available at http://wso2.com/licenses. For specific
-  ~ language governing the permissions and limitations under this license,
-  ~ please see the license as well as any agreement you’ve entered into with
-  ~ WSO2 governing the purchase of this software and any associated services.
-  --%>
+<!--
+~ Copyright (c) 2021-2023, WSO2 LLC. (https://www.wso2.com). All Rights Reserved.
+~
+~ This software is the property of WSO2 LLC. and its suppliers, if any.
+~ Dissemination of any information or reproduction of any material contained
+~ herein in any form is strictly forbidden, unless permitted by WSO2 expressly.
+~ You may not alter or remove any copyright or other notice from copies of this content.
+~
+-->
 
 <%@ taglib prefix="fmt" uri="http://java.sun.com/jsp/jstl/fmt" %>
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
@@ -56,7 +54,7 @@
     }
     session.setAttribute("isSharedWithinDay", isSharedWithinDay);
 %>
-<div class="col-xs-12 col-sm-12 col-md-12 col-lg-12 data-container">
+<div class="col-xs-12 col-sm-12 col-md-12 col-lg-12">
     <div class="clearfix"></div>
     <form action="${pageContext.request.contextPath}/oauth2_authz_confirm.do" method="post" id="oauth2_authz_confirm"
           name="oauth2_authz_confirm" class="form-horizontal">
