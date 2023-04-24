@@ -41,7 +41,7 @@ class AUPageObjects {
     public static String LBL_PERMISSION_HEADER_TRA_DETAILS = "//button[contains(text(),'Transaction details')]"
     public static String LBL_PERMISSION_HEADER_PAYMENT_READ = "//button[contains(text(),'Direct debits and scheduled payments')]"
     public static String LBL_PERMISSION_HEADER_PAYEES = "//button[contains(text(),'Saved payees')]"
-    public static String LBL_PERMISSION_LIST_ITEM_1 = "./following::ul[@class='scopes-list padding']//li[1]"
+    public static String LBL_PERMISSION_LIST_ITEM_1 = "/following::ul[@class='scopes-list padding']//li[1]"
     public static String LBL_PERMISSION_LIST_ITEM_2 = "./following::ul[@class='scopes-list padding']//li[2]"
     public static String LBL_PERMISSION_LIST_ITEM_3 = "./following::ul[@class='scopes-list padding']//li[3]"
     public static String LBL_PERMISSION_LIST_ITEM_4 = "./following::ul[@class='scopes-list padding']//li[4]"
@@ -183,12 +183,17 @@ class AUPageObjects {
     public static String BUSINESS_PROFILE_SELECTION = "//input[@id='business']"
     public static String INDIVIDUAL_PROFILE_SELECTION = "//input[@id='individual']"
     public static String PROFILE_SELECTION_NEXT_BUTTON = "//*[@id='approve']"
-    public static String BUSINESS_ACCOUNT_1 = "//input[@id='business_account_1']"
-    public static String BUSINESS_ACCOUNT_2 = "//input[@id='business_account_2']"
+    public static String CHK_BUSINESS_ACCOUNT_1 = "//td/strong[contains(text(),' business_account_1')]"
+    public static String CHK_BUSINESS_ACCOUNT_2 = "//td/strong[contains(text(),' business_account_2')]"
     public static String SECONDARY_ACCOUNT_1 = "//input[@id='secondary_account_1']"
     public static String SECONDARY_ACCOUNT_2 = "//input[@id='secondary_account_2']"
     public static String LBL_ACCOUNTS_UNAVAILABLE_TO_SHARE= "//option[contains(text(),'Accounts unavailable to share')]"
     public static String LBL_FIRST_UNAVAILABLE_ACCOUNT= "//input[@id='unavailable_account_1']//following::small[1]"
+
+    public static String LBL_BUSINESS_ACCOUNT_1 = "//strong[contains(text(),'business_account_1')]"
+    public static String LBL_BUSINESS_ACCOUNT_2 = "//strong[contains(text(),'business_account_2')]"
+    public static String BTN_SELECT_ALL = "//button[contains(text(),'Select all')]"
+    public static String LBL_NO_ELIGIBLE_ACCOUNTS = "//form[@id='oauth2_authz_consent']//div//p"
 
 }
 

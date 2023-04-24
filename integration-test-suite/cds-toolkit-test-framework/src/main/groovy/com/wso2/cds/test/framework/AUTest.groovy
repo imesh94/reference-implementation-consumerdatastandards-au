@@ -14,6 +14,7 @@ import com.wso2.cds.test.framework.constant.AUAccountScope
 import com.wso2.cds.test.framework.constant.AUConfigConstants
 import com.wso2.cds.test.framework.constant.AUConstants
 import com.wso2.cds.test.framework.constant.AUPageObjects
+import com.wso2.cds.test.framework.constant.AUPayloads
 import com.wso2.cds.test.framework.constant.ContextConstants
 import com.wso2.cds.test.framework.automation.consent.AUAccountSelectionStep
 import com.wso2.cds.test.framework.automation.consent.AUBasicAuthAutomationStep
@@ -35,6 +36,7 @@ import com.wso2.cds.test.framework.request_builder.AURequestBuilder
 import com.wso2.cds.test.framework.utility.AURestAsRequestBuilder
 import com.wso2.cds.test.framework.utility.AUTestUtil
 
+import java.nio.charset.Charset
 import java.time.OffsetDateTime
 import java.time.ZoneOffset
 
@@ -352,13 +354,13 @@ class AUTest extends OBTest {
 
                 //Select Business Account 1
                 consentedAccount = authWebDriver.getElementAttribute(AUTestUtil.getBusinessAccount1XPath(),
-                        AUPageObjects.VALUE_ATTRIBUTE)
+                        AUPageObjects.VALUE)
                 authWebDriver.clickButtonXpath(AUTestUtil.getBusinessAccount1XPath())
 
                 if (isSelectMultipleAccounts) {
                     //Select Business Account 2
                     consentedAccount = authWebDriver.getElementAttribute(AUTestUtil.getBusinessAccount2XPath(),
-                            AUPageObjects.VALUE_ATTRIBUTE)
+                            AUPageObjects.VALUE)
                     authWebDriver.clickButtonXpath(AUTestUtil.getBusinessAccount2XPath())
                 }
             }
@@ -369,13 +371,13 @@ class AUTest extends OBTest {
 
                 //Select Individual Account 1
                 consentedAccount = authWebDriver.getElementAttribute(AUTestUtil.getSingleAccountXPath(),
-                        AUPageObjects.VALUE_ATTRIBUTE)
+                        AUPageObjects.VALUE)
                 authWebDriver.clickButtonXpath(AUTestUtil.getSingleAccountXPath())
 
                 if(isSelectMultipleAccounts) {
                     //Select Individual Account 2
                     consentedAccount = authWebDriver.getElementAttribute(AUTestUtil.getAltSingleAccountXPath(),
-                            AUPageObjects.VALUE_ATTRIBUTE)
+                            AUPageObjects.VALUE)
                     authWebDriver.clickButtonXpath(AUTestUtil.getAltSingleAccountXPath())
                 }
             }
@@ -384,13 +386,13 @@ class AUTest extends OBTest {
         else {
             //Select Account 1
             consentedAccount = authWebDriver.getElementAttribute(AUTestUtil.getSingleAccountXPath(),
-                    AUPageObjects.VALUE_ATTRIBUTE)
+                    AUPageObjects.VALUE)
             authWebDriver.clickButtonXpath(AUTestUtil.getSingleAccountXPath())
 
             if (isSelectMultipleAccounts) {
                 //Select Account 2
                 consentedAccount = authWebDriver.getElementAttribute(AUTestUtil.getAltSingleAccountXPath(),
-                        AUPageObjects.VALUE_ATTRIBUTE)
+                        AUPageObjects.VALUE)
                 authWebDriver.clickButtonXpath(AUTestUtil.getAltSingleAccountXPath())
             }
         }
@@ -415,13 +417,13 @@ class AUTest extends OBTest {
 
                 //Select Business Account 1
                 consentedAccount = authWebDriver.getElementAttribute(AUTestUtil.getBusinessAccount1XPath(),
-                        AUPageObjects.VALUE_ATTRIBUTE)
+                        AUPageObjects.VALUE)
                 authWebDriver.clickButtonXpath(AUTestUtil.getBusinessAccount1XPath())
 
                 if (isSelectMultipleAccounts) {
                     //Select Business Account 2
                     consentedAccount = authWebDriver.getElementAttribute(AUTestUtil.getBusinessAccount2XPath(),
-                            AUPageObjects.VALUE_ATTRIBUTE)
+                            AUPageObjects.VALUE)
                     authWebDriver.clickButtonXpath(AUTestUtil.getBusinessAccount2XPath())
                 }
             }
@@ -432,13 +434,13 @@ class AUTest extends OBTest {
 
                 //Select Individual Account 1
                 consentedAccount = authWebDriver.getElementAttribute(AUTestUtil.getSingleAccountXPath(),
-                        AUPageObjects.VALUE_ATTRIBUTE)
+                        AUPageObjects.VALUE)
                 authWebDriver.clickButtonXpath(AUTestUtil.getSingleAccountXPath())
 
                 if(isSelectMultipleAccounts) {
                     //Select Individual Account 2
                     consentedAccount = authWebDriver.getElementAttribute(AUTestUtil.getAltSingleAccountXPath(),
-                            AUPageObjects.VALUE_ATTRIBUTE)
+                            AUPageObjects.VALUE)
                     authWebDriver.clickButtonXpath(AUTestUtil.getAltSingleAccountXPath())
                 }
             }
@@ -450,13 +452,13 @@ class AUTest extends OBTest {
 
             //Select Account 1
             consentedAccount = authWebDriver.getElementAttribute(AUTestUtil.getSecondaryAccount1XPath(),
-                    AUPageObjects.VALUE_ATTRIBUTE)
+                    AUPageObjects.VALUE)
             authWebDriver.clickButtonXpath(AUTestUtil.getSecondaryAccount1XPath())
 
             if (isSelectMultipleAccounts) {
                 //Select Account 2
                 consentedAccount = authWebDriver.getElementAttribute(AUTestUtil.getSecondaryAccount2XPath(),
-                        AUPageObjects.VALUE_ATTRIBUTE)
+                        AUPageObjects.VALUE)
                 authWebDriver.clickButtonXpath(AUTestUtil.getSecondaryAccount2XPath())
             }
         }
@@ -561,7 +563,7 @@ class AUTest extends OBTest {
 
                     //Check Consent Expiry
                     String expiryTime = authWebDriver.getElementAttribute(AUPageObjects.CONSENT_EXPIRY_XPATH,
-                            AUPageObjects.TEXT_ATTRIBUTE)
+                            AUPageObjects.TEXT)
                     Assert.assertTrue(expiryTime.contains(consentExpiry))
 
                     //Click Confirm Button
@@ -684,7 +686,7 @@ class AUTest extends OBTest {
                 .addStep { driver, context ->
                     AutomationMethod authWebDriver = new AutomationMethod(driver)
 
-                    Assert.assertTrue(authWebDriver.getElementAttribute(AUPageObjects.ADR_NAME_HEADER_XPATH, AUPageObjects.TEXT_ATTRIBUTE)
+                    Assert.assertTrue(authWebDriver.getElementAttribute(AUPageObjects.ADR_NAME_HEADER_XPATH, AUPageObjects.TEXT)
                             .contains(auConfiguration.getAppDCRSoftwareId()))
 
                     //Select Secondary Account
@@ -726,7 +728,7 @@ class AUTest extends OBTest {
                 .addStep { driver, context ->
                     AutomationMethod authWebDriver = new AutomationMethod(driver)
 
-                    Assert.assertTrue(authWebDriver.getElementAttribute(AUPageObjects.ADR_NAME_HEADER_XPATH, AUPageObjects.TEXT_ATTRIBUTE)
+                    Assert.assertTrue(authWebDriver.getElementAttribute(AUPageObjects.ADR_NAME_HEADER_XPATH, AUPageObjects.TEXT)
                             .contains(auConfiguration.getAppDCRSoftwareId()))
 
                     //Select Secondary Account
@@ -821,6 +823,127 @@ class AUTest extends OBTest {
             requestUri = AUTestUtil.parseResponseBody(response, AUConstants.REQUEST_URI)
             doConsentAuthorisationViaRequestUriSingleAccount(scopes, requestUri.toURI(), clientId, profiles)
         }
+    }
+
+    /**
+     * Add and Update Business User Permission for a Single User.
+     * @param headerString
+     * @param accountID
+     * @param accountOwnerUserID
+     * @param nominatedRepUserID
+     * @param permissionType
+     * @return response
+     */
+    Response updateSingleBusinessUserPermission(String headerString, String accountID, String accountOwnerUserID, String nominatedRepUserID,
+                                     String permissionType) {
+
+        def requestBody = AUPayloads.getSingleUserNominationPayload(accountID, accountOwnerUserID, nominatedRepUserID, permissionType)
+
+        return AURestAsRequestBuilder.buildRequest()
+                .header(AUConstants.AUTHORIZATION_HEADER_KEY, AUConstants.BASIC_HEADER_KEY + Base64.encoder.encodeToString(
+                        headerString.getBytes(Charset.forName("UTF-8"))))
+                .contentType(AUConstants.CONTENT_TYPE_APPLICATION_JSON)
+                .body(requestBody)
+                .baseUri(getAuConfiguration().getISServerUrl())
+                .post("${AUConstants.CONSENT_STATUS_AU_ENDPOINT}${AUConstants.UPDATE_BUSINESS_USER}")
+    }
+
+    /**
+     * Add and Update Business User Permission for a Multiple Users.
+     * @param headerString
+     * @param accountID
+     * @param accountOwnerUserID
+     * @param nominatedRepUserID
+     * @param permissionType
+     * @param nominatedRepUserID2
+     * @param permissionType2
+     * @return
+     */
+    Response updateMultiBusinessUserPermission(String headerString, String accountID, String accountOwnerUserID, String nominatedRepUserID,
+                                                String permissionType, String nominatedRepUserID2, String permissionType2) {
+
+        def requestBody = AUPayloads.getMultiUserNominationPayload(accountID, accountOwnerUserID, nominatedRepUserID,
+                permissionType, nominatedRepUserID2, permissionType2)
+
+        return AURestAsRequestBuilder.buildRequest()
+                .header(AUConstants.AUTHORIZATION_HEADER_KEY, AUConstants.BASIC_HEADER_KEY + Base64.encoder.encodeToString(
+                        headerString.getBytes(Charset.forName("UTF-8"))))
+                .contentType(AUConstants.CONTENT_TYPE_APPLICATION_JSON)
+                .body(requestBody)
+                .baseUri(getAuConfiguration().getISServerUrl())
+                .post("${AUConstants.CONSENT_STATUS_AU_ENDPOINT}${AUConstants.UPDATE_BUSINESS_USER}")
+    }
+
+    /**
+     * Get Sharable bank account list of the secondary ,Joint and Business users.
+     * @return response.
+     */
+    Response getSharableBankAccounts() {
+
+        return AURestAsRequestBuilder.buildRequest()
+                .baseUri(getAuConfiguration().getSharableAccountUrl())
+                .get("${AUConstants.SHARABLE_BANK_ACCOUNT_SERVICE}${AUConstants.BANK_ACCOUNT_SERVICE}")
+    }
+
+    /**
+     * Delete Single Business User Nomination.
+     * @param headerString
+     * @param accountID
+     * @param accountOwnerUserID
+     * @param nominatedRepUserID
+     * @return response
+     */
+    Response deleteSingleBusinessUser(String headerString, String accountID, String accountOwnerUserID, String nominatedRepUserID) {
+
+        def requestBody = AUPayloads.getSingleUserDeletePayload(accountID, accountOwnerUserID, nominatedRepUserID)
+
+        return AURestAsRequestBuilder.buildRequest()
+                .header(AUConstants.AUTHORIZATION_HEADER_KEY, AUConstants.BASIC_HEADER_KEY + Base64.encoder.encodeToString(
+                        headerString.getBytes(Charset.forName("UTF-8"))))
+                .contentType(AUConstants.CONTENT_TYPE_APPLICATION_JSON)
+                .body(requestBody)
+                .baseUri(getAuConfiguration().getISServerUrl())
+                .delete("${AUConstants.CONSENT_STATUS_AU_ENDPOINT}${AUConstants.UPDATE_BUSINESS_USER}")
+    }
+
+    /**
+     * Delete Multiple Business User Nomination.
+     * @param headerString
+     * @param accountID
+     * @param accountOwnerUserID
+     * @param nominatedRepUserID
+     * @return response
+     */
+    Response deleteMultipleBusinessUsers(String headerString, String accountID, String accountOwnerUserID, String nominatedRepUserID,
+                                         String nominatedRepUserID2) {
+
+        def requestBody = AUPayloads.getMultiUserDeletePayload(accountID, accountOwnerUserID, nominatedRepUserID,
+                nominatedRepUserID2)
+
+        return AURestAsRequestBuilder.buildRequest()
+                .header(AUConstants.AUTHORIZATION_HEADER_KEY, AUConstants.BASIC_HEADER_KEY + Base64.encoder.encodeToString(
+                        headerString.getBytes(Charset.forName("UTF-8"))))
+                .contentType(AUConstants.CONTENT_TYPE_APPLICATION_JSON)
+                .body(requestBody)
+                .baseUri(getAuConfiguration().getISServerUrl())
+                .delete("${AUConstants.CONSENT_STATUS_AU_ENDPOINT}${AUConstants.UPDATE_BUSINESS_USER}")
+    }
+
+    /**
+     * Get the Business User Permissions of a particular user.
+     * @param userId
+     * @param accountId
+     * @return permission
+     */
+    Response getStakeholderPermissions(String userId, String accountId) {
+
+        return AURestAsRequestBuilder.buildRequest()
+                .contentType(AUConstants.CONTENT_TYPE_APPLICATION_JSON)
+                .queryParam(AUConstants.QUERY_PARAM_USERID, userId)
+                .queryParam(AUConstants.QUERY_PARAM_ACCID, accountId)
+                .baseUri(getAuConfiguration().getISServerUrl())
+                .get("${AUConstants.CONSENT_STATUS_AU_ENDPOINT}${AUConstants.BUSINESS_USER_PERMISSION}")
+
     }
 }
 

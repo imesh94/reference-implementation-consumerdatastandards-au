@@ -23,7 +23,7 @@ enum AUAccountProfile {
         this.value = value
     }
 
-    String getScopeString() {
+    String getProfileString() {
         return this.value
     }
 }
