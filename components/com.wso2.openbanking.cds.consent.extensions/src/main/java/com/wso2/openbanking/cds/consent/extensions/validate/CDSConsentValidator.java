@@ -167,12 +167,22 @@ public class CDSConsentValidator implements ConsentValidator {
 
             for (ConsentMappingResource consentMappingResource : consentValidateData.
                     getComprehensiveConsent().getConsentMappingResources()) {
-                log.info(consentMappingResource.getAccountID());
+
+                String accountId = consentMappingResource.getAccountID();
+                String responseLegalEntities = accountMetadataService.getAccountMetadataByKey
+                        (accountId, secondaryUserId, "BLOCKED_LEGAL_ENTITIES");
+
+                if (responseLegalEntities != null) {
+                    String[] blockedLegalEntities = responseLegalEntities.split(",");
+
+                    for (String blockedLegalEntity : blockedLegalEntities) {
+                        if (legalEntityId.equals(blockedLegalEntity)) {
+                            distinctMappingResources.remove(consentMappingResource);
+                        }
+                    }
+                }
+
             }
-
-
-//            String responseLegalEntities = accountMetadataService.getAccountMetadataByKey
-//                    (accountId, secondaryUserId, "BLOCKED_LEGAL_ENTITIES");
 
 
             log.info("----- PAUSE -----");

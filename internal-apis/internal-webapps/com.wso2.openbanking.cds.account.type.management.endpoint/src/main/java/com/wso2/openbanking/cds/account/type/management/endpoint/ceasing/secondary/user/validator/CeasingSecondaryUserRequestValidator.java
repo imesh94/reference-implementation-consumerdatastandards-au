@@ -70,13 +70,13 @@ public class CeasingSecondaryUserRequestValidator {
             }
 
             //Checking the validity of the value in the "accountId" field in the request object
-            if (!secondaryUserId.matches("^[a-zA-Z0-9]+$") || secondaryUserId.isEmpty()) {
+            if (secondaryUserId.isEmpty()) {
                 throw new OpenBankingException
                         ("Bad request : invalid value present for the field \"secondaryUserId\" ");
             }
 
             //Checking the validity of the value in the "accountId" field in the request object
-            if (!legalEntityId.matches("^[a-zA-Z0-9]+$") || legalEntityId.isEmpty()) {
+            if (legalEntityId.isEmpty()) {
                 throw new OpenBankingException
                         ("Bad request : invalid value present for the field \"legalEntityId\" ");
             }
