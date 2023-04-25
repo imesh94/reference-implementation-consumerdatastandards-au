@@ -349,10 +349,10 @@ class AUTest extends OBTest {
 
         //If Profile Selection Enabled
         if (auConfiguration.getProfileSelectionEnabled()) {
-            if (profiles == AUAccountProfile.BUSINESS) {
+            if (profiles == AUAccountProfile.ORGANIZATION_A) {
 
                 //Select Business Profile
-                authWebDriver.selectOption(AUPageObjects.BUSINESS_PROFILE_SELECTION)
+                authWebDriver.selectOption(AUPageObjects.ORGANIZATION_A_PROFILE_SELECTION)
                 authWebDriver.clickButtonXpath(AUPageObjects.PROFILE_SELECTION_NEXT_BUTTON)
 
                 //Select Business Account 1
@@ -412,10 +412,10 @@ class AUTest extends OBTest {
 
         //If Profile Selection Enabled
         if (auConfiguration.getProfileSelectionEnabled()) {
-            if (profiles == AUAccountProfile.BUSINESS) {
+            if (profiles == AUAccountProfile.ORGANIZATION_A) {
 
                 //Select Business Profile
-                authWebDriver.selectOption(AUPageObjects.BUSINESS_PROFILE_SELECTION)
+                authWebDriver.selectOption(AUPageObjects.ORGANIZATION_A_PROFILE_SELECTION)
                 authWebDriver.clickButtonXpath(AUPageObjects.PROFILE_SELECTION_NEXT_BUTTON)
 
                 //Select Business Account 1
@@ -641,9 +641,9 @@ class AUTest extends OBTest {
 
                     //If Profile Selection Enabled
                     if (auConfiguration.getProfileSelectionEnabled()) {
-                        if (profiles == AUAccountProfile.BUSINESS) {
+                        if (profiles == AUAccountProfile.ORGANIZATION_A) {
                             //Select Business Profile
-                            authWebDriver.selectOption(AUPageObjects.BUSINESS_PROFILE_SELECTION)
+                            authWebDriver.selectOption(AUPageObjects.ORGANIZATION_A_PROFILE_SELECTION)
                             authWebDriver.clickButtonXpath(AUPageObjects.PROFILE_SELECTION_NEXT_BUTTON)
                         }
                         else {

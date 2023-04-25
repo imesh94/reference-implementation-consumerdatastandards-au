@@ -65,7 +65,7 @@ class ConsentAmendmentFlowTests extends AUTest {
         response = auAuthorisationBuilder.doPushAuthorisationRequest(scopes, AUConstants.DEFAULT_SHARING_DURATION,
                 true, "")
         requestUri = AUTestUtil.parseResponseBody(response, AUConstants.REQUEST_URI)
-        doConsentAuthorisationViaRequestUriSingleAccount(scopes, requestUri.toURI(), null, AUAccountProfile.BUSINESS)
+        doConsentAuthorisationViaRequestUriSingleAccount(scopes, requestUri.toURI(), null, AUAccountProfile.ORGANIZATION_A)
         userAccessToken = getUserAccessTokenResponse(clientId).tokens.accessToken
         cdrArrangementId = userAccessToken.get.get("cdr_arrangement_id")
         Assert.assertNotNull(cdrArrangementId)
@@ -107,7 +107,7 @@ class ConsentAmendmentFlowTests extends AUTest {
         response = auAuthorisationBuilder.doPushAuthorisationRequest(scopes, AUConstants.DEFAULT_SHARING_DURATION,
                 true, "")
         requestUri = AUTestUtil.parseResponseBody(response, AUConstants.REQUEST_URI)
-        doConsentAuthorisationViaRequestUriSingleAccount(scopes, requestUri.toURI(), null, AUAccountProfile.BUSINESS)
+        doConsentAuthorisationViaRequestUriSingleAccount(scopes, requestUri.toURI(), null, AUAccountProfile.ORGANIZATION_A)
         userAccessToken = getUserAccessTokenResponse(clientId).tokens.accessToken
         cdrArrangementId = userAccessToken.get.get("cdr_arrangement_id")
         Assert.assertNotNull(cdrArrangementId)
@@ -150,7 +150,7 @@ class ConsentAmendmentFlowTests extends AUTest {
     void "CDS-514_Verify a Consent Amendment flow with a Business user account"() {
 
         //Consent Authorisation
-        doConsentAuthorisation(null, AUAccountProfile.BUSINESS)
+        doConsentAuthorisation(null, AUAccountProfile.ORGANIZATION_A)
         generateUserAccessToken()
 
         //Get Account Transaction Details
