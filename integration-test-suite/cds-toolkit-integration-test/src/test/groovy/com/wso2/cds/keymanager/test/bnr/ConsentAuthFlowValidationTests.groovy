@@ -20,7 +20,6 @@ import com.wso2.cds.test.framework.constant.AUConstants
 import com.wso2.cds.test.framework.constant.AUPageObjects
 import com.wso2.cds.test.framework.utility.AUTestUtil
 import com.wso2.openbanking.test.framework.automation.AutomationMethod
-import io.restassured.response.Response
 import org.openqa.selenium.By
 import org.testng.Assert
 import org.testng.annotations.BeforeClass
@@ -78,7 +77,7 @@ class ConsentAuthFlowValidationTests extends AUTest{
                     if (auConfiguration.getProfileSelectionEnabled()) {
 
                         //Verify Profile Selection Page contains radio buttons for Business and Individual Profile selections
-                        assert authWebDriver.isElementDisplayed(AUPageObjects.BUSINESS_PROFILE_SELECTION)
+                        assert authWebDriver.isElementDisplayed(AUPageObjects.ORGANIZATION_A_PROFILE_SELECTION)
                         assert authWebDriver.isElementDisplayed(AUPageObjects.INDIVIDUAL_PROFILE_SELECTION)
 
                     } else {
@@ -157,7 +156,7 @@ class ConsentAuthFlowValidationTests extends AUTest{
                     if (auConfiguration.getProfileSelectionEnabled()) {
 
                         //Select Individual Profile
-                        authWebDriver.selectOption(AUPageObjects.BUSINESS_PROFILE_SELECTION)
+                        authWebDriver.selectOption(AUPageObjects.ORGANIZATION_A_PROFILE_SELECTION)
                         authWebDriver.clickButtonXpath(AUPageObjects.PROFILE_SELECTION_NEXT_BUTTON)
 
                         //Verify Account Selection Page
@@ -220,7 +219,7 @@ class ConsentAuthFlowValidationTests extends AUTest{
                     if (auConfiguration.getProfileSelectionEnabled()) {
 
                         //Select Individual Profile
-                        authWebDriver.selectOption(AUPageObjects.BUSINESS_PROFILE_SELECTION)
+                        authWebDriver.selectOption(AUPageObjects.ORGANIZATION_A_PROFILE_SELECTION)
                         authWebDriver.clickButtonXpath(AUPageObjects.PROFILE_SELECTION_NEXT_BUTTON)
 
                         authWebDriver.clickButtonXpath(AUPageObjects.CONSENT_DENY_XPATH)
@@ -259,7 +258,7 @@ class ConsentAuthFlowValidationTests extends AUTest{
                     if (auConfiguration.getProfileSelectionEnabled()) {
 
                         //Select Individual Profile
-                        authWebDriver.selectOption(AUPageObjects.BUSINESS_PROFILE_SELECTION)
+                        authWebDriver.selectOption(AUPageObjects.ORGANIZATION_A_PROFILE_SELECTION)
                         authWebDriver.clickButtonXpath(AUPageObjects.PROFILE_SELECTION_NEXT_BUTTON)
 
                         //Select Business Account 1
@@ -307,7 +306,7 @@ class ConsentAuthFlowValidationTests extends AUTest{
                     if (auConfiguration.getProfileSelectionEnabled()) {
 
                         //Select Individual Profile
-                        authWebDriver.selectOption(AUPageObjects.BUSINESS_PROFILE_SELECTION)
+                        authWebDriver.selectOption(AUPageObjects.ORGANIZATION_A_PROFILE_SELECTION)
                         authWebDriver.clickButtonXpath(AUPageObjects.PROFILE_SELECTION_NEXT_BUTTON)
 
                         //Check the account selection enabled
@@ -345,7 +344,7 @@ class ConsentAuthFlowValidationTests extends AUTest{
                     if (auConfiguration.getProfileSelectionEnabled()) {
 
                         //Select Individual Profile
-                        authWebDriver.selectOption(AUPageObjects.BUSINESS_PROFILE_SELECTION)
+                        authWebDriver.selectOption(AUPageObjects.ORGANIZATION_A_PROFILE_SELECTION)
                         authWebDriver.clickButtonXpath(AUPageObjects.PROFILE_SELECTION_NEXT_BUTTON)
 
                         //Check the account selection disabled
@@ -379,7 +378,7 @@ class ConsentAuthFlowValidationTests extends AUTest{
                     if (auConfiguration.getProfileSelectionEnabled()) {
 
                         //Select Individual Profile
-                        authWebDriver.selectOption(AUPageObjects.BUSINESS_PROFILE_SELECTION)
+                        authWebDriver.selectOption(AUPageObjects.ORGANIZATION_A_PROFILE_SELECTION)
                         authWebDriver.clickButtonXpath(AUPageObjects.PROFILE_SELECTION_NEXT_BUTTON)
 
                         //Select all accounts
@@ -413,7 +412,7 @@ class ConsentAuthFlowValidationTests extends AUTest{
                     if (auConfiguration.getProfileSelectionEnabled()) {
 
                         //Select Individual Profile
-                        authWebDriver.selectOption(AUPageObjects.BUSINESS_PROFILE_SELECTION)
+                        authWebDriver.selectOption(AUPageObjects.ORGANIZATION_A_PROFILE_SELECTION)
                         authWebDriver.clickButtonXpath(AUPageObjects.PROFILE_SELECTION_NEXT_BUTTON)
 
                         //Check the account selection disabled
@@ -446,7 +445,7 @@ class ConsentAuthFlowValidationTests extends AUTest{
                     if (auConfiguration.getProfileSelectionEnabled()) {
 
                         //Select Individual Profile
-                        authWebDriver.selectOption(AUPageObjects.BUSINESS_PROFILE_SELECTION)
+                        authWebDriver.selectOption(AUPageObjects.ORGANIZATION_A_PROFILE_SELECTION)
                         authWebDriver.clickButtonXpath(AUPageObjects.PROFILE_SELECTION_NEXT_BUTTON)
 
                         //Check the error message
@@ -479,7 +478,7 @@ class ConsentAuthFlowValidationTests extends AUTest{
                     if (auConfiguration.getProfileSelectionEnabled()) {
 
                         //Select Individual Profile
-                        authWebDriver.selectOption(AUPageObjects.BUSINESS_PROFILE_SELECTION)
+                        authWebDriver.selectOption(AUPageObjects.ORGANIZATION_A_PROFILE_SELECTION)
                         authWebDriver.clickButtonXpath(AUPageObjects.PROFILE_SELECTION_NEXT_BUTTON)
 
                         //Check account selection page has multiple accounts

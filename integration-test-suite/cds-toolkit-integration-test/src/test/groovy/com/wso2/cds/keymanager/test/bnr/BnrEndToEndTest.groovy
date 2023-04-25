@@ -52,7 +52,7 @@ class BnrEndToEndTest extends AUTest{
     void "CDS-486_Verify an accounts retrieval call after business profile selection and business accounts consented"(resourcePath) {
 
         //Consent Authorisation
-        doConsentAuthorisation(null, AUAccountProfile.BUSINESS)
+        doConsentAuthorisation(null, AUAccountProfile.ORGANIZATION_A)
         generateUserAccessToken()
 
         //Get Accounts

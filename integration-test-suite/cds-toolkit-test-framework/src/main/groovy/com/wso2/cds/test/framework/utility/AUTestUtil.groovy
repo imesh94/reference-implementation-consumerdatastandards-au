@@ -203,7 +203,7 @@ class AUTestUtil extends OBTestUtil {
         def  ShareableAccountMap = [:]
 
         for (sharableAccount in sharableAccountList) {
-            if (sharableAccount[AUConstants.PARAM_CUSTOMER_ACCOUNT_TYPE] == AUAccountProfile.BUSINESS) {
+            if (sharableAccount[AUConstants.PARAM_CUSTOMER_ACCOUNT_TYPE] == AUAccountProfile.ORGANIZATION_A) {
                 ShareableAccountMap [AUConstants.PARAM_ACCOUNT_ID] = sharableAccount[AUConstants.ACCOUNT_ID]
                 ShareableAccountMap [AUConstants.ACCOUNT_OWNER_USER_ID] =
                         sharableAccount[AUConstants.BUSINESS_ACCOUNT_INFO][AUConstants.ACCOUNT_OWNERS][AUConstants.MEMBER_ID][0]

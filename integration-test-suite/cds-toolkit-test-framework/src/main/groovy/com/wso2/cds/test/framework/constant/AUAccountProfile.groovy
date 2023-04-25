@@ -14,7 +14,8 @@ package com.wso2.cds.test.framework.constant
  */
 enum AUAccountProfile {
 
-    BUSINESS("business"),
+    ORGANIZATION_A("organization_A"),
+    ORGANIZATION_B("organization_B"),
     INDIVIDUAL("individual"),
 
     private String value
