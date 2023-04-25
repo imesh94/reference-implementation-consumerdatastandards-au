@@ -21,6 +21,7 @@
     <jaxrs:server id="services" address="/">
         <jaxrs:serviceBeans>
             <bean class="com.wso2.openbanking.cds.account.type.management.endpoint.nominated.representative.impl.NominatedRepresentativeAPIImpl"/>
+            <bean class="com.wso2.openbanking.cds.account.type.management.endpoint.disclosure.options.impl.DisclosureOptionsApiImpl"/>
         </jaxrs:serviceBeans>
         <jaxrs:providers>
             <bean class="com.fasterxml.jackson.jaxrs.json.JacksonJsonProvider"/>

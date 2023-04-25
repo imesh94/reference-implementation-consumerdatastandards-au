@@ -70,6 +70,9 @@ public class CDSConsentExtensionConstants {
     public static final String JOINT_ACCOUNT_CONSENT_ELECTION_STATUS = "jointAccountConsentElectionStatus";
     public static final String JOINT_ACCOUNT_PRE_APPROVAL = "ELECTED";
     public static final String JOINT_ACCOUNT_NO_SHARING = "UNAVAILABLE";
+    public static final String DOMS_STATUS = "DISCLOSURE_OPTIONS_STATUS";
+    public static final String DOMS_STATUS_PRE_APPROVAL = "pre-approval";
+    public static final String DOMS_STATUS_NO_SHARING = "no-sharing";
     public static final String LINKED_MEMBER = "linkedMember";
     public static final String LINKED_MEMBERS_COUNT = "linked_members_count";
     public static final String LINKED_MEMBER_ID = "memberId";

@@ -12,6 +12,9 @@
 
 package com.wso2.openbanking.cds.consent.extensions.validate;
 
+import com.wso2.openbanking.accelerator.account.metadata.service.service.AccountMetadataService;
+import com.wso2.openbanking.accelerator.account.metadata.service.service.AccountMetadataServiceImpl;
+import com.wso2.openbanking.accelerator.common.exception.OpenBankingException;
 import com.wso2.openbanking.accelerator.consent.extensions.common.ConsentException;
 import com.wso2.openbanking.accelerator.consent.extensions.common.ResponseStatus;
 import com.wso2.openbanking.accelerator.consent.extensions.validate.model.ConsentValidateData;
@@ -24,6 +27,7 @@ import com.wso2.openbanking.cds.common.metadata.domain.MetadataValidationRespons
 import com.wso2.openbanking.cds.common.metadata.status.validator.service.MetadataService;
 import com.wso2.openbanking.cds.consent.extensions.common.CDSConsentExtensionConstants;
 import com.wso2.openbanking.cds.consent.extensions.validate.utils.CDSConsentValidatorUtil;
+
 import net.minidev.json.JSONObject;
 import net.minidev.json.parser.JSONParser;
 import net.minidev.json.parser.ParseException;
@@ -34,9 +38,12 @@ import org.apache.http.HttpStatus;
 
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Iterator;
 import java.util.List;
+import java.util.Map;
 
-import static com.wso2.openbanking.accelerator.consent.mgt.service.constants.ConsentCoreServiceConstants.INACTIVE_MAPPING_STATUS;
+import static com.wso2.openbanking.accelerator.consent.mgt.service.constants.ConsentCoreServiceConstants.
+        INACTIVE_MAPPING_STATUS;
 
 /**
  * Consent validator CDS implementation.
@@ -140,6 +147,8 @@ public class CDSConsentValidator implements ConsentValidator {
      * @param consentValidateData consentValidateData
      */
     private void removeInactiveAndDuplicateConsentMappings(ConsentValidateData consentValidateData) {
+        log.info(consentValidateData);
+
         ArrayList<ConsentMappingResource> distinctMappingResources = new ArrayList<>();
         List<String> duplicateAccountIds = new ArrayList<>();
 
@@ -151,8 +160,42 @@ public class CDSConsentValidator implements ConsentValidator {
                     distinctMappingResources.add(distinctMapping);
                 });
 
+
+        //filter non-sharable joint accounts and remove them
+        Iterator<ConsentMappingResource> iterator = distinctMappingResources.iterator();
+        while (iterator.hasNext()) {
+            // Get the next ConsentMappingResource from the iterator
+            ConsentMappingResource mappingResource = iterator.next();
+            log.info(mappingResource.getAccountID());
+            // Check if the account is eligible for data sharing based on its DOMS status
+            if (!isDomsStatusEligibleForDataSharing(mappingResource.getAccountID())) {
+                // If the account is not eligible for data sharing, remove the ConsentMappingResource from the iterator
+                iterator.remove();
+            }
+        }
         consentValidateData.getComprehensiveConsent().setConsentMappingResources(distinctMappingResources);
     }
+
+    public Boolean isDomsStatusEligibleForDataSharing(String accountId) {
+        // Get an instance of the AccountMetadataService implementation
+        AccountMetadataService accountMetadataService = AccountMetadataServiceImpl.getInstance();
+        try {
+            // Call the getGlobalAccountMetadataMap method of the AccountMetadataService implementation
+            Map<String, String> accountMetadata = accountMetadataService.getGlobalAccountMetadataMap(accountId);
+
+            if (!accountMetadata.isEmpty()) {
+                // Check if the DOMS status value for the account is equal to "pre-approval"
+                return accountMetadata.containsValue(CDSConsentExtensionConstants.DOMS_STATUS_PRE_APPROVAL);
+            } else {
+                return false;
+            }
+        } catch (OpenBankingException e) {
+            // Log the exception message and return true to indicate that the account is eligible for data sharing
+            log.info(e.getMessage());
+            return true;
+        }
+    }
+
 
     private String generateErrorPayload(String title, String detail, String metaURN, String accountId) {
 

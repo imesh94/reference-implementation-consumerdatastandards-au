@@ -236,6 +236,11 @@
             </dependency>
             <dependency>
                 <groupId>com.wso2</groupId>
+                <artifactId>com.wso2.openbanking.accelerator.account.metadata.service</artifactId>
+                <version>${accelerator.project.version.range}</version>
+            </dependency>
+            <dependency>
+                <groupId>com.wso2</groupId>
                 <artifactId>com.wso2.openbanking.accelerator.identity</artifactId>
                 <version>${accelerator.project.version.range}</version>
             </dependency>
