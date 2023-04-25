@@ -7,7 +7,7 @@
 ~ You may not alter or remove any copyright or other notice from copies of this content.
 ~
 -->
-<div class="form-actions disclaimer" style="font-size:11px">
+<div class="form-actions disclaimer" style="font-size:0.9em">
 	Your Customer ID will not be shared with "<%=request.getAttribute("spDetails").toString()%>". One time passwords are used
 	to share banking data. You will never be asked to provide your real password to share banking data.
 </div>

@@ -7,6 +7,6 @@
 ~ You may not alter or remove any copyright or other notice from copies of this content.
 ~
 -->
-<div class="field disclaimer" style="font-size:11px">
+<div class="field disclaimer" style="font-size:0.9em">
 	Forgot Customer ID? Go to the WSO2 Open Banking website to retrieve it.
 </div>
