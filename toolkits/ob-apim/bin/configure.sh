@@ -1,15 +1,12 @@
 #!/bin/bash
 # ------------------------------------------------------------------------
 #
-# Copyright (c) 2021, WSO2 Inc. (http://www.wso2.com). All Rights Reserved.
+# Copyright (c) 2021-2023, WSO2 LLC. (https://www.wso2.com). All Rights Reserved.
 #
-# This software is the property of WSO2 Inc. and its suppliers, if any.
+# This software is the property of WSO2 LLC. and its suppliers, if any.
 # Dissemination of any information or reproduction of any material contained
-# herein is strictly forbidden, unless permitted by WSO2 in accordance with
-# the WSO2 Software License available at https://wso2.com/licenses/eula/3.1.
-# For specific language governing the permissions and limitations under this
-# license, please see the license as well as any agreement you’ve entered into
-# with WSO2 governing the purchase of this software and any associated services.
+# herein in any form is strictly forbidden, unless permitted by WSO2 expressly.
+# You may not alter or remove any copyright or other notice from copies of this content.
 # ------------------------------------------------------------------------
 
 # command to execute
@@ -46,6 +43,9 @@ cp ${ACCELERATOR_HOME}/${PRODUCT_CONF_PATH} ${DEPLOYMENT_TOML_FILE};
 # read open-banking-cds.xml file
 OPENBANKING_CDS_XML_FILE=${WSO2_OB_APIM_HOME}/repository/conf/open-banking-cds.xml;
 
+# read main.xml file
+MAIN_ERROR_SEQUENCE_FILE=${WSO2_OB_APIM_HOME}/repository/deployment/server/synapse-configs/default/sequences/main.xml
+
 configure_datasources() {
     if [ "${DB_TYPE}" == "mysql" ]
         then
@@ -70,6 +70,11 @@ configure_datasources() {
     fi
 }
 
+configure_error_sequences() {
+  sed -i -e 's|{"code":"404","type":"Status report","message":"Not Found","description":"The requested resource is not available."}|\
+{"errors":[{"code": "urn:au-cds:error:cds-all:Resource/NotFound","title": "Resource Not Found"}]}|' ${MAIN_ERROR_SEQUENCE_FILE}
+}
+
 echo -e "\nReplace hostnames \n"
 echo -e "================================================\n"
 sed -i -e 's|APIM_HOSTNAME|'${APIM_HOSTNAME}'|g' ${DEPLOYMENT_TOML_FILE}
@@ -81,6 +86,10 @@ sed -i -e 's|APIM_HOSTNAME|'${APIM_HOSTNAME}'|g' ${OPENBANKING_CDS_XML_FILE}
 echo -e "\nConfigure datasources \n"
 echo -e "================================================\n"
 configure_datasources;
+
+echo -e "\nConfigure cds error sequences \n"
+echo -e "================================================\n"
+configure_error_sequences;
 
 echo -e "\nCopy deployment.toml file to repository/conf \n"
 echo -e "================================================\n"
