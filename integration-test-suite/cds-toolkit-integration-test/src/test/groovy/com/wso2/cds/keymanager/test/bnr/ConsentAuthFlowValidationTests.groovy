@@ -393,6 +393,7 @@ class ConsentAuthFlowValidationTests extends AUTest{
                 .execute()
     }
 
+    @Test
     void "CDS-510_Verify Users with View Permission are not able to Authorize Consents"() {
 
         //Get Authorisation URL
@@ -426,6 +427,7 @@ class ConsentAuthFlowValidationTests extends AUTest{
                 .execute()
     }
 
+    @Test
     void "CDS-512_Verify a Consent Authorization Flow with non NR"() {
 
         //Get Authorisation URL
@@ -459,6 +461,7 @@ class ConsentAuthFlowValidationTests extends AUTest{
                 .execute()
     }
 
+    @Test
     void "CDS-541_Verify same user nominated for multiple accounts"() {
 
         //Get Authorisation URL
@@ -492,8 +495,4 @@ class ConsentAuthFlowValidationTests extends AUTest{
                 }
                 .execute()
     }
-
-
-
-
 }
