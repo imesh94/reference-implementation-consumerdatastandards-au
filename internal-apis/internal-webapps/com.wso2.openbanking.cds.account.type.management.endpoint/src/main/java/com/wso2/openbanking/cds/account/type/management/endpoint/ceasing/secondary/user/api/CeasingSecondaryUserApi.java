@@ -67,7 +67,7 @@ public interface CeasingSecondaryUserApi {
      * bound to the account holder in the consent manager dashboard.
      */
     @GET
-    @Path("/get-accounts-users-legalentities-details")
+    @Path("/get-users-accounts-legalentities-details")
     @Produces({"application/json"})
     @ApiOperation(value = "This API is used to get accounts, secondary users, legal entities and their sharing status",
             tags = {"Legal Entity"})
@@ -76,7 +76,7 @@ public interface CeasingSecondaryUserApi {
                     "and their sharing status"),
             @ApiResponse(code = 400, message = "Error!, failed to retrieve accounts, secondary users, legal entities "
                     + "and their sharing status")})
-    Response getAccountsUsersLegalEntities(@ApiParam(value = "Get accounts, secondary users, legal entities and their "
+    Response getUsersAccountsLegalEntities(@ApiParam(value = "Get accounts, secondary users, legal entities and their "
             + "sharing status",
             required = true) @QueryParam("userId") String userId);
 

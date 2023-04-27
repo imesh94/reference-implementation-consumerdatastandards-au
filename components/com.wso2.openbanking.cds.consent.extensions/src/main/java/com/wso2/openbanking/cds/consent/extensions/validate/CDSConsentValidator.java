@@ -183,9 +183,7 @@ public class CDSConsentValidator implements ConsentValidator {
                 }
 
             }
-
-
-            log.info("----- PAUSE -----");
+//            log.info("----- PAUSE -----");
         } catch (Exception e) {
             log.info(e.getMessage());
         }

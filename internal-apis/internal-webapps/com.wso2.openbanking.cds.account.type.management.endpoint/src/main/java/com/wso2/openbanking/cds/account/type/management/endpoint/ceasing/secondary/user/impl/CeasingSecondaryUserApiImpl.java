@@ -14,6 +14,7 @@ package com.wso2.openbanking.cds.account.type.management.endpoint.ceasing.second
 import com.wso2.openbanking.cds.account.type.management.endpoint.ceasing.secondary.user.api.CeasingSecondaryUserApi;
 import com.wso2.openbanking.cds.account.type.management.endpoint.ceasing.secondary.user.handler.
         CeasingSecondaryUserHandler;
+import com.wso2.openbanking.cds.account.type.management.endpoint.ceasing.secondary.user.models.UsersAccountsLegalEntitiesResource;
 import com.wso2.openbanking.cds.account.type.management.endpoint.ceasing.secondary.user.validator.
         CeasingSecondaryUserRequestValidator;
 import net.minidev.json.JSONArray;
@@ -92,11 +93,13 @@ public class CeasingSecondaryUserApiImpl implements CeasingSecondaryUserApi {
      * An endpoint should be designed to get all accounts, secondary users, legal entities and their sharing status
      * bound to the account holder in the consent manager dashboard.
      */
-    public Response getAccountsUsersLegalEntities(String userId) {
+    public Response getUsersAccountsLegalEntities(String userId) {
 
         try {
-            ceasingSecondaryUserHandler.getAccountsUsersLegalEntities(userId);
-            return Response.ok().entity("").header(XV_HEADER, X_VERSION).build();
+            UsersAccountsLegalEntitiesResource responseUsersAccountsLegalEntities = ceasingSecondaryUserHandler.
+                    getUsersAccountsLegalEntities(userId);
+
+            return Response.ok().entity(responseUsersAccountsLegalEntities).header(XV_HEADER, X_VERSION).build();
         } catch (Exception e) {
             //TODO: Update the response message
             log.error("", e);

@@ -15,10 +15,14 @@ package com.wso2.openbanking.cds.account.type.management.endpoint.ceasing.second
 import com.wso2.openbanking.accelerator.account.metadata.service.service.AccountMetadataService;
 import com.wso2.openbanking.accelerator.account.metadata.service.service.AccountMetadataServiceImpl;
 import com.wso2.openbanking.accelerator.common.exception.OpenBankingException;
+import com.wso2.openbanking.accelerator.common.identity.retriever.sp.CommonServiceProviderRetriever;
 import com.wso2.openbanking.accelerator.consent.mgt.dao.models.AuthorizationResource;
+import com.wso2.openbanking.accelerator.consent.mgt.dao.models.ConsentMappingResource;
 import com.wso2.openbanking.accelerator.consent.mgt.dao.models.DetailedConsentResource;
 import com.wso2.openbanking.accelerator.consent.mgt.service.ConsentCoreService;
 import com.wso2.openbanking.accelerator.consent.mgt.service.impl.ConsentCoreServiceImpl;
+import com.wso2.openbanking.cds.account.type.management.endpoint.ceasing.secondary.user.models.
+        UsersAccountsLegalEntitiesResource;
 import net.minidev.json.JSONArray;
 import net.minidev.json.JSONObject;
 import org.apache.commons.logging.Log;
@@ -170,39 +174,188 @@ public class CeasingSecondaryUserHandler {
      * An endpoint should be designed to get all accounts, secondary users, legal entities and their sharing status
      * bound to the account holder in the consent manager dashboard.
      */
-    public void getAccountsUsersLegalEntities(String userId) {
+    public UsersAccountsLegalEntitiesResource getUsersAccountsLegalEntities(String userId) {
 
         log.debug("Getting accounts, secondary users, legal entities and their sharing status.");
 
         try {
             ConsentCoreService consentCoreService = new ConsentCoreServiceImpl();
+            CommonServiceProviderRetriever commonServiceProviderRetriever = new CommonServiceProviderRetriever();
 
             // Creating an array list to append the userId
             ArrayList<String> userIdAL = new ArrayList<>();
             userIdAL.add(userId);
+
+            UsersAccountsLegalEntitiesResource responseUsersAccountsLegalEntities =
+                    new UsersAccountsLegalEntitiesResource(userId);
 
             ArrayList<DetailedConsentResource> responseDetailedConsents = consentCoreService.searchDetailedConsents
                     (null, null, null, null, userIdAL, null, null,
                             null, null, false);
 
 
-            log.info(responseDetailedConsents);
+            /* Updating - Secondary Users */
+            // Consent
+            for (DetailedConsentResource detailedConsent : responseDetailedConsents) {
 
-//            for (DetailedConsentResource detailedConsent : responseDetailedConsents) {
-//                log.info("\n\n");
-//                log.info(detailedConsent.getAuthorizationResources());
-//
-//                for(AuthorizationResource ar:detailedConsent.getAuthorizationResources()){
-//                    log.info(ar.getUserID());
-//                    log.info("\n\n");
-//
-//                }
-//            }
+                // Authorization Resource
+                for (AuthorizationResource authorizationResource : detailedConsent.getAuthorizationResources()) {
 
 
-            log.info("----- PAUSE -----");
+                    if (authorizationResource.getAuthorizationType().equals("primary_member")) {
+
+                        UsersAccountsLegalEntitiesResource.SecondaryUser uniqueSecondaryUser = new
+                                UsersAccountsLegalEntitiesResource.
+                                        SecondaryUser(authorizationResource.getUserID(), null);
+
+                        if (responseUsersAccountsLegalEntities.getSecondaryUsers() == null) {
+                            responseUsersAccountsLegalEntities.addSecondaryUser(uniqueSecondaryUser);
+                        } else {
+                            for (UsersAccountsLegalEntitiesResource.SecondaryUser secondaryUser :
+                                    responseUsersAccountsLegalEntities.getSecondaryUsers()) {
+                                if (!secondaryUser.getSecondaryUserId().
+                                        equals(uniqueSecondaryUser.getSecondaryUserId())) {
+                                    responseUsersAccountsLegalEntities.addSecondaryUser(uniqueSecondaryUser);
+                                    break;
+                                }
+                            }
+
+                        }
+
+                    }
+
+                }
+            }
+
+            /* Updating - Accounts */
+            for (UsersAccountsLegalEntitiesResource.SecondaryUser secondaryUser :
+                    responseUsersAccountsLegalEntities.getSecondaryUsers()) {
+
+                // Consent
+                for (DetailedConsentResource detailedConsent : responseDetailedConsents) {
+
+                    // Authorization Resource
+                    for (AuthorizationResource authorizationResource : detailedConsent.getAuthorizationResources()) {
+                        String authorizationId = authorizationResource.getAuthorizationID();
+                        // Consent Mapping Resource
+                        for (ConsentMappingResource consentMappingResource : detailedConsent.
+                                getConsentMappingResources()) {
+
+                            if (consentMappingResource.getAuthorizationID().equals(authorizationId) &&
+                                    authorizationResource.getUserID().equals(secondaryUser.getSecondaryUserId())) {
+
+                                UsersAccountsLegalEntitiesResource.Account uniqueAccount =
+                                        new UsersAccountsLegalEntitiesResource.
+                                                Account(consentMappingResource.getAccountID(), null);
+
+                                if (secondaryUser.getAccounts() == null) {
+                                    secondaryUser.addAccount(uniqueAccount);
+                                } else {
+                                    for (UsersAccountsLegalEntitiesResource.Account account :
+                                            secondaryUser.getAccounts()) {
+                                        if (!account.getAccountId().equals(uniqueAccount.getAccountId())) {
+                                            secondaryUser.addAccount(uniqueAccount);
+                                            break;
+                                        }
+                                    }
+                                }
+
+                            }
+
+                        }
+
+
+                    }
+                }
+
+
+            }
+
+            log.info("Pause");
+
+            /* Updating - Legal Entities */
+            for (UsersAccountsLegalEntitiesResource.SecondaryUser secondaryUser :
+                    responseUsersAccountsLegalEntities.getSecondaryUsers()) {
+
+                for (UsersAccountsLegalEntitiesResource.Account account : secondaryUser.getAccounts()) {
+                    String clientId;
+                    String secondaryUserId = secondaryUser.getSecondaryUserId();
+                    String accountId = account.getAccountId();
+                    String legalEntityId = null;
+                    String legalEntitySharingStatus = null;
+
+                    // Consent
+                    for (DetailedConsentResource detailedConsent : responseDetailedConsents) {
+
+                        // Authorization Resource
+                        for (AuthorizationResource authorizationResource :
+                                detailedConsent.getAuthorizationResources()) {
+
+                            // Consent Mapping Resource
+                            for (ConsentMappingResource consentMappingResource :
+                                    detailedConsent.getConsentMappingResources()) {
+
+                                if (authorizationResource.getUserID().equals(secondaryUserId) &&
+                                        consentMappingResource.getAccountID().equals(accountId)) {
+                                    clientId = detailedConsent.getClientID();
+
+                                    legalEntityId = commonServiceProviderRetriever.
+                                            getAppPropertyFromSPMetaData(clientId, "legal_entity_id");
+
+
+                                    String responseLegalEntities = accountMetadataService.
+                                            getAccountMetadataByKey
+                                                    (accountId, secondaryUserId, "BLOCKED_LEGAL_ENTITIES");
+
+                                    if (responseLegalEntities != null) {
+                                        String[] blockedLegalEntities = responseLegalEntities.split(",");
+
+                                        for (String blockedLegalEntity : blockedLegalEntities) {
+                                            if (legalEntityId.equals(blockedLegalEntity)) {
+                                                legalEntitySharingStatus = "blocked";
+                                                break;
+                                            } else {
+                                                legalEntitySharingStatus = "active";
+                                            }
+                                        }
+                                    } else {
+                                        legalEntitySharingStatus = "active";
+                                    }
+
+                                    UsersAccountsLegalEntitiesResource.LegalEntity uniqueLegalEntity =
+                                            new UsersAccountsLegalEntitiesResource.
+                                                    LegalEntity(legalEntityId, legalEntitySharingStatus);
+
+                                    if (account.getLegalEntities() == null) {
+                                        account.addLegalEntity(uniqueLegalEntity);
+                                    } else {
+                                        for (UsersAccountsLegalEntitiesResource.LegalEntity legalEntity :
+                                                account.getLegalEntities()) {
+                                            if (!legalEntity.getLegalEntityId().
+                                                    equals(uniqueLegalEntity.getLegalEntityId())) {
+                                                account.addLegalEntity(uniqueLegalEntity);
+                                                break;
+                                            }
+                                        }
+                                    }
+
+                                }
+
+                            }
+                        }
+                    }
+
+
+                }
+
+            }
+
+            return responseUsersAccountsLegalEntities;
+        } catch (RuntimeException e) {
+            throw e;
         } catch (Exception e) {
             log.warn(e.getMessage());
+            return null;
         }
     }
 }
