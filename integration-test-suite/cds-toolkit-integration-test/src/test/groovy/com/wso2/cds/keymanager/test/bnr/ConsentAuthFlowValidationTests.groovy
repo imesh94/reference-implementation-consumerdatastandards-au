@@ -91,7 +91,7 @@ class ConsentAuthFlowValidationTests extends AUTest{
     @Test
     void "CDS-543_Verify customer language in consent page for individual consumer"() {
 
-        List<AUAccountScope> scopes = [AUAccountScope.BANK_ACCOUNT_BASIC_READ]
+        List<AUAccountScope> scopes = [AUAccountScope.BANK_CUSTOMER_BASIC_READ]
 
         //Get Authorisation URL
         response = auAuthorisationBuilder.doPushAuthorisationRequest(scopes, AUConstants.DEFAULT_SHARING_DURATION,
@@ -117,7 +117,6 @@ class ConsentAuthFlowValidationTests extends AUTest{
                         assert authWebDriver.isElementDisplayed(AUTestUtil.getSingleAccountXPath())
                         authWebDriver.clickButtonXpath(AUTestUtil.getSingleAccountXPath())
 
-                        assert authWebDriver.isElementDisplayed(AUTestUtil.getAltSingleAccountXPath())
                         Assert.assertTrue(authWebDriver.getElementAttribute(AUPageObjects.LBL_PERMISSION_HEADER,
                                 AUPageObjects.TEXT).trim().contains(AUConstants.BANK_CUSTOMER_BASIC_READ_INDIVIDUAL))
                         authWebDriver.clickButtonXpath(AUPageObjects.LBL_PERMISSION_HEADER)
@@ -137,7 +136,7 @@ class ConsentAuthFlowValidationTests extends AUTest{
     @Test
     void "CDS-544_Verify customer language in consent page for business consumer"() {
 
-        List<AUAccountScope> scopes = [AUAccountScope.BANK_ACCOUNT_DETAIL_READ]
+        List<AUAccountScope> scopes = [AUAccountScope.BANK_CUSTOMER_DETAIL_READ]
 
         //Get Authorisation URL
         response = auAuthorisationBuilder.doPushAuthorisationRequest(scopes, AUConstants.DEFAULT_SHARING_DURATION,
