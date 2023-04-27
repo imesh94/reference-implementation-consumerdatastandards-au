@@ -17,8 +17,7 @@ import javax.validation.constraints.Pattern;
 public class NominatedRepresentativeDTO {
 
     @NotEmpty(message = "permission field cannot be empty")
-    @Pattern(regexp = "^(AUTHORIZE|VIEW|REVOKE)$", message = "Invalid permission value. " +
-            "Must be AUTHORIZE, VIEW, or REVOKE.")
+    @Pattern(regexp = "^(AUTHORIZE|VIEW)$", message = "Invalid permission value. Must be AUTHORIZE or VIEW.")
     private String permission;
 
     @NotEmpty(message = "name field cannot be empty")

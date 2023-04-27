@@ -15,7 +15,7 @@ import javax.validation.constraints.NotEmpty;
 /**
  * AccountDataDTO
  */
-public class AccountDataDTO {
+public class AccountDataUpdateDTO {
 
     @NotEmpty(message = "accountID field cannot be empty")
     private String accountID;

@@ -57,6 +57,7 @@ public interface NominatedRepresentativeAPI {
     @DELETE
     @Path("/business-stakeholders")
     @Consumes({"application/json; charset=utf-8"})
+    @Produces({"application/json; charset=utf-8"})
     @ApiOperation(value = "Revoke the permissions of business nominated representatives\n",
             notes = "This API is used to revoke the permissions of business nominated representatives.\n")
     @ApiResponses(value = {
@@ -80,10 +81,10 @@ public interface NominatedRepresentativeAPI {
             @ApiResponse(code = 200, message = "Permission status successfully retrieved\n"),
             @ApiResponse(code = 400, message = "Bad Request.\nRequest body validation failed.\n")})
     Response retrieveNominatedRepresentativePermissions(
-            @ApiParam(value = "User identifier of the subject.\n", required = true)
-            @QueryParam("userId") String userId,
             @ApiParam(value = "Account ID of the subject.\n", required = true)
-            @QueryParam("accountId") String accountIds
+            @QueryParam("accountId") String accountId,
+            @ApiParam(value = "User identifier of the subject.\n", required = true)
+            @QueryParam("userId") String userId
     );
 
     @GET

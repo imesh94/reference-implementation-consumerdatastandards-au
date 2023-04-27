@@ -12,18 +12,18 @@ import java.util.List;
 import javax.validation.Valid;
 
 /**
- * AccountListDTO
+ * AccountListDeleteDTO
  */
-public class AccountListDTO {
+public class AccountListDeleteDTO {
 
     @Valid
-    private List<AccountDataDTO> data;
+    private List<AccountDataDeleteDTO> data;
 
-    public List<AccountDataDTO> getData() {
+    public List<AccountDataDeleteDTO> getData() {
         return data;
     }
 
-    public void setData(List<AccountDataDTO> data) {
+    public void setData(List<AccountDataDeleteDTO> data) {
         this.data = data;
     }
 }
