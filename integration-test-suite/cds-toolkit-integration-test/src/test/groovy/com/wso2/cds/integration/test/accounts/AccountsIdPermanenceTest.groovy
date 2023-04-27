@@ -48,12 +48,12 @@ class AccountsIdPermanenceTest extends AUTest {
     @Test(priority = 1)
     void "TC1201001_Get Accounts"() {
 
-        String requestUrl = "${AUConstants.CDS_PATH}${AUConstants.BULK_ACCOUNT_PATH}"
+        String bulkAccountRequestUrl = "${AUConstants.CDS_PATH}${AUConstants.BULK_ACCOUNT_PATH}"
 
         def response = AURequestBuilder.buildBasicRequestWithCustomHeaders(userAccessToken,
                 AUConstants.X_V_HEADER_ACCOUNTS, clientHeader)
                 .baseUri(AUTestUtil.getBaseUrl(AUConstants.BASE_PATH_TYPE_ACCOUNT))
-                .get(requestUrl)
+                .get(bulkAccountRequestUrl)
 
         SoftAssert softAssertion= new SoftAssert()
         softAssertion.assertEquals(response.statusCode(), AUConstants.STATUS_CODE_200)
@@ -67,15 +67,15 @@ class AccountsIdPermanenceTest extends AUTest {
                 AUIdEncryptorDecryptor.decrypt(encryptedAccount2Id, secretKey).split(":")[2])
 
         softAssertion.assertTrue(AUTestUtil.parseResponseBody(response, AUConstants.LINKS_SELF)
-                .contains(requestUrl.split(AUConstants.CDS_PATH)[1]))
+                .contains(bulkAccountRequestUrl.split(AUConstants.CDS_PATH)[1]))
         softAssertion.assertTrue(AUTestUtil.parseResponseBody(response, AUConstants.LINKS_FIRST)
-                .contains(requestUrl.split(AUConstants.CDS_PATH)[1]))
+                .contains(bulkAccountRequestUrl.split(AUConstants.CDS_PATH)[1]))
         softAssertion.assertTrue(AUTestUtil.parseResponseBody(response, AUConstants.LINKS_PREV)
-                .contains(requestUrl.split(AUConstants.CDS_PATH)[1]))
+                .contains(bulkAccountRequestUrl.split(AUConstants.CDS_PATH)[1]))
         softAssertion.assertTrue(AUTestUtil.parseResponseBody(response, AUConstants.LINKS_NEXT)
-                .contains(requestUrl.split(AUConstants.CDS_PATH)[1]))
+                .contains(bulkAccountRequestUrl.split(AUConstants.CDS_PATH)[1]))
         softAssertion.assertTrue(AUTestUtil.parseResponseBody(response, AUConstants.LINKS_LAST)
-                .contains(requestUrl.split(AUConstants.CDS_PATH)[1]))
+                .contains(bulkAccountRequestUrl.split(AUConstants.CDS_PATH)[1]))
         softAssertion.assertAll()
     }
 
@@ -93,14 +93,14 @@ class AccountsIdPermanenceTest extends AUTest {
             }
         """.stripIndent()
 
-        String requestUrl = "${AUConstants.CDS_PATH}${AUConstants.BULK_BALANCES_PATH}"
+        String bulkBalanceRequestUrl = "${AUConstants.CDS_PATH}${AUConstants.BULK_BALANCES_PATH}"
 
         def response = AURequestBuilder.buildBasicRequestWithCustomHeaders(userAccessToken,
                 AUConstants.X_V_HEADER_ACCOUNTS, clientHeader)
                 .contentType(ContentType.JSON)
                 .body(requestBody)
                 .baseUri(AUTestUtil.getBaseUrl(AUConstants.BASE_PATH_TYPE_BALANCES))
-                .post(requestUrl)
+                .post(bulkBalanceRequestUrl)
 
         SoftAssert softAssertion= new SoftAssert()
         softAssertion.assertEquals(response.statusCode(), AUConstants.STATUS_CODE_200)
@@ -113,15 +113,15 @@ class AccountsIdPermanenceTest extends AUTest {
                 split(":")[2])
 
         softAssertion.assertTrue(AUTestUtil.parseResponseBody(response, AUConstants.LINKS_SELF)
-                .contains(requestUrl.split(AUConstants.CDS_PATH)[1]))
+                .contains(bulkBalanceRequestUrl.split(AUConstants.CDS_PATH)[1]))
         softAssertion.assertTrue(AUTestUtil.parseResponseBody(response, AUConstants.LINKS_FIRST)
-                .contains(requestUrl.split(AUConstants.CDS_PATH)[1]))
+                .contains(bulkBalanceRequestUrl.split(AUConstants.CDS_PATH)[1]))
         softAssertion.assertTrue(AUTestUtil.parseResponseBody(response, AUConstants.LINKS_PREV)
-                .contains(requestUrl.split(AUConstants.CDS_PATH)[1]))
+                .contains(bulkBalanceRequestUrl.split(AUConstants.CDS_PATH)[1]))
         softAssertion.assertTrue(AUTestUtil.parseResponseBody(response, AUConstants.LINKS_NEXT)
-                .contains(requestUrl.split(AUConstants.CDS_PATH)[1]))
+                .contains(bulkBalanceRequestUrl.split(AUConstants.CDS_PATH)[1]))
         softAssertion.assertTrue(AUTestUtil.parseResponseBody(response, AUConstants.LINKS_LAST)
-                .contains(requestUrl.split(AUConstants.CDS_PATH)[1]))
+                .contains(bulkBalanceRequestUrl.split(AUConstants.CDS_PATH)[1]))
 
         softAssertion.assertAll()
     }
@@ -129,12 +129,12 @@ class AccountsIdPermanenceTest extends AUTest {
     @Test (dependsOnMethods = "TC1201001_Get Accounts", priority = 1)
     void "TC1204001_Get Account Balance"() {
 
-        String requestUrl = "${AUConstants.CDS_PATH}${AUConstants.BULK_ACCOUNT_PATH}/${encryptedAccount1Id}/balance"
+        String accBalanceRequestUrl = "${AUConstants.CDS_PATH}${AUConstants.BULK_ACCOUNT_PATH}/${encryptedAccount1Id}/balance"
 
         def response = AURequestBuilder.buildBasicRequestWithCustomHeaders(userAccessToken,
                 AUConstants.X_V_HEADER_ACCOUNTS, clientHeader)
                 .baseUri(AUTestUtil.getBaseUrl(AUConstants.BASE_PATH_TYPE_BALANCES))
-                .get(requestUrl)
+                .get(accBalanceRequestUrl)
 
         SoftAssert softAssertion= new SoftAssert()
         softAssertion.assertEquals(response.statusCode(), AUConstants.STATUS_CODE_200)
@@ -142,19 +142,19 @@ class AccountsIdPermanenceTest extends AUTest {
                 AUTestUtil.parseResponseBody(response, AUConstants.RESPONSE_DATA_SINGLE_ACCOUNTID), secretKey).
                 split(":")[2])
         softAssertion.assertTrue(AUTestUtil.parseResponseBody(response, AUConstants.LINKS_SELF)
-                .contains(requestUrl.split(AUConstants.CDS_PATH)[1]))
+                .contains(accBalanceRequestUrl.split(AUConstants.CDS_PATH)[1]))
         softAssertion.assertAll()
     }
 
     @Test (dependsOnMethods = "TC1201001_Get Accounts", priority = 1)
     void "TC1205001_Get Account Detail"() {
 
-        String requestUrl = "${AUConstants.CDS_PATH}${AUConstants.BULK_ACCOUNT_PATH}/${encryptedAccount1Id}"
+        String accountRequestUrl = "${AUConstants.CDS_PATH}${AUConstants.BULK_ACCOUNT_PATH}/${encryptedAccount1Id}"
 
         def response = AURequestBuilder.buildBasicRequestWithCustomHeaders(userAccessToken,
                 AUConstants.X_V_HEADER_ACCOUNTS, clientHeader)
                 .baseUri(AUTestUtil.getBaseUrl(AUConstants.BASE_PATH_TYPE_ACCOUNT))
-                .get(requestUrl)
+                .get(accountRequestUrl)
 
         SoftAssert softAssertion= new SoftAssert()
         softAssertion.assertEquals(response.statusCode(), AUConstants.STATUS_CODE_200)
@@ -164,7 +164,7 @@ class AccountsIdPermanenceTest extends AUTest {
                 split(":")[2])
 
         softAssertion.assertTrue(AUTestUtil.parseResponseBody(response, AUConstants.LINKS_SELF)
-                .contains(requestUrl.split(AUConstants.CDS_PATH)[1]))
+                .contains(accountRequestUrl.split(AUConstants.CDS_PATH)[1]))
 
         softAssertion.assertAll()
     }
@@ -219,12 +219,12 @@ class AccountsIdPermanenceTest extends AUTest {
     @Test (dependsOnMethods = "TC1201001_Get Accounts", priority = 1)
     void "TC1208001_Get Direct Debits For Account"() {
 
-        String requestUrl = "${AUConstants.CDS_PATH}${AUConstants.BULK_ACCOUNT_PATH}/${encryptedAccount1Id}/direct-debits"
+        String directDebitRequestUrl = "${AUConstants.CDS_PATH}${AUConstants.BULK_ACCOUNT_PATH}/${encryptedAccount1Id}/direct-debits"
 
         Response response = AURequestBuilder.buildBasicRequestWithCustomHeaders(userAccessToken,
                 AUConstants.X_V_HEADER_ACCOUNTS, clientHeader)
                 .baseUri(AUTestUtil.getBaseUrl(AUConstants.BASE_PATH_TYPE_DIRECT_DEBIT))
-                .get(requestUrl)
+                .get(directDebitRequestUrl)
 
         SoftAssert softAssertion= new SoftAssert()
         softAssertion.assertEquals(response.statusCode(), AUConstants.STATUS_CODE_200)
@@ -234,15 +234,15 @@ class AccountsIdPermanenceTest extends AUTest {
                 split(":")[2])
 
         softAssertion.assertTrue(AUTestUtil.parseResponseBody(response, AUConstants.LINKS_SELF)
-                .contains(requestUrl.split(AUConstants.CDS_PATH)[1]))
+                .contains(directDebitRequestUrl.split(AUConstants.CDS_PATH)[1]))
         softAssertion.assertTrue(AUTestUtil.parseResponseBody(response, AUConstants.LINKS_FIRST)
-                .contains(requestUrl.split(AUConstants.CDS_PATH)[1]))
+                .contains(directDebitRequestUrl.split(AUConstants.CDS_PATH)[1]))
         softAssertion.assertTrue(AUTestUtil.parseResponseBody(response, AUConstants.LINKS_PREV)
-                .contains(requestUrl.split(AUConstants.CDS_PATH)[1]))
+                .contains(directDebitRequestUrl.split(AUConstants.CDS_PATH)[1]))
         softAssertion.assertTrue(AUTestUtil.parseResponseBody(response, AUConstants.LINKS_NEXT)
-                .contains(requestUrl.split(AUConstants.CDS_PATH)[1]))
+                .contains(directDebitRequestUrl.split(AUConstants.CDS_PATH)[1]))
         softAssertion.assertTrue(AUTestUtil.parseResponseBody(response, AUConstants.LINKS_LAST)
-                .contains(requestUrl.split(AUConstants.CDS_PATH)[1]))
+                .contains(directDebitRequestUrl.split(AUConstants.CDS_PATH)[1]))
 
         softAssertion.assertAll()
     }
@@ -280,14 +280,14 @@ class AccountsIdPermanenceTest extends AUTest {
             }
         """.stripIndent()
 
-        String requestUrl = "${AUConstants.CDS_PATH}${AUConstants.BULK_DIRECT_DEBITS_PATH}"
+        String directDebitRequestUrl = "${AUConstants.CDS_PATH}${AUConstants.BULK_DIRECT_DEBITS_PATH}"
 
         def response = AURequestBuilder.buildBasicRequestWithCustomHeaders(userAccessToken,
                 AUConstants.X_V_HEADER_ACCOUNTS, clientHeader)
                 .contentType(ContentType.JSON)
                 .body(requestBody)
                 .baseUri(AUTestUtil.getBaseUrl(AUConstants.BASE_PATH_TYPE_DIRECT_DEBIT))
-                .post(requestUrl)
+                .post(directDebitRequestUrl)
 
         SoftAssert softAssertion= new SoftAssert()
         softAssertion.assertEquals(response.statusCode(), AUConstants.STATUS_CODE_200)
@@ -297,15 +297,15 @@ class AccountsIdPermanenceTest extends AUTest {
                 split(":")[2])
 
         softAssertion.assertTrue(AUTestUtil.parseResponseBody(response, AUConstants.LINKS_SELF)
-                .contains(requestUrl.split(AUConstants.CDS_PATH)[1]))
+                .contains(directDebitRequestUrl.split(AUConstants.CDS_PATH)[1]))
         softAssertion.assertTrue(AUTestUtil.parseResponseBody(response, AUConstants.LINKS_FIRST)
-                .contains(requestUrl.split(AUConstants.CDS_PATH)[1]))
+                .contains(directDebitRequestUrl.split(AUConstants.CDS_PATH)[1]))
         softAssertion.assertTrue(AUTestUtil.parseResponseBody(response, AUConstants.LINKS_PREV)
-                .contains(requestUrl.split(AUConstants.CDS_PATH)[1]))
+                .contains(directDebitRequestUrl.split(AUConstants.CDS_PATH)[1]))
         softAssertion.assertTrue(AUTestUtil.parseResponseBody(response, AUConstants.LINKS_NEXT)
-                .contains(requestUrl.split(AUConstants.CDS_PATH)[1]))
+                .contains(directDebitRequestUrl.split(AUConstants.CDS_PATH)[1]))
         softAssertion.assertTrue(AUTestUtil.parseResponseBody(response, AUConstants.LINKS_LAST)
-                .contains(requestUrl.split(AUConstants.CDS_PATH)[1]))
+                .contains(directDebitRequestUrl.split(AUConstants.CDS_PATH)[1]))
 
         softAssertion.assertAll()
     }
@@ -313,12 +313,12 @@ class AccountsIdPermanenceTest extends AUTest {
     @Test (dependsOnMethods = "TC1201001_Get Accounts", priority = 1)
     void "TC1211001_Get Scheduled Payments for Account"() {
 
-        String requestUrl = "${AUConstants.CDS_PATH}${AUConstants.BULK_ACCOUNT_PATH}/${encryptedAccount1Id}/payments/scheduled"
+        String schedulePaymentRequestUrl = "${AUConstants.CDS_PATH}${AUConstants.BULK_ACCOUNT_PATH}/${encryptedAccount1Id}/payments/scheduled"
 
         Response response = AURequestBuilder.buildBasicRequestWithCustomHeaders(userAccessToken,
                 AUConstants.X_V_HEADER_ACCOUNTS, clientHeader)
                 .baseUri(AUTestUtil.getBaseUrl(AUConstants.BASE_PATH_TYPE_SCHEDULED_PAYMENT))
-                .get(requestUrl)
+                .get(schedulePaymentRequestUrl)
 
         SoftAssert softAssertion= new SoftAssert()
         softAssertion.assertEquals(response.statusCode(), AUConstants.STATUS_CODE_200)
@@ -341,15 +341,15 @@ class AccountsIdPermanenceTest extends AUTest {
                 .split(":")[0])
 
         softAssertion.assertTrue(AUTestUtil.parseResponseBody(response, AUConstants.LINKS_SELF)
-                .contains(requestUrl.split(AUConstants.CDS_PATH)[1]))
+                .contains(schedulePaymentRequestUrl.split(AUConstants.CDS_PATH)[1]))
         softAssertion.assertTrue(AUTestUtil.parseResponseBody(response, AUConstants.LINKS_FIRST)
-                .contains(requestUrl.split(AUConstants.CDS_PATH)[1]))
+                .contains(schedulePaymentRequestUrl.split(AUConstants.CDS_PATH)[1]))
         softAssertion.assertTrue(AUTestUtil.parseResponseBody(response, AUConstants.LINKS_PREV)
-                .contains(requestUrl.split(AUConstants.CDS_PATH)[1]))
+                .contains(schedulePaymentRequestUrl.split(AUConstants.CDS_PATH)[1]))
         softAssertion.assertTrue(AUTestUtil.parseResponseBody(response, AUConstants.LINKS_NEXT)
-                .contains(requestUrl.split(AUConstants.CDS_PATH)[1]))
+                .contains(schedulePaymentRequestUrl.split(AUConstants.CDS_PATH)[1]))
         softAssertion.assertTrue(AUTestUtil.parseResponseBody(response, AUConstants.LINKS_LAST)
-                .contains(requestUrl.split(AUConstants.CDS_PATH)[1]))
+                .contains(schedulePaymentRequestUrl.split(AUConstants.CDS_PATH)[1]))
 
         softAssertion.assertAll()
     }
@@ -368,14 +368,14 @@ class AccountsIdPermanenceTest extends AUTest {
             }
         """.stripIndent()
 
-        String requestUrl = "${AUConstants.CDS_PATH}${AUConstants.BULK_SCHEDULE_PAYMENTS_PATH}"
+        String schedulePaymentRequestUrl = "${AUConstants.CDS_PATH}${AUConstants.BULK_SCHEDULE_PAYMENTS_PATH}"
 
         def response = AURequestBuilder.buildBasicRequestWithCustomHeaders(userAccessToken,
                 AUConstants.X_V_HEADER_ACCOUNTS, clientHeader)
                 .contentType(ContentType.JSON)
                 .body(requestBody)
                 .baseUri(AUTestUtil.getBaseUrl(AUConstants.BASE_PATH_TYPE_SCHEDULED_PAYMENT))
-                .post(requestUrl)
+                .post(schedulePaymentRequestUrl)
 
         SoftAssert softAssertion= new SoftAssert()
         softAssertion.assertEquals(response.statusCode(), AUConstants.STATUS_CODE_200)
@@ -398,15 +398,15 @@ class AccountsIdPermanenceTest extends AUTest {
                 .split(":")[0])
 
         softAssertion.assertTrue(AUTestUtil.parseResponseBody(response, AUConstants.LINKS_SELF)
-                .contains(requestUrl.split(AUConstants.CDS_PATH)[1]))
+                .contains(schedulePaymentRequestUrl.split(AUConstants.CDS_PATH)[1]))
         softAssertion.assertTrue(AUTestUtil.parseResponseBody(response, AUConstants.LINKS_FIRST)
-                .contains(requestUrl.split(AUConstants.CDS_PATH)[1]))
+                .contains(schedulePaymentRequestUrl.split(AUConstants.CDS_PATH)[1]))
         softAssertion.assertTrue(AUTestUtil.parseResponseBody(response, AUConstants.LINKS_PREV)
-                .contains(requestUrl.split(AUConstants.CDS_PATH)[1]))
+                .contains(schedulePaymentRequestUrl.split(AUConstants.CDS_PATH)[1]))
         softAssertion.assertTrue(AUTestUtil.parseResponseBody(response, AUConstants.LINKS_NEXT)
-                .contains(requestUrl.split(AUConstants.CDS_PATH)[1]))
+                .contains(schedulePaymentRequestUrl.split(AUConstants.CDS_PATH)[1]))
         softAssertion.assertTrue(AUTestUtil.parseResponseBody(response, AUConstants.LINKS_LAST)
-                .contains(requestUrl.split(AUConstants.CDS_PATH)[1]))
+                .contains(schedulePaymentRequestUrl.split(AUConstants.CDS_PATH)[1]))
 
         softAssertion.assertAll()
     }
@@ -414,12 +414,12 @@ class AccountsIdPermanenceTest extends AUTest {
     @Test (dependsOnMethods = "TC1201001_Get Accounts", priority = 1)
     void "TC1206001_Get Transactions For Account"() {
 
-        String requestUrl = "${AUConstants.CDS_PATH}${AUConstants.BULK_ACCOUNT_PATH}/${encryptedAccount1Id}/transactions"
+        String transactionRequestUrl = "${AUConstants.CDS_PATH}${AUConstants.BULK_ACCOUNT_PATH}/${encryptedAccount1Id}/transactions"
 
         Response response = AURequestBuilder.buildBasicRequestWithCustomHeaders(userAccessToken,
                 AUConstants.X_V_HEADER_ACCOUNTS, clientHeader)
                 .baseUri(AUTestUtil.getBaseUrl(AUConstants.BASE_PATH_TYPE_TRANSACTIONS))
-                .get(requestUrl)
+                .get(transactionRequestUrl)
 
         encryptedTransactionId = AUTestUtil.parseResponseBody(response, "${AUConstants.RESPONSE_DATA_TRANSACTION_LIST}.transactionId[0]")
 
@@ -433,15 +433,15 @@ class AccountsIdPermanenceTest extends AUTest {
                 split(":")[0])
 
         softAssertion.assertTrue(AUTestUtil.parseResponseBody(response, AUConstants.LINKS_SELF)
-                .contains(requestUrl.split(AUConstants.CDS_PATH)[1]))
+                .contains(transactionRequestUrl.split(AUConstants.CDS_PATH)[1]))
         softAssertion.assertTrue(AUTestUtil.parseResponseBody(response, AUConstants.LINKS_FIRST)
-                .contains(requestUrl.split(AUConstants.CDS_PATH)[1]))
+                .contains(transactionRequestUrl.split(AUConstants.CDS_PATH)[1]))
         softAssertion.assertTrue(AUTestUtil.parseResponseBody(response, AUConstants.LINKS_PREV)
-                .contains(requestUrl.split(AUConstants.CDS_PATH)[1]))
+                .contains(transactionRequestUrl.split(AUConstants.CDS_PATH)[1]))
         softAssertion.assertTrue(AUTestUtil.parseResponseBody(response, AUConstants.LINKS_NEXT)
-                .contains(requestUrl.split(AUConstants.CDS_PATH)[1]))
+                .contains(transactionRequestUrl.split(AUConstants.CDS_PATH)[1]))
         softAssertion.assertTrue(AUTestUtil.parseResponseBody(response, AUConstants.LINKS_LAST)
-                .contains(requestUrl.split(AUConstants.CDS_PATH)[1]))
+                .contains(transactionRequestUrl.split(AUConstants.CDS_PATH)[1]))
 
         softAssertion.assertAll()
     }
@@ -449,13 +449,13 @@ class AccountsIdPermanenceTest extends AUTest {
     @Test (dependsOnMethods = "TC1206001_Get Transactions For Account", priority = 1)
     void "TC1207001_Get Transaction Detail"() {
 
-        String requestUrl = "${AUConstants.CDS_PATH}${AUConstants.BULK_ACCOUNT_PATH}/${encryptedAccount1Id}/" +
+        String transactionRequestUrl = "${AUConstants.CDS_PATH}${AUConstants.BULK_ACCOUNT_PATH}/${encryptedAccount1Id}/" +
                 "transactions/$encryptedTransactionId"
 
         Response response = AURequestBuilder.buildBasicRequestWithCustomHeaders(userAccessToken,
                 AUConstants.X_V_HEADER_ACCOUNTS, clientHeader)
                 .baseUri(AUTestUtil.getBaseUrl(AUConstants.BASE_PATH_TYPE_TRANSACTIONS))
-                .get(requestUrl)
+                .get(transactionRequestUrl)
 
         SoftAssert softAssertion= new SoftAssert()
         softAssertion.assertEquals(response.statusCode(), AUConstants.STATUS_CODE_200)
@@ -468,7 +468,7 @@ class AccountsIdPermanenceTest extends AUTest {
                 split(":")[0])
 
         softAssertion.assertTrue(AUTestUtil.parseResponseBody(response, AUConstants.LINKS_SELF)
-                .contains(requestUrl.split(AUConstants.CDS_PATH)[1]))
+                .contains(transactionRequestUrl.split(AUConstants.CDS_PATH)[1]))
 
         softAssertion.assertAll()
     }
@@ -476,12 +476,12 @@ class AccountsIdPermanenceTest extends AUTest {
     @Test
     void "TC1202001_Get Bulk Balances"() {
 
-        String requestUrl = "${AUConstants.CDS_PATH}${AUConstants.BULK_BALANCES_PATH}"
+        String balanceRequestUrl = "${AUConstants.CDS_PATH}${AUConstants.BULK_BALANCES_PATH}"
 
         def response = AURequestBuilder.buildBasicRequestWithCustomHeaders(userAccessToken,
                 AUConstants.X_V_HEADER_ACCOUNTS, clientHeader)
                 .baseUri(AUTestUtil.getBaseUrl(AUConstants.BASE_PATH_TYPE_BALANCES))
-                .get(requestUrl)
+                .get(balanceRequestUrl)
 
         SoftAssert softAssertion= new SoftAssert()
         softAssertion.assertEquals(response.statusCode(), AUConstants.STATUS_CODE_200)
@@ -494,15 +494,15 @@ class AccountsIdPermanenceTest extends AUTest {
                 split(":")[2])
 
         softAssertion.assertTrue(AUTestUtil.parseResponseBody(response, AUConstants.LINKS_SELF)
-                .contains(requestUrl.split(AUConstants.CDS_PATH)[1]))
+                .contains(balanceRequestUrl.split(AUConstants.CDS_PATH)[1]))
         softAssertion.assertTrue(AUTestUtil.parseResponseBody(response, AUConstants.LINKS_FIRST)
-                .contains(requestUrl.split(AUConstants.CDS_PATH)[1]))
+                .contains(balanceRequestUrl.split(AUConstants.CDS_PATH)[1]))
         softAssertion.assertTrue(AUTestUtil.parseResponseBody(response, AUConstants.LINKS_PREV)
-                .contains(requestUrl.split(AUConstants.CDS_PATH)[1]))
+                .contains(balanceRequestUrl.split(AUConstants.CDS_PATH)[1]))
         softAssertion.assertTrue(AUTestUtil.parseResponseBody(response, AUConstants.LINKS_NEXT)
-                .contains(requestUrl.split(AUConstants.CDS_PATH)[1]))
+                .contains(balanceRequestUrl.split(AUConstants.CDS_PATH)[1]))
         softAssertion.assertTrue(AUTestUtil.parseResponseBody(response, AUConstants.LINKS_LAST)
-                .contains(requestUrl.split(AUConstants.CDS_PATH)[1]))
+                .contains(balanceRequestUrl.split(AUConstants.CDS_PATH)[1]))
 
         softAssertion.assertAll()
     }
@@ -596,12 +596,12 @@ class AccountsIdPermanenceTest extends AUTest {
     @Test
     void "TC1209001_Get Bulk Direct Debits"() {
 
-        String requestUrl = "${AUConstants.CDS_PATH}${AUConstants.BULK_DIRECT_DEBITS_PATH}"
+        String directDebitRequestUrl = "${AUConstants.CDS_PATH}${AUConstants.BULK_DIRECT_DEBITS_PATH}"
 
         Response response = AURequestBuilder.buildBasicRequestWithCustomHeaders(userAccessToken,
                 AUConstants.X_V_HEADER_ACCOUNTS, clientHeader)
                 .baseUri(AUTestUtil.getBaseUrl(AUConstants.BASE_PATH_TYPE_DIRECT_DEBIT))
-                .get(requestUrl)
+                .get(directDebitRequestUrl)
 
         SoftAssert softAssertion= new SoftAssert()
         softAssertion.assertEquals(response.statusCode(), AUConstants.STATUS_CODE_200)
@@ -614,15 +614,15 @@ class AccountsIdPermanenceTest extends AUTest {
                 split(":")[2])
 
         softAssertion.assertTrue(AUTestUtil.parseResponseBody(response, AUConstants.LINKS_SELF)
-                .contains(requestUrl.split(AUConstants.CDS_PATH)[1]))
+                .contains(directDebitRequestUrl.split(AUConstants.CDS_PATH)[1]))
         softAssertion.assertTrue(AUTestUtil.parseResponseBody(response, AUConstants.LINKS_FIRST)
-                .contains(requestUrl.split(AUConstants.CDS_PATH)[1]))
+                .contains(directDebitRequestUrl.split(AUConstants.CDS_PATH)[1]))
         softAssertion.assertTrue(AUTestUtil.parseResponseBody(response, AUConstants.LINKS_PREV)
-                .contains(requestUrl.split(AUConstants.CDS_PATH)[1]))
+                .contains(directDebitRequestUrl.split(AUConstants.CDS_PATH)[1]))
         softAssertion.assertTrue(AUTestUtil.parseResponseBody(response, AUConstants.LINKS_NEXT)
-                .contains(requestUrl.split(AUConstants.CDS_PATH)[1]))
+                .contains(directDebitRequestUrl.split(AUConstants.CDS_PATH)[1]))
         softAssertion.assertTrue(AUTestUtil.parseResponseBody(response, AUConstants.LINKS_LAST)
-                .contains(requestUrl.split(AUConstants.CDS_PATH)[1]))
+                .contains(directDebitRequestUrl.split(AUConstants.CDS_PATH)[1]))
 
         softAssertion.assertAll()
     }
@@ -661,12 +661,12 @@ class AccountsIdPermanenceTest extends AUTest {
     @Test
     void "TC1212001_Get Scheduled Payments Bulk"() {
 
-        String requestUrl = "${AUConstants.CDS_PATH}${AUConstants.BULK_SCHEDULE_PAYMENTS_PATH}"
+        String schedulePaymentRequestUrl = "${AUConstants.CDS_PATH}${AUConstants.BULK_SCHEDULE_PAYMENTS_PATH}"
 
         Response response = AURequestBuilder.buildBasicRequestWithCustomHeaders(userAccessToken,
                 AUConstants.X_V_HEADER_ACCOUNTS, clientHeader)
                 .baseUri(AUTestUtil.getBaseUrl(AUConstants.BASE_PATH_TYPE_SCHEDULED_PAYMENT))
-                .get(requestUrl)
+                .get(schedulePaymentRequestUrl)
 
         SoftAssert softAssertion= new SoftAssert()
         softAssertion.assertEquals(response.statusCode(), AUConstants.STATUS_CODE_200)
@@ -699,15 +699,15 @@ class AccountsIdPermanenceTest extends AUTest {
                 secretKey).split(":")[0])
 
         softAssertion.assertTrue(AUTestUtil.parseResponseBody(response, AUConstants.LINKS_SELF)
-                .contains(requestUrl.split(AUConstants.CDS_PATH)[1]))
+                .contains(schedulePaymentRequestUrl.split(AUConstants.CDS_PATH)[1]))
         softAssertion.assertTrue(AUTestUtil.parseResponseBody(response, AUConstants.LINKS_FIRST)
-                .contains(requestUrl.split(AUConstants.CDS_PATH)[1]))
+                .contains(schedulePaymentRequestUrl.split(AUConstants.CDS_PATH)[1]))
         softAssertion.assertTrue(AUTestUtil.parseResponseBody(response, AUConstants.LINKS_PREV)
-                .contains(requestUrl.split(AUConstants.CDS_PATH)[1]))
+                .contains(schedulePaymentRequestUrl.split(AUConstants.CDS_PATH)[1]))
         softAssertion.assertTrue(AUTestUtil.parseResponseBody(response, AUConstants.LINKS_NEXT)
-                .contains(requestUrl.split(AUConstants.CDS_PATH)[1]))
+                .contains(schedulePaymentRequestUrl.split(AUConstants.CDS_PATH)[1]))
         softAssertion.assertTrue(AUTestUtil.parseResponseBody(response, AUConstants.LINKS_LAST)
-                .contains(requestUrl.split(AUConstants.CDS_PATH)[1]))
+                .contains(schedulePaymentRequestUrl.split(AUConstants.CDS_PATH)[1]))
 
         softAssertion.assertAll()
     }
@@ -766,12 +766,12 @@ class AccountsIdPermanenceTest extends AUTest {
     @Test (priority = 2)
     void "TC1214001_Get Payees"() {
 
-        String requestUrl = "${AUConstants.CDS_PATH}${AUConstants.BULK_PAYEES}"
+        String payeeRequestUrl = "${AUConstants.CDS_PATH}${AUConstants.BULK_PAYEES}"
 
         Response response = AURequestBuilder.buildBasicRequestWithCustomHeaders(userAccessToken,
                 AUConstants.X_V_HEADER_ACCOUNTS, clientHeader)
                 .baseUri(AUTestUtil.getBaseUrl(AUConstants.BASE_PATH_TYPE_PAYEES))
-                .get(requestUrl)
+                .get(payeeRequestUrl)
 
         encryptedPayeeId = AUTestUtil.parseResponseBody(response, "${AUConstants.RESPONSE_DATA_PAYEE}.payeeId[0]")
 
@@ -782,15 +782,15 @@ class AccountsIdPermanenceTest extends AUTest {
                 secretKey).split(":")[0])
 
         softAssertion.assertTrue(AUTestUtil.parseResponseBody(response, AUConstants.LINKS_SELF)
-                .contains(requestUrl.split(AUConstants.CDS_PATH)[1]))
+                .contains(payeeRequestUrl.split(AUConstants.CDS_PATH)[1]))
         softAssertion.assertTrue(AUTestUtil.parseResponseBody(response, AUConstants.LINKS_FIRST)
-                .contains(requestUrl.split(AUConstants.CDS_PATH)[1]))
+                .contains(payeeRequestUrl.split(AUConstants.CDS_PATH)[1]))
         softAssertion.assertTrue(AUTestUtil.parseResponseBody(response, AUConstants.LINKS_PREV)
-                .contains(requestUrl.split(AUConstants.CDS_PATH)[1]))
+                .contains(payeeRequestUrl.split(AUConstants.CDS_PATH)[1]))
         softAssertion.assertTrue(AUTestUtil.parseResponseBody(response, AUConstants.LINKS_NEXT)
-                .contains(requestUrl.split(AUConstants.CDS_PATH)[1]))
+                .contains(payeeRequestUrl.split(AUConstants.CDS_PATH)[1]))
         softAssertion.assertTrue(AUTestUtil.parseResponseBody(response, AUConstants.LINKS_LAST)
-                .contains(requestUrl.split(AUConstants.CDS_PATH)[1]))
+                .contains(payeeRequestUrl.split(AUConstants.CDS_PATH)[1]))
 
         softAssertion.assertAll()
     }
@@ -798,12 +798,12 @@ class AccountsIdPermanenceTest extends AUTest {
     @Test (dependsOnMethods = "TC1214001_Get Payees", priority = 2)
     void "TC1215001_Get Payee Detail"() {
 
-        String requestUrl = "${AUConstants.CDS_PATH}${AUConstants.BULK_PAYEES}/${encryptedPayeeId}"
+        String payeeRequestUrl = "${AUConstants.CDS_PATH}${AUConstants.BULK_PAYEES}/${encryptedPayeeId}"
 
         Response response = AURequestBuilder.buildBasicRequestWithCustomHeaders(userAccessToken,
                 AUConstants.X_V_HEADER_ACCOUNTS, clientHeader)
                 .baseUri(AUTestUtil.getBaseUrl(AUConstants.BASE_PATH_TYPE_PAYEES))
-                .get(requestUrl)
+                .get(payeeRequestUrl)
 
         SoftAssert softAssertion= new SoftAssert()
         softAssertion.assertEquals(response.statusCode(), AUConstants.STATUS_CODE_200)
@@ -813,7 +813,7 @@ class AccountsIdPermanenceTest extends AUTest {
                 secretKey).split(":")[0])
 
         softAssertion.assertTrue(AUTestUtil.parseResponseBody(response, AUConstants.LINKS_SELF)
-                .contains(requestUrl.split(AUConstants.CDS_PATH)[1]))
+                .contains(payeeRequestUrl.split(AUConstants.CDS_PATH)[1]))
 
         softAssertion.assertAll()
     }

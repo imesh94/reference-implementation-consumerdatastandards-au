@@ -351,5 +351,6 @@ class AUConstants extends OBConstants {
     public static final String RESPONSE_DATA_PAYEE = "data.payees"
     public static final String RESPONSE_DATA_TRANSACTIONID = "data.transactionId"
     public static final String RESPONSE_DATA_PAYEEID = "data.payeeId"
+    public static final String ERROR_NOT_ALLOWED_TO_ACCESS = "The access token does not allow you to access the requested resource"
 }
 

@@ -342,7 +342,7 @@ class AccountsRetrievalRequestValidationTests extends AUTest {
         softAssertion.assertEquals(response.statusCode(), AUConstants.STATUS_CODE_403)
         softAssertion.assertEquals(response.getHeader(AUConstants.X_V_HEADER).toInteger(), AUConstants.X_V_HEADER_ACCOUNTS)
         softAssertion.assertEquals(AUTestUtil.parseResponseBody(response, AUConstants.ERROR_DESCRIPTION),
-                "The access token does not allow you to access the requested resource")
+                AUConstants.ERROR_NOT_ALLOWED_TO_ACCESS)
         softAssertion.assertEquals(AUTestUtil.parseResponseBody(response, AUConstants.ERROR),
                 AUConstants.INSUFFICIENT_SCOPE)
         softAssertion.assertAll()
@@ -371,7 +371,7 @@ class AccountsRetrievalRequestValidationTests extends AUTest {
         softAssertion.assertEquals(response.statusCode(), AUConstants.STATUS_CODE_403)
         softAssertion.assertEquals(response.getHeader(AUConstants.X_V_HEADER).toInteger(), AUConstants.X_V_HEADER_ACCOUNTS)
         softAssertion.assertEquals(AUTestUtil.parseResponseBody(response, AUConstants.ERROR_DESCRIPTION),
-                "The access token does not allow you to access the requested resource")
+                AUConstants.ERROR_NOT_ALLOWED_TO_ACCESS)
         softAssertion.assertEquals(AUTestUtil.parseResponseBody(response, AUConstants.ERROR),
                 AUConstants.INSUFFICIENT_SCOPE)
         softAssertion.assertAll()
@@ -401,7 +401,7 @@ class AccountsRetrievalRequestValidationTests extends AUTest {
         softAssertion.assertEquals(response.statusCode(), AUConstants.STATUS_CODE_403)
         softAssertion.assertEquals(response.getHeader(AUConstants.X_V_HEADER).toInteger(), AUConstants.X_V_HEADER_ACCOUNTS)
         softAssertion.assertEquals(AUTestUtil.parseResponseBody(response, AUConstants.ERROR_DESCRIPTION),
-                "The access token does not allow you to access the requested resource")
+                AUConstants.ERROR_NOT_ALLOWED_TO_ACCESS)
         softAssertion.assertEquals(AUTestUtil.parseResponseBody(response, AUConstants.ERROR),
                 AUConstants.INSUFFICIENT_SCOPE)
         softAssertion.assertAll()
@@ -463,7 +463,7 @@ class AccountsRetrievalRequestValidationTests extends AUTest {
         softAssertion.assertEquals(response.statusCode(), AUConstants.STATUS_CODE_403)
         softAssertion.assertEquals(response.getHeader(AUConstants.X_V_HEADER).toInteger(), AUConstants.X_V_HEADER_ACCOUNTS)
         softAssertion.assertEquals(AUTestUtil.parseResponseBody(response, AUConstants.ERROR_DESCRIPTION),
-                "The access token does not allow you to access the requested resource")
+                AUConstants.ERROR_NOT_ALLOWED_TO_ACCESS)
         softAssertion.assertEquals(AUTestUtil.parseResponseBody(response, AUConstants.ERROR),
                 AUConstants.INSUFFICIENT_SCOPE)
         softAssertion.assertAll()
@@ -490,7 +490,7 @@ class AccountsRetrievalRequestValidationTests extends AUTest {
         softAssertion.assertEquals(response.statusCode(), AUConstants.STATUS_CODE_403)
         softAssertion.assertEquals(response.getHeader(AUConstants.X_V_HEADER).toInteger(), AUConstants.X_V_HEADER_ACCOUNTS)
         softAssertion.assertEquals(AUTestUtil.parseResponseBody(response, AUConstants.ERROR_DESCRIPTION),
-                "The access token does not allow you to access the requested resource")
+                AUConstants.ERROR_NOT_ALLOWED_TO_ACCESS)
         softAssertion.assertEquals(AUTestUtil.parseResponseBody(response, AUConstants.ERROR),
                 AUConstants.INSUFFICIENT_SCOPE)
         softAssertion.assertAll()
@@ -517,7 +517,7 @@ class AccountsRetrievalRequestValidationTests extends AUTest {
         softAssertion.assertEquals(response.statusCode(), AUConstants.STATUS_CODE_403)
         softAssertion.assertEquals(response.getHeader(AUConstants.X_V_HEADER).toInteger(), AUConstants.X_V_HEADER_ACCOUNTS)
         softAssertion.assertEquals(AUTestUtil.parseResponseBody(response, AUConstants.ERROR_DESCRIPTION),
-                "The access token does not allow you to access the requested resource")
+                AUConstants.ERROR_NOT_ALLOWED_TO_ACCESS)
         softAssertion.assertEquals(AUTestUtil.parseResponseBody(response, AUConstants.ERROR),
                 AUConstants.INSUFFICIENT_SCOPE)
         softAssertion.assertAll()

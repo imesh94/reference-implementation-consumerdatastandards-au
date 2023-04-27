@@ -178,8 +178,8 @@ class AUPageObjects {
     public static String AU_TXT_OTP_CODE_ID = "OTPcode"
     public static String AU_BTN_AUTHENTICATE = "//input[@id='authenticate']"
 
-    public static String VALUE = "value"
-    public static String TEXT = "text"
+    public static String VALUE_ATTRIBUTE = "value"
+    public static String TEXT_ATTRIBUTE = "text"
     public static String BUSINESS_PROFILE_SELECTION = "//input[@id='business']"
     public static String INDIVIDUAL_PROFILE_SELECTION = "//input[@id='individual']"
     public static String PROFILE_SELECTION_NEXT_BUTTON = "//*[@id='approve']"
