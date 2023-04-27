@@ -965,5 +965,34 @@ class AUTest extends OBTest {
                 .get("${AUConstants.CONSENT_STATUS_AU_ENDPOINT}${AUConstants.BUSINESS_USER_PERMISSION}")
 
     }
+
+    /**
+     * Authorisation FLow UI Navigation Method.
+     * @param authoriseUrl
+     * @param profiles
+     * @param isStateParamPresent
+     * @return
+     */
+    def doAuthorisationFlowNavigation(String authoriseUrl, AUAccountProfile profiles = null,
+                                      boolean isStateParamPresent = true) {
+
+        automationResponse = getBrowserAutomation(AUConstants.DEFAULT_DELAY)
+                .addStep(new AUBasicAuthAutomationStep(authoriseUrl))
+                .addStep { driver, context ->
+                    AutomationMethod authWebDriver = new AutomationMethod(driver)
+
+                    //Select Profile and Accounts
+                    selectProfileAndAccount(authWebDriver, profiles, isStateParamPresent)
+
+                    //Click Confirm Button
+                    authWebDriver.clickButtonXpath(AUPageObjects.CONSENT_CONFIRM_XPATH)
+
+                    //Click Authorise Button
+                    authWebDriver.clickButtonXpath(AUPageObjects.CONSENT_CONFIRM_XPATH)
+                }
+                .execute()
+
+        return automationResponse
+    }
 }
 

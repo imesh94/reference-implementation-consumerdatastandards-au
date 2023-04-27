@@ -20,8 +20,11 @@ import com.wso2.cds.test.framework.constant.AUPageObjects
 import com.wso2.openbanking.test.framework.utility.OBTestUtil
 import com.wso2.cds.test.framework.configuration.AUConfigurationService
 import org.apache.http.conn.ssl.SSLSocketFactory
+import org.jsoup.nodes.Document
+import org.jsoup.nodes.Element
 import org.testng.Assert
-import io.restassured.response.Response;
+import io.restassured.response.Response
+import org.jsoup.Jsoup
 
 /**
  * Domain specific AU layer Class to contain utility classes used for Test Framework.
@@ -203,7 +206,7 @@ class AUTestUtil extends OBTestUtil {
         def  ShareableAccountMap = [:]
 
         for (sharableAccount in sharableAccountList) {
-            if (sharableAccount[AUConstants.PARAM_CUSTOMER_ACCOUNT_TYPE] == AUAccountProfile.ORGANIZATION_B) {
+            if (sharableAccount[AUConstants.PARAM_CUSTOMER_ACCOUNT_TYPE] == AUAccountProfile.ORGANIZATION_A) {
                 ShareableAccountMap [AUConstants.PARAM_ACCOUNT_ID] = sharableAccount[AUConstants.ACCOUNT_ID]
                 ShareableAccountMap [AUConstants.ACCOUNT_OWNER_USER_ID] =
                         sharableAccount[AUConstants.BUSINESS_ACCOUNT_INFO][AUConstants.ACCOUNT_OWNERS][AUConstants.MEMBER_ID][0]
@@ -226,6 +229,20 @@ class AUTestUtil extends OBTestUtil {
      */
     static String getPermissionForUser(String accountId) {
         return "$AUConstants.PARAM_PERMISSION_STATUS.$accountId"
+    }
+
+    /**
+     * Read Attributes from HTML Document
+     * @param htmlDocumentBody
+     * @param attribute
+     * @return
+     */
+    static String readHtmlDocument(String htmlDocumentBody, String attribute) {
+
+        Document doc = Jsoup.parse(htmlDocumentBody)
+        Element element = doc.getElementsByAttribute(attribute)
+
+        return element.toString()
     }
 }
 

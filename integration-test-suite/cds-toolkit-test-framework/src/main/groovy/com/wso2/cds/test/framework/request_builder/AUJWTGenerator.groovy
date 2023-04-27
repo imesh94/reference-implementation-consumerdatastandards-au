@@ -1,18 +1,15 @@
 /*
- * Copyright (c) 2022, WSO2 Inc. (http://www.wso2.com). All Rights Reserved.
+ * Copyright (c) 2022-2023, WSO2 LLC. (https://www.wso2.com). All Rights Reserved.
  *
- * This software is the property of WSO2 Inc. and its suppliers, if any.
+ * This software is the property of WSO2 LLC. and its suppliers, if any.
  * Dissemination of any information or reproduction of any material contained
- * herein is strictly forbidden, unless permitted by WSO2 in accordance with
- * the WSO2 Software License available at https://wso2.com/licenses/eula/3.1. For specific
- * language governing the permissions and limitations under this license,
- * please see the license as well as any agreement you’ve entered into with
- * WSO2 governing the purchase of this software and any associated services.
+ * herein in any form is strictly forbidden, unless permitted by WSO2 expressly.
+ * You may not alter or remove any copyright or other notice from copies of this content.
  */
 
 package com.wso2.cds.test.framework.request_builder
 
-import com.nimbusds.oauth2.sdk.id.State
+
 import com.wso2.bfsi.test.framework.exception.TestFrameworkException
 import com.nimbusds.jose.JOSEObjectType
 import com.nimbusds.jose.JWSAlgorithm
@@ -211,5 +208,30 @@ class AUJWTGenerator {
         return SignedJWT.parse(payload)
     }
 
-}
 
+    /**
+     * Extract JWT token and assign to a map.
+     * @param jwtToken
+     * @return map
+     */
+    static Map<String, String> extractJwt(String jwtToken) {
+
+        Base64.Decoder decoder = Base64.getDecoder()
+        String payload = new String(decoder.decode(jwtToken))
+
+        Map<String, String> mapPayload = new HashMap<String, String>()
+        String[] partsPayload = payload.replaceAll("[{}]|\"", "").split(",")
+        for (String part : partsPayload) {
+            String[] keyValue = part.split(":")
+            String key = keyValue[0].trim()
+            String value = keyValue[1].trim()
+
+            if (keyValue.length >= 3) {
+                value = keyValue[1].trim() + ":" + keyValue[2].trim()
+            }
+
+            mapPayload.put(key, value)
+        }
+        return mapPayload
+    }
+}
