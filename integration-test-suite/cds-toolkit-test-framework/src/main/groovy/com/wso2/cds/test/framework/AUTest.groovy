@@ -354,13 +354,13 @@ class AUTest extends OBTest {
 
                 //Select Business Account 1
                 consentedAccount = authWebDriver.getElementAttribute(AUTestUtil.getBusinessAccount1XPath(),
-                        AUPageObjects.VALUE)
+                        AUPageObjects.VALUE_ATTRIBUTE)
                 authWebDriver.clickButtonXpath(AUTestUtil.getBusinessAccount1XPath())
 
                 if (isSelectMultipleAccounts) {
                     //Select Business Account 2
                     consentedAccount = authWebDriver.getElementAttribute(AUTestUtil.getBusinessAccount2XPath(),
-                            AUPageObjects.VALUE)
+                            AUPageObjects.VALUE_ATTRIBUTE)
                     authWebDriver.clickButtonXpath(AUTestUtil.getBusinessAccount2XPath())
                 }
             }
@@ -371,13 +371,13 @@ class AUTest extends OBTest {
 
                 //Select Individual Account 1
                 consentedAccount = authWebDriver.getElementAttribute(AUTestUtil.getSingleAccountXPath(),
-                        AUPageObjects.VALUE)
+                        AUPageObjects.VALUE_ATTRIBUTE)
                 authWebDriver.clickButtonXpath(AUTestUtil.getSingleAccountXPath())
 
                 if(isSelectMultipleAccounts) {
                     //Select Individual Account 2
                     consentedAccount = authWebDriver.getElementAttribute(AUTestUtil.getAltSingleAccountXPath(),
-                            AUPageObjects.VALUE)
+                            AUPageObjects.VALUE_ATTRIBUTE)
                     authWebDriver.clickButtonXpath(AUTestUtil.getAltSingleAccountXPath())
                 }
             }
@@ -386,13 +386,13 @@ class AUTest extends OBTest {
         else {
             //Select Account 1
             consentedAccount = authWebDriver.getElementAttribute(AUTestUtil.getSingleAccountXPath(),
-                    AUPageObjects.VALUE)
+                    AUPageObjects.VALUE_ATTRIBUTE)
             authWebDriver.clickButtonXpath(AUTestUtil.getSingleAccountXPath())
 
             if (isSelectMultipleAccounts) {
                 //Select Account 2
                 consentedAccount = authWebDriver.getElementAttribute(AUTestUtil.getAltSingleAccountXPath(),
-                        AUPageObjects.VALUE)
+                        AUPageObjects.VALUE_ATTRIBUTE)
                 authWebDriver.clickButtonXpath(AUTestUtil.getAltSingleAccountXPath())
             }
         }
@@ -417,13 +417,13 @@ class AUTest extends OBTest {
 
                 //Select Business Account 1
                 consentedAccount = authWebDriver.getElementAttribute(AUTestUtil.getBusinessAccount1XPath(),
-                        AUPageObjects.VALUE)
+                        AUPageObjects.VALUE_ATTRIBUTE)
                 authWebDriver.clickButtonXpath(AUTestUtil.getBusinessAccount1XPath())
 
                 if (isSelectMultipleAccounts) {
                     //Select Business Account 2
                     consentedAccount = authWebDriver.getElementAttribute(AUTestUtil.getBusinessAccount2XPath(),
-                            AUPageObjects.VALUE)
+                            AUPageObjects.VALUE_ATTRIBUTE)
                     authWebDriver.clickButtonXpath(AUTestUtil.getBusinessAccount2XPath())
                 }
             }
@@ -434,13 +434,13 @@ class AUTest extends OBTest {
 
                 //Select Individual Account 1
                 consentedAccount = authWebDriver.getElementAttribute(AUTestUtil.getSingleAccountXPath(),
-                        AUPageObjects.VALUE)
+                        AUPageObjects.VALUE_ATTRIBUTE)
                 authWebDriver.clickButtonXpath(AUTestUtil.getSingleAccountXPath())
 
                 if(isSelectMultipleAccounts) {
                     //Select Individual Account 2
                     consentedAccount = authWebDriver.getElementAttribute(AUTestUtil.getAltSingleAccountXPath(),
-                            AUPageObjects.VALUE)
+                            AUPageObjects.VALUE_ATTRIBUTE)
                     authWebDriver.clickButtonXpath(AUTestUtil.getAltSingleAccountXPath())
                 }
             }
@@ -452,13 +452,13 @@ class AUTest extends OBTest {
 
             //Select Account 1
             consentedAccount = authWebDriver.getElementAttribute(AUTestUtil.getSecondaryAccount1XPath(),
-                    AUPageObjects.VALUE)
+                    AUPageObjects.VALUE_ATTRIBUTE)
             authWebDriver.clickButtonXpath(AUTestUtil.getSecondaryAccount1XPath())
 
             if (isSelectMultipleAccounts) {
                 //Select Account 2
                 consentedAccount = authWebDriver.getElementAttribute(AUTestUtil.getSecondaryAccount2XPath(),
-                        AUPageObjects.VALUE)
+                        AUPageObjects.VALUE_ATTRIBUTE)
                 authWebDriver.clickButtonXpath(AUTestUtil.getSecondaryAccount2XPath())
             }
         }
@@ -563,7 +563,7 @@ class AUTest extends OBTest {
 
                     //Check Consent Expiry
                     String expiryTime = authWebDriver.getElementAttribute(AUPageObjects.CONSENT_EXPIRY_XPATH,
-                            AUPageObjects.TEXT)
+                            AUPageObjects.TEXT_ATTRIBUTE)
                     Assert.assertTrue(expiryTime.contains(consentExpiry))
 
                     //Click Confirm Button
@@ -686,7 +686,7 @@ class AUTest extends OBTest {
                 .addStep { driver, context ->
                     AutomationMethod authWebDriver = new AutomationMethod(driver)
 
-                    Assert.assertTrue(authWebDriver.getElementAttribute(AUPageObjects.ADR_NAME_HEADER_XPATH, AUPageObjects.TEXT)
+                    Assert.assertTrue(authWebDriver.getElementAttribute(AUPageObjects.ADR_NAME_HEADER_XPATH, AUPageObjects.TEXT_ATTRIBUTE)
                             .contains(auConfiguration.getAppDCRSoftwareId()))
 
                     //Select Secondary Account
@@ -728,7 +728,7 @@ class AUTest extends OBTest {
                 .addStep { driver, context ->
                     AutomationMethod authWebDriver = new AutomationMethod(driver)
 
-                    Assert.assertTrue(authWebDriver.getElementAttribute(AUPageObjects.ADR_NAME_HEADER_XPATH, AUPageObjects.TEXT)
+                    Assert.assertTrue(authWebDriver.getElementAttribute(AUPageObjects.ADR_NAME_HEADER_XPATH, AUPageObjects.TEXT_ATTRIBUTE)
                             .contains(auConfiguration.getAppDCRSoftwareId()))
 
                     //Select Secondary Account
