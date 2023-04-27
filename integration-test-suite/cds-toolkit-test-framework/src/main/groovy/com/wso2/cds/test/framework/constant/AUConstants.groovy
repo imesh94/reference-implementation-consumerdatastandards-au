@@ -296,6 +296,7 @@ class AUConstants extends OBConstants {
     public static final String DCR_INVALID_ID_TOKEN_ENCRYPTION_METHOD = "Invalid idTokenEncryptionResponseEnc provided"
     public static final String DCR_INVALID_REDIRECT_DESCRIPTION = "Invalid callbackUris provided"
     public static final String INSUFFICIENT_SCOPE = "insufficient_scope"
+    public static final String UNSUPPORTED_RESPONSE_MODE = "Unsupported Response Mode"
 
     /**
      * Mock Register Constants
@@ -377,5 +378,8 @@ class AUConstants extends OBConstants {
     public static final String TPP_ERROR_CODE_FORMAT_ERROR = "FORMAT_ERROR"
     public static final String TPP_ERROR_CODE_VALUE = "ERROR"
     public static final String TPP_ERROR_CODE_FORMAT_INVALID= "REQUESTED_FORMATS_INVALID"
+
+    public static final String VALUE_KEY = "value"
+    public static final String HTML_RESPONSE_ATTR = "response="
 }
 

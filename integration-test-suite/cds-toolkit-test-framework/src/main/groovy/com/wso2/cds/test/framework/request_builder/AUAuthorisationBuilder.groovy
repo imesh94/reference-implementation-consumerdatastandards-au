@@ -12,6 +12,7 @@
 
 package com.wso2.cds.test.framework.request_builder
 
+import com.nimbusds.oauth2.sdk.ResponseMode
 import com.wso2.cds.test.framework.constant.AUAccountScope
 import com.wso2.cds.test.framework.constant.AUConstants
 import com.nimbusds.oauth2.sdk.AuthorizationRequest
@@ -66,7 +67,8 @@ class AUAuthorisationBuilder {
                 .endpointURI(getEndpoint())
                 .redirectionURI(getRedirectURI())
                 .requestObject(generator.getSignedAuthRequestObject(scopeString, sharingDuration, sendSharingDuration, cdrArrangementId,
-                        getRedirectURI().toString(), null, response_type.toString()))
+                        getRedirectURI().toString(), null, response_type.toString(), true,
+                        getState().toString()))
                 .scope(new Scope(scopeString))
                 .state(getState())
                 .customParameter("prompt", "login")
@@ -115,6 +117,49 @@ class AUAuthorisationBuilder {
     }
 
     /**
+     * Get authorization request with response_mode.
+     * @param scopes
+     * @param sharingDuration
+     * @param sendSharingDuration
+     * @param cdrArrangementId
+     * @param clientID
+     * @param response_type
+     * @param response_mode
+     * @return
+     */
+    AuthorizationRequest getAuthorizationRequest(List<AUAccountScope> scopes, URI requestUri, ResponseMode response_mode,
+                                                 String clientID = getClientID().getValue(),
+                                                 ResponseType responseType = getResponseType(),
+                                                 boolean isStateParamPresent = true) {
+
+        String scopeString = "openid ${String.join(" ", scopes.collect({ it.scopeString }))}"
+
+        if(isStateParamPresent) {
+            request = new AuthorizationRequest.Builder(getResponseType(), new ClientID(clientID))
+                    .responseType(responseType)
+                    .responseMode(response_mode)
+                    .scope(new Scope(scopeString))
+                    .requestURI(requestUri)
+                    .redirectionURI(getRedirectURI())
+                    .state(getState())
+                    .endpointURI(getEndpoint())
+                    .customParameter("prompt", "login")
+                    .build()
+        } else {
+            request = new AuthorizationRequest.Builder(getResponseType(), new ClientID(clientID))
+                    .responseType(responseType)
+                    .responseMode(response_mode)
+                    .scope(new Scope(scopeString))
+                    .requestURI(requestUri)
+                    .redirectionURI(getRedirectURI())
+                    .endpointURI(getEndpoint())
+                    .customParameter("prompt", "login")
+                    .build()
+        }
+        return request
+    }
+
+    /**
      * AU Authorisation Builder for Pushed Authorisation Flow
      * @param headerString
      * @param scopes
@@ -159,7 +204,7 @@ class AUAuthorisationBuilder {
                     .formParams(bodyContent)
                     .formParams(AUConstants.REQUEST_KEY, generator.getSignedAuthRequestObject(scopeString,
                             sharingDuration, sendSharingDuration, cdrArrangementId, redirectUrl, clientId, responseType,
-                            false).serialize())
+                            false, state).serialize())
                     .baseUri(AUConstants.PUSHED_AUTHORISATION_BASE_PATH)
                     .post(AUConstants.PAR_ENDPOINT)
         }
@@ -196,8 +241,8 @@ class AUAuthorisationBuilder {
                 .contentType(AUConstants.ACCESS_TOKEN_CONTENT_TYPE)
                 .formParams(bodyContent)
                 .formParams(AUConstants.REQUEST_KEY, generator.getSignedAuthRequestObject(scopeString,
-                        sharingDuration, sendSharingDuration, cdrArrangementId, auConfiguration.getAppInfoRedirectURL(),
-                        clientId, responseType).serialize())
+                        sharingDuration, sendSharingDuration, cdrArrangementId, redirectUrl, clientId, responseType,
+                        false, state).serialize())
                 .baseUri(AUConstants.PUSHED_AUTHORISATION_BASE_PATH)
                 .post(AUConstants.PAR_ENDPOINT)
 

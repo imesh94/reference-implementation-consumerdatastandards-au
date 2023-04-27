@@ -12,7 +12,7 @@
 
 package com.wso2.cds.test.framework.request_builder
 
-import com.nimbusds.oauth2.sdk.id.State
+
 import com.wso2.bfsi.test.framework.exception.TestFrameworkException
 import com.nimbusds.jose.JOSEObjectType
 import com.nimbusds.jose.JWSAlgorithm
@@ -209,6 +209,32 @@ class AUJWTGenerator {
         Reporter.log("JWS Payload ${new Payload(claims).toString()}")
 
         return SignedJWT.parse(payload)
+    }
+
+    /**
+     * Extract JWT token and assign to a map.
+     * @param jwtToken
+     * @return map
+     */
+    static Map<String, String> extractJwt(String jwtToken) {
+
+        Base64.Decoder decoder = Base64.getDecoder()
+        String payload = new String(decoder.decode(jwtToken))
+
+        Map<String, String> mapPayload = new HashMap<String, String>()
+        String[] partsPayload = payload.replaceAll("[{}]|\"", "").split(",")
+        for (String part : partsPayload) {
+            String[] keyValue = part.split(":")
+            String key = keyValue[0].trim()
+            String value = keyValue[1].trim()
+
+            if (keyValue.length >= 3) {
+                value = keyValue[1].trim() + ":" + keyValue[2].trim()
+            }
+
+            mapPayload.put(key, value)
+        }
+        return mapPayload
     }
 
 }
