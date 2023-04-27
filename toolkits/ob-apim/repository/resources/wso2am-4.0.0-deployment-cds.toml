@@ -316,7 +316,8 @@ HostnameVerifier = "AllowAll"
 "http.headers.preserve"="Content-Type,Date"
 
 [transport.passthru_https.listener.parameters]
-"SSLVerifyClient" = "optional"
+HttpsProtocols = "TLSv1.2"
+PreferredCiphers = "TLS_DHE_RSA_WITH_AES_128_GCM_SHA256,TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256,TLS_DHE_RSA_WITH_AES_256_GCM_SHA384, TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384"
 
 #================configs related to identity.xml=============
 
