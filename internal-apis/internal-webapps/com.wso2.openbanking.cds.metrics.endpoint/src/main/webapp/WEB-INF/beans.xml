@@ -22,7 +22,7 @@
     <bean class="org.springframework.context.support.PropertySourcesPlaceholderConfigurer"/>
     <jaxrs:server id="services" address="/">
         <jaxrs:serviceBeans>
-            <bean class="com.wso2.openbanking.cds.metrics.endpoint.impl.CeasingSecondaryUserApiImpl"/>
+            <bean class="com.wso2.openbanking.cds.metrics.endpoint.impl.MetricsApiImpl"/>
         </jaxrs:serviceBeans>
         <jaxrs:providers>
             <bean class="com.fasterxml.jackson.jaxrs.json.JacksonJsonProvider"/>
