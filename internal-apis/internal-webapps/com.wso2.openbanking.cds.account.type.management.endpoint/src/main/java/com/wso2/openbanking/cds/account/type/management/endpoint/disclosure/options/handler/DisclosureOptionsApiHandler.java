@@ -1,9 +1,19 @@
+/*
+ * Copyright (c) 2023, WSO2 LLC. (https://www.wso2.com). All Rights Reserved.
+ *
+ * This software is the property of WSO2 LLC. and its suppliers, if any.
+ * Dissemination of any information or reproduction of any material contained
+ * herein in any form is strictly forbidden, unless permitted by WSO2 expressly.
+ * You may not alter or remove any copyright or other notice from copies of this content.
+ */
+
 package com.wso2.openbanking.cds.account.type.management.endpoint.disclosure.options.handler;
 
 import com.wso2.openbanking.accelerator.account.metadata.service.service.AccountMetadataService;
 import com.wso2.openbanking.accelerator.account.metadata.service.service.AccountMetadataServiceImpl;
 import com.wso2.openbanking.accelerator.common.exception.OpenBankingException;
-import com.wso2.openbanking.cds.account.type.management.endpoint.disclosure.options.validation.DomsOptionsStatusValidator;
+import com.wso2.openbanking.cds.account.type.management.endpoint.disclosure.options.validation.
+        DomsOptionsStatusValidator;
 
 import net.minidev.json.JSONArray;
 import net.minidev.json.JSONObject;
@@ -20,10 +30,6 @@ import javax.ws.rs.core.Response;
 
 public class DisclosureOptionsApiHandler {
     private static final Log log = LogFactory.getLog(DisclosureOptionsApiHandler.class);
-
-    private static final String XV_HEADER = "x-v";
-    private static final String X_VERSION = "2";
-
     AccountMetadataService accountMetadataService = AccountMetadataServiceImpl.getInstance();
     DomsOptionsStatusValidator domsOptionsStatusValidator = new DomsOptionsStatusValidator();
 
@@ -52,18 +58,16 @@ public class DisclosureOptionsApiHandler {
                 // Call the addOrUpdateGlobalAccountMetadata method from the AccountMetadataService class
                 accountMetadataService.addOrUpdateGlobalAccountMetadata(accountId, disclosureOptionsMap);
             }
-            return Response.ok().entity("Account disclosure options successfully updated")
-                    .header(XV_HEADER, X_VERSION).build();
+            return Response.ok().entity("Account disclosure options successfully updated").build();
             } catch (OpenBankingException e) {
                 log.error(e);
-                return Response.status(Response.Status.BAD_REQUEST).entity(e.getMessage())
-                        .header(XV_HEADER, X_VERSION).build();
+                return Response.status(Response.Status.BAD_REQUEST).entity(e.getMessage()).build();
             } catch (Exception e) {
                 log.error("Bad Request. Request body validation failed", e);
-                return Response.status(Response.Status.BAD_REQUEST).entity(e.getMessage())
-                        .header(XV_HEADER, X_VERSION).build();
+                return Response.status(Response.Status.BAD_REQUEST).entity(e.getMessage()).build();
             }
     }
+
 }
 
 
