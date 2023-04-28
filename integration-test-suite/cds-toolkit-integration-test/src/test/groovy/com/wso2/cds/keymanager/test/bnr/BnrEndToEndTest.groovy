@@ -13,6 +13,7 @@
 package com.wso2.cds.keymanager.test.bnr
 
 import com.wso2.cds.test.framework.AUTest
+import com.wso2.cds.test.framework.configuration.AUConfigurationService
 import com.wso2.cds.test.framework.constant.AUAccountProfile
 import com.wso2.cds.test.framework.constant.AUBusinessUserPermission
 import com.wso2.cds.test.framework.constant.AUConstants
@@ -31,9 +32,11 @@ import java.nio.charset.Charset
 class BnrEndToEndTest extends AUTest{
 
     def clientHeader
+    AUConfigurationService auConfiguration = new AUConfigurationService()
 
     @BeforeClass(alwaysRun = true)
     void "Nominate Business User Representative"() {
+        auConfiguration.setPsuNumber(2)
         clientHeader = "${Base64.encoder.encodeToString(getCDSClient().getBytes(Charset.defaultCharset()))}"
 
         //Get Sharable Account List and Nominate Business Representative with Authorize Permission

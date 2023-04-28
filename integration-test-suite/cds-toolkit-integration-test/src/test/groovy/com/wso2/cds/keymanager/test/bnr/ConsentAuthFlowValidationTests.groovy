@@ -41,6 +41,7 @@ class ConsentAuthFlowValidationTests extends AUTest{
 
     @BeforeClass(alwaysRun = true)
     void "Nominate Business User Representative"() {
+        auConfiguration.setPsuNumber(2)
         clientHeader = "${Base64.encoder.encodeToString(getCDSClient().getBytes(Charset.defaultCharset()))}"
 
         //Get Sharable Account List and Nominate Business Representative with Authorize and View Permissions
@@ -88,9 +89,10 @@ class ConsentAuthFlowValidationTests extends AUTest{
                 .execute()
     }
 
-    @Test
+    @Test (priority = 1)
     void "CDS-543_Verify customer language in consent page for individual consumer"() {
 
+        auConfiguration.setPsuNumber(1)
         List<AUAccountScope> scopes = [AUAccountScope.BANK_CUSTOMER_BASIC_READ]
 
         //Get Authorisation URL
@@ -281,9 +283,10 @@ class ConsentAuthFlowValidationTests extends AUTest{
         Assert.assertEquals(auAuthorisationBuilder.state, stateParam)
     }
 
-    @Test
+    @Test (priority = 1)
     void "CDS-540_Consent Authorisation after updating nominated representatives permission from view to authorise"() {
 
+        auConfiguration.setPsuNumber(3)
         //Check the permissions of nominated representatives
         def permissionsResponse = getStakeholderPermissions(nominatedRepUserID2, accountID)
         Assert.assertEquals(permissionsResponse.statusCode(), AUConstants.OK)
@@ -319,9 +322,11 @@ class ConsentAuthFlowValidationTests extends AUTest{
                 .execute()
     }
 
-    @Test (dependsOnMethods = "CDS-540_Consent Authorisation after updating nominated representatives permission from view to authorise")
+    @Test (priority = 1,
+            dependsOnMethods = "CDS-540_Consent Authorisation after updating nominated representatives permission from view to authorise")
     void "CDS-542_Consent Authorisation after updating nominated representatives permission from authorise to view"() {
 
+        auConfiguration.setPsuNumber(3)
         //Check the permissions of nominated representatives
         def permissionsResponse = getStakeholderPermissions(nominatedRepUserID2, accountID)
         Assert.assertEquals(permissionsResponse.statusCode(), AUConstants.OK)
@@ -426,8 +431,10 @@ class ConsentAuthFlowValidationTests extends AUTest{
                 .execute()
     }
 
-    @Test
+    @Test (priority = 1)
     void "CDS-512_Verify a Consent Authorization Flow with non NR"() {
+
+        auConfiguration.setPsuNumber(1)
 
         //Get Authorisation URL
         response = auAuthorisationBuilder.doPushAuthorisationRequest(scopes, AUConstants.DEFAULT_SHARING_DURATION,
@@ -460,9 +467,10 @@ class ConsentAuthFlowValidationTests extends AUTest{
                 .execute()
     }
 
-    @Test
+    @Test (priority = 1)
     void "CDS-541_Verify same user nominated for multiple accounts"() {
 
+        auConfiguration.setPsuNumber(3)
         //Get Authorisation URL
         response = auAuthorisationBuilder.doPushAuthorisationRequest(scopes, AUConstants.DEFAULT_SHARING_DURATION,
                 true, "")

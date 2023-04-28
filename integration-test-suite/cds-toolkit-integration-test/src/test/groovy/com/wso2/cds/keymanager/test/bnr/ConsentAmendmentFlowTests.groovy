@@ -42,6 +42,7 @@ class ConsentAmendmentFlowTests extends AUTest {
 
     @BeforeClass(alwaysRun = true)
     void "Nominate Business User Representative"() {
+        auConfiguration.setPsuNumber(2)
         clientHeader = "${Base64.encoder.encodeToString(getCDSClient().getBytes(Charset.defaultCharset()))}"
 
         //Get Sharable Account List and Nominate Business Representative with Authorize and View Permissions
