@@ -1,13 +1,10 @@
 /*
- * Copyright (c) 2022-2023, WSO2 Inc. (http://www.wso2.com). All Rights Reserved.
+ * Copyright (c) 2022-2023, WSO2 LLC. (https://www.wso2.com). All Rights Reserved.
  *
- * This software is the property of WSO2 Inc. and its suppliers, if any.
+ * This software is the property of WSO2 LLC. and its suppliers, if any.
  * Dissemination of any information or reproduction of any material contained
- * herein is strictly forbidden, unless permitted by WSO2 in accordance with
- * the WSO2 Software License available at https://wso2.com/licenses/eula/3.1. For specific
- * language governing the permissions and limitations under this license,
- * please see the license as well as any agreement you’ve entered into with
- * WSO2 governing the purchase of this software and any associated services.
+ * herein in any form is strictly forbidden, unless permitted by WSO2 expressly.
+ * You may not alter or remove any copyright or other notice from copies of this content.
  */
 
 package com.wso2.cds.integration.test.accounts
@@ -237,8 +234,8 @@ class AccountsRetrievalRequestHeaderValidationTest extends AUTest {
                 AUConstants.UNSUPPORTED_VERSION)
     }
 
-    //before executing need to configure  <HolderIdentifier>ABC-Bank</HolderIdentifier> in open-banking xml file
-    //of OB_KM to the value set in {holderID} below
+    //Before executing need to configure the [open_banking_cds.headers]holder_identifier=ABC-Bank in deployment.toml file
+    //in API Manager pack.
     @Test (dataProvider = "BankingApis", dataProviderClass = AccountsDataProviders.class)
     void "TC0301015_Retrieve accounts with unsupported endpoint version with holder identifier header"(resourcePath) {
 
@@ -373,7 +370,6 @@ class AccountsRetrievalRequestHeaderValidationTest extends AUTest {
                 AUConstants.STATUS_CLOSED)
     }
 
-    //TODO: Git issue: https://github.com/wso2-enterprise/financial-open-banking/issues/5562
     @Test
     void "TC0301029_Retrieve account list with invalid x-fapi-interaction-id"() {
 

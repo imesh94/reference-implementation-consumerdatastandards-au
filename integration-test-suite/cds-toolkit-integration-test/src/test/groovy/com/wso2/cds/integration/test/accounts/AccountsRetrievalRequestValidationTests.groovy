@@ -1,13 +1,10 @@
 /*
- * Copyright (c) 2023, WSO2 Inc. (http://www.wso2.com). All Rights Reserved.
+ * Copyright (c) 2023, WSO2 LLC. (https://www.wso2.com). All Rights Reserved.
  *
- * This software is the property of WSO2 Inc. and its suppliers, if any.
+ * This software is the property of WSO2 LLC. and its suppliers, if any.
  * Dissemination of any information or reproduction of any material contained
- * herein is strictly forbidden, unless permitted by WSO2 in accordance with
- * the WSO2 Software License available at https://wso2.com/licenses/eula/3.1. For specific
- * language governing the permissions and limitations under this license,
- * please see the license as well as any agreement you’ve entered into with
- * WSO2 governing the purchase of this software and any associated services.
+ * herein in any form is strictly forbidden, unless permitted by WSO2 expressly.
+ * You may not alter or remove any copyright or other notice from copies of this content.
  */
 
 package com.wso2.cds.integration.test.accounts
@@ -585,8 +582,7 @@ class AccountsRetrievalRequestValidationTests extends AUTest {
                 "Invalid mutual TLS request. Client certificate is missing"))
     }
 
-    //Todo: enable after fixing issue https://github.com/wso2-enterprise/financial-open-banking/issues/6640
-    //@Test
+    @Test
     void "OB-1162_Invoke bulk balances POST without request body"() {
 
         def response = AURequestBuilder.buildBasicRequestWithCustomHeaders(userAccessToken,
@@ -603,8 +599,7 @@ class AccountsRetrievalRequestValidationTests extends AUTest {
         Assert.assertEquals(AUTestUtil.parseResponseBody(response, AUConstants.ERROR_TITLE), AUConstants.INVALID_FIELD)
     }
 
-    //Todo: enable after fixing issue https://github.com/wso2-enterprise/financial-open-banking/issues/6639
-    //@Test
+    @Test
     void "OB-1263_Invoke bulk balances POST with invalid request body"() {
 
         // sending 'accountIds' as a string instead of the mandated String array format
@@ -674,7 +669,7 @@ class AccountsRetrievalRequestValidationTests extends AUTest {
         softAssertion.assertAll()
     }
 
-    //TODO:Need enable the account id validation in IAM
+    //TODO:Enable the account id validation in IAM
     @Test
     void "TC0301003_Retrieve invalid single accounts"() {
 
