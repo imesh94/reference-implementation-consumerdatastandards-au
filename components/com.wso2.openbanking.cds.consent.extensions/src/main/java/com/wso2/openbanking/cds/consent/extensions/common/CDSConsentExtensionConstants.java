@@ -75,8 +75,8 @@ public class CDSConsentExtensionConstants {
     public static final String LINKED_MEMBER_ID = "memberId";
     public static final String AUTH_RESOURCE_TYPE_PRIMARY = "primary_member";
     public static final String AUTH_RESOURCE_TYPE_LINKED = "linked_member";
-    public static final String MAP_JOINT_ACCOUNTS_ID_WITH_USERS = "jointAccountIdWithUsers";
-    public static final String MAP_USER_ID_WITH_JOINT_ACCOUNTS = "usersWithMultipleJointAccounts";
+    public static final String NON_PRIMARY_ACCOUNT_ID_AGAINST_USERS_MAP = "nonPrimaryAccountAgainstUsers";
+    public static final String USER_ID_AGAINST_NON_PRIMARY_ACCOUNTS_MAP = "userAgainstNonPrimaryAccounts";
     public static final String JOINT_ACCOUNT_PAYLOAD_PRIMARY_MEMBER = "primaryMember";
     public static final String JOINT_ACCOUNT_PAYLOAD_LINKED_MEMBER = "linkedMember";
     public static final String JOINT_ACCOUNT_PAYLOAD_USER_ID = "userId";
@@ -101,6 +101,19 @@ public class CDSConsentExtensionConstants {
     public static final Map<String, Map<String, List<String>>> CDS_DATA_CLUSTER;
     public static final Map<String, Map<String, List<String>>> BUSINESS_CDS_DATA_CLUSTER;
     public static final Map<String, Map<String, List<String>>> INDIVIDUAL_CDS_DATA_CLUSTER;
+
+    //Nominated Representative Constants
+    public static final String BUSINESS_ACCOUNT_INFO = "businessAccountInfo";
+    public static final String ACCOUNT_OWNERS = "AccountOwners";
+    public static final String NOMINATED_REPRESENTATIVES = "NominatedRepresentatives";
+    public static final String MEMBER_ID = "memberId";
+    public static final String BUSINESS_ACCOUNT_OWNER = "business_account_owner";
+    public static final String NOMINATED_REPRESENTATIVE = "nominated_representative";
+    public static final String CUSTOMER_ACCOUNT_TYPE = "customerAccountType";
+    public static final String BUSINESS = "Business";
+    public static final String BNR_PERMISSION = "bnr-permission";
+    public static final String BNR_REVOKE_PERMISSION = "REVOKE";
+
 
     public static final String ACCEPT_HEADER_NAME = "Accept";
     public static final String ACCEPT_HEADER_VALUE = "application/json";

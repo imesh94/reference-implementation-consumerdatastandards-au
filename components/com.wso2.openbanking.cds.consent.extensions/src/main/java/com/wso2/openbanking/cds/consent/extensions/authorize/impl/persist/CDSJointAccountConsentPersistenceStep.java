@@ -44,7 +44,7 @@ public class CDSJointAccountConsentPersistenceStep implements ConsentPersistStep
         if (consentPersistData.getApproval()) {
             JSONObject payload = consentPersistData.getPayload();
             ArrayList<String> consentedAccountIdList = getConsentedAccountIdList(payload);
-            Map<String, List<String>> jointAccountIdWithUsers = new HashMap<>();
+            Map<String, Map<String, String>> jointAccountIdWithUsers = new HashMap<>();
 
             ConsentData consentData = consentPersistData.getConsentData();
             JSONArray allAccounts = getAllAccounts(consentData);
@@ -60,12 +60,28 @@ public class CDSJointAccountConsentPersistenceStep implements ConsentPersistStep
             }
 
             // Add joint account data to consentPersistData, used in CDSConsentPersistStep.class
-            consentPersistData.addMetadata(CDSConsentExtensionConstants.MAP_JOINT_ACCOUNTS_ID_WITH_USERS,
+            Map<String, Map<String, String>> nonPrimaryAccountIdUsersMap = new HashMap<>();
+            Map<String, List<String>> userIdNonPrimaryAccountsMap = new HashMap<>();
+            if (consentPersistData.getMetadata().get(CDSConsentExtensionConstants.
+                    NON_PRIMARY_ACCOUNT_ID_AGAINST_USERS_MAP) != null) {
+                nonPrimaryAccountIdUsersMap = (Map<String, Map<String, String>>) consentPersistData.getMetadata().
+                        get(CDSConsentExtensionConstants.NON_PRIMARY_ACCOUNT_ID_AGAINST_USERS_MAP);
+            }
+            if (consentPersistData.getMetadata().get(CDSConsentExtensionConstants.
+                    USER_ID_AGAINST_NON_PRIMARY_ACCOUNTS_MAP) != null) {
+                userIdNonPrimaryAccountsMap = (Map<String, List<String>>) consentPersistData.getMetadata().
+                        get(CDSConsentExtensionConstants.USER_ID_AGAINST_NON_PRIMARY_ACCOUNTS_MAP);
+            }
+
+            Map<String, List<String>> usersWithJointAccounts = getUsersWithMultipleJointAccounts(
                     jointAccountIdWithUsers);
-            Map<String, List<String>> usersWithJointAccounts =
-                    getUsersWithMultipleJointAccounts(jointAccountIdWithUsers);
-            consentPersistData.addMetadata(CDSConsentExtensionConstants.MAP_USER_ID_WITH_JOINT_ACCOUNTS,
-                    usersWithJointAccounts);
+            nonPrimaryAccountIdUsersMap.putAll(jointAccountIdWithUsers);
+            userIdNonPrimaryAccountsMap.putAll(usersWithJointAccounts);
+
+            consentPersistData.addMetadata(CDSConsentExtensionConstants.NON_PRIMARY_ACCOUNT_ID_AGAINST_USERS_MAP,
+                    nonPrimaryAccountIdUsersMap);
+            consentPersistData.addMetadata(CDSConsentExtensionConstants.USER_ID_AGAINST_NON_PRIMARY_ACCOUNTS_MAP,
+                    userIdNonPrimaryAccountsMap);
             consentPersistData.addMetadata(CDSConsentExtensionConstants.JOINT_ACCOUNTS_PAYLOAD,
                     getJointAccountConsentAttributePayload(consentData, usersWithJointAccounts));
         }
@@ -102,16 +118,16 @@ public class CDSJointAccountConsentPersistenceStep implements ConsentPersistStep
      * @param jointAccount: consented joint account
      * @return list of user ids
      */
-    private List<String> getUsersFromAccount(JSONObject jointAccount) {
-        List<String> userIdList = new ArrayList<>();
+    private Map<String, String> getUsersFromAccount(JSONObject jointAccount) {
+        Map<String, String> userIdList = new HashMap<>();
         Object jointAccountInfo = jointAccount.get(CDSConsentExtensionConstants.JOINT_ACCOUNT_INFO);
         if (jointAccountInfo instanceof JSONObject) {
             Object linkedMembers = ((JSONObject) jointAccountInfo).get(CDSConsentExtensionConstants.LINKED_MEMBER);
             if (linkedMembers instanceof JSONArray) {
                 for (Object linkedMember : ((JSONArray) linkedMembers)) {
                     if (linkedMember instanceof JSONObject) {
-                        userIdList.add(((JSONObject) linkedMember)
-                                .getAsString(CDSConsentExtensionConstants.LINKED_MEMBER_ID));
+                        userIdList.put(((JSONObject) linkedMember)
+                                .getAsString(CDSConsentExtensionConstants.LINKED_MEMBER_ID), "linked_member");
                     }
                 }
             }
@@ -168,12 +184,12 @@ public class CDSJointAccountConsentPersistenceStep implements ConsentPersistStep
      * @param jointAccountIdWithUsers: joint account id and linked members map
      * @return a map of user ids and joint account ids
      */
-    private Map<String, List<String>> getUsersWithMultipleJointAccounts(Map<String, List<String>>
+    private Map<String, List<String>> getUsersWithMultipleJointAccounts(Map<String, Map<String, String>>
                                                                                 jointAccountIdWithUsers) {
         Map<String, List<String>> userWithJointAccountIds = new HashMap<>();
-        for (Map.Entry<String, List<String>> entry : jointAccountIdWithUsers.entrySet()) {
+        for (Map.Entry<String, Map<String, String>> entry : jointAccountIdWithUsers.entrySet()) {
             final String jointAccountId = entry.getKey();
-            final List<String> userIdList = entry.getValue();
+            final List<String> userIdList = new ArrayList<>(entry.getValue().keySet());
             for (String userId : userIdList) {
                 if (userWithJointAccountIds.containsKey(userId)) {
                     userWithJointAccountIds.get(userId).add(jointAccountId);
