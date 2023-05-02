@@ -35,7 +35,6 @@ import org.w3c.dom.Element;
 import org.w3c.dom.NodeList;
 import org.xml.sax.SAXException;
 import java.util.Base64;
-import sun.security.provider.X509Factory;
 
 import java.io.ByteArrayInputStream;
 import java.io.FileInputStream;
@@ -702,10 +701,10 @@ public class TestUtil {
 
         StringBuilder certificateBuilder = new StringBuilder();
         Base64.Encoder encoder = Base64.getEncoder();
-        certificateBuilder.append(X509Factory.BEGIN_CERT);
+        certificateBuilder.append("-----BEGIN CERTIFICATE-----");
         certificateBuilder.append(encoder.encodeToString(Objects.requireNonNull(getCertificateFromKeyStore())
                 .getEncoded()));
-        certificateBuilder.append(X509Factory.END_CERT);
+        certificateBuilder.append("-----END CERTIFICATE-----");
 
         return certificateBuilder.toString().replaceAll("\n", "");
     }
