@@ -90,6 +90,7 @@ class AUTest extends OBTest {
     public Response response
     public def automationResponse
     public String productId
+    public Response deletionResponse
 
     /**
      * Set Scopes of application
@@ -303,7 +304,7 @@ class AUTest extends OBTest {
             String token = AURequestBuilder.getApplicationAccessToken(scopes, clientId)
 
             if (token) {
-                def deletionResponse = AURegistrationRequestBuilder.buildBasicRequest(token)
+                deletionResponse = AURegistrationRequestBuilder.buildBasicRequest(token)
                         .when()
                         .delete(AUConstants.DCR_REGISTRATION_ENDPOINT + clientId)
             }
@@ -320,7 +321,7 @@ class AUTest extends OBTest {
             String token = AURequestBuilder.getApplicationAccessToken(getApplicationScope(), clientId)
 
             if (token) {
-                def deletionResponse = AURegistrationRequestBuilder.buildBasicRequest(token)
+                deletionResponse = AURegistrationRequestBuilder.buildBasicRequest(token)
                         .when()
                         .delete(AUConstants.DCR_REGISTRATION_ENDPOINT + clientId)
 
