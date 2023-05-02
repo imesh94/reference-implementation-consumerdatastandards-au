@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!--
- ~ Copyright (c) 2022, WSO2 Inc. (http://www.wso2.com). All Rights Reserved.
+ ~ Copyright (c) 2023, WSO2 Inc. (http://www.wso2.com). All Rights Reserved.
  ~
  ~ This software is the property of WSO2 Inc. and its suppliers, if any.
  ~ Dissemination of any information or reproduction of any material contained
@@ -21,11 +21,33 @@
             <class name="com.wso2.cds.integration.test.authflow.AuthorisationFlowCXValidationTest"/>
             <class name="com.wso2.cds.integration.test.authflow.AuthorisationFlowUIValidationTest"/>
             <class name="com.wso2.cds.integration.test.authflow.UserAuthenticationFlowValidationTest"/>
+        </classes>
+    </test>
+    <test name="DCR Tests" parallel="false" enabled="true">
+        <classes>
             <class name="com.wso2.cds.integration.test.clientRegistration.DynamicClientRegistrationCreateTest"/>
-            <class name="com.wso2.cds.integration.test.clientRegistration.DynamicClientRegistrationDeleteTest"/>
             <class name="com.wso2.cds.integration.test.clientRegistration.DynamicClientRegistrationRetrieveTest"/>
             <class name="com.wso2.cds.integration.test.clientRegistration.DynamicClientRegistrationUpdateTest"/>
+            <class name="com.wso2.cds.integration.test.clientRegistration.DynamicClientRegistrationDeleteTest"/>
+        </classes>
+    </test>
+    <test name="Accounts Integration Tests" parallel="false" enabled="true">
+        <classes>
+            <class name="com.wso2.cds.integration.test.accounts.AccountsRetrievalRequestValidationTests"/>
+            <class name="com.wso2.cds.integration.test.accounts.AccountsRetrievalRequestHeaderValidationTest"/>
+            <class name="com.wso2.cds.integration.test.accounts.AccountsIdPermanenceTest"/>
+        </classes>
+    </test>
+    <test name="Banking Products API Tests" parallel="false" enabled="true">
+        <classes>
+            <class name="com.wso2.cds.integration.test.banking_products.ProductRetrievalHeaderValidationTest"/>
+            <class name="com.wso2.cds.integration.test.banking_products.ProductRetrievalValidationTest"/>
+        </classes>
+    </test>
+    <test name="Common API Tests" parallel="false" enabled="true">
+        <classes>
+            <class name="com.wso2.cds.integration.test.common_api.CustomerDetailsRetrievalHeaderValidationTests"/>
+            <class name="com.wso2.cds.integration.test.common_api.CustomerDetailsRetrievalTest"/>
         </classes>
     </test>
 </suite>
-

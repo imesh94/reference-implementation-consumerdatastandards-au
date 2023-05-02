@@ -89,6 +89,7 @@ class AUTest extends OBTest {
     public String authFlowError
     public Response response
     public def automationResponse
+    public String productId
 
     /**
      * Set Scopes of application

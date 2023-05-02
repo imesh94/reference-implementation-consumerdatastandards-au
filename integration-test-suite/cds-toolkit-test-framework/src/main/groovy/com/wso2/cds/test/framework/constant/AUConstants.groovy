@@ -297,6 +297,8 @@ class AUConstants extends OBConstants {
     public static final String DCR_INVALID_REDIRECT_DESCRIPTION = "Invalid callbackUris provided"
     public static final String INSUFFICIENT_SCOPE = "insufficient_scope"
     public static final String UNSUPPORTED_RESPONSE_MODE = "Unsupported Response Mode"
+    public static final String ERROR_CODE_INVALID_PAGE = "urn:au-cds:error:cds-all:Field/InvalidPage"
+    public static final String INVALID_PAGE = "Invalid Page"
 
     /**
      * Mock Register Constants
@@ -366,6 +368,7 @@ class AUConstants extends OBConstants {
     public static final String RESPONSE_DATA_PAYEE = "data.payees"
     public static final String RESPONSE_DATA_TRANSACTIONID = "data.transactionId"
     public static final String RESPONSE_DATA_PAYEEID = "data.payeeId"
+    public static final String RESPONSE_DATA_PRODUCTS = "data.products"
 
     public static final String PARAM_CUSTOMER_ACCOUNT_TYPE = "customerAccountType"
     public static final String INCORRECT_ACC_ID = "1234567"
@@ -381,5 +384,15 @@ class AUConstants extends OBConstants {
 
     public static final String VALUE_KEY = "value"
     public static final String HTML_RESPONSE_ATTR = "response="
+    public static final String CURRENT = "CURRENT"
+    public static final String ALL = "ALL"
+    public static final String PAGE_SIZE = "PAGE_SIZE"
+    public static final String UPDATED_SINCE = "UPDATED_SINCE"
+    public static final String BRAND = "BRAND"
+    public static final String EFFECTIVE = "EFFECTIVE"
+
+    public static final String RESPONSE_DATA_CUSTOMERUTYPE = "data.customerUType"
+    public static final String RESPONSE_DATA_PERSON = "data.person"
+    public static final String RESPONSE_DATA_ORGANIZATION = "data.organisation"
 }
 
