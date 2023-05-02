@@ -77,10 +77,7 @@ public class CDSConsentExtensionConstants {
     public static final String AUTH_RESOURCE_TYPE_LINKED = "linked_member";
     public static final String NON_PRIMARY_ACCOUNT_ID_AGAINST_USERS_MAP = "nonPrimaryAccountAgainstUsers";
     public static final String USER_ID_AGAINST_NON_PRIMARY_ACCOUNTS_MAP = "userAgainstNonPrimaryAccounts";
-    public static final String JOINT_ACCOUNT_PAYLOAD_PRIMARY_MEMBER = "primaryMember";
-    public static final String JOINT_ACCOUNT_PAYLOAD_LINKED_MEMBER = "linkedMember";
-    public static final String JOINT_ACCOUNT_PAYLOAD_USER_ID = "userId";
-    public static final String JOINT_ACCOUNT_PAYLOAD_ACCOUNT_ID = "accountId";
+    public static final String LINKED_MEMBER_AUTH_TYPE = "linked_member";
     public static final String JOINT_ACCOUNTS_PAYLOAD = "joint_accounts_payload";
     public static final String PRE_SELECTED_ACCOUNT_LIST = "preSelectedAccountList";
     public static final String IS_PRE_SELECTED_ACCOUNT = "isPreSelectedAccount";

@@ -11,7 +11,6 @@ package com.wso2.openbanking.cds.consent.extensions.authorize.utils;
 import com.wso2.openbanking.accelerator.consent.extensions.authorize.model.ConsentData;
 import com.wso2.openbanking.accelerator.consent.extensions.authorize.model.ConsentPersistData;
 import com.wso2.openbanking.accelerator.consent.extensions.common.ConsentException;
-import com.wso2.openbanking.accelerator.consent.extensions.common.ResponseStatus;
 import com.wso2.openbanking.cds.consent.extensions.common.CDSConsentExtensionConstants;
 import net.minidev.json.JSONArray;
 import net.minidev.json.JSONObject;
@@ -49,11 +48,17 @@ public class CDSConsentPersistUtil {
                 NON_PRIMARY_ACCOUNT_ID_AGAINST_USERS_MAP) != null) {
             currentNonPrimaryAccountIdUsersMap = (Map<String, Map<String, String>>) consentPersistData.getMetadata().
                     get(CDSConsentExtensionConstants.NON_PRIMARY_ACCOUNT_ID_AGAINST_USERS_MAP);
+        } else {
+            log.debug("Non-primary accountId against users map not available in consentPersistData. " +
+                    "Creating new map");
         }
         if (consentPersistData.getMetadata().get(CDSConsentExtensionConstants.
                 USER_ID_AGAINST_NON_PRIMARY_ACCOUNTS_MAP) != null) {
             currentUserIdNonPrimaryAccountsMap = (Map<String, List<String>>) consentPersistData.getMetadata().
                     get(CDSConsentExtensionConstants.USER_ID_AGAINST_NON_PRIMARY_ACCOUNTS_MAP);
+        } else {
+            log.debug("UserIds against non-primary accountId map not available in consentPersistData. " +
+                    "Creating new map");
         }
 
         //Add new non-primary account data to consent persist data
@@ -100,18 +105,16 @@ public class CDSConsentPersistUtil {
      */
     public static ArrayList<String> getConsentedAccountIdList(JSONObject payloadData) throws ConsentException {
 
-        if (!(payloadData.get(CDSConsentExtensionConstants.ACCOUNT_IDS) instanceof JSONArray)) {
-            log.error("AccountIds not available in persistence request");
-            throw new ConsentException(ResponseStatus.BAD_REQUEST, "AccountIds not available in persistence request");
-        }
         ArrayList<String> accountIdsList = new ArrayList<>();
-        JSONArray accountIds = (JSONArray) payloadData.get(CDSConsentExtensionConstants.ACCOUNT_IDS);
-        for (Object account : accountIds) {
-            if (!(account instanceof String)) {
-                log.error("AccountId format error in persistence request");
-                throw new ConsentException(ResponseStatus.BAD_REQUEST, "AccountId format error in persistence request");
+        if (payloadData.get(CDSConsentExtensionConstants.ACCOUNT_IDS) instanceof JSONArray) {
+            JSONArray accountIds = (JSONArray) payloadData.get(CDSConsentExtensionConstants.ACCOUNT_IDS);
+            for (Object account : accountIds) {
+                accountIdsList.add((String) account);
             }
-            accountIdsList.add((String) account);
+        }
+        if (accountIdsList.isEmpty()) {
+            log.debug("Failed to get consented account list from payload data. This can be caused by a " +
+                    "formatting error in sharable accounts response Returning an empty list");
         }
         return accountIdsList;
     }
@@ -138,10 +141,12 @@ public class CDSConsentPersistUtil {
                     }
                 }
             }
-            return requestedAccountArray;
-        } else {
-            return new JSONArray();
         }
+        if (requestedAccountArray.isEmpty()) {
+            log.debug("Failed to get requested accounts from consent data. This can be caused by a formatting " +
+                    "error in sharable accounts response Returning an empty array");
+        }
+        return requestedAccountArray;
     }
 
 }

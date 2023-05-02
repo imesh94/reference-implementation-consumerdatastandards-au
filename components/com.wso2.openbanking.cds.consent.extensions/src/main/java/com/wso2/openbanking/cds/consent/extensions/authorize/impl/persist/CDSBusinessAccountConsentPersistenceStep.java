@@ -41,6 +41,7 @@ public class CDSBusinessAccountConsentPersistenceStep implements ConsentPersistS
 
         if (consentPersistData.getApproval()) {
 
+            log.debug("Executing CDSBusinessAccountConsentPersistenceStep");
             JSONObject payloadJsonObject = consentPersistData.getPayload();
             Map<String, Map<String, String>> businessAccountIdUserMap;
             ConsentData consentData = consentPersistData.getConsentData();
@@ -112,22 +113,30 @@ public class CDSBusinessAccountConsentPersistenceStep implements ConsentPersistS
         if (businessAccountInfo instanceof JSONObject) {
             Object accountOwners = ((JSONObject) businessAccountInfo).get(CDSConsentExtensionConstants.ACCOUNT_OWNERS);
             if (accountOwners instanceof JSONArray) {
-                for (Object linkedMember : ((JSONArray) accountOwners)) {
-                    if (linkedMember instanceof JSONObject) {
-                        userIdList.put(((JSONObject) linkedMember)
-                                        .getAsString(CDSConsentExtensionConstants.MEMBER_ID),
-                                CDSConsentExtensionConstants.BUSINESS_ACCOUNT_OWNER);
+                for (Object accountOwnerObj : ((JSONArray) accountOwners)) {
+                    if (accountOwnerObj instanceof JSONObject) {
+                        String accountOwner = ((JSONObject) accountOwnerObj).
+                                getAsString(CDSConsentExtensionConstants.MEMBER_ID);
+                        if (log.isDebugEnabled()) {
+                            log.debug("Added account owner: " + accountOwner + " to the list of users to be " +
+                                    "persisted");
+                        }
+                        userIdList.put(accountOwner, CDSConsentExtensionConstants.BUSINESS_ACCOUNT_OWNER);
                     }
                 }
             }
             Object nominatedRepresentatives = ((JSONObject) businessAccountInfo).get(CDSConsentExtensionConstants
                     .NOMINATED_REPRESENTATIVES);
             if (nominatedRepresentatives instanceof JSONArray) {
-                for (Object nominatedRep : ((JSONArray) nominatedRepresentatives)) {
-                    if (nominatedRep instanceof JSONObject) {
-                        userIdList.put(((JSONObject) nominatedRep)
-                                        .getAsString(CDSConsentExtensionConstants.MEMBER_ID),
-                                CDSConsentExtensionConstants.NOMINATED_REPRESENTATIVE);
+                for (Object nominatedRepObj : ((JSONArray) nominatedRepresentatives)) {
+                    if (nominatedRepObj instanceof JSONObject) {
+                        String nominatedRep = ((JSONObject) nominatedRepObj).getAsString(
+                                CDSConsentExtensionConstants.MEMBER_ID);
+                        if (log.isDebugEnabled()) {
+                            log.debug("Added nominated representative: " + nominatedRep + " to the list of users " +
+                                    "to be persisted");
+                        }
+                        userIdList.put(nominatedRep, CDSConsentExtensionConstants.NOMINATED_REPRESENTATIVE);
                     }
                 }
             }
@@ -198,6 +207,10 @@ public class CDSBusinessAccountConsentPersistenceStep implements ConsentPersistS
                 String bnrPermission = CDSConsentExtensionConstants.NOMINATED_REPRESENTATIVE.equals(authType) ?
                         CDSConsentExtensionConstants.BNR_AUTHORIZE_PERMISSION :
                         CDSConsentExtensionConstants.BNR_VIEW_PERMISSION;
+                if (log.isDebugEnabled()) {
+                    log.debug("Adding business nominated representative permission " + bnrPermission +
+                            " for user " + userId + " for account " + accountId + " to account metadata table");
+                }
                 accountMetadataService.addOrUpdateAccountMetadata(accountId, userId,
                         Collections.singletonMap(CDSConsentExtensionConstants.BNR_PERMISSION, bnrPermission));
             }

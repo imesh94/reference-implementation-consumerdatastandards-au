@@ -1,32 +1,25 @@
 /*
- * Copyright (c) 2021, WSO2 Inc. (http://www.wso2.com). All Rights Reserved.
+ * Copyright (c) 2021-2023, WSO2 LLC. (https://www.wso2.com). All Rights Reserved.
  *
- * This software is the property of WSO2 Inc. and its suppliers, if any.
+ * This software is the property of WSO2 LLC. and its suppliers, if any.
  * Dissemination of any information or reproduction of any material contained
- * herein is strictly forbidden, unless permitted by WSO2 in accordance with
- * the WSO2 Software License available at https://wso2.com/licenses/eula/3.1. For specific
- * language governing the permissions and limitations under this license,
- * please see the license as well as any agreement you’ve entered into with
- * WSO2 governing the purchase of this software and any associated services.
+ * herein in any form is strictly forbidden, unless permitted by WSO2 expressly.
+ * You may not alter or remove any copyright or other notice from copies of this content.
  */
-
 package com.wso2.openbanking.cds.consent.extensions.authorize.impl.persist;
 
 import com.wso2.openbanking.accelerator.consent.extensions.authorize.model.ConsentData;
 import com.wso2.openbanking.accelerator.consent.extensions.authorize.model.ConsentPersistData;
 import com.wso2.openbanking.accelerator.consent.extensions.authorize.model.ConsentPersistStep;
 import com.wso2.openbanking.accelerator.consent.extensions.common.ConsentException;
-import com.wso2.openbanking.accelerator.consent.extensions.common.ResponseStatus;
+import com.wso2.openbanking.cds.consent.extensions.authorize.utils.CDSConsentPersistUtil;
 import com.wso2.openbanking.cds.consent.extensions.common.CDSConsentExtensionConstants;
 import net.minidev.json.JSONArray;
 import net.minidev.json.JSONObject;
-import net.minidev.json.JSONStyle;
-import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -42,8 +35,10 @@ public class CDSJointAccountConsentPersistenceStep implements ConsentPersistStep
     public void execute(ConsentPersistData consentPersistData) throws ConsentException {
 
         if (consentPersistData.getApproval()) {
+
+            log.debug("Executing CDSJointAccountConsentPersistenceStep.");
             JSONObject payload = consentPersistData.getPayload();
-            ArrayList<String> consentedAccountIdList = getConsentedAccountIdList(payload);
+            ArrayList<String> consentedAccountIdList = CDSConsentPersistUtil.getConsentedAccountIdList(payload);
             Map<String, Map<String, String>> jointAccountIdWithUsers = new HashMap<>();
 
             ConsentData consentData = consentPersistData.getConsentData();
@@ -60,30 +55,8 @@ public class CDSJointAccountConsentPersistenceStep implements ConsentPersistStep
             }
 
             // Add joint account data to consentPersistData, used in CDSConsentPersistStep.class
-            Map<String, Map<String, String>> nonPrimaryAccountIdUsersMap = new HashMap<>();
-            Map<String, List<String>> userIdNonPrimaryAccountsMap = new HashMap<>();
-            if (consentPersistData.getMetadata().get(CDSConsentExtensionConstants.
-                    NON_PRIMARY_ACCOUNT_ID_AGAINST_USERS_MAP) != null) {
-                nonPrimaryAccountIdUsersMap = (Map<String, Map<String, String>>) consentPersistData.getMetadata().
-                        get(CDSConsentExtensionConstants.NON_PRIMARY_ACCOUNT_ID_AGAINST_USERS_MAP);
-            }
-            if (consentPersistData.getMetadata().get(CDSConsentExtensionConstants.
-                    USER_ID_AGAINST_NON_PRIMARY_ACCOUNTS_MAP) != null) {
-                userIdNonPrimaryAccountsMap = (Map<String, List<String>>) consentPersistData.getMetadata().
-                        get(CDSConsentExtensionConstants.USER_ID_AGAINST_NON_PRIMARY_ACCOUNTS_MAP);
-            }
+            CDSConsentPersistUtil.addNonPrimaryAccountDataToPersistData(jointAccountIdWithUsers, consentPersistData);
 
-            Map<String, List<String>> usersWithJointAccounts = getUsersWithMultipleJointAccounts(
-                    jointAccountIdWithUsers);
-            nonPrimaryAccountIdUsersMap.putAll(jointAccountIdWithUsers);
-            userIdNonPrimaryAccountsMap.putAll(usersWithJointAccounts);
-
-            consentPersistData.addMetadata(CDSConsentExtensionConstants.NON_PRIMARY_ACCOUNT_ID_AGAINST_USERS_MAP,
-                    nonPrimaryAccountIdUsersMap);
-            consentPersistData.addMetadata(CDSConsentExtensionConstants.USER_ID_AGAINST_NON_PRIMARY_ACCOUNTS_MAP,
-                    userIdNonPrimaryAccountsMap);
-            consentPersistData.addMetadata(CDSConsentExtensionConstants.JOINT_ACCOUNTS_PAYLOAD,
-                    getJointAccountConsentAttributePayload(consentData, usersWithJointAccounts));
         }
     }
 
@@ -127,39 +100,13 @@ public class CDSJointAccountConsentPersistenceStep implements ConsentPersistStep
                 for (Object linkedMember : ((JSONArray) linkedMembers)) {
                     if (linkedMember instanceof JSONObject) {
                         userIdList.put(((JSONObject) linkedMember)
-                                .getAsString(CDSConsentExtensionConstants.LINKED_MEMBER_ID), "linked_member");
+                                        .getAsString(CDSConsentExtensionConstants.LINKED_MEMBER_ID),
+                                CDSConsentExtensionConstants.LINKED_MEMBER_AUTH_TYPE);
                     }
                 }
             }
         }
         return userIdList;
-    }
-
-    /**
-     * Get account list from payload data and check for validity.
-     *
-     * @param payloadData payload data of retrieved from persist data
-     * @return List of user consented accounts
-     */
-    private ArrayList<String> getConsentedAccountIdList(JSONObject payloadData) throws ConsentException {
-
-        if (!(payloadData.get(CDSConsentExtensionConstants.ACCOUNT_IDS) instanceof JSONArray)) {
-            log.error("Account IDs not available in persist request");
-            throw new ConsentException(ResponseStatus.BAD_REQUEST,
-                    "Account IDs not available in persist request");
-        }
-
-        ArrayList<String> accountIdsList = new ArrayList<>();
-        JSONArray accountIds = (JSONArray) payloadData.get(CDSConsentExtensionConstants.ACCOUNT_IDS);
-        for (Object account : accountIds) {
-            if (!(account instanceof String)) {
-                log.error("Account IDs format error in persist request");
-                throw new ConsentException(ResponseStatus.BAD_REQUEST,
-                        "Account IDs format error in persist request");
-            }
-            accountIdsList.add((String) account);
-        }
-        return accountIdsList;
     }
 
     /**
@@ -178,51 +125,4 @@ public class CDSJointAccountConsentPersistenceStep implements ConsentPersistStep
         }
     }
 
-    /**
-     * Generate a list of account ids for users who has multiple joint accounts.
-     *
-     * @param jointAccountIdWithUsers: joint account id and linked members map
-     * @return a map of user ids and joint account ids
-     */
-    private Map<String, List<String>> getUsersWithMultipleJointAccounts(Map<String, Map<String, String>>
-                                                                                jointAccountIdWithUsers) {
-        Map<String, List<String>> userWithJointAccountIds = new HashMap<>();
-        for (Map.Entry<String, Map<String, String>> entry : jointAccountIdWithUsers.entrySet()) {
-            final String jointAccountId = entry.getKey();
-            final List<String> userIdList = new ArrayList<>(entry.getValue().keySet());
-            for (String userId : userIdList) {
-                if (userWithJointAccountIds.containsKey(userId)) {
-                    userWithJointAccountIds.get(userId).add(jointAccountId);
-                } else {
-                    userWithJointAccountIds.put(userId, new ArrayList<>(Collections.singletonList(jointAccountId)));
-                }
-            }
-        }
-        return userWithJointAccountIds;
-    }
-
-    private String getJointAccountConsentAttributePayload(ConsentData consentData,
-                                                          Map<String, List<String>> usersWithJointAccounts) {
-        if (!usersWithJointAccounts.isEmpty()) {
-            JSONArray secondaryUsers = new JSONArray();
-            for (Map.Entry<String, List<String>> entry : usersWithJointAccounts.entrySet()) {
-                JSONArray accountIds = new JSONArray();
-                accountIds.addAll(entry.getValue());
-
-                JSONObject secondaryUser = new JSONObject();
-                secondaryUser.put(CDSConsentExtensionConstants.JOINT_ACCOUNT_PAYLOAD_ACCOUNT_ID, accountIds);
-                secondaryUser.put(CDSConsentExtensionConstants.JOINT_ACCOUNT_PAYLOAD_USER_ID, entry.getKey());
-
-                secondaryUsers.add(secondaryUser);
-            }
-            JSONObject jointAccountPayload = new JSONObject();
-            jointAccountPayload.put(CDSConsentExtensionConstants.JOINT_ACCOUNT_PAYLOAD_PRIMARY_MEMBER,
-                    consentData.getUserId());
-            jointAccountPayload.put(CDSConsentExtensionConstants.JOINT_ACCOUNT_PAYLOAD_LINKED_MEMBER, secondaryUsers);
-
-            return jointAccountPayload.toJSONString(JSONStyle.MAX_COMPRESS);
-        }
-        // joint account data is not present
-        return StringUtils.EMPTY;
-    }
 }
