@@ -274,6 +274,11 @@
                 <artifactId>com.wso2.openbanking.accelerator.data.publisher.common</artifactId>
                 <version>${accelerator.project.version.range}</version>
             </dependency>
+            <dependency>
+                <groupId>com.wso2</groupId>
+                <artifactId>com.wso2.openbanking.accelerator.account.metadata.service</artifactId>
+                <version>${accelerator.project.version.range}</version>
+            </dependency>
             <!--Dependencies from Toolkit -->
             <dependency>
                 <groupId>com.wso2.openbanking</groupId>

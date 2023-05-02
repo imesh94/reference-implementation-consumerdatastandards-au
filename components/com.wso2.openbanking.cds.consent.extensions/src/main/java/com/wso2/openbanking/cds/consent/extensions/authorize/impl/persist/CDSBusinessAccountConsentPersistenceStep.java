@@ -23,6 +23,7 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -62,10 +63,18 @@ public class CDSBusinessAccountConsentPersistenceStep implements ConsentPersistS
                                 "the consent request");
             }
 
-            // Add business nominated representative data to the account metadata table //Todo
-
-            // Add business account data to consentPersistData, used in CDSConsentPersistStep.class
-            CDSConsentPersistUtil.addNonPrimaryAccountDataToPersistData(businessAccountIdUserMap, consentPersistData);
+            try {
+                //Add business nominated representative data to the account metadata table
+                addNominatedRepresentativeDataToAccountMetadataTable(businessAccountIdUserMap);
+                //Add business account data to consentPersistData
+                CDSConsentPersistUtil.addNonPrimaryAccountDataToPersistData(businessAccountIdUserMap,
+                        consentPersistData);
+            } catch (OpenBankingException e) {
+                log.error("Error while adding nominated representative data to account metadata table. " +
+                        "Aborting consent persistence", e);
+                throw new ConsentException(ResponseStatus.INTERNAL_SERVER_ERROR,
+                        "Error while adding nominated representative data to account metadata table");
+            }
         }
     }
 
@@ -169,6 +178,30 @@ public class CDSBusinessAccountConsentPersistenceStep implements ConsentPersistS
                     "Error while checking revoke permission for business accounts");
         }
         return true;
+    }
+
+    /**
+     * Add business nominated representative data to the account metadata table.
+     *
+     * @param businessAccountIdUserMap BusinessAccountIdUserMap
+     * @throws OpenBankingException OpenBankingException
+     */
+    private void addNominatedRepresentativeDataToAccountMetadataTable(Map<String, Map<String, String>>
+        businessAccountIdUserMap) throws OpenBankingException {
+
+        for (Map.Entry<String, Map<String, String>> entry : businessAccountIdUserMap.entrySet()) {
+            String accountId = entry.getKey();
+            Map<String, String> users = entry.getValue();
+            for (Map.Entry<String, String> user : users.entrySet()) {
+                String userId = user.getKey();
+                String authType = user.getValue();
+                String bnrPermission = CDSConsentExtensionConstants.NOMINATED_REPRESENTATIVE.equals(authType) ?
+                        CDSConsentExtensionConstants.BNR_AUTHORIZE_PERMISSION :
+                        CDSConsentExtensionConstants.BNR_VIEW_PERMISSION;
+                accountMetadataService.addOrUpdateAccountMetadata(accountId, userId,
+                        Collections.singletonMap(CDSConsentExtensionConstants.BNR_PERMISSION, bnrPermission));
+            }
+        }
     }
 
 }

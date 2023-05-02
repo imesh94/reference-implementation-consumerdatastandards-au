@@ -112,6 +112,8 @@ public class CDSConsentExtensionConstants {
     public static final String CUSTOMER_ACCOUNT_TYPE = "customerAccountType";
     public static final String BUSINESS = "Business";
     public static final String BNR_PERMISSION = "bnr-permission";
+    public static final String BNR_AUTHORIZE_PERMISSION = "AUTHORIZE";
+    public static final String BNR_VIEW_PERMISSION = "VIEW";
     public static final String BNR_REVOKE_PERMISSION = "REVOKE";
 
 
