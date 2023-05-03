@@ -200,7 +200,7 @@ class AccountsRetrievalRequestHeaderValidationTest extends AUTest {
 
         def response = AURequestBuilder.buildBasicRequestWithCustomHeaders(userAccessToken,
                 AUConstants.X_V_HEADER_ACCOUNTS, clientHeader)
-                .header(AUConstants.X_MIN_HEADER, 1)
+                .header(AUConstants.X_MIN_HEADER, AUConstants.X_V_HEADER_ACCOUNTS)
                 .baseUri(AUTestUtil.getBaseUrl(AUConstants.BASE_PATH_TYPE_ACCOUNT))
                 .get("${AUConstants.CDS_PATH}${resourcePath}")
 
@@ -220,8 +220,9 @@ class AccountsRetrievalRequestHeaderValidationTest extends AUTest {
     @Test (dataProvider = "BankingApis", dataProviderClass = AccountsDataProviders.class)
     void "TC0301014_Retrieve accounts with unsupported endpoint version"(resourcePath) {
 
-        def response = AURequestBuilder.buildBasicRequestWithCustomHeaders(userAccessToken, 5, clientHeader)
-                .header(AUConstants.X_MIN_HEADER, 4)
+        def response = AURequestBuilder.buildBasicRequestWithCustomHeaders(userAccessToken,
+                AUConstants.UNSUPPORTED_X_V_VERSION, clientHeader)
+                .header(AUConstants.X_MIN_HEADER, AUConstants.X_V_HEADER_ACCOUNTS)
                 .baseUri(AUTestUtil.getBaseUrl(AUConstants.BASE_PATH_TYPE_ACCOUNT))
                 .get("${AUConstants.CDS_PATH}${resourcePath}")
 
@@ -243,7 +244,7 @@ class AccountsRetrievalRequestHeaderValidationTest extends AUTest {
 
         def response = AURequestBuilder.buildBasicRequestWithCustomHeaders(userAccessToken,
                 AUConstants.X_V_HEADER_ACCOUNTS, clientHeader)
-                .header("x-${holderID}-v", 5)
+                .header("x-${holderID}-v", AUConstants.UNSUPPORTED_X_V_VERSION)
                 .baseUri(AUTestUtil.getBaseUrl(AUConstants.BASE_PATH_TYPE_ACCOUNT))
                 .get("${AUConstants.CDS_PATH}${resourcePath}")
 
@@ -285,7 +286,7 @@ class AccountsRetrievalRequestHeaderValidationTest extends AUTest {
 
         def response = AURequestBuilder.buildBasicRequestWithOptionalHeaders(userAccessToken,
                 AUConstants.X_V_HEADER_ACCOUNTS, clientHeader)
-                .header(AUConstants.X_MIN_HEADER, 1)
+                .header(AUConstants.X_MIN_HEADER, AUConstants.X_V_HEADER_ACCOUNTS)
                 .baseUri(AUTestUtil.getBaseUrl(AUConstants.BASE_PATH_TYPE_ACCOUNT))
                 .get("${AUConstants.CDS_PATH}${resourcePath}")
 
@@ -355,7 +356,7 @@ class AccountsRetrievalRequestHeaderValidationTest extends AUTest {
     }
 
     //TODO: Git issue: https://github.com/wso2-enterprise/financial-open-banking/issues/5557
-//    @Test
+    //@Test
     void "TC0301022_Retrieve account list with close status"() {
 
         def response = AURequestBuilder.buildBasicRequestWithCustomHeaders(userAccessToken,

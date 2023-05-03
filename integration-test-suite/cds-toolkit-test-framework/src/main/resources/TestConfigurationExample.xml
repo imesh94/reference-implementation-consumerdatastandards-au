@@ -175,7 +175,7 @@
             <!-- DCR Configurations -->
             <DCR>
                 <!--Sample Values: {Path to ob-compliance-toolkit-cds}/integration-test-suite/test-artifacts/DynamicClientRegistration/
-                AU/sample-client-resources/ssa.txt -->
+                AU/sample-client-resources2/ssa.txt -->
                 <SSAPath>AppConfig2.DCR.SSAPath</SSAPath>
 
                 <!-- Software Product ID -->
