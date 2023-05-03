@@ -90,7 +90,7 @@ class AccountsIdPermanenceTest extends AUTest {
             }
         """.stripIndent()
 
-    String bulkBalanceRequestUrl = "${AUConstants.CDS_PATH}${AUConstants.BULK_BALANCES_PATH}"
+        String bulkBalanceRequestUrl = "${AUConstants.CDS_PATH}${AUConstants.BULK_BALANCES_PATH}"
 
         def response = AURequestBuilder.buildBasicRequestWithCustomHeaders(userAccessToken,
                 AUConstants.X_V_HEADER_ACCOUNTS, clientHeader)
