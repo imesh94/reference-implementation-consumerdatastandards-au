@@ -65,5 +65,8 @@ class AUConfigConstants {
     public static final String ID_PERMANENCE = "IdPermanence"
     public static final String ID_PERMANENCE_SECRET_KEY = "SecretKey"
 
+    //Profile Selection configuration constants
+    public static final String PROFILE_SELECTION = "ProfileSelection"
+    public static final String PROFILE_SELECTION_ENABLED = "Enabled"
 }
 

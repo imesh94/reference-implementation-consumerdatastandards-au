@@ -155,7 +155,7 @@ class AUJWTGenerator {
      * @return
      */
     JWT getSignedAuthRequestObject(String scopeString, Long sharingDuration, Boolean sendSharingDuration,
-                                   String cdrArrangementId, String redirect_uri, String clientId) {
+                                   String cdrArrangementId, String redirect_uri, String clientId, String responseType) {
 
         def expiryDate = Instant.now().plus(1, ChronoUnit.DAYS)
 
@@ -174,7 +174,7 @@ class AUJWTGenerator {
         }
         String claims = new JSONRequestGenerator()
                 .addAudience()
-                .addResponseType()
+                .addResponseType(responseType)
                 .addExpireDate(expiryDate.getEpochSecond().toLong())
                 .addClientID(clientId)
                 .addIssuer(clientId)

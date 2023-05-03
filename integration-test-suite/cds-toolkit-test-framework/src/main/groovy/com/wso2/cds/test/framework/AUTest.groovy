@@ -1,17 +1,15 @@
 /*
- * Copyright (c) 2022, WSO2 Inc. (http://www.wso2.com). All Rights Reserved.
+ * Copyright (c) 2022-2023, WSO2 LLC. (https://www.wso2.com). All Rights Reserved.
  *
- * This software is the property of WSO2 Inc. and its suppliers, if any.
+ * This software is the property of WSO2 LLC. and its suppliers, if any.
  * Dissemination of any information or reproduction of any material contained
- * herein is strictly forbidden, unless permitted by WSO2 in accordance with
- * the WSO2 Software License available at https://wso2.com/licenses/eula/3.1. For specific
- * language governing the permissions and limitations under this license,
- * please see the license as well as any agreement you’ve entered into with
- * WSO2 governing the purchase of this software and any associated services.
+ * herein in any form is strictly forbidden, unless permitted by WSO2 expressly.
+ * You may not alter or remove any copyright or other notice from copies of this content.
  */
 
 package com.wso2.cds.test.framework
 
+import com.wso2.cds.test.framework.constant.AUAccountProfile
 import com.wso2.cds.test.framework.constant.AUAccountScope
 import com.wso2.cds.test.framework.constant.AUConfigConstants
 import com.wso2.cds.test.framework.constant.AUConstants
@@ -22,12 +20,13 @@ import com.wso2.cds.test.framework.automation.consent.AUBasicAuthAutomationStep
 import com.nimbusds.oauth2.sdk.AccessTokenResponse
 import com.wso2.openbanking.test.framework.OBTest
 import com.wso2.cds.test.framework.configuration.AUConfigurationService
+import com.wso2.openbanking.test.framework.automation.AutomationMethod
 import com.wso2.openbanking.test.framework.configuration.OBConfigParser
 import io.restassured.response.Response
 import org.apache.logging.log4j.LogManager
 import org.apache.logging.log4j.Logger
 import org.openqa.selenium.By
-import org.openqa.selenium.WebElement
+import org.testng.Assert
 import org.testng.ITestContext
 import org.testng.annotations.BeforeClass
 import com.wso2.cds.test.framework.request_builder.AUAuthorisationBuilder
@@ -36,6 +35,9 @@ import com.wso2.cds.test.framework.request_builder.AURequestBuilder
 import com.wso2.cds.test.framework.utility.AURestAsRequestBuilder
 import com.wso2.cds.test.framework.utility.AUTestUtil
 
+import java.time.OffsetDateTime
+import java.time.ZoneOffset
+
 /**
  * Class for defining common methods that needed in test classes.
  * Every test class in Test layer should extended from this.
@@ -43,15 +45,16 @@ import com.wso2.cds.test.framework.utility.AUTestUtil
  */
 class AUTest extends OBTest {
 
-
     AUConfigurationService auConfiguration
-    protected static Logger log = LogManager.getLogger(AUTest.class.getName());
+    protected static Logger log = LogManager.getLogger(AUTest.class.getName())
+    AUAuthorisationBuilder auAuthorisationBuilder
 
     @BeforeClass(alwaysRun = true)
     void "Initialize Test Suite"() {
         OBConfigParser.getInstance(AUConfigConstants.CONFIG_FILE_LOCATION)
         AURestAsRequestBuilder.init()
         auConfiguration = new AUConfigurationService()
+        auAuthorisationBuilder = new AUAuthorisationBuilder()
     }
 
     public List<AUAccountScope> scopes = [
@@ -74,6 +77,10 @@ class AUTest extends OBTest {
     public String jtiVal
     public String clientId
     public String accessToken
+    public String requestUri
+    public String authoriseUrl
+    public String authFlowError
+    public Response response
 
     /**
      * Set Scopes of application
@@ -119,57 +126,62 @@ class AUTest extends OBTest {
     /**
      * Consent Authorization method
      * @param clientId
+     * @param profiles
      */
-    void doConsentAuthorisation(String clientId = null) {
-        AUAuthorisationBuilder auAuthorisationBuilder = new AUAuthorisationBuilder()
-        String authoriseUrl = auAuthorisationBuilder.getAuthorizationRequest(scopes, AUConstants.DEFAULT_SHARING_DURATION, true)
-                .toURI().toString()
+    void doConsentAuthorisation(String clientId = null, AUAccountProfile profiles = AUAccountProfile.INDIVIDUAL) {
 
-        def automation = getBrowserAutomation(AUConstants.DEFAULT_DELAY)
-                .addStep(new AUBasicAuthAutomationStep(authoriseUrl))
-                .addStep { driver, context ->
-                    // Consent First Account
-                    WebElement accElement = driver.findElement(By.xpath(AUTestUtil.getSingleAccountXPath()))
-                    consentedAccount = accElement.getAttribute("value")
-                    accElement.click()
-                    // Consent Second Account
-                    accElement = driver.findElement(By.xpath(AUTestUtil.getAltSingleAccountXPath()))
-                    secondConsentedAccount = accElement.getAttribute("value")
-                    accElement.click()
-                    // Submit consent
-                    driver.findElement(By.xpath(AUPageObjects.CONSENT_SUBMIT_XPATH)).click()
-                    driver.findElement(By.xpath(AUPageObjects.CONSENT_SUBMIT_XPATH)).click()
+        def response
 
-                }
-                .addStep(getWaitForRedirectAutomationStep())
-                .execute()
-        // Get Code From URL
-        authorisationCode = AUTestUtil.getHybridCodeFromUrl(automation.currentUrl.get())
+        if (clientId == null) {
+            response = auAuthorisationBuilder.doPushAuthorisationRequest(scopes, AUConstants.DEFAULT_SHARING_DURATION,
+                    true, "")
+            requestUri = AUTestUtil.parseResponseBody(response, AUConstants.REQUEST_URI)
+            doConsentAuthorisationViaRequestUri(scopes, requestUri.toURI(), null, profiles)
+        } else {
+            response = auAuthorisationBuilder.doPushAuthorisationRequest(scopes, AUConstants.DEFAULT_SHARING_DURATION,
+                    true, "", clientId)
+            requestUri = AUTestUtil.parseResponseBody(response, AUConstants.REQUEST_URI)
+            doConsentAuthorisationViaRequestUri(scopes, requestUri.toURI(), clientId, profiles)
+        }
     }
 
     /**
      * Consent authorization method with Request URI
      * @param scopes
      * @param requestUri
+     * @param clientId
+     * @param profiles
      */
-    void doConsentAuthorisationViaRequestUri(List<AUAccountScope> scopes, URI requestUri) {
-        AUAuthorisationBuilder auAuthorisationBuilder = new AUAuthorisationBuilder()
-        String authoriseUrl = auAuthorisationBuilder.getAuthorizationRequest(scopes, requestUri)
-                .toURI().toString()
+    void doConsentAuthorisationViaRequestUri(List<AUAccountScope> scopes, URI requestUri,
+                                             String clientId = null, AUAccountProfile profiles = null) {
+
+        if (clientId != null) {
+            authoriseUrl = auAuthorisationBuilder.getAuthorizationRequest(scopes, requestUri, clientId)
+                    .toURI().toString()
+        } else {
+            authoriseUrl = auAuthorisationBuilder.getAuthorizationRequest(scopes, requestUri)
+                    .toURI().toString()
+        }
 
         def automation = getBrowserAutomation(AUConstants.DEFAULT_DELAY)
                 .addStep(new AUBasicAuthAutomationStep(authoriseUrl))
                 .addStep { driver, context ->
-                    driver.findElement(By.xpath(AUTestUtil.getSingleAccountXPath())).click()
-                    driver.findElement(By.xpath(AUPageObjects.CONSENT_SUBMIT_XPATH)).click()
-                    driver.findElement(By.xpath(AUPageObjects.CONSENT_CONFIRM_XPATH)).click()
+                    AutomationMethod authWebDriver = new AutomationMethod(driver)
 
+                    //Select Profile and Accounts
+                    selectProfileAndAccount(authWebDriver, profiles, true)
+
+                    //Click Confirm Button
+                    authWebDriver.clickButtonXpath(AUPageObjects.CONSENT_CONFIRM_XPATH)
+
+                    //Click Authorise Button
+                    authWebDriver.clickButtonXpath(AUPageObjects.CONSENT_CONFIRM_XPATH)
                 }
                 .addStep(getWaitForRedirectAutomationStep())
                 .execute()
+
         // Get Code From URL
         authorisationCode = AUTestUtil.getHybridCodeFromUrl(automation.currentUrl.get())
-
     }
 
     /**
@@ -317,8 +329,498 @@ class AUTest extends OBTest {
     }
 
     String getCDSClient() {
+        auConfiguration = new AUConfigurationService()
         return "${auConfiguration.getAppInfoClientID()}:${auConfiguration.getAppInfoClientSecret()}"
     }
 
+    /**
+     * Common method to automate the Profile Selection and Account Selection in Authorisation Flow.
+     * @param authWebDriver
+     * @param profiles
+     * @param isSelectMultipleAccounts
+     */
+    void selectProfileAndAccount(AutomationMethod authWebDriver, AUAccountProfile profiles = null,
+                                 boolean isSelectMultipleAccounts = false) {
+
+        //If Profile Selection Enabled
+        if (auConfiguration.getProfileSelectionEnabled()) {
+            if (profiles == AUAccountProfile.BUSINESS) {
+
+                //Select Business Profile
+                authWebDriver.selectOption(AUPageObjects.BUSINESS_PROFILE_SELECTION)
+                authWebDriver.clickButtonXpath(AUPageObjects.PROFILE_SELECTION_NEXT_BUTTON)
+
+                //Select Business Account 1
+                consentedAccount = authWebDriver.getElementAttribute(AUTestUtil.getBusinessAccount1XPath(),
+                        AUPageObjects.VALUE_ATTRIBUTE)
+                authWebDriver.clickButtonXpath(AUTestUtil.getBusinessAccount1XPath())
+
+                if (isSelectMultipleAccounts) {
+                    //Select Business Account 2
+                    consentedAccount = authWebDriver.getElementAttribute(AUTestUtil.getBusinessAccount2XPath(),
+                            AUPageObjects.VALUE_ATTRIBUTE)
+                    authWebDriver.clickButtonXpath(AUTestUtil.getBusinessAccount2XPath())
+                }
+            }
+            else {
+                //Select Individual Profile
+                authWebDriver.selectOption(AUPageObjects.INDIVIDUAL_PROFILE_SELECTION)
+                authWebDriver.clickButtonXpath(AUPageObjects.PROFILE_SELECTION_NEXT_BUTTON)
+
+                //Select Individual Account 1
+                consentedAccount = authWebDriver.getElementAttribute(AUTestUtil.getSingleAccountXPath(),
+                        AUPageObjects.VALUE_ATTRIBUTE)
+                authWebDriver.clickButtonXpath(AUTestUtil.getSingleAccountXPath())
+
+                if(isSelectMultipleAccounts) {
+                    //Select Individual Account 2
+                    consentedAccount = authWebDriver.getElementAttribute(AUTestUtil.getAltSingleAccountXPath(),
+                            AUPageObjects.VALUE_ATTRIBUTE)
+                    authWebDriver.clickButtonXpath(AUTestUtil.getAltSingleAccountXPath())
+                }
+            }
+        }
+        //If Profile Selection Disabled
+        else {
+            //Select Account 1
+            consentedAccount = authWebDriver.getElementAttribute(AUTestUtil.getSingleAccountXPath(),
+                    AUPageObjects.VALUE_ATTRIBUTE)
+            authWebDriver.clickButtonXpath(AUTestUtil.getSingleAccountXPath())
+
+            if (isSelectMultipleAccounts) {
+                //Select Account 2
+                consentedAccount = authWebDriver.getElementAttribute(AUTestUtil.getAltSingleAccountXPath(),
+                        AUPageObjects.VALUE_ATTRIBUTE)
+                authWebDriver.clickButtonXpath(AUTestUtil.getAltSingleAccountXPath())
+            }
+        }
+    }
+
+    /**
+     * Common method to automate the Secondary Account Selection in Authorisation Flow.
+     * @param authWebDriver
+     * @param profiles
+     * @param isSelectMultipleAccounts
+     */
+    void selectSecondaryAccount(AutomationMethod authWebDriver, AUAccountProfile profiles = null,
+                                 boolean isSelectMultipleAccounts = false) {
+
+        //If Profile Selection Enabled
+        if (auConfiguration.getProfileSelectionEnabled()) {
+            if (profiles == AUAccountProfile.BUSINESS) {
+
+                //Select Business Profile
+                authWebDriver.selectOption(AUPageObjects.BUSINESS_PROFILE_SELECTION)
+                authWebDriver.clickButtonXpath(AUPageObjects.PROFILE_SELECTION_NEXT_BUTTON)
+
+                //Select Business Account 1
+                consentedAccount = authWebDriver.getElementAttribute(AUTestUtil.getBusinessAccount1XPath(),
+                        AUPageObjects.VALUE_ATTRIBUTE)
+                authWebDriver.clickButtonXpath(AUTestUtil.getBusinessAccount1XPath())
+
+                if (isSelectMultipleAccounts) {
+                    //Select Business Account 2
+                    consentedAccount = authWebDriver.getElementAttribute(AUTestUtil.getBusinessAccount2XPath(),
+                            AUPageObjects.VALUE_ATTRIBUTE)
+                    authWebDriver.clickButtonXpath(AUTestUtil.getBusinessAccount2XPath())
+                }
+            }
+            else {
+                //Select Individual Profile
+                authWebDriver.selectOption(AUPageObjects.INDIVIDUAL_PROFILE_SELECTION)
+                authWebDriver.clickButtonXpath(AUPageObjects.PROFILE_SELECTION_NEXT_BUTTON)
+
+                //Select Individual Account 1
+                consentedAccount = authWebDriver.getElementAttribute(AUTestUtil.getSingleAccountXPath(),
+                        AUPageObjects.VALUE_ATTRIBUTE)
+                authWebDriver.clickButtonXpath(AUTestUtil.getSingleAccountXPath())
+
+                if(isSelectMultipleAccounts) {
+                    //Select Individual Account 2
+                    consentedAccount = authWebDriver.getElementAttribute(AUTestUtil.getAltSingleAccountXPath(),
+                            AUPageObjects.VALUE_ATTRIBUTE)
+                    authWebDriver.clickButtonXpath(AUTestUtil.getAltSingleAccountXPath())
+                }
+            }
+        }
+        //If Profile Selection Disabled
+        else {
+            //Verify the secondary account label
+            Assert.assertTrue(authWebDriver.isElementDisplayed(AUPageObjects.LBL_SECONDARY_ACCOUNT_INDICATION))
+
+            //Select Account 1
+            consentedAccount = authWebDriver.getElementAttribute(AUTestUtil.getSecondaryAccount1XPath(),
+                    AUPageObjects.VALUE_ATTRIBUTE)
+            authWebDriver.clickButtonXpath(AUTestUtil.getSecondaryAccount1XPath())
+
+            if (isSelectMultipleAccounts) {
+                //Select Account 2
+                consentedAccount = authWebDriver.getElementAttribute(AUTestUtil.getSecondaryAccount2XPath(),
+                        AUPageObjects.VALUE_ATTRIBUTE)
+                authWebDriver.clickButtonXpath(AUTestUtil.getSecondaryAccount2XPath())
+            }
+        }
+    }
+
+    /**
+     * Consent Authorisation without Account Selection.
+     */
+    void doConsentAuthorisationWithoutAccountSelection() {
+
+        def response = auAuthorisationBuilder.doPushAuthorisationRequest(scopes, AUConstants.DEFAULT_SHARING_DURATION,
+                true, "")
+        String requestUri = AUTestUtil.parseResponseBody(response, AUConstants.REQUEST_URI)
+
+        AUAuthorisationBuilder auAuthorisationBuilder = new AUAuthorisationBuilder()
+        authoriseUrl = auAuthorisationBuilder.getAuthorizationRequest(scopes, requestUri)
+                .toURI().toString()
+
+        def automation = getBrowserAutomation(AUConstants.DEFAULT_DELAY)
+                .addStep(new AUBasicAuthAutomationStep(authoriseUrl))
+                .addStep { driver, context ->
+                    // Submit consent
+                    driver.findElement(By.xpath(AUPageObjects.CONSENT_SUBMIT_XPATH)).click()
+
+                }
+                .addStep(getWaitForRedirectAutomationStep())
+                .execute()
+
+        // Get Code From URL
+        authorisationCode = AUTestUtil.getHybridCodeFromUrl(automation.currentUrl.get())
+    }
+
+    /**
+     * Consent Authorisation by selecting one account.
+     *
+     * @param scopes
+     * @param requestUri
+     * @param clientId
+     * @param profiles
+     */
+    void doConsentAuthorisationViaRequestUriSingleAccount(List<AUAccountScope> scopes, URI requestUri,
+                                                          String clientId = null , AUAccountProfile profiles = null) {
+        if (clientId != null) {
+            authoriseUrl = auAuthorisationBuilder.getAuthorizationRequest(scopes, requestUri, clientId)
+                    .toURI().toString()
+        } else {
+            authoriseUrl = auAuthorisationBuilder.getAuthorizationRequest(scopes, requestUri)
+                    .toURI().toString()
+        }
+
+        def automation = getBrowserAutomation(AUConstants.DEFAULT_DELAY)
+                .addStep(new AUBasicAuthAutomationStep(authoriseUrl))
+                .addStep { driver, context ->
+                    AutomationMethod authWebDriver = new AutomationMethod(driver)
+
+                    //Select Profile and Accounts
+                    selectProfileAndAccount(authWebDriver, profiles, false)
+
+                    //Click Submit/Next Button
+                    authWebDriver.clickButtonXpath(AUPageObjects.CONSENT_SUBMIT_XPATH)
+
+                    //Click Confirm Button
+                    authWebDriver.clickButtonXpath(AUPageObjects.CONSENT_CONFIRM_XPATH)
+                }
+                .addStep(getWaitForRedirectAutomationStep())
+                .execute()
+
+        // Get Code From URL
+        authorisationCode = AUTestUtil.getHybridCodeFromUrl(automation.currentUrl.get())
+    }
+
+    /**
+     * Consent Authorization with request URI for sharing duration greater than one year.
+     * @param scopes
+     * @param requestUri
+     * @param clientId
+     * @param profiles
+     */
+    void doConsentAuthorisationViaRequestUriLargeSharingDue(List<AUAccountScope> scopes, URI requestUri,
+                                                          String clientId = null , AUAccountProfile profiles = null) {
+        if (clientId != null) {
+            authoriseUrl = auAuthorisationBuilder.getAuthorizationRequest(scopes, requestUri, clientId)
+                    .toURI().toString()
+        } else {
+            authoriseUrl = auAuthorisationBuilder.getAuthorizationRequest(scopes, requestUri)
+                    .toURI().toString()
+        }
+
+        OffsetDateTime currentTime = OffsetDateTime.now(ZoneOffset.UTC)
+        String consentExpiry = currentTime.plusSeconds(AUConstants.ONE_YEAR_DURATION).getYear().toString()
+
+        def automation = getBrowserAutomation(AUConstants.DEFAULT_DELAY)
+                .addStep(new AUBasicAuthAutomationStep(authoriseUrl))
+                .addStep { driver, context ->
+                    AutomationMethod authWebDriver = new AutomationMethod(driver)
+
+                    //Select Profile and Accounts
+                    selectProfileAndAccount(authWebDriver, profiles, false)
+
+                    //Click Submit/Next Button
+                    authWebDriver.clickButtonXpath(AUPageObjects.CONSENT_SUBMIT_XPATH)
+
+                    //Check Consent Expiry
+                    String expiryTime = authWebDriver.getElementAttribute(AUPageObjects.CONSENT_EXPIRY_XPATH,
+                            AUPageObjects.TEXT_ATTRIBUTE)
+                    Assert.assertTrue(expiryTime.contains(consentExpiry))
+
+                    //Click Confirm Button
+                    authWebDriver.clickButtonXpath(AUPageObjects.CONSENT_CONFIRM_XPATH)
+                }
+                .addStep(getWaitForRedirectAutomationStep())
+                .execute()
+
+        // Get Code From URL
+        authorisationCode = AUTestUtil.getHybridCodeFromUrl(automation.currentUrl.get())
+    }
+
+    /**
+     * Consent AAuthorization Deny flow.
+     * @param scopes
+     * @param requestUri
+     * @param clientId
+     * @param profiles
+     */
+    void doConsentAuthorisationViaRequestUriDenyFlow(List<AUAccountScope> scopes, URI requestUri,
+                                                     String clientId = null , AUAccountProfile profiles = null) {
+        if (clientId != null) {
+            authoriseUrl = auAuthorisationBuilder.getAuthorizationRequest(scopes, requestUri, clientId)
+                    .toURI().toString()
+        } else {
+            authoriseUrl = auAuthorisationBuilder.getAuthorizationRequest(scopes, requestUri)
+                    .toURI().toString()
+        }
+
+        def automation = getBrowserAutomation(AUConstants.DEFAULT_DELAY)
+                .addStep(new AUBasicAuthAutomationStep(authoriseUrl))
+                .addStep { driver, context ->
+                    AutomationMethod authWebDriver = new AutomationMethod(driver)
+
+                    //Select Profile and Accounts
+                    selectProfileAndAccount(authWebDriver, profiles, true)
+
+                    //Click Submit/Next Button
+                    authWebDriver.clickButtonXpath(AUPageObjects.CONSENT_SUBMIT_XPATH)
+
+                    //Click Deny Button
+                    authWebDriver.clickButtonXpath(AUPageObjects.CONSENT_DENY_XPATH)
+                    authWebDriver.clickButtonXpath(AUPageObjects.CONFIRM_CONSENT_DENY_XPATH)
+                }
+                .execute()
+
+        // Get Error From URL
+        authFlowError = AUTestUtil.getErrorDescriptionFromUrl(automation.currentUrl.get())
+    }
+
+    /**
+     * Consent Authorisation without Account Selection
+     * @param scopes
+     * @param requestUri
+     * @param clientId
+     * @param profiles
+     */
+    void doConsentAuthorisationViaRequestUriNoAccountSelection(List<AUAccountScope> scopes, URI requestUri,
+                                                               String clientId = null , AUAccountProfile profiles = null) {
+        if (clientId != null) {
+            authoriseUrl = auAuthorisationBuilder.getAuthorizationRequest(scopes, requestUri, clientId)
+                    .toURI().toString()
+        } else {
+            authoriseUrl = auAuthorisationBuilder.getAuthorizationRequest(scopes, requestUri)
+                    .toURI().toString()
+        }
+
+        def automation = getBrowserAutomation(AUConstants.DEFAULT_DELAY)
+                .addStep(new AUBasicAuthAutomationStep(authoriseUrl))
+                .addStep { driver, context ->
+                    AutomationMethod authWebDriver = new AutomationMethod(driver)
+
+                    //If Profile Selection Enabled
+                    if (auConfiguration.getProfileSelectionEnabled()) {
+                        if (profiles == AUAccountProfile.BUSINESS) {
+                            //Select Business Profile
+                            authWebDriver.selectOption(AUPageObjects.BUSINESS_PROFILE_SELECTION)
+                            authWebDriver.clickButtonXpath(AUPageObjects.PROFILE_SELECTION_NEXT_BUTTON)
+                        }
+                        else {
+                            //Select Individual Profile
+                            authWebDriver.selectOption(AUPageObjects.INDIVIDUAL_PROFILE_SELECTION)
+                            authWebDriver.clickButtonXpath(AUPageObjects.PROFILE_SELECTION_NEXT_BUTTON)
+                        }
+                    }
+                    //If Profile Selection Disabled
+                    else {
+                        authWebDriver.clickButtonXpath(AUPageObjects.LBL_PERMISSION_HEADER)
+                    }
+
+                    //Click Confirm Button
+                    authWebDriver.clickButtonXpath(AUPageObjects.CONSENT_SUBMIT_XPATH)
+                }
+                .addStep(getWaitForRedirectAutomationStep())
+                .execute()
+
+        // Get Code From URL
+        authorisationCode = AUTestUtil.getHybridCodeFromUrl(automation.currentUrl.get())
+    }
+
+    /**
+     * Consent Authorisation with Secondary Account Selection.
+     * @param scopes
+     * @param requestUri
+     * @param clientId
+     * @param profiles
+     */
+    void doSecondaryAccountSelection(List<AUAccountScope> scopes, URI requestUri,
+                                     String clientId = null , AUAccountProfile profiles = null) {
+        if (clientId != null) {
+            authoriseUrl = auAuthorisationBuilder.getAuthorizationRequest(scopes, requestUri, clientId)
+                    .toURI().toString()
+        } else {
+            authoriseUrl = auAuthorisationBuilder.getAuthorizationRequest(scopes, requestUri)
+                    .toURI().toString()
+        }
+
+        def automation = getBrowserAutomation(AUConstants.DEFAULT_DELAY)
+                .addStep(new AUBasicAuthAutomationStep(authoriseUrl))
+                .addStep { driver, context ->
+                    AutomationMethod authWebDriver = new AutomationMethod(driver)
+
+                    Assert.assertTrue(authWebDriver.getElementAttribute(AUPageObjects.ADR_NAME_HEADER_XPATH, AUPageObjects.TEXT_ATTRIBUTE)
+                            .contains(auConfiguration.getAppDCRSoftwareId()))
+
+                    //Select Secondary Account
+                    selectSecondaryAccount(authWebDriver, profiles, true)
+
+                    //Click Submit/Next Button
+                    authWebDriver.clickButtonXpath(AUPageObjects.CONSENT_SUBMIT_XPATH)
+
+                    //Click Confirm Button
+                    authWebDriver.clickButtonXpath(AUPageObjects.CONSENT_CONFIRM_XPATH)
+                }
+                .addStep(getWaitForRedirectAutomationStep())
+                .execute()
+
+        // Get Code From URL
+        authorisationCode = AUTestUtil.getHybridCodeFromUrl(automation.currentUrl.get())
+    }
+
+    /**
+     * Verify Unavailable Accounts in Secondary Account Selection Flow.
+     * @param scopes
+     * @param requestUri
+     * @param clientId
+     * @param profiles
+     */
+    void doSecondaryAccountSelectionCheckUnavailableAccounts(List<AUAccountScope> scopes, URI requestUri,
+                                                             String clientId = null , AUAccountProfile profiles = null) {
+
+        if (clientId != null) {
+            authoriseUrl = auAuthorisationBuilder.getAuthorizationRequest(scopes, requestUri, clientId)
+                    .toURI().toString()
+        } else {
+            authoriseUrl = auAuthorisationBuilder.getAuthorizationRequest(scopes, requestUri)
+                    .toURI().toString()
+        }
+
+        def automation = getBrowserAutomation(AUConstants.DEFAULT_DELAY)
+                .addStep(new AUBasicAuthAutomationStep(authoriseUrl))
+                .addStep { driver, context ->
+                    AutomationMethod authWebDriver = new AutomationMethod(driver)
+
+                    Assert.assertTrue(authWebDriver.getElementAttribute(AUPageObjects.ADR_NAME_HEADER_XPATH, AUPageObjects.TEXT_ATTRIBUTE)
+                            .contains(auConfiguration.getAppDCRSoftwareId()))
+
+                    //Select Secondary Account
+                    selectSecondaryAccount(authWebDriver, profiles, true)
+
+                    //Verify the Unavailable Accounts Topic
+                    Assert.assertTrue(authWebDriver.isElementDisplayed(AUPageObjects.LBL_ACCOUNTS_UNAVAILABLE_TO_SHARE))
+
+                    // Assert the first Unavailable Account
+                    Assert.assertTrue(authWebDriver.isElementDisplayed(AUPageObjects.LBL_FIRST_UNAVAILABLE_ACCOUNT))
+
+                    //Click Submit/Next Button
+                    authWebDriver.clickButtonXpath(AUPageObjects.CONSENT_SUBMIT_XPATH)
+
+                    //Click Confirm Button
+                    authWebDriver.clickButtonXpath(AUPageObjects.CONSENT_CONFIRM_XPATH)
+                }
+                .addStep(getWaitForRedirectAutomationStep())
+                .execute()
+
+        // Get Code From URL
+        authorisationCode = AUTestUtil.getHybridCodeFromUrl(automation.currentUrl.get())
+    }
+
+    /**
+     * Authorisation via Request Uri Without Account Selection Step.
+     * @param authoriseUrl
+     * @return authorisationCode
+     */
+    String doAuthorisationViaRequestUriWithoutAccSelection(String authoriseUrl) {
+
+        def automation = getBrowserAutomation(AUConstants.DEFAULT_DELAY)
+                .addStep(new AUBasicAuthAutomationStep(authoriseUrl))
+                .addStep { driver, context ->
+                    AutomationMethod authWebDriver = new AutomationMethod(driver)
+
+                    //Click Submit/Next Button
+                    authWebDriver.clickButtonXpath(AUPageObjects.CONSENT_SUBMIT_XPATH)
+                }
+                .addStep(getWaitForRedirectAutomationStep())
+                .execute()
+
+        // Get Code From URL
+        authorisationCode = AUTestUtil.getHybridCodeFromUrl(automation.currentUrl.get())
+        return authorisationCode
+    }
+
+    /**
+     * Send Account Retrieval Request.
+     * @param userAccessToken
+     * @param accountEndpointVersion
+     * @return account retrieval request
+     */
+    Response doAccountRetrieval(String userAccessToken, int accountEndpointVersion = AUConstants.CDR_ENDPOINT_VERSION) {
+
+        response = AURequestBuilder.buildBasicRequest(userAccessToken, accountEndpointVersion)
+                .header(AUConstants.PARAM_FAPI_AUTH_DATE,AUConstants.VALUE_FAPI_AUTH_DATE)
+                .baseUri(AUTestUtil.getBaseUrl(AUConstants.BASE_PATH_TYPE_ACCOUNT))
+                .get("${AUConstants.CDS_PATH}${AUConstants.BULK_ACCOUNT_PATH}")
+
+        return response
+    }
+
+    Response doConsentStatusRetrieval(String userAccessToken, int accountEndpointVersion = AUConstants.CDR_ENDPOINT_VERSION) {
+
+        response = AURequestBuilder.buildBasicRequest(userAccessToken, accountEndpointVersion)
+                .header(AUConstants.PARAM_FAPI_AUTH_DATE,AUConstants.VALUE_FAPI_AUTH_DATE)
+                .baseUri(AUTestUtil.getBaseUrl(AUConstants.BASE_PATH_TYPE_ACCOUNT))
+                .get("${AUConstants.CDS_PATH}${AUConstants.BULK_ACCOUNT_PATH}")
+
+        return response
+    }
+
+    /**
+     * Consent Authorization by Selecting Single Account.
+     * @param clientId
+     * @param profiles
+     */
+    void doConsentAuthorisationSelectingSingleAccount(String clientId = null,
+                                                      AUAccountProfile profiles = AUAccountProfile.INDIVIDUAL) {
+
+        def response
+
+        if (clientId == null) {
+            response = auAuthorisationBuilder.doPushAuthorisationRequest(scopes, AUConstants.DEFAULT_SHARING_DURATION,
+                    true, "")
+            requestUri = AUTestUtil.parseResponseBody(response, AUConstants.REQUEST_URI)
+            doConsentAuthorisationViaRequestUriSingleAccount(scopes, requestUri.toURI(), null, profiles)
+        } else {
+            response = auAuthorisationBuilder.doPushAuthorisationRequest(scopes, AUConstants.DEFAULT_SHARING_DURATION,
+                    true, "", clientId)
+            requestUri = AUTestUtil.parseResponseBody(response, AUConstants.REQUEST_URI)
+            doConsentAuthorisationViaRequestUriSingleAccount(scopes, requestUri.toURI(), clientId, profiles)
+        }
+    }
 }
 

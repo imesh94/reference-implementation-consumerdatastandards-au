@@ -24,9 +24,6 @@ class AUConstants extends OBConstants {
 
     static AUConfigurationService auConfiguration = new AUConfigurationService()
 
-    public static final String SOLUTION_VERSION_150 = "1.5.0"
-    public static final String SOLUTION_VERSION_200 = "2.0.0"
-    public static final String SOLUTION_VERSION_300 = "3.0.0"
     public static final String API_VERSION = auConfiguration.getCommonApiVersion()
 
     public static final String X_V_HEADER = "x-v"
@@ -48,8 +45,9 @@ class AUConstants extends OBConstants {
     public static final String IP = "2001:0db8:85a3:0000:0000:8a2e:0370:7334"
     public static final String PRODUCT_CATEGORY = "TRANS_AND_SAVINGS_ACCOUNTS"
     public static final String PRODUCT = "product-category"
-    public static final String STATUS = "open-status"
-    public static final String STATUS1 = "OPEN"
+    public static final String OPEN_STATUS_PARAM = "open-status"
+    public static final String STATUS_OPEN = "OPEN"
+    public static final String STATUS_CLOSED = "CLOSED"
     public static final String GET_ACCOUNTS = "/banking/accounts"
     public static final String GET_BALANCES = "/banking/accounts/balances"
     public static final String GET_TRANSACTIONS = "/banking/accounts/" + accountID + "/transactions"
@@ -60,11 +58,11 @@ class AUConstants extends OBConstants {
     public static final String GET_META = "/admin/register/metadata"
     public static final String GET_STAT = "/admin/metrics"
     public static final String X_FAPI_FINANCIAL_ID = "x-fapi-financial-id"
-    public static final int X_V_HEADER_ACCOUNTS = 1
-    public static final int X_V_HEADER_METRICS = 1
-    public static final int X_V_HEADER_CUSTOMER = 1
-    public static final int X_V_HEADER_PRODUCTS = getProductEndpointVersion()
-    public static final int UNSUPPORTED_X_V_VERSION = 5
+    public static final Integer X_V_HEADER_ACCOUNTS = 1
+    public static final Integer X_V_HEADER_METRICS = 1
+    public static final Integer X_V_HEADER_CUSTOMER = 1
+    public static final Integer X_V_HEADER_PRODUCTS = getProductEndpointVersion()
+    public static final Integer UNSUPPORTED_X_V_VERSION = 5
     public static final String USERNAME = "admin@wso2.com"
     public static final String PASSWORD = "wso2123"
     public static final String ACCESS_TOKEN = "token"
@@ -176,6 +174,9 @@ class AUConstants extends OBConstants {
     public static final String ERROR_SOURCE_POINTER = "errors[0].source.pointer"
     public static final String ERROR_TITLE = "errors[0].title"
     public static final String ERROR_CODE = "errors[0].code"
+    public static final String ERROR_META_URN = "errors[0].meta.urn"
+    public static final String ERROR_OPENSTATUS = "data.accounts.openStatus[0]"
+
     public static final String ERROR_X_V_INVALID = "x-v header in the request is invalid"
     public static final String ERROR_X_V_MISSING = "Mandatory header x-v is missing"
     public static final String ERROR_X_MIN_V_INVALID = "x-min-v header in the request is invalid"
@@ -198,6 +199,9 @@ class AUConstants extends OBConstants {
     public static final String UNAPPROVED_SOFTWARE_STATEMENT = "unapproved_software_statement"
     public static final String RESOURCE_NOT_FOUND = "Resource Not Found"
     public static final String MESSAGE_THROTTLED_OUT = "Message throttled out"
+    public static final String REQUEST_URI = "requestUri"
+    public static final String INVALID_CLIENT = "invalid_client"
+    public static final String MISSING_CREDENTIALS = "Missing Credentials"
 
     public static final String ERROR_CODE_MISSING_HEADER = "urn:au-cds:error:cds-all:Header/Missing"
     public static final String ERROR_CODE_INVALID_HEADER = "urn:au-cds:error:cds-all:Header/Invalid"
@@ -215,6 +219,7 @@ class AUConstants extends OBConstants {
     public static final String ERROR_TITLE_INVALID_SP_STATUS = "ADR Software Product Status Is Invalid"
     public static final String ERROR_CODE_INVALID_ADR_STATUS = "AU.CDR.Entitlements.InvalidAdrStatus"
     public static final String ERROR_TITLE_INVALID_ADR_STATUS = "ADR Status Is Invalid"
+    public static final String ERROR_CODE_GENERAL_ERROR_UNEXPECTED = "urn:au-cds:error:cds-all:GeneralError/Unexpected"
 
     // Headers
     public static final String PARAM_X_V = "x-v"
@@ -276,6 +281,7 @@ class AUConstants extends OBConstants {
     public static final String DCR_INVALID_ID_TOKEN_ENCRYPTION_ALGO = "Invalid idTokenEncryptionResponseAlg provided"
     public static final String DCR_INVALID_ID_TOKEN_ENCRYPTION_METHOD = "Invalid idTokenEncryptionResponseEnc provided"
     public static final String DCR_INVALID_REDIRECT_DESCRIPTION = "Invalid callbackUris provided"
+    public static final String INSUFFICIENT_SCOPE = "insufficient_scope"
 
     /**
      * Mock Register Constants
@@ -316,7 +322,7 @@ class AUConstants extends OBConstants {
      * Get the Product Endpoint Version
      * @return product endpoint version
      */
-    static int getProductEndpointVersion() {
+    static Integer getProductEndpointVersion() {
         def productEndpoint = null
         if (API_VERSION.equalsIgnoreCase("1.2.0")) {
             productEndpoint = 2
@@ -326,5 +332,25 @@ class AUConstants extends OBConstants {
         return productEndpoint
     }
 
+    //Payload Links
+    public static final String LINKS_SELF = "links.self"
+    public static final String LINKS_FIRST = "links.first"
+    public static final String LINKS_PREV = "links.prev"
+    public static final String LINKS_NEXT = "links.next"
+    public static final String LINKS_LAST = "links.last"
+    public static final String DATA = "data"
+    public static final String META = "meta"
+
+    //Response Payloads Validations
+    public static final String RESPONSE_DATA_BULK_ACCOUNTID_LIST = "data.accounts.accountId"
+    public static final String RESPONSE_DATA_SINGLE_ACCOUNTID = "data.accountId"
+    public static final String RESPONSE_DATA_BULK_BALANCE_LIST = "data.balances.accountId"
+    public static final String RESPONSE_DATA_TRANSACTION_LIST = "data.transactions.accountId"
+    public static final String RESPONSE_DATA_DIRECT_DEBIT_AUTH = "data.directDebitAuthorisations"
+    public static final String RESPONSE_DATA_SCHEDULE_PAY = "data.scheduledPayments"
+    public static final String RESPONSE_DATA_PAYEE = "data.payees"
+    public static final String RESPONSE_DATA_TRANSACTIONID = "data.transactionId"
+    public static final String RESPONSE_DATA_PAYEEID = "data.payeeId"
+    public static final String ERROR_NOT_ALLOWED_TO_ACCESS = "The access token does not allow you to access the requested resource"
 }
 
