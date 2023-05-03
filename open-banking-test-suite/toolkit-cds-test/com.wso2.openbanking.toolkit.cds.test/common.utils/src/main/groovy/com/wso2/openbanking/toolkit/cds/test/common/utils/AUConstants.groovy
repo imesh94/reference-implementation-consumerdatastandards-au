@@ -333,6 +333,7 @@ class AUConstants {
     static final INVALID_CDR_ARRANGEMENT_ID = "Invalid cdr_arrangement_id"
     static final INVALID_REQUEST_OBJECT = "invalid_request_object"
     static final INVALID_REQUEST = "invalid_request"
+    static final INSUFFICIENT_SCOPE = "insufficient_scope"
     static final MISSING_REQUIRED_FIELD = "Missing Required Field"
     static final TOKEN_NOT_ALLOWED_TO_ACCESS_RESOURCE = "The access token does not allow you to access the requested resource"
 
