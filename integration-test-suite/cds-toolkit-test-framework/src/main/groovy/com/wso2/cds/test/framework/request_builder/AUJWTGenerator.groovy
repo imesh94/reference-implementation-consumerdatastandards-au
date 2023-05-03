@@ -237,5 +237,99 @@ class AUJWTGenerator {
         return mapPayload
     }
 
+    /**
+     * Return signed JWT for Authorization request with string sharing duration.
+     * The method is used for testing the auth request with string sharing duration.
+     * @param scopeString
+     * @param sharingDuration
+     * @param sendSharingDuration
+     * @param cdrArrangementId
+     * @param redirect_uri
+     * @param clientId
+     * @return
+     */
+    JWT getSignedAuthRequestObjectForStringSharingDuration(String scopeString, String sharingDuration,
+                                   String cdrArrangementId, String redirect_uri, String clientId, String responseType) {
+
+        def expiryDate = Instant.now().plus(1, ChronoUnit.DAYS)
+        String claims
+
+        JSONObject acr = new JSONObject().put("essential", true).put("values", new ArrayList<String>() {
+            {
+                add("urn:cds.au:cdr:3")
+            }
+        })
+        JSONObject userInfoString = new JSONObject().put("given_name", null).put("family_name", null)
+        JSONObject claimsString = new JSONObject().put("id_token", new JSONObject().put("acr", acr)).put("userinfo", userInfoString)
+        claimsString.put("sharing_duration", sharingDuration)
+        if (!StringUtils.isEmpty(cdrArrangementId)) {
+            claimsString.put("cdr_arrangement_id", cdrArrangementId)
+        }
+        claims = new JSONRequestGenerator()
+                .addAudience()
+                .addResponseType(responseType)
+                .addExpireDate(expiryDate.getEpochSecond().toLong())
+                .addClientID(clientId)
+                .addIssuer(clientId)
+                .addRedirectURI(redirect_uri)
+                .addScope(scopeString)
+                .addNonce()
+                .addCustomJson("claims", claimsString)
+                .getJsonObject().toString()
+
+        String payload = getSignedRequestObject(claims)
+
+        Reporter.log("Authorisation Request Object")
+        Reporter.log("JWS Payload ${new Payload(claims).toString()}")
+
+        return SignedJWT.parse(payload)
+    }
+
+    /**
+     * Return signed JWT for Authorization request without scopes.
+     * The method is used for testing the auth request without scopes.
+     * @param sharingDuration
+     * @param sendSharingDuration
+     * @param cdrArrangementId
+     * @param redirect_uri
+     * @param clientId
+     * @return
+     */
+    JWT getSignedAuthRequestObjectWithoutScopes(long sharingDuration, String cdrArrangementId, String redirect_uri,
+                                                String clientId, String responseType) {
+
+        def expiryDate = Instant.now().plus(1, ChronoUnit.DAYS)
+        String claims
+
+        JSONObject acr = new JSONObject().put("essential", true).put("values", new ArrayList<String>() {
+            {
+                add("urn:cds.au:cdr:3")
+            }
+        })
+        JSONObject userInfoString = new JSONObject().put("given_name", null).put("family_name", null)
+        JSONObject claimsString = new JSONObject().put("id_token", new JSONObject().put("acr", acr)).put("userinfo", userInfoString)
+        claimsString.put("sharing_duration", sharingDuration)
+        if (!StringUtils.isEmpty(cdrArrangementId)) {
+            claimsString.put("cdr_arrangement_id", cdrArrangementId)
+        }
+        claims = new JSONRequestGenerator()
+                .addAudience()
+                .addResponseType(responseType)
+                .addExpireDate(expiryDate.getEpochSecond().toLong())
+                .addClientID(clientId)
+                .addIssuer(clientId)
+                .addRedirectURI(redirect_uri)
+                .addNonce()
+                .addCustomJson("claims", claimsString)
+                .getJsonObject().toString()
+
+        String payload = getSignedRequestObject(claims)
+
+        Reporter.log("Authorisation Request Object")
+        Reporter.log("JWS Payload ${new Payload(claims).toString()}")
+
+        return SignedJWT.parse(payload)
+    }
+
 }
 

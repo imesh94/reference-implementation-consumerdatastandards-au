@@ -394,5 +394,9 @@ class AUConstants extends OBConstants {
     public static final String RESPONSE_DATA_CUSTOMERUTYPE = "data.customerUType"
     public static final String RESPONSE_DATA_PERSON = "data.person"
     public static final String RESPONSE_DATA_ORGANIZATION = "data.organisation"
+    public static final String RESPONSE_EXPIRES_IN = "expiresIn"
+    public static final String CDR_ARRANGEMENT_ID = "cdr_arrangement_id"
+    public static final String INVALID_REQUEST = "invalid_request"
+    public static final String INVALID_REQUEST_OBJECT = "invalid_request_object"
 }
 

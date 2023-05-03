@@ -355,5 +355,78 @@ class AUAuthorisationBuilder {
         this.state = new State(state)
     }
 
-}
+    /**
+     * AU Authorisation Builder for Pushed Authorisation Flow with String value for Sharing Duration.
+     * @param headerString
+     * @param scopes
+     * @param sharingDuration
+     * @param sendSharingDuration
+     * @param cdrArrangementId
+     * @param clientId
+     * @return
+     */
+    Response doPushAuthRequestForStringSharingDuration(List<AUAccountScope> scopes, String sharingDuration,
+                                                       String cdrArrangementId,
+                                                       String clientId = getClientID().getValue(),
+                                                       String redirectUrl = getRedirectURI().toString(),
+                                                       String responseType = getResponseType().toString()) {
 
+        AUJWTGenerator generator = new AUJWTGenerator()
+        String scopeString = "openid ${String.join(" ", scopes.collect({ it.scopeString }))}"
+        Response parResponse
+
+        String assertionString = generator.getClientAssertionJwt(clientId)
+
+        def bodyContent = [
+                (AUConstants.CLIENT_ID_KEY)            : (clientId),
+                (AUConstants.CLIENT_ASSERTION_TYPE_KEY): (AUConstants.CLIENT_ASSERTION_TYPE),
+                (AUConstants.CLIENT_ASSERTION_KEY)     : assertionString,
+        ]
+
+            parResponse = AURestAsRequestBuilder.buildRequest()
+                    .contentType(AUConstants.ACCESS_TOKEN_CONTENT_TYPE)
+                    .formParams(bodyContent)
+                    .formParams(AUConstants.REQUEST_KEY, generator.getSignedAuthRequestObjectForStringSharingDuration(scopeString,
+                            sharingDuration, cdrArrangementId, redirectUrl, clientId, responseType).serialize())
+                    .baseUri(AUConstants.PUSHED_AUTHORISATION_BASE_PATH)
+                    .post(AUConstants.PAR_ENDPOINT)
+
+        return parResponse
+    }
+
+    /**
+     * AU Authorisation Builder for Pushed Authorisation Flow without Scopes.
+     * @param headerString
+     * @param sharingDuration
+     * @param sendSharingDuration
+     * @param cdrArrangementId
+     * @param clientId
+     * @return
+     */
+    Response doPushAuthRequestWithoutScopes(long sharingDuration, String cdrArrangementId,
+                                            String clientId = getClientID().getValue(),
+                                            String redirectUrl = getRedirectURI().toString(),
+                                            String responseType = getResponseType().toString()) {
+
+        AUJWTGenerator generator = new AUJWTGenerator()
+        Response parResponse
+
+        String assertionString = generator.getClientAssertionJwt(clientId)
+
+        def bodyContent = [
+                (AUConstants.CLIENT_ID_KEY)            : (clientId),
+                (AUConstants.CLIENT_ASSERTION_TYPE_KEY): (AUConstants.CLIENT_ASSERTION_TYPE),
+                (AUConstants.CLIENT_ASSERTION_KEY)     : assertionString,
+        ]
+
+        parResponse = AURestAsRequestBuilder.buildRequest()
+                .contentType(AUConstants.ACCESS_TOKEN_CONTENT_TYPE)
+                .formParams(bodyContent)
+                .formParams(AUConstants.REQUEST_KEY, generator.getSignedAuthRequestObjectWithoutScopes(sharingDuration,
+                        cdrArrangementId, redirectUrl, clientId, responseType).serialize())
+                .baseUri(AUConstants.PUSHED_AUTHORISATION_BASE_PATH)
+                .post(AUConstants.PAR_ENDPOINT)
+
+        return parResponse
+    }
+}
