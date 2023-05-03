@@ -184,10 +184,6 @@ id_token_token.enable = false
 device.enable = true
 
 [[oauth.custom_response_type]]
-name = "code"
-class = "com.wso2.openbanking.accelerator.identity.auth.extensions.response.handler.OBCodeResponseTypeHandlerExtension"
-
-[[oauth.custom_response_type]]
 name = "code id_token"
 class = "com.wso2.openbanking.accelerator.identity.auth.extensions.response.handler.OBHybridResponseTypeHandlerExtension"
 
@@ -384,6 +380,10 @@ custom_webapps = ["/keymanager-operations/"]
 [oauth.mutualtls]
 client_certificate_header = "x-wso2-mutual-auth-cert"
 
+[oauth.oidc.id_token]
+sign_before_encryption = true
+signature_algorithm = "SHA256withPS"
+
 [[oauth.oidc.custom_request_object_builder]]
 type = "request_uri_param_value_builder"
 class = "com.wso2.openbanking.accelerator.identity.builders.DefaultOBRequestUriRequestObjectBuilder"
@@ -435,6 +435,8 @@ claim_callback_handler="com.wso2.openbanking.accelerator.identity.claims.OBDefau
 request_object_validator = "com.wso2.openbanking.accelerator.identity.auth.extensions.request.validator.OBRequestObjectValidationExtension"
 id_token_builder = "com.wso2.openbanking.accelerator.identity.idtoken.OBIDTokenBuilder"
 
+[transport.https.sslHostConfig.properties]
+ciphers="TLS_DHE_RSA_WITH_AES_128_GCM_SHA256,TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256,TLS_DHE_RSA_WITH_AES_256_GCM_SHA384,TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384"
 #================configs related to identity-event.properties=============
 
 [[event_handler]]

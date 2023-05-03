@@ -76,12 +76,6 @@
       <artifactId>java-uuid-generator</artifactId>
       <scope>test</scope>
     </dependency>
-      <dependency>
-          <groupId>com.wso2.openbanking</groupId>
-          <artifactId>cds-toolkit-test-framework</artifactId>
-          <version>1.0.0</version>
-          <scope>test</scope>
-      </dependency>
   </dependencies>
   <build>
     <plugins>
