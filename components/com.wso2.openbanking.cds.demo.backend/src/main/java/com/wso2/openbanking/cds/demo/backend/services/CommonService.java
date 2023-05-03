@@ -146,7 +146,7 @@ public class CommonService {
                 "            \"flatUnitNumber\": \"string\",\n" +
                 "            \"floorLevelType\": \"string\",\n" +
                 "            \"floorLevelNumber\": \"string\",\n" +
-                "            \"lotNumber\": 0,\n" +
+                "            \"lotNumber\": \"0\",\n" +
                 "            \"buildingName1\": \"string\",\n" +
                 "            \"buildingName2\": \"string\",\n" +
                 "            \"streetName\": \"string\",\n" +
@@ -202,7 +202,7 @@ public class CommonService {
                 "            \"flatUnitNumber\": \"string\",\n" +
                 "            \"floorLevelType\": \"string\",\n" +
                 "            \"floorLevelNumber\": \"string\",\n" +
-                "            \"lotNumber\": 0,\n" +
+                "            \"lotNumber\": \"0\",\n" +
                 "            \"buildingName1\": \"string\",\n" +
                 "            \"buildingName2\": \"string\",\n" +
                 "            \"streetName\": \"string\",\n" +

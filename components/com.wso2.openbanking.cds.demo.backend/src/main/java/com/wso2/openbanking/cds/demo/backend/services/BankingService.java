@@ -465,13 +465,15 @@ public class BankingService {
                 "    \"accountNumber\": \"12345\",\n" +
                 "    \"bundleName\": \"bundleName\",\n" +
                 "    \"specificAccountUType\": \"termDeposit\",\n" +
-                "    \"termDeposit\": {\n" +
-                "      \"lodgementDate\": \"2019-09-01T15:43:00.12345Z\",\n" +
-                "      \"maturityDate\": \"2019-09-01T15:43:00.12345Z\",\n" +
-                "      \"maturityAmount\": \"200.00\",\n" +
-                "      \"maturityCurrency\": \"AUD\",\n" +
-                "      \"maturityInstructions\": \"ROLLED_OVER\"\n" +
-                "    },\n" +
+                "    \"termDeposit\": [" +
+                "      {\n" +
+                "        \"lodgementDate\": \"2019-09-01T15:43:00.12345Z\",\n" +
+                "        \"maturityDate\": \"2019-09-01T15:43:00.12345Z\",\n" +
+                "        \"maturityAmount\": \"200.00\",\n" +
+                "        \"maturityCurrency\": \"AUD\",\n" +
+                "        \"maturityInstructions\": \"ROLLED_OVER\"\n" +
+                "      }" +
+                "    ],\n" +
                 "    \"depositRate\": \"23\",\n" +
                 "    \"lendingRate\": \"34\",\n" +
                 "    \"depositRates\": [\n" +
