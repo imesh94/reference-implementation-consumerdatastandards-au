@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2021, WSO2 Inc. (http://www.wso2.com). All Rights Reserved.
+ * Copyright (c) 2021-2023, WSO2 Inc. (http://www.wso2.com). All Rights Reserved.
  *
  * This software is the property of WSO2 Inc. and its suppliers, if any.
  * Dissemination of any information or reproduction of any material contained
@@ -166,36 +166,36 @@ public class CDSConsentValidator implements ConsentValidator {
         while (iterator.hasNext()) {
             // Get the next ConsentMappingResource from the iterator
             ConsentMappingResource mappingResource = iterator.next();
-            log.info(mappingResource.getAccountID());
-            // Check if the account is eligible for data sharing based on its DOMS status
-            if (!isDomsStatusEligibleForDataSharing(mappingResource.getAccountID())) {
-                // If the account is not eligible for data sharing, remove the ConsentMappingResource from the iterator
-                iterator.remove();
+
+            try {
+                // Check if the account is eligible for data sharing based on its DOMS status
+                if (!isDomsStatusEligibleForDataSharing(mappingResource.getAccountID())) {
+                    // If the account is not eligible for data sharing, remove the ConsentMappingResource from the
+                    // iterator
+                    iterator.remove();
+                }
+            } catch (OpenBankingException e) {
+                log.error("Error checking DOMS status for account " + mappingResource.getAccountID(), e);
             }
+
         }
         consentValidateData.getComprehensiveConsent().setConsentMappingResources(distinctMappingResources);
     }
 
-    public Boolean isDomsStatusEligibleForDataSharing(String accountId) {
+    public Boolean isDomsStatusEligibleForDataSharing(String accountId) throws OpenBankingException {
         // Get an instance of the AccountMetadataService implementation
         AccountMetadataService accountMetadataService = AccountMetadataServiceImpl.getInstance();
-        try {
-            // Call the getGlobalAccountMetadataMap method of the AccountMetadataService implementation
-            Map<String, String> accountMetadata = accountMetadataService.getGlobalAccountMetadataMap(accountId);
 
-            if (!accountMetadata.isEmpty()) {
-                // Check if the DOMS status value for the account is equal to "pre-approval"
-                return accountMetadata.containsValue(CDSConsentExtensionConstants.DOMS_STATUS_PRE_APPROVAL);
-            } else {
-                return false;
-            }
-        } catch (OpenBankingException e) {
-            // Log the exception message and return true to indicate that the account is eligible for data sharing
-            log.info(e.getMessage());
-            return true;
+        // Call the getGlobalAccountMetadataMap method of the AccountMetadataService implementation
+        Map<String, String> accountMetadata = accountMetadataService.getGlobalAccountMetadataMap(accountId);
+
+        if (!accountMetadata.isEmpty()) {
+            // Check if the DOMS status value for the account is equal to "pre-approval"
+            return accountMetadata.containsValue(CDSConsentExtensionConstants.DOMS_STATUS_PRE_APPROVAL);
+        } else {
+            return false;
         }
     }
-
 
     private String generateErrorPayload(String title, String detail, String metaURN, String accountId) {
 

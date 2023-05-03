@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2021, WSO2 Inc. (http://www.wso2.com). All Rights Reserved.
+ * Copyright (c) 2021-2023, WSO2 Inc. (http://www.wso2.com). All Rights Reserved.
  *
  * This software is the property of WSO2 Inc. and its suppliers, if any.
  * Dissemination of any information or reproduction of any material contained
@@ -12,8 +12,11 @@
 
 package com.wso2.openbanking.cds.consent.extensions.admin.impl;
 
+import com.wso2.openbanking.accelerator.account.metadata.service.service.AccountMetadataService;
+import com.wso2.openbanking.accelerator.account.metadata.service.service.AccountMetadataServiceImpl;
 import com.wso2.openbanking.accelerator.common.config.OpenBankingConfigParser;
 import com.wso2.openbanking.accelerator.common.exception.ConsentManagementException;
+import com.wso2.openbanking.accelerator.common.exception.OpenBankingException;
 import com.wso2.openbanking.accelerator.consent.extensions.admin.impl.DefaultConsentAdminHandler;
 import com.wso2.openbanking.accelerator.consent.extensions.admin.model.ConsentAdminData;
 import com.wso2.openbanking.accelerator.consent.extensions.admin.model.ConsentAdminHandler;
@@ -26,6 +29,7 @@ import com.wso2.openbanking.accelerator.consent.mgt.dao.models.DetailedConsentRe
 import com.wso2.openbanking.accelerator.consent.mgt.service.constants.ConsentCoreServiceConstants;
 import com.wso2.openbanking.accelerator.consent.mgt.service.impl.ConsentCoreServiceImpl;
 import com.wso2.openbanking.cds.consent.extensions.authorize.utils.PermissionsEnum;
+
 import net.minidev.json.JSONArray;
 import net.minidev.json.JSONObject;
 import net.minidev.json.parser.JSONParser;
@@ -39,8 +43,13 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
 
-import static com.wso2.openbanking.cds.consent.extensions.common.CDSConsentExtensionConstants.AUTH_RESOURCE_TYPE_PRIMARY;
+import static com.wso2.openbanking.cds.consent.extensions.common.CDSConsentExtensionConstants.
+        AUTH_RESOURCE_TYPE_PRIMARY;
 import static com.wso2.openbanking.cds.consent.extensions.common.CDSConsentExtensionConstants.CONSENT_STATUS_REVOKED;
+import static com.wso2.openbanking.cds.consent.extensions.common.CDSConsentExtensionConstants.DOMS_STATUS;
+import static com.wso2.openbanking.cds.consent.extensions.common.CDSConsentExtensionConstants.DOMS_STATUS_PRE_APPROVAL;
+import static com.wso2.openbanking.cds.consent.extensions.common.CDSConsentExtensionConstants.
+        JOINT_ACCOUNT_PAYLOAD_ACCOUNT_ID;
 
 /**
  * Consent admin handler CDS implementation.
@@ -67,6 +76,34 @@ public class CDSConsentAdminHandler implements ConsentAdminHandler {
     @Override
     public void handleSearch(ConsentAdminData consentAdminData) throws ConsentException {
         this.defaultConsentAdminHandler.handleSearch(consentAdminData);
+
+        try {
+            AccountMetadataService accountMetadataService = AccountMetadataServiceImpl.getInstance();
+
+            for (Object item : (JSONArray) consentAdminData.getResponsePayload().get("data")) {
+
+                JSONObject itemJSONObject = (JSONObject) item;
+                JSONArray consentMappingResourcesArray = (JSONArray) itemJSONObject.get("consentMappingResources");
+
+                for (Object consentMappingResource : consentMappingResourcesArray) {
+
+                    JSONObject cmrJSONObject = (JSONObject) consentMappingResource;
+                    String accountId = cmrJSONObject.getAsString(JOINT_ACCOUNT_PAYLOAD_ACCOUNT_ID);
+
+                    Map<String, String> disclosureOptionsMap = accountMetadataService.
+                            getGlobalAccountMetadataMap(accountId);
+
+                    String disclosureOptionStatus = disclosureOptionsMap.get(DOMS_STATUS);
+
+                    if (disclosureOptionStatus == null) {
+                        disclosureOptionStatus = DOMS_STATUS_PRE_APPROVAL;
+                    }
+                    cmrJSONObject.put("domsStatus", disclosureOptionStatus);
+                }
+            }
+        } catch (OpenBankingException e) {
+            log.warn(e.getMessage());
+        }
     }
 
     @Override
