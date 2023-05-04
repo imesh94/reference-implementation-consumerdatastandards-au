@@ -103,7 +103,7 @@ class AUConstants extends OBConstants {
     public static final String BANK_ACCOUNT_SERVICE  = "/services/bankaccounts/bankaccountservice/sharable-accounts"
     public static final String BUSINESS_USER_PERMISSION  = "/account-access-consents/business-stakeholders/permission"
 
-    public static final String BANK_CUSTOMER_BASIC_READ = "Organisation profile and contact details"
+    public static final String BANK_CUSTOMER_BASIC_READ = "Organisation profile*"
     public static final String BANK_CUSTOMER_DETAIL_READ = "Organisation profile and contact details*‡"
     public static final String BANK_ACCOUNT_BASIC_READ = "Account name, type, and balance"
     public static final String BANK_ACCOUNT_DETAIL_READ = "Account balance and details‡"
