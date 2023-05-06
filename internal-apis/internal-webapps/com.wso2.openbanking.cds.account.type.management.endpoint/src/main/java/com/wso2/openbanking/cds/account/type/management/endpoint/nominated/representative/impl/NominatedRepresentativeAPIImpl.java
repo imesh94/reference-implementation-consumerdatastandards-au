@@ -12,6 +12,10 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.wso2.openbanking.accelerator.account.metadata.service.service.AccountMetadataServiceImpl;
 import com.wso2.openbanking.accelerator.common.exception.OpenBankingException;
+import com.wso2.openbanking.accelerator.consent.mgt.dao.models.AuthorizationResource;
+import com.wso2.openbanking.accelerator.consent.mgt.dao.models.ConsentMappingResource;
+import com.wso2.openbanking.accelerator.consent.mgt.dao.models.DetailedConsentResource;
+import com.wso2.openbanking.accelerator.consent.mgt.service.impl.ConsentCoreServiceImpl;
 import com.wso2.openbanking.cds.account.type.management.endpoint.nominated.representative.api.NominatedRepresentativeAPI;
 import com.wso2.openbanking.cds.account.type.management.endpoint.nominated.representative.model.AccountDataDeleteDTO;
 import com.wso2.openbanking.cds.account.type.management.endpoint.nominated.representative.model.AccountDataUpdateDTO;
@@ -50,6 +54,15 @@ public class NominatedRepresentativeAPIImpl implements NominatedRepresentativeAP
     private static final String VIEW = "VIEW";
     private static final String AUTHORIZE = "AUTHORIZE";
     private static final String REVOKE = "REVOKE";
+
+    // Consent constants
+    private static final String PRIMARY_MEMBER_AUTH_TYPE = "primary_member";
+    private static final String REVOKED_CONSENT_STATUS = "Revoked";
+
+
+
+    private static final ConsentCoreServiceImpl consentCoreService = new ConsentCoreServiceImpl();
+
 
     /**
      * {@inheritDoc}
@@ -252,16 +265,47 @@ public class NominatedRepresentativeAPIImpl implements NominatedRepresentativeAP
         try {
             for (AccountDataDeleteDTO accountDataDeleteDTO : accountListDeleteDTO.getData()) {
                 String accountID = accountDataDeleteDTO.getAccountID();
+                // Get a list of account owners and nominated representatives for the account
+                List<String> accountUsers = getUserIdListFromAccountDataDeleteDTO(accountDataDeleteDTO);
+                ArrayList<String> consentIds = new ArrayList<>();
+
                 // Persist account owners
-                for (String accountOwner : accountDataDeleteDTO.getAccountOwners()) {
-                    accountMetadataService.addOrUpdateAccountMetadata(accountID, accountOwner,
+                for (String accountUser : accountUsers) {
+                    accountMetadataService.addOrUpdateAccountMetadata(accountID, accountUser,
                             revokePermissionMap);
+                    // Add consent ID to the consentIds list used for revocation if the user is primary member
+                    // of the consent
+                    //Todo: add config
+                    List<AuthorizationResource> authResourcesForUser = consentCoreService.searchAuthorizationsForUser(
+                            accountUser);
+                    for (AuthorizationResource authResource : authResourcesForUser) {
+                        if (PRIMARY_MEMBER_AUTH_TYPE.equals(authResource.getAuthorizationType())) {
+                            consentIds.add(authResource.getConsentID());
+                        }
+                    }
                 }
-                // Persist nominated representatives
-                for (String nominatedRepresentative : accountDataDeleteDTO.
-                        getNominatedRepresentatives()) {
-                    accountMetadataService.addOrUpdateAccountMetadata(accountID, nominatedRepresentative,
-                            revokePermissionMap);
+                // Check if there are any other users who have AUTHORIZE permission for the account
+                // If there are none, remove all bnr-permission records for the account
+                Map<String, String> userIdAttributesMap = accountMetadataService.getUserAttributesForAccountIdAndKey(
+                        accountID, BNR_PERMISSION);
+                if (!userIdAttributesMap.containsValue(AUTHORIZE)) {
+                    accountMetadataService.removeAccountMetadataByKeyForAllUsers(accountID, BNR_PERMISSION);
+                }
+                // Revoke the consent where the user is the primary member of the consent
+                //Todo: add config
+                List<DetailedConsentResource> detailedConsentResources = consentCoreService.searchDetailedConsents(
+                        consentIds, null, null, null, null, null, null, null, null, false);
+                log.info(detailedConsentResources.size());
+                for (DetailedConsentResource detailedConsentResource : detailedConsentResources) {
+                    List<ConsentMappingResource> consentMappingResources = detailedConsentResource.
+                            getConsentMappingResources();
+                    for (ConsentMappingResource consentMappingResource : consentMappingResources) {
+                        if (accountID.equals(consentMappingResource.getAccountID())) {
+                            consentCoreService.revokeConsentWithReason(detailedConsentResource.getConsentID(),
+                                    REVOKED_CONSENT_STATUS, null, true, "Revoked using BNR Dashboard");
+                            break;
+                        }
+                    }
                 }
             }
         } catch (OpenBankingException e) {
@@ -318,7 +362,8 @@ public class NominatedRepresentativeAPIImpl implements NominatedRepresentativeAP
      * @return List of account-ids in the given AccountDataDeleteDTO
      */
     private static List<String> getUserIdListFromAccountDataDeleteDTO(AccountDataDeleteDTO accountDataDeleteDTO) {
-        List<String> userIdList = accountDataDeleteDTO.getAccountOwners();
+        List<String> userIdList = new ArrayList<>();
+        userIdList.addAll(accountDataDeleteDTO.getAccountOwners());
         userIdList.addAll(accountDataDeleteDTO.getNominatedRepresentatives());
         return userIdList;
     }
