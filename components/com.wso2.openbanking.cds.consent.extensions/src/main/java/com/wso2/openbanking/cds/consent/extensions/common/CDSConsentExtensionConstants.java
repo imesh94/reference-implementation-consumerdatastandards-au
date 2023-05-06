@@ -112,6 +112,14 @@ public class CDSConsentExtensionConstants {
     public static final String BNR_AUTHORIZE_PERMISSION = "AUTHORIZE";
     public static final String BNR_VIEW_PERMISSION = "VIEW";
     public static final String BNR_REVOKE_PERMISSION = "REVOKE";
+    public static final String INDIVIDUAL_PROFILE_TYPE = "Individual";
+    public static final String INDIVIDUAL_PROFILE_ID = "individual_profile";
+    public static final String BUSINESS_PROFILE_TYPE = "Business";
+    public static final String PROFILE_ID = "profileId";
+    public static final String PROFILE_NAME = "profileName";
+    public static final String PRE_SELECTED_PROFILE_ID = "preSelectedProfileId";
+    public static final String CUSTOMER_PROFILES_ATTRIBUTE = "customerProfiles";
+    public static final String PROFILES_DATA_ATTRIBUTE = "profiles_data";
 
 
     public static final String ACCEPT_HEADER_NAME = "Accept";
