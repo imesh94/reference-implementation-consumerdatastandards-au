@@ -38,8 +38,11 @@ public class OBCDSAuthServletImpl implements OBAuthServletInterface {
 
         // Set "data_requested" that contains the human-readable scope-requested information
         JSONArray dataRequestedJsonArray = dataSet.getJSONArray(CDSConsentExtensionConstants.DATA_REQUESTED);
+        JSONArray businessDataClusterArray = dataSet.getJSONArray(CDSConsentExtensionConstants.BUSINESS_DATA_CLUSTER);
         Map<String, List<String>> dataRequested = getRequestedDataMap(dataRequestedJsonArray);
+        Map<String, List<String>> businessDataCluster = getRequestedDataMap(businessDataClusterArray);
         returnMaps.put(CDSConsentExtensionConstants.DATA_REQUESTED, dataRequested);
+        returnMaps.put(CDSConsentExtensionConstants.BUSINESS_DATA_CLUSTER, businessDataCluster);
 
         // Add accounts list
         JSONArray accountsArray = dataSet.getJSONArray(CDSConsentExtensionConstants.ACCOUNTS);

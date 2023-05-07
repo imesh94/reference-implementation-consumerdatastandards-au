@@ -39,8 +39,15 @@
     DateTimeFormatter dtf = DateTimeFormatter.ofPattern("yyyy-MM-dd");
     LocalDateTime now = LocalDateTime.now();
     String currentDate = dtf.format(now);
-    Map<String, List<String>> consentData = (Map<String, List<String>>) session.getAttribute("configParamsMap");
-    Map<String, List<String>> newConsentData = (Map<String, List<String>>) session.getAttribute("newConfigParamsMap");
+    Map<String, List<String>> consentData;
+    Map<String, List<String>> newConsentData;
+    if ("individual_profile".equalsIgnoreCase(selectedProfileId)) {
+        consentData = (Map<String, List<String>>) session.getAttribute("configParamsMap");
+        newConsentData = (Map<String, List<String>>) session.getAttribute("newConfigParamsMap");
+    } else {
+        consentData = (Map<String, List<String>>) session.getAttribute("business_data_cluster");
+        newConsentData = (Map<String, List<String>>) session.getAttribute("new_business_data_cluster");
+    }
     session.setAttribute("configParamsMap", consentData);
     session.setAttribute("newConfigParamsMap", newConsentData);
     session.setAttribute("isConsentAmendment", isConsentAmendment);

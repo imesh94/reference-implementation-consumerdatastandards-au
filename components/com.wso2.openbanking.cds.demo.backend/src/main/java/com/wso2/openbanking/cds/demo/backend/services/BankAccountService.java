@@ -188,7 +188,7 @@ public class BankAccountService {
             "          \"businessAccountInfo\": {\n" +
             "              \"AccountOwners\": [\n" +
             "                  {\n" +
-            "                  \"memberId\":\"nominatedUser1@wso2.com@carbon.super\",\n" +
+            "                  \"memberId\":\"nominatedUser3@wso2.com@carbon.super\",\n" +
             "                  \"meta\":{}\n" +
             "                  },\n" +
             "                  {\n" +
@@ -202,7 +202,7 @@ public class BankAccountService {
             "                 \"meta\":{}\n" +
             "                 },\n" +
             "                 {\n" +
-            "                 \"memberId\":\"nominatedUser3@wso2.com@carbon.super\",\n" +
+            "                 \"memberId\":\"nominatedUser1@wso2.com@carbon.super\",\n" +
             "                 \"meta\":{}\n" +
             "                 },\n" +
             "                 {\n" +

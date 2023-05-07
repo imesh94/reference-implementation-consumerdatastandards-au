@@ -109,6 +109,8 @@ public class CDSConsentExtensionConstants {
     public static final String BNR_AUTHORIZE_PERMISSION = "AUTHORIZE";
     public static final String BNR_VIEW_PERMISSION = "VIEW";
     public static final String BNR_REVOKE_PERMISSION = "REVOKE";
+
+    //Multi Profile Constants
     public static final String INDIVIDUAL_PROFILE_TYPE = "Individual";
     public static final String INDIVIDUAL_PROFILE_ID = "individual_profile";
     public static final String BUSINESS_PROFILE_TYPE = "Business";
@@ -125,6 +127,9 @@ public class CDSConsentExtensionConstants {
     public static final String BUSINESS_PROFILE_TYPE_ATTRIBUTE = "business-profile";
     public static final String TOTAL = "total";
     public static final String COUNT = "count";
+    public static final String BUSINESS_DATA_CLUSTER = "business_data_cluster";
+    public static final String NEW_BUSINESS_DATA_CLUSTER = "new_business_data_cluster";
+
 
 
     public static final String ACCEPT_HEADER_NAME = "Accept";
