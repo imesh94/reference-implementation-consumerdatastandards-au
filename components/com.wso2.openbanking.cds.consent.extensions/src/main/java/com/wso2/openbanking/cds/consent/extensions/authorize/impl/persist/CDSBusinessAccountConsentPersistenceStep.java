@@ -70,6 +70,8 @@ public class CDSBusinessAccountConsentPersistenceStep implements ConsentPersistS
                 //Add business account data to consentPersistData
                 CDSConsentPersistUtil.addNonPrimaryAccountDataToPersistData(businessAccountIdUserMap,
                         consentPersistData);
+                //Add customer profile data to consent attributes
+                addProfileDataToConsentAttributes(consentPersistData);
             } catch (OpenBankingException e) {
                 log.error("Error while adding nominated representative data to account metadata table. " +
                         "Aborting consent persistence", e);
@@ -216,5 +218,27 @@ public class CDSBusinessAccountConsentPersistenceStep implements ConsentPersistS
             }
         }
     }
+
+    /**
+     * Add profile-id, profile-name and profile type to consent attributes.
+     *
+     * @param consentPersistData ConsentPersistData
+     */
+    private void addProfileDataToConsentAttributes (ConsentPersistData consentPersistData) {
+        String selectedProfileId = consentPersistData.getPayload().getAsString(CDSConsentExtensionConstants.
+                SELECTED_PROFILE_ID);
+        String selectedProfileName = consentPersistData.getPayload().getAsString(CDSConsentExtensionConstants.
+                SELECTED_PROFILE_NAME);
+        String customerAccountType = CDSConsentExtensionConstants.INDIVIDUAL_PROFILE_ID.
+                equals(selectedProfileId) ? CDSConsentExtensionConstants.INDIVIDUAL_PROFILE_TYPE
+                : CDSConsentExtensionConstants.BUSINESS_PROFILE_TYPE;
+        CDSConsentPersistUtil.addConsentAttribute(CDSConsentExtensionConstants.SELECTED_PROFILE_ID, selectedProfileId,
+                consentPersistData);
+        CDSConsentPersistUtil.addConsentAttribute(CDSConsentExtensionConstants.SELECTED_PROFILE_NAME,
+                selectedProfileName, consentPersistData);
+        CDSConsentPersistUtil.addConsentAttribute(CDSConsentExtensionConstants.CUSTOMER_ACCOUNT_TYPE,
+                customerAccountType, consentPersistData);
+    }
+
 
 }

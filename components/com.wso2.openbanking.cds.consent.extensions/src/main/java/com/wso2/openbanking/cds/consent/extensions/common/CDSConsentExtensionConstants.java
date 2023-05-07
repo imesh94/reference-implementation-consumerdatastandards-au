@@ -61,6 +61,7 @@ public class CDSConsentExtensionConstants {
     public static final String ACCOUNT_MASKING_ENABLED = "account_masking_enabled";
     public static final String USER_ID_KEY_NAME = "userID";
     public static final String CONSENT_STATUS_REVOKED = "revoked";
+    public static final String CONSENT_ATTRIBUTES = "consentAttributes";
 
     // Joint account constants
     public static final String IS_JOINT_ACCOUNT_RESPONSE = "isJointAccount";
@@ -120,6 +121,8 @@ public class CDSConsentExtensionConstants {
     public static final String PRE_SELECTED_PROFILE_ID = "preSelectedProfileId";
     public static final String CUSTOMER_PROFILES_ATTRIBUTE = "customerProfiles";
     public static final String PROFILES_DATA_ATTRIBUTE = "profiles_data";
+    public static final String SELECTED_PROFILE_ID = "selectedProfileId";
+    public static final String SELECTED_PROFILE_NAME = "selectedProfileName";
 
 
     public static final String ACCEPT_HEADER_NAME = "Accept";

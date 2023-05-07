@@ -18,6 +18,7 @@ import com.wso2.openbanking.accelerator.consent.extensions.authorize.model.Conse
 import com.wso2.openbanking.accelerator.consent.extensions.authorize.model.ConsentPersistData;
 import com.wso2.openbanking.accelerator.consent.extensions.authorize.model.ConsentPersistStep;
 import com.wso2.openbanking.accelerator.consent.extensions.common.ConsentException;
+import com.wso2.openbanking.accelerator.consent.extensions.common.ConsentExtensionConstants;
 import com.wso2.openbanking.accelerator.consent.extensions.common.ResponseStatus;
 import com.wso2.openbanking.accelerator.consent.mgt.dao.constants.ConsentMgtDAOConstants;
 import com.wso2.openbanking.accelerator.consent.mgt.dao.models.AuthorizationResource;
@@ -248,6 +249,12 @@ public class CDSConsentPersistStep implements ConsentPersistStep {
                 .get(CDSConsentExtensionConstants.JOINT_ACCOUNTS_PAYLOAD);
         if (jointAccountsPayload != null && StringUtils.isNotBlank(jointAccountsPayload.toString())) {
             consentAttributes.put(CDSConsentExtensionConstants.JOINT_ACCOUNTS_PAYLOAD, jointAccountsPayload.toString());
+        }
+        // Add consent attributes from all consent persistence steps.
+        if (consentPersistData.getMetadata().containsKey(CDSConsentExtensionConstants.CONSENT_ATTRIBUTES)) {
+            Map<String, String> persistStepsAttributes = (Map<String, String>) consentPersistData.getMetadata().
+                    get(CDSConsentExtensionConstants.CONSENT_ATTRIBUTES);
+            consentAttributes.putAll(persistStepsAttributes);
         }
 
         return consentAttributes;

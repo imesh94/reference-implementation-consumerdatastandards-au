@@ -29,6 +29,8 @@
     String spFullName = request.getParameter("spFullName");
     String consentId = request.getParameter("id");
     String userName = request.getParameter("user");
+    String selectedProfileId = request.getParameter("selectedProfileId");
+    String selectedProfileName = request.getParameter("selectedProfileName");
     String[] accountList = accounNames.split(":");
     String[] accountIdList = accounts.split(":");
     String consentExpiryDateTime = request.getParameter("consent-expiry-date");
@@ -205,6 +207,8 @@
                         <input type="hidden" name="accounts[]" id="account" value="<%=accounts%>">
                         <input type="hidden" name="spFullName" id="spFullName" value="<%=spFullName%>"/>
                         <input type="hidden" name="user" id="user" value="<%=userName%>"/>
+                        <input type="hidden" name="selectedProfileId" id="selectedProfileId" value="<%=selectedProfileId%>"/>
+                        <input type="hidden" name="selectedProfileName" id="selectedProfileName" value="<%=selectedProfileName%>"/>
                     </div>
                 </div>
             </div>

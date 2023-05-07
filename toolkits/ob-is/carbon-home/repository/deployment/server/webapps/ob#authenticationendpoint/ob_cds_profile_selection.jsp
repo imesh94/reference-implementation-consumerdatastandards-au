@@ -50,7 +50,8 @@
                         <c:forEach items="${profiles_data}" var="record">
                             <label for="${record['profileName']}">
                                 <input type="radio" id="${record['profileName']}" name="optProfiles"
-                                    value="${record['profileId']}" onclick="setSelectedProfile()"/>
+                                    value="${record['profileId']}" data-profile-name="${record['profileName']}"
+                                onclick="setSelectedProfile()"/>
                                 ${record['profileName']}
                             </label>
                             <br/>
@@ -69,6 +70,7 @@
                     <input type="hidden" name="accNames" id="accountName" value=""/>
                     <input type="hidden" name="type" id="type" value="accounts"/>
                     <input type="hidden" name="selectedProfileId" id="selectedProfileId" value=""/>
+                    <input type="hidden" name="selectedProfileName" id="selectedProfileName" value=""/>
                     <input type="hidden" name="sessionDataKeyConsent" value="${sessionDataKeyConsent}"/>
                 </div>
             </div>
@@ -91,9 +93,12 @@
 
 <script>
     function setSelectedProfile() {
-        var selectedProfileInput = document.getElementById("selectedProfileId");
-        var selectedProfile = document.querySelector('input[name="optProfiles"]:checked').value;
-        selectedProfileInput.value = selectedProfile;
+        var selectedProfileIdInput = document.getElementById("selectedProfileId");
+        var selectedProfileNameInput = document.getElementById("selectedProfileName");
+        var selectedProfileId = document.querySelector('input[name="optProfiles"]:checked').value;
+        var selectedProfileName = document.querySelector('input[name="optProfiles"]:checked').dataset.profileName;
+        selectedProfileIdInput.value = selectedProfileId;
+        selectedProfileNameInput.value = selectedProfileName;
     }
 </script>
 

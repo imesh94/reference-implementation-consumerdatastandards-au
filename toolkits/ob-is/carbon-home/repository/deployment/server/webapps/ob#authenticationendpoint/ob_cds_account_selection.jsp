@@ -52,12 +52,11 @@
                     </h5>
                     <div class="col-md-12" >
                         <%--Get account ids for the selected profile--%>
-                        <p>Selected profile1: ${selectedProfileId} </p>
-                        <p>Selected profile2: <%=selectedProfileId%> </p>
                         <c:set var="selectedProfileId" scope="session" value="<%=selectedProfileId%>"/>
                         <c:forEach items="${profiles_data}" var="profile">
                             <c:if test="${profile['profileId'] eq selectedProfileId}">
                                 <c:set var="profileAccountIds" value="${profile['accountIds']}" />
+                                <c:set var="selectedProfileName" value="${profile['profileName']}" />
                             </c:if>
                         </c:forEach>
                         <%--Display filtered accounts--%>
@@ -120,6 +119,8 @@
                     <input type="hidden" name="accountMaskingEnabled" id="accountMaskingEnabled" value="${account_masking_enabled}"/>
                     <input type="hidden" name="isConsentAmendment" id="isConsentAmendment" value="${isConsentAmendment}"/>
                     <input type="hidden" name="isSharingDurationUpdated" id="isSharingDurationUpdated" value="${isSharingDurationUpdated}"/>
+                    <input type="hidden" name="selectedProfileId" id="selectedProfileId" value="<%=selectedProfileId%>"/>
+                    <input type="hidden" name="selectedProfileName" id="selectedProfileName" value="${selectedProfileName}"/>
                 </div>
             </div>
 

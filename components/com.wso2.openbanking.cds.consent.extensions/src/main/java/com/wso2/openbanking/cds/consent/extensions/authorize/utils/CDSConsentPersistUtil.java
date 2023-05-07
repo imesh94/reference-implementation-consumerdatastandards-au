@@ -149,4 +149,28 @@ public class CDSConsentPersistUtil {
         return requestedAccountArray;
     }
 
+    /**
+     * Add consent attribute to consentPersistData.
+     * These data will be added to the Consent_Attributes table.
+     *
+     * @param attributeKey - Attribute key
+     * @param attributeValue - Attribute value
+     * @param consentPersistData - ConsentPersistData object
+     */
+    public static void addConsentAttribute(String attributeKey, String attributeValue,
+                                           ConsentPersistData consentPersistData) {
+        if (log.isDebugEnabled()) {
+            log.debug("Adding consent attribute " + attributeKey + " with value " + attributeValue);
+        }
+
+        Map<String, String> consentAttributeMap;
+        if (consentPersistData.getMetadata().containsKey("consentAttributes")) {
+            consentAttributeMap = (Map<String, String>) consentPersistData.getMetadata().get("consentAttributes");
+        } else {
+            consentAttributeMap = new HashMap<>();
+        }
+        consentAttributeMap.put(attributeKey, attributeValue);
+        consentPersistData.addMetadata("consentAttributes", consentAttributeMap);
+    }
+
 }
