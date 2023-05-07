@@ -26,6 +26,7 @@ import com.wso2.openbanking.accelerator.consent.mgt.dao.models.DetailedConsentRe
 import com.wso2.openbanking.accelerator.consent.mgt.service.constants.ConsentCoreServiceConstants;
 import com.wso2.openbanking.accelerator.consent.mgt.service.impl.ConsentCoreServiceImpl;
 import com.wso2.openbanking.cds.consent.extensions.authorize.utils.PermissionsEnum;
+import com.wso2.openbanking.cds.consent.extensions.common.CDSConsentExtensionConstants;
 import net.minidev.json.JSONArray;
 import net.minidev.json.JSONObject;
 import net.minidev.json.parser.JSONParser;
@@ -67,6 +68,35 @@ public class CDSConsentAdminHandler implements ConsentAdminHandler {
     @Override
     public void handleSearch(ConsentAdminData consentAdminData) throws ConsentException {
         this.defaultConsentAdminHandler.handleSearch(consentAdminData);
+
+        // Filter the consent data based on the profiles if profiles are available in the query params.
+        if (consentAdminData.getQueryParams().containsKey(CDSConsentExtensionConstants.PROFILES)) {
+            ArrayList profiles = ((ArrayList) consentAdminData.getQueryParams().get(
+                    CDSConsentExtensionConstants.PROFILES));
+            if (profiles.size() > 0) {
+                JSONArray filteredConsentData = new JSONArray();
+                for (Object consentObj : (JSONArray) consentAdminData.getResponsePayload().get(
+                        CDSConsentExtensionConstants.DATA)) {
+                    JSONObject consent = (JSONObject) consentObj;
+                    JSONObject consentAttributes = (JSONObject) consent.get(
+                            CDSConsentExtensionConstants.CONSENT_ATTRIBUTES);
+                    if (consentAttributes.containsKey(CDSConsentExtensionConstants.CUSTOMER_PROFILE_TYPE)) {
+                        String customerProfileType = consentAttributes.get(
+                                CDSConsentExtensionConstants.CUSTOMER_PROFILE_TYPE).toString().split("-")[0];
+                        for (Object profile : profiles) {
+                            if (profile.toString().equalsIgnoreCase(customerProfileType)) {
+                                filteredConsentData.add(consent);
+                            }
+                        }
+                    }
+                }
+                JSONObject responseMetadata = (JSONObject) consentAdminData.getResponsePayload().get(
+                        CDSConsentExtensionConstants.METADATA);
+                responseMetadata.put(CDSConsentExtensionConstants.TOTAL, filteredConsentData.size());
+                responseMetadata.put(CDSConsentExtensionConstants.COUNT, filteredConsentData.size());
+                consentAdminData.getResponsePayload().put(CDSConsentExtensionConstants.DATA, filteredConsentData);
+            }
+        }
     }
 
     @Override

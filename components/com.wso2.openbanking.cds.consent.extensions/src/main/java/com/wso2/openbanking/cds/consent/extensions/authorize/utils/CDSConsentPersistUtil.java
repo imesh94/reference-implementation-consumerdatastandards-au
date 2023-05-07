@@ -164,13 +164,14 @@ public class CDSConsentPersistUtil {
         }
 
         Map<String, String> consentAttributeMap;
-        if (consentPersistData.getMetadata().containsKey("consentAttributes")) {
-            consentAttributeMap = (Map<String, String>) consentPersistData.getMetadata().get("consentAttributes");
+        if (consentPersistData.getMetadata().containsKey(CDSConsentExtensionConstants.CONSENT_ATTRIBUTES)) {
+            consentAttributeMap = (Map<String, String>) consentPersistData.getMetadata().get(
+                    CDSConsentExtensionConstants.CONSENT_ATTRIBUTES);
         } else {
             consentAttributeMap = new HashMap<>();
         }
         consentAttributeMap.put(attributeKey, attributeValue);
-        consentPersistData.addMetadata("consentAttributes", consentAttributeMap);
+        consentPersistData.addMetadata(CDSConsentExtensionConstants.CONSENT_ATTRIBUTES, consentAttributeMap);
     }
 
 }

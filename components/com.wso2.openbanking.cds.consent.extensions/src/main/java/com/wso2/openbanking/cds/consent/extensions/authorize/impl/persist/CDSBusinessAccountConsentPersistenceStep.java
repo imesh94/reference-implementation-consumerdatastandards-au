@@ -155,7 +155,7 @@ public class CDSBusinessAccountConsentPersistenceStep implements ConsentPersistS
     private boolean isValidBusinessAccount(JSONObject accountObject) {
 
         String accountType = accountObject.getAsString(CDSConsentExtensionConstants.CUSTOMER_ACCOUNT_TYPE);
-        return (CDSConsentExtensionConstants.BUSINESS.equalsIgnoreCase(accountType));
+        return (CDSConsentExtensionConstants.BUSINESS_PROFILE_TYPE.equalsIgnoreCase(accountType));
     }
 
     /**
@@ -229,15 +229,15 @@ public class CDSBusinessAccountConsentPersistenceStep implements ConsentPersistS
                 SELECTED_PROFILE_ID);
         String selectedProfileName = consentPersistData.getPayload().getAsString(CDSConsentExtensionConstants.
                 SELECTED_PROFILE_NAME);
-        String customerAccountType = CDSConsentExtensionConstants.INDIVIDUAL_PROFILE_ID.
-                equals(selectedProfileId) ? CDSConsentExtensionConstants.INDIVIDUAL_PROFILE_TYPE
-                : CDSConsentExtensionConstants.BUSINESS_PROFILE_TYPE;
+        String customerProfileType = CDSConsentExtensionConstants.INDIVIDUAL_PROFILE_ID.
+                equals(selectedProfileId) ? CDSConsentExtensionConstants.INDIVIDUAL_PROFILE_TYPE_ATTRIBUTE
+                : CDSConsentExtensionConstants.BUSINESS_PROFILE_TYPE_ATTRIBUTE;
         CDSConsentPersistUtil.addConsentAttribute(CDSConsentExtensionConstants.SELECTED_PROFILE_ID, selectedProfileId,
                 consentPersistData);
         CDSConsentPersistUtil.addConsentAttribute(CDSConsentExtensionConstants.SELECTED_PROFILE_NAME,
                 selectedProfileName, consentPersistData);
-        CDSConsentPersistUtil.addConsentAttribute(CDSConsentExtensionConstants.CUSTOMER_ACCOUNT_TYPE,
-                customerAccountType, consentPersistData);
+        CDSConsentPersistUtil.addConsentAttribute(CDSConsentExtensionConstants.CUSTOMER_PROFILE_TYPE,
+                customerProfileType, consentPersistData);
     }
 
 

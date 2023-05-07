@@ -105,7 +105,6 @@ public class CDSConsentExtensionConstants {
     public static final String BUSINESS_ACCOUNT_OWNER = "business_account_owner";
     public static final String NOMINATED_REPRESENTATIVE = "nominated_representative";
     public static final String CUSTOMER_ACCOUNT_TYPE = "customerAccountType";
-    public static final String BUSINESS = "Business";
     public static final String BNR_PERMISSION = "bnr-permission";
     public static final String BNR_AUTHORIZE_PERMISSION = "AUTHORIZE";
     public static final String BNR_VIEW_PERMISSION = "VIEW";
@@ -120,6 +119,12 @@ public class CDSConsentExtensionConstants {
     public static final String PROFILES_DATA_ATTRIBUTE = "profiles_data";
     public static final String SELECTED_PROFILE_ID = "selectedProfileId";
     public static final String SELECTED_PROFILE_NAME = "selectedProfileName";
+    public static final String PROFILES = "profiles";
+    public static final String CUSTOMER_PROFILE_TYPE = "customerProfileType";
+    public static final String INDIVIDUAL_PROFILE_TYPE_ATTRIBUTE = "individual-profile";
+    public static final String BUSINESS_PROFILE_TYPE_ATTRIBUTE = "business-profile";
+    public static final String TOTAL = "total";
+    public static final String COUNT = "count";
 
 
     public static final String ACCEPT_HEADER_NAME = "Accept";
