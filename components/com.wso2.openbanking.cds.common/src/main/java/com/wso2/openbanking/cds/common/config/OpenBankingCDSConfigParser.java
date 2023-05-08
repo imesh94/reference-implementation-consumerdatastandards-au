@@ -548,4 +548,37 @@ public class OpenBankingCDSConfigParser {
         return value == null ? "" : value;
     }
 
+    //---Nominated Representative Configs---
+    /**
+     * Check if prioritizing sharable accounts response is enabled for Nominated Representative feature.
+     * If this is enabled, data stored in the Account_Metadata will not be used for validations during consent
+     * authorization. When the consent is authorized, Account_Metadata table will be updated.
+     *
+     * @return configured boolean value, default value is true
+     */
+    public boolean isBNRPrioritizeSharableAccountsResponseEnabled() {
+        Object config = getConfigElementFromKey(CommonConstants.PRIORITIZE_SHARABLE_ACCOUNTS_RESPONSE);
+        if (config != null) {
+            return Boolean.parseBoolean((String) config);
+        } else {
+            return true;
+        }
+    }
+
+    /**
+     * Check if validating accounts on retrieval is enabled for Nominated Representative feature.
+     * If this is enabled, bnr-permission will be checked when retrieving accounts data, and if
+     * the user has REVOKE permission, the account will be removed during consent validation.
+     *
+     * @return configured boolean value, default value is true
+     */
+    public boolean isBNRValidateAccountsOnRetrievalEnabled() {
+        Object config = getConfigElementFromKey(CommonConstants.VALIDATE_ACCOUNTS_ON_RETRIEVAL);
+        if (config != null) {
+            return Boolean.parseBoolean((String) config);
+        } else {
+            return true;
+        }
+    }
+
 }

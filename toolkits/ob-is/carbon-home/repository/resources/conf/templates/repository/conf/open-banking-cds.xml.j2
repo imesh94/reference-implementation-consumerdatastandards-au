@@ -172,4 +172,21 @@
              {% endif %}
          </ParFilterValidators>
      </FilterValidators>
+     <BNR>
+        {% if open_banking_cds.bnr.prioritize_sharable_accounts_response is defined %}
+        <PrioritizeSharableAccountsResponse>{{prioritize_sharable_accounts_response}}</PrioritizeSharableAccountsResponse>
+        {% else %}
+        <PrioritizeSharableAccountsResponse>true</PrioritizeSharableAccountsResponse>
+        {% endif %}
+        {% if open_banking_cds.bnr.enable_consent_revocation is defined %}
+        <EnableConsentRevocation>{{open_banking_cds.bnr.enable_consent_revocation}}</EnableConsentRevocation>
+        {% else %}
+        <EnableConsentRevocation>true</EnableConsentRevocation>
+        {% endif %}
+        {% if open_banking_cds.bnr.validate_accounts_on_retrieval is defined %}
+        <ValidateAccountsOnRetrieval>{{open_banking_cds.bnr.validate_accounts_on_retrieval}}</ValidateAccountsOnRetrieval>
+        {% else %}
+        <ValidateAccountsOnRetrieval>true</ValidateAccountsOnRetrieval>
+        {% endif %}
+     </BNR>
 </Server>

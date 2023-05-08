@@ -29,6 +29,8 @@ public class CommonConstants {
     public static final String INTROSPECT_FILTER_VALIDATORS = "FilterValidators.IntrospectFilterValidators.Validator";
     public static final String REVOKE_FILTER_VALIDATORS = "FilterValidators.RevokeFilterValidators.Validator";
     public static final String PAR_FILTER_VALIDATORS = "FilterValidators.ParFilterValidators.Validator";
+    public static final String PRIORITIZE_SHARABLE_ACCOUNTS_RESPONSE = "BNR.PrioritizeSharableAccountsResponse";
+    public static final String VALIDATE_ACCOUNTS_ON_RETRIEVAL = "BNR.ValidateAccountsOnRetrieval";
 
 
     // Http related constants

@@ -131,11 +131,12 @@ public class CDSConsentValidator implements ConsentValidator {
             }
         }
 
-        // remove inactive and duplicate consent mappings
+        // Remove inactive and duplicate consent mappings
         removeInactiveAndDuplicateConsentMappings(consentValidateData);
-        // remove accounts with revoked BNR permission
-        removeAccountsWithRevokedBNRPermission(consentValidateData);
-
+        // Remove accounts with revoked BNR permission if the configuration is enabled.
+        if(OpenBankingCDSConfigParser.getInstance().isBNRValidateAccountsOnRetrievalEnabled()) {
+            removeAccountsWithRevokedBNRPermission(consentValidateData);
+        }
         consentValidationResult.setValid(true);
     }
 
