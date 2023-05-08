@@ -15,6 +15,7 @@ import com.wso2.openbanking.accelerator.consent.extensions.authorize.model.Conse
 import com.wso2.openbanking.accelerator.consent.extensions.authorize.model.ConsentPersistStep;
 import com.wso2.openbanking.accelerator.consent.extensions.common.ConsentException;
 import com.wso2.openbanking.accelerator.consent.extensions.common.ResponseStatus;
+import com.wso2.openbanking.cds.common.config.OpenBankingCDSConfigParser;
 import com.wso2.openbanking.cds.consent.extensions.authorize.utils.CDSConsentPersistUtil;
 import com.wso2.openbanking.cds.consent.extensions.common.CDSConsentExtensionConstants;
 import net.minidev.json.JSONArray;
@@ -55,13 +56,16 @@ public class CDSBusinessAccountConsentPersistenceStep implements ConsentPersistS
             //Get a map of business account id against users with their auth type
             businessAccountIdUserMap = getBusinessAccountIdUsersMap(consentedAccountsJsonArray);
 
-            //Abort the flow if any of the users have revoke permission //Todo: make this configurable
-            if (!validateNominatedRepresentativePermissions(businessAccountIdUserMap)) {
-                log.error("Users that don't have permissions to be nominated representatives are present in " +
-                        "the consent request");
-                throw new ConsentException(ResponseStatus.BAD_REQUEST,
-                        "Users that don't have permissions to be nominated representatives are present in " +
-                                "the consent request");
+            //Abort the flow if any of the users have revoke permission and the config for prioritizing
+            // sharable accounts response is enabled.
+            if(OpenBankingCDSConfigParser.getInstance().isBNRPrioritizeSharableAccountsResponseEnabled()) {
+                if (!validateNominatedRepresentativePermissions(businessAccountIdUserMap)) {
+                    log.error("Users that don't have permissions to be nominated representatives are present in " +
+                            "the consent request");
+                    throw new ConsentException(ResponseStatus.BAD_REQUEST,
+                            "Users that don't have permissions to be nominated representatives are present in " +
+                                    "the consent request");
+                }
             }
 
             try {
