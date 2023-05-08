@@ -24,6 +24,7 @@ import com.wso2.openbanking.cds.account.type.management.endpoint.nominated.repre
 import com.wso2.openbanking.cds.account.type.management.endpoint.nominated.representative.model.ErrorDTO;
 import com.wso2.openbanking.cds.account.type.management.endpoint.nominated.representative.model.NominatedRepresentativeDTO;
 import com.wso2.openbanking.cds.account.type.management.endpoint.nominated.representative.model.NominatedRepresentativeResponseDTO;
+import com.wso2.openbanking.cds.common.config.OpenBankingCDSConfigParser;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -58,8 +59,6 @@ public class NominatedRepresentativeAPIImpl implements NominatedRepresentativeAP
     // Consent constants
     private static final String PRIMARY_MEMBER_AUTH_TYPE = "primary_member";
     private static final String REVOKED_CONSENT_STATUS = "Revoked";
-
-
 
     private static final ConsentCoreServiceImpl consentCoreService = new ConsentCoreServiceImpl();
 
@@ -274,15 +273,17 @@ public class NominatedRepresentativeAPIImpl implements NominatedRepresentativeAP
                     accountMetadataService.addOrUpdateAccountMetadata(accountID, accountUser,
                             revokePermissionMap);
                     // Add consent ID to the consentIds list used for revocation if the user is primary member
-                    // of the consent
-                    //Todo: add config
-                    List<AuthorizationResource> authResourcesForUser = consentCoreService.searchAuthorizationsForUser(
-                            accountUser);
-                    for (AuthorizationResource authResource : authResourcesForUser) {
-                        if (PRIMARY_MEMBER_AUTH_TYPE.equals(authResource.getAuthorizationType())) {
-                            consentIds.add(authResource.getConsentID());
+                    // of the consent and if the revocation config is enabled
+                    if (OpenBankingCDSConfigParser.getInstance().isBNRConsentRevocationEnabled()) {
+                        List<AuthorizationResource> authResourcesForUser = consentCoreService.
+                                searchAuthorizationsForUser(accountUser);
+                        for (AuthorizationResource authResource : authResourcesForUser) {
+                            if (PRIMARY_MEMBER_AUTH_TYPE.equals(authResource.getAuthorizationType())) {
+                                consentIds.add(authResource.getConsentID());
+                            }
                         }
                     }
+
                 }
                 // Check if there are any other users who have AUTHORIZE permission for the account
                 // If there are none, remove all bnr-permission records for the account
@@ -292,18 +293,19 @@ public class NominatedRepresentativeAPIImpl implements NominatedRepresentativeAP
                     accountMetadataService.removeAccountMetadataByKeyForAllUsers(accountID, BNR_PERMISSION);
                 }
                 // Revoke the consent where the user is the primary member of the consent
-                //Todo: add config
-                List<DetailedConsentResource> detailedConsentResources = consentCoreService.searchDetailedConsents(
-                        consentIds, null, null, null, null, null, null, null, null, false);
-                log.info(detailedConsentResources.size());
-                for (DetailedConsentResource detailedConsentResource : detailedConsentResources) {
-                    List<ConsentMappingResource> consentMappingResources = detailedConsentResource.
-                            getConsentMappingResources();
-                    for (ConsentMappingResource consentMappingResource : consentMappingResources) {
-                        if (accountID.equals(consentMappingResource.getAccountID())) {
-                            consentCoreService.revokeConsentWithReason(detailedConsentResource.getConsentID(),
-                                    REVOKED_CONSENT_STATUS, null, true, "Revoked using BNR Dashboard");
-                            break;
+                if (consentIds.size() > 0) {
+                    List<DetailedConsentResource> detailedConsentResources = consentCoreService.searchDetailedConsents(
+                            consentIds, null, null, null, null, null, null, null, null, false);
+                    log.info(detailedConsentResources.size());
+                    for (DetailedConsentResource detailedConsentResource : detailedConsentResources) {
+                        List<ConsentMappingResource> consentMappingResources = detailedConsentResource.
+                                getConsentMappingResources();
+                        for (ConsentMappingResource consentMappingResource : consentMappingResources) {
+                            if (accountID.equals(consentMappingResource.getAccountID())) {
+                                consentCoreService.revokeConsentWithReason(detailedConsentResource.getConsentID(),
+                                        REVOKED_CONSENT_STATUS, null, true, "Revoked using BNR Dashboard");
+                                break;
+                            }
                         }
                     }
                 }
