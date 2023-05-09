@@ -24,6 +24,7 @@ import com.wso2.openbanking.cds.account.type.management.endpoint.nominated.repre
 import com.wso2.openbanking.cds.account.type.management.endpoint.nominated.representative.model.ErrorDTO;
 import com.wso2.openbanking.cds.account.type.management.endpoint.nominated.representative.model.NominatedRepresentativeDTO;
 import com.wso2.openbanking.cds.account.type.management.endpoint.nominated.representative.model.NominatedRepresentativeResponseDTO;
+import com.wso2.openbanking.cds.account.type.management.endpoint.util.ValidationUtil;
 import com.wso2.openbanking.cds.common.config.OpenBankingCDSConfigParser;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.logging.Log;
@@ -33,11 +34,6 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import java.util.Map;
-import java.util.Set;
-import javax.validation.ConstraintViolation;
-import javax.validation.Validation;
-import javax.validation.Validator;
-import javax.validation.ValidatorFactory;
 import javax.ws.rs.core.Response;
 
 /**
@@ -75,7 +71,7 @@ public class NominatedRepresentativeAPIImpl implements NominatedRepresentativeAP
         try {
             accountListUpdateDTO = objectMapper.readValue(requestBody, AccountListUpdateDTO.class);
             // Validate the request body
-            String validationError = getFirstViolationMessage(accountListUpdateDTO);
+            String validationError = ValidationUtil.getFirstViolationMessage(accountListUpdateDTO);
             if (validationError.isEmpty()) {
                 // Proceed with persisting nominated representative data if there are no violations.
                 boolean successfullyPersisted = persistUpdatedNominatedRepresentativeData
@@ -112,7 +108,7 @@ public class NominatedRepresentativeAPIImpl implements NominatedRepresentativeAP
         try {
             accountListDeleteDTO = objectMapper.readValue(requestBody, AccountListDeleteDTO.class);
             // Validate the request body
-            String validationError = getFirstViolationMessage(accountListDeleteDTO);
+            String validationError = ValidationUtil.getFirstViolationMessage(accountListDeleteDTO);
             if (!validationError.isEmpty()) {
                 ErrorDTO errorDTO = new ErrorDTO(INVALID_REQUEST, validationError);
                 return Response.status(Response.Status.BAD_REQUEST).entity(errorDTO).build();
@@ -192,26 +188,6 @@ public class NominatedRepresentativeAPIImpl implements NominatedRepresentativeAP
 
         //ToDo: Implement this method
         return null;
-    }
-
-    /**
-     * Validate the passed DTO and return the first violation message.
-     *
-     * @param dto DTO to be validated
-     * @return first violation message
-     */
-    protected static String getFirstViolationMessage(Object dto) {
-
-        String firstViolationMessage = "";
-        ValidatorFactory factory = Validation.buildDefaultValidatorFactory();
-        Validator validator = factory.getValidator();
-        Set<ConstraintViolation<Object>> violations = validator.validate(dto);
-        if (!violations.isEmpty()) {
-            ConstraintViolation<?> firstViolation = violations.iterator().next();
-            firstViolationMessage = firstViolation.getMessage().replaceAll("\\.$", "") +
-                    ". Error path :" + firstViolation.getPropertyPath();
-        }
-        return firstViolationMessage;
     }
 
     /**
