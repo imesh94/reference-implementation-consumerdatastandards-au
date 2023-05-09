@@ -58,7 +58,7 @@ public class CDSBusinessAccountConsentPersistenceStep implements ConsentPersistS
 
             //Abort the flow if any of the users have revoke permission and the config for prioritizing
             // sharable accounts response is enabled.
-            if(OpenBankingCDSConfigParser.getInstance().isBNRPrioritizeSharableAccountsResponseEnabled()) {
+            if (OpenBankingCDSConfigParser.getInstance().isBNRPrioritizeSharableAccountsResponseEnabled()) {
                 if (!validateNominatedRepresentativePermissions(businessAccountIdUserMap)) {
                     log.error("Users that don't have permissions to be nominated representatives are present in " +
                             "the consent request");
