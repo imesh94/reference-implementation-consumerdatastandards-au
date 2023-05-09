@@ -21,6 +21,7 @@ import com.wso2.openbanking.cds.account.type.management.endpoint.nominated.repre
 import com.wso2.openbanking.cds.account.type.management.endpoint.nominated.representative.model.AccountDataUpdateDTO;
 import com.wso2.openbanking.cds.account.type.management.endpoint.nominated.representative.model.AccountListDeleteDTO;
 import com.wso2.openbanking.cds.account.type.management.endpoint.nominated.representative.model.AccountListUpdateDTO;
+import com.wso2.openbanking.cds.account.type.management.endpoint.nominated.representative.model.BNRPermissionsEnum;
 import com.wso2.openbanking.cds.account.type.management.endpoint.nominated.representative.model.ErrorDTO;
 import com.wso2.openbanking.cds.account.type.management.endpoint.nominated.representative.model.NominatedRepresentativeDTO;
 import com.wso2.openbanking.cds.account.type.management.endpoint.nominated.representative.model.NominatedRepresentativeResponseDTO;
@@ -55,6 +56,10 @@ public class NominatedRepresentativeAPIImpl implements NominatedRepresentativeAP
     // Consent constants
     private static final String PRIMARY_MEMBER_AUTH_TYPE = "primary_member";
     private static final String REVOKED_CONSENT_STATUS = "Revoked";
+
+    // Error messages
+    private static final String METADATA_SERVICE_ERROR = "\"Error occurred while persisting nominated " +
+            "representative data using the account metadata service\"";
 
     private static final ConsentCoreServiceImpl consentCoreService = new ConsentCoreServiceImpl();
 
@@ -199,7 +204,8 @@ public class NominatedRepresentativeAPIImpl implements NominatedRepresentativeAP
     protected static boolean persistUpdatedNominatedRepresentativeData(AccountListUpdateDTO accountListUpdateDTO) {
 
         AccountMetadataServiceImpl accountMetadataService = AccountMetadataServiceImpl.getInstance();
-        Map<String, String> accountOwnerPermissionMap = Collections.singletonMap(BNR_PERMISSION, VIEW);
+        Map<String, String> accountOwnerPermissionMap = Collections.singletonMap(BNR_PERMISSION,
+                BNRPermissionsEnum.VIEW.toString());
 
         try {
             for (AccountDataUpdateDTO accountDataUpdateDTO : accountListUpdateDTO.getData()) {
@@ -220,8 +226,7 @@ public class NominatedRepresentativeAPIImpl implements NominatedRepresentativeAP
                 }
             }
         } catch (OpenBankingException e) {
-            log.error("Error occurred while persisting nominated representative data using the accelerator " +
-                    "account metadata service", e);
+            log.error(METADATA_SERVICE_ERROR, e);
             return false;
         }
         return true;
@@ -236,7 +241,8 @@ public class NominatedRepresentativeAPIImpl implements NominatedRepresentativeAP
     protected static boolean persistRevokedNominatedRepresentativeData(AccountListDeleteDTO accountListDeleteDTO) {
 
         AccountMetadataServiceImpl accountMetadataService = AccountMetadataServiceImpl.getInstance();
-        Map<String, String> revokePermissionMap = Collections.singletonMap(BNR_PERMISSION, REVOKE);
+        Map<String, String> revokePermissionMap = Collections.singletonMap(BNR_PERMISSION, BNRPermissionsEnum.
+                REVOKE.toString());
         try {
             for (AccountDataDeleteDTO accountDataDeleteDTO : accountListDeleteDTO.getData()) {
                 String accountID = accountDataDeleteDTO.getAccountID();
@@ -248,8 +254,8 @@ public class NominatedRepresentativeAPIImpl implements NominatedRepresentativeAP
                 for (String accountUser : accountUsers) {
                     accountMetadataService.addOrUpdateAccountMetadata(accountID, accountUser,
                             revokePermissionMap);
-                    // Add consent ID to the consentIds list used for revocation if the user is primary member
-                    // of the consent and if the revocation config is enabled
+                    /* Add consent ID to the consentIds list used for revocation if the user is primary member
+                       of the consent and if the revocation config is enabled */
                     if (OpenBankingCDSConfigParser.getInstance().isBNRConsentRevocationEnabled()) {
                         List<AuthorizationResource> authResourcesForUser = consentCoreService.
                                 searchAuthorizationsForUser(accountUser);
@@ -261,11 +267,11 @@ public class NominatedRepresentativeAPIImpl implements NominatedRepresentativeAP
                     }
 
                 }
-                // Check if there are any other users who have AUTHORIZE permission for the account
-                // If there are none, remove all bnr-permission records for the account
+                /* Check if there are any other users who have AUTHORIZE permission for the account
+                   If there are none, remove all bnr-permission records for the account*/
                 Map<String, String> userIdAttributesMap = accountMetadataService.getUserAttributesForAccountIdAndKey(
                         accountID, BNR_PERMISSION);
-                if (!userIdAttributesMap.containsValue(AUTHORIZE)) {
+                if (!userIdAttributesMap.containsValue(BNRPermissionsEnum.AUTHORIZE.toString())) {
                     accountMetadataService.removeAccountMetadataByKeyForAllUsers(accountID, BNR_PERMISSION);
                 }
                 // Revoke the consent where the user is the primary member of the consent
@@ -287,13 +293,19 @@ public class NominatedRepresentativeAPIImpl implements NominatedRepresentativeAP
                 }
             }
         } catch (OpenBankingException e) {
-            log.error("Error occurred while persisting nominated representative data using the accelerator " +
-                    "account metadata service", e);
+            log.error(METADATA_SERVICE_ERROR, e);
             return false;
         }
         return true;
     }
 
+    /**
+     * Get a list of user-ids from the AccountDataDeleteDTO object which are not present in the database.
+     *
+     * @param accountListDeleteDTO - AccountListDeleteDTO object
+     * @return
+     * @throws OpenBankingException - OpenBankingException
+     */
     private static List<String> getUnavailableUserIdsFromAccountListDeleteDTO(
             AccountListDeleteDTO accountListDeleteDTO) throws OpenBankingException {
 
