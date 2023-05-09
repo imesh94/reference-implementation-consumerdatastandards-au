@@ -203,7 +203,7 @@
                         <input type="button" class="ui default column button btn btn-default" id="back" name="back"
                                onclick="history.back();"
                                value="Back"/>
-                        <input type="button" class="ui primary column button btn btn-primary" id="approve" name="approve"
+                        <input type="button" class="ui primary column button btn" id="approve" name="approve"
                                onclick="javascript: approvedAU(); return false;"
                                value="Authorise"/>
                         <input type="hidden" id="hasApprovedAlways" name="hasApprovedAlways" value="false"/>

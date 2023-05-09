@@ -111,7 +111,9 @@
 
             <div class="form-group ui form row">
                 <div class="ui body col-md-12">
-                    <input type="button" class="ui primary button btn btn-primary" id="approve" name="confirm account"
+                    <input type="button" class="ui default column button btn btn-default" id="cancel" name="cancel"
+                           onclick="showModal()" checked data-toggle="modal" data-target="#cancelModel" value="Cancel"/>
+                    <input type="button" class="ui primary button column btn" id="approve" name="confirm account"
                            onclick="approvedAcc(); return false;" value="Approve"/>
                     <input type="hidden" id="hasApprovedAlways" name="hasApprovedAlways" value="false"/>
                     <input type="hidden" name="sessionDataKeyConsent" value="${sessionDataKeyConsent}"/>
@@ -146,7 +148,72 @@
     </form>
 </div>
 
+<!-- Cancel Modal -->
+<div class="modal" id="cancelModal">
+    <div class="modal-dialog">
+        <div class="modal-content">
+
+            <!-- Modal body -->
+            <div class="modal-body">
+                <p style="color:black"> Unless you confirm your authorisation, we won't be able to share your data with
+                    "${sp_full_name}". <br>
+                    <br> Are you sure you would like to cancel this process? </p>
+
+                <div class="ui two column grid">
+                    <table style="width:100%">
+                        <tbody>
+                        <tr>
+                            <td>
+                                <div class="md-col-6 column align-left buttons">
+                                    <input type="button" onclick="redirect()" class="ui default column button btn btn-default"
+                                           id="registerLink" role="button" value="Yes cancel">
+                                </div>
+                            </td>
+                            <td>
+                                <div class="column align-right buttons">
+                                    <input type="button" onclick="closeModal()" class="ui primary column button btn" role="button"
+                                           value="No continue" style="float:right;">
+                                </div>
+                            </td>
+                        </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+
+        </div>
+    </div>
+</div>
+
 <script>
+
+    let modal = document.getElementById("cancelModal");
+
+    function showModal() {
+        modal.style.display = "block";
+    }
+
+    function closeModal() {
+        modal.style.display = "none";
+    }
+
+    function redirect() {
+        let error = "User skip the consent flow";
+        let state = "${state}"
+        if (state) {
+            top.location = "${redirectURL}#error=access_denied&error_description=" + error +
+                "&state=" + state;
+        } else {
+            top.location = "${redirectURL}#error=access_denied&error_description=" + error;
+        }
+    }
+
+    window.onclick = function (event) {
+        if (event.target == modal) {
+            modal.style.display = "none";
+        }
+    }
+
     $(document).ready(function(){
         updateAcc();
         var accountMaskingEnabled="${account_masking_enabled}";

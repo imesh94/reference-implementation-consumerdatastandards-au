@@ -581,4 +581,18 @@ public class OpenBankingCDSConfigParser {
         }
     }
 
+    /**
+     * Check if consent needs to be revoked when the nominated representative permission is revoked.
+     *
+     * @return configured boolean value, default value is true
+     */
+    public boolean isBNRConsentRevocationEnabled() {
+        Object config = getConfigElementFromKey(CommonConstants.ENABLE_CONSENT_REVOCATION);
+        if (config != null) {
+            return Boolean.parseBoolean((String) config);
+        } else {
+            return true;
+        }
+    }
+
 }
