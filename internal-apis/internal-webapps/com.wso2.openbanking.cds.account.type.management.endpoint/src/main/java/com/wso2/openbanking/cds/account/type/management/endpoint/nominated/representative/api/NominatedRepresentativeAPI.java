@@ -8,6 +8,8 @@
  */
 package com.wso2.openbanking.cds.account.type.management.endpoint.nominated.representative.api;
 
+import com.wso2.openbanking.cds.account.type.management.endpoint.nominated.representative.model.ErrorDTO;
+import com.wso2.openbanking.cds.account.type.management.endpoint.nominated.representative.model.NominatedRepresentativeResponseDTO;
 import io.swagger.annotations.ApiOperation;
 import io.swagger.annotations.ApiParam;
 import io.swagger.annotations.ApiResponse;
@@ -74,12 +76,14 @@ public interface NominatedRepresentativeAPI {
      */
     @GET
     @Path("/business-stakeholders/permission")
-    @Consumes({"application/json; charset=utf-8"})
+    @Produces({"application/json; charset=utf-8"})
     @ApiOperation(value = "Retrieve the permission status of the business nominated representatives. \n",
             notes = "This API is used to retrieve the permission status of the business nominated representatives.\n")
     @ApiResponses(value = {
-            @ApiResponse(code = 200, message = "Permission status successfully retrieved\n"),
-            @ApiResponse(code = 400, message = "Bad Request.\nRequest body validation failed.\n")})
+            @ApiResponse(code = 200, message = "Permission status successfully retrieved.",
+                    response = NominatedRepresentativeResponseDTO.class),
+            @ApiResponse(code = 400, message = "Bad Request.\nRequest body validation failed.",
+                    response = ErrorDTO.class)})
     Response retrieveNominatedRepresentativePermissions(
             @ApiParam(value = "Account ID of the subject.\n", required = true)
             @QueryParam("accountId") String accountId,
