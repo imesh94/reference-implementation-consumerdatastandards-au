@@ -29,6 +29,8 @@
     String spFullName = request.getParameter("spFullName");
     String consentId = request.getParameter("id");
     String userName = request.getParameter("user");
+    String selectedProfileId = request.getParameter("selectedProfileId");
+    String selectedProfileName = request.getParameter("selectedProfileName");
     String[] accountList = accounNames.split(":");
     String[] accountIdList = accounts.split(":");
     String consentExpiryDateTime = request.getParameter("consent-expiry-date");
@@ -37,8 +39,15 @@
     DateTimeFormatter dtf = DateTimeFormatter.ofPattern("yyyy-MM-dd");
     LocalDateTime now = LocalDateTime.now();
     String currentDate = dtf.format(now);
-    Map<String, List<String>> consentData = (Map<String, List<String>>) session.getAttribute("configParamsMap");
-    Map<String, List<String>> newConsentData = (Map<String, List<String>>) session.getAttribute("newConfigParamsMap");
+    Map<String, List<String>> consentData;
+    Map<String, List<String>> newConsentData;
+    if ("individual_profile".equalsIgnoreCase(selectedProfileId)) {
+        consentData = (Map<String, List<String>>) session.getAttribute("configParamsMap");
+        newConsentData = (Map<String, List<String>>) session.getAttribute("newConfigParamsMap");
+    } else {
+        consentData = (Map<String, List<String>>) session.getAttribute("business_data_cluster");
+        newConsentData = (Map<String, List<String>>) session.getAttribute("new_business_data_cluster");
+    }
     session.setAttribute("configParamsMap", consentData);
     session.setAttribute("newConfigParamsMap", newConsentData);
     session.setAttribute("isConsentAmendment", isConsentAmendment);
@@ -194,7 +203,7 @@
                         <input type="button" class="ui default column button btn btn-default" id="back" name="back"
                                onclick="history.back();"
                                value="Back"/>
-                        <input type="button" class="ui primary column button btn btn-primary" id="approve" name="approve"
+                        <input type="button" class="ui primary column button btn" id="approve" name="approve"
                                onclick="javascript: approvedAU(); return false;"
                                value="Authorise"/>
                         <input type="hidden" id="hasApprovedAlways" name="hasApprovedAlways" value="false"/>
@@ -205,6 +214,8 @@
                         <input type="hidden" name="accounts[]" id="account" value="<%=accounts%>">
                         <input type="hidden" name="spFullName" id="spFullName" value="<%=spFullName%>"/>
                         <input type="hidden" name="user" id="user" value="<%=userName%>"/>
+                        <input type="hidden" name="selectedProfileId" id="selectedProfileId" value="<%=selectedProfileId%>"/>
+                        <input type="hidden" name="selectedProfileName" id="selectedProfileName" value="<%=selectedProfileName%>"/>
                     </div>
                 </div>
             </div>

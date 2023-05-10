@@ -12,6 +12,8 @@
 
 package com.wso2.openbanking.cds.consent.extensions.validate;
 
+import com.wso2.openbanking.accelerator.account.metadata.service.service.AccountMetadataServiceImpl;
+import com.wso2.openbanking.accelerator.common.exception.OpenBankingException;
 import com.wso2.openbanking.accelerator.consent.extensions.common.ConsentException;
 import com.wso2.openbanking.accelerator.consent.extensions.common.ResponseStatus;
 import com.wso2.openbanking.accelerator.consent.extensions.validate.model.ConsentValidateData;
@@ -44,6 +46,7 @@ import static com.wso2.openbanking.accelerator.consent.mgt.service.constants.Con
 public class CDSConsentValidator implements ConsentValidator {
 
     private static final Log log = LogFactory.getLog(CDSConsentValidator.class);
+    AccountMetadataServiceImpl accountMetadataService = AccountMetadataServiceImpl.getInstance();
 
     @Override
     public void validate(ConsentValidateData consentValidateData, ConsentValidationResult consentValidationResult)
@@ -128,9 +131,12 @@ public class CDSConsentValidator implements ConsentValidator {
             }
         }
 
-        // remove inactive and duplicate consent mappings
+        // Remove inactive and duplicate consent mappings
         removeInactiveAndDuplicateConsentMappings(consentValidateData);
-
+        // Remove accounts with revoked BNR permission if the configuration is enabled.
+        if (OpenBankingCDSConfigParser.getInstance().isBNRValidateAccountsOnRetrievalEnabled()) {
+            removeAccountsWithRevokedBNRPermission(consentValidateData);
+        }
         consentValidationResult.setValid(true);
     }
 
@@ -152,6 +158,37 @@ public class CDSConsentValidator implements ConsentValidator {
                 });
 
         consentValidateData.getComprehensiveConsent().setConsentMappingResources(distinctMappingResources);
+    }
+
+    /**
+     * Method to remove accounts which the user has "REVOKED" nominated representative permissions.
+     *
+     * @param consentValidateData consentValidateData
+     */
+    private void removeAccountsWithRevokedBNRPermission(ConsentValidateData consentValidateData) throws
+            ConsentException {
+        ArrayList<ConsentMappingResource> validMappingResources = new ArrayList<>();
+        ArrayList<ConsentMappingResource> consentMappingResources = consentValidateData.getComprehensiveConsent().
+                getConsentMappingResources();
+        try {
+            for (ConsentMappingResource consentMappingResource : consentMappingResources) {
+                String accountId = consentMappingResource.getAccountID();
+                String userId = consentValidateData.getUserId();
+                userId = userId.replaceAll("(@carbon\\.super)+", "@carbon.super");
+                //Todo: improve accelerator to do this with single database call.
+                String bnrPermission = accountMetadataService.getAccountMetadataByKey(accountId, userId,
+                        CDSConsentExtensionConstants.BNR_PERMISSION);
+                if (StringUtils.isBlank(bnrPermission) || !bnrPermission.equals(CDSConsentExtensionConstants.
+                        BNR_REVOKE_PERMISSION)) {
+                    validMappingResources.add(consentMappingResource);
+                }
+            }
+            consentValidateData.getComprehensiveConsent().setConsentMappingResources(validMappingResources);
+        } catch (OpenBankingException e) {
+            log.error("Error occurred while retrieving account metadata", e);
+            throw new ConsentException(ResponseStatus.INTERNAL_SERVER_ERROR,
+                    "Error occurred while retrieving account metadata");
+        }
     }
 
     private String generateErrorPayload(String title, String detail, String metaURN, String accountId) {

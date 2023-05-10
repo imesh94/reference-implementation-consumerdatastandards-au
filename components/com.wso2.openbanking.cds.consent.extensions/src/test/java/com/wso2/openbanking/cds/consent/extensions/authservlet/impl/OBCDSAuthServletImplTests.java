@@ -74,8 +74,10 @@ public class OBCDSAuthServletImplTests extends PowerMockTestCase {
         JSONObject dataSet = new JSONObject();
 
         dataSet.put(CDSConsentExtensionConstants.DATA_REQUESTED, dataRequested);
+        dataSet.put(CDSConsentExtensionConstants.BUSINESS_DATA_CLUSTER, dataRequested);
         dataSet.put(CDSConsentExtensionConstants.ACCOUNTS, accounts);
         dataSet.put(CDSConsentExtensionConstants.SP_FULL_NAME, "TestServiceProvider");
+        dataSet.put(CDSConsentExtensionConstants.REDIRECT_URL, "TestRedirectUrl");
         dataSet.put(CDSConsentExtensionConstants.CONSENT_EXPIRY, "ConsentExpiryDate");
 
         Map<String, Object> returnMap = obCdsAuthServlet.updateRequestAttribute(
@@ -117,8 +119,10 @@ public class OBCDSAuthServletImplTests extends PowerMockTestCase {
         accounts.put(accJsonElement);
 
         dataSet.put(CDSConsentExtensionConstants.DATA_REQUESTED, dataRequested);
+        dataSet.put(CDSConsentExtensionConstants.BUSINESS_DATA_CLUSTER, dataRequested);
         dataSet.put(CDSConsentExtensionConstants.ACCOUNTS, accounts);
         dataSet.put(CDSConsentExtensionConstants.SP_FULL_NAME, "TestServiceProvider");
+        dataSet.put(CDSConsentExtensionConstants.REDIRECT_URL, "TestRedirectUrl");
         dataSet.put(CDSConsentExtensionConstants.CONSENT_EXPIRY, "ConsentExpiryDate");
 
         Map<String, Object> returnMap = obCdsAuthServlet.updateRequestAttribute(

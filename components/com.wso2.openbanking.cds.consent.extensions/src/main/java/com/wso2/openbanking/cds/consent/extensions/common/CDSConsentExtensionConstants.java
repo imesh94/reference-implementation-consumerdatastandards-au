@@ -1,13 +1,10 @@
 /*
- * Copyright (c) 2021, WSO2 Inc. (http://www.wso2.com). All Rights Reserved.
+ * Copyright (c) 2021-2023, WSO2 LLC. (https://www.wso2.com). All Rights Reserved.
  *
- * This software is the property of WSO2 Inc. and its suppliers, if any.
+ * This software is the property of WSO2 LLC. and its suppliers, if any.
  * Dissemination of any information or reproduction of any material contained
- * herein is strictly forbidden, unless permitted by WSO2 in accordance with
- * the WSO2 Software License available at https://wso2.com/licenses/eula/3.1. For specific
- * language governing the permissions and limitations under this license,
- * please see the license as well as any agreement you’ve entered into with
- * WSO2 governing the purchase of this software and any associated services.
+ * herein in any form is strictly forbidden, unless permitted by WSO2 expressly.
+ * You may not alter or remove any copyright or other notice from copies of this content.
  */
 package com.wso2.openbanking.cds.consent.extensions.common;
 
@@ -61,6 +58,7 @@ public class CDSConsentExtensionConstants {
     public static final String ACCOUNT_MASKING_ENABLED = "account_masking_enabled";
     public static final String USER_ID_KEY_NAME = "userID";
     public static final String CONSENT_STATUS_REVOKED = "revoked";
+    public static final String CONSENT_ATTRIBUTES = "consentAttributes";
 
     // Joint account constants
     public static final String IS_JOINT_ACCOUNT_RESPONSE = "isJointAccount";
@@ -75,12 +73,9 @@ public class CDSConsentExtensionConstants {
     public static final String LINKED_MEMBER_ID = "memberId";
     public static final String AUTH_RESOURCE_TYPE_PRIMARY = "primary_member";
     public static final String AUTH_RESOURCE_TYPE_LINKED = "linked_member";
-    public static final String MAP_JOINT_ACCOUNTS_ID_WITH_USERS = "jointAccountIdWithUsers";
-    public static final String MAP_USER_ID_WITH_JOINT_ACCOUNTS = "usersWithMultipleJointAccounts";
-    public static final String JOINT_ACCOUNT_PAYLOAD_PRIMARY_MEMBER = "primaryMember";
-    public static final String JOINT_ACCOUNT_PAYLOAD_LINKED_MEMBER = "linkedMember";
-    public static final String JOINT_ACCOUNT_PAYLOAD_USER_ID = "userId";
-    public static final String JOINT_ACCOUNT_PAYLOAD_ACCOUNT_ID = "accountId";
+    public static final String NON_PRIMARY_ACCOUNT_ID_AGAINST_USERS_MAP = "nonPrimaryAccountAgainstUsers";
+    public static final String USER_ID_AGAINST_NON_PRIMARY_ACCOUNTS_MAP = "userAgainstNonPrimaryAccounts";
+    public static final String LINKED_MEMBER_AUTH_TYPE = "linked_member";
     public static final String JOINT_ACCOUNTS_PAYLOAD = "joint_accounts_payload";
     public static final String PRE_SELECTED_ACCOUNT_LIST = "preSelectedAccountList";
     public static final String IS_PRE_SELECTED_ACCOUNT = "isPreSelectedAccount";
@@ -101,6 +96,39 @@ public class CDSConsentExtensionConstants {
     public static final Map<String, Map<String, List<String>>> CDS_DATA_CLUSTER;
     public static final Map<String, Map<String, List<String>>> BUSINESS_CDS_DATA_CLUSTER;
     public static final Map<String, Map<String, List<String>>> INDIVIDUAL_CDS_DATA_CLUSTER;
+
+    //Nominated Representative Constants
+    public static final String BUSINESS_ACCOUNT_INFO = "businessAccountInfo";
+    public static final String ACCOUNT_OWNERS = "AccountOwners";
+    public static final String NOMINATED_REPRESENTATIVES = "NominatedRepresentatives";
+    public static final String MEMBER_ID = "memberId";
+    public static final String BUSINESS_ACCOUNT_OWNER = "business_account_owner";
+    public static final String NOMINATED_REPRESENTATIVE = "nominated_representative";
+    public static final String CUSTOMER_ACCOUNT_TYPE = "customerAccountType";
+    public static final String BNR_PERMISSION = "bnr-permission";
+    public static final String BNR_AUTHORIZE_PERMISSION = "AUTHORIZE";
+    public static final String BNR_VIEW_PERMISSION = "VIEW";
+    public static final String BNR_REVOKE_PERMISSION = "REVOKE";
+
+    //Multi Profile Constants
+    public static final String INDIVIDUAL_PROFILE_TYPE = "Individual";
+    public static final String INDIVIDUAL_PROFILE_ID = "individual_profile";
+    public static final String BUSINESS_PROFILE_TYPE = "Business";
+    public static final String PROFILE_ID = "profileId";
+    public static final String PROFILE_NAME = "profileName";
+    public static final String PRE_SELECTED_PROFILE_ID = "preSelectedProfileId";
+    public static final String CUSTOMER_PROFILES_ATTRIBUTE = "customerProfiles";
+    public static final String PROFILES_DATA_ATTRIBUTE = "profiles_data";
+    public static final String SELECTED_PROFILE_ID = "selectedProfileId";
+    public static final String SELECTED_PROFILE_NAME = "selectedProfileName";
+    public static final String PROFILES = "profiles";
+    public static final String CUSTOMER_PROFILE_TYPE = "customerProfileType";
+    public static final String INDIVIDUAL_PROFILE_TYPE_ATTRIBUTE = "individual-profile";
+    public static final String BUSINESS_PROFILE_TYPE_ATTRIBUTE = "business-profile";
+    public static final String TOTAL = "total";
+    public static final String COUNT = "count";
+    public static final String BUSINESS_DATA_CLUSTER = "business_data_cluster";
+    public static final String NEW_BUSINESS_DATA_CLUSTER = "new_business_data_cluster";
 
     public static final String ACCEPT_HEADER_NAME = "Accept";
     public static final String ACCEPT_HEADER_VALUE = "application/json";
