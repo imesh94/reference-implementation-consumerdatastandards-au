@@ -167,7 +167,7 @@ public class CDSConsentPersistStepTests {
         mockCDSConsentPersistError.execute(consentPersistDataMock);
     }
 
-    //@Test
+    @Test
     public void testConsentPersistWithAmendment() throws Exception {
 
         doReturn(null).when(consentCoreServiceMock).amendDetailedConsent(anyString(), anyString(),
@@ -176,6 +176,7 @@ public class CDSConsentPersistStepTests {
 
         doReturn(new DetailedConsentResource()).when(consentCoreServiceMock).getDetailedConsent(anyString());
         doNothing().when(consentCoreServiceMock).revokeTokens(any(DetailedConsentResource.class), anyString());
+        doReturn(true).when(consentCoreServiceMock).updateAccountMappingStatus(any(ArrayList.class), anyString());
 
         Map<Object, Object> consentDataMapClone = new HashMap<>(consentDataMap);
         consentDataMapClone.put(CDSConsentExtensionConstants.IS_CONSENT_AMENDMENT, true);

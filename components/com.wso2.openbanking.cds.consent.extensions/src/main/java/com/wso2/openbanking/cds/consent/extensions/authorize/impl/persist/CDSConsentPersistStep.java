@@ -497,11 +497,13 @@ public class CDSConsentPersistStep implements ConsentPersistStep {
         try {
             DetailedConsentResource consentResource = consentCoreService.getDetailedConsent(cdrArrangementId);
             List<ConsentMappingResource> consentMappingResourceList = consentResource.getConsentMappingResources();
-            for (ConsentMappingResource consentMappingResource : consentMappingResourceList) {
-                consentMappingIdList.add(consentMappingResource.getMappingID());
+            if (consentMappingResourceList != null) {
+                for (ConsentMappingResource consentMappingResource : consentMappingResourceList) {
+                    consentMappingIdList.add(consentMappingResource.getMappingID());
+                }
+                consentCoreService.updateAccountMappingStatus(consentMappingIdList,
+                        ConsentCoreServiceConstants.ACTIVE_MAPPING_STATUS);
             }
-            consentCoreService.updateAccountMappingStatus(consentMappingIdList,
-                    ConsentCoreServiceConstants.ACTIVE_MAPPING_STATUS);
         } catch (ConsentManagementException e) {
             log.error(String.format("Error occurred while activating account mappings. %s", e.getMessage()));
             throw new ConsentException(ResponseStatus.INTERNAL_SERVER_ERROR, "Error while activating account " +
