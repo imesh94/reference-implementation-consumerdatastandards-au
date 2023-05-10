@@ -36,7 +36,6 @@ public class CDSBusinessAccountConsentPersistenceStep implements ConsentPersistS
     private static final Log log = LogFactory.getLog(CDSBusinessAccountConsentPersistenceStep.class);
     AccountMetadataServiceImpl accountMetadataService = AccountMetadataServiceImpl.getInstance();
 
-
     @Override
     public void execute(ConsentPersistData consentPersistData) throws ConsentException {
 
@@ -243,6 +242,5 @@ public class CDSBusinessAccountConsentPersistenceStep implements ConsentPersistS
         CDSConsentPersistUtil.addConsentAttribute(CDSConsentExtensionConstants.CUSTOMER_PROFILE_TYPE,
                 customerProfileType, consentPersistData);
     }
-
 
 }

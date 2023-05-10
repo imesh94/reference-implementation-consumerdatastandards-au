@@ -130,8 +130,6 @@ public class CDSConsentExtensionConstants {
     public static final String BUSINESS_DATA_CLUSTER = "business_data_cluster";
     public static final String NEW_BUSINESS_DATA_CLUSTER = "new_business_data_cluster";
 
-
-
     public static final String ACCEPT_HEADER_NAME = "Accept";
     public static final String ACCEPT_HEADER_VALUE = "application/json";
     public static final String SERVICE_URL_SLASH = "/";
