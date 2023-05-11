@@ -137,7 +137,8 @@ public class OBCDSAuthServletImpl implements OBAuthServletInterface {
     }
 
     private void updateJointAccountAttributes(JSONObject account, Map<String, Object> data) {
-        if (account != null && account.getBoolean(CDSConsentExtensionConstants.IS_JOINT_ACCOUNT_RESPONSE)) {
+        if (account != null && (account.getBoolean(CDSConsentExtensionConstants.IS_JOINT_ACCOUNT_RESPONSE))
+                && !account.getBoolean(CDSConsentExtensionConstants.IS_SECONDARY_ACCOUNT_RESPONSE)) {
             data.put(CDSConsentExtensionConstants.IS_JOINT_ACCOUNT, true);
 
             String consentElectionStatus = String
@@ -153,6 +154,33 @@ public class OBCDSAuthServletImpl implements OBAuthServletInterface {
         }
     }
 
+    /**
+     * Update Secondary Account Details.
+     *
+     * @param account: account object
+     * @param data: data map
+     * @return
+     */
+    private void updateSecondaryAccountAttributes(JSONObject account, Map<String, Object> data) {
+        if (account != null && account.getBoolean(CDSConsentExtensionConstants.IS_SECONDARY_ACCOUNT_RESPONSE)) {
+            data.put(CDSConsentExtensionConstants.IS_SECONDARY_ACCOUNT, true);
+
+            // secondaryAccountPrivilegeStatus depicts whether the account is enabled for secondary user data sharing
+            Boolean secondaryAccountPrivilegeStatus = Boolean.valueOf(String
+                    .valueOf(account.get(CDSConsentExtensionConstants.SECONDARY_ACCOUNT_PRIVILEGE_STATUS)));
+
+            // handle secondary joint accounts
+            if (account.getBoolean(CDSConsentExtensionConstants.IS_JOINT_ACCOUNT_RESPONSE)) {
+                String consentElectionStatus = String
+                        .valueOf(account.get(CDSConsentExtensionConstants.JOINT_ACCOUNT_CONSENT_ELECTION_STATUS));
+                Boolean isPreApproved = CDSConsentExtensionConstants.JOINT_ACCOUNT_PRE_APPROVAL
+                        .equalsIgnoreCase(consentElectionStatus);
+                data.put(CDSConsentExtensionConstants.IS_SELECTABLE, isPreApproved && secondaryAccountPrivilegeStatus);
+            } else {
+                data.put(CDSConsentExtensionConstants.IS_SELECTABLE, secondaryAccountPrivilegeStatus);
+            }
+        }
+    }
 
     private Map<String, List<String>> getRequestedDataMap(JSONArray dataRequestedJsonArray) {
 
@@ -181,6 +209,7 @@ public class OBCDSAuthServletImpl implements OBAuthServletInterface {
             String displayName = account.getString(CDSConsentExtensionConstants.DISPLAY_NAME);
             String isPreSelectedAccount = "false";
             updateJointAccountAttributes(account, data);
+            updateSecondaryAccountAttributes(account, data);
 
             if (account.has(CDSConsentExtensionConstants.IS_PRE_SELECTED_ACCOUNT)) {
                 isPreSelectedAccount = account.getString(CDSConsentExtensionConstants.IS_PRE_SELECTED_ACCOUNT);

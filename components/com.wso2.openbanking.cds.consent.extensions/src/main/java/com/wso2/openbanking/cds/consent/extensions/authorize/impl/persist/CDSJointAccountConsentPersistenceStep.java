@@ -55,7 +55,8 @@ public class CDSJointAccountConsentPersistenceStep implements ConsentPersistStep
             }
 
             // Add joint account data to consentPersistData, used in CDSConsentPersistStep.class
-            CDSConsentPersistUtil.addNonPrimaryAccountDataToPersistData(jointAccountIdWithUsers, consentPersistData);
+            CDSConsentPersistUtil.addNonPrimaryAccountDataToPersistData(jointAccountIdWithUsers,
+                    null, consentPersistData);
 
         }
     }
@@ -70,7 +71,9 @@ public class CDSJointAccountConsentPersistenceStep implements ConsentPersistStep
     private boolean isValidJointAccount(JSONObject account, List<String> consentedAccountIdList) {
 
         final boolean isJointAccount = Boolean.parseBoolean(account
-                .getAsString(CDSConsentExtensionConstants.IS_JOINT_ACCOUNT_RESPONSE));
+                .getAsString(CDSConsentExtensionConstants.IS_JOINT_ACCOUNT_RESPONSE)) &&
+                CDSConsentExtensionConstants.INDIVIDUAL_PROFILE_TYPE.equals(account.getAsString(
+                        CDSConsentExtensionConstants.CUSTOMER_ACCOUNT_TYPE));
 
         if (isJointAccount) {
             final String accountId = account.getAsString(CDSConsentExtensionConstants.ACCOUNT_ID);

@@ -590,4 +590,19 @@ public class OpenBankingCDSConfigParser {
         }
     }
 
+    /**
+     * Get secondary user accounts enabled status.
+     *
+     * @return boolean
+     */
+    public boolean getSecondaryUserAccountsEnabled() {
+
+        Object config = getConfigElementFromKey(CommonConstants.SECONDARY_USER_ACCOUNTS_ENABLED);
+        if (config != null) {
+            return Boolean.parseBoolean((String) config);
+        } else {
+            return false;
+        }
+    }
+
 }

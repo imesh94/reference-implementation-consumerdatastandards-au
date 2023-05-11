@@ -93,6 +93,25 @@ public class CDSConsentPersistStep implements ConsentPersistStep {
                 Object userIdAgainstNonPrimaryAccountsObj = consentPersistData.
                         getMetadata().get(CDSConsentExtensionConstants.USER_ID_AGAINST_NON_PRIMARY_ACCOUNTS_MAP);
 
+                // Get permission map for non-primary accounts if provided
+                Map<String, ArrayList<String>> nonPrimaryAccountIDsMapWithPermissions = new HashMap<>();
+                ArrayList<String> primaryAccounts = new ArrayList<>();
+                if (consentPersistData.getMetadata().containsKey(
+                        CDSConsentExtensionConstants.NON_PRIMARY_ACCOUNT_ID_WITH_PERMISSIONS_MAP)) {
+                    nonPrimaryAccountIDsMapWithPermissions = (Map<String, ArrayList<String>>) consentPersistData.
+                            getMetadata().get(CDSConsentExtensionConstants.NON_PRIMARY_ACCOUNT_ID_WITH_PERMISSIONS_MAP);
+
+                    // filter Primary Accounts from account list
+                    if (!nonPrimaryAccountIDsMapWithPermissions.isEmpty()) {
+                        primaryAccounts = new ArrayList<>();
+                        for (String accountId : accountIdList) {
+                            if (!nonPrimaryAccountIDsMapWithPermissions.containsKey(accountId)) {
+                                primaryAccounts.add(accountId);
+                            }
+                        }
+                    }
+                }
+
                 // Consent amendment flow
                 if (consentData.getMetaDataMap().containsKey(CDSConsentExtensionConstants.IS_CONSENT_AMENDMENT) &&
                         Boolean.parseBoolean(consentData.getMetaDataMap().get(
@@ -104,7 +123,16 @@ public class CDSConsentPersistStep implements ConsentPersistStep {
                             AUTH_RESOURCE_ID).toString();
                     String authResourceStatus = consentData.getMetaDataMap().get(CDSConsentExtensionConstants.
                             AUTH_RESOURCE_STATUS).toString();
-                    Map<String, ArrayList<String>> accountIdsMap = getCDSAccountIDsMapWithPermissions(accountIdList);
+                    Map<String, ArrayList<String>> accountIdsMapWithPermissions = new HashMap<>();
+
+                    if (!nonPrimaryAccountIDsMapWithPermissions.isEmpty()) {
+                        // get account-permission list when specific non-primary permissions defined
+                        accountIdsMapWithPermissions = getCDSAccountIDsMapWithPermissionsWhenPermissionsDefined(
+                                accountIdList, nonPrimaryAccountIDsMapWithPermissions);
+                    } else {
+                        accountIdsMapWithPermissions = getCDSAccountIDsMapWithPermissions(accountIdList);
+                    }
+
                     // Revoke existing tokens
                     revokeTokens(cdrArrangementId, userId);
                     // Activate account mappings which were deactivated when revoking tokens
@@ -121,7 +149,7 @@ public class CDSConsentPersistStep implements ConsentPersistStep {
                         validityPeriod = 0;
                     }
 
-                    // get the amendments related to user consented non primary accounts
+                    // get the amendments related to user consented non-primary accounts
                     Map<String, Object> additionalAmendmentData = new HashMap<>();
                     if (nonPrimaryAccountIdAgainstUsersObj != null && userIdAgainstNonPrimaryAccountsObj != null) {
                         additionalAmendmentData = bindNonPrimaryAccountUsersToConsent(consentResource, consentData,
@@ -129,7 +157,7 @@ public class CDSConsentPersistStep implements ConsentPersistStep {
                                 (Map<String, ArrayList<String>>) userIdAgainstNonPrimaryAccountsObj, true);
                     }
                     consentCoreService.amendDetailedConsent(cdrArrangementId, consentResource.getReceipt(),
-                            validityPeriod, authResorceId, accountIdsMap,
+                            validityPeriod, authResorceId, accountIdsMapWithPermissions,
                             CDSConsentExtensionConstants.AUTHORIZED_STATUS, consentAttributes, userId,
                             additionalAmendmentData);
                 } else {
@@ -157,10 +185,19 @@ public class CDSConsentPersistStep implements ConsentPersistStep {
                         throw new ConsentException(ResponseStatus.INTERNAL_SERVER_ERROR,
                                 "Consent ID not available in consent data");
                     }
-                    // bind user consented accounts with the create consent
-                    bindUserAccountsToConsent(consentCoreService, consentResource, consentData, accountIdList);
+                    if (!primaryAccounts.isEmpty()) {
+                        // bind user consented own accounts with the created consent
+                        bindUserAccountsToConsent(consentCoreService, consentResource, consentData, primaryAccounts);
 
-                    // bind user consented non primary accounts with the created consent
+                        // bind user consented non-primary accounts with the created consent
+                        bindNonPrimaryAccountsToConsentWithGivenPermissions(consentCoreService, consentResource,
+                                consentData, nonPrimaryAccountIDsMapWithPermissions);
+                    } else {
+                        // case where no specific non-primary account permissions provided
+                        bindUserAccountsToConsent(consentCoreService, consentResource, consentData, accountIdList);
+                    }
+
+                    // bind user consented accounts with the created consent for non-primary users
                     if (nonPrimaryAccountIdAgainstUsersObj != null && userIdAgainstNonPrimaryAccountsObj != null) {
                         bindNonPrimaryAccountUsersToConsent(consentResource, consentData,
                                 (Map<String, Map<String, String>>) nonPrimaryAccountIdAgainstUsersObj,
@@ -194,6 +231,17 @@ public class CDSConsentPersistStep implements ConsentPersistStep {
 
         return consentCoreService.bindUserAccountsToConsent(consentResource, consentData.getUserId(),
                 consentData.getAuthResource().getAuthorizationID(), accountIdsString,
+                CDSConsentExtensionConstants.AUTHORIZED_STATUS, CDSConsentExtensionConstants.AUTHORIZED_STATUS);
+    }
+
+    @Generated(message = "Excluding from code coverage since it requires a service call")
+    protected boolean bindNonPrimaryAccountsToConsentWithGivenPermissions(ConsentCoreServiceImpl consentCoreService,
+                                                 ConsentResource consentResource, ConsentData consentData,
+                                                 Map<String, ArrayList<String>> nonPrimaryAccountIDsMapWithPermissions)
+            throws ConsentManagementException {
+
+        return consentCoreService.bindUserAccountsToConsent(consentResource, consentData.getUserId(),
+                consentData.getAuthResource().getAuthorizationID(), nonPrimaryAccountIDsMapWithPermissions,
                 CDSConsentExtensionConstants.AUTHORIZED_STATUS, CDSConsentExtensionConstants.AUTHORIZED_STATUS);
     }
 
@@ -323,8 +371,8 @@ public class CDSConsentPersistStep implements ConsentPersistStep {
 
     @Generated(message = "Excluding from code coverage since it requires a service call")
     private Map<String, Object> bindNonPrimaryAccountUsersToConsent(ConsentResource consentResource,
-            ConsentData consentData, Map<String, Map<String, String>> nonPrimaryAccountIdAgainstUsers,
-            Map<String, ArrayList<String>> userIdAgainstNonPrimaryAccounts, boolean isConsentAmendment)
+                           ConsentData consentData, Map<String, Map<String, String>> nonPrimaryAccountIdAgainstUsers,
+                           Map<String, ArrayList<String>> userIdAgainstNonPrimaryAccounts, boolean isConsentAmendment)
             throws ConsentManagementException {
 
         List<String> alreadyAddedUsers = new ArrayList<>();
@@ -443,6 +491,31 @@ public class CDSConsentPersistStep implements ConsentPersistStep {
         permissionsList.add("n/a"); // Not applicable for CDS
         for (String accountId : accountIds) {
             accountIdsMap.put(accountId, permissionsList);
+        }
+        return accountIdsMap;
+    }
+
+    /**
+     * Get account-permission map when non-primary account permissions are provided.
+     *
+     * @param accountIds - consented accountId list
+     * @param nonPrimaryAccountIDsMapWithPermissions - non-primary account permissions map
+     * @return Map of user consented accounts with permissions
+     */
+    private Map<String, ArrayList<String>> getCDSAccountIDsMapWithPermissionsWhenPermissionsDefined(
+            List<String> accountIds, Map<String, ArrayList<String>> nonPrimaryAccountIDsMapWithPermissions) {
+        Map<String, ArrayList<String>> accountIdsMap = new HashMap<>();
+
+        // prepare non-empty permissions list for primary accounts
+        ArrayList<String> permissionsList = new ArrayList<>();
+        permissionsList.add("n/a"); // Not applicable for CDS
+
+        for (String accountId : accountIds) {
+            if (nonPrimaryAccountIDsMapWithPermissions.containsKey(accountId)) {
+                accountIdsMap.put(accountId, nonPrimaryAccountIDsMapWithPermissions.get(accountId));
+            } else {
+                accountIdsMap.put(accountId, permissionsList);
+            }
         }
         return accountIdsMap;
     }

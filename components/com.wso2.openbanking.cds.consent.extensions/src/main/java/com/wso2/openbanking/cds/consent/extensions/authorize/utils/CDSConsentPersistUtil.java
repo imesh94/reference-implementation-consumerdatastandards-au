@@ -14,6 +14,7 @@ import com.wso2.openbanking.accelerator.consent.extensions.common.ConsentExcepti
 import com.wso2.openbanking.cds.consent.extensions.common.CDSConsentExtensionConstants;
 import net.minidev.json.JSONArray;
 import net.minidev.json.JSONObject;
+import org.apache.commons.collections.MapUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
@@ -38,7 +39,9 @@ public class CDSConsentPersistUtil {
      * @param consentPersistData          ConsentPersistData object
      */
     public static void addNonPrimaryAccountDataToPersistData(
-            Map<String, Map<String, String>> nonPrimaryAccountIdUsersMap, ConsentPersistData consentPersistData) {
+            Map<String, Map<String, String>> nonPrimaryAccountIdUsersMap,
+            Map<String, ArrayList<String>> nonPrimaryAccountIDWithPermissionsMap,
+            ConsentPersistData consentPersistData) {
 
         Map<String, Map<String, String>> currentNonPrimaryAccountIdUsersMap = new HashMap<>();
         Map<String, List<String>> currentUserIdNonPrimaryAccountsMap = new HashMap<>();
@@ -59,6 +62,12 @@ public class CDSConsentPersistUtil {
         } else {
             log.debug("UserIds against non-primary accountId map not available in consentPersistData. " +
                     "Creating new map");
+        }
+
+        // update non-primary account permissions if defined
+        if (MapUtils.isNotEmpty(nonPrimaryAccountIDWithPermissionsMap)) {
+            consentPersistData.addMetadata(CDSConsentExtensionConstants.NON_PRIMARY_ACCOUNT_ID_WITH_PERMISSIONS_MAP,
+                    nonPrimaryAccountIDWithPermissionsMap);
         }
 
         //Add new non-primary account data to consent persist data

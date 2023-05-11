@@ -79,4 +79,7 @@
         <ValidateAccountsOnRetrieval>true</ValidateAccountsOnRetrieval>
         <EnableConsentRevocation>true</EnableConsentRevocation>
     </BNR>
+    <SecondaryUserAccounts>
+        <Enable>true</Enable>
+    </SecondaryUserAccounts>
 </Server>
