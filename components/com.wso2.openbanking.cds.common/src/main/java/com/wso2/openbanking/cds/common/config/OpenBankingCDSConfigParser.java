@@ -292,7 +292,7 @@ public class OpenBankingCDSConfigParser {
             // configured value is a positive number
             return Integer.parseInt((String) config);
         }
-        return CommonConstants.DEFAULT_META_DATA_CACHE_UPDATE_PERIOD;
+        return 5;
     }
 
     /**
@@ -306,7 +306,7 @@ public class OpenBankingCDSConfigParser {
         if (config != null) {
             return (String) config;
         }
-        return CommonConstants.DEFAULT_DATA_RECIPIENT_DISCOVERY_URL;
+        return "https://api.cdr.gov.au/cdr-register/v1/banking/data-recipients";
     }
 
     /**
@@ -343,7 +343,7 @@ public class OpenBankingCDSConfigParser {
             // configured value is a positive number
             return Integer.parseInt((String) config);
         }
-        return CommonConstants.DEFAULT_RETRY_COUNT;
+        return 2;
     }
 
     /**
@@ -357,7 +357,7 @@ public class OpenBankingCDSConfigParser {
             // configured value is a positive number
             return Integer.parseInt((String) config);
         }
-        return CommonConstants.DEFAULT_CACHE_EXPIRY;
+        return 2;
     }
 
     /**
@@ -387,7 +387,7 @@ public class OpenBankingCDSConfigParser {
                 return hour;
             }
         }
-        return CommonConstants.DEFAULT_BULK_EXECUTION_HOUR_2AM;
+        return 2;
     }
 
     /**
@@ -544,7 +544,6 @@ public class OpenBankingCDSConfigParser {
         return value == null ? "" : value;
     }
 
-    //---Nominated Representative Configs---
     /**
      * Check if prioritizing sharable accounts response is enabled for Nominated Representative feature.
      * If this is enabled, data stored in the Account_Metadata will not be used for validations during consent
@@ -588,6 +587,21 @@ public class OpenBankingCDSConfigParser {
             return Boolean.parseBoolean((String) config);
         } else {
             return true;
+        }
+    }
+
+    /**
+     * Get secondary user accounts enabled status.
+     *
+     * @return boolean
+     */
+    public boolean getSecondaryUserAccountsEnabled() {
+
+        Object config = getConfigElementFromKey(CommonConstants.SECONDARY_USER_ACCOUNTS_ENABLED);
+        if (config != null) {
+            return Boolean.parseBoolean((String) config);
+        } else {
+            return false;
         }
     }
 

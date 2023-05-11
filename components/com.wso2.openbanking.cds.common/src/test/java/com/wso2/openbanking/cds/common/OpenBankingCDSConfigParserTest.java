@@ -221,6 +221,13 @@ public class OpenBankingCDSConfigParserTest {
     }
 
     @Test(priority = 8)
+    public void testIsSecondaryAccountsEnabled() {
+        String dummyConfigFile = absolutePathForTestResources + "/open-banking-cds.xml";
+        OpenBankingCDSConfigParser openBankingCDSConfigParser = OpenBankingCDSConfigParser.getInstance(dummyConfigFile);
+        Assert.assertTrue(openBankingCDSConfigParser.getSecondaryUserAccountsEnabled());
+    }
+
+    @Test(priority = 8)
     public void testIsBNRPrioritizeSharableAccountsResponseEnabled() {
         String dummyConfigFile = absolutePathForTestResources + "/open-banking-cds.xml";
         OpenBankingCDSConfigParser openBankingCDSConfigParser = OpenBankingCDSConfigParser.getInstance(dummyConfigFile);

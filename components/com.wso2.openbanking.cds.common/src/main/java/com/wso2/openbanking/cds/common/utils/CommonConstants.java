@@ -92,5 +92,8 @@ public class CommonConstants {
     public static final int DEFAULT_RETRY_COUNT = 2;
     public static final int DEFAULT_BULK_EXECUTION_HOUR_2AM = 2;
 
+    // Secondary user account config constants
+    public static final String SECONDARY_USER_ACCOUNTS_ENABLED = "SecondaryUserAccounts.Enable";
+
     private CommonConstants() {}
 }
