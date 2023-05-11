@@ -62,6 +62,11 @@
         </dependency>
         <dependency>
             <groupId>com.wso2</groupId>
+            <artifactId>com.wso2.openbanking.accelerator.consent.extensions</artifactId>
+            <scope>provided</scope>
+        </dependency>
+        <dependency>
+            <groupId>com.wso2</groupId>
             <artifactId>com.wso2.openbanking.accelerator.consent.service</artifactId>
             <scope>provided</scope>
         </dependency>

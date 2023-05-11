@@ -8,7 +8,7 @@
  */
 package com.wso2.openbanking.cds.account.type.management.endpoint.nominated.representative.api;
 
-import com.wso2.openbanking.cds.account.type.management.endpoint.nominated.representative.model.ErrorDTO;
+import com.wso2.openbanking.cds.account.type.management.endpoint.model.ErrorDTO;
 import com.wso2.openbanking.cds.account.type.management.endpoint.nominated.representative.model.NominatedRepresentativeResponseDTO;
 import io.swagger.annotations.ApiOperation;
 import io.swagger.annotations.ApiParam;
