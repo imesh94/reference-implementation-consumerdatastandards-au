@@ -72,7 +72,7 @@ public class CDSBusinessAccountConsentPersistenceStep implements ConsentPersistS
                 addNominatedRepresentativeDataToAccountMetadataTable(businessAccountIdUserMap);
                 //Add business account data to consentPersistData
                 CDSConsentPersistUtil.addNonPrimaryAccountDataToPersistData(businessAccountIdUserMap,
-                        consentPersistData);
+                        null, consentPersistData);
                 //Add customer profile data to consent attributes
                 addProfileDataToConsentAttributes(consentPersistData);
             } catch (OpenBankingException e) {
@@ -201,7 +201,7 @@ public class CDSBusinessAccountConsentPersistenceStep implements ConsentPersistS
      * @throws OpenBankingException OpenBankingException
      */
     private void addNominatedRepresentativeDataToAccountMetadataTable(Map<String, Map<String, String>>
-        businessAccountIdUserMap) throws OpenBankingException {
+                                                      businessAccountIdUserMap) throws OpenBankingException {
 
         for (Map.Entry<String, Map<String, String>> entry : businessAccountIdUserMap.entrySet()) {
             String accountId = entry.getKey();
