@@ -22,6 +22,11 @@ public class CDSConsentExtensionConstants {
 
     public static final String TITLE = "title";
     public static final String DATA = "data";
+    public static final String CONSENT_MAPPING_RESOURCES = "consentMappingResources";
+    public static final String AUTHORIZATION_RESOURCES = "authorizationResources";
+    public static final String PERMISSION = "permission";
+    public static final String USER_ID = "userId";
+    public static final String AUTHORIZATION_ID = "authorizationId";
     public static final String CONSENT_DATA = "consentData";
     public static final String ACCOUNT_DATA = "accountData";
     public static final String ACCOUNTS_DATA = "accounts_data";
@@ -75,6 +80,7 @@ public class CDSConsentExtensionConstants {
     public static final String AUTH_RESOURCE_TYPE_LINKED = "linked_member";
     public static final String NON_PRIMARY_ACCOUNT_ID_AGAINST_USERS_MAP = "nonPrimaryAccountAgainstUsers";
     public static final String USER_ID_AGAINST_NON_PRIMARY_ACCOUNTS_MAP = "userAgainstNonPrimaryAccounts";
+    public static final String NON_PRIMARY_ACCOUNT_ID_WITH_PERMISSIONS_MAP = "nonPrimaryAccountWithPermissions";
     public static final String LINKED_MEMBER_AUTH_TYPE = "linked_member";
     public static final String JOINT_ACCOUNTS_PAYLOAD = "joint_accounts_payload";
     public static final String PRE_SELECTED_ACCOUNT_LIST = "preSelectedAccountList";
@@ -147,6 +153,19 @@ public class CDSConsentExtensionConstants {
     public static final String POST_METHOD = "POST";
     public static final String ENABLE_ACCOUNT_ID_VALIDATION_ON_RETRIEVAL = "ConsentManagement.Validate" +
             "AccountIdOnRetrieval";
+
+    // constants related to secondary accounts
+    public static final String INSTRUCTION_STATUS = "secondaryAccountInstructionStatus";
+    public static final String SECONDARY_ACCOUNT_USER = "secondary_account_user";
+    public static final String SECONDARY_ACCOUNT_OWNER = "secondary_account_owner";
+    public static final String ACTIVE_STATUS = "active";
+    public static final String IS_SECONDARY_ACCOUNT_RESPONSE = "isSecondaryAccount";
+    public static final String IS_SECONDARY_ACCOUNT = "is_secondary_account";
+    public static final String SECONDARY_ACCOUNT_PRIVILEGE_STATUS = "secondaryAccountPrivilegeStatus";
+    public static final String SECONDARY_ACCOUNT_INFO = "secondaryAccountInfo";
+    public static final String SECONDARY_ACCOUNT_OWNER_LIST = "accountOwner";
+    public static final String INDIVIDUAL = "Individual";
+    public static final String SECONDARY = "Secondary";
 
     // DH revocation configs
     public static final String ENABLE_RECIPIENT_CONSENT_REVOCATION = "RecipientConsentRevocationEndpoint.Enable";
