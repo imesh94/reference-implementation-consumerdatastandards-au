@@ -6,18 +6,18 @@
  * herein in any form is strictly forbidden, unless permitted by WSO2 expressly.
  * You may not alter or remove any copyright or other notice from copies of this content.
  */
-package com.wso2.openbanking.cds.account.type.management.endpoint.nominated.representative.model;
+package com.wso2.openbanking.cds.account.type.management.endpoint.model;
 
 /**
- * ErrorDTO
+ * ErrorDTO model class.
  */
 public class ErrorDTO {
 
     private String error;
     private String errorDescription;
 
-    public ErrorDTO(String error, String errorDescription) {
-        this.error = error;
+    public ErrorDTO(ErrorStatusEnum error, String errorDescription) {
+        this.error = error.getValue();
         this.errorDescription = errorDescription;
     }
 
