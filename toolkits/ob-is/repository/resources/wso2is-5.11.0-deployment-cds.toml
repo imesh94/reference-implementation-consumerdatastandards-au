@@ -437,6 +437,9 @@ id_token_builder = "com.wso2.openbanking.accelerator.identity.idtoken.OBIDTokenB
 
 [transport.https.sslHostConfig.properties]
 ciphers="TLS_DHE_RSA_WITH_AES_128_GCM_SHA256,TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256,TLS_DHE_RSA_WITH_AES_256_GCM_SHA384,TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384"
+
+[application_mgt]
+enable_role_validation = true
 #================configs related to identity-event.properties=============
 
 [[event_handler]]
