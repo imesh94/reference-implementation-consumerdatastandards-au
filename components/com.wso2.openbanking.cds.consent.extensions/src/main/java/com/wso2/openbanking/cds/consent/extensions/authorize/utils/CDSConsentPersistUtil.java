@@ -38,7 +38,9 @@ public class CDSConsentPersistUtil {
      * @param consentPersistData          ConsentPersistData object
      */
     public static void addNonPrimaryAccountDataToPersistData(
-            Map<String, Map<String, String>> nonPrimaryAccountIdUsersMap, ConsentPersistData consentPersistData) {
+            Map<String, Map<String, String>> nonPrimaryAccountIdUsersMap,
+            Map<String, ArrayList<String>> nonPrimaryAccountIDWithPermissionsMap,
+            ConsentPersistData consentPersistData) {
 
         Map<String, Map<String, String>> currentNonPrimaryAccountIdUsersMap = new HashMap<>();
         Map<String, List<String>> currentUserIdNonPrimaryAccountsMap = new HashMap<>();
@@ -59,6 +61,12 @@ public class CDSConsentPersistUtil {
         } else {
             log.debug("UserIds against non-primary accountId map not available in consentPersistData. " +
                     "Creating new map");
+        }
+
+        // update non-primary account permissions if defined
+        if (nonPrimaryAccountIDWithPermissionsMap != null && !nonPrimaryAccountIDWithPermissionsMap.isEmpty()) {
+            consentPersistData.addMetadata(CDSConsentExtensionConstants.NON_PRIMARY_ACCOUNT_ID_WITH_PERMISSIONS_MAP,
+                    nonPrimaryAccountIDWithPermissionsMap);
         }
 
         //Add new non-primary account data to consent persist data
