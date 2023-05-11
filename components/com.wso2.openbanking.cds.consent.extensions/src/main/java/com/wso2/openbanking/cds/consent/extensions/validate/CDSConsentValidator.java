@@ -84,8 +84,10 @@ public class CDSConsentValidator implements ConsentValidator {
             return;
         }
 
+        OpenBankingCDSConfigParser openBankingCDSConfigParser = OpenBankingCDSConfigParser.getInstance();
+
         // account ID Validation
-        String isAccountIdValidationEnabled = OpenBankingCDSConfigParser.getInstance().getConfiguration()
+        String isAccountIdValidationEnabled = openBankingCDSConfigParser.getConfiguration()
                 .get(CDSConsentExtensionConstants.ENABLE_ACCOUNT_ID_VALIDATION_ON_RETRIEVAL).toString();
 
         if (Boolean.parseBoolean(isAccountIdValidationEnabled) &&
@@ -119,7 +121,7 @@ public class CDSConsentValidator implements ConsentValidator {
         }
 
         // validate metadata status
-        if (OpenBankingCDSConfigParser.getInstance().isMetadataCacheEnabled()) {
+        if (openBankingCDSConfigParser.isMetadataCacheEnabled()) {
             MetadataValidationResponse metadataValidationResp =
                     MetadataService.shouldDiscloseCDRData(consentValidateData.getClientId());
             if (!metadataValidationResp.isValid()) {
@@ -135,12 +137,12 @@ public class CDSConsentValidator implements ConsentValidator {
         removeInactiveAndDuplicateConsentMappings(consentValidateData);
 
         // filter inactive secondary user accounts
-        if (OpenBankingCDSConfigParser.getInstance().getSecondaryUserAccountsEnabled()) {
+        if (openBankingCDSConfigParser.getSecondaryUserAccountsEnabled()) {
             removeInactiveSecondaryUserAccountConsentMappings(consentValidateData);
         }
 
         // Remove accounts with revoked BNR permission if the configuration is enabled.
-        if (OpenBankingCDSConfigParser.getInstance().isBNRValidateAccountsOnRetrievalEnabled()) {
+        if (openBankingCDSConfigParser.isBNRValidateAccountsOnRetrievalEnabled()) {
             removeAccountsWithRevokedBNRPermission(consentValidateData);
         }
         consentValidationResult.setValid(true);

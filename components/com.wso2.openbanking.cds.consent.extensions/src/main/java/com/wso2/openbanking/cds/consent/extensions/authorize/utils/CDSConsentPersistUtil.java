@@ -14,6 +14,7 @@ import com.wso2.openbanking.accelerator.consent.extensions.common.ConsentExcepti
 import com.wso2.openbanking.cds.consent.extensions.common.CDSConsentExtensionConstants;
 import net.minidev.json.JSONArray;
 import net.minidev.json.JSONObject;
+import org.apache.commons.collections.MapUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
@@ -64,7 +65,7 @@ public class CDSConsentPersistUtil {
         }
 
         // update non-primary account permissions if defined
-        if (nonPrimaryAccountIDWithPermissionsMap != null && !nonPrimaryAccountIDWithPermissionsMap.isEmpty()) {
+        if (MapUtils.isNotEmpty(nonPrimaryAccountIDWithPermissionsMap)) {
             consentPersistData.addMetadata(CDSConsentExtensionConstants.NON_PRIMARY_ACCOUNT_ID_WITH_PERMISSIONS_MAP,
                     nonPrimaryAccountIDWithPermissionsMap);
         }

@@ -72,7 +72,7 @@ public class CDSJointAccountConsentPersistenceStep implements ConsentPersistStep
 
         final boolean isJointAccount = Boolean.parseBoolean(account
                 .getAsString(CDSConsentExtensionConstants.IS_JOINT_ACCOUNT_RESPONSE)) &&
-                CDSConsentExtensionConstants.INDIVIDUAL.equals(account.getAsString(
+                CDSConsentExtensionConstants.INDIVIDUAL_PROFILE_TYPE.equals(account.getAsString(
                         CDSConsentExtensionConstants.CUSTOMER_ACCOUNT_TYPE));
 
         if (isJointAccount) {

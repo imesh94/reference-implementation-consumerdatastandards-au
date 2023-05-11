@@ -164,8 +164,7 @@ public class CDSConsentExtensionConstants {
     public static final String SECONDARY_ACCOUNT_PRIVILEGE_STATUS = "secondaryAccountPrivilegeStatus";
     public static final String SECONDARY_ACCOUNT_INFO = "secondaryAccountInfo";
     public static final String SECONDARY_ACCOUNT_OWNER_LIST = "accountOwner";
-    public static final String INDIVIDUAL = "Individual";
-    public static final String SECONDARY = "Secondary";
+    public static final String SECONDARY_ACCOUNT_TYPE = "Secondary";
 
     // DH revocation configs
     public static final String ENABLE_RECIPIENT_CONSENT_REVOCATION = "RecipientConsentRevocationEndpoint.Enable";

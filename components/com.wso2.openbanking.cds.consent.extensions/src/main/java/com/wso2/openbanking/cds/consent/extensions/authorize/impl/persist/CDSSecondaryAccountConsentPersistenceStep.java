@@ -65,7 +65,7 @@ public class CDSSecondaryAccountConsentPersistenceStep implements ConsentPersist
                         }
                     } catch (ConsentException e) {
                         log.error("Error occurred while validating secondary account: " + consentedAccountId, e);
-                        throw new ConsentException(ResponseStatus.NOT_ACCEPTABLE, e.getMessage());
+                        throw new ConsentException(e.getStatus(), e.getMessage());
                     }
                 }
             }
@@ -91,7 +91,7 @@ public class CDSSecondaryAccountConsentPersistenceStep implements ConsentPersist
 
         final boolean isSecondaryAccount = Boolean.parseBoolean(account
                 .getAsString(CDSConsentExtensionConstants.IS_SECONDARY_ACCOUNT_RESPONSE)) &&
-                CDSConsentExtensionConstants.SECONDARY.equals(account.getAsString(
+                CDSConsentExtensionConstants.SECONDARY_ACCOUNT_TYPE.equals(account.getAsString(
                 CDSConsentExtensionConstants.CUSTOMER_ACCOUNT_TYPE));
 
         if (isSecondaryAccount) {
@@ -111,7 +111,7 @@ public class CDSSecondaryAccountConsentPersistenceStep implements ConsentPersist
 
             if (!isShareableAccount) {
                 log.error("Secondary account instruction is not granted for account: " + accountId,
-                        new ConsentException(ResponseStatus.NOT_ACCEPTABLE,
+                        new ConsentException(ResponseStatus.PRECONDITION_FAILED,
                                 "Secondary account instruction is not granted for account: " + accountId));
             }
 
