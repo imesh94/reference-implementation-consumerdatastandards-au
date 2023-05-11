@@ -12,10 +12,10 @@ package com.wso2.openbanking.cds.account.type.management.endpoint.disclosure.opt
 import com.wso2.openbanking.accelerator.common.exception.OpenBankingException;
 import com.wso2.openbanking.cds.account.type.management.endpoint.disclosure.options.api.DisclosureOptionsApi;
 import com.wso2.openbanking.cds.account.type.management.endpoint.disclosure.options.handler.DisclosureOptionsApiHandler;
-import com.wso2.openbanking.cds.account.type.management.endpoint.disclosure.options.validation.
-        DomsOptionsStatusValidator;
+import com.wso2.openbanking.cds.account.type.management.endpoint.disclosure.options.validation.DomsOptionsStatusValidator;
 
 import net.minidev.json.JSONObject;
+import net.minidev.json.parser.ParseException;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
@@ -27,8 +27,6 @@ import javax.ws.rs.core.Response;
 public class DisclosureOptionsApiImpl implements DisclosureOptionsApi {
 
     private static final Log log = LogFactory.getLog(DisclosureOptionsApiImpl.class);
-    private static final String X_VERSION = "2";
-
     DisclosureOptionsApiHandler disclosureOptionsApiHandler = new DisclosureOptionsApiHandler();
 
     /**
@@ -43,12 +41,10 @@ public class DisclosureOptionsApiImpl implements DisclosureOptionsApi {
             String successMessage = "Account Disclosure Options successfully updated!";
             return Response.ok().entity(successMessage).build();
         } catch (OpenBankingException e) {
-            // catch OpenBankingException thrown by the validator and return a BAD_REQUEST response
             log.error("Bad Request. Request body validation failed", e);
             return Response.status(Response.Status.BAD_REQUEST).entity(e.getMessage()).build();
-        } catch (Exception e) {
-            // catch any other exception thrown and return a BAD_REQUEST response
-            log.error("Bad Request. Request body validation failed", e);
+        } catch (ParseException e) {
+            log.error("Request body validation failed", e);
             return Response.status(Response.Status.BAD_REQUEST).entity(e.getMessage()).build();
         }
     }

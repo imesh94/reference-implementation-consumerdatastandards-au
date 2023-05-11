@@ -14,6 +14,7 @@ import com.wso2.openbanking.accelerator.common.exception.OpenBankingException;
 import net.minidev.json.JSONArray;
 import net.minidev.json.JSONObject;
 import net.minidev.json.parser.JSONParser;
+import net.minidev.json.parser.ParseException;
 
 /**
  * Validator class to validate the request body of the disclosure options API
@@ -21,7 +22,7 @@ import net.minidev.json.parser.JSONParser;
 
 public class DomsOptionsStatusValidator {
     JSONParser parser = new JSONParser(JSONParser.MODE_JSON_SIMPLE);
-    public JSONObject validateDomsOptionsStatusRequest(String requestBody) throws OpenBankingException, Exception {
+    public JSONObject validateDomsOptionsStatusRequest(String requestBody) throws OpenBankingException, ParseException {
 
             JSONObject requestBodyJSON = (JSONObject) parser.parse(requestBody);
             JSONArray requestBodyJSONData = (JSONArray) requestBodyJSON.get("data");
