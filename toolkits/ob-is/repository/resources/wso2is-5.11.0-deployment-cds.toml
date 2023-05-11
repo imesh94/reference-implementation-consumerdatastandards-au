@@ -728,13 +728,21 @@ priority = 3
 class = "com.wso2.openbanking.cds.consent.extensions.authorize.impl.retrieval.CDSAccountListRetrievalStep"
 priority = 4
 
+[[open_banking.consent.authorize_steps.retrieve]]
+class = "com.wso2.openbanking.cds.consent.extensions.authorize.impl.retrieval.CDSProfileListRetrievalStep"
+priority = 5
+
 [[open_banking.consent.authorize_steps.persist]]
-class = "com.wso2.openbanking.cds.consent.extensions.authorize.impl.persist.CDSJointAccountConsentPersistenceStep"
+class = "com.wso2.openbanking.cds.consent.extensions.authorize.impl.persist.CDSBusinessAccountConsentPersistenceStep"
 priority = 1
 
 [[open_banking.consent.authorize_steps.persist]]
-class = "com.wso2.openbanking.cds.consent.extensions.authorize.impl.persist.CDSConsentPersistStep"
+class = "com.wso2.openbanking.cds.consent.extensions.authorize.impl.persist.CDSJointAccountConsentPersistenceStep"
 priority = 2
+
+[[open_banking.consent.authorize_steps.persist]]
+class = "com.wso2.openbanking.cds.consent.extensions.authorize.impl.persist.CDSConsentPersistStep"
+priority = 3
 
 [open_banking.consent.manage]
 handler="com.wso2.openbanking.accelerator.consent.extensions.manage.impl.DefaultConsentManageHandler"
@@ -763,6 +771,11 @@ request_object_validator="com.wso2.openbanking.cds.identity.auth.extensions.requ
 response_type_handler="com.wso2.openbanking.cds.identity.auth.extensions.response.handler.CDSResponseTypeHandlerImpl"
 claim_provider="com.wso2.openbanking.cds.identity.claims.CDSClaimProvider"
 push_auth_request_validator="com.wso2.openbanking.cds.identity.push.auth.extension.request.validator.CDSPushAuthRequestValidator"
+
+#===================authenticator configs====================
+[open_banking.sca.idp]
+name = "SMSAuthentication"
+step = 2
 
 #===================for Connection pool====================
 [open_banking.http_connection_pool]
@@ -825,3 +838,8 @@ class = "com.wso2.openbanking.accelerator.identity.token.validators.MTLSEnforcem
 
 [[open_banking_cds.filter_validators.par_filter_validators]]
 class = "com.wso2.openbanking.accelerator.identity.token.validators.MTLSEnforcementValidator"
+
+[open_banking_cds.bnr]
+prioritize_sharable_accounts_response=true
+enable_consent_revocation=true
+validate_accounts_on_retrieval=true

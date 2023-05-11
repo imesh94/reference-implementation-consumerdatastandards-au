@@ -37,6 +37,7 @@ import org.apache.http.client.methods.HttpGet;
 import org.apache.http.client.utils.URLEncodedUtils;
 import org.apache.http.impl.client.CloseableHttpClient;
 import org.apache.http.message.BasicNameValuePair;
+import org.wso2.carbon.context.PrivilegedCarbonContext;
 import org.wso2.carbon.identity.oauth.cache.SessionDataCache;
 import org.wso2.carbon.identity.oauth.cache.SessionDataCacheEntry;
 import org.wso2.carbon.identity.oauth.cache.SessionDataCacheKey;
@@ -299,6 +300,22 @@ public class CDSDataRetrievalUtil {
             log.error(String.format("Exception occurred while parsing the consent receipt. %s", e.getMessage()));
             throw new ConsentException(ResponseStatus.INTERNAL_SERVER_ERROR,
                     "Exception occurred while parsing the consent receipt");
+        }
+    }
+
+    /**
+     * Method to get the userId with tenant domain.
+     *
+     * @param userId
+     * @return
+     */
+    public static String getUserIdWithTenantDomain(String userId) {
+
+        String tenantDomain = PrivilegedCarbonContext.getThreadLocalCarbonContext().getTenantDomain();
+        if (userId.endsWith(tenantDomain)) {
+            return userId;
+        } else {
+            return userId + "@" + tenantDomain;
         }
     }
 
