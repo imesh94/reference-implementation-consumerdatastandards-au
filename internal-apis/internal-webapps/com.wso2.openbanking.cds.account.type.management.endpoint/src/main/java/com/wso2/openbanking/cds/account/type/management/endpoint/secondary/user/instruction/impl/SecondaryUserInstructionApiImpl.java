@@ -60,7 +60,7 @@ public class SecondaryUserInstructionApiImpl implements SecondaryUserInstruction
         String errMsg;
 
         try {
-            JSONParser parser = new JSONParser(JSONParser.MODE_JSON_SIMPLE);
+            JSONParser parser = new JSONParser(JSONParser.MODE_PERMISSIVE);
             JSONObject requestJson = (JSONObject) parser.parse(requestObject);
             JSONArray accountsArray = (JSONArray) requestJson.get(DATA);
             ObjectMapper objectMapper = new ObjectMapper();
@@ -116,7 +116,7 @@ public class SecondaryUserInstructionApiImpl implements SecondaryUserInstruction
     /**
      * Expire all the consents created by the secondary user that includes the given secondary account
      * of which the account owner has removed the secondary account instruction status
-     * if secondary user don't have any other accounts with the DH
+     * if secondary user don't have any other accounts with the DH.
      * @param secondaryUserAccountStatusData
      * @throws ConsentException
      */
@@ -147,7 +147,7 @@ public class SecondaryUserInstructionApiImpl implements SecondaryUserInstruction
     }
 
     /**
-     * Retrieve active consents with secondary accounts mappings
+     * Retrieve active consents with secondary accounts mappings.
      *
      * @param userId
      * @param accountId
@@ -180,7 +180,7 @@ public class SecondaryUserInstructionApiImpl implements SecondaryUserInstruction
     }
 
     /**
-     * Get Internal Server Error Response
+     * Get Internal Server Error Response.
      *
      * @param errMsg - error messege
      * @return error response

@@ -85,7 +85,7 @@ public class NominatedRepresentativeAPIImpl implements NominatedRepresentativeAP
                 } else {
                     // Return internal server error if an error occurred in the accelerator account metadata service.
                     ErrorDTO errorDTO = new ErrorDTO(ErrorStatusEnum.INTERNAL_SERVER_ERROR,
-                            "Error occurred while " + "persisting updated nominated representative data");
+                            "Error occurred while persisting updated nominated representative data");
                     return Response.status(Response.Status.INTERNAL_SERVER_ERROR).entity(errorDTO).build();
                 }
             } else {
@@ -95,7 +95,7 @@ public class NominatedRepresentativeAPIImpl implements NominatedRepresentativeAP
         } catch (JsonProcessingException e) {
             log.error(e.getMessage());
             ErrorDTO errorDTO = new ErrorDTO(ErrorStatusEnum.INVALID_REQUEST,
-                    "Error occurred while parsing " + "the request body");
+                    "Error occurred while parsing the request body");
             return Response.status(Response.Status.BAD_REQUEST).entity(errorDTO).build();
         }
     }
@@ -132,17 +132,17 @@ public class NominatedRepresentativeAPIImpl implements NominatedRepresentativeAP
             } else {
                 // Return internal server error if an error occurred in the accelerator account metadata service.
                 ErrorDTO errorDTO = new ErrorDTO(ErrorStatusEnum.INTERNAL_SERVER_ERROR,
-                        "Error occurred while " + "persisting revoked nominated representative data");
+                        "Error occurred while persisting revoked nominated representative data");
                 return Response.status(Response.Status.INTERNAL_SERVER_ERROR).entity(errorDTO).build();
             }
         } catch (JsonProcessingException e) {
             log.error(e.getMessage());
             ErrorDTO errorDTO = new ErrorDTO(ErrorStatusEnum.INVALID_REQUEST,
-                    "Error occurred while parsing " + "the request body");
+                    "Error occurred while parsing the request body");
             return Response.status(Response.Status.BAD_REQUEST).entity(errorDTO).build();
         } catch (OpenBankingException e) {
             ErrorDTO errorDTO = new ErrorDTO(ErrorStatusEnum.INTERNAL_SERVER_ERROR,
-                    "Error occurred while validating " + "the user-Ids in the database");
+                    "Error occurred while validating the user-Ids in the database");
             return Response.status(Response.Status.INTERNAL_SERVER_ERROR).entity(errorDTO).build();
         }
     }

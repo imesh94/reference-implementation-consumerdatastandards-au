@@ -21,7 +21,7 @@ import javax.ws.rs.Produces;
 import javax.ws.rs.core.Response;
 
 /**
- *  Secondary User API
+ *  Secondary User API.
  */
 @Path("/account-type-management")
 public interface SecondaryUserInstructionApi {
