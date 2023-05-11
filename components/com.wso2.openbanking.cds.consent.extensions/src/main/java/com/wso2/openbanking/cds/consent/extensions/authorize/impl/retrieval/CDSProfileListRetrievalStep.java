@@ -15,6 +15,7 @@ import com.wso2.openbanking.accelerator.consent.extensions.authorize.model.Conse
 import com.wso2.openbanking.accelerator.consent.extensions.common.ConsentException;
 import com.wso2.openbanking.accelerator.consent.extensions.common.ResponseStatus;
 import com.wso2.openbanking.cds.common.config.OpenBankingCDSConfigParser;
+import com.wso2.openbanking.cds.consent.extensions.authorize.utils.CDSDataRetrievalUtil;
 import com.wso2.openbanking.cds.consent.extensions.common.CDSConsentExtensionConstants;
 import net.minidev.json.JSONArray;
 import net.minidev.json.JSONObject;
@@ -82,7 +83,7 @@ public class CDSProfileListRetrievalStep implements ConsentRetrievalStep {
 
                 Map<String, String> profileMap = new HashMap<>();
                 Map<String, List<String>> profileIdAccountsMap = new HashMap<>();
-                String userId = consentData.getUserId();
+                String userId = CDSDataRetrievalUtil.getUserIdWithTenantDomain(consentData.getUserId());
                 for (Object account : accountsJSON) {
                     JSONObject accountJSON = (JSONObject) account;
                     // Check if the current user has permission to authorize the account.
@@ -194,10 +195,9 @@ public class CDSProfileListRetrievalStep implements ConsentRetrievalStep {
     /**
      * Check if the current user has permission to authorize the account.
      *
-     * @param userId - user id
+     * @param userId      - user id
      * @param accountJSON - account json
      * @return true if the user is eligible for consent authorization
-     *
      * @throws ConsentException - Consent Exception
      */
     private boolean isUserEligibleForConsentAuthorization(String userId, JSONObject accountJSON) throws
