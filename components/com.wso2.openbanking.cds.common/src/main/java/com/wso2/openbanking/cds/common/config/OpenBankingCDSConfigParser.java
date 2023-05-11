@@ -292,7 +292,7 @@ public class OpenBankingCDSConfigParser {
             // configured value is a positive number
             return Integer.parseInt((String) config);
         }
-        return 5;
+        return CommonConstants.DEFAULT_META_DATA_CACHE_UPDATE_PERIOD;
     }
 
     /**
@@ -306,7 +306,7 @@ public class OpenBankingCDSConfigParser {
         if (config != null) {
             return (String) config;
         }
-        return "https://api.cdr.gov.au/cdr-register/v1/banking/data-recipients";
+        return CommonConstants.DEFAULT_DATA_RECIPIENT_DISCOVERY_URL;
     }
 
     /**
@@ -343,7 +343,7 @@ public class OpenBankingCDSConfigParser {
             // configured value is a positive number
             return Integer.parseInt((String) config);
         }
-        return 2;
+        return CommonConstants.DEFAULT_RETRY_COUNT;
     }
 
     /**
@@ -357,7 +357,7 @@ public class OpenBankingCDSConfigParser {
             // configured value is a positive number
             return Integer.parseInt((String) config);
         }
-        return 2;
+        return CommonConstants.DEFAULT_CACHE_EXPIRY;
     }
 
     /**
@@ -387,7 +387,7 @@ public class OpenBankingCDSConfigParser {
                 return hour;
             }
         }
-        return 2;
+        return CommonConstants.DEFAULT_BULK_EXECUTION_HOUR_2AM;
     }
 
     /**
@@ -544,6 +544,7 @@ public class OpenBankingCDSConfigParser {
         return value == null ? "" : value;
     }
 
+    //---Nominated Representative Configs---
     /**
      * Check if prioritizing sharable accounts response is enabled for Nominated Representative feature.
      * If this is enabled, data stored in the Account_Metadata will not be used for validations during consent
