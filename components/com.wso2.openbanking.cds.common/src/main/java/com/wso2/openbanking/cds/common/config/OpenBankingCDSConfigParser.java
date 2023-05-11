@@ -544,7 +544,6 @@ public class OpenBankingCDSConfigParser {
         return value == null ? "" : value;
     }
 
-    //---Nominated Representative Configs---
     /**
      * Check if prioritizing sharable accounts response is enabled for Nominated Representative feature.
      * If this is enabled, data stored in the Account_Metadata will not be used for validations during consent
