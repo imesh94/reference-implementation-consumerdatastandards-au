@@ -133,6 +133,12 @@ public class CDSConsentValidator implements ConsentValidator {
 
         // Remove inactive and duplicate consent mappings
         removeInactiveAndDuplicateConsentMappings(consentValidateData);
+
+        // filter inactive secondary user accounts
+        if (OpenBankingCDSConfigParser.getInstance().getSecondaryUserAccountsEnabled()) {
+            removeInactiveSecondaryUserAccountConsentMappings(consentValidateData);
+        }
+
         // Remove accounts with revoked BNR permission if the configuration is enabled.
         if (OpenBankingCDSConfigParser.getInstance().isBNRValidateAccountsOnRetrievalEnabled()) {
             removeAccountsWithRevokedBNRPermission(consentValidateData);
@@ -160,6 +166,26 @@ public class CDSConsentValidator implements ConsentValidator {
         consentValidateData.getComprehensiveConsent().setConsentMappingResources(distinctMappingResources);
     }
 
+    /**
+     * Method to remove inactive secondary user account consent mappings from consentValidateData.
+     *
+     * @param consentValidateData consentValidateData
+     */
+    private void removeInactiveSecondaryUserAccountConsentMappings(ConsentValidateData consentValidateData) {
+        ArrayList<ConsentMappingResource> consentMappingResources =
+                consentValidateData.getComprehensiveConsent().getConsentMappingResources();
+
+        for (ConsentMappingResource mappingResource : consentMappingResources) {
+            if (CDSConsentExtensionConstants.SECONDARY_ACCOUNT_USER.equals(mappingResource.getPermission()) &&
+                    !CDSConsentValidatorUtil
+                            .isUserEligibleForSecondaryAccountDataSharing(mappingResource.getAccountID(),
+                                    consentValidateData.getUserId())) {
+                consentMappingResources.remove(mappingResource);
+            }
+        }
+
+        consentValidateData.getComprehensiveConsent().setConsentMappingResources(consentMappingResources);
+    }
     /**
      * Method to remove accounts which the user has "REVOKED" nominated representative permissions.
      *
