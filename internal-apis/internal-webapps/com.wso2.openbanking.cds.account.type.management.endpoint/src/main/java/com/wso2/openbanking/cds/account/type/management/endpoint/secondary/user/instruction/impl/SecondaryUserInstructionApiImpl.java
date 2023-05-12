@@ -45,7 +45,7 @@ public class SecondaryUserInstructionApiImpl implements SecondaryUserInstruction
     private static final Log log = LogFactory.getLog(SecondaryUserInstructionApiImpl.class);
 
     private static final String DATA = "data";
-    private static final String AUTHORISED = "authorised";
+    private static final String AUTHORIZED = "authorized";
     private static final String EXPIRED =  "Expired";
     private AccountMetadataService accountMetadataService = AccountMetadataServiceImpl.getInstance();
     private ConsentCoreServiceImpl consentCoreService = new ConsentCoreServiceImpl();
@@ -157,7 +157,7 @@ public class SecondaryUserInstructionApiImpl implements SecondaryUserInstruction
             String userId, String accountId)
             throws ConsentManagementException {
 
-        ArrayList<String> consentStatuses = new ArrayList<>(Arrays.asList(AUTHORISED));
+        ArrayList<String> consentStatuses = new ArrayList<>(Arrays.asList(AUTHORIZED));
         ArrayList<String> userIds = new ArrayList<>(Arrays.asList(userId));
 
         // retrieve active consent for the current user

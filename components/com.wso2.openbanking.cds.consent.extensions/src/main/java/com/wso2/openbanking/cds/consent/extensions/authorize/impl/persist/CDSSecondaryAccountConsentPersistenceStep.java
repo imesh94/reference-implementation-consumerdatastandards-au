@@ -13,6 +13,7 @@ import com.wso2.openbanking.accelerator.consent.extensions.authorize.model.Conse
 import com.wso2.openbanking.accelerator.consent.extensions.authorize.model.ConsentPersistStep;
 import com.wso2.openbanking.accelerator.consent.extensions.common.ConsentException;
 import com.wso2.openbanking.accelerator.consent.extensions.common.ResponseStatus;
+import com.wso2.openbanking.cds.consent.extensions.authorize.utils.CDSConsentCommonUtil;
 import com.wso2.openbanking.cds.consent.extensions.authorize.utils.CDSConsentPersistUtil;
 import com.wso2.openbanking.cds.consent.extensions.common.CDSConsentExtensionConstants;
 import com.wso2.openbanking.cds.consent.extensions.validate.utils.CDSConsentValidatorUtil;
@@ -41,7 +42,9 @@ public class CDSSecondaryAccountConsentPersistenceStep implements ConsentPersist
 
             Map<String, Map<String, String>> secondaryAccountIdWithOwners = new HashMap<>();
             Map<String, ArrayList<String>> secondaryAccountIDsMapWithPermissions = new HashMap<>();
-            String userId = consentPersistData.getConsentData().getUserId();
+            String userId = CDSConsentCommonUtil.getUserIdWithTenantDomain(
+                    consentPersistData.getConsentData().getUserId());
+            consentPersistData.getConsentData().setUserId(userId);
 
             // Get details of consented accounts
             ArrayList<String> consentedAccountIdList =
@@ -110,9 +113,9 @@ public class CDSSecondaryAccountConsentPersistenceStep implements ConsentPersist
             Boolean isShareableAccount = secondaryAccountInstructionStatus && secondaryAccountPrivilegeStatus;
 
             if (!isShareableAccount) {
-                log.error("Secondary account instruction is not granted for account: " + accountId,
-                        new ConsentException(ResponseStatus.PRECONDITION_FAILED,
-                                "Secondary account instruction is not granted for account: " + accountId));
+                log.error("Secondary account instruction is not granted for account: " + accountId);
+                throw new ConsentException(ResponseStatus.PRECONDITION_FAILED,
+                                "Secondary account instruction is not granted for account: " + accountId);
             }
 
             // validate secondary user joint accounts
