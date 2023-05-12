@@ -422,13 +422,6 @@ url = "jdbc:h2:./repository/database/WSO2CARBON_DB;DB_CLOSE_ON_EXIT=FALSE"
 username="$ref{super_admin.username}"
 password="$ref{super_admin.password}"
 
-[open_banking.dcr.apim_rest_endpoints]
-app_creation = "api/am/devportal/v3/applications"
-key_generation = "api/am/devportal/v3/applications/application-id/map-keys"
-api_retrieve = "api/am/devportal/v3/apis"
-api_subscribe = "api/am/devportal/v3/subscriptions/multiple"
-retrieve_subscribe="api/am/devportal/v3/subscriptions"
-
 [open_banking.dcr]
 jwks_endpoint_name = "jwks_uri"
 app_name_claim = "client_name"
@@ -438,6 +431,13 @@ use_softwareIdForAppName = true
 #[open_banking.dcr.jwks_retriever]
 #connection_timeout = 3000
 #read_timeout = 3000
+
+[open_banking.dcr.apim_rest_endpoints]
+app_creation = "api/am/devportal/v3/applications"
+key_generation = "api/am/devportal/v3/applications/application-id/map-keys"
+api_retrieve = "api/am/devportal/v3/apis"
+api_subscribe = "api/am/devportal/v3/subscriptions/multiple"
+retrieve_subscribe="api/am/devportal/v3/subscriptions"
 
 [[open_banking.dcr.regulatory_api]]
 api_name = "CDRDynamicClientRegistrationAPI"
