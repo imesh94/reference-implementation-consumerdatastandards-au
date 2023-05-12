@@ -46,7 +46,10 @@ public class CDSApplicationUpdaterImpl extends ApplicationUpdaterImpl {
             oauthApplication.setIdTokenEncryptionMethod(spMetaData
                     .get(CDSValidationConstants.ID_TOKEN_ENCRYPTION_RESPONSE_ENC).toString());
         }
-        oauthApplication.setPkceMandatory(true); // Make PKCE mandatory feature for all applications.
+
+        if (isRegulatoryApp) {
+            oauthApplication.setPkceMandatory(true);
+        }
     }
     @Override
     public void doPostDeleteApplication(ServiceProvider serviceProvider, String tenantDomain, String userName)
