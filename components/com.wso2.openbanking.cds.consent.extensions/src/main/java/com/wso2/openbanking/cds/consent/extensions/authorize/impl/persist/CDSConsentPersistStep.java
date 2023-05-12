@@ -71,7 +71,8 @@ public class CDSConsentPersistStep implements ConsentPersistStep {
                 JSONObject payloadData = consentPersistData.getPayload();
 
                 // Append tenant domain to user id
-                consentData.setUserId(CDSConsentCommonUtil.getUserIdWithTenantDomain(consentData.getUserId()));
+                String userId = CDSConsentCommonUtil.getUserIdWithTenantDomain(consentData.getUserId());
+                consentData.setUserId(userId);
 
                 ArrayList<String> accountIdList = getAccountIdList(payloadData);
                 // get the consent model to be created
@@ -138,7 +139,7 @@ public class CDSConsentPersistStep implements ConsentPersistStep {
                     }
 
                     // Revoke existing tokens
-                    revokeTokens(cdrArrangementId, consentData.getUserId());
+                    revokeTokens(cdrArrangementId, userId);
                     // Activate account mappings which were deactivated when revoking tokens
                     activateAccountMappings(cdrArrangementId);
                     // Amend consent data
@@ -162,7 +163,7 @@ public class CDSConsentPersistStep implements ConsentPersistStep {
                     }
                     consentCoreService.amendDetailedConsent(cdrArrangementId, consentResource.getReceipt(),
                             validityPeriod, authResorceId, accountIdsMapWithPermissions,
-                            CDSConsentExtensionConstants.AUTHORIZED_STATUS, consentAttributes, consentData.getUserId(),
+                            CDSConsentExtensionConstants.AUTHORIZED_STATUS, consentAttributes, userId,
                             additionalAmendmentData);
                 } else {
                     // create authorizable consent using the consent resource above
