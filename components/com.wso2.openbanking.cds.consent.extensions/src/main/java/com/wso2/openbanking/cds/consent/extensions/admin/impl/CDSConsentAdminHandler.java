@@ -27,6 +27,7 @@ import com.wso2.openbanking.accelerator.consent.mgt.service.constants.ConsentCor
 import com.wso2.openbanking.accelerator.consent.mgt.service.impl.ConsentCoreServiceImpl;
 import com.wso2.openbanking.cds.consent.extensions.authorize.utils.PermissionsEnum;
 import com.wso2.openbanking.cds.consent.extensions.common.CDSConsentExtensionConstants;
+import com.wso2.openbanking.cds.consent.extensions.validate.utils.CDSConsentValidatorUtil;
 import net.minidev.json.JSONArray;
 import net.minidev.json.JSONObject;
 import net.minidev.json.parser.JSONParser;
@@ -96,6 +97,11 @@ public class CDSConsentAdminHandler implements ConsentAdminHandler {
                 responseMetadata.put(CDSConsentExtensionConstants.COUNT, filteredConsentData.size());
                 consentAdminData.getResponsePayload().put(CDSConsentExtensionConstants.DATA, filteredConsentData);
             }
+        }
+
+        // filter secondary user consents if 'secondaryAccountInfo' is available in the query params.
+        if (consentAdminData.getQueryParams().containsKey(CDSConsentExtensionConstants.SECONDARY_ACCOUNT_INFO)) {
+            filterSecondaryUserConsents(consentAdminData);
         }
     }
 
@@ -359,6 +365,125 @@ public class CDSConsentAdminHandler implements ConsentAdminHandler {
         }
         consentResource.appendField("userList", userList);
         return consentResource;
+    }
+
+    /**
+     * Method to filter secondary user created consents for searching user including privileged secondary accounts.
+     * QueryParams should contain 'secondaryAccountInfo' as a key and userid as the value.
+     *
+     * @param consentAdminData consentAdminData
+     */
+    private void filterSecondaryUserConsents(ConsentAdminData consentAdminData) {
+
+        JSONArray filteredConsentData = new JSONArray();
+
+        for (Object consentObj : (JSONArray) consentAdminData.getResponsePayload().get(
+                CDSConsentExtensionConstants.DATA)) {
+            JSONObject consent = (JSONObject) consentObj;
+            JSONArray secondaryAccountOwnerAuthResources = new JSONArray();
+            JSONArray consentAuthResources = (JSONArray) consent.get(
+                    CDSConsentExtensionConstants.AUTHORIZATION_RESOURCES);
+            JSONArray consentMappingsResources = (JSONArray) consent.get(
+                    CDSConsentExtensionConstants.CONSENT_MAPPING_RESOURCES);
+
+            // filter secondary account owner auth resources
+            String primaryUserId = null;
+            for (Object consentAuthResourceObj : consentAuthResources) {
+                if (consentAuthResourceObj instanceof JSONObject) {
+                    JSONObject authResource = (JSONObject) consentAuthResourceObj;
+                    if (authResource.get(CDSConsentExtensionConstants.AUTH_TYPE)
+                            .equals(CDSConsentExtensionConstants.SECONDARY_ACCOUNT_OWNER)) {
+                        secondaryAccountOwnerAuthResources.add(authResource);
+                    } else if (authResource.get(CDSConsentExtensionConstants.AUTH_TYPE)
+                            .equals(CDSConsentExtensionConstants.AUTH_RESOURCE_TYPE_PRIMARY)) {
+                        primaryUserId = (String) authResource.get(CDSConsentExtensionConstants.USER_ID);
+                    }
+                }
+            }
+
+            // case where consent has secondary accounts of the searching user
+            if (!secondaryAccountOwnerAuthResources.isEmpty()) {
+
+                // retrieve secondary account mappings for filtered auth resources
+                Map<String, Map<String, String>> accountOwnerAgainstAccountWithPrivilegeMap = new HashMap<>();
+                JSONArray secondaryAccountInfo = new JSONArray();
+
+                for (Object authResourceObj: secondaryAccountOwnerAuthResources) {
+                    if (authResourceObj instanceof JSONObject) {
+                        JSONObject authResource = (JSONObject) authResourceObj;
+                        String authResourceId = (String) ((JSONObject) authResource)
+                                .get(CDSConsentExtensionConstants.AUTHORIZATION_ID);
+                        for (Object mappingResourceObj: consentMappingsResources) {
+                            if (mappingResourceObj instanceof JSONObject) {
+                                JSONObject mappingResource = (JSONObject) mappingResourceObj;
+                                if (mappingResource.get(CDSConsentExtensionConstants.AUTHORIZATION_ID)
+                                        .equals(authResourceId)) {
+                                    Map<String, String> accountWithPrivilegeMap = new HashMap<>();
+                                    String accountId = (String) mappingResource.get(
+                                            CDSConsentExtensionConstants.ACCOUNT_ID);
+                                    Boolean isPrivileged = mappingResource
+                                            .get(CDSConsentExtensionConstants.MAPPING_STATUS)
+                                            .equals(CDSConsentExtensionConstants.ACTIVE_STATUS) &&
+                                            CDSConsentValidatorUtil.isUserEligibleForSecondaryAccountDataSharing(
+                                                    accountId, primaryUserId);
+
+                                    accountWithPrivilegeMap.put((String) mappingResource.get(
+                                            CDSConsentExtensionConstants.ACCOUNT_ID), isPrivileged.toString());
+                                    accountOwnerAgainstAccountWithPrivilegeMap.put(authResource.getAsString(
+                                            CDSConsentExtensionConstants.USER_ID), accountWithPrivilegeMap);
+                                }
+                            }
+                        }
+                    }
+                }
+                // append processed secondary account info to consent object
+                consent.appendField(CDSConsentExtensionConstants.SECONDARY_ACCOUNT_INFO,
+                        getSecondaryAccountInfoArray(primaryUserId, accountOwnerAgainstAccountWithPrivilegeMap));
+                filteredConsentData.add(consent);
+            }
+        }
+        JSONObject responseMetadata = (JSONObject) consentAdminData.getResponsePayload().get(
+                CDSConsentExtensionConstants.METADATA);
+        responseMetadata.put(CDSConsentExtensionConstants.TOTAL, filteredConsentData.size());
+        responseMetadata.put(CDSConsentExtensionConstants.COUNT, filteredConsentData.size());
+        consentAdminData.getResponsePayload().put(CDSConsentExtensionConstants.DATA, filteredConsentData);
+    }
+
+    private JSONObject getSecondaryAccountInfoArray(String primaryUserId,
+                                  Map<String, Map<String, String>> accountOwnerAgainstAccountWithPrivilegeMap) {
+        JSONObject secondaryAccountInfo = new JSONObject();
+        JSONArray secondaryAccountList = new JSONArray();
+        secondaryAccountInfo.put(CDSConsentExtensionConstants.ACCOUNT_USER, primaryUserId);
+
+        for (Map.Entry<String, Map<String, String>> accountOwnerAgainstAccountWithPrivilege :
+                accountOwnerAgainstAccountWithPrivilegeMap.entrySet()) {
+            String accountOwnerUserId = accountOwnerAgainstAccountWithPrivilege.getKey();
+            Map<String, String> accountWithPrivilegeMap = accountOwnerAgainstAccountWithPrivilege.getValue();
+            JSONArray activeAccountList = new JSONArray();
+            JSONArray inactiveAccountList = new JSONArray();
+
+            if (accountOwnerUserId.equals(primaryUserId)) {
+                continue;
+            }
+
+            for (Map.Entry<String, String> accountWithPrivilege : accountWithPrivilegeMap.entrySet()) {
+                String accountId = accountWithPrivilege.getKey();
+
+                if (accountWithPrivilege.getValue().equals("true")) {
+                    activeAccountList.add(accountId);
+                } else {
+                    inactiveAccountList.add(accountId);
+                }
+            }
+
+            JSONObject secondaryAccountObject = new JSONObject();
+            secondaryAccountObject.put(CDSConsentExtensionConstants.ACCOUNT_OWNER, accountOwnerUserId);
+            secondaryAccountObject.put(CDSConsentExtensionConstants.ACTIVE_ACCOUNTS, activeAccountList);
+            secondaryAccountObject.put(CDSConsentExtensionConstants.INACTIVE_ACCOUNTS, inactiveAccountList);
+            secondaryAccountList.add(secondaryAccountObject);
+        }
+        secondaryAccountInfo.put(CDSConsentExtensionConstants.SECONDARY_ACCOUNTS, secondaryAccountList);
+        return secondaryAccountInfo;
     }
 
     private void storeJointAccountWithdrawalHistory(DetailedConsentResource detailedConsentResource)
