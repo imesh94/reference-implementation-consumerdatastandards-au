@@ -24,6 +24,7 @@ import com.wso2.openbanking.accelerator.consent.mgt.dao.models.DetailedConsentRe
 import com.wso2.openbanking.accelerator.consent.mgt.service.constants.ConsentCoreServiceConstants;
 import com.wso2.openbanking.accelerator.consent.mgt.service.impl.ConsentCoreServiceImpl;
 import com.wso2.openbanking.cds.consent.extensions.authorize.impl.model.AccountConsentRequest;
+import com.wso2.openbanking.cds.consent.extensions.authorize.utils.CDSConsentCommonUtil;
 import com.wso2.openbanking.cds.consent.extensions.authorize.utils.CDSDataRetrievalUtil;
 import com.wso2.openbanking.cds.consent.extensions.authorize.utils.PermissionsEnum;
 import com.wso2.openbanking.cds.consent.extensions.common.CDSConsentExtensionConstants;
@@ -68,7 +69,10 @@ public class CDSConsentPersistStep implements ConsentPersistStep {
             try {
                 ConsentData consentData = consentPersistData.getConsentData();
                 JSONObject payloadData = consentPersistData.getPayload();
-                String userId = consentData.getUserId();
+
+                // Append tenant domain to user id
+                consentData.setUserId(CDSConsentCommonUtil.getUserIdWithTenantDomain(consentData.getUserId()));
+
                 ArrayList<String> accountIdList = getAccountIdList(payloadData);
                 // get the consent model to be created
                 AccountConsentRequest accountConsentRequest = CDSDataRetrievalUtil
@@ -134,7 +138,7 @@ public class CDSConsentPersistStep implements ConsentPersistStep {
                     }
 
                     // Revoke existing tokens
-                    revokeTokens(cdrArrangementId, userId);
+                    revokeTokens(cdrArrangementId, consentData.getUserId());
                     // Activate account mappings which were deactivated when revoking tokens
                     activateAccountMappings(cdrArrangementId);
                     // Amend consent data
@@ -158,7 +162,7 @@ public class CDSConsentPersistStep implements ConsentPersistStep {
                     }
                     consentCoreService.amendDetailedConsent(cdrArrangementId, consentResource.getReceipt(),
                             validityPeriod, authResorceId, accountIdsMapWithPermissions,
-                            CDSConsentExtensionConstants.AUTHORIZED_STATUS, consentAttributes, userId,
+                            CDSConsentExtensionConstants.AUTHORIZED_STATUS, consentAttributes, consentData.getUserId(),
                             additionalAmendmentData);
                 } else {
                     // create authorizable consent using the consent resource above

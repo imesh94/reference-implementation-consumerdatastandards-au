@@ -10,7 +10,7 @@ package com.wso2.openbanking.cds.consent.extensions.authorize.impl.retrieval;
 
 import com.wso2.openbanking.accelerator.consent.extensions.authorize.model.ConsentData;
 import com.wso2.openbanking.cds.common.config.OpenBankingCDSConfigParser;
-import com.wso2.openbanking.cds.consent.extensions.authorize.utils.CDSDataRetrievalUtil;
+import com.wso2.openbanking.cds.consent.extensions.authorize.utils.CDSConsentCommonUtil;
 import com.wso2.openbanking.cds.consent.extensions.common.CDSConsentExtensionConstants;
 import net.minidev.json.JSONObject;
 import net.minidev.json.parser.JSONParser;
@@ -32,7 +32,7 @@ import static org.mockito.Mockito.when;
 /**
  * Test class for CDS Account Retrieval
  */
-@PrepareForTest({OpenBankingCDSConfigParser.class, CDSDataRetrievalUtil.class})
+@PrepareForTest({OpenBankingCDSConfigParser.class, CDSConsentCommonUtil.class})
 @PowerMockIgnore({"com.wso2.openbanking.accelerator.consent.extensions.common.*", "jdk.internal.reflect.*"})
 public class CDSProfileListRetrievalStepTests extends PowerMockTestCase {
 
@@ -114,8 +114,8 @@ public class CDSProfileListRetrievalStepTests extends PowerMockTestCase {
         PowerMockito.mockStatic(OpenBankingCDSConfigParser.class);
         PowerMockito.when(OpenBankingCDSConfigParser.getInstance()).thenReturn(openBankingCDSConfigParserMock);
 
-        PowerMockito.mockStatic(CDSDataRetrievalUtil.class);
-        when(CDSDataRetrievalUtil.getUserIdWithTenantDomain(anyString())).thenReturn("user1@wso2.com@carbon.super");
+        PowerMockito.mockStatic(CDSConsentCommonUtil.class);
+        when(CDSConsentCommonUtil.getUserIdWithTenantDomain(anyString())).thenReturn("user1@wso2.com@carbon.super");
 
         JSONObject jsonObject = (JSONObject) new JSONParser(JSONParser.MODE_PERMISSIVE).parse(TEST_ACCOUNT_DATA_JSON);
         doReturn(CDSConsentExtensionConstants.ACCOUNTS).when(consentDataMock).getType();
