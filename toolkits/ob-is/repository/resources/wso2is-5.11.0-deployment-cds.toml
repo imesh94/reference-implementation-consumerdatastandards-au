@@ -485,8 +485,9 @@ name = "cdr-register"
 name = "IdentifierExecutor"
 display = "ob-identifier-first"
 
-#[open_banking.sca.idp]
-#name = ""
+[open_banking.sca.idp]
+name = "SMSAuthentication"
+step = 2
 
 [open_banking.dcr.registration.grant_types]
 allowed_values = ["authorization_code", "refresh_token", "client_credentials"]
@@ -775,11 +776,6 @@ response_type_handler="com.wso2.openbanking.cds.identity.auth.extensions.respons
 claim_provider="com.wso2.openbanking.cds.identity.claims.CDSClaimProvider"
 push_auth_request_validator="com.wso2.openbanking.cds.identity.push.auth.extension.request.validator.CDSPushAuthRequestValidator"
 
-#===================authenticator configs====================
-[open_banking.sca.idp]
-name = "SMSAuthentication"
-step = 2
-
 #===================for Connection pool====================
 [open_banking.http_connection_pool]
 max_connections = 2000
@@ -819,7 +815,7 @@ expiry=2
 update_period=4
 data_recipients_discovery_url="https://api.cdr.gov.au/cdr-register/v1/banking/data-recipients"
 dcr_internal_url="https://IS_HOSTNAME:9446/api/openbanking/dynamic-client-registration/register"
-apim_application_search_url="https://APIM_HOSTNAME:9443/api/am/admin/v2/applications"
+apim_application_search_url="https://APIM_HOSTNAME:9443/api/am/admin/v4/applications"
 http_request_retry_count=2
 dataholder_responsibilities.bulk_execution=true
 dataholder_responsibilities.bulk_execution_hour=2
