@@ -60,8 +60,10 @@ public class CDSProfileListRetrievalStep implements ConsentRetrievalStep {
                                 if (accountJson.containsKey(CDSConsentExtensionConstants.CUSTOMER_ACCOUNT_TYPE)) {
                                     String customerAccountType = (String) accountJson.get(
                                             CDSConsentExtensionConstants.CUSTOMER_ACCOUNT_TYPE);
+                                    //Todo: Process secondary accounts separately.
                                     if (CDSConsentExtensionConstants.INDIVIDUAL_PROFILE_TYPE.
-                                            equals(customerAccountType)) {
+                                            equals(customerAccountType) || CDSConsentExtensionConstants.
+                                            SECONDARY_ACCOUNT_TYPE.equals(customerAccountType)) {
                                         preSelectedProfileId = CDSConsentExtensionConstants.INDIVIDUAL_PROFILE_ID;
                                     } else if (CDSConsentExtensionConstants.BUSINESS_PROFILE_TYPE.
                                             equals(customerAccountType)) {
@@ -110,7 +112,11 @@ public class CDSProfileListRetrievalStep implements ConsentRetrievalStep {
                     } else if (accountJSON.containsKey(CDSConsentExtensionConstants.CUSTOMER_ACCOUNT_TYPE) &&
                             StringUtils.equals((String) accountJSON.get(CDSConsentExtensionConstants.
                                             CUSTOMER_ACCOUNT_TYPE),
-                                    CDSConsentExtensionConstants.INDIVIDUAL_PROFILE_TYPE)) {
+                                    CDSConsentExtensionConstants.INDIVIDUAL_PROFILE_TYPE) || StringUtils.equals(
+                                            (String) accountJSON.get(CDSConsentExtensionConstants.
+                                                    CUSTOMER_ACCOUNT_TYPE), CDSConsentExtensionConstants.
+                                    SECONDARY_ACCOUNT_TYPE)) {
+                        //Todo: Process secondary accounts separately.
                         // Create maps of profileId to profileName and profileId to accountIds for individual accounts.
                         String accountId = (String) accountJSON.get(CDSConsentExtensionConstants.ACCOUNT_ID);
 
