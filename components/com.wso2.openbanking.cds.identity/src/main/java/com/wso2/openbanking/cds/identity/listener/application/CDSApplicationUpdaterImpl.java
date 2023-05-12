@@ -45,6 +45,9 @@ public class CDSApplicationUpdaterImpl extends ApplicationUpdaterImpl {
                     .get(CDSValidationConstants.ID_TOKEN_ENCRYPTION_RESPONSE_ALG).toString());
             oauthApplication.setIdTokenEncryptionMethod(spMetaData
                     .get(CDSValidationConstants.ID_TOKEN_ENCRYPTION_RESPONSE_ENC).toString());
+        }
+
+        if (isRegulatoryApp) {
             oauthApplication.setPkceMandatory(true);
         }
     }
