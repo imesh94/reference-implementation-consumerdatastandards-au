@@ -741,12 +741,16 @@ class = "com.wso2.openbanking.cds.consent.extensions.authorize.impl.persist.CDSB
 priority = 1
 
 [[open_banking.consent.authorize_steps.persist]]
-class = "com.wso2.openbanking.cds.consent.extensions.authorize.impl.persist.CDSJointAccountConsentPersistenceStep"
+class = "com.wso2.openbanking.cds.consent.extensions.authorize.impl.persist.CDSSecondaryAccountConsentPersistenceStep"
 priority = 2
 
 [[open_banking.consent.authorize_steps.persist]]
-class = "com.wso2.openbanking.cds.consent.extensions.authorize.impl.persist.CDSConsentPersistStep"
+class = "com.wso2.openbanking.cds.consent.extensions.authorize.impl.persist.CDSJointAccountConsentPersistenceStep"
 priority = 3
+
+[[open_banking.consent.authorize_steps.persist]]
+class = "com.wso2.openbanking.cds.consent.extensions.authorize.impl.persist.CDSConsentPersistStep"
+priority = 4
 
 [open_banking.consent.manage]
 handler="com.wso2.openbanking.accelerator.consent.extensions.manage.impl.DefaultConsentManageHandler"
@@ -842,3 +846,6 @@ class = "com.wso2.openbanking.accelerator.identity.token.validators.MTLSEnforcem
 prioritize_sharable_accounts_response=true
 enable_consent_revocation=true
 validate_accounts_on_retrieval=true
+
+[open_banking_cds.secondary_user_accounts]
+enable = true
