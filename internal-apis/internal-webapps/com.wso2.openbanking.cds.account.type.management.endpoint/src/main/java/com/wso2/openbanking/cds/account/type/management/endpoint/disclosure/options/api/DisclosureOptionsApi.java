@@ -20,15 +20,15 @@ import javax.ws.rs.Produces;
 import javax.ws.rs.core.Response;
 
 /**
- *  Disclosure Options API
+ * Disclosure Options API
  */
 @Path("/account-type-management")
 public interface DisclosureOptionsApi {
 
     /**
-     *  Disclosure Options API
-     *  REST API endpoint that updates the disclosure options of the CDS account by
-     *  sending a JSON payload in the request body.
+     * Disclosure Options API
+     * REST API endpoint that updates the disclosure options of the CDS account by
+     * sending a JSON payload in the request body.
      */
     @PUT
     @Path("/update-disclosure-options")
@@ -41,7 +41,6 @@ public interface DisclosureOptionsApi {
     })
     Response cdsUpdateAccountDisclosureOptions(@ApiParam(value = "Array of account disclosure option details.\n",
             required = true) String requestBody);
-
 }
 
 

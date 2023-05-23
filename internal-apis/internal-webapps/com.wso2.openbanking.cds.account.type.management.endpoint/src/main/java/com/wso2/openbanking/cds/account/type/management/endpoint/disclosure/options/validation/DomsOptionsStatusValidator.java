@@ -9,7 +9,6 @@
 
 
 package com.wso2.openbanking.cds.account.type.management.endpoint.disclosure.options.validation;
-
 import com.wso2.openbanking.accelerator.common.exception.OpenBankingException;
 import net.minidev.json.JSONArray;
 import net.minidev.json.JSONObject;
