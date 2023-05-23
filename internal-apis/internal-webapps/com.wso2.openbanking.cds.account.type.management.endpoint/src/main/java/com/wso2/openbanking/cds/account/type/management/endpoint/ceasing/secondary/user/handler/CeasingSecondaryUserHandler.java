@@ -1,13 +1,10 @@
 /*
- * Copyright (c) 2021, WSO2 Inc. (http://www.wso2.com). All Rights Reserved.
+ * Copyright (c) 2023, WSO2 LLC. (https://www.wso2.com). All Rights Reserved.
  *
- * This software is the property of WSO2 Inc. and its suppliers, if any.
+ * This software is the property of WSO2 LLC. and its suppliers, if any.
  * Dissemination of any information or reproduction of any material contained
- * herein is strictly forbidden, unless permitted by WSO2 in accordance with
- * the WSO2 Software License available at https://wso2.com/licenses/eula/3.1. For specific
- * language governing the permissions and limitations under this license,
- * please see the license as well as any agreement you’ve entered into with
- * WSO2 governing the purchase of this software and any associated services.
+ * herein in any form is strictly forbidden, unless permitted by WSO2 expressly.
+ * You may not alter or remove any copyright or other notice from copies of this content.
  */
 
 package com.wso2.openbanking.cds.account.type.management.endpoint.ceasing.secondary.user.handler;
@@ -43,41 +40,44 @@ public class CeasingSecondaryUserHandler {
 
     /**
      * ----- Block the sharing status for a legal entity -----
-     * An endpoint should be designed to allow an account holder to block a legal entity in order to cease the
+     * This endpoint is designed to allow an account holder to block a legal entity in order to cease the
      * disclosure initiated by a secondary user for a particular account to that legal entity.
+     *
+     * @param JSONArray - ValidatedRequestBody
+     * @return void
+     * @throws OpenBankingException
      */
     public void blockLegalEntitySharingStatus(JSONArray validatedRequestBody) {
 
         log.debug("Blocking the legal entity sharing status");
 
         try {
-            //TODO: Handle the existing consents upon blocking a legal entity
             for (Object validatedRequestBodyItem : validatedRequestBody) {
                 String accountId = ((JSONObject) validatedRequestBodyItem).getAsString("accountId");
                 String secondaryUserId = ((JSONObject) validatedRequestBodyItem).getAsString("secondaryUserId");
                 String legalEntityId = ((JSONObject) validatedRequestBodyItem).getAsString("legalEntityId");
 
-                //Generating the hashmap
+                // Generating the hashmap
                 HashMap<String, String> blockedLegalEntityMap = new HashMap<String, String>();
 
-                //Checking the existence of a record in the OB_ACCOUNT_METADATA table for the corresponding
-                //to a particular accountId, secondaryUserId and metadataKey
+                // Checking the existence of a record in the OB_ACCOUNT_METADATA table for the corresponding
+                // to a particular accountId, secondaryUserId and metadataKey
                 String responseLegalEntities = accountMetadataService.getAccountMetadataByKey
                         (accountId, secondaryUserId, metadataKey);
 
                 if (responseLegalEntities == null) {
-                    /* --- Legal entities does not exist for corresponding accountId and secondaryUserId --- */
+                    // Legal entities does not exist for corresponding accountId and secondaryUserId
                     blockedLegalEntityMap.put(metadataKey, legalEntityId);
                     accountMetadataService.
                             addOrUpdateAccountMetadata(accountId, secondaryUserId, blockedLegalEntityMap);
                     log.info("Legal Entity: " + legalEntityId + ", has been successfully blocked!");
                 } else {
-                    /* --- Legal entities exist for corresponding accountId and secondaryUserId --- */
+                    // Legal entities exist for corresponding accountId and secondaryUserId
                     StringBuilder legalEntitiesMetaDataValue = new StringBuilder(responseLegalEntities);
                     log.info(legalEntitiesMetaDataValue);
 
-                /* --- Appending legalEntityId to the existing legalEntityIds for corresponding accountId and
-                       secondaryUserId --- */
+                    // Appending legalEntityId to the existing legalEntityIds for corresponding accountId and
+                    // secondaryUserId
                     if (legalEntitiesMetaDataValue.indexOf(legalEntityId) != -1) {
                         log.info("Legal Entity: " + legalEntityId + ", has been already blocked!");
                     } else {
@@ -99,8 +99,12 @@ public class CeasingSecondaryUserHandler {
 
     /**
      * ----- Unblock the sharing status for a legal entity -----
-     * An endpoint should be designed to allow an account holder to block a legal entity in order to cease the
+     * This endpoint is designed to allow an account holder to block a legal entity in order to cease the
      * disclosure initiated by a secondary user for a particular account to that legal entity.
+     *
+     * @param JSONArray - ValidatedRequestBody
+     * @return void
+     * @throws OpenBankingException
      */
     public void unblockLegalEntitySharingStatus(JSONArray validatedRequestBody) {
 
@@ -112,20 +116,20 @@ public class CeasingSecondaryUserHandler {
                 String secondaryUserId = ((JSONObject) validatedRequestBodyItem).getAsString("secondaryUserId");
                 String legalEntityId = ((JSONObject) validatedRequestBodyItem).getAsString("legalEntityId");
 
-                //Checking the existence of a record in the OB_ACCOUNT_METADATA table for the corresponding
-                //to a particular accountId, secondaryUserId and metadataKey
+                // Checking the existence of a record in the OB_ACCOUNT_METADATA table for the corresponding
+                // to a particular accountId, secondaryUserId and metadataKey
                 String responseLegalEntities = accountMetadataService.getAccountMetadataByKey
                         (accountId, secondaryUserId, metadataKey);
 
                 if (responseLegalEntities == null) {
-                    /* --- Legal entities does not exist for corresponding accountId and secondaryUserId --- */
+                    //Legal entities does not exist for corresponding accountId and secondaryUserId
                     log.info("Legal Entity : " + legalEntityId + ", has not been blocked!");
                 } else {
-                    /* --- Legal entities exist for corresponding accountId and secondaryUserId --- */
+                    // Legal entities exist for corresponding accountId and secondaryUserId
                     StringBuilder legalEntitiesMetaDataValue = new StringBuilder(responseLegalEntities);
 
-                /* --- Removing legalEntityId to the existing legalEntityIds for corresponding accountId and
-                       secondaryUserId --- */
+                    // Removing legalEntityId to the existing legalEntityIds for corresponding accountId and
+                    // secondaryUserId
                     if (legalEntitiesMetaDataValue.indexOf(legalEntityId) == -1) {
                         log.info("Legal Entity : " + legalEntityId + ", has not been blocked!");
                     } else {
@@ -159,20 +163,21 @@ public class CeasingSecondaryUserHandler {
                         log.info("Legal Entity : " + legalEntityId + ", has been unblocked!");
                     }
                 }
-
             }
-
         } catch (OpenBankingException e) {
             log.warn(e.getMessage());
         }
-
     }
 
 
     /**
      * ----- Get accounts, secondary users, legal entities and their sharing status -----
-     * An endpoint should be designed to get all accounts, secondary users, legal entities and their sharing status
+     * This endpoint is designed to get all accounts, secondary users, legal entities and their sharing status
      * bound to the account holder in the consent manager dashboard.
+     *
+     * @param String - UserId
+     * @return UsersAccountsLegalEntitiesResource
+     * @throws RuntimeException
      */
     public UsersAccountsLegalEntitiesResource getUsersAccountsLegalEntities(String userId) {
 
@@ -194,13 +199,12 @@ public class CeasingSecondaryUserHandler {
                             null, null, false);
 
 
-            /* Updating - Secondary Users */
+            // Updating - Secondary Users
             // Consent
             for (DetailedConsentResource detailedConsent : responseDetailedConsents) {
 
                 // Authorization Resource
                 for (AuthorizationResource authorizationResource : detailedConsent.getAuthorizationResources()) {
-
 
                     if (authorizationResource.getAuthorizationType().equals("primary_member")) {
 
@@ -219,15 +223,12 @@ public class CeasingSecondaryUserHandler {
                                     break;
                                 }
                             }
-
                         }
-
                     }
-
                 }
             }
 
-            /* Updating - Accounts */
+            // Updating - Accounts
             for (UsersAccountsLegalEntitiesResource.SecondaryUser secondaryUser :
                     responseUsersAccountsLegalEntities.getSecondaryUsers()) {
 
@@ -259,19 +260,11 @@ public class CeasingSecondaryUserHandler {
                                         }
                                     }
                                 }
-
                             }
-
                         }
-
-
                     }
                 }
-
-
             }
-
-            log.info("Pause");
 
             /* Updating - Legal Entities */
             for (UsersAccountsLegalEntitiesResource.SecondaryUser secondaryUser :
@@ -338,18 +331,13 @@ public class CeasingSecondaryUserHandler {
                                             }
                                         }
                                     }
-
                                 }
-
                             }
                         }
                     }
-
-
                 }
 
             }
-
             return responseUsersAccountsLegalEntities;
         } catch (RuntimeException e) {
             throw e;
