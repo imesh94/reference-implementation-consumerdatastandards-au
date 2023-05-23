@@ -18,6 +18,7 @@ import com.wso2.openbanking.accelerator.consent.mgt.dao.models.AuthorizationReso
 import com.wso2.openbanking.accelerator.consent.mgt.dao.models.ConsentMappingResource;
 import com.wso2.openbanking.accelerator.consent.mgt.dao.models.DetailedConsentResource;
 import com.wso2.openbanking.accelerator.consent.mgt.service.impl.ConsentCoreServiceImpl;
+import com.wso2.openbanking.cds.consent.extensions.authorize.utils.CDSConsentCommonUtil;
 import com.wso2.openbanking.cds.consent.extensions.authorize.utils.CDSDataRetrievalUtil;
 import com.wso2.openbanking.cds.consent.extensions.common.CDSConsentExtensionConstants;
 import net.minidev.json.JSONArray;
@@ -88,7 +89,9 @@ public class CDSConsentRetrievalStep implements ConsentRetrievalStep {
                         OffsetDateTime currentDateTime = OffsetDateTime.now(ZoneOffset.UTC);
                         if (existingConsentExpiry.isAfter(currentDateTime)) {
                             // Add required data for the persistence step
-                            String userId = consentData.getUserId();
+                            String userId = CDSConsentCommonUtil.getUserIdWithTenantDomain(consentData.getUserId());
+                            // Set userid with tenant domain to consent data
+                            consentData.setUserId(userId);
                             String authId = null;
                             String authStatus = null;
                             ArrayList<AuthorizationResource> authResourceList = consentResource.
@@ -103,9 +106,7 @@ public class CDSConsentRetrievalStep implements ConsentRetrievalStep {
                                 String errorMessage = String.format("There's no authorization resource " +
                                                 "corresponds to consent id %s and user id %s.", consentId,
                                         consentData.getUserId());
-                                if (log.isDebugEnabled()) {
-                                    log.debug(errorMessage);
-                                }
+                                log.error(errorMessage);
                                 throw new ConsentException(ResponseStatus.BAD_REQUEST, errorMessage);
                             }
                             consentData.addData(CDSConsentExtensionConstants.CDR_ARRANGEMENT_ID,

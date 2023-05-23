@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2021-2022, WSO2 LLC. (https://www.wso2.com). All Rights Reserved.
+ * Copyright (c) 2021-2023, WSO2 LLC. (https://www.wso2.com). All Rights Reserved.
  *
  * This software is the property of WSO2 LLC. and its suppliers, if any.
  * Dissemination of any information or reproduction of any material contained
@@ -51,7 +51,7 @@ public class CDSClaimProviderTest extends PowerMockTestCase {
         oAuth2AuthorizeReqDTO.setSessionDataKey("DummySessionDataKey");
         OAuthAuthzReqMessageContext oAuthAuthzReqMessageContext =
                 new OAuthAuthzReqMessageContext(oAuth2AuthorizeReqDTO);
-        oAuthAuthzReqMessageContext.setCodeIssuedTime(1672782);
+        oAuthAuthzReqMessageContext.setCodeIssuedTime(1672782000); //Set the value in milliseconds
         oAuthAuthzReqMessageContext.setAccessTokenIssuedTime(1672432);
         oAuthAuthzReqMessageContext.setRefreshTokenvalidityPeriod(7776000);
         OAuth2AuthorizeRespDTO oAuth2AuthorizeRespDTOMock = mock(OAuth2AuthorizeRespDTO.class);

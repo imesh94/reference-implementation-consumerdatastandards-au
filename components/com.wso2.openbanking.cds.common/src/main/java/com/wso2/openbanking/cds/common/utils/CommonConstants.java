@@ -29,6 +29,9 @@ public class CommonConstants {
     public static final String INTROSPECT_FILTER_VALIDATORS = "FilterValidators.IntrospectFilterValidators.Validator";
     public static final String REVOKE_FILTER_VALIDATORS = "FilterValidators.RevokeFilterValidators.Validator";
     public static final String PAR_FILTER_VALIDATORS = "FilterValidators.ParFilterValidators.Validator";
+    public static final String PRIORITIZE_SHARABLE_ACCOUNTS_RESPONSE = "BNR.PrioritizeSharableAccountsResponse";
+    public static final String VALIDATE_ACCOUNTS_ON_RETRIEVAL = "BNR.ValidateAccountsOnRetrieval";
+    public static final String ENABLE_CONSENT_REVOCATION = "BNR.EnableConsentRevocation";
 
 
     // Http related constants
@@ -88,6 +91,9 @@ public class CommonConstants {
     public static final int DEFAULT_CACHE_EXPIRY = 2;
     public static final int DEFAULT_RETRY_COUNT = 2;
     public static final int DEFAULT_BULK_EXECUTION_HOUR_2AM = 2;
+
+    // Secondary user account config constants
+    public static final String SECONDARY_USER_ACCOUNTS_ENABLED = "SecondaryUserAccounts.Enable";
 
     private CommonConstants() {}
 }

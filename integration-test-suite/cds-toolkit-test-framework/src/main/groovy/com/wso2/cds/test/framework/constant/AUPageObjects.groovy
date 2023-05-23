@@ -22,10 +22,8 @@ class AUPageObjects {
     public static String CONSENT_CANCEL_XPATH = "//*[@value='Cancel']"
     public static String CONFIRM_CONSENT_DENY_XPATH = "//*[@value='Deny']"
     public static String ADR_NAME_HEADER_XPATH = "//h3[@class='ui header']"
-    public static String SINGLE_ACCOUNT_XPATH = "//option[contains(text(),'account_1')]"
-    public static String SINGLE_ACCOUNT_XPATH_200 = "//input[@id='account_1']"
-    public static String ALT_SINGLE_ACCOUNT_XPATH = "//option[contains(text(),'account_2')]"
-    public static String ALT_SINGLE_ACCOUNT_XPATH_200 = "//input[@id='account_2']"
+    public static String SINGLE_ACCOUNT_XPATH = "//input[@id='account_1']"
+    public static String ALT_SINGLE_ACCOUNT_XPATH = "//input[@id='account_2']"
     public static String LBL_WHERE_TO_MANAGE_INSTRUCTION_XPATH = "//div[contains(text(),'Where to manage this arrangement')]//h5"
     public static String LBL_NEW_PAYEES_INDICATOR_XPATH = "//b[contains(text(),'Saved payees')]/following-sibling::span[contains(text(),'New')]"
     public static String LBL_NEW_SHARING_DURATION_XPATH = "//span[@id='consent-expiry-date']/following-sibling::span[contains(text(),'New')]"
@@ -54,6 +52,8 @@ class AUPageObjects {
     public static String LBL_PERMISSION_LIST_ITEM_9 = "./following::ul[@class='scopes-list padding']//li[9]"
     public static String LBL_PERMISSION_LIST_ITEM_10 = "./following::ul[@class='scopes-list padding']//li[10]"
     public static String LBL_PERMISSION_LIST_ITEM_11 = "./following::ul[@class='scopes-list padding']//li[11]"
+    public static String LBL_PERMISSION_HEADER = "//*[@class='padding']//button"
+    public static String LBL_SECONDARY_ACCOUNT_INDICATION= "//button[@id='secondary_account']/span[contains(text(),'New')]"
 
     public static String LBL_AUTHORISED_STATUS = "//div[@id='heading0acc']//div[@class='p1 consent-status ml-3 ml-auto align-self-center']"
     public static String LBL_REVOKED_STATUS = "//div[@id='heading2acc']//div[@class='p1 consent-status ml-3 ml-auto align-self-center']"
@@ -154,12 +154,12 @@ class AUPageObjects {
     public static String LBL_CCPORTAL_DIRECT_DEBITS_TAB = "//div[@id='accordion0']//div[@id='Directdebitsandscheduledpayments']//li"
 
     //Selenium Constants
-    public static String AU_USERNAME_FIELD_ID = "usernameUserInput"
+    public static String AU_USERNAME_FIELD_ID = "username"
     public static String AU_USERNAME_FIELD_XPATH_200 = "//form[@id=\"identifierForm\"]/div//input[@id=\"usernameUserInput\"]"
     public static String AU_PASSWORD_FIELD_ID = "password"
     public static String AU_HEADLESS_TAG = "--headless"
     public static String AU_ACCOUNT_SELECT_DROPDOWN_XPATH = "//*[@id=\"accselect\"]"
-    public static String AU_AUTH_SIGNIN_XPATH = "//button[contains(text(),'Sign In')]"
+    public static String AU_AUTH_SIGNIN_XPATH = "//button[contains(text(),' Continue')]"
     public static String AU_AUTH_SIGNIN_XPATH_200 = "//input[@value=\"Next\"]"
     public static String AU_CONSENT_DENY_XPATH = "//input[@value='Deny']"
     public static String AU_CONSENT_APPROVE_SUBMIT_ID = "approve"
@@ -177,5 +177,18 @@ class AUPageObjects {
     public static String AU_LBL_SMSOTP_AUTHENTICATOR = "//h2[text()='Authenticating with SMSOTP']"
     public static String AU_TXT_OTP_CODE_ID = "OTPcode"
     public static String AU_BTN_AUTHENTICATE = "//input[@id='authenticate']"
+
+    public static String VALUE_ATTRIBUTE = "value"
+    public static String TEXT_ATTRIBUTE = "text"
+    public static String BUSINESS_PROFILE_SELECTION = "//input[@id='business']"
+    public static String INDIVIDUAL_PROFILE_SELECTION = "//input[@id='individual']"
+    public static String PROFILE_SELECTION_NEXT_BUTTON = "//*[@id='approve']"
+    public static String BUSINESS_ACCOUNT_1 = "//input[@id='business_account_1']"
+    public static String BUSINESS_ACCOUNT_2 = "//input[@id='business_account_2']"
+    public static String SECONDARY_ACCOUNT_1 = "//input[@id='secondary_account_1']"
+    public static String SECONDARY_ACCOUNT_2 = "//input[@id='secondary_account_2']"
+    public static String LBL_ACCOUNTS_UNAVAILABLE_TO_SHARE= "//option[contains(text(),'Accounts unavailable to share')]"
+    public static String LBL_FIRST_UNAVAILABLE_ACCOUNT= "//input[@id='unavailable_account_1']//following::small[1]"
+
 }
 

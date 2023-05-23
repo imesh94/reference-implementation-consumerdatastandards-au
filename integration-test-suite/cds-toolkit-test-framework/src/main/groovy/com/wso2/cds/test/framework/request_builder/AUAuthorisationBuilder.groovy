@@ -55,17 +55,18 @@ class AUAuthorisationBuilder {
      * @param client_id
      */
     AuthorizationRequest getAuthorizationRequest(List<AUAccountScope> scopes, Long sharingDuration, Boolean sendSharingDuration,
-                                                 String cdrArrangementId = "", String clientID = getClientID().getValue()) {
+                                                 String cdrArrangementId = "", String clientID = getClientID().getValue(),
+                                                 ResponseType response_type = getResponseType()) {
 
         AUJWTGenerator generator = new AUJWTGenerator()
         String scopeString = "openid ${String.join(" ", scopes.collect({ it.scopeString }))}"
 
-        request = new AuthorizationRequest.Builder(getResponseType(), new ClientID(clientID))
-                .responseType(ResponseType.parse("code id_token"))
+        request = new AuthorizationRequest.Builder(response_type, new ClientID(clientID))
+                .responseType(response_type)
                 .endpointURI(getEndpoint())
                 .redirectionURI(getRedirectURI())
                 .requestObject(generator.getSignedAuthRequestObject(scopeString, sharingDuration, sendSharingDuration, cdrArrangementId,
-                        getRedirectURI().toString(), null))
+                        getRedirectURI().toString(), null, response_type.toString()))
                 .scope(new Scope(scopeString))
                 .state(getState())
                 .customParameter("prompt", "login")
@@ -123,28 +124,27 @@ class AUAuthorisationBuilder {
      * @param clientId
      * @return
      */
-    Response doPushAuthorisationRequest(String headerString, List<AUAccountScope> scopes, long sharingDuration,
+    Response doPushAuthorisationRequest(List<AUAccountScope> scopes, long sharingDuration,
                                         boolean sendSharingDuration, String cdrArrangementId,
-                                        String clientId = getClientID().getValue()) {
+                                        String clientId = getClientID().getValue(),
+                                        String redirectUrl = getRedirectURI().toString(),
+                                        String responseType = getResponseType().toString()) {
+
         AUJWTGenerator generator = new AUJWTGenerator()
         String scopeString = "openid ${String.join(" ", scopes.collect({ it.scopeString }))}"
 
         String assertionString = generator.getClientAssertionJwt(clientId)
 
         def bodyContent = [
+                (AUConstants.CLIENT_ID_KEY)            : (clientId),
                 (AUConstants.CLIENT_ASSERTION_TYPE_KEY): (AUConstants.CLIENT_ASSERTION_TYPE),
                 (AUConstants.CLIENT_ASSERTION_KEY)     : assertionString,
-    ]
-        def parResponse = AURestAsRequestBuilder.buildRequest()
+        ]
+        Response parResponse = AURestAsRequestBuilder.buildRequest()
                 .contentType(AUConstants.ACCESS_TOKEN_CONTENT_TYPE)
-                .header(AUConstants.AUTHORIZATION_HEADER_KEY, "Basic " + Base64.encoder.encodeToString(
-                        headerString.getBytes(Charset.forName("UTF-8"))))
                 .formParams(bodyContent)
                 .formParams(AUConstants.REQUEST_KEY, generator.getSignedAuthRequestObject(scopeString,
-                        sharingDuration, sendSharingDuration, cdrArrangementId, auConfiguration.getAppInfoRedirectURL(), clientId).serialize())
-                .formParam(AUConstants.CLIENT_ID_KEY,clientId)
-
-
+                        sharingDuration, sendSharingDuration, cdrArrangementId, redirectUrl, clientId, responseType).serialize())
                 .baseUri(AUConstants.PUSHED_AUTHORISATION_BASE_PATH)
                 .post(AUConstants.PAR_ENDPOINT)
 
@@ -162,7 +162,10 @@ class AUAuthorisationBuilder {
      */
     Response doPushAuthorisationRequestWithPkjwt(List<AUAccountScope> scopes, long sharingDuration,
                                                  boolean sendSharingDuration, String cdrArrangementId,
-                                                 String clientId = getClientID().getValue()) {
+                                                 String clientId = getClientID().getValue(),
+                                                 String redirectUrl = getRedirectURI().toString(),
+                                                 String responseType = getResponseType().toString()) {
+
         AUJWTGenerator generator = new AUJWTGenerator()
         String scopeString = "openid ${String.join(" ", scopes.collect({ it.scopeString }))}"
 
@@ -177,7 +180,8 @@ class AUAuthorisationBuilder {
                 .contentType(AUConstants.ACCESS_TOKEN_CONTENT_TYPE)
                 .formParams(bodyContent)
                 .formParams(AUConstants.REQUEST_KEY, generator.getSignedAuthRequestObject(scopeString,
-                        sharingDuration, sendSharingDuration, cdrArrangementId, auConfiguration.getAppInfoRedirectURL(), clientId).serialize())
+                        sharingDuration, sendSharingDuration, cdrArrangementId, auConfiguration.getAppInfoRedirectURL(),
+                        clientId, responseType).serialize())
                 .baseUri(AUConstants.PUSHED_AUTHORISATION_BASE_PATH)
                 .post(AUConstants.PAR_ENDPOINT)
 

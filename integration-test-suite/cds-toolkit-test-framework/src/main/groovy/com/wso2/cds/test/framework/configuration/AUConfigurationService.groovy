@@ -233,5 +233,12 @@ class AUConfigurationService extends OBConfigurationService {
         return configuration.get(AUConfigConstants.MICRO_GATEWAY + "." + AUConfigConstants.MICRO_GATEWAY_CDS_ADMIN_URL)
     }
 
+    /**
+     * Get Profile Selection Configurations
+     */
+    String getProfileSelectionEnabled() {
+        return configuration.get(AUConfigConstants.PROFILE_SELECTION + "." + AUConfigConstants.PROFILE_SELECTION_ENABLED)
+    }
+
 }
 

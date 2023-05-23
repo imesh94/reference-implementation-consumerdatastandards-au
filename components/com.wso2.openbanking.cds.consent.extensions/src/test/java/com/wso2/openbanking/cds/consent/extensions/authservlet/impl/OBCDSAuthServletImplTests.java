@@ -74,8 +74,10 @@ public class OBCDSAuthServletImplTests extends PowerMockTestCase {
         JSONObject dataSet = new JSONObject();
 
         dataSet.put(CDSConsentExtensionConstants.DATA_REQUESTED, dataRequested);
+        dataSet.put(CDSConsentExtensionConstants.BUSINESS_DATA_CLUSTER, dataRequested);
         dataSet.put(CDSConsentExtensionConstants.ACCOUNTS, accounts);
         dataSet.put(CDSConsentExtensionConstants.SP_FULL_NAME, "TestServiceProvider");
+        dataSet.put(CDSConsentExtensionConstants.REDIRECT_URL, "TestRedirectUrl");
         dataSet.put(CDSConsentExtensionConstants.CONSENT_EXPIRY, "ConsentExpiryDate");
 
         Map<String, Object> returnMap = obCdsAuthServlet.updateRequestAttribute(
@@ -114,11 +116,14 @@ public class OBCDSAuthServletImplTests extends PowerMockTestCase {
         accJsonElement.put(CDSConsentExtensionConstants.JOINT_ACCOUNT_CONSENT_ELECTION_STATUS,
                 CDSConsentExtensionConstants.JOINT_ACCOUNT_PRE_APPROVAL);
         accJsonElement.put(CDSConsentExtensionConstants.JOINT_ACCOUNT_INFO, jointAccountInfo);
+        accJsonElement.put(CDSConsentExtensionConstants.IS_SECONDARY_ACCOUNT_RESPONSE, false);
         accounts.put(accJsonElement);
 
         dataSet.put(CDSConsentExtensionConstants.DATA_REQUESTED, dataRequested);
+        dataSet.put(CDSConsentExtensionConstants.BUSINESS_DATA_CLUSTER, dataRequested);
         dataSet.put(CDSConsentExtensionConstants.ACCOUNTS, accounts);
         dataSet.put(CDSConsentExtensionConstants.SP_FULL_NAME, "TestServiceProvider");
+        dataSet.put(CDSConsentExtensionConstants.REDIRECT_URL, "TestRedirectUrl");
         dataSet.put(CDSConsentExtensionConstants.CONSENT_EXPIRY, "ConsentExpiryDate");
 
         Map<String, Object> returnMap = obCdsAuthServlet.updateRequestAttribute(
@@ -150,6 +155,6 @@ public class OBCDSAuthServletImplTests extends PowerMockTestCase {
     @Test
     public void testGetJSPPath() {
         String jspPath = obCdsAuthServlet.getJSPPath();
-        Assert.assertTrue("/ob_cds_default.jsp".equals(jspPath));
+        Assert.assertTrue("/ob_cds_profile_selection.jsp".equals(jspPath));
     }
 }
