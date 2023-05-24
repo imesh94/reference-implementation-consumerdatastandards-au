@@ -189,4 +189,11 @@
         <ValidateAccountsOnRetrieval>true</ValidateAccountsOnRetrieval>
         {% endif %}
      </BNR>
+    <SecondaryUserAccounts>
+        {% if open_banking_cds.secondary_user_accounts.enable is defined %}
+        <Enable>{{open_banking_cds.secondary_user_accounts.enable}}</Enable>
+        {% else %}
+        <Enable>false</Enable>
+        {% endif %}
+    </SecondaryUserAccounts>
 </Server>

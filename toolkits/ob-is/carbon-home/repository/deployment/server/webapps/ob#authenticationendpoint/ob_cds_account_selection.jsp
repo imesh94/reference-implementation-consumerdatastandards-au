@@ -73,6 +73,7 @@
                                         value="${record['accountId']}" onclick="updateAcc()"
                                         ${record['isPreSelectedAccount'] ? 'checked' : ''}
                                         ${record['is_joint_account'] ? record['is_selectable'] ? "" : "disabled='disabled'" : ""}
+                                        ${record['is_secondary_account'] ? record['is_selectable'] ? "" : "disabled='disabled'" : ""}
                                     />
                                     ${record['displayName']}
                                 </label>
@@ -96,6 +97,20 @@
                                             %>
                                             <a tabindex="0" role="button" data-html="true" data-placement="auto top" data-toggle="popover" data-template="<%=popoverTemplate%>"
                                                 data-trigger="focus" title="&check; Pre-approval enabled" data-content="${record['linked_members_count']}<%=selectablePopoverContent%>">&#9432;</a>
+                                        </c:if>
+                                    </c:if>
+                                </span>
+
+                                <span id="secondary-accounts-info">
+                                    <c:if test="${record['is_secondary_account'] eq true}">
+                                        <c:if test="${record['is_selectable'] ne true}">
+                                            <%
+                                                String disabledPopoverContent = "<p style='text-align: left'> The account holder(s) must give you secondary user data sharing rights before you can share data from this account."
+                                                        + "<br/><br/>"
+                                                        + "Please call the bank for more details. </p>";
+                                            %>
+                                            <a tabindex="0" role="button" data-html="true" data-placement="auto top" data-toggle="popover" data-template="<%=popoverTemplate%>"
+                                               data-trigger="focus" title="Why can't I share these?" data-content="<%=disabledPopoverContent%>">&#9432;</a>
                                         </c:if>
                                     </c:if>
                                 </span>
