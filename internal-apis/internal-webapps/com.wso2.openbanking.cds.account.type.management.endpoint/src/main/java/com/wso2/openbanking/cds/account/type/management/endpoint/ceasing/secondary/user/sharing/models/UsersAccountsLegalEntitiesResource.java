@@ -6,7 +6,7 @@
  * herein in any form is strictly forbidden, unless permitted by WSO2 expressly.
  * You may not alter or remove any copyright or other notice from copies of this content.
  */
-package com.wso2.openbanking.cds.account.type.management.endpoint.ceasing.secondary.user.models;
+package com.wso2.openbanking.cds.account.type.management.endpoint.ceasing.secondary.user.sharing.models;
 
 import java.util.ArrayList;
 
@@ -14,20 +14,20 @@ import java.util.ArrayList;
  * Ceasing Secondary User - UsersAccountsLegalEntitiesResource
  */
 public class UsersAccountsLegalEntitiesResource {
-    private String userId;
+    private String userID;
     private ArrayList<SecondaryUser> secondaryUsers = null;
 
-    public UsersAccountsLegalEntitiesResource(String userId) {
-        this.userId = userId;
+    public UsersAccountsLegalEntitiesResource(String userID) {
+        this.userID = userID;
     }
 
-    // userId
-    public String getUserId() {
-        return userId;
+    // userID
+    public String getUserID() {
+        return userID;
     }
 
-    public void setUserId(String userId) {
-        this.userId = userId;
+    public void setUserID(String userID) {
+        this.userID = userID;
     }
 
     // secondaryUsers
@@ -50,26 +50,26 @@ public class UsersAccountsLegalEntitiesResource {
      * Secondary User
      */
     public static class SecondaryUser {
-        private String secondaryUserId;
+        private String secondaryUserID;
         private ArrayList<Account> accounts;
 
 
-        public SecondaryUser(String secondaryUserId) {
-            this.secondaryUserId = secondaryUserId;
+        public SecondaryUser(String secondaryUserID) {
+            this.secondaryUserID = secondaryUserID;
         }
 
-        public SecondaryUser(String secondaryUserId, ArrayList<Account> accounts) {
-            this.secondaryUserId = secondaryUserId;
+        public SecondaryUser(String secondaryUserID, ArrayList<Account> accounts) {
+            this.secondaryUserID = secondaryUserID;
             this.accounts = accounts;
         }
 
-        // secondaryUserId
-        public String getSecondaryUserId() {
-            return secondaryUserId;
+        // secondaryUserID
+        public String getSecondaryUserID() {
+            return secondaryUserID;
         }
 
-        public void setSecondaryUserId(String secondaryUserId) {
-            this.secondaryUserId = secondaryUserId;
+        public void setSecondaryUserID(String secondaryUserID) {
+            this.secondaryUserID = secondaryUserID;
         }
 
         // accounts
@@ -94,21 +94,21 @@ public class UsersAccountsLegalEntitiesResource {
      */
     public static class Account {
 
-        private String accountId;
+        private String accountID;
         private ArrayList<LegalEntity> legalEntities;
 
-        public Account(String accountId, ArrayList<LegalEntity> legalEntities) {
-            this.accountId = accountId;
+        public Account(String accountID, ArrayList<LegalEntity> legalEntities) {
+            this.accountID = accountID;
             this.legalEntities = legalEntities;
         }
 
-        // accountId
-        public String getAccountId() {
-            return accountId;
+        // accountID
+        public String getAccountID() {
+            return accountID;
         }
 
-        public void setAccountId(String accountId) {
-            this.accountId = accountId;
+        public void setAccountID(String accountID) {
+            this.accountID = accountID;
         }
 
         // legalEntities
@@ -132,21 +132,21 @@ public class UsersAccountsLegalEntitiesResource {
      * Legal Entity
      */
     public static class LegalEntity {
-        private String legalEntityId;
+        private String legalEntityID;
         private String legalEntitySharingStatus;
 
-        public LegalEntity(String legalEntityId, String legalEntitySharingStatus) {
-            this.legalEntityId = legalEntityId;
+        public LegalEntity(String legalEntityID, String legalEntitySharingStatus) {
+            this.legalEntityID = legalEntityID;
             this.legalEntitySharingStatus = legalEntitySharingStatus;
         }
 
-        // legalEntityId
-        public String getLegalEntityId() {
-            return legalEntityId;
+        // legalEntityID
+        public String getLegalEntityID() {
+            return legalEntityID;
         }
 
-        public void setLegalEntityId(String legalEntityId) {
-            this.legalEntityId = legalEntityId;
+        public void setLegalEntityID(String legalEntityID) {
+            this.legalEntityID = legalEntityID;
         }
 
         // legalEntitySharingStatus
@@ -163,7 +163,7 @@ public class UsersAccountsLegalEntitiesResource {
     @Override
     public String toString() {
         return "UsersAccountsLegalEntitiesResource{" +
-                "userId='" + userId + '\'' +
+                "userID='" + userID + '\'' +
                 ", secondaryUsers=" + secondaryUsers +
                 '}';
     }

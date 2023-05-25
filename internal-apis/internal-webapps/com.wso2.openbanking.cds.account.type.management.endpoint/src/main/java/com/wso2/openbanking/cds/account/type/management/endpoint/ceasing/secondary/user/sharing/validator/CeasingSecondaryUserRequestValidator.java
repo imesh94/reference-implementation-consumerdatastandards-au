@@ -7,7 +7,7 @@
  * You may not alter or remove any copyright or other notice from copies of this content.
  */
 
-package com.wso2.openbanking.cds.account.type.management.endpoint.ceasing.secondary.user.validator;
+package com.wso2.openbanking.cds.account.type.management.endpoint.ceasing.secondary.user.sharing.validator;
 
 import com.wso2.openbanking.accelerator.common.exception.OpenBankingException;
 import net.minidev.json.JSONArray;
@@ -22,8 +22,7 @@ import org.apache.commons.logging.LogFactory;
  */
 public class CeasingSecondaryUserRequestValidator {
 
-    private static final Log log = LogFactory.getLog(com.wso2.openbanking.cds.account.type.management.endpoint.ceasing.
-            secondary.user.validator.CeasingSecondaryUserRequestValidator.class);
+    private static final Log log = LogFactory.getLog(CeasingSecondaryUserRequestValidator.class);
 
     public static JSONArray ceasingSecondaryUserRequestValidator(String requestBody) throws
             OpenBankingException, Exception {

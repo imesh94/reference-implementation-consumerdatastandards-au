@@ -83,18 +83,18 @@ public class SecondaryUserInstructionApiImpl implements SecondaryUserInstruction
                 } else {
                     // Proceed to store secondary account status data in database
                     if (accountMetadataService.addOrUpdateAccountMetadata(
-                            secondaryUserAccountStatusData.getSecondaryAccountId(),
-                            secondaryUserAccountStatusData.getSecondaryUserId(),
+                            secondaryUserAccountStatusData.getSecondaryAccountID(),
+                            secondaryUserAccountStatusData.getSecondaryUserID(),
                             secondaryUserAccountStatusData.getAccountMetadataMap()) > 0) {
 
                         // handle the consents based on the otherAccountsAvailability flag
                         expireConsentsBasedOnOtherAccountAvailability(secondaryUserAccountStatusData);
 
                         log.debug("Successfully updated secondary account status data for account id: " +
-                                secondaryUserAccountStatusData.getSecondaryAccountId());
+                                secondaryUserAccountStatusData.getSecondaryAccountID());
                     } else {
                         errMsg = "Error occurred while persisting secondary account status data for " +
-                                "account id:" + secondaryUserAccountStatusData.getSecondaryAccountId();
+                                "account id:" + secondaryUserAccountStatusData.getSecondaryAccountID();
                         return getInternalServerErrorResponse(errMsg);
                     }
                 }
@@ -128,8 +128,8 @@ public class SecondaryUserInstructionApiImpl implements SecondaryUserInstruction
 
         try {
             ArrayList<DetailedConsentResource> consentsWithActiveSecondaryAccountMappings =
-                    getActiveConsentsWithSecondaryAccountMappings(secondaryUserAccountStatusData.getSecondaryUserId(),
-                            secondaryUserAccountStatusData.getSecondaryAccountId());
+                    getActiveConsentsWithSecondaryAccountMappings(secondaryUserAccountStatusData.getSecondaryUserID(),
+                            secondaryUserAccountStatusData.getSecondaryAccountID());
             if (!isDataSharingActivation) {
 
                 for (DetailedConsentResource detailedConsentResource : consentsWithActiveSecondaryAccountMappings) {

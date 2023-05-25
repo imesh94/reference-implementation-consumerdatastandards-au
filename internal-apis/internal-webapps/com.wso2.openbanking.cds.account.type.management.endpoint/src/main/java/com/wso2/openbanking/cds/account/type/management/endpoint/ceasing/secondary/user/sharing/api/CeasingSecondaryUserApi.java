@@ -7,7 +7,7 @@
  * You may not alter or remove any copyright or other notice from copies of this content.
  */
 
-package com.wso2.openbanking.cds.account.type.management.endpoint.ceasing.secondary.user.api;
+package com.wso2.openbanking.cds.account.type.management.endpoint.ceasing.secondary.user.sharing.api;
 
 import io.swagger.annotations.ApiOperation;
 import io.swagger.annotations.ApiParam;
@@ -31,6 +31,9 @@ public interface CeasingSecondaryUserApi {
      * ----- Block the sharing status for a legal entity -----
      * An endpoint should be designed to allow an account holder to block a legal entity in order to cease the
      * disclosure initiated by a secondary user for a particular account to that legal entity.
+     *
+     * @param requestBody - List of legal entities to be blocked
+     * @return success or error message when updating the sharing status of legal entities.
      */
     @PUT
     @Path("/block-legalentitiy")
@@ -46,6 +49,9 @@ public interface CeasingSecondaryUserApi {
      * ----- Unblock the sharing status for a legal entity -----
      * An endpoint should be designed to allow an account holder to block a legal entity in order to cease the
      * disclosure initiated by a secondary user for a particular account to that legal entity.
+     *
+     * @param requestBody - List of legal entities to be unblocked
+     * @return success or error message when updating the sharing status of legal entities.
      */
     @PUT
     @Path("/unblock-legalentitiy")
@@ -62,6 +68,10 @@ public interface CeasingSecondaryUserApi {
      * ----- Get accounts, secondary users, legal entities and their sharing status -----
      * An endpoint should be designed to get all accounts, secondary users, legal entities and their sharing status
      * bound to the account holder in the consent manager dashboard.
+     *
+     *@param userID - The userID of the account holder
+     *@return All accounts, secondary users, legal entities and their sharing status
+     *        bound to the account holder in the consent manager dashboard.
      */
     @GET
     @Path("/get-users-accounts-legalentities-details")
@@ -75,6 +85,6 @@ public interface CeasingSecondaryUserApi {
                     + "and their sharing status")})
     Response getUsersAccountsLegalEntities(@ApiParam(value = "Get accounts, secondary users, legal entities and their "
             + "sharing status",
-            required = true) @QueryParam("userId") String userId);
+            required = true) @QueryParam("userID") String userID);
 
 }

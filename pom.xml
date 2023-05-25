@@ -69,7 +69,7 @@
 
     <repositories>
         <!-- When building locally, uncomment the Updates 2 nexus repo and connect to VPN-->
-        <!--<repository>
+        <repository>
             <id>wso2-nexus-2</id>
             <name>WSO2 internal Repository</name>
             <url>https://support-maven.wso2.org/nexus/content/repositories/updates-2.0/</url>
@@ -81,7 +81,7 @@
             <snapshots>
                 <enabled>false</enabled>
             </snapshots>
-        </repository>-->
+        </repository>
         <repository>
             <id>wso2-nexus</id>
             <name>WSO2 internal Repository</name>

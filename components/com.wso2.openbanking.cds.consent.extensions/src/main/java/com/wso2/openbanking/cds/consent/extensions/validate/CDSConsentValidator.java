@@ -11,8 +11,8 @@ package com.wso2.openbanking.cds.consent.extensions.validate;
 
 import com.wso2.openbanking.accelerator.account.metadata.service.service.AccountMetadataService;
 import com.wso2.openbanking.accelerator.account.metadata.service.service.AccountMetadataServiceImpl;
-import com.wso2.openbanking.accelerator.common.identity.retriever.sp.CommonServiceProviderRetriever;
 import com.wso2.openbanking.accelerator.common.exception.OpenBankingException;
+import com.wso2.openbanking.accelerator.common.identity.retriever.sp.CommonServiceProviderRetriever;
 import com.wso2.openbanking.accelerator.consent.extensions.common.ConsentException;
 import com.wso2.openbanking.accelerator.consent.extensions.common.ResponseStatus;
 import com.wso2.openbanking.accelerator.consent.extensions.validate.model.ConsentValidateData;
@@ -219,6 +219,7 @@ public class CDSConsentValidator implements ConsentValidator {
 
         consentValidateData.getComprehensiveConsent().setConsentMappingResources(consentMappingResources);
     }
+
     /**
      * Method to remove accounts which the user has "REVOKED" nominated representative permissions.
      *
