@@ -220,6 +220,34 @@ public class OpenBankingCDSConfigParserTest {
         Assert.assertEquals(openBankingCDSConfigParser.getJWTAuthJWKSUrl(), "DummyJWKS");
     }
 
+    @Test(priority = 8)
+    public void testIsSecondaryAccountsEnabled() {
+        String dummyConfigFile = absolutePathForTestResources + "/open-banking-cds.xml";
+        OpenBankingCDSConfigParser openBankingCDSConfigParser = OpenBankingCDSConfigParser.getInstance(dummyConfigFile);
+        Assert.assertTrue(openBankingCDSConfigParser.getSecondaryUserAccountsEnabled());
+    }
+
+    @Test(priority = 8)
+    public void testIsBNRPrioritizeSharableAccountsResponseEnabled() {
+        String dummyConfigFile = absolutePathForTestResources + "/open-banking-cds.xml";
+        OpenBankingCDSConfigParser openBankingCDSConfigParser = OpenBankingCDSConfigParser.getInstance(dummyConfigFile);
+        Assert.assertEquals(openBankingCDSConfigParser.isBNRPrioritizeSharableAccountsResponseEnabled(), true);
+    }
+
+    @Test(priority = 8)
+    public void testIsBNRValidateAccountsOnRetrievalEnabled() {
+        String dummyConfigFile = absolutePathForTestResources + "/open-banking-cds.xml";
+        OpenBankingCDSConfigParser openBankingCDSConfigParser = OpenBankingCDSConfigParser.getInstance(dummyConfigFile);
+        Assert.assertEquals(openBankingCDSConfigParser.isBNRValidateAccountsOnRetrievalEnabled(), true);
+    }
+
+    @Test(priority = 8)
+    public void testIsBNRConsentRevocationEnabled() {
+        String dummyConfigFile = absolutePathForTestResources + "/open-banking-cds.xml";
+        OpenBankingCDSConfigParser openBankingCDSConfigParser = OpenBankingCDSConfigParser.getInstance(dummyConfigFile);
+        Assert.assertEquals(openBankingCDSConfigParser.isBNRConsentRevocationEnabled(), true);
+    }
+
     private void injectEnvironmentVariable(String key, String value)
             throws ReflectiveOperationException {
 

@@ -74,7 +74,7 @@
                 <!--Sample Values: https://wso2.com -->
                 <DomainName>AppConfig1.KeyStore.DomainName</DomainName>
 
-                <!--Sample Values: w7NFeMODzCMOZen_WECAlG9N8gg -->
+                <!--Sample Values: h3ZCF0VrzgXgnHCqbHbKXzzfjTg -->
                 <SigningKid>AppConfig1.KeyStore.SigningKid</SigningKid>
             </KeyStore>
 
@@ -105,6 +105,10 @@
                 <!--Sample Values:  {Path to ob-compliance-toolkit-cds}/integration-test-suite/test-artifacts/DynamicClientRegistration/
                 AU/sample-client-resources/ssa.txt -->
                 <SSAPath>AppConfig1.DCR.SSAPath</SSAPath>
+
+                <!-- Software Product ID -->
+                <!--Sample Values: oQ4KoaavpOuoE7rvQsZEOV -->
+                <SoftwareId>DCR.SoftwareId</SoftwareId>
 
                 <!-- SSA Redirect Uri -->
                 <!--Sample Values: https://www.google.com/redirects/redirect1 -->
@@ -171,8 +175,12 @@
             <!-- DCR Configurations -->
             <DCR>
                 <!--Sample Values: {Path to ob-compliance-toolkit-cds}/integration-test-suite/test-artifacts/DynamicClientRegistration/
-                AU/sample-client-resources/ssa.txt -->
+                AU/sample-client-resources2/ssa.txt -->
                 <SSAPath>AppConfig2.DCR.SSAPath</SSAPath>
+
+                <!-- Software Product ID -->
+                <!--Sample Values: 8PwKpjuPDgU76j3QxJzfOtE9CWw -->
+                <SoftwareId>DCR.SoftwareId</SoftwareId>
 
                 <!-- SSA Redirect Uri -->
                 <!--Sample Values: https://www.google.com/redirects/redirect1 -->

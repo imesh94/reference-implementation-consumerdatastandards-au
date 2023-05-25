@@ -15,6 +15,6 @@ directory as the Transport Keystore.
 Sample Keystore information:
 Signing key alias = tpp6-signing
 Signing keystore password = wso2carbon
-Signing Kid = w7NFeMODzCMOZen_WECAlG9N8gg
+Signing Kid = h3ZCF0VrzgXgnHCqbHbKXzzfjTg
 Transport keystore password = wso2carbon
 Transport keystore alias = tpp6-transport

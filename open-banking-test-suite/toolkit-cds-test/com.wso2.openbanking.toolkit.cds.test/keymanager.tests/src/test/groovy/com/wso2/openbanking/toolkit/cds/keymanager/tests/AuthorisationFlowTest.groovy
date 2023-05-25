@@ -14,6 +14,7 @@ package com.wso2.openbanking.toolkit.cds.keymanager.tests
 
 import com.nimbusds.oauth2.sdk.AccessTokenResponse
 import com.wso2.openbanking.test.framework.automation.AUBasicAuthAutomationStep
+import com.wso2.openbanking.test.framework.automation.BasicAuthErrorStep
 import com.wso2.openbanking.test.framework.automation.BrowserAutomation
 import com.wso2.openbanking.test.framework.automation.WaitForRedirectAutomationStep
 import com.wso2.openbanking.test.framework.util.ConfigParser
@@ -324,7 +325,7 @@ class AuthorisationFlowTest {
         String errorMessage = "No valid scopes found in the request"
 
         def automation = new BrowserAutomation(BrowserAutomation.DEFAULT_DELAY)
-                .addStep(new AUBasicAuthAutomationStep(authorisationBuilder.authoriseUrl))
+                .addStep(new BasicAuthErrorStep(authorisationBuilder.authoriseUrl))
                 .execute()
 
         String url = automation.currentUrl.get()

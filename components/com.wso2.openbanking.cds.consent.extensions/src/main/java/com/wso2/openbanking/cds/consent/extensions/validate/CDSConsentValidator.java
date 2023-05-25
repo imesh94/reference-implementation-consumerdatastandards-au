@@ -51,6 +51,7 @@ import static com.wso2.openbanking.accelerator.consent.mgt.service.constants.Con
 public class CDSConsentValidator implements ConsentValidator {
 
     private static final Log log = LogFactory.getLog(CDSConsentValidator.class);
+    AccountMetadataServiceImpl accountMetadataService = AccountMetadataServiceImpl.getInstance();
 
     @Override
     public void validate(ConsentValidateData consentValidateData, ConsentValidationResult consentValidationResult)
@@ -88,8 +89,10 @@ public class CDSConsentValidator implements ConsentValidator {
             return;
         }
 
+        OpenBankingCDSConfigParser openBankingCDSConfigParser = OpenBankingCDSConfigParser.getInstance();
+
         // account ID Validation
-        String isAccountIdValidationEnabled = OpenBankingCDSConfigParser.getInstance().getConfiguration()
+        String isAccountIdValidationEnabled = openBankingCDSConfigParser.getConfiguration()
                 .get(CDSConsentExtensionConstants.ENABLE_ACCOUNT_ID_VALIDATION_ON_RETRIEVAL).toString();
 
         if (Boolean.parseBoolean(isAccountIdValidationEnabled) &&
@@ -123,7 +126,7 @@ public class CDSConsentValidator implements ConsentValidator {
         }
 
         // validate metadata status
-        if (OpenBankingCDSConfigParser.getInstance().isMetadataCacheEnabled()) {
+        if (openBankingCDSConfigParser.isMetadataCacheEnabled()) {
             MetadataValidationResponse metadataValidationResp =
                     MetadataService.shouldDiscloseCDRData(consentValidateData.getClientId());
             if (!metadataValidationResp.isValid()) {
@@ -135,11 +138,21 @@ public class CDSConsentValidator implements ConsentValidator {
             }
         }
 
-        // remove inactive and duplicate consent mappings
+        // Remove inactive and duplicate consent mappings
         removeInactiveAndDuplicateConsentMappings(consentValidateData);
 
+        // filter inactive secondary user accounts
+        if (openBankingCDSConfigParser.getSecondaryUserAccountsEnabled()) {
+            removeInactiveSecondaryUserAccountConsentMappings(consentValidateData);
+        }
+
+        // Remove accounts with revoked BNR permission if the configuration is enabled.
+        if (openBankingCDSConfigParser.isBNRValidateAccountsOnRetrievalEnabled()) {
+            removeAccountsWithRevokedBNRPermission(consentValidateData);
+        }
         consentValidationResult.setValid(true);
     }
+
 
     /**
      * Method to remove inactive and duplicate consent mappings from consentValidateData.
@@ -147,8 +160,6 @@ public class CDSConsentValidator implements ConsentValidator {
      * @param consentValidateData consentValidateData
      */
     private void removeInactiveAndDuplicateConsentMappings(ConsentValidateData consentValidateData) {
-        log.info(consentValidateData);
-
         ArrayList<ConsentMappingResource> distinctMappingResources = new ArrayList<>();
         List<String> duplicateAccountIds = new ArrayList<>();
 
@@ -160,7 +171,6 @@ public class CDSConsentValidator implements ConsentValidator {
                     distinctMappingResources.add(distinctMapping);
                 });
 
-
         //filter non-sharable joint accounts and remove them
         Iterator<ConsentMappingResource> iterator = distinctMappingResources.iterator();
         while (iterator.hasNext()) {
@@ -170,30 +180,80 @@ public class CDSConsentValidator implements ConsentValidator {
             try {
                 // Check if the account is eligible for data sharing based on its DOMS status
                 if (!isDomsStatusEligibleForDataSharing(mappingResource.getAccountID())) {
-                    // If the account is not eligible for data sharing, remove the ConsentMappingResource from the
-                    // iterator
                     iterator.remove();
                 }
             } catch (OpenBankingException e) {
                 log.error("Error checking DOMS status for account " + mappingResource.getAccountID(), e);
             }
-
         }
         consentValidateData.getComprehensiveConsent().setConsentMappingResources(distinctMappingResources);
     }
 
-    public Boolean isDomsStatusEligibleForDataSharing(String accountId) throws OpenBankingException {
+    public Boolean isDomsStatusEligibleForDataSharing(String accountID) throws OpenBankingException {
         // Get an instance of the AccountMetadataService implementation
         AccountMetadataService accountMetadataService = AccountMetadataServiceImpl.getInstance();
 
         // Call the getGlobalAccountMetadataMap method of the AccountMetadataService implementation
-        Map<String, String> accountMetadata = accountMetadataService.getGlobalAccountMetadataMap(accountId);
+        Map<String, String> accountMetadata = accountMetadataService.getGlobalAccountMetadataMap(accountID);
 
         if (!accountMetadata.isEmpty()) {
             // Check if the DOMS status value for the account is equal to "pre-approval"
             return accountMetadata.containsValue(CDSConsentExtensionConstants.DOMS_STATUS_PRE_APPROVAL);
         } else {
             return false;
+        }
+    }
+
+    /**
+     * Method to remove inactive secondary user account consent mappings from consentValidateData.
+     *
+     * @param consentValidateData consentValidateData
+     */
+    private void removeInactiveSecondaryUserAccountConsentMappings(ConsentValidateData consentValidateData) {
+        ArrayList<ConsentMappingResource> consentMappingResources =
+                consentValidateData.getComprehensiveConsent().getConsentMappingResources();
+
+        for (ConsentMappingResource mappingResource : consentMappingResources) {
+            if (CDSConsentExtensionConstants.SECONDARY_ACCOUNT_USER.equals(mappingResource.getPermission()) &&
+                    !CDSConsentValidatorUtil
+                            .isUserEligibleForSecondaryAccountDataSharing(mappingResource.getAccountID(),
+                                    consentValidateData.getUserId())) {
+                consentMappingResources.remove(mappingResource);
+            }
+        }
+
+        consentValidateData.getComprehensiveConsent().setConsentMappingResources(consentMappingResources);
+    }
+
+    /**
+     * Method to remove accounts which the user has "REVOKED" nominated representative permissions.
+     *
+     * @param consentValidateData consentValidateData
+     */
+    private void removeAccountsWithRevokedBNRPermission(ConsentValidateData consentValidateData) throws
+            ConsentException {
+        ArrayList<ConsentMappingResource> validMappingResources = new ArrayList<>();
+        ArrayList<ConsentMappingResource> consentMappingResources = consentValidateData.getComprehensiveConsent().
+                getConsentMappingResources();
+        try {
+            for (ConsentMappingResource consentMappingResource : consentMappingResources) {
+                String accountId = consentMappingResource.getAccountID();
+                String userId = consentValidateData.getUserId();
+                userId = userId.replaceAll("(@carbon\\.super)+", "@carbon.super");
+                //Todo: improve accelerator to do this with single database call.
+                String bnrPermission = accountMetadataService.getAccountMetadataByKey(accountId, userId,
+                        CDSConsentExtensionConstants.BNR_PERMISSION);
+                if (StringUtils.isBlank(bnrPermission) || !bnrPermission.equals(CDSConsentExtensionConstants.
+                        BNR_REVOKE_PERMISSION)) {
+                    validMappingResources.add(consentMappingResource);
+                }
+            }
+            consentValidateData.getComprehensiveConsent().setConsentMappingResources(validMappingResources);
+        } catch (OpenBankingException e) {
+            log.error("Error occurred while retrieving account metadata", e);
+            throw new ConsentException(ResponseStatus.INTERNAL_SERVER_ERROR,
+                    "Error occurred while retrieving account metadata");
+
         }
     }
 
@@ -212,3 +272,4 @@ public class CDSConsentValidator implements ConsentValidator {
         return errorPayload.toString();
     }
 }
+

@@ -17,6 +17,7 @@ import com.wso2.openbanking.accelerator.consent.mgt.dao.models.ConsentResource;
 import com.wso2.openbanking.accelerator.consent.mgt.dao.models.DetailedConsentResource;
 import com.wso2.openbanking.accelerator.consent.mgt.service.impl.ConsentCoreServiceImpl;
 import com.wso2.openbanking.accelerator.identity.push.auth.extension.request.validator.util.PushAuthRequestValidatorUtils;
+import com.wso2.openbanking.cds.consent.extensions.authorize.utils.CDSConsentCommonUtil;
 import com.wso2.openbanking.cds.consent.extensions.authorize.utils.CDSDataRetrievalUtil;
 import com.wso2.openbanking.cds.consent.extensions.util.CDSConsentAuthorizeTestConstants;
 import net.minidev.json.JSONObject;
@@ -46,7 +47,7 @@ import static org.powermock.api.mockito.PowerMockito.when;
  * Test class for CDS Consent Retrieval
  */
 @PrepareForTest({SessionDataCacheEntry.class, SessionDataCache.class, PushAuthRequestValidatorUtils.class,
-        CDSDataRetrievalUtil.class})
+        CDSDataRetrievalUtil.class, CDSConsentCommonUtil.class})
 @PowerMockIgnore({"com.wso2.openbanking.accelerator.consent.extensions.common.*", "jdk.internal.reflect.*"})
 public class CDSConsentRetrievalStepTests extends PowerMockTestCase {
 
@@ -209,6 +210,9 @@ public class CDSConsentRetrievalStepTests extends PowerMockTestCase {
     @Test(priority = 2)
     public void testConsentRetrievalWithConsentAmendment() throws OpenBankingException {
 
+        PowerMockito.mockStatic(CDSConsentCommonUtil.class);
+        Mockito.when(CDSConsentCommonUtil.getUserIdWithTenantDomain(anyString())).
+                thenReturn("user1@wso2.com@carbon.super");
         JSONObject jsonObject = new JSONObject();
         String request = "request=" + CDSConsentAuthorizeTestConstants.VALID_AMENDMENT_REQUEST_OBJECT;
         String redirectUri = "redirect_uri=https://www.google.com/redirects/redirect1&";
@@ -216,7 +220,7 @@ public class CDSConsentRetrievalStepTests extends PowerMockTestCase {
         String clientId = "client-id";
         String spFullName = "sp-full-name";
         String sampleQueryParams =  redirectUri + request;
-        final String userId = "mark@gold.com";
+        final String userId = "user1@wso2.com@carbon.super";
         when(consentDataMock.getSpQueryParams()).thenReturn(sampleQueryParams);
         when(consentDataMock.getScopeString()).thenReturn(scopeString);
         when(consentDataMock.getClientId()).thenReturn(clientId);

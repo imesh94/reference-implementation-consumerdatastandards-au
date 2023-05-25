@@ -19,12 +19,17 @@ import com.wso2.openbanking.accelerator.consent.mgt.dao.models.AuthorizationReso
 import com.wso2.openbanking.accelerator.consent.mgt.dao.models.ConsentResource;
 import com.wso2.openbanking.accelerator.consent.mgt.dao.models.DetailedConsentResource;
 import com.wso2.openbanking.accelerator.consent.mgt.service.impl.ConsentCoreServiceImpl;
+import com.wso2.openbanking.cds.consent.extensions.authorize.utils.CDSConsentCommonUtil;
 import com.wso2.openbanking.cds.consent.extensions.common.CDSConsentExtensionConstants;
 import com.wso2.openbanking.cds.consent.extensions.util.CDSConsentAuthorizeTestConstants;
 import net.minidev.json.JSONObject;
 import net.minidev.json.parser.JSONParser;
+import org.powermock.api.mockito.PowerMockito;
+import org.powermock.core.classloader.annotations.PowerMockIgnore;
+import org.powermock.core.classloader.annotations.PrepareForTest;
 import org.testng.Assert;
 import org.testng.annotations.BeforeClass;
+import org.testng.annotations.BeforeMethod;
 import org.testng.annotations.Test;
 
 import java.time.OffsetDateTime;
@@ -41,10 +46,13 @@ import static org.mockito.Mockito.anyString;
 import static org.mockito.Mockito.doNothing;
 import static org.mockito.Mockito.doReturn;
 import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.when;
 
 /**
  * Test class for CDS Consent Persistence.
  */
+@PrepareForTest({CDSConsentCommonUtil.class})
+@PowerMockIgnore({"com.wso2.openbanking.accelerator.consent.extensions.common.*", "jdk.internal.reflect.*"})
 public class CDSConsentPersistStepTests {
 
     private static CDSConsentPersistStep cdsConsentPersistStep;
@@ -72,6 +80,12 @@ public class CDSConsentPersistStepTests {
         consentResourceMock = mock(ConsentResource.class);
         authorizationResourceMock = mock(AuthorizationResource.class);
         consentCoreServiceMock = mock(ConsentCoreServiceImpl.class);
+    }
+
+    @BeforeMethod
+    public void initMethod() {
+        PowerMockito.mockStatic(CDSConsentCommonUtil.class);
+        when(CDSConsentCommonUtil.getUserIdWithTenantDomain(anyString())).thenReturn("user1@wso2.com@carbon.super");
     }
 
     @Test
@@ -176,6 +190,7 @@ public class CDSConsentPersistStepTests {
 
         doReturn(new DetailedConsentResource()).when(consentCoreServiceMock).getDetailedConsent(anyString());
         doNothing().when(consentCoreServiceMock).revokeTokens(any(DetailedConsentResource.class), anyString());
+        doReturn(true).when(consentCoreServiceMock).updateAccountMappingStatus(any(ArrayList.class), anyString());
 
         Map<Object, Object> consentDataMapClone = new HashMap<>(consentDataMap);
         consentDataMapClone.put(CDSConsentExtensionConstants.IS_CONSENT_AMENDMENT, true);
