@@ -70,7 +70,14 @@ public class CDSPushAuthRequestValidator  extends PushAuthRequestValidator {
                 && StringUtils.isNotBlank(claims.getAsString(SHARING_DURATION))) {
             sharingDurationString = claims.getAsString(SHARING_DURATION);
         }
-        int sharingDuration = sharingDurationString.isEmpty() ? 0 : Integer.parseInt(sharingDurationString);
+
+        int sharingDuration;
+        try {
+            sharingDuration = StringUtils.isEmpty(sharingDurationString) ? 0 : Integer.parseInt(sharingDurationString);
+        } catch (NumberFormatException e) {
+            return false;
+        }
+
         //If the sharing_duration value is negative then the authorisation should fail.
         return sharingDuration >= 0;
     }

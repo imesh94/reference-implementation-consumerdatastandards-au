@@ -36,7 +36,14 @@ public class SharingDurationValidator implements ConstraintValidator<ValidateSha
         if (claims != null && claims.containsKey("sharing_duration")) {
             sharingDurationString = claims.get("sharing_duration").toString();
         }
-        int sharingDuration = sharingDurationString.isEmpty() ? 0 : Integer.parseInt(sharingDurationString);
+
+        int sharingDuration;
+        try {
+            sharingDuration = StringUtils.isEmpty(sharingDurationString) ? 0 : Integer.parseInt(sharingDurationString);
+        } catch (NumberFormatException e) {
+            return false;
+        }
+
         //If the sharing_duration value is negative then the authorisation should fail.
         return sharingDuration >= 0;
     }
