@@ -43,6 +43,7 @@ import org.wso2.carbon.identity.oauth2.IdentityOAuth2Exception;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
+import javax.ws.rs.core.Response;
 
 import static com.wso2.openbanking.cds.consent.extensions.common.CDSConsentExtensionConstants.
         AUTH_RESOURCE_TYPE_PRIMARY;
@@ -75,25 +76,20 @@ public class CDSConsentAdminHandler implements ConsentAdminHandler {
         this.defaultConsentAdminHandler = consentAdminHandler;
     }
 
-    @Override
-    public void handleSearch(ConsentAdminData consentAdminData) throws ConsentException {
-        this.defaultConsentAdminHandler.handleSearch(consentAdminData);
-
+    private Response updateDomsStatusForConsentData(ConsentAdminData consentAdminData) {
         try {
             AccountMetadataService accountMetadataService = AccountMetadataServiceImpl.getInstance();
 
             for (Object item : (JSONArray) consentAdminData.getResponsePayload().get("data")) {
-
                 JSONObject itemJSONObject = (JSONObject) item;
                 JSONArray consentMappingResourcesArray = (JSONArray) itemJSONObject.get("consentMappingResources");
 
                 for (Object consentMappingResource : consentMappingResourcesArray) {
-
                     JSONObject cmrJSONObject = (JSONObject) consentMappingResource;
                     String accountId = cmrJSONObject.getAsString(DOMS_ACCOUNT_ID);
 
-                    Map<String, String> disclosureOptionsMap = accountMetadataService.
-                            getGlobalAccountMetadataMap(accountId);
+                    Map<String, String> disclosureOptionsMap = accountMetadataService.getGlobalAccountMetadataMap
+                            (accountId);
 
                     String disclosureOptionStatus = disclosureOptionsMap.get(DOMS_STATUS);
 
@@ -103,11 +99,21 @@ public class CDSConsentAdminHandler implements ConsentAdminHandler {
                     cmrJSONObject.put("domsStatus", disclosureOptionStatus);
                 }
             }
-        } catch (OpenBankingException e) {
-            log.error("An OpenBankingException occurred: {}");
-        }
 
-            // Filter the consent data based on the profiles if profiles are available in the query params.
+            return Response.ok().entity("DOMS status for consent data successfully updated").build();
+        } catch (OpenBankingException e) {
+            log.error("An OpenBankingException occurred: {}", e);
+            return Response.status(Response.Status.INTERNAL_SERVER_ERROR).entity("An error occurred while updating " +
+                    "DOMS status").build();
+        }
+    }
+
+    @Override
+    public void handleSearch(ConsentAdminData consentAdminData) throws ConsentException {
+        this.defaultConsentAdminHandler.handleSearch(consentAdminData);
+        updateDomsStatusForConsentData(consentAdminData);
+
+        // Filter the consent data based on the profiles if profiles are available in the query params.
             if (consentAdminData.getQueryParams().containsKey(CDSConsentExtensionConstants.PROFILES)) {
                 ArrayList profiles = ((ArrayList) consentAdminData.getQueryParams().get(
                         CDSConsentExtensionConstants.PROFILES));
