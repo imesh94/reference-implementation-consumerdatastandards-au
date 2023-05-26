@@ -10,20 +10,24 @@ package com.wso2.openbanking.cds.account.type.management.endpoint.ceasing.second
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.wso2.openbanking.accelerator.consent.mgt.dao.models.AuthorizationResource;
+import com.wso2.openbanking.accelerator.consent.mgt.dao.models.DetailedConsentResource;
+import com.wso2.openbanking.accelerator.consent.mgt.service.ConsentCoreService;
+import com.wso2.openbanking.accelerator.consent.mgt.service.impl.ConsentCoreServiceImpl;
 import com.wso2.openbanking.cds.account.type.management.endpoint.ceasing.secondary.user.sharing.api.
         CeasingSecondaryUserApi;
 import com.wso2.openbanking.cds.account.type.management.endpoint.ceasing.secondary.user.sharing.handler.
         CeasingSecondaryUserHandler;
 import com.wso2.openbanking.cds.account.type.management.endpoint.ceasing.secondary.user.sharing.models.
         LegalEntityListDTO;
-import com.wso2.openbanking.cds.account.type.management.endpoint.ceasing.secondary.user.sharing.models.
-        UsersAccountsLegalEntitiesResource;
+import com.wso2.openbanking.cds.account.type.management.endpoint.ceasing.secondary.user.sharing.models.UsersAccountsLegalEntitiesDTO;
 import com.wso2.openbanking.cds.account.type.management.endpoint.model.ErrorDTO;
 import com.wso2.openbanking.cds.account.type.management.endpoint.model.ErrorStatusEnum;
 import com.wso2.openbanking.cds.account.type.management.endpoint.util.ValidationUtil;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
+import java.util.ArrayList;
 import javax.ws.rs.core.Response;
 
 /**
@@ -113,12 +117,68 @@ public class CeasingSecondaryUserApiImpl implements CeasingSecondaryUserApi {
      */
     public Response getUsersAccountsLegalEntities(String userID) {
 
+        String userIDError = null;
+
         try {
-            UsersAccountsLegalEntitiesResource responseUsersAccountsLegalEntities = ceasingSecondaryUserHandler.
-                    getUsersAccountsLegalEntities(userID);
-            return Response.ok().entity(responseUsersAccountsLegalEntities).build();
+            ConsentCoreService consentCoreService = new ConsentCoreServiceImpl();
+
+            // Creating an array list to append the userID
+            ArrayList<String> userIDAL = new ArrayList<>();
+            userIDAL.add(userID);
+
+            UsersAccountsLegalEntitiesDTO responseUsersAccountsLegalEntitiesDTO =
+                    new UsersAccountsLegalEntitiesDTO(userID);
+
+            ArrayList<DetailedConsentResource> responseDetailedConsents = consentCoreService.searchDetailedConsents
+                    (null, null, null, null, userIDAL, null, null,
+                            null, null, false);
+
+            // Checking the validity of the userID
+            if (responseDetailedConsents.size() == 0) {
+                userIDError = "Error!, user not found with userID" + userID;
+            }
+
+            if (userIDError != null) {
+                log.error(userIDError);
+                ErrorDTO errorDTO = new ErrorDTO(ErrorStatusEnum.INVALID_REQUEST,
+                        userIDError);
+                return Response.status(Response.Status.BAD_REQUEST)
+                        .entity(errorDTO).build();
+            }
+
+            // Checking if the user is a secondary account owner
+            boolean isSecondaryAccountOwner = false;
+
+            // Consent
+            for (DetailedConsentResource detailedConsent : responseDetailedConsents) {
+
+                // Authorization Resource
+                for (AuthorizationResource authorizationResource : detailedConsent.getAuthorizationResources()) {
+                    if (authorizationResource.getUserID().equals(userID) &&
+                            authorizationResource.getAuthorizationType().equals("secondary_account_owner")) {
+                        isSecondaryAccountOwner = true;
+                        break;
+                    }
+                }
+            }
+
+            if (!isSecondaryAccountOwner) {
+                userIDError = "Error, UserID: " + userID + " is not a secondary account owner";
+            }
+
+            if (userIDError == null) {
+                UsersAccountsLegalEntitiesDTO responseUsersAccountsLegalEntities = ceasingSecondaryUserHandler.
+                        getUsersAccountsLegalEntities(responseDetailedConsents, responseUsersAccountsLegalEntitiesDTO);
+                return Response.ok().entity(responseUsersAccountsLegalEntities).build();
+            } else {
+                log.error(userIDError);
+                ErrorDTO errorDTO = new ErrorDTO(ErrorStatusEnum.INVALID_REQUEST,
+                        userIDError);
+                return Response.status(Response.Status.BAD_REQUEST)
+                        .entity(errorDTO).build();
+            }
+
         } catch (Exception e) {
-            //TODO: Update the response message
             log.error("Error occurred while retrieving users,accounts and legal entities.", e);
             return Response.status(Response.Status.BAD_REQUEST).entity(e.getMessage()).build();
         }

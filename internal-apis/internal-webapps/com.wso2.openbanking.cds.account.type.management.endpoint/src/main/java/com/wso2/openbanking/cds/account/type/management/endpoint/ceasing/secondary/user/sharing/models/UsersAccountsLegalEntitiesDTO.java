@@ -13,11 +13,11 @@ import java.util.ArrayList;
 /**
  * Ceasing Secondary User - UsersAccountsLegalEntitiesResource
  */
-public class UsersAccountsLegalEntitiesResource {
+public class UsersAccountsLegalEntitiesDTO {
     private String userID;
     private ArrayList<SecondaryUser> secondaryUsers = null;
 
-    public UsersAccountsLegalEntitiesResource(String userID) {
+    public UsersAccountsLegalEntitiesDTO(String userID) {
         this.userID = userID;
     }
 
