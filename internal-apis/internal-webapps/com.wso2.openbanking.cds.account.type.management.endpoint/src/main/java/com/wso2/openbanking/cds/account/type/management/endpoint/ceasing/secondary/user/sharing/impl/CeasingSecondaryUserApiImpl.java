@@ -20,7 +20,8 @@ import com.wso2.openbanking.cds.account.type.management.endpoint.ceasing.seconda
         CeasingSecondaryUserHandler;
 import com.wso2.openbanking.cds.account.type.management.endpoint.ceasing.secondary.user.sharing.models.
         LegalEntityListDTO;
-import com.wso2.openbanking.cds.account.type.management.endpoint.ceasing.secondary.user.sharing.models.UsersAccountsLegalEntitiesDTO;
+import com.wso2.openbanking.cds.account.type.management.endpoint.ceasing.secondary.user.sharing.models.
+        UsersAccountsLegalEntitiesDTO;
 import com.wso2.openbanking.cds.account.type.management.endpoint.model.ErrorDTO;
 import com.wso2.openbanking.cds.account.type.management.endpoint.model.ErrorStatusEnum;
 import com.wso2.openbanking.cds.account.type.management.endpoint.util.ValidationUtil;
@@ -54,11 +55,11 @@ public class CeasingSecondaryUserApiImpl implements CeasingSecondaryUserApi {
             String validationError = ValidationUtil.getFirstViolationMessage(legalEntityListDTO);
 
             if (validationError.isEmpty()) {
-                String infoLogs = ceasingSecondaryUserHandler.blockLegalEntitySharingStatus(legalEntityListDTO);
+                ceasingSecondaryUserHandler.blockLegalEntitySharingStatus(legalEntityListDTO);
 
                 log.info("Success!, the sharing status for legal entity/entities has been blocked.");
                 return Response.ok().
-                        entity(infoLogs).build();
+                        entity("Success!, the sharing status for legal entity/entities has been blocked.").build();
             } else {
                 log.error("Error occurred while blocking the sharing status for a legal entity/entities.");
                 ErrorDTO errorDTO = new ErrorDTO(ErrorStatusEnum.INVALID_REQUEST,
@@ -91,11 +92,11 @@ public class CeasingSecondaryUserApiImpl implements CeasingSecondaryUserApi {
             String validationError = ValidationUtil.getFirstViolationMessage(legalEntityListDTO);
 
             if (validationError.isEmpty()) {
-                String infoLogs = ceasingSecondaryUserHandler.unblockLegalEntitySharingStatus(legalEntityListDTO);
+                ceasingSecondaryUserHandler.unblockLegalEntitySharingStatus(legalEntityListDTO);
 
                 log.info("Success!, the sharing status for legal entity/entities has been unblocked.");
                 return Response.ok().
-                        entity(infoLogs).build();
+                        entity("Success!, the sharing status for legal entity/entities has been blocked.").build();
             } else {
                 log.error("Error occurred while blocking the sharing status for a legal entity/entities.");
                 ErrorDTO errorDTO = new ErrorDTO(ErrorStatusEnum.INVALID_REQUEST,
