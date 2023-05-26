@@ -51,7 +51,7 @@ public class DisclosureOptionsApiHandler {
                 // Call the addOrUpdateGlobalAccountMetadata method from the AccountMetadataService class
                 accountMetadataService.addOrUpdateGlobalAccountMetadata(accountId, disclosureOptionsMap);
             }
-            return Response.ok().entity("Account disclosure options successfully updated").build();
+            return Response.ok().build();
         } catch (OpenBankingException e) {
             log.error(e);
             return Response.status(Response.Status.BAD_REQUEST).entity(e.getMessage()).build();
