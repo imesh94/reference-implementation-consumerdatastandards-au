@@ -16,11 +16,11 @@
 <suite name="metrics-test-suite">
     <test name="cds-client-authenticators">
         <classes>
-<!--            <class name="com.wso2.openbanking.cds.metrics.service.CDSMetricsServiceImplTest"/>-->
-<!--            <class name="com.wso2.openbanking.cds.metrics.service.CDSMetricsProcessorImplTest"/>-->
-<!--            <class name="com.wso2.openbanking.cds.metrics.util.MetricsProcessorUtilTest"/>-->
-<!--            <class name="com.wso2.openbanking.cds.metrics.util.SPJsonProcessorUtilTest"/>-->
-<!--            <class name="com.wso2.openbanking.cds.metrics.util.SPQueryExecutorUtilTest"/>-->
+            <class name="com.wso2.openbanking.cds.metrics.service.CDSMetricsServiceImplTest"/>
+            <class name="com.wso2.openbanking.cds.metrics.service.CDSMetricsProcessorImplTest"/>
+            <class name="com.wso2.openbanking.cds.metrics.util.MetricsProcessorUtilTest"/>
+            <class name="com.wso2.openbanking.cds.metrics.util.SPJsonProcessorUtilTest"/>
+            <class name="com.wso2.openbanking.cds.metrics.util.SPQueryExecutorUtilTest"/>
         </classes>
     </test>
 </suite>
