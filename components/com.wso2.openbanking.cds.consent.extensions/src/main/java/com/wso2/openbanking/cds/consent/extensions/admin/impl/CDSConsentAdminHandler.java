@@ -76,6 +76,16 @@ public class CDSConsentAdminHandler implements ConsentAdminHandler {
         this.defaultConsentAdminHandler = consentAdminHandler;
     }
 
+    /**
+     * Updates the DOMS status for the consent data.
+     * Retrieves the DOMS status for each consent mapping resource in the provided consent data
+     * and updates the "domsStatus" field accordingly.
+     *
+     * @param consentAdminData The ConsentAdminData object containing the consent data to update.
+     * @return A Response object indicating the result of the update operation.
+     *         Returns a success response if the DOMS status is updated successfully,
+     *         or an error response if an OpenBankingException occurs during the process.
+     */
     private Response updateDomsStatusForConsentData(ConsentAdminData consentAdminData) {
         try {
             AccountMetadataService accountMetadataService = AccountMetadataServiceImpl.getInstance();
@@ -99,7 +109,6 @@ public class CDSConsentAdminHandler implements ConsentAdminHandler {
                     cmrJSONObject.put("domsStatus", disclosureOptionStatus);
                 }
             }
-
             return Response.ok().entity("DOMS status for consent data successfully updated").build();
         } catch (OpenBankingException e) {
             log.error("An OpenBankingException occurred: {}", e);
