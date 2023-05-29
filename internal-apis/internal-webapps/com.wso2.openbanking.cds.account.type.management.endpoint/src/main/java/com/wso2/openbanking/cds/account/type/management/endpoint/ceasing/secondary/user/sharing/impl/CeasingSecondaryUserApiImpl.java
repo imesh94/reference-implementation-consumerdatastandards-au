@@ -96,11 +96,11 @@ public class CeasingSecondaryUserApiImpl implements CeasingSecondaryUserApi {
 
                 log.info("Success!, the sharing status for legal entity/entities has been unblocked.");
                 return Response.ok().
-                        entity("Success!, the sharing status for legal entity/entities has been blocked.").build();
+                        entity("Success!, the sharing status for legal entity/entities has been unblocked.").build();
             } else {
-                log.error("Error occurred while blocking the sharing status for a legal entity/entities.");
+                log.error("Error occurred while unblocking the sharing status for a legal entity/entities.");
                 ErrorDTO errorDTO = new ErrorDTO(ErrorStatusEnum.INVALID_REQUEST,
-                        "Error occurred while blocking the sharing status for a legal entity/entities.");
+                        "Error occurred while unblocking the sharing status for a legal entity/entities.");
                 return Response.status(Response.Status.BAD_REQUEST).entity(errorDTO).build();
             }
 
@@ -136,7 +136,7 @@ public class CeasingSecondaryUserApiImpl implements CeasingSecondaryUserApi {
 
             // Checking the validity of the userID
             if (responseDetailedConsents.size() == 0) {
-                userIDError = "Error!, user not found with userID" + userID;
+                userIDError = "Error!, user not found with userID: " + userID;
             }
 
             if (userIDError != null) {

@@ -47,8 +47,8 @@ public interface CeasingSecondaryUserApi {
 
     /**
      * ----- Unblock the sharing status for a legal entity -----
-     * An endpoint should be designed to allow an account holder to block a legal entity in order to cease the
-     * disclosure initiated by a secondary user for a particular account to that legal entity.
+     * An endpoint should be designed to allow an account holder to unblock a legal entity that has been
+     * blocked previously.
      *
      * @param requestBody - List of legal entities to be unblocked
      * @return success or error message when updating the sharing status of legal entities.

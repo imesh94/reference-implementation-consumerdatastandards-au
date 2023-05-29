@@ -192,19 +192,24 @@ public class CeasingSecondaryUserHandler {
                         if (responseUsersAccountsLegalEntitiesDTO.getSecondaryUsers() == null) {
                             responseUsersAccountsLegalEntitiesDTO.addSecondaryUser(uniqueSecondaryUser);
                         } else {
+                            boolean isUniqueSecondaryAccountUser = true;
                             for (UsersAccountsLegalEntitiesDTO.SecondaryUser secondaryUser :
                                     responseUsersAccountsLegalEntitiesDTO.getSecondaryUsers()) {
-                                if (!secondaryUser.getSecondaryUserID().
+                                if (secondaryUser.getSecondaryUserID().
                                         equals(uniqueSecondaryUser.getSecondaryUserID())) {
-                                    responseUsersAccountsLegalEntitiesDTO.addSecondaryUser(uniqueSecondaryUser);
+                                    isUniqueSecondaryAccountUser = false;
                                     break;
                                 }
+                            }
+                            if (isUniqueSecondaryAccountUser) {
+                                responseUsersAccountsLegalEntitiesDTO.addSecondaryUser(uniqueSecondaryUser);
                             }
                         }
                     }
                 }
             }
 
+            log.info("PAUSE");
             // Updating - Accounts
             for (UsersAccountsLegalEntitiesDTO.SecondaryUser secondaryUser :
                     responseUsersAccountsLegalEntitiesDTO.getSecondaryUsers()) {
@@ -230,12 +235,16 @@ public class CeasingSecondaryUserHandler {
                                 if (secondaryUser.getAccounts() == null) {
                                     secondaryUser.addAccount(uniqueAccount);
                                 } else {
+                                    boolean isUniqueAccount = true;
                                     for (UsersAccountsLegalEntitiesDTO.Account account :
                                             secondaryUser.getAccounts()) {
-                                        if (!account.getAccountID().equals(uniqueAccount.getAccountID())) {
-                                            secondaryUser.addAccount(uniqueAccount);
+                                        if (account.getAccountID().equals(uniqueAccount.getAccountID())) {
+                                            isUniqueAccount = false;
                                             break;
                                         }
+                                    }
+                                    if (isUniqueAccount) {
+                                        secondaryUser.addAccount(uniqueAccount);
                                     }
                                 }
                             }

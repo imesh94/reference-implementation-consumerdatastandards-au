@@ -164,6 +164,7 @@
                                         <limit implementation="org.jacoco.report.check.Limit">
                                             <counter>INSTRUCTION</counter>
                                             <value>COVEREDRATIO</value>
+                                            <!--TODO: Write Unit Tests-->
                                             <minimum>0.6</minimum>
                                         </limit>
                                     </limits>
