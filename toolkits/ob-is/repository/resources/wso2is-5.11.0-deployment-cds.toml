@@ -849,6 +849,7 @@ class = "com.wso2.openbanking.accelerator.identity.token.validators.MTLSEnforcem
 class = "com.wso2.openbanking.accelerator.identity.token.validators.MTLSEnforcementValidator"
 
 [open_banking_cds.bnr]
+customer_type_selection_method="profile_selection" # values: profile_selection, customer_utype, cookie_data
 prioritize_sharable_accounts_response=true
 enable_consent_revocation=true
 validate_accounts_on_retrieval=true

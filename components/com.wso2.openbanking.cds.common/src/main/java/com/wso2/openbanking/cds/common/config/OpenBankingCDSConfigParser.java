@@ -591,6 +591,18 @@ public class OpenBankingCDSConfigParser {
     }
 
     /**
+     * Get the customer type selection method for BNR.
+     * Expected values : profile_selection, customer_utype, cookie_data
+     *
+     * @return configured value
+     */
+    public String getBNRCustomerTypeSelectionMethod() {
+
+        String value = (String) getConfigElementFromKey(CommonConstants.CUSTOMER_TYPE_SELECTION_METHOD);
+        return value == null ? "" : value;
+    }
+
+    /**
      * Get secondary user accounts enabled status.
      *
      * @return boolean

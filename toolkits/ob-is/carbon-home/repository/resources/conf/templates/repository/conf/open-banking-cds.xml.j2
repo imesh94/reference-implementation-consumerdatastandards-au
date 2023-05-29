@@ -173,6 +173,12 @@
          </ParFilterValidators>
      </FilterValidators>
      <BNR>
+        <!-- Accepted Values : profile_selection, customer_utype, cookie_data -->
+        {% if open_banking_cds.bnr.customer_type_selection_method is defined %}
+        <CustomerTypeSelectionMethod>{{customer_type_selection_method}}</CustomerTypeSelectionMethod>
+        {% else %}
+        <CustomerTypeSelectionMethod>profile_selection</CustomerTypeSelectionMethod>
+        {% endif %}
         {% if open_banking_cds.bnr.prioritize_sharable_accounts_response is defined %}
         <PrioritizeSharableAccountsResponse>{{prioritize_sharable_accounts_response}}</PrioritizeSharableAccountsResponse>
         {% else %}
