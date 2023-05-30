@@ -183,6 +183,7 @@ public class CDSConsentExtensionConstants {
 
     public static final int CDS_DEFAULT_EXPIRY = 86400; // 1 day
 
+    // CDS data cluster
     static {
         Map<String, Map<String, List<String>>> dataCluster = new HashMap<>();
 
@@ -220,6 +221,7 @@ public class CDSConsentExtensionConstants {
         CDS_DATA_CLUSTER = Collections.unmodifiableMap(dataCluster);
     }
 
+    // Business data cluster
     static {
         Map<String, Map<String, List<String>>> dataCluster = new HashMap<>();
 
@@ -240,6 +242,7 @@ public class CDSConsentExtensionConstants {
         BUSINESS_CDS_DATA_CLUSTER = Collections.unmodifiableMap(dataCluster);
     }
 
+    // Individual data cluster
     static {
         Map<String, Map<String, List<String>>> dataCluster = new HashMap<>();
 
@@ -255,6 +258,7 @@ public class CDSConsentExtensionConstants {
         INDIVIDUAL_CDS_DATA_CLUSTER = Collections.unmodifiableMap(dataCluster);
     }
 
+    // Profile scope data cluster
     static {
         Map<String, Map<String, List<String>>> dataCluster = new HashMap<>();
 

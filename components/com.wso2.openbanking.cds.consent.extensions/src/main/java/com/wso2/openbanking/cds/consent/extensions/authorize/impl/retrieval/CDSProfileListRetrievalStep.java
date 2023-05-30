@@ -73,6 +73,7 @@ public class CDSProfileListRetrievalStep implements ConsentRetrievalStep {
             JSONObject accountJSON = (JSONObject) account;
             // Check if the current user has permission to authorize the account.
             boolean isUserEligible = isUserEligibleForConsentAuthorization(userId, accountJSON);
+
             // Process business accounts.
             if (isUserEligible && accountJSON.containsKey(CDSConsentExtensionConstants.
                     CUSTOMER_ACCOUNT_TYPE) && StringUtils.equals((String) accountJSON.get(
@@ -88,7 +89,7 @@ public class CDSProfileListRetrievalStep implements ConsentRetrievalStep {
                     profileIdAccountsMap = getProfileIdAccountsMapForProfiledAccounts(profileIdAccountsMap,
                             profileMap, accountJSON);
                 }
-                //Process individual accounts (non-business accounts are processed as individual).
+            //Process individual accounts (non-business accounts are processed as individual).
             } else {
                 if (customerType != null && customerType.equalsIgnoreCase(CDSConsentExtensionConstants.
                         PERSON)) {
@@ -99,6 +100,7 @@ public class CDSProfileListRetrievalStep implements ConsentRetrievalStep {
                         profileMap, accountJSON);
             }
         }
+
         /*If there is only one profile, set it as the pre-selected profile so the profile selection can
          be skipped.*/
         if (profileMap.size() == 1) {
