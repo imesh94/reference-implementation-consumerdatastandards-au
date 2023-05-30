@@ -552,6 +552,7 @@ public class OpenBankingCDSConfigParser {
      * @return configured boolean value, default value is true
      */
     public boolean isBNRPrioritizeSharableAccountsResponseEnabled() {
+
         Object config = getConfigElementFromKey(CommonConstants.PRIORITIZE_SHARABLE_ACCOUNTS_RESPONSE);
         if (config != null) {
             return Boolean.parseBoolean((String) config);
@@ -568,6 +569,7 @@ public class OpenBankingCDSConfigParser {
      * @return configured boolean value, default value is true
      */
     public boolean isBNRValidateAccountsOnRetrievalEnabled() {
+
         Object config = getConfigElementFromKey(CommonConstants.VALIDATE_ACCOUNTS_ON_RETRIEVAL);
         if (config != null) {
             return Boolean.parseBoolean((String) config);
@@ -582,6 +584,7 @@ public class OpenBankingCDSConfigParser {
      * @return configured boolean value, default value is true
      */
     public boolean isBNRConsentRevocationEnabled() {
+
         Object config = getConfigElementFromKey(CommonConstants.ENABLE_CONSENT_REVOCATION);
         if (config != null) {
             return Boolean.parseBoolean((String) config);
@@ -598,8 +601,8 @@ public class OpenBankingCDSConfigParser {
      */
     public String getBNRCustomerTypeSelectionMethod() {
 
-        String value = (String) getConfigElementFromKey(CommonConstants.CUSTOMER_TYPE_SELECTION_METHOD);
-        return value == null ? "" : value;
+        return getConfigElementFromKey(CommonConstants.CUSTOMER_TYPE_SELECTION_METHOD) == null ? "" :
+                ((String) getConfigElementFromKey(CommonConstants.CUSTOMER_TYPE_SELECTION_METHOD)).trim();
     }
 
     /**
