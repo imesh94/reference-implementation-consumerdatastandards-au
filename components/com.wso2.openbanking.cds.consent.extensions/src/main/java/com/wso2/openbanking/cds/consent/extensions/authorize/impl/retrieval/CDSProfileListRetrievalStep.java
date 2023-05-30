@@ -69,6 +69,7 @@ public class CDSProfileListRetrievalStep implements ConsentRetrievalStep {
         Map<String, String> profileMap = new HashMap<>();
         Map<String, List<String>> profileIdAccountsMap = new HashMap<>();
         String userId = CDSConsentCommonUtil.getUserIdWithTenantDomain(consentData.getUserId());
+
         for (Object account : accountsJSON) {
             JSONObject accountJSON = (JSONObject) account;
             // Check if the current user has permission to authorize the account.
@@ -89,7 +90,7 @@ public class CDSProfileListRetrievalStep implements ConsentRetrievalStep {
                     profileIdAccountsMap = getProfileIdAccountsMapForProfiledAccounts(profileIdAccountsMap,
                             profileMap, accountJSON);
                 }
-            //Process individual accounts (non-business accounts are processed as individual).
+                //Process individual accounts (non-business accounts are processed as individual).
             } else {
                 if (customerType != null && customerType.equalsIgnoreCase(CDSConsentExtensionConstants.
                         PERSON)) {
@@ -145,6 +146,7 @@ public class CDSProfileListRetrievalStep implements ConsentRetrievalStep {
      * @return nominated representatives
      */
     private List<String> getNominatedRepresentativesFromAccountResponse(JSONObject accountJSON) {
+
         List<String> nominatedRepresentatives = new ArrayList<>();
         if (accountJSON.containsKey(CDSConsentExtensionConstants.BUSINESS_ACCOUNT_INFO)) {
             JSONObject businessAccountInfoJson = (JSONObject) accountJSON.get(CDSConsentExtensionConstants.
@@ -206,6 +208,7 @@ public class CDSProfileListRetrievalStep implements ConsentRetrievalStep {
      * @param jsonObject   - jsonObject
      */
     public void executeConsentAmendmentFlow(JSONArray accountsJSON, JSONObject jsonObject) {
+
         JSONArray preSelectedAccounts = (JSONArray) jsonObject.get(CDSConsentExtensionConstants.
                 PRE_SELECTED_ACCOUNT_LIST);
 
@@ -244,6 +247,7 @@ public class CDSProfileListRetrievalStep implements ConsentRetrievalStep {
      */
     public Map<String, List<String>> getProfileIdAccountsMapForProfiledAccounts(
             Map<String, List<String>> profileIdAccountsMap, Map<String, String> profileMap, JSONObject accountJSON) {
+
         // Create maps of profileId to profileName and profileId to accountIds for business accounts.
         String accountId = (String) accountJSON.get(CDSConsentExtensionConstants.ACCOUNT_ID);
         String profileId = (String) accountJSON.get(CDSConsentExtensionConstants.PROFILE_ID);
@@ -271,6 +275,7 @@ public class CDSProfileListRetrievalStep implements ConsentRetrievalStep {
      */
     public Map<String, List<String>> getProfileIdAccountsMapForGeneralBusinessAccounts(
             Map<String, List<String>> profileIdAccountsMap, Map<String, String> profileMap, JSONObject accountJSON) {
+
         // Create maps of profileId to profileName and profileId to accountIds for business accounts.
         String accountId = (String) accountJSON.get(CDSConsentExtensionConstants.ACCOUNT_ID);
 
@@ -298,6 +303,7 @@ public class CDSProfileListRetrievalStep implements ConsentRetrievalStep {
      */
     public Map<String, List<String>> getProfileIdAccountsMapForIndividualAccounts(
             Map<String, List<String>> profileIdAccountsMap, Map<String, String> profileMap, JSONObject accountJSON) {
+
         // Create maps of profileId to profileName and profileId to accountIds for individual accounts.
         String accountId = (String) accountJSON.get(CDSConsentExtensionConstants.ACCOUNT_ID);
 
@@ -313,5 +319,4 @@ public class CDSProfileListRetrievalStep implements ConsentRetrievalStep {
         }
         return profileIdAccountsMap;
     }
-
 }
