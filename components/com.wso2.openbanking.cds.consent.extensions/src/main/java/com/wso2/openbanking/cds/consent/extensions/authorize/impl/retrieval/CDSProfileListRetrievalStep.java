@@ -37,6 +37,7 @@ public class CDSProfileListRetrievalStep implements ConsentRetrievalStep {
 
     private static final Log log = LogFactory.getLog(CDSProfileListRetrievalStep.class);
     AccountMetadataServiceImpl accountMetadataService = AccountMetadataServiceImpl.getInstance();
+    OpenBankingCDSConfigParser openBankingCDSConfigParser = OpenBankingCDSConfigParser.getInstance();
 
     @Override
     public void execute(ConsentData consentData, JSONObject jsonObject) throws ConsentException {
@@ -56,8 +57,7 @@ public class CDSProfileListRetrievalStep implements ConsentRetrievalStep {
         }
 
         // Get Customer Type Selection Method from config
-        String customerTypeSelectionMethod = OpenBankingCDSConfigParser.getInstance().
-                getBNRCustomerTypeSelectionMethod();
+        String customerTypeSelectionMethod = openBankingCDSConfigParser.getBNRCustomerTypeSelectionMethod();
         String customerType = null;
         if (CustomerTypeSelectionMethodEnum.CUSTOMER_UTYPE.toString().equals(customerTypeSelectionMethod)) {
             customerType = CDSConsentCommonUtil.getCustomerType(consentData);
@@ -182,7 +182,7 @@ public class CDSProfileListRetrievalStep implements ConsentRetrievalStep {
         boolean isEligible;
         // If the config is enabled, get eligibility from the sharable accounts response. Otherwise, get
         // eligibility from the Account_Metadata table.
-        if (OpenBankingCDSConfigParser.getInstance().isBNRPrioritizeSharableAccountsResponseEnabled()) {
+        if (openBankingCDSConfigParser.isBNRPrioritizeSharableAccountsResponseEnabled()) {
             isEligible = getNominatedRepresentativesFromAccountResponse(accountJSON).contains(userId);
         } else {
             String accountId = (String) accountJSON.get(CDSConsentExtensionConstants.ACCOUNT_ID);
