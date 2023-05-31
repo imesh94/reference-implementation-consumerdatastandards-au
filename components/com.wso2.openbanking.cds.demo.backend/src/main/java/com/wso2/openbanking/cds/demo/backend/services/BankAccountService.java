@@ -34,6 +34,7 @@ public class BankAccountService {
             "            \"customerAccountType\": \"Individual\",\n" +
             "            \"type\": \"TRANS_AND_SAVINGS_ACCOUNTS\",\n" +
             "            \"isEligible\": true,\n" +
+            "            \"isSecondaryAccount\" : false,\n" +
             "            \"isJointAccount\": false,\n" +
             "            \"jointAccountConsentElectionStatus\": false\n" +
             "        },\n" +
@@ -45,6 +46,7 @@ public class BankAccountService {
             "            \"customerAccountType\": \"Individual\",\n" +
             "            \"type\": \"TRANS_AND_SAVINGS_ACCOUNTS\",\n" +
             "            \"isEligible\": true,\n" +
+            "            \"isSecondaryAccount\" : false,\n" +
             "            \"isJointAccount\": false,\n" +
             "            \"jointAccountConsentElectionStatus\": false\n" +
             "        },\n" +
@@ -57,6 +59,7 @@ public class BankAccountService {
             "            \"type\": \"TRANS_AND_SAVINGS_ACCOUNTS\",\n" +
             "            \"isEligible\": true,\n" +
             "            \"isJointAccount\": true,\n" +
+            "            \"isSecondaryAccount\" : false,\n" +
             "            \"jointAccountConsentElectionStatus\": \"ELECTED\",\n" +
             "            \"jointAccountinfo\": {\n" +
             "              \"linkedMember\": [\n" +
@@ -81,6 +84,7 @@ public class BankAccountService {
             "            \"type\": \"TRANS_AND_SAVINGS_ACCOUNTS\",\n" +
             "            \"isEligible\": true,\n" +
             "            \"isJointAccount\": true,\n" +
+            "            \"isSecondaryAccount\" : false,\n" +
             "            \"jointAccountConsentElectionStatus\": \"UNAVAILABLE\",\n" +
             "            \"jointAccountinfo\": {\n" +
             "                \"linkedMember\": [\n" +
@@ -103,6 +107,7 @@ public class BankAccountService {
             "          \"type\": \"TRANS_AND_SAVINGS_ACCOUNTS\",\n" +
             "          \"isEligible\": true,\n" +
             "          \"isJointAccount\": false,\n" +
+            "          \"isSecondaryAccount\" : false,\n" +
             "          \"jointAccountConsentElectionStatus\": false,\n" +
             "          \"isSecondaryAccount\": false,\n" +
             "          \"businessAccountInfo\": {\n" +
@@ -143,6 +148,7 @@ public class BankAccountService {
             "          \"type\": \"TRANS_AND_SAVINGS_ACCOUNTS\",\n" +
             "          \"isEligible\": true,\n" +
             "          \"isJointAccount\": false,\n" +
+            "          \"isSecondaryAccount\" : false,\n" +
             "          \"jointAccountConsentElectionStatus\": false,\n" +
             "          \"isSecondaryAccount\": false,\n" +
             "          \"businessAccountInfo\": {\n" +
@@ -183,6 +189,7 @@ public class BankAccountService {
             "          \"type\": \"TRANS_AND_SAVINGS_ACCOUNTS\",\n" +
             "          \"isEligible\": true,\n" +
             "          \"isJointAccount\": false,\n" +
+            "          \"isSecondaryAccount\" : false,\n" +
             "          \"jointAccountConsentElectionStatus\": false,\n" +
             "          \"isSecondaryAccount\": false,\n" +
             "          \"businessAccountInfo\": {\n" +
@@ -215,6 +222,132 @@ public class BankAccountService {
             "                 }\n" +
             "              ]\n" +
             "           }\n" +
+            "        },\n" +
+            "        {\n" +
+            "            \"accountId\": \"30080098763500\",\n" +
+            "            \"displayName\": \"secondary_account_1\",\n" +
+            "            \"authorizationMethod\": \"single\",\n" +
+            "            \"nickName\": \"not-working\",\n" +
+            "            \"customerAccountType\": \"Secondary\",\n" +
+            "            \"type\": \"TRANS_AND_SAVINGS_ACCOUNTS\",\n" +
+            "            \"isEligible\": true,\n" +
+            "            \"isJointAccount\": false,\n" +
+            "            \"jointAccountConsentElectionStatus\": false,\n" +
+            "            \"isSecondaryAccount\" : true,\n" +
+            "            \"secondaryAccountPrivilegeStatus\" : true,\n" +
+            "            \"secondaryAccountInfo\": {\n" +
+            "              \"accountOwner\": [\n" +
+            "                {\n" +
+            "                  \"memberId\": \"amy@gold.com@carbon.super\",\n" +
+            "                  \"meta\": {}\n" +
+            "                },\n" +
+            "              ]\n" +
+            "            },\n" +
+            "            \"meta\": {}\n" +
+            "        },\n" +
+            "        {\n" +
+            "            \"accountId\": \"30080098763501\",\n" +
+            "            \"displayName\": \"secondary_account_2\",\n" +
+            "            \"authorizationMethod\": \"single\",\n" +
+            "            \"nickName\": \"not-working\",\n" +
+            "            \"customerAccountType\": \"Secondary\",\n" +
+            "            \"type\": \"TRANS_AND_SAVINGS_ACCOUNTS\",\n" +
+            "            \"isEligible\": true,\n" +
+            "            \"isJointAccount\": false,\n" +
+            "            \"jointAccountConsentElectionStatus\": false,\n" +
+            "            \"isSecondaryAccount\" : true,\n" +
+            "            \"secondaryAccountPrivilegeStatus\" : false,\n" +
+            "            \"secondaryAccountInfo\": {\n" +
+            "              \"accountOwner\": [\n" +
+            "                {\n" +
+            "                  \"memberId\": \"ann@gold.com@carbon.super\",\n" +
+            "                  \"meta\": {}\n" +
+            "                },\n" +
+            "              ]\n" +
+            "            },\n" +
+            "            \"meta\": {}\n" +
+            "        },\n" +
+            "        {\n" +
+            "            \"accountId\": \"7500101550\",\n" +
+            "            \"displayName\": \"secondary_joint_account_1\",\n" +
+            "            \"authorizationMethod\": \"single\",\n" +
+            "            \"nickName\": \"secondary_joint_account_1\",\n" +
+            "            \"customerAccountType\": \"Secondary\",\n" +
+            "            \"type\": \"TRANS_AND_SAVINGS_ACCOUNTS\",\n" +
+            "            \"isEligible\": true,\n" +
+            "            \"isSecondaryAccount\" : true,\n" +
+            "            \"isJointAccount\": true,\n" +
+            "            \"jointAccountConsentElectionStatus\": \"ELECTED\",\n" +
+            "            \"secondaryAccountPrivilegeStatus\" : true,\n" +
+            "            \"secondaryAccountInfo\": {\n" +
+            "              \"accountOwner\": [\n" +
+            "                     {\n" +
+            "                  \"memberId\": \"amy@gold.com@carbon.super\",\n" +
+            "                  \"meta\": {}\n" +
+            "                },\n" +
+            "                {\n" +
+            "                  \"memberId\": \"ann@gold.com@carbon.super\",\n" +
+            "                  \"meta\": {}\n" +
+            "                }" +
+            "                ]\n" +
+            "            },\n" +
+            "            \"meta\": {}\n" +
+            "        },\n" +
+            "        {\n" +
+            "            \"accountId\": \"7500101555\",\n" +
+            "            \"displayName\": \"secondary_joint_account_2\",\n" +
+            "            \"authorizationMethod\": \"single\",\n" +
+            "            \"nickName\": \"secondary_joint_account_2\",\n" +
+            "            \"customerAccountType\": \"Secondary\",\n" +
+            "            \"type\": \"TRANS_AND_SAVINGS_ACCOUNTS\",\n" +
+            "            \"isEligible\": true,\n" +
+            "            \"isSecondaryAccount\" : true,\n" +
+            "            \"isJointAccount\": true,\n" +
+            "            \"jointAccountConsentElectionStatus\": \"ELECTED\",\n" +
+            "            \"secondaryAccountPrivilegeStatus\" : false,\n" +
+            "            \"secondaryAccountInfo\": {\n" +
+            "              \"accountOwner\": [\n" +
+            "                     {\n" +
+            "                  \"memberId\": \"john@gold.com@carbon.super\",\n" +
+            "                  \"meta\": {}\n" +
+            "                },\n" +
+            "                {\n" +
+            "                  \"memberId\": \"peter@gold.com@carbon.super\",\n" +
+            "                  \"meta\": {}\n" +
+            "                }" +
+            "                ]\n" +
+            "            },\n" +
+            "            \"meta\": {}\n" +
+            "        },\n" +
+            "        {\n" +
+            "            \"accountId\": \"7500101558\",\n" +
+            "            \"displayName\": \"secondary_joint_account_3\",\n" +
+            "            \"authorizationMethod\": \"single\",\n" +
+            "            \"nickName\": \"secondary_joint_account_1\",\n" +
+            "            \"customerAccountType\": \"Secondary\",\n" +
+            "            \"type\": \"TRANS_AND_SAVINGS_ACCOUNTS\",\n" +
+            "            \"isEligible\": true,\n" +
+            "            \"isSecondaryAccount\" : true,\n" +
+            "            \"isJointAccount\": true,\n" +
+            "            \"jointAccountConsentElectionStatus\": \"UNAVAILABLE\",\n" +
+            "            \"secondaryAccountPrivilegeStatus\" : true,\n" +
+            "            \"secondaryAccountInfo\": {\n" +
+            "              \"accountOwner\": [\n" +
+            "                     {\n" +
+            "                  \"memberId\": \"john@gold.com@carbon.super\",\n" +
+            "                  \"meta\": {}\n" +
+            "                },\n" +
+            "                     {\n" +
+            "                  \"memberId\": \"amy@gold.com@carbon.super\",\n" +
+            "                  \"meta\": {}\n" +
+            "                },\n" +
+            "                {\n" +
+            "                  \"memberId\": \"ann@gold.com@carbon.super\",\n" +
+            "                  \"meta\": {}\n" +
+            "                }" +
+            "                ]\n" +
+            "            },\n" +
+            "            \"meta\": {}\n" +
             "        }\n" +
             "      ]\n" +
             "}";
