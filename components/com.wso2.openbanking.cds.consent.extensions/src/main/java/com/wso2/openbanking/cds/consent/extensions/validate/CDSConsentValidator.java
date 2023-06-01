@@ -153,13 +153,13 @@ public class CDSConsentValidator implements ConsentValidator {
         consentValidationResult.setValid(true);
     }
 
-
     /**
      * Method to remove inactive and duplicate consent mappings from consentValidateData.
      *
      * @param consentValidateData consentValidateData
      */
-    private void removeInactiveAndDuplicateConsentMappings(ConsentValidateData consentValidateData) {
+    private void removeInactiveAndDuplicateConsentMappings(ConsentValidateData consentValidateData) throws
+            OpenBankingException {
         ArrayList<ConsentMappingResource> distinctMappingResources = new ArrayList<>();
         List<String> duplicateAccountIds = new ArrayList<>();
 
@@ -171,33 +171,25 @@ public class CDSConsentValidator implements ConsentValidator {
                     distinctMappingResources.add(distinctMapping);
                 });
 
-        //filter non-sharable joint accounts and remove them
         Iterator<ConsentMappingResource> iterator = distinctMappingResources.iterator();
         while (iterator.hasNext()) {
-            // Get the next ConsentMappingResource from the iterator
             ConsentMappingResource mappingResource = iterator.next();
-
             try {
-                // Check if the account is eligible for data sharing based on its DOMS status
                 if (!isDomsStatusEligibleForDataSharing(mappingResource.getAccountID())) {
                     iterator.remove();
                 }
             } catch (OpenBankingException e) {
-                log.error("Error checking DOMS status for account " + mappingResource.getAccountID(), e);
+                throw e;
             }
         }
         consentValidateData.getComprehensiveConsent().setConsentMappingResources(distinctMappingResources);
     }
 
     public Boolean isDomsStatusEligibleForDataSharing(String accountID) throws OpenBankingException {
-        // Get an instance of the AccountMetadataService implementation
         AccountMetadataService accountMetadataService = AccountMetadataServiceImpl.getInstance();
-
-        // Call the getGlobalAccountMetadataMap method of the AccountMetadataService implementation
         Map<String, String> accountMetadata = accountMetadataService.getGlobalAccountMetadataMap(accountID);
 
         if (!accountMetadata.isEmpty()) {
-            // Check if the DOMS status value for the account is equal to "pre-approval"
             return accountMetadata.containsValue(CDSConsentExtensionConstants.DOMS_STATUS_PRE_APPROVAL);
         } else {
             return false;
@@ -224,7 +216,6 @@ public class CDSConsentValidator implements ConsentValidator {
 
         consentValidateData.getComprehensiveConsent().setConsentMappingResources(consentMappingResources);
     }
-
     /**
      * Method to remove accounts which the user has "REVOKED" nominated representative permissions.
      *
@@ -253,7 +244,6 @@ public class CDSConsentValidator implements ConsentValidator {
             log.error("Error occurred while retrieving account metadata", e);
             throw new ConsentException(ResponseStatus.INTERNAL_SERVER_ERROR,
                     "Error occurred while retrieving account metadata");
-
         }
     }
 
@@ -272,4 +262,3 @@ public class CDSConsentValidator implements ConsentValidator {
         return errorPayload.toString();
     }
 }
-
