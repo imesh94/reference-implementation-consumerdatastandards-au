@@ -53,7 +53,7 @@ public class DisclosureOptionsApiHandler {
             }
             return Response.ok().build();
         } catch (OpenBankingException e) {
-            log.error(e);
+            log.error("Error occurred while updating CDS Account Disclosure Options", e);
             return Response.status(Response.Status.BAD_REQUEST).entity(e.getMessage()).build();
         } catch (Exception e) {
             log.error("Bad Request. Request body validation failed", e);

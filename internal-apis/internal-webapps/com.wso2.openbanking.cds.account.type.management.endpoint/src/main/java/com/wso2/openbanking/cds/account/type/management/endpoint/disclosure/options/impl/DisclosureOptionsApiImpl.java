@@ -46,7 +46,7 @@ public class DisclosureOptionsApiImpl implements DisclosureOptionsApi {
 
             if (validationError.isEmpty()) {
                 disclosureOptionsApiHandler.updateCDSAccountDisclosureOptions(requestBody);
-                return Response.ok().entity("Success!").build();
+                return Response.ok().entity("").build();
             } else {
                 ErrorDTO errorDTO = new ErrorDTO(ErrorStatusEnum.INVALID_REQUEST, validationError);
                 return Response.status(Response.Status.BAD_REQUEST).entity(errorDTO).build();
