@@ -37,11 +37,6 @@
             <scope>provided</scope>
         </dependency>
         <dependency>
-            <groupId>org.wso2.carbon.analytics-common</groupId>
-            <artifactId>org.wso2.carbon.databridge.commons</artifactId>
-            <version>5.2.34</version>
-        </dependency>
-        <dependency>
             <groupId>com.wso2</groupId>
             <artifactId>com.wso2.openbanking.accelerator.common</artifactId>
             <scope>provided</scope>
