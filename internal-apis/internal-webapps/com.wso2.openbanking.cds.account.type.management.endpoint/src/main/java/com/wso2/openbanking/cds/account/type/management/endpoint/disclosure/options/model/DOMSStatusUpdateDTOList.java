@@ -13,18 +13,18 @@ import java.util.List;
 import javax.validation.Valid;
 
 /**
- * Disclosure Options Management - DomsStatusUpdateDTOList
+ * Disclosure Options Management - DOMSStatusUpdateDTOList
  */
-public class DomsStatusUpdateDTOList {
+public class DOMSStatusUpdateDTOList {
 
     @Valid
-    private List<DomsStatusUpdateDTOItem> data;
+    private List<DOMSStatusUpdateDTOItem> data;
 
-    public List<DomsStatusUpdateDTOItem> getData() {
+    public List<DOMSStatusUpdateDTOItem> getData() {
         return data;
     }
 
-    public void setData(List<DomsStatusUpdateDTOItem> data) {
+    public void setData(List<DOMSStatusUpdateDTOItem> data) {
         this.data = data;
     }
 

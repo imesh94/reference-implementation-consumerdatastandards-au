@@ -13,9 +13,9 @@ import javax.validation.constraints.NotEmpty;
 import javax.validation.constraints.Pattern;
 
 /**
- * Disclosure Options Management - DomsStatusUpdateDTOItem
+ * Disclosure Options Management - DOMSStatusUpdateDTOItem
  */
-public class DomsStatusUpdateDTOItem {
+public class DOMSStatusUpdateDTOItem {
     @NotEmpty(message = "Expected field is not present for the field \"accountID\" ")
     private String accountID;
 
