@@ -86,41 +86,12 @@ public class CDSConsentAdminHandler implements ConsentAdminHandler {
      *         Returns a success response if the DOMS status is updated successfully,
      *         or an error response if an OpenBankingException occurs during the process.
      */
-    private Response updateDomsStatusForConsentData(ConsentAdminData consentAdminData) {
-        try {
-            AccountMetadataService accountMetadataService = AccountMetadataServiceImpl.getInstance();
 
-            for (Object item : (JSONArray) consentAdminData.getResponsePayload().get("data")) {
-                JSONObject itemJSONObject = (JSONObject) item;
-                JSONArray consentMappingResourcesArray = (JSONArray) itemJSONObject.get("consentMappingResources");
-
-                for (Object consentMappingResource : consentMappingResourcesArray) {
-                    JSONObject cmrJSONObject = (JSONObject) consentMappingResource;
-                    String accountId = cmrJSONObject.getAsString(DOMS_ACCOUNT_ID);
-
-                    Map<String, String> disclosureOptionsMap = accountMetadataService.getGlobalAccountMetadataMap
-                            (accountId);
-
-                    String disclosureOptionStatus = disclosureOptionsMap.get(DOMS_STATUS);
-
-                    if (disclosureOptionStatus == null) {
-                        disclosureOptionStatus = DOMS_STATUS_PRE_APPROVAL;
-                    }
-                    cmrJSONObject.put("domsStatus", disclosureOptionStatus);
-                }
-            }
-            return Response.ok().entity("DOMS status for consent data successfully updated").build();
-        } catch (OpenBankingException e) {
-            log.error("An OpenBankingException occurred: {}", e);
-            return Response.status(Response.Status.INTERNAL_SERVER_ERROR).entity("An error occurred while updating " +
-                    "DOMS status").build();
-        }
-    }
 
     @Override
     public void handleSearch(ConsentAdminData consentAdminData) throws ConsentException {
         this.defaultConsentAdminHandler.handleSearch(consentAdminData);
-        updateDomsStatusForConsentData(consentAdminData);
+        updateDOMSStatusForConsentData(consentAdminData);
 
         // Filter the consent data based on the profiles if profiles are available in the query params.
             if (consentAdminData.getQueryParams().containsKey(CDSConsentExtensionConstants.PROFILES)) {
@@ -447,6 +418,36 @@ public class CDSConsentAdminHandler implements ConsentAdminHandler {
             return false;
         }
 
+        private Response updateDOMSStatusForConsentData(ConsentAdminData consentAdminData) {
+            try {
+                AccountMetadataService accountMetadataService = AccountMetadataServiceImpl.getInstance();
+
+                for (Object item : (JSONArray) consentAdminData.getResponsePayload().get("data")) {
+                    JSONObject itemJSONObject = (JSONObject) item;
+                    JSONArray consentMappingResourcesArray = (JSONArray) itemJSONObject.get("consentMappingResources");
+
+                    for (Object consentMappingResource : consentMappingResourcesArray) {
+                        JSONObject cmrJSONObject = (JSONObject) consentMappingResource;
+                        String accountId = cmrJSONObject.getAsString(DOMS_ACCOUNT_ID);
+
+                        Map<String, String> disclosureOptionsMap = accountMetadataService.getGlobalAccountMetadataMap
+                                (accountId);
+
+                        String disclosureOptionStatus = disclosureOptionsMap.get(DOMS_STATUS);
+
+                        if (disclosureOptionStatus == null) {
+                            disclosureOptionStatus = DOMS_STATUS_PRE_APPROVAL;
+                        }
+                        cmrJSONObject.put("domsStatus", disclosureOptionStatus);
+                    }
+                }
+                return Response.ok().entity("DOMS status for consent data successfully updated").build();
+            } catch (OpenBankingException e) {
+                log.error("An OpenBankingException occurred: {}", e);
+                return Response.status(Response.Status.INTERNAL_SERVER_ERROR).entity("An error occurred while updating " +
+                        "DOMS status").build();
+            }
+        }
         @Override
         public void handleConsentFileSearch (ConsentAdminData consentAdminData) throws ConsentException {
             this.defaultConsentAdminHandler.handleConsentFileSearch(consentAdminData);
