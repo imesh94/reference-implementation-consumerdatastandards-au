@@ -24,13 +24,14 @@ import javax.ws.rs.core.Response;
 
 /**
  * Handler class for handling CDS Account Disclosure Options requests.
+ * Updates the disclosure options for CDS accounts based on the provided request body.
  */
 
 public class DisclosureOptionsApiHandler {
     private static final Log log = LogFactory.getLog(DisclosureOptionsApiHandler.class);
     AccountMetadataService accountMetadataService = AccountMetadataServiceImpl.getInstance();
 
-    public Response cdsUpdateAccountDisclosureOptions(String requestBody) {
+    public Response updateCDSAccountDisclosureOptions(String requestBody) {
 
         log.debug("Update Account Disclosure Options request received");
         JSONParser parser = new JSONParser(JSONParser.MODE_JSON_SIMPLE);

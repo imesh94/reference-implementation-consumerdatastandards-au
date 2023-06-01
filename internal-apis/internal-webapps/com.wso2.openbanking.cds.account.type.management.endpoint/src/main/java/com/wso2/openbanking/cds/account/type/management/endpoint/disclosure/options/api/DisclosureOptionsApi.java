@@ -26,7 +26,7 @@ public interface DisclosureOptionsApi {
      * sending a JSON payload in the request body.
      */
     @PUT
-    @Path("/update-disclosure-options")
+    @Path("/disclosure-options")
     @Produces({"application/json"})
     @ApiOperation(value = "Update CDS account disclosure options", notes = "This API is used to update the CDS " +
             "account disclosure status.")
@@ -34,10 +34,8 @@ public interface DisclosureOptionsApi {
             @ApiResponse(code = 200, message = "Account disclosure options successfully updated."),
             @ApiResponse(code = 400, message = "Bad Request. Request body validation failed.")
     })
-    Response cdsUpdateAccountDisclosureOptions(@ApiParam(value = "Array of account disclosure option details.\n",
+    Response updateCDSAccountDisclosureOptions(@ApiParam(value = "Array of account disclosure option details.\n",
             required = true) String requestBody); }
-
-
 
 
 

@@ -13,7 +13,7 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.wso2.openbanking.cds.account.type.management.endpoint.disclosure.options.api.DisclosureOptionsApi;
 import com.wso2.openbanking.cds.account.type.management.endpoint.disclosure.options.handler.DisclosureOptionsApiHandler;
-import com.wso2.openbanking.cds.account.type.management.endpoint.disclosure.options.model.DomsStatusUpdateDTOList;
+import com.wso2.openbanking.cds.account.type.management.endpoint.disclosure.options.model.DOMSStatusUpdateDTOList;
 import com.wso2.openbanking.cds.account.type.management.endpoint.model.ErrorDTO;
 import com.wso2.openbanking.cds.account.type.management.endpoint.model.ErrorStatusEnum;
 import com.wso2.openbanking.cds.account.type.management.endpoint.util.ValidationUtil;
@@ -34,18 +34,18 @@ public class DisclosureOptionsApiImpl implements DisclosureOptionsApi {
     /**
      * The following method updates the Disclosure Options
      */
-    public Response cdsUpdateAccountDisclosureOptions(String requestBody) {
+    public Response updateCDSAccountDisclosureOptions(String requestBody) {
 
         ObjectMapper objectMapper = new ObjectMapper();
-        DomsStatusUpdateDTOList domsStatusUpdateDTOList;
+        DOMSStatusUpdateDTOList domsStatusUpdateDTOList;
 
         try {
-            domsStatusUpdateDTOList = objectMapper.readValue(requestBody, DomsStatusUpdateDTOList.class);
+            domsStatusUpdateDTOList = objectMapper.readValue(requestBody, DOMSStatusUpdateDTOList.class);
 
             String validationError = ValidationUtil.getFirstViolationMessage(domsStatusUpdateDTOList);
 
             if (validationError.isEmpty()) {
-                disclosureOptionsApiHandler.cdsUpdateAccountDisclosureOptions(requestBody);
+                disclosureOptionsApiHandler.updateCDSAccountDisclosureOptions(requestBody);
                 return Response.ok().entity("Account disclosure options successfully updated!").build();
             } else {
                 ErrorDTO errorDTO = new ErrorDTO(ErrorStatusEnum.INVALID_REQUEST, validationError);

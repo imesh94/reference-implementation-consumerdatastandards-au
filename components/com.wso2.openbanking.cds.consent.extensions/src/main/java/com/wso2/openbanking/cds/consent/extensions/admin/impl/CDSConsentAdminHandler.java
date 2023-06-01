@@ -43,7 +43,6 @@ import org.wso2.carbon.identity.oauth2.IdentityOAuth2Exception;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
-import javax.ws.rs.core.Response;
 
 import static com.wso2.openbanking.cds.consent.extensions.common.CDSConsentExtensionConstants.AUTH_RESOURCE_TYPE_PRIMARY;
 import static com.wso2.openbanking.cds.consent.extensions.common.CDSConsentExtensionConstants.CONSENT_STATUS_REVOKED;
@@ -85,7 +84,7 @@ public class CDSConsentAdminHandler implements ConsentAdminHandler {
     @Override
     public void handleSearch(ConsentAdminData consentAdminData) throws ConsentException {
         this.defaultConsentAdminHandler.handleSearch(consentAdminData);
-        updateDomsStatusForConsentData(consentAdminData);
+        updateDOMSStatusForConsentData(consentAdminData);
 
         // Filter the consent data based on the profiles if profiles are available in the query params.
         if (consentAdminData.getQueryParams().containsKey(CDSConsentExtensionConstants.PROFILES)) {
@@ -525,7 +524,7 @@ public class CDSConsentAdminHandler implements ConsentAdminHandler {
         }
         return false;
     }
-    private void updateDomsStatusForConsentData(ConsentAdminData consentAdminData) {
+    private void updateDOMSStatusForConsentData(ConsentAdminData consentAdminData) {
         try {
             AccountMetadataService accountMetadataService = AccountMetadataServiceImpl.getInstance();
 
@@ -537,7 +536,7 @@ public class CDSConsentAdminHandler implements ConsentAdminHandler {
 
                 for (Object consentMappingResource : consentMappingResourcesArray) {
                     JSONObject cmrJSONObject = (JSONObject) consentMappingResource;
-                    String accountId = cmrJSONObject.getAsString(CDSConsentExtensionConstants.DOMS_ACCOUNT_ID);
+                    String accountId = cmrJSONObject.getAsString(CDSConsentExtensionConstants.ACCOUNT_ID);
 
                     Map<String, String> disclosureOptionsMap = accountMetadataService.getGlobalAccountMetadataMap
                             (accountId);
@@ -550,7 +549,6 @@ public class CDSConsentAdminHandler implements ConsentAdminHandler {
                     cmrJSONObject.put("domsStatus", disclosureOptionStatus);
                 }
             }
-            return;
         } catch (OpenBankingException e) {
             throw new ConsentException(ResponseStatus.INTERNAL_SERVER_ERROR,
                     "Exception occurred while revoking consents");
