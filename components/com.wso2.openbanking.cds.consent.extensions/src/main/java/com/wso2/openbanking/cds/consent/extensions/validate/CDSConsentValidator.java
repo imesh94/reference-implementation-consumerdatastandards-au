@@ -141,6 +141,9 @@ public class CDSConsentValidator implements ConsentValidator {
         // Remove inactive and duplicate consent mappings
         removeInactiveAndDuplicateConsentMappings(consentValidateData);
 
+        //filter non-sharable joint accounts and remove them
+        removeInactiveDOMSAccountConsentMappings(consentValidateData);
+
         // filter inactive secondary user accounts
         if (openBankingCDSConfigParser.getSecondaryUserAccountsEnabled()) {
             removeInactiveSecondaryUserAccountConsentMappings(consentValidateData);
@@ -158,8 +161,7 @@ public class CDSConsentValidator implements ConsentValidator {
      *
      * @param consentValidateData consentValidateData
      */
-    private void removeInactiveAndDuplicateConsentMappings(ConsentValidateData consentValidateData) throws
-            OpenBankingException {
+    private void removeInactiveAndDuplicateConsentMappings(ConsentValidateData consentValidateData) {
         ArrayList<ConsentMappingResource> distinctMappingResources = new ArrayList<>();
         List<String> duplicateAccountIds = new ArrayList<>();
 
@@ -170,6 +172,13 @@ public class CDSConsentValidator implements ConsentValidator {
                     duplicateAccountIds.add(distinctMapping.getAccountID());
                     distinctMappingResources.add(distinctMapping);
                 });
+        consentValidateData.getComprehensiveConsent().setConsentMappingResources(distinctMappingResources);
+    }
+
+    private void removeInactiveDOMSAccountConsentMappings(ConsentValidateData consentValidateData)
+            throws ConsentException {
+        ArrayList<ConsentMappingResource> distinctMappingResources = consentValidateData.getComprehensiveConsent()
+                .getConsentMappingResources();
 
         Iterator<ConsentMappingResource> iterator = distinctMappingResources.iterator();
         while (iterator.hasNext()) {
@@ -179,12 +188,13 @@ public class CDSConsentValidator implements ConsentValidator {
                     iterator.remove();
                 }
             } catch (OpenBankingException e) {
-                throw e;
+                log.error("Error occurred while retrieving account metadata", e);
+                throw new ConsentException(ResponseStatus.INTERNAL_SERVER_ERROR,
+                        "Error occurred while retrieving account metadata");
             }
         }
         consentValidateData.getComprehensiveConsent().setConsentMappingResources(distinctMappingResources);
     }
-
     public Boolean isDomsStatusEligibleForDataSharing(String accountID) throws OpenBankingException {
         AccountMetadataService accountMetadataService = AccountMetadataServiceImpl.getInstance();
         Map<String, String> accountMetadata = accountMetadataService.getGlobalAccountMetadataMap(accountID);
