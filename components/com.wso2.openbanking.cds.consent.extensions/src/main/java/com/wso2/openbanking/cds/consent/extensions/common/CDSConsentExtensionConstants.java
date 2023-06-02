@@ -41,6 +41,8 @@ public class CDSConsentExtensionConstants {
     public static final String SHARING_DURATION_VALUE = "sharing_duration_value";
     public static final String CDR_ARRANGEMENT_ID = "cdr_arrangement_id";
     public static final String AUTH_RESOURCE_ID = "authResourceId";
+    public static final String AUTH_TYPE = "authorizationType";
+    public static final String MAPPING_STATUS = "mappingStatus";
     public static final String AUTH_RESOURCE_STATUS = "authResourceStatus";
     public static final String CDR_ACCOUNTS = "CDR_ACCOUNTS";
     public static final String OPENID_SCOPES = "openid_scopes";
@@ -73,7 +75,6 @@ public class CDSConsentExtensionConstants {
     public static final String JOINT_ACCOUNT_CONSENT_ELECTION_STATUS = "jointAccountConsentElectionStatus";
     public static final String JOINT_ACCOUNT_PRE_APPROVAL = "ELECTED";
     public static final String JOINT_ACCOUNT_NO_SHARING = "UNAVAILABLE";
-    public static final String DOMS_ACCOUNT_ID = "DomsAccountId";
     public static final String DOMS_STATUS = "DISCLOSURE_OPTIONS_STATUS";
     public static final String DOMS_STATUS_PRE_APPROVAL = "pre-approval";
     public static final String LINKED_MEMBER = "linkedMember";
@@ -168,6 +169,11 @@ public class CDSConsentExtensionConstants {
     public static final String SECONDARY_ACCOUNT_INFO = "secondaryAccountInfo";
     public static final String SECONDARY_ACCOUNT_OWNER_LIST = "accountOwner";
     public static final String SECONDARY_ACCOUNT_TYPE = "Secondary";
+    public static final String ACCOUNT_USER = "secondaryAccountUser";
+    public static final String ACCOUNT_OWNER = "secondaryAccountOwner";
+    public static final String SECONDARY_ACCOUNTS = "secondaryAccounts";
+    public static final String ACTIVE_ACCOUNTS = "activeAccounts";
+    public static final String INACTIVE_ACCOUNTS = "inactiveAccounts";
 
     // DH revocation configs
     public static final String ENABLE_RECIPIENT_CONSENT_REVOCATION = "RecipientConsentRevocationEndpoint.Enable";

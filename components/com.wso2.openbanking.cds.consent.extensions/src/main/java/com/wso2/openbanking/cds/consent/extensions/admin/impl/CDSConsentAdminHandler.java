@@ -44,11 +44,8 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
 
-import static com.wso2.openbanking.cds.consent.extensions.common.CDSConsentExtensionConstants.
-        AUTH_RESOURCE_TYPE_PRIMARY;
+import static com.wso2.openbanking.cds.consent.extensions.common.CDSConsentExtensionConstants.AUTH_RESOURCE_TYPE_PRIMARY;
 import static com.wso2.openbanking.cds.consent.extensions.common.CDSConsentExtensionConstants.CONSENT_STATUS_REVOKED;
-
-
 
 /**
  * Consent admin handler CDS implementation.
@@ -515,31 +512,25 @@ public class CDSConsentAdminHandler implements ConsentAdminHandler {
         }
         return false;
     }
-
-    /**
-     * Updates the 'domsStatus' property in the consentMappingResources within the consentAdminData.
-     *
-     * @param consentAdminData The consentAdminData object containing the consent mapping resources.
-     * @throws ConsentException if an error occurs while updating the 'domsStatus' property.
-     */
-    public void updateDomsStatusInConsentMappingResources(ConsentAdminData consentAdminData) throws ConsentException {
+    private void updateDOMSStatusForConsentData(ConsentAdminData consentAdminData) {
         try {
             AccountMetadataService accountMetadataService = AccountMetadataServiceImpl.getInstance();
-            JSONArray consentDataArray = (JSONArray) consentAdminData.getResponsePayload().
-                    get(CDSConsentExtensionConstants.DATA);
 
-            for (Object item : consentDataArray) {
+            for (Object item : (JSONArray) consentAdminData.getResponsePayload().
+                    get(CDSConsentExtensionConstants.DATA)) {
                 JSONObject itemJSONObject = (JSONObject) item;
-                JSONArray consentMappingResourcesArray = (JSONArray) itemJSONObject.
-                        get(CDSConsentExtensionConstants.CONSENT_MAPPING_RESOURCES);
+                JSONArray consentMappingResourcesArray = (JSONArray) itemJSONObject.get(CDSConsentExtensionConstants.
+                        CONSENT_MAPPING_RESOURCES);
 
                 for (Object consentMappingResource : consentMappingResourcesArray) {
                     JSONObject cmrJSONObject = (JSONObject) consentMappingResource;
                     String accountId = cmrJSONObject.getAsString(CDSConsentExtensionConstants.ACCOUNT_ID);
 
-                    Map<String, String> disclosureOptionsMap = accountMetadataService.
-                            getGlobalAccountMetadataMap(accountId);
+                    Map<String, String> disclosureOptionsMap = accountMetadataService.getGlobalAccountMetadataMap
+                            (accountId);
+
                     String disclosureOptionStatus = disclosureOptionsMap.get(CDSConsentExtensionConstants.DOMS_STATUS);
+
                     if (disclosureOptionStatus == null) {
                         disclosureOptionStatus = CDSConsentExtensionConstants.DOMS_STATUS_PRE_APPROVAL;
                     }
@@ -547,15 +538,14 @@ public class CDSConsentAdminHandler implements ConsentAdminHandler {
                 }
             }
         } catch (OpenBankingException e) {
-            throw new ConsentException(ResponseStatus.INTERNAL_SERVER_ERROR, "Error occurred while updating" +
-                    " domsStatus in ConsentMappingResources");
+            throw new ConsentException(ResponseStatus.INTERNAL_SERVER_ERROR,
+                    "Exception occurred while revoking consents");
         }
     }
-
-        @Override
-        public void handleConsentFileSearch (ConsentAdminData consentAdminData) throws ConsentException {
-            this.defaultConsentAdminHandler.handleConsentFileSearch(consentAdminData);
-        }
+    @Override
+    public void handleConsentFileSearch(ConsentAdminData consentAdminData) throws ConsentException {
+        this.defaultConsentAdminHandler.handleConsentFileSearch(consentAdminData);
+    }
 
     @Override
     public void handleConsentStatusAuditSearch(ConsentAdminData consentAdminData) throws ConsentException {

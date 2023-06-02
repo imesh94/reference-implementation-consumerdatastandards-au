@@ -24,6 +24,7 @@ import javax.ws.rs.core.Response;
 
 /**
  * Handler class for handling CDS Account Disclosure Options requests.
+ * Updates the disclosure options for CDS accounts based on the provided request body.
  */
 
 public class DisclosureOptionsApiHandler {
