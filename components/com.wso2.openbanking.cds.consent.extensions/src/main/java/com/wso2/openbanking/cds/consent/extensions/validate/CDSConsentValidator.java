@@ -27,7 +27,6 @@ import com.wso2.openbanking.cds.common.metadata.domain.MetadataValidationRespons
 import com.wso2.openbanking.cds.common.metadata.status.validator.service.MetadataService;
 import com.wso2.openbanking.cds.consent.extensions.common.CDSConsentExtensionConstants;
 import com.wso2.openbanking.cds.consent.extensions.validate.utils.CDSConsentValidatorUtil;
-
 import net.minidev.json.JSONObject;
 import net.minidev.json.parser.JSONParser;
 import net.minidev.json.parser.ParseException;
@@ -272,3 +271,4 @@ public class CDSConsentValidator implements ConsentValidator {
         return errorPayload.toString();
     }
 }
+
