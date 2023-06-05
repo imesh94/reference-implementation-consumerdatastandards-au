@@ -97,11 +97,11 @@ class AUConstants extends OBConstants {
     public static final String PAR_ENDPOINT = "/par"
     public static final String REVOKE_PATH = "/revoke"
     public static final String STATUS_PATH = "/account-confirmation"
-    public static final String CONSENT_STATUS_AU_ENDPOINT = "/api/openbanking/consent-mgt/au"
-    public static final String UPDATE_BUSINESS_USER  = "/account-access-consents/business-stakeholders"
-    public static final String SHARABLE_BANK_ACCOUNT_SERVICE= "/api/openbanking/backend-uk"
+    public static final String CONSENT_STATUS_AU_ENDPOINT = "api/openbanking/account-type-mgt"
+    public static final String UPDATE_BUSINESS_USER  = "/account-type-management/business-stakeholders"
+    public static final String SHARABLE_BANK_ACCOUNT_SERVICE= "/api/openbanking/cds/backend"
     public static final String BANK_ACCOUNT_SERVICE  = "/services/bankaccounts/bankaccountservice/sharable-accounts"
-    public static final String BUSINESS_USER_PERMISSION  = "/account-access-consents/business-stakeholders/permission"
+    public static final String BUSINESS_USER_PERMISSION  = "/account-type-management/business-stakeholders/permission"
 
     public static final String BANK_CUSTOMER_BASIC_READ = "Organisation profile*"
     public static final String BANK_CUSTOMER_DETAIL_READ = "Organisation profile and contact details*‡"
@@ -273,7 +273,7 @@ class AUConstants extends OBConstants {
     public static final int DEFAULT_DELAY = 5;
 
     // Second Factor Authenticator constants
-    public static final String AU_OTP_CODE = "123456"
+    public static final String AU_OTP_CODE = "111222"
 
     // DCR constants
     public static final String DCR_REGISTRATION_ENDPOINT = "/open-banking/0.2/register/"
@@ -331,6 +331,7 @@ class AUConstants extends OBConstants {
     static final int STATUS_CODE_204 = 204
     static final int STATUS_CODE_403 = 403
     static final int STATUS_CODE_500 = 500
+    static final int STATUS_CODE_415 = 415
 
     /**
      * Get the Product Endpoint Version
@@ -378,5 +379,9 @@ class AUConstants extends OBConstants {
     public static final String TPP_ERROR_CODE_VALUE = "ERROR"
     public static final String TPP_ERROR_CODE_FORMAT_INVALID= "REQUESTED_FORMATS_INVALID"
     public static final String ERROR_NOT_ALLOWED_TO_ACCESS = "The access token does not allow you to access the requested resource"
+    public static final String VALUE_KEY = "value"
+    public static final String PARAM_PROFILE_NAME = "profileName"
+    public static final String USER_DENIED_THE_CONSENT = "User denied the consent"
+
 }
 

@@ -12,6 +12,7 @@
 
 package com.wso2.cds.test.framework.request_builder
 
+import com.nimbusds.oauth2.sdk.pkce.CodeVerifier
 import com.wso2.cds.test.framework.constant.AUAccountScope
 import com.wso2.cds.test.framework.constant.AUConstants
 import com.nimbusds.jwt.SignedJWT
@@ -165,16 +166,16 @@ class AURequestBuilder {
 
     /**
      * Get User Access Token From Authorization Code.
-     *
      * @param code authorisation code
-     * @param client_id
-     * @return token response
+     * @param codeVerifier code verifier
+     * @param clientId client id
+     * @return user access token
      */
-    static AccessTokenResponse getUserToken(String code, String clientId = null) {
+    static AccessTokenResponse getUserToken(String code, CodeVerifier codeVerifier, String clientId = null) {
 
         AuthorizationCode grant = new AuthorizationCode(code)
         URI callbackUri = new URI(auConfiguration.getAppInfoRedirectURL())
-        AuthorizationGrant codeGrant = new AuthorizationCodeGrant(grant, callbackUri)
+        AuthorizationGrant codeGrant = new AuthorizationCodeGrant(grant, callbackUri, codeVerifier)
 
         String assertionString = new SignedObject().getJwt(clientId)
 

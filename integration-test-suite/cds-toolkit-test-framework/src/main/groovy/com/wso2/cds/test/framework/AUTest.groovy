@@ -83,6 +83,7 @@ class AUTest extends OBTest {
     public String authoriseUrl
     public String authFlowError
     public Response response
+    public def automationResponse
 
     /**
      * Set Scopes of application
@@ -165,22 +166,8 @@ class AUTest extends OBTest {
                     .toURI().toString()
         }
 
-        def automation = getBrowserAutomation(AUConstants.DEFAULT_DELAY)
-                .addStep(new AUBasicAuthAutomationStep(authoriseUrl))
-                .addStep { driver, context ->
-                    AutomationMethod authWebDriver = new AutomationMethod(driver)
-
-                    //Select Profile and Accounts
-                    selectProfileAndAccount(authWebDriver, profiles, true)
-
-                    //Click Confirm Button
-                    authWebDriver.clickButtonXpath(AUPageObjects.CONSENT_CONFIRM_XPATH)
-
-                    //Click Authorise Button
-                    authWebDriver.clickButtonXpath(AUPageObjects.CONSENT_CONFIRM_XPATH)
-                }
-                .addStep(getWaitForRedirectAutomationStep())
-                .execute()
+        //UI Flow Navigation
+        def automation = doAuthorisationFlowNavigation(authoriseUrl, profiles, false)
 
         // Get Code From URL
         authorisationCode = AUTestUtil.getHybridCodeFromUrl(automation.currentUrl.get())
@@ -213,7 +200,7 @@ class AUTest extends OBTest {
      */
     AccessTokenResponse getUserAccessTokenResponse(String clientId = null) {
         try {
-            return AURequestBuilder.getUserToken(authorisationCode, clientId)
+            return AURequestBuilder.getUserToken(authorisationCode, auAuthorisationBuilder.getCodeVerifier(), clientId)
         }
         catch (Exception e) {
             log.error(e)
@@ -855,17 +842,19 @@ class AUTest extends OBTest {
      * @return response
      */
     Response updateSingleBusinessUserPermission(String headerString, String accountID, String accountOwnerUserID, String nominatedRepUserID,
-                                     String permissionType) {
+                                                String permissionType) {
 
         def requestBody = AUPayloads.getSingleUserNominationPayload(accountID, accountOwnerUserID, nominatedRepUserID, permissionType)
 
-        return AURestAsRequestBuilder.buildRequest()
-                .header(AUConstants.AUTHORIZATION_HEADER_KEY, AUConstants.BASIC_HEADER_KEY + Base64.encoder.encodeToString(
-                        headerString.getBytes(Charset.forName("UTF-8"))))
+        return AURestAsRequestBuilder.buildBasicRequest()
+                .header(AUConstants.AUTHORIZATION_HEADER_KEY, AUConstants.BASIC_HEADER_KEY + " " +
+                        Base64.encoder.encodeToString(
+                                "${auConfiguration.getUserBasicAuthName()}:${auConfiguration.getUserBasicAuthPWD()}"
+                                        .getBytes(Charset.forName("UTF-8"))))
                 .contentType(AUConstants.CONTENT_TYPE_APPLICATION_JSON)
                 .body(requestBody)
-                .baseUri(getAuConfiguration().getISServerUrl())
-                .post("${AUConstants.CONSENT_STATUS_AU_ENDPOINT}${AUConstants.UPDATE_BUSINESS_USER}")
+                .baseUri(auConfiguration.getServerAuthorisationServerURL())
+                .put("${AUConstants.CONSENT_STATUS_AU_ENDPOINT}${AUConstants.UPDATE_BUSINESS_USER}")
     }
 
     /**
@@ -900,7 +889,7 @@ class AUTest extends OBTest {
      */
     Response getSharableBankAccounts() {
 
-        return AURestAsRequestBuilder.buildRequest()
+        return AURestAsRequestBuilder.buildBasicRequest()
                 .baseUri(getAuConfiguration().getSharableAccountUrl())
                 .get("${AUConstants.SHARABLE_BANK_ACCOUNT_SERVICE}${AUConstants.BANK_ACCOUNT_SERVICE}")
     }
@@ -964,6 +953,35 @@ class AUTest extends OBTest {
                 .baseUri(getAuConfiguration().getISServerUrl())
                 .get("${AUConstants.CONSENT_STATUS_AU_ENDPOINT}${AUConstants.BUSINESS_USER_PERMISSION}")
 
+    }
+
+    /**
+     * Authorisation FLow UI Navigation Method.
+     * @param authoriseUrl
+     * @param profiles
+     * @param isStateParamPresent
+     * @return
+     */
+    def doAuthorisationFlowNavigation(String authoriseUrl, AUAccountProfile profiles = null,
+                                      boolean isStateParamPresent = true) {
+
+        automationResponse = getBrowserAutomation(AUConstants.DEFAULT_DELAY)
+                .addStep(new AUBasicAuthAutomationStep(authoriseUrl))
+                .addStep { driver, context ->
+                    AutomationMethod authWebDriver = new AutomationMethod(driver)
+
+                    //Select Profile and Accounts
+                    selectProfileAndAccount(authWebDriver, profiles, isStateParamPresent)
+
+                    //Click Confirm Button
+                    authWebDriver.clickButtonXpath(AUPageObjects.CONSENT_CONFIRM_XPATH)
+
+                    //Click Authorise Button
+                    authWebDriver.clickButtonXpath(AUPageObjects.CONSENT_CONFIRM_XPATH)
+                }
+                .execute()
+
+        return automationResponse
     }
 }
 

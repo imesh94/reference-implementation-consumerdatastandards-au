@@ -195,7 +195,8 @@ class AUTestUtil extends OBTestUtil {
      * @param shareableAccountsResponse
      * @return ShareableAccountMap
      */
-    static Map getSharableAccountsList(Response shareableAccountsResponse) {
+    static Map getSharableAccountsList(Response shareableAccountsResponse,
+                                       String profile = AUAccountProfile.ORGANIZATION_A.getProperty(AUConstants.VALUE_KEY)) {
 
         //Asserting sharableBankAccountsResponse response and sec
         def sharableAccountList = shareableAccountsResponse.jsonPath().get(AUConstants.DATA)
@@ -203,7 +204,7 @@ class AUTestUtil extends OBTestUtil {
         def  ShareableAccountMap = [:]
 
         for (sharableAccount in sharableAccountList) {
-            if (sharableAccount[AUConstants.PARAM_CUSTOMER_ACCOUNT_TYPE] == AUAccountProfile.ORGANIZATION_B) {
+            if (sharableAccount[AUConstants.PARAM_PROFILE_NAME] == profile) {
                 ShareableAccountMap [AUConstants.PARAM_ACCOUNT_ID] = sharableAccount[AUConstants.ACCOUNT_ID]
                 ShareableAccountMap [AUConstants.ACCOUNT_OWNER_USER_ID] =
                         sharableAccount[AUConstants.BUSINESS_ACCOUNT_INFO][AUConstants.ACCOUNT_OWNERS][AUConstants.MEMBER_ID][0]
@@ -211,7 +212,7 @@ class AUTestUtil extends OBTestUtil {
                         sharableAccount[AUConstants.BUSINESS_ACCOUNT_INFO][AUConstants.NOMINATED_REPRESENTATIVES][AUConstants.MEMBER_ID][0]
                 ShareableAccountMap [AUConstants.ACCOUNT_OWNER_USER_ID] =
                         sharableAccount[AUConstants.BUSINESS_ACCOUNT_INFO][AUConstants.ACCOUNT_OWNERS][AUConstants.MEMBER_ID][1]
-                ShareableAccountMap [AUConstants.NOMINATED_REP_USER_ID] =
+                ShareableAccountMap [AUConstants.NOMINATED_REP_USER_ID2] =
                         sharableAccount[AUConstants.BUSINESS_ACCOUNT_INFO][AUConstants.NOMINATED_REPRESENTATIVES][AUConstants.MEMBER_ID][1]
                 break
             }
@@ -226,6 +227,14 @@ class AUTestUtil extends OBTestUtil {
      */
     static String getPermissionForUser(String accountId) {
         return "$AUConstants.PARAM_PERMISSION_STATUS.$accountId"
+    }
+
+    /**
+     * Get Business Account 3 XPath
+     * @return SingleAccountXPath
+     */
+    static String getBusinessAccount3CheckBox() {
+        return AUPageObjects.CHK_ORG_B_BUSINESS_ACCOUNT_2
     }
 }
 

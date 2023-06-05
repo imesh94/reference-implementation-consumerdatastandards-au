@@ -226,7 +226,7 @@
         <RedirectURL>NonRegulatoryApplication.RedirectURL</RedirectURL>
     </NonRegulatoryApplication>
 
-    <!-- PSU_INFO List - Can Add Multiple PSUInfo sets as you wish-->
+    <!-- PSU_INFO List - Can Add Multiple PSUInfo sets as required-->
     <PSUList>
         <!-- Common PSU Info -->
         <PSUInfo>
