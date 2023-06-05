@@ -44,8 +44,8 @@ class UserNominationManagementTests extends AUTest {
         //Check the permissions of nominated representatives
         def permissionsResponse = getStakeholderPermissions(nominatedRepUserID, accountID)
         Assert.assertEquals(permissionsResponse.statusCode(), AUConstants.OK)
-        Assert.assertEquals(AUTestUtil.parseResponseBody(permissionsResponse, AUTestUtil.getPermissionForUser(accountID)),
-                AUBusinessUserPermission.AUTHORIZE.getPermissionString())
+        Assert.assertTrue(AUTestUtil.parseResponseBody(permissionsResponse, AUConstants.PARAM_PERMISSION_STATUS)
+                .contains("${nominatedRepUserID}:${AUBusinessUserPermission.AUTHORIZE.getPermissionString()}"))
     }
 
     @Test
@@ -78,8 +78,8 @@ class UserNominationManagementTests extends AUTest {
         //Check the permissions of nominated representatives
         def permissionsResponse = getStakeholderPermissions(nominatedRepUserID, accountID)
         Assert.assertEquals(permissionsResponse.statusCode(), AUConstants.OK)
-        Assert.assertEquals(AUTestUtil.parseResponseBody(permissionsResponse, AUTestUtil.getPermissionForUser(accountID)),
-                AUBusinessUserPermission.AUTHORIZE.getPermissionString())
+        Assert.assertTrue(AUTestUtil.parseResponseBody(permissionsResponse, AUConstants.PARAM_PERMISSION_STATUS)
+                .contains("${nominatedRepUserID}:${AUBusinessUserPermission.AUTHORIZE.getPermissionString()}"))
 
         //Update the Permission of Nominated User to Revoke
         def updateResponse = updateSingleBusinessUserPermission(clientHeader, accountID, accountOwnerUserID,
@@ -89,8 +89,8 @@ class UserNominationManagementTests extends AUTest {
         //Check the permissions of nominated representatives
         def permissionsResponse2 = getStakeholderPermissions(nominatedRepUserID, accountID)
         Assert.assertEquals(permissionsResponse2.statusCode(), AUConstants.OK)
-        Assert.assertEquals(AUTestUtil.parseResponseBody(permissionsResponse2, AUTestUtil.getPermissionForUser(accountID)),
-                AUBusinessUserPermission.VIEW.getPermissionString())
+        Assert.assertTrue(AUTestUtil.parseResponseBody(permissionsResponse2, AUConstants.PARAM_PERMISSION_STATUS)
+                .contains("${nominatedRepUserID}:${AUBusinessUserPermission.VIEW.getPermissionString()}"))
     }
 
     @Test
@@ -105,19 +105,15 @@ class UserNominationManagementTests extends AUTest {
         //Check the permissions of nominated representatives
         def permissionsResponse = getStakeholderPermissions(nominatedRepUserID, accountID)
         Assert.assertEquals(permissionsResponse.statusCode(), AUConstants.OK)
-        Assert.assertEquals(AUTestUtil.parseResponseBody(permissionsResponse, AUTestUtil.getPermissionForUser(accountID)),
-                AUBusinessUserPermission.AUTHORIZE.getPermissionString())
+        Assert.assertTrue(AUTestUtil.parseResponseBody(permissionsResponse, AUConstants.PARAM_PERMISSION_STATUS)
+                .contains("${nominatedRepUserID}:${AUBusinessUserPermission.AUTHORIZE.getPermissionString()}"))
 
-        //Update the Permission of Nominated User to Revoke
+        //Update the Permission of Nominated User to Revoke - Should give an error as there is no permission called revoke
         def updateResponse = updateSingleBusinessUserPermission(clientHeader, accountID, accountOwnerUserID,
                 nominatedRepUserID, AUBusinessUserPermission.REVOKE.getPermissionString())
-        Assert.assertEquals(updateResponse.statusCode(), AUConstants.OK)
-
-        //Check the permissions of nominated representatives
-        def permissionsResponse2 = getStakeholderPermissions(nominatedRepUserID, accountID)
-        Assert.assertEquals(permissionsResponse2.statusCode(), AUConstants.OK)
-        Assert.assertEquals(AUTestUtil.parseResponseBody(permissionsResponse2, AUTestUtil.getPermissionForUser(accountID)),
-                AUBusinessUserPermission.REVOKE.getPermissionString())
+        Assert.assertEquals(updateResponse.statusCode(), AUConstants.BAD_REQUEST)
+        Assert.assertTrue(AUTestUtil.parseResponseBody(updateResponse, AUConstants.ERROR_DESCRIPTION).contains(
+                "Invalid permission value. Must be AUTHORIZE or VIEW."))
     }
 
     @Test
@@ -130,7 +126,7 @@ class UserNominationManagementTests extends AUTest {
 
         //Update the Permission of Nominated User with incorrect payload
         def updateResponse = updateSingleBusinessUserPermission(clientHeader, null, accountOwnerUserID,
-                nominatedRepUserID, AUBusinessUserPermission.AUTHORIZE.getPermissionString())
+                nominatedRepUserID, AUBusinessUserPermission.VIEW.getPermissionString())
         Assert.assertEquals(updateResponse.statusCode(), AUConstants.BAD_REQUEST)
         Assert.assertEquals(AUTestUtil.parseResponseBody(response, AUConstants.TPP_ERROR_CATEGORY),
                 AUConstants.TPP_ERROR_CODE_VALUE)
@@ -152,18 +148,16 @@ class UserNominationManagementTests extends AUTest {
                 AUBusinessUserPermission.AUTHORIZE.getPermissionString())
 
         def updateResponse = AURestAsRequestBuilder.buildRequest()
-                .header(AUConstants.AUTHORIZATION_HEADER_KEY, AUConstants.BASIC_HEADER_KEY + Base64.encoder.encodeToString(
-                        clientHeader.getBytes(Charset.forName("UTF-8"))))
+                .header(AUConstants.AUTHORIZATION_HEADER_KEY, AUConstants.BASIC_HEADER_KEY + " " +
+                        Base64.encoder.encodeToString(
+                                "${auConfiguration.getUserBasicAuthName()}:${auConfiguration.getUserBasicAuthPWD()}"
+                                        .getBytes(Charset.forName("UTF-8"))))
                 .contentType(AUConstants.CONTENT_TYPE_APPLICATION_JWT)
                 .body(requestBody)
-                .baseUri(getAuConfiguration().getISServerUrl())
-                .post("${AUConstants.CONSENT_STATUS_AU_ENDPOINT}${AUConstants.UPDATE_BUSINESS_USER}")
+                .baseUri(getAuConfiguration().getServerAuthorisationServerURL())
+                .put("${AUConstants.CONSENT_STATUS_AU_ENDPOINT}${AUConstants.UPDATE_BUSINESS_USER}")
 
-        Assert.assertEquals(updateResponse.statusCode(), AUConstants.BAD_REQUEST)
-        Assert.assertEquals(AUTestUtil.parseResponseBody(response, AUConstants.TPP_ERROR_CATEGORY),
-                AUConstants.TPP_ERROR_CODE_VALUE)
-        Assert.assertEquals(AUTestUtil.parseResponseBody(response, AUConstants.TPP_ERROR_CODE),
-                AUConstants.TPP_ERROR_CODE_FORMAT_INVALID)
+        Assert.assertEquals(updateResponse.statusCode(), AUConstants.STATUS_CODE_415)
     }
 
     @Test
@@ -180,17 +174,15 @@ class UserNominationManagementTests extends AUTest {
                 AUBusinessUserPermission.AUTHORIZE.getPermissionString())
 
         def updateResponse = AURestAsRequestBuilder.buildRequest()
-                .header(AUConstants.AUTHORIZATION_HEADER_KEY, AUConstants.BASIC_HEADER_KEY + Base64.encoder.encodeToString(
-                        clientHeader.getBytes(Charset.forName("UTF-8"))))
+                .header(AUConstants.AUTHORIZATION_HEADER_KEY, AUConstants.BASIC_HEADER_KEY + " " +
+                        Base64.encoder.encodeToString(
+                                "${auConfiguration.getUserBasicAuthName()}:${auConfiguration.getUserBasicAuthPWD()}"
+                                        .getBytes(Charset.forName("UTF-8"))))
                 .body(requestBody)
-                .baseUri(getAuConfiguration().getISServerUrl())
-                .post("${AUConstants.CONSENT_STATUS_AU_ENDPOINT}${AUConstants.UPDATE_BUSINESS_USER}")
+                .baseUri(getAuConfiguration().getServerAuthorisationServerURL())
+                .put("${AUConstants.CONSENT_STATUS_AU_ENDPOINT}${AUConstants.UPDATE_BUSINESS_USER}")
 
-        Assert.assertEquals(updateResponse.statusCode(), AUConstants.BAD_REQUEST)
-        Assert.assertEquals(AUTestUtil.parseResponseBody(response, AUConstants.TPP_ERROR_CATEGORY),
-                AUConstants.TPP_ERROR_CODE_VALUE)
-        Assert.assertEquals(AUTestUtil.parseResponseBody(response, AUConstants.TPP_ERROR_CODE),
-                AUConstants.TPP_ERROR_CODE_FORMAT_INVALID)
+        Assert.assertEquals(updateResponse.statusCode(), AUConstants.STATUS_CODE_415)
     }
 
     @Test
@@ -209,14 +201,10 @@ class UserNominationManagementTests extends AUTest {
         def updateResponse = AURestAsRequestBuilder.buildRequest()
                 .contentType(AUConstants.CONTENT_TYPE_APPLICATION_JSON)
                 .body(requestBody)
-                .baseUri(getAuConfiguration().getISServerUrl())
-                .post("${AUConstants.CONSENT_STATUS_AU_ENDPOINT}${AUConstants.UPDATE_BUSINESS_USER}")
+                .baseUri(getAuConfiguration().getServerAuthorisationServerURL())
+                .put("${AUConstants.CONSENT_STATUS_AU_ENDPOINT}${AUConstants.UPDATE_BUSINESS_USER}")
 
         Assert.assertEquals(updateResponse.statusCode(), AUConstants.UNAUTHORIZED)
-        Assert.assertEquals(AUTestUtil.parseResponseBody(response, AUConstants.TPP_ERROR_CATEGORY),
-                AUConstants.TPP_ERROR_CODE_VALUE)
-        Assert.assertEquals(AUTestUtil.parseResponseBody(response, AUConstants.TPP_ERROR_CODE),
-                AUConstants.TPP_ERROR_CODE_FORMAT_INVALID)
     }
 
     @Test
@@ -233,18 +221,16 @@ class UserNominationManagementTests extends AUTest {
                 AUBusinessUserPermission.AUTHORIZE.getPermissionString())
 
         def updateResponse = AURestAsRequestBuilder.buildRequest()
-                .header(AUConstants.AUTHORIZATION_HEADER_KEY, AUConstants.BASIC_HEADER_KEY + Base64.encoder.encodeToString(
-                        clientHeader.getBytes(Charset.forName("UTF-8"))))
+                .header(AUConstants.AUTHORIZATION_HEADER_KEY, AUConstants.BASIC_HEADER_KEY + " " +
+                        Base64.encoder.encodeToString(
+                                "${auConfiguration.getUserBasicAuthName()}:${auConfiguration.getUserBasicAuthPWD()}"
+                                        .getBytes(Charset.forName("UTF-8"))))
                 .contentType(AUConstants.CONTENT_TYPE_APPLICATION_JSON)
                 .body(requestBody)
-                .baseUri(getAuConfiguration().getISServerUrl())
-                .post("${AUConstants.CONSENT_STATUS_AU_ENDPOINT}${AUConstants.BANK_ACCOUNT_SERVICE}")
+                .baseUri(getAuConfiguration().getServerAuthorisationServerURL())
+                .put("${AUConstants.CONSENT_STATUS_AU_ENDPOINT}${AUConstants.BANK_ACCOUNT_SERVICE}")
 
-        Assert.assertEquals(updateResponse.statusCode(), AUConstants.BAD_REQUEST)
-        Assert.assertEquals(AUTestUtil.parseResponseBody(response, AUConstants.TPP_ERROR_CATEGORY),
-                AUConstants.TPP_ERROR_CODE_VALUE)
-        Assert.assertEquals(AUTestUtil.parseResponseBody(response, AUConstants.TPP_ERROR_CODE),
-                AUConstants.TPP_ERROR_CODE_FORMAT_INVALID)
+        Assert.assertEquals(updateResponse.statusCode(), AUConstants.STATUS_CODE_404)
     }
 
     @Test
@@ -308,7 +294,7 @@ class UserNominationManagementTests extends AUTest {
     }
 
     @Test
-    void "CDS-600Verify the Delete BU end point with NR who has REVOKE Permission"() {
+    void "CDS-600_Verify the Delete BU end point with NR who has REVOKE Permission"() {
 
         def shareableElements = AUTestUtil.getSharableAccountsList(getSharableBankAccounts())
 
@@ -370,18 +356,16 @@ class UserNominationManagementTests extends AUTest {
         def requestBody = AUPayloads.getSingleUserDeletePayload(accountID, accountOwnerUserID, nominatedRepUserID)
 
         def deleteResponse = AURestAsRequestBuilder.buildRequest()
-                .header(AUConstants.AUTHORIZATION_HEADER_KEY, AUConstants.BASIC_HEADER_KEY + Base64.encoder.encodeToString(
-                        clientHeader.getBytes(Charset.forName("UTF-8"))))
+                .header(AUConstants.AUTHORIZATION_HEADER_KEY, AUConstants.BASIC_HEADER_KEY + " " +
+                        Base64.encoder.encodeToString(
+                                "${auConfiguration.getUserBasicAuthName()}:${auConfiguration.getUserBasicAuthPWD()}"
+                                        .getBytes(Charset.forName("UTF-8"))))
                 .contentType(AUConstants.CONTENT_TYPE_APPLICATION_JWT)
                 .body(requestBody)
-                .baseUri(getAuConfiguration().getISServerUrl())
+                .baseUri(getAuConfiguration().getServerAuthorisationServerURL())
                 .delete("${AUConstants.CONSENT_STATUS_AU_ENDPOINT}${AUConstants.UPDATE_BUSINESS_USER}")
 
-        Assert.assertEquals(deleteResponse.statusCode(), AUConstants.BAD_REQUEST)
-        Assert.assertEquals(AUTestUtil.parseResponseBody(response, AUConstants.TPP_ERROR_CATEGORY),
-                AUConstants.TPP_ERROR_CODE_VALUE)
-        Assert.assertEquals(AUTestUtil.parseResponseBody(response, AUConstants.TPP_ERROR_CODE),
-                AUConstants.TPP_ERROR_CODE_FORMAT_ERROR)
+        Assert.assertEquals(deleteResponse.statusCode(), AUConstants.STATUS_CODE_415)
     }
 
     @Test
@@ -402,17 +386,15 @@ class UserNominationManagementTests extends AUTest {
         def requestBody = AUPayloads.getSingleUserDeletePayload(accountID, accountOwnerUserID, nominatedRepUserID)
 
         def deleteResponse = AURestAsRequestBuilder.buildRequest()
-                .header(AUConstants.AUTHORIZATION_HEADER_KEY, AUConstants.BASIC_HEADER_KEY + Base64.encoder.encodeToString(
-                        clientHeader.getBytes(Charset.forName("UTF-8"))))
+                .header(AUConstants.AUTHORIZATION_HEADER_KEY, AUConstants.BASIC_HEADER_KEY + " " +
+                        Base64.encoder.encodeToString(
+                                "${auConfiguration.getUserBasicAuthName()}:${auConfiguration.getUserBasicAuthPWD()}"
+                                        .getBytes(Charset.forName("UTF-8"))))
                 .body(requestBody)
-                .baseUri(getAuConfiguration().getISServerUrl())
+                .baseUri(getAuConfiguration().getServerAuthorisationServerURL())
                 .delete("${AUConstants.CONSENT_STATUS_AU_ENDPOINT}${AUConstants.UPDATE_BUSINESS_USER}")
 
-        Assert.assertEquals(deleteResponse.statusCode(), AUConstants.BAD_REQUEST)
-        Assert.assertEquals(AUTestUtil.parseResponseBody(response, AUConstants.TPP_ERROR_CATEGORY),
-                AUConstants.TPP_ERROR_CODE_VALUE)
-        Assert.assertEquals(AUTestUtil.parseResponseBody(response, AUConstants.TPP_ERROR_CODE),
-                AUConstants.TPP_ERROR_CODE_FORMAT_ERROR)
+        Assert.assertEquals(deleteResponse.statusCode(), AUConstants.STATUS_CODE_415)
     }
 
     @Test
@@ -435,7 +417,7 @@ class UserNominationManagementTests extends AUTest {
         def deleteResponse = AURestAsRequestBuilder.buildRequest()
                 .contentType(AUConstants.CONTENT_TYPE_APPLICATION_JSON)
                 .body(requestBody)
-                .baseUri(getAuConfiguration().getISServerUrl())
+                .baseUri(getAuConfiguration().getServerAuthorisationServerURL())
                 .delete("${AUConstants.CONSENT_STATUS_AU_ENDPOINT}${AUConstants.UPDATE_BUSINESS_USER}")
 
         Assert.assertEquals(deleteResponse.statusCode(), AUConstants.BAD_REQUEST)
@@ -463,17 +445,15 @@ class UserNominationManagementTests extends AUTest {
         def requestBody = AUPayloads.getSingleUserDeletePayload(accountID, accountOwnerUserID, nominatedRepUserID)
 
         def deleteResponse = AURestAsRequestBuilder.buildRequest()
-                .header(AUConstants.AUTHORIZATION_HEADER_KEY, AUConstants.BASIC_HEADER_KEY + Base64.encoder.encodeToString(
-                        clientHeader.getBytes(Charset.forName("UTF-8"))))
+                .header(AUConstants.AUTHORIZATION_HEADER_KEY, AUConstants.BASIC_HEADER_KEY + " " +
+                        Base64.encoder.encodeToString(
+                                "${auConfiguration.getUserBasicAuthName()}:${auConfiguration.getUserBasicAuthPWD()}"
+                                        .getBytes(Charset.forName("UTF-8"))))
                 .contentType(AUConstants.CONTENT_TYPE_APPLICATION_JWT)
                 .body(requestBody)
-                .baseUri(getAuConfiguration().getISServerUrl())
+                .baseUri(getAuConfiguration().getServerAuthorisationServerURL())
                 .delete("${AUConstants.CONSENT_STATUS_AU_ENDPOINT}${AUConstants.BUSINESS_ACCOUNT_INFO}")
 
-        Assert.assertEquals(deleteResponse.statusCode(), AUConstants.BAD_REQUEST)
-        Assert.assertEquals(AUTestUtil.parseResponseBody(response, AUConstants.TPP_ERROR_CATEGORY),
-                AUConstants.TPP_ERROR_CODE_VALUE)
-        Assert.assertEquals(AUTestUtil.parseResponseBody(response, AUConstants.TPP_ERROR_CODE),
-                AUConstants.TPP_ERROR_CODE_FORMAT_INVALID)
+        Assert.assertEquals(deleteResponse.statusCode(), AUConstants.UNAUTHORIZED)
     }
 }
