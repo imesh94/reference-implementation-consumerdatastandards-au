@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2021, WSO2 Inc. (http://www.wso2.com). All Rights Reserved.
+ * Copyright (c) 2021 - 2023, WSO2 Inc. (http://www.wso2.com). All Rights Reserved.
  *
  * This software is the property of WSO2 Inc. and its suppliers, if any.
  * Dissemination of any information or reproduction of any material contained
@@ -25,6 +25,7 @@ import com.wso2.openbanking.toolkit.cds.test.common.utils.AUAuthorisationBuilder
 import com.wso2.openbanking.toolkit.cds.test.common.utils.AUConstants
 import com.wso2.openbanking.toolkit.cds.test.common.utils.AURequestBuilder
 import com.wso2.openbanking.toolkit.cds.test.common.utils.AUTestUtil
+import com.wso2.openbanking.toolkit.cds.test.common.utils.AbstractAUTests
 import org.openqa.selenium.By
 import org.testng.Assert
 import org.testng.annotations.BeforeClass
@@ -35,7 +36,7 @@ import org.testng.asserts.SoftAssert
 /**
  * Authorisation Flow Testing.
  */
-class AuthorisationFlowTest {
+class AuthorisationFlowTest extends AbstractAUTests{
 
     private List<AUConstants.SCOPES> scopes = [
             AUConstants.SCOPES.BANK_ACCOUNT_BASIC_READ,
