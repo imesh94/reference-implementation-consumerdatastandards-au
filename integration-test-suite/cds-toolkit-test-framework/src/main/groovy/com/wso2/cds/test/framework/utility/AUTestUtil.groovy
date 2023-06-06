@@ -147,7 +147,7 @@ class AUTestUtil extends OBTestUtil {
      * @return SingleAccountXPath
      */
     static String getBusinessAccount1CheckBox() {
-        return AUPageObjects.CHK_BUSINESS_ACCOUNT_1
+        return AUPageObjects.CHK_ORG_A_BUSINESS_ACCOUNT_1
     }
 
     /**
@@ -155,7 +155,15 @@ class AUTestUtil extends OBTestUtil {
      * @return SingleAccountXPath
      */
     static String getBusinessAccount2CheckBox() {
-        return AUPageObjects.CHK_BUSINESS_ACCOUNT_2
+        return AUPageObjects.CHK_ORG_B_BUSINESS_ACCOUNT_1
+    }
+
+    /**
+     * Get Business Account 3 XPath
+     * @return SingleAccountXPath
+     */
+    static String getBusinessAccount3CheckBox() {
+        return AUPageObjects.CHK_ORG_B_BUSINESS_ACCOUNT_2
     }
 
     /**
@@ -227,14 +235,6 @@ class AUTestUtil extends OBTestUtil {
      */
     static String getPermissionForUser(String accountId) {
         return "$AUConstants.PARAM_PERMISSION_STATUS.$accountId"
-    }
-
-    /**
-     * Get Business Account 3 XPath
-     * @return SingleAccountXPath
-     */
-    static String getBusinessAccount3CheckBox() {
-        return AUPageObjects.CHK_ORG_B_BUSINESS_ACCOUNT_2
     }
 }
 

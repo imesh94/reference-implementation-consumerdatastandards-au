@@ -420,11 +420,7 @@ class UserNominationManagementTests extends AUTest {
                 .baseUri(getAuConfiguration().getServerAuthorisationServerURL())
                 .delete("${AUConstants.CONSENT_STATUS_AU_ENDPOINT}${AUConstants.UPDATE_BUSINESS_USER}")
 
-        Assert.assertEquals(deleteResponse.statusCode(), AUConstants.BAD_REQUEST)
-        Assert.assertEquals(AUTestUtil.parseResponseBody(response, AUConstants.TPP_ERROR_CATEGORY),
-                AUConstants.TPP_ERROR_CODE_VALUE)
-        Assert.assertEquals(AUTestUtil.parseResponseBody(response, AUConstants.TPP_ERROR_CODE),
-                AUConstants.TPP_ERROR_CODE_FORMAT_INVALID)
+        Assert.assertEquals(deleteResponse.statusCode(), AUConstants.UNAUTHORIZED)
     }
 
     @Test

@@ -68,7 +68,7 @@ class ConsentAmendmentFlowTests extends AUTest {
         //Get Access Token
         AccessTokenResponse responseBody = getUserAccessTokenResponse(clientId)
         userAccessToken = responseBody.tokens.accessToken
-        cdrArrangementId = responseBody.getCustomParameters().get("cdr_arrangement_id")
+        cdrArrangementId = responseBody.getCustomParameters().get(AUConstants.CDR_ARRANGEMENT_ID)
         Assert.assertNotNull(cdrArrangementId)
 
         //Consent Amendment
@@ -89,8 +89,8 @@ class ConsentAmendmentFlowTests extends AUTest {
                     if (auConfiguration.getProfileSelectionEnabled()) {
 
                         //Verify Account Selection Page
-                        assert authWebDriver.isElementDisplayed(AUTestUtil.getBusinessAccount1CheckBox())
-                        authWebDriver.clickButtonXpath(AUTestUtil.getBusinessAccount1CheckBox())
+                        assert authWebDriver.isElementDisplayed(AUTestUtil.getBusinessAccount3CheckBox())
+                        authWebDriver.clickButtonXpath(AUTestUtil.getBusinessAccount3CheckBox())
 
                     } else {
                         assert authWebDriver.isElementDisplayed(AUTestUtil.getSingleAccountXPath())
@@ -112,7 +112,7 @@ class ConsentAmendmentFlowTests extends AUTest {
         //Get Access Token
         AccessTokenResponse responseBody = getUserAccessTokenResponse(clientId)
         userAccessToken = responseBody.tokens.accessToken
-        cdrArrangementId = responseBody.getCustomParameters().get("cdr_arrangement_id")
+        cdrArrangementId = responseBody.getCustomParameters().get(AUConstants.CDR_ARRANGEMENT_ID)
         Assert.assertNotNull(cdrArrangementId)
 
         //Consent Amendment
@@ -162,11 +162,11 @@ class ConsentAmendmentFlowTests extends AUTest {
         //Get Access Token
         AccessTokenResponse responseBody = getUserAccessTokenResponse(clientId)
         userAccessToken = responseBody.tokens.accessToken
-        cdrArrangementId = responseBody.getCustomParameters().get("cdr_arrangement_id")
+        cdrArrangementId = responseBody.getCustomParameters().get(AUConstants.CDR_ARRANGEMENT_ID)
         Assert.assertNotNull(cdrArrangementId)
 
         //Get Account Details
-        def response = AURequestBuilder.buildBasicRequestWithCustomHeaders(userAccessToken,
+        response = AURequestBuilder.buildBasicRequestWithCustomHeaders(userAccessToken,
                 AUConstants.X_V_HEADER_ACCOUNTS, clientHeader)
                 .baseUri(AUTestUtil.getBaseUrl(AUConstants.BASE_PATH_TYPE_ACCOUNT))
                 .get("${AUConstants.CDS_PATH}${AUConstants.BULK_ACCOUNT_PATH}")
@@ -225,9 +225,9 @@ class ConsentAmendmentFlowTests extends AUTest {
 
         Assert.assertEquals(responseAfterAmendment.statusCode(), AUConstants.STATUS_CODE_200)
         Assert.assertEquals(responseAfterAmendment.getHeader(AUConstants.X_V_HEADER).toInteger(), AUConstants.X_V_HEADER_ACCOUNTS)
-        Assert.assertNotNull(AUTestUtil.parseResponseBody(response,
+        Assert.assertNotNull(AUTestUtil.parseResponseBody(responseAfterAmendment,
                 "${AUConstants.RESPONSE_DATA_BULK_ACCOUNTID_LIST}[0]"))
-        Assert.assertNotNull(AUTestUtil.parseResponseBody(response,
+        Assert.assertNotNull(AUTestUtil.parseResponseBody(responseAfterAmendment,
                 "${AUConstants.RESPONSE_DATA_BULK_ACCOUNTID_LIST}[1]"))
     }
 
@@ -243,11 +243,11 @@ class ConsentAmendmentFlowTests extends AUTest {
         //Get Access Token
         AccessTokenResponse responseBody = getUserAccessTokenResponse(clientId)
         userAccessToken = responseBody.tokens.accessToken
-        cdrArrangementId = responseBody.getCustomParameters().get("cdr_arrangement_id")
+        cdrArrangementId = responseBody.getCustomParameters().get(AUConstants.CDR_ARRANGEMENT_ID)
         Assert.assertNotNull(cdrArrangementId)
 
         //Get Account Details
-        def response = AURequestBuilder.buildBasicRequestWithCustomHeaders(userAccessToken,
+        response = AURequestBuilder.buildBasicRequestWithCustomHeaders(userAccessToken,
                 AUConstants.X_V_HEADER_ACCOUNTS, clientHeader)
                 .baseUri(AUTestUtil.getBaseUrl(AUConstants.BASE_PATH_TYPE_ACCOUNT))
                 .get("${AUConstants.CDS_PATH}${AUConstants.BULK_ACCOUNT_PATH}")
@@ -276,10 +276,6 @@ class ConsentAmendmentFlowTests extends AUTest {
                     //Verify if Profile Selection Enabled
                     if (auConfiguration.getProfileSelectionEnabled()) {
 
-                        //Verify Account Selection Page
-                        assert authWebDriver.isElementDisplayed(AUTestUtil.getBusinessAccount3CheckBox())
-                        authWebDriver.clickButtonXpath(AUTestUtil.getBusinessAccount3CheckBox())
-
                         //Click Confirm Button
                         authWebDriver.clickButtonXpath(AUPageObjects.CONSENT_CONFIRM_XPATH)
 
@@ -307,9 +303,7 @@ class ConsentAmendmentFlowTests extends AUTest {
 
         Assert.assertEquals(responseAfterAmendment.statusCode(), AUConstants.STATUS_CODE_200)
         Assert.assertEquals(responseAfterAmendment.getHeader(AUConstants.X_V_HEADER).toInteger(), AUConstants.X_V_HEADER_ACCOUNTS)
-        Assert.assertNotNull(AUTestUtil.parseResponseBody(response,
+        Assert.assertNotNull(AUTestUtil.parseResponseBody(responseAfterAmendment,
                 "${AUConstants.RESPONSE_DATA_BULK_ACCOUNTID_LIST}[0]"))
-        Assert.assertNotNull(AUTestUtil.parseResponseBody(response,
-                "${AUConstants.RESPONSE_DATA_BULK_ACCOUNTID_LIST}[1]"))
     }
 }

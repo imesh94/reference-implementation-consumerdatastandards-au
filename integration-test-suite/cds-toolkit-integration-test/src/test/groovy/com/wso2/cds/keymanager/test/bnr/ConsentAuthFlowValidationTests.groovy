@@ -201,7 +201,7 @@ class ConsentAuthFlowValidationTests extends AUTest{
     }
 
     @Test
-    void "CDS-484_Verify a Consent denial flow after Business Profile selection"() {
+    void "CDS-484_Verify a Consent cancellation flow after Business Profile selection"() {
 
         //Get Authorisation URL
         response = auAuthorisationBuilder.doPushAuthorisationRequest(scopes, AUConstants.DEFAULT_SHARING_DURATION,
@@ -239,7 +239,7 @@ class ConsentAuthFlowValidationTests extends AUTest{
     }
 
     @Test
-    void "CDS-588_Verify a Consent denial flow after Business Account selection"() {
+    void "CDS-588_Verify a Consent cancellation flow after Business Account selection"() {
 
         //Get Authorisation URL
         response = auAuthorisationBuilder.doPushAuthorisationRequest(scopes, AUConstants.DEFAULT_SHARING_DURATION,

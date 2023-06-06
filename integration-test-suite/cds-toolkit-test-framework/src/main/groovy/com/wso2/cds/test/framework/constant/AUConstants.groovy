@@ -103,7 +103,7 @@ class AUConstants extends OBConstants {
     public static final String BANK_ACCOUNT_SERVICE  = "/services/bankaccounts/bankaccountservice/sharable-accounts"
     public static final String BUSINESS_USER_PERMISSION  = "/account-type-management/business-stakeholders/permission"
 
-    public static final String BANK_CUSTOMER_BASIC_READ = "Organisation profile*"
+    public static final String BANK_CUSTOMER_BASIC_READ = "Organisation profile and contact details"
     public static final String BANK_CUSTOMER_DETAIL_READ = "Organisation profile and contact details*‡"
     public static final String BANK_ACCOUNT_BASIC_READ = "Account name, type, and balance"
     public static final String BANK_ACCOUNT_DETAIL_READ = "Account balance and details‡"
@@ -173,7 +173,7 @@ class AUConstants extends OBConstants {
     public static final String CCPORTAL_URL = auConfiguration.getServerAuthorisationServerURL() + "/ccportal"
 
     public static final String ERROR = "error";
-    public static final String ERROR_DESCRIPTION = "error_description";
+    public static final String ERROR_DESCRIPTION = "errorDescription";
     public static final String ERROR_DETAIL = "errors[0].detail"
     public static final String ERROR_SOURCE_PARAMETER = "errors[0].source.parameter"
     public static final String ERROR_SOURCE_POINTER = "errors[0].source.pointer"
@@ -241,7 +241,7 @@ class AUConstants extends OBConstants {
     public static final String NOMINATED_REP_USER_ID = "nominatedRepUserID"
     public static final String ACCOUNT_OWNER_USER_ID2 = "accountOwnerUserID2"
     public static final String NOMINATED_REP_USER_ID2 = "nominatedRepUserID2"
-    public static final String ACCOUNT_ID = "account_id"
+    public static final String ACCOUNT_ID = "accountId"
     public static final String BUSINESS_ACCOUNT_INFO = "businessAccountInfo"
     public static final String ACCOUNT_OWNERS = "AccountOwners"
     public static final String NOMINATED_REPRESENTATIVES = "NominatedRepresentatives"
@@ -371,7 +371,7 @@ class AUConstants extends OBConstants {
     public static final String INCORRECT_ACC_ID = "1234567"
     public static final String QUERY_PARAM_USERID = "userId"
     public static final String QUERY_PARAM_ACCID = "accountId"
-    public static final String PARAM_PERMISSION_STATUS = "PermissionStatus"
+    public static final String PARAM_PERMISSION_STATUS = "permissionStatus"
 
     public static final String TPP_ERROR_CATEGORY = "tppMessages[0].category"
     public static final String TPP_ERROR_CODE = "tppMessages[0].code"
@@ -382,6 +382,7 @@ class AUConstants extends OBConstants {
     public static final String VALUE_KEY = "value"
     public static final String PARAM_PROFILE_NAME = "profileName"
     public static final String USER_DENIED_THE_CONSENT = "User denied the consent"
+    public static final String CDR_ARRANGEMENT_ID = "cdr_arrangement_id"
 
 }
 
