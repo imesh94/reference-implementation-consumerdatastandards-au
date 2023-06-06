@@ -206,7 +206,7 @@ class AUTestUtil extends OBTestUtil {
     static Map getSharableAccountsList(Response shareableAccountsResponse,
                                        String profile = AUAccountProfile.ORGANIZATION_A.getProperty(AUConstants.VALUE_KEY)) {
 
-        //Asserting sharableBankAccountsResponse response and sec
+        //Get the response of the shareable endpoint and map the required values according to the profile selection.
         def sharableAccountList = shareableAccountsResponse.jsonPath().get(AUConstants.DATA)
 
         def  ShareableAccountMap = [:]
