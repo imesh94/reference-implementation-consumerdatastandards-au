@@ -25,6 +25,7 @@ import com.nimbusds.oauth2.sdk.ResponseType
 import com.nimbusds.oauth2.sdk.Scope
 import com.nimbusds.oauth2.sdk.id.ClientID
 import com.nimbusds.oauth2.sdk.id.State
+import com.nimbusds.oauth2.sdk.pkce.CodeChallengeMethod
 import com.wso2.openbanking.test.framework.util.AppConfigReader
 import com.wso2.openbanking.test.framework.util.ConfigParser
 import com.wso2.openbanking.test.framework.util.TestConstants
@@ -78,6 +79,7 @@ class AUAuthorisationBuilder {
                         params.redirect_uri.toString(), client_id))
                 .scope(new Scope(scopeString))
                 .state(params.state)
+                .codeChallenge(AURequestBuilder.getCodeVerifier(), CodeChallengeMethod.S256)
                 .customParameter("prompt", "login")
                 .build()
     }
@@ -97,6 +99,7 @@ class AUAuthorisationBuilder {
                 .scope(new Scope(scopeString))
                 .requestURI(requestUri)
                 .redirectionURI(params.redirect_uri)
+                .codeChallenge(AURequestBuilder.getCodeVerifier(), CodeChallengeMethod.S256)
                 .endpointURI(params.endpoint)
                 .customParameter("prompt", "login")
                 .build()
@@ -118,6 +121,7 @@ class AUAuthorisationBuilder {
                 .scope(new Scope(scopeString))
                 .requestURI(requestUri)
                 .redirectionURI(redirect_uri.toURI())
+                .codeChallenge(AURequestBuilder.getCodeVerifier(), CodeChallengeMethod.S256)
                 .endpointURI(params.endpoint)
                 .customParameter("prompt", "login")
                 .build()
@@ -154,13 +158,14 @@ class AUAuthorisationBuilder {
 
         String claims
 
-        def expiryDate = Instant.now().plus(1, ChronoUnit.DAYS)
+        def expiryDate = Instant.now().plus(1, ChronoUnit.HOURS)
+        def notBefore = Instant.now()
 
         if (sharingDuration.intValue() == 0 && !sendSharingDuration) {
 
             claims = """
             {
-              "aud": "${ConfigParser.instance.audienceValue}",
+              "aud": ["${ConfigParser.instance.audienceValue}", "https://localhost:9446"],
               "response_type": "code id_token",
               "exp": ${expiryDate.getEpochSecond().toLong()},
               "client_id": "${clientId}",
@@ -169,8 +174,9 @@ class AUAuthorisationBuilder {
               "scope": "${scopeString}",
               "state": "suite",
               "nonce": "${UUID.randomUUID()}",
+              "nbf": ${notBefore.getEpochSecond().toLong()},
               "claims": {
-                "id_token": {
+                id_token": {
                   "acr": {
                     "essential": true,
                     "values": ["urn:cds.au:cdr:3"]
@@ -187,7 +193,7 @@ class AUAuthorisationBuilder {
 
             claims = """
             {
-              "aud": "${ConfigParser.instance.audienceValue}",
+              "aud": ["${ConfigParser.instance.audienceValue}", "https://localhost:9446"],
               "response_type": "code id_token",
               "exp": ${expiryDate.getEpochSecond().toLong()},
               "client_id": "${clientId}",
@@ -196,6 +202,7 @@ class AUAuthorisationBuilder {
               "scope": "${scopeString}",
               "state": "suite",
               "nonce": "${UUID.randomUUID()}",
+              "nbf": ${notBefore.getEpochSecond().toLong()},
               "claims": {
                 "sharing_duration" : ${sharingDuration},
                 "id_token": {

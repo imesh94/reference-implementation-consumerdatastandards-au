@@ -99,9 +99,12 @@ class AuthorisationFlowTest {
     @Test (priority = 1)
     void "OB-1141_Initiate authorisation consent flow with cdr_arrangement_id claim in request object"() {
 
+        response = doPushAuthorisationRequest(scopes, AUConstants.DEFAULT_SHARING_DURATION,
+                true, AUConstants.UUID)
+        requestUri = TestUtil.parseResponseBody(response, AUConstants.REQUEST_URI)
         AUAuthorisationBuilder authorisationBuilder = new AUAuthorisationBuilder(
-                scopes, AUConstants.DEFAULT_SHARING_DURATION, true, AUConstants.UUID
-        )
+                scopes, AUConstants.DEFAULT_SHARING_DURATION, true, "", AppConfigReader.getClientId())
+
         String errorMessage = "Request object validation failed.The claim cdr_arrangement_id is only accepted in par initiated requests."
 
         def automation = new BrowserAutomation(BrowserAutomation.DEFAULT_DELAY)
@@ -122,24 +125,26 @@ class AuthorisationFlowTest {
     @Test (priority = 1)
     void "TC0202007_Initiate authorisation consent deny flow"() {
 
+        response = doPushAuthorisationRequest(scopes, AUConstants.DEFAULT_SHARING_DURATION,
+                true, AppConfigReader.getClientId())
+        requestUri = TestUtil.parseResponseBody(response, AUConstants.REQUEST_URI)
         AUAuthorisationBuilder authorisationBuilder = new AUAuthorisationBuilder(
-                scopes, AUConstants.DEFAULT_SHARING_DURATION, true
-        )
+                scopes, AUConstants.DEFAULT_SHARING_DURATION, true, "", AppConfigReader.getClientId())
 
         def automation = new BrowserAutomation(BrowserAutomation.DEFAULT_DELAY)
                 .addStep(new AUBasicAuthAutomationStep(authorisationBuilder.authoriseUrl))
                 .addStep { driver, context ->
-            driver.findElement(By.xpath(AUTestUtil.getSingleAccountXPath())).click()
+                    driver.findElement(By.xpath(AUTestUtil.getSingleAccountXPath())).click()
 
-            // Extra step for OB-2.0 AU Authentication flow.
-            if (TestConstants.SOLUTION_VERSION_300.equals(ConfigParser.getInstance().getSolutionVersion())) {
-                driver.findElement(By.xpath(AUConstants.CONSENT_SUBMIT_XPATH)).click()
-                driver.findElement(By.xpath(AUConstants.CONFIRM_CONSENT_DENY_XPATH)).click()
-            } else {
-                driver.findElement(By.xpath(AUConstants.CONSENT_DENY_XPATH)).click()
-            }
+                    // Extra step for OB-2.0 AU Authentication flow.
+                    if (TestConstants.SOLUTION_VERSION_300.equals(ConfigParser.getInstance().getSolutionVersion())) {
+                        driver.findElement(By.xpath(AUConstants.CONSENT_SUBMIT_XPATH)).click()
+                        driver.findElement(By.xpath(AUConstants.CONFIRM_CONSENT_DENY_XPATH)).click()
+                    } else {
+                        driver.findElement(By.xpath(AUConstants.CONSENT_DENY_XPATH)).click()
+                    }
 
-        }
+                }
                 .execute()
 
         if (TestConstants.SOLUTION_VERSION_300.equals(ConfigParser.getInstance().getSolutionVersion())) {
@@ -157,18 +162,20 @@ class AuthorisationFlowTest {
     @Test (priority = 1)
     void "TC0203007_Status of the access token of previous authorisation code after re generating a new authorisation code"() {
 
+        response = doPushAuthorisationRequest(scopes, AUConstants.DEFAULT_SHARING_DURATION,
+                true, AppConfigReader.getClientId())
+        requestUri = TestUtil.parseResponseBody(response, AUConstants.REQUEST_URI)
         AUAuthorisationBuilder authorisationBuilder = new AUAuthorisationBuilder(
-                scopes, AUConstants.DEFAULT_SHARING_DURATION, true
-        )
+                scopes, AUConstants.DEFAULT_SHARING_DURATION, true, "", AppConfigReader.getClientId())
 
         def automation = new BrowserAutomation(BrowserAutomation.DEFAULT_DELAY)
                 .addStep(new AUBasicAuthAutomationStep(authorisationBuilder.authoriseUrl))
                 .addStep { driver, context ->
-            driver.findElement(By.xpath(AUTestUtil.getSingleAccountXPath())).click()
-            driver.findElement(By.xpath(AUConstants.CONSENT_SUBMIT_XPATH)).click()
-            driver.findElement(By.xpath(AUConstants.CONSENT_CONFIRM_XPATH)).click()
-        }
-        .addStep(new WaitForRedirectAutomationStep())
+                    driver.findElement(By.xpath(AUTestUtil.getSingleAccountXPath())).click()
+                    driver.findElement(By.xpath(AUConstants.CONSENT_SUBMIT_XPATH)).click()
+                    driver.findElement(By.xpath(AUConstants.CONSENT_CONFIRM_XPATH)).click()
+                }
+                .addStep(new WaitForRedirectAutomationStep())
                 .execute()
 
         // Get Code From URL
@@ -176,11 +183,12 @@ class AuthorisationFlowTest {
 
         Assert.assertNotNull(authorisationCode)
 
-        userAccessToken = AURequestBuilder.getUserToken(authorisationCode)
-        Assert.assertNotNull(userAccessToken.tokens.accessToken)
+        def accessTokenResponse = AURequestBuilder.getUserToken(authorisationCode, AURequestBuilder.getCodeVerifier())
+        userAccessToken = accessTokenResponse.tokens.accessToken
+        Assert.assertNotNull(userAccessToken)
 
         def response1 = AURequestBuilder
-                .buildIntrospectionRequest(userAccessToken.tokens.accessToken.toString())
+                .buildIntrospectionRequest(userAccessToken)
                 .post(AUConstants.INTROSPECTION_ENDPOINT)
 
         Assert.assertTrue(response1.jsonPath().get("active").equals(true))
@@ -188,11 +196,11 @@ class AuthorisationFlowTest {
         automation = new BrowserAutomation(BrowserAutomation.DEFAULT_DELAY)
                 .addStep(new AUBasicAuthAutomationStep(authorisationBuilder.authoriseUrl))
                 .addStep { driver, context ->
-            driver.findElement(By.xpath(AUTestUtil.getSingleAccountXPath())).click()
-            driver.findElement(By.xpath(AUConstants.CONSENT_SUBMIT_XPATH)).click()
-            driver.findElement(By.xpath(AUConstants.CONSENT_CONFIRM_XPATH)).click()
-        }
-        .addStep(new WaitForRedirectAutomationStep())
+                    driver.findElement(By.xpath(AUTestUtil.getSingleAccountXPath())).click()
+                    driver.findElement(By.xpath(AUConstants.CONSENT_SUBMIT_XPATH)).click()
+                    driver.findElement(By.xpath(AUConstants.CONSENT_CONFIRM_XPATH)).click()
+                }
+                .addStep(new WaitForRedirectAutomationStep())
                 .execute()
 
         // Get Code From URL
@@ -200,11 +208,12 @@ class AuthorisationFlowTest {
 
         Assert.assertNotNull(authorisationCode)
 
-        userAccessToken = AURequestBuilder.getUserToken(authorisationCode)
-        Assert.assertNotNull(userAccessToken.tokens.accessToken)
+        accessTokenResponse = AURequestBuilder.getUserToken(authorisationCode, AURequestBuilder.getCodeVerifier())
+        userAccessToken = accessTokenResponse.tokens.accessToken
+        Assert.assertNotNull(userAccessToken)
 
         def response2 = AURequestBuilder
-                .buildIntrospectionRequest(userAccessToken.tokens.accessToken.toString())
+                .buildIntrospectionRequest(userAccessToken)
                 .post(AUConstants.INTROSPECTION_ENDPOINT)
 
         Assert.assertTrue(response2.jsonPath().get("active").equals(true))
@@ -214,18 +223,20 @@ class AuthorisationFlowTest {
     @Test (priority = 1)
     void "TC0203009_Status of the consent after revoking the access token bound to the consent"() {
 
+        response = doPushAuthorisationRequest(scopes, AUConstants.DEFAULT_SHARING_DURATION,
+                true, AppConfigReader.getClientId())
+        requestUri = TestUtil.parseResponseBody(response, AUConstants.REQUEST_URI)
         AUAuthorisationBuilder authorisationBuilder = new AUAuthorisationBuilder(
-                scopes, AUConstants.DEFAULT_SHARING_DURATION, true
-        )
+                scopes, AUConstants.DEFAULT_SHARING_DURATION, true, "", AppConfigReader.getClientId())
 
         def automation = new BrowserAutomation(BrowserAutomation.DEFAULT_DELAY)
                 .addStep(new AUBasicAuthAutomationStep(authorisationBuilder.authoriseUrl))
                 .addStep { driver, context ->
-            driver.findElement(By.xpath(AUTestUtil.getSingleAccountXPath())).click()
-            driver.findElement(By.xpath(AUConstants.CONSENT_SUBMIT_XPATH)).click()
-            driver.findElement(By.xpath(AUConstants.CONSENT_CONFIRM_XPATH)).click()
-        }
-        .addStep(new WaitForRedirectAutomationStep())
+                    driver.findElement(By.xpath(AUTestUtil.getSingleAccountXPath())).click()
+                    driver.findElement(By.xpath(AUConstants.CONSENT_SUBMIT_XPATH)).click()
+                    driver.findElement(By.xpath(AUConstants.CONSENT_CONFIRM_XPATH)).click()
+                }
+                .addStep(new WaitForRedirectAutomationStep())
                 .execute()
 
         // Get Code From URL
@@ -266,9 +277,11 @@ class AuthorisationFlowTest {
                 AUConstants.SCOPES.BANK_REGULAR_PAYMENTS_READ
         ]
 
+        response = doPushAuthorisationRequest(scopes, AUConstants.DEFAULT_SHARING_DURATION,
+                true, AppConfigReader.getClientId())
+        requestUri = TestUtil.parseResponseBody(response, AUConstants.REQUEST_URI)
         AUAuthorisationBuilder authorisationBuilder = new AUAuthorisationBuilder(
-                scopes, AUConstants.DEFAULT_SHARING_DURATION, true
-        )
+                scopes, AUConstants.DEFAULT_SHARING_DURATION, true, "", AppConfigReader.getClientId())
 
         def automation = new BrowserAutomation(BrowserAutomation.DEFAULT_DELAY)
                 .addStep(new AUBasicAuthAutomationStep(authorisationBuilder.authoriseUrl))
@@ -296,8 +309,11 @@ class AuthorisationFlowTest {
                 AUConstants.SCOPES.BANK_CUSTOMER_DETAIL_READ
         ]
 
+        response = doPushAuthorisationRequest(scopes, AUConstants.DEFAULT_SHARING_DURATION,
+                true, AppConfigReader.getClientId())
+        requestUri = TestUtil.parseResponseBody(response, AUConstants.REQUEST_URI)
         AUAuthorisationBuilder authorisationBuilder = new AUAuthorisationBuilder(
-                scopes, AUConstants.DEFAULT_SHARING_DURATION, true)
+                scopes, AUConstants.DEFAULT_SHARING_DURATION, true, "", AppConfigReader.getClientId())
 
         def automation = new BrowserAutomation(BrowserAutomation.DEFAULT_DELAY)
                 .addStep(new AUBasicAuthAutomationStep(authorisationBuilder.authoriseUrl))
@@ -319,9 +335,12 @@ class AuthorisationFlowTest {
 
         scopes = []
 
+        response = doPushAuthorisationRequest(scopes, AUConstants.DEFAULT_SHARING_DURATION,
+                true, AppConfigReader.getClientId())
+        requestUri = TestUtil.parseResponseBody(response, AUConstants.REQUEST_URI)
         AUAuthorisationBuilder authorisationBuilder = new AUAuthorisationBuilder(
-                scopes, AUConstants.DEFAULT_SHARING_DURATION, true
-        )
+                scopes, AUConstants.DEFAULT_SHARING_DURATION, true, "", AppConfigReader.getClientId())
+
         String errorMessage = "No valid scopes found in the request"
 
         def automation = new BrowserAutomation(BrowserAutomation.DEFAULT_DELAY)
@@ -344,13 +363,16 @@ class AuthorisationFlowTest {
                 AUConstants.SCOPES.ADMIN_METADATA_UPDATE
         ]
 
+        response = doPushAuthorisationRequest(scopes, AUConstants.DEFAULT_SHARING_DURATION,
+                true, AppConfigReader.getClientId())
+        requestUri = TestUtil.parseResponseBody(response, AUConstants.REQUEST_URI)
         AUAuthorisationBuilder authorisationBuilder = new AUAuthorisationBuilder(
-                scopes, AUConstants.DEFAULT_SHARING_DURATION, true
-        )
+                scopes, AUConstants.DEFAULT_SHARING_DURATION, true, "", AppConfigReader.getClientId())
+
         String errorMessage = "No valid scopes found in the request"
 
         def automation = new BrowserAutomation(BrowserAutomation.DEFAULT_DELAY)
-                .addStep(new AUBasicAuthAutomationStep(authorisationBuilder.authoriseUrl))
+                .addStep(new BasicAuthErrorStep(authorisationBuilder.authoriseUrl))
                 .execute()
 
         String url = automation.currentUrl.get()

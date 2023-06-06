@@ -66,6 +66,8 @@ class AbstractAUTests {
     public String payeeId
     public Response parResponse
     public Response revocationResponse
+    def response
+    public String requestUri
 
     @BeforeClass(alwaysRun = true)
     void "Initialize Test Suite"() {
@@ -73,45 +75,19 @@ class AbstractAUTests {
         TestSuite.init()
     }
 
-    void doConsentAuthorisation(String clientId = null) {
+    void doConsentAuthorisation(String clientId = null, AUAccountProfile profiles = AUAccountProfile.INDIVIDUAL) {
 
-        AUAuthorisationBuilder authorisationBuilder
-
-        if (clientId) {
-            authorisationBuilder = new AUAuthorisationBuilder(
-                    scopes, AUConstants.DEFAULT_SHARING_DURATION, true, "", clientId)
+        if (clientId == null) {
+            response = doPushAuthorisationRequest(scopes, AUConstants.DEFAULT_SHARING_DURATION,
+                    true, "")
+            requestUri = TestUtil.parseResponseBody(response, AUConstants.REQUEST_URI)
+            doConsentAuthorisationViaRequestUri(scopes, requestUri.toURI(), null, profiles)
         } else {
-            authorisationBuilder = new AUAuthorisationBuilder(
-                    scopes, AUConstants.DEFAULT_SHARING_DURATION, true)
+            response = doPushAuthorisationRequest(scopes, AUConstants.DEFAULT_SHARING_DURATION,
+                    true, "", clientId)
+            requestUri = TestUtil.parseResponseBody(response, AUConstants.REQUEST_URI)
+            doConsentAuthorisationViaRequestUri(scopes, requestUri.toURI(), clientId, profiles)
         }
-
-        def automation = new BrowserAutomation(BrowserAutomation.DEFAULT_DELAY)
-                .addStep(new AUBasicAuthAutomationStep(authorisationBuilder.authoriseUrl))
-                .addStep { driver, context ->
-                    // Consent First Account
-                    WebElement accElement = driver.findElement(By.xpath(AUTestUtil.getSingleAccountXPath()))
-                    consentedAccount = accElement.getAttribute("value")
-                    accElement.click()
-                    // Consent Second Account
-                    accElement = driver.findElement(By.xpath(AUTestUtil.getAltSingleAccountXPath()))
-                    secondConsentedAccount = accElement.getAttribute("value")
-                    accElement.click()
-                    // Submit consent
-                    driver.findElement(By.xpath(AUConstants.CONSENT_SUBMIT_XPATH)).click()
-
-                    // Extra step for OB-2.0 AU Authentication flow.
-                    if (TestConstants.SOLUTION_VERSION_300.equals(ConfigParser.getInstance().getSolutionVersion())) {
-                        driver.findElement(By.xpath(AUConstants.CONSENT_SUBMIT_XPATH)).click()
-                    }
-                }
-                .addStep(new WaitForRedirectAutomationStep())
-                .execute()
-
-        // Get Code From URL
-        authorisationCode = TestUtil.getHybridCodeFromUrl(automation.currentUrl.get())
-
-        Assert.assertNotNull(authorisationCode)
-
     }
 
     void doConsentAuthorisationWithoutAccountSelection() {
@@ -138,7 +114,7 @@ class AbstractAUTests {
 
     void generateUserAccessToken() {
 
-        userAccessToken = AURequestBuilder.getUserToken(authorisationCode).tokens.accessToken
+        userAccessToken = AURequestBuilder.getUserToken(authorisationCode, AURequestBuilder.getCodeVerifier()).tokens.accessToken
         Assert.assertNotNull(userAccessToken)
     }
 
@@ -162,9 +138,10 @@ class AbstractAUTests {
         String assertionString = getAssertionString(clientId)
 
         def bodyContent = [
-                           (TestConstants.CLIENT_ASSERTION_TYPE_KEY): (TestConstants.CLIENT_ASSERTION_TYPE),
-                           (TestConstants.CLIENT_ASSERTION_KEY)     : assertionString,
-                                                ]
+                (TestConstants.CLIENT_ID_KEY)            : (clientId),
+                (TestConstants.CLIENT_ASSERTION_TYPE_KEY): (TestConstants.CLIENT_ASSERTION_TYPE),
+                (TestConstants.CLIENT_ASSERTION_KEY)     : assertionString,
+        ]
 
         parResponse = TestSuite.buildRequest()
                 .contentType(TestConstants.ACCESS_TOKEN_CONTENT_TYPE)
@@ -222,22 +199,45 @@ class AbstractAUTests {
 
     }
 
-    void doConsentAuthorisationViaRequestUri(List<AUConstants.SCOPES> scopes, URI requestUri) {
+    void doConsentAuthorisationViaRequestUri(List<AUConstants.SCOPES> scopes, URI requestUri,
+                                             String clientId = null, AUAccountProfile profiles = null) {
 
-        AUAuthorisationBuilder authorisationBuilder = new AUAuthorisationBuilder(
-                scopes, requestUri)
+        AUAuthorisationBuilder authorisationBuilder
+
+        if (clientId) {
+            authorisationBuilder = new AUAuthorisationBuilder(
+                    scopes, AUConstants.DEFAULT_SHARING_DURATION, true, "", clientId)
+        } else {
+            authorisationBuilder = new AUAuthorisationBuilder(
+                    scopes, AUConstants.DEFAULT_SHARING_DURATION, true)
+        }
 
         def automation = new BrowserAutomation(BrowserAutomation.DEFAULT_DELAY)
                 .addStep(new AUBasicAuthAutomationStep(authorisationBuilder.authoriseUrl))
                 .addStep { driver, context ->
-                    driver.findElement(By.xpath(AUTestUtil.getSingleAccountXPath())).click()
+                    // Consent First Account
+                    WebElement accElement = driver.findElement(By.xpath(AUTestUtil.getSingleAccountXPath()))
+                    consentedAccount = accElement.getAttribute("value")
+                    accElement.click()
+                    // Consent Second Account
+                    accElement = driver.findElement(By.xpath(AUTestUtil.getAltSingleAccountXPath()))
+                    secondConsentedAccount = accElement.getAttribute("value")
+                    accElement.click()
+                    // Submit consent
                     driver.findElement(By.xpath(AUConstants.CONSENT_SUBMIT_XPATH)).click()
-                    driver.findElement(By.xpath(AUConstants.CONSENT_CONFIRM_XPATH)).click()
+
+                    // Extra step for OB-2.0 AU Authentication flow.
+                    if (TestConstants.SOLUTION_VERSION_300.equals(ConfigParser.getInstance().getSolutionVersion())) {
+                        driver.findElement(By.xpath(AUConstants.CONSENT_SUBMIT_XPATH)).click()
+                    }
                 }
                 .addStep(new WaitForRedirectAutomationStep())
                 .execute()
 
+        // Get Code From URL
         authorisationCode = TestUtil.getHybridCodeFromUrl(automation.currentUrl.get())
+
+        Assert.assertNotNull(authorisationCode)
     }
 
     void verifyScopes(String scopesString, List<AUConstants.SCOPES> scopes) {
@@ -314,95 +314,95 @@ class AbstractAUTests {
         }
     }
 
-  /**
-   * Push Authorisation Request with private_key_jwt authentication method.
-   * @param scopes
-   * @param sharingDuration
-   * @param sendSharingDuration
-   * @param cdrArrangementId
-   * @param clientId
-   * @return
-   */
-  Response doPushAuthorisationRequestWithPkjwt(List<AUConstants.SCOPES> scopes, long sharingDuration,
-                                               boolean sendSharingDuration, String cdrArrangementId,
-                                               String clientId = AppConfigReader.getClientId()) {
+    /**
+     * Push Authorisation Request with private_key_jwt authentication method.
+     * @param scopes
+     * @param sharingDuration
+     * @param sendSharingDuration
+     * @param cdrArrangementId
+     * @param clientId
+     * @return
+     */
+    Response doPushAuthorisationRequestWithPkjwt(List<AUConstants.SCOPES> scopes, long sharingDuration,
+                                                 boolean sendSharingDuration, String cdrArrangementId,
+                                                 String clientId = AppConfigReader.getClientId()) {
 
-    String scopeString = "openid ${String.join(" ", scopes.collect({ it.scopeString }))}"
+        String scopeString = "openid ${String.join(" ", scopes.collect({ it.scopeString }))}"
 
-    String assertionString = new AccessTokenJwtDto().getJwt(AppConfigReader.getClientId(),
-            ConfigParser.getInstance().getAudienceValue())
+        String assertionString = new AccessTokenJwtDto().getJwt(AppConfigReader.getClientId(),
+                ConfigParser.getInstance().getAudienceValue())
 
-    def bodyContent = [(TestConstants.CLIENT_ID_KEY)            : (AppConfigReader.getClientId()),
-                       (TestConstants.CLIENT_ASSERTION_TYPE_KEY): (TestConstants.CLIENT_ASSERTION_TYPE),
-                       (TestConstants.CLIENT_ASSERTION_KEY)     : assertionString,
-                       "cdr_arrangement_id"                     : cdrArrangementId]
+        def bodyContent = [(TestConstants.CLIENT_ID_KEY)            : (AppConfigReader.getClientId()),
+                           (TestConstants.CLIENT_ASSERTION_TYPE_KEY): (TestConstants.CLIENT_ASSERTION_TYPE),
+                           (TestConstants.CLIENT_ASSERTION_KEY)     : assertionString,
+                           "cdr_arrangement_id"                     : cdrArrangementId]
 
-    parResponse = TestSuite.buildRequest()
-            .contentType(TestConstants.ACCESS_TOKEN_CONTENT_TYPE)
-            .formParams(bodyContent)
-            .formParams(TestConstants.REQUEST_KEY, AUAuthorisationBuilder.getSignedRequestObject(scopeString,
-                    sharingDuration, sendSharingDuration, cdrArrangementId, AppConfigReader.getRedirectURL(), clientId).serialize())
-            .baseUri(AUConstants.PUSHED_AUTHORISATION_BASE_PATH)
-            .post(AUConstants.PAR_ENDPOINT)
+        parResponse = TestSuite.buildRequest()
+                .contentType(TestConstants.ACCESS_TOKEN_CONTENT_TYPE)
+                .formParams(bodyContent)
+                .formParams(TestConstants.REQUEST_KEY, AUAuthorisationBuilder.getSignedRequestObject(scopeString,
+                        sharingDuration, sendSharingDuration, cdrArrangementId, AppConfigReader.getRedirectURL(), clientId).serialize())
+                .baseUri(AUConstants.PUSHED_AUTHORISATION_BASE_PATH)
+                .post(AUConstants.PAR_ENDPOINT)
 
-    return parResponse
-  }
+        return parResponse
+    }
 
-  /**
-   * Sharing Arrangement Revocation with private_key_jwt authentication method.
-   * @param applicationAccessToken
-   * @param cdrArrangementId
-   * @param clientId
-   * @return
-   */
-  Response doArrangementRevocationWithPkjwt(String applicationAccessToken, String cdrArrangementId,
-                                            String clientId = AppConfigReader.getClientId()) {
+    /**
+     * Sharing Arrangement Revocation with private_key_jwt authentication method.
+     * @param applicationAccessToken
+     * @param cdrArrangementId
+     * @param clientId
+     * @return
+     */
+    Response doArrangementRevocationWithPkjwt(String applicationAccessToken, String cdrArrangementId,
+                                              String clientId = AppConfigReader.getClientId()) {
 
-    String assertionString = new AccessTokenJwtDto().getJwt(AppConfigReader.getClientId(),
-            ConfigParser.getInstance().getAudienceValue())
+        String assertionString = new AccessTokenJwtDto().getJwt(AppConfigReader.getClientId(),
+                ConfigParser.getInstance().getAudienceValue())
 
-    def bodyContent = [(TestConstants.CLIENT_ID_KEY)            : (clientId),
-                       (TestConstants.CLIENT_ASSERTION_TYPE_KEY): (TestConstants.CLIENT_ASSERTION_TYPE),
-                       (TestConstants.CLIENT_ASSERTION_KEY)     : assertionString,
-                       "cdr_arrangement_id"                     : cdrArrangementId]
+        def bodyContent = [(TestConstants.CLIENT_ID_KEY)            : (clientId),
+                           (TestConstants.CLIENT_ASSERTION_TYPE_KEY): (TestConstants.CLIENT_ASSERTION_TYPE),
+                           (TestConstants.CLIENT_ASSERTION_KEY)     : assertionString,
+                           "cdr_arrangement_id"                     : cdrArrangementId]
 
-    revocationResponse = TestSuite.buildRequest()
-            .contentType(TestConstants.ACCESS_TOKEN_CONTENT_TYPE)
-            .header(AUConstants.X_V_HEADER, AUConstants.CDR_ENDPOINT_VERSION)
-            .header(TestConstants.AUTHORIZATION_HEADER_KEY, "Bearer ${applicationAccessToken}")
-            .formParams(bodyContent)
-            .baseUri(AUTestUtil.getBaseUrl(AUConstants.BASE_PATH_TYPE_CDR_ARRANGEMENT))
-            .delete("${AUConstants.CDR_ARRANGEMENT_ENDPOINT}/${cdrArrangementId}")
+        revocationResponse = TestSuite.buildRequest()
+                .contentType(TestConstants.ACCESS_TOKEN_CONTENT_TYPE)
+                .header(AUConstants.X_V_HEADER, AUConstants.CDR_ENDPOINT_VERSION)
+                .header(TestConstants.AUTHORIZATION_HEADER_KEY, "Bearer ${applicationAccessToken}")
+                .formParams(bodyContent)
+                .baseUri(AUTestUtil.getBaseUrl(AUConstants.BASE_PATH_TYPE_CDR_ARRANGEMENT))
+                .delete("${AUConstants.CDR_ARRANGEMENT_ENDPOINT}/${cdrArrangementId}")
 
-    return revocationResponse
-  }
+        return revocationResponse
+    }
 
-  /**
-   * Basic TPP Registration Method.
-   * @return response.
-   */
-  static Response tppRegistration() {
+    /**
+     * Basic TPP Registration Method.
+     * @return response.
+     */
+    static Response tppRegistration() {
 
-    def registrationResponse = AURegistrationRequestBuilder
-            .buildRegistrationRequest(AURegistrationRequestBuilder.getRegularClaims())
-            .when()
-            .post(AUDCRConstants.REGISTRATION_ENDPOINT)
+        def registrationResponse = AURegistrationRequestBuilder
+                .buildRegistrationRequest(AURegistrationRequestBuilder.getRegularClaims())
+                .when()
+                .post(AUDCRConstants.REGISTRATION_ENDPOINT)
 
-    return registrationResponse
-  }
+        return registrationResponse
+    }
 
-  /**
-   * Basic TPP Deletion Method.
-   * @param clientId
-   * @param accessToken
-   * @return response.
-   */
-  static Response tppDeletion(String clientId, String accessToken) {
+    /**
+     * Basic TPP Deletion Method.
+     * @param clientId
+     * @param accessToken
+     * @return response.
+     */
+    static Response tppDeletion(String clientId, String accessToken) {
 
-    def registrationResponse = AURegistrationRequestBuilder.buildBasicRequest(accessToken)
-            .when()
-            .delete(AUDCRConstants.REGISTRATION_ENDPOINT + clientId)
+        def registrationResponse = AURegistrationRequestBuilder.buildBasicRequestWithContentTypeJson(accessToken)
+                .when()
+                .delete(AUDCRConstants.REGISTRATION_ENDPOINT + clientId)
 
-    return registrationResponse
-  }
+        return registrationResponse
+    }
 }

@@ -34,17 +34,17 @@ import org.testng.annotations.Test
 class MultiTppDcrEndpointTests {
 
 	private List<String> scopes = [
-					AUConstants.SCOPES.BANK_ACCOUNT_BASIC_READ.getScopeString(),
-					AUConstants.SCOPES.BANK_TRANSACTION_READ.getScopeString(),
-					AUConstants.SCOPES.BANK_CUSTOMER_DETAIL_READ.getScopeString(),
-					AUConstants.SCOPES.CDR_REGISTRATION.getScopeString()
+			AUConstants.SCOPES.BANK_ACCOUNT_BASIC_READ.getScopeString(),
+			AUConstants.SCOPES.BANK_TRANSACTION_READ.getScopeString(),
+			AUConstants.SCOPES.BANK_CUSTOMER_DETAIL_READ.getScopeString(),
+			AUConstants.SCOPES.CDR_REGISTRATION.getScopeString()
 	]
 
 	private String accessToken
 	private String clientId
 	private String registrationPath
 	File xmlFile = new File(System.getProperty("user.dir").toString()
-					.concat("/../../../resources/test-config.xml"))
+			.concat("/../../../resources/test-config.xml"))
 	def appConfigReader = new AppConfigReader()
 
 	@BeforeClass(alwaysRun = true)
@@ -66,7 +66,7 @@ class MultiTppDcrEndpointTests {
 
 		//Write Client Id of TPP2 to config file.
 		TestUtil.writeXMLContent(xmlFile.toString(), "Application", "ClientID", clientId,
-						appConfigReader.tppNumber)
+				appConfigReader.tppNumber)
 
 		appConfigReader.setTppNumber(0)
 		accessToken = AURequestBuilder.getApplicationToken(scopes, AppConfigReader.getClientId())
@@ -76,45 +76,45 @@ class MultiTppDcrEndpointTests {
 	@Test
 	void "OB-1308_Retrieve registration details with access token bound to a different client"() {
 
-		def registrationResponse = AURegistrationRequestBuilder.buildBasicRequest(accessToken)
-						.when()
-						.get(registrationPath + clientId)
+		def registrationResponse = AURegistrationRequestBuilder.buildBasicRequestWithContentTypeJson(accessToken)
+				.when()
+				.get(registrationPath + clientId)
 
 		Assert.assertEquals(registrationResponse.statusCode(), TestConstants.UNAUTHORIZED)
 		Assert.assertEquals(TestUtil.parseResponseBody(registrationResponse,AUConstants.ERROR),
-						AUConstants.INVALID_CLIENT_METADATA)
+				AUConstants.INVALID_CLIENT)
 		Assert.assertEquals(TestUtil.parseResponseBody(registrationResponse,AUConstants.ERROR_DESCRIPTION),
-						"Request failed due to unknown or invalid Client")
+				"Request failed due to unknown or invalid Client")
 	}
 
 	@Test
 	void "OB-1309_Update Application with access token bound to a different client"() {
 
 		def registrationResponse = AURegistrationRequestBuilder.buildBasicRequest(accessToken)
-						.body(AURegistrationRequestBuilder.getSignedRequestObject(AURegistrationRequestBuilder
-										.getRegularClaims()))
-						.when()
-						.put(registrationPath + clientId)
+				.body(AURegistrationRequestBuilder.getSignedRequestObject(AURegistrationRequestBuilder
+						.getRegularClaims()))
+				.when()
+				.put(registrationPath + clientId)
 
 		Assert.assertEquals(registrationResponse.statusCode(), TestConstants.UNAUTHORIZED)
 		Assert.assertEquals(TestUtil.parseResponseBody(registrationResponse,AUConstants.ERROR),
-						AUConstants.INVALID_CLIENT_METADATA)
+				AUConstants.INVALID_CLIENT)
 		Assert.assertEquals(TestUtil.parseResponseBody(registrationResponse,AUConstants.ERROR_DESCRIPTION),
-						"Request failed due to unknown or invalid Client")
+				"Request failed due to unknown or invalid Client")
 	}
 
 	@Test
 	void "OB-1310_Delete application with access token bound to a different client"() {
 
-		def registrationResponse = AURegistrationRequestBuilder.buildBasicRequest(accessToken)
-						.when()
-						.delete(registrationPath + clientId)
+		def registrationResponse = AURegistrationRequestBuilder.buildBasicRequestWithContentTypeJson(accessToken)
+				.when()
+				.delete(registrationPath + clientId)
 
 		Assert.assertEquals(registrationResponse.statusCode(), TestConstants.UNAUTHORIZED)
 		Assert.assertEquals(TestUtil.parseResponseBody(registrationResponse,AUConstants.ERROR),
-						AUConstants.INVALID_CLIENT_METADATA)
+				AUConstants.INVALID_CLIENT_METADATA)
 		Assert.assertEquals(TestUtil.parseResponseBody(registrationResponse,AUConstants.ERROR_DESCRIPTION),
-						"Request failed due to unknown or invalid Client")
+				"Request failed due to unknown or invalid Client")
 	}
 
 	@AfterClass (alwaysRun = true)
@@ -129,6 +129,6 @@ class MultiTppDcrEndpointTests {
 
 		//Remove Client Id of TPP2 from config file.
 		TestUtil.writeXMLContent(xmlFile.toString(), "Application", "ClientID", "",
-						appConfigReader.tppNumber)
+				appConfigReader.tppNumber)
 	}
 }

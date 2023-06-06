@@ -387,7 +387,7 @@ public class TestUtil {
      */
     public static String getHybridCodeFromUrl(String codeUrl) {
 
-        return codeUrl.split("#")[1].split("&")[0].split("code")[1].substring(1);
+        return codeUrl.split("&")[1].split("code=")[1];
     }
 
     /**

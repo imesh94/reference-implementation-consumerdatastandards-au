@@ -81,7 +81,7 @@ public class AUBasicAuthAutomationStep implements BrowserAutomationStep {
 
         //Second Factor Authentication Step
         try {
-            if (webDriver.findElement(By.xpath(TestConstants.LBL_SMSOTP_AUTHENTICATOR)).isDisplayed()) {
+            if (webDriver.findElement(By.xpath(TestConstants.BTN_AUTHENTICATE)).isDisplayed()) {
 
                 String otpCode = TestConstants.OTP_CODE;
                 webDriver.findElement(By.id(TestConstants.TXT_OTP_CODE)).sendKeys(otpCode);

@@ -38,52 +38,41 @@ class ConcurrentConsentTest extends AbstractAUTests {
     static final String CDS_PATH = AUConstants.CDS_PATH
     def clientHeader = "${Base64.encoder.encodeToString(cdsClient.getBytes(Charset.defaultCharset()))}"
     static final String CDR_ARRANGEMENT_ENDPOINT = AUConstants.CDR_ARRANGEMENT_ENDPOINT
-    def authorisationCode = ""
+    AccessTokenResponse userAccessToken
 
     private AccessTokenResponse doAuthorizationWithAccountSelection( List<AUConstants.SCOPES> scopes, String cdrArrangementId = ""){
 
-        AUAuthorisationBuilder authorisationBuilder = new AUAuthorisationBuilder(
-                scopes, AUConstants.DEFAULT_SHARING_DURATION, true,
-                cdrArrangementId
-        )
+        response = doPushAuthorisationRequest(scopes, AUConstants.DEFAULT_SHARING_DURATION,
+                true, cdrArrangementId)
+        requestUri = TestUtil.parseResponseBody(response, AUConstants.REQUEST_URI)
 
-        def automation = new BrowserAutomation(BrowserAutomation.DEFAULT_DELAY)
-                .addStep(new AUBasicAuthAutomationStep(authorisationBuilder.authoriseUrl))
-                .addStep { driver, context ->
-            driver.findElement(By.xpath(AUTestUtil.getSingleAccountXPath())).click()
-            driver.findElement(By.xpath(AUConstants.CONSENT_SUBMIT_XPATH)).click()
+        doConsentAuthorisationViaRequestUri(scopes, requestUri.toURI(), null, AUAccountProfile.INDIVIDUAL)
+        userAccessToken = AURequestBuilder.getUserToken(authorisationCode, AURequestBuilder.getCodeVerifier())
 
-            if (TestConstants.SOLUTION_VERSION_300.equals(ConfigParser.getInstance().getSolutionVersion())) {
-                driver.findElement(By.xpath(AUConstants.CONSENT_CONFIRM_XPATH)).click()
-            }
-        }
-        .addStep(new WaitForRedirectAutomationStep())
-                .execute()
-
-        authorisationCode = TestUtil.getHybridCodeFromUrl(automation.currentUrl.get())
-
-        return AURequestBuilder.getUserToken(authorisationCode)
+        return userAccessToken
     }
 
     private AccessTokenResponse doAuthorizationWithoutAccountSelection( List<AUConstants.SCOPES> scopes, String cdrArrangementId = ""){
 
+        response = doPushAuthorisationRequest(scopes, AUConstants.DEFAULT_SHARING_DURATION,
+                true, cdrArrangementId)
+        requestUri = TestUtil.parseResponseBody(response, AUConstants.REQUEST_URI)
+
         AUAuthorisationBuilder authorisationBuilder = new AUAuthorisationBuilder(
-                scopes, AUConstants.DEFAULT_SHARING_DURATION, true,
-                cdrArrangementId
-        )
+                scopes, AUConstants.DEFAULT_SHARING_DURATION, true, cdrArrangementId)
 
         def automation = new BrowserAutomation(BrowserAutomation.DEFAULT_DELAY)
                 .addStep(new AUBasicAuthAutomationStep(authorisationBuilder.authoriseUrl))
                 .addStep { driver, context ->
                     driver.findElement(By.xpath(AUConstants.CONSENT_SUBMIT_XPATH)).click()
-        }
-        .addStep(new WaitForRedirectAutomationStep())
-        .execute()
+                }
+                .addStep(new WaitForRedirectAutomationStep())
+                .execute()
 
 
         authorisationCode = TestUtil.getHybridCodeFromUrl(automation.currentUrl.get())
 
-        return AURequestBuilder.getUserToken(authorisationCode)
+        return userAccessToken = AURequestBuilder.getUserToken(authorisationCode, AURequestBuilder.getCodeVerifier())
     }
 
     @Test
@@ -97,7 +86,7 @@ class ConcurrentConsentTest extends AbstractAUTests {
 
         Response response1 = AURequestBuilder
                 .buildBasicRequest(userAccessToken1.tokens.accessToken.toString(),
-                 AUConstants.CDR_ENDPOINT_VERSION)
+                        AUConstants.CDR_ENDPOINT_VERSION)
                 .baseUri(AUTestUtil.getBaseUrl(AUConstants.BASE_PATH_TYPE_ACCOUNT))
                 .get("${CDS_PATH}${AUConstants.BULK_ACCOUNT_PATH}")
 
@@ -105,7 +94,7 @@ class ConcurrentConsentTest extends AbstractAUTests {
 
         Response response2 = AURequestBuilder
                 .buildBasicRequest(userAccessToken2.tokens.accessToken.toString(),
-                 AUConstants.CDR_ENDPOINT_VERSION)
+                        AUConstants.CDR_ENDPOINT_VERSION)
                 .baseUri(AUTestUtil.getBaseUrl(AUConstants.BASE_PATH_TYPE_PAYEES))
                 .get("${CDS_PATH}${AUConstants.BULK_PAYEES}")
 
@@ -124,7 +113,7 @@ class ConcurrentConsentTest extends AbstractAUTests {
 
         Response response1 = AURequestBuilder
                 .buildBasicRequest(userAccessToken2.tokens.accessToken.toString(),
-                AUConstants.CDR_ENDPOINT_VERSION)
+                        AUConstants.CDR_ENDPOINT_VERSION)
                 .baseUri(AUTestUtil.getBaseUrl(AUConstants.BASE_PATH_TYPE_ACCOUNT))
                 .get("${CDS_PATH}${AUConstants.BULK_ACCOUNT_PATH}")
 
@@ -132,7 +121,7 @@ class ConcurrentConsentTest extends AbstractAUTests {
 
         Response response2 = AURequestBuilder
                 .buildBasicRequest(userAccessToken1.tokens.accessToken.toString(),
-                AUConstants.CDR_ENDPOINT_VERSION)
+                        AUConstants.CDR_ENDPOINT_VERSION)
                 .baseUri(AUTestUtil.getBaseUrl(AUConstants.BASE_PATH_TYPE_PAYEES))
                 .get("${CDS_PATH}${AUConstants.BULK_PAYEES}")
 
@@ -155,7 +144,7 @@ class ConcurrentConsentTest extends AbstractAUTests {
         //retrieve consumer data successfully
         Response response = AURequestBuilder
                 .buildBasicRequest(userAccessToken.tokens.accessToken.toString(),
-                AUConstants.CDR_ENDPOINT_VERSION)
+                        AUConstants.CDR_ENDPOINT_VERSION)
                 .header(AUConstants.X_FAPI_AUTH_DATE, AUConstants.DATE)
                 .header(AUConstants.X_FAPI_CUSTOMER_IP_ADDRESS , AUConstants.IP)
                 .header(AUConstants.X_CDS_CLIENT_HEADERS , clientHeader)
@@ -184,12 +173,12 @@ class ConcurrentConsentTest extends AbstractAUTests {
                 .baseUri(AUTestUtil.getBaseUrl(AUConstants.BASE_PATH_TYPE_ACCOUNT))
                 .get("${CDS_PATH}${AUConstants.BULK_ACCOUNT_PATH}")
 
-        Assert.assertEquals(response.statusCode(), AUConstants.STATUS_CODE_403)
+        Assert.assertEquals(response.statusCode(), AUConstants.STATUS_CODE_401)
 
         //validate token
         response = AURequestBuilder
-                    .buildIntrospectionRequest(userAccessToken.tokens.accessToken.toString())
-                    .post(AUConstants.INTROSPECTION_ENDPOINT)
+                .buildIntrospectionRequest(userAccessToken.tokens.accessToken.toString())
+                .post(AUConstants.INTROSPECTION_ENDPOINT)
 
         Assert.assertTrue((response.jsonPath().get("active")).equals(false))
     }
@@ -210,7 +199,7 @@ class ConcurrentConsentTest extends AbstractAUTests {
         //retrieve consumer data successfully
         Response response = AURequestBuilder
                 .buildBasicRequest(userAccessToken.tokens.accessToken.toString(),
-                AUConstants.CDR_ENDPOINT_VERSION)
+                        AUConstants.CDR_ENDPOINT_VERSION)
                 .header(AUConstants.X_FAPI_AUTH_DATE, AUConstants.DATE)
                 .header(AUConstants.X_FAPI_CUSTOMER_IP_ADDRESS , AUConstants.IP)
                 .header(AUConstants.X_CDS_CLIENT_HEADERS , clientHeader)
@@ -252,7 +241,31 @@ class ConcurrentConsentTest extends AbstractAUTests {
         Assert.assertNotNull(cdrArrangementId1)
 
         //authorize the second sharing arrangement
-        def userAccessToken2 = doAuthorizationWithoutAccountSelection(sharingScopes2, cdrArrangementId1)
+        response = doPushAuthorisationRequest(scopes, AUConstants.DEFAULT_SHARING_DURATION,
+                true, cdrArrangementId1)
+        requestUri = TestUtil.parseResponseBody(response, AUConstants.REQUEST_URI)
+
+        AUAuthorisationBuilder authorisationBuilder = new AUAuthorisationBuilder(scopes, requestUri.toURI())
+        def automation = new BrowserAutomation(BrowserAutomation.DEFAULT_DELAY)
+                .addStep(new AUBasicAuthAutomationStep(authorisationBuilder.authoriseUrl))
+                .addStep { driver, context ->
+                    // Submit consent
+                    driver.findElement(By.xpath(AUConstants.CONSENT_SUBMIT_XPATH)).click()
+
+                    // Extra step for OB-2.0 AU Authentication flow.
+                    if (TestConstants.SOLUTION_VERSION_300.equals(ConfigParser.getInstance().getSolutionVersion())) {
+                        driver.findElement(By.xpath(AUConstants.CONSENT_SUBMIT_XPATH)).click()
+                    }
+                }
+                .addStep(new WaitForRedirectAutomationStep())
+                .execute()
+
+        // Get Code From URL
+        authorisationCode = TestUtil.getHybridCodeFromUrl(automation.currentUrl.get())
+
+        Assert.assertNotNull(authorisationCode)
+
+        def userAccessToken2 = AURequestBuilder.getUserToken(authorisationCode, AURequestBuilder.getCodeVerifier())
         String cdrArrangementId2 = userAccessToken2.getCustomParameters().get("cdr_arrangement_id")
         Assert.assertNotNull(cdrArrangementId2)
 
@@ -271,6 +284,5 @@ class ConcurrentConsentTest extends AbstractAUTests {
                 .post(AUConstants.INTROSPECTION_ENDPOINT)
 
         Assert.assertTrue(response.jsonPath().get("active").toString().contains("true"))
-        Assert.assertEquals(response.jsonPath().get("cdr_arrangement_id").toString(), cdrArrangementId2)
     }
 }

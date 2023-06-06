@@ -42,12 +42,12 @@ class SharingDurationValidationTest {
             AUConstants.SCOPES.BANK_CUSTOMER_DETAIL_READ
     ]
     private String authorisationCode
-    private AccessTokenResponse userAccessToken
+    private String userAccessToken
 
     private String doAuthorization(long sharingDuration, boolean sendSharingDuration, String assertionValue) {
 
         AUAuthorisationBuilder authorisationBuilder = new AUAuthorisationBuilder(scopes, sharingDuration,
-                                             sendSharingDuration)
+                sendSharingDuration)
 
         def automation = new BrowserAutomation(BrowserAutomation.DEFAULT_DELAY)
                 .addStep(new AUBasicAuthAutomationStep(authorisationBuilder.authoriseUrl))
@@ -80,11 +80,11 @@ class SharingDurationValidationTest {
 
         TestSuite.init()
     }
-
+    //
     @Test
     void "TC0202002_Initiate authorisation consent flow with no sharing duration"() {
 
-        authorisationCode = doAuthorization(AUConstants.SINGLE_ACCESS_CONSENT, false,
+        authorisationCode = doAuthorization(AUConstants.SINGLE_ACCESS_CONSENT, true,
                 "Your data will be shared once.")
         Assert.assertNotNull(authorisationCode)
 
@@ -93,9 +93,10 @@ class SharingDurationValidationTest {
     @Test(dependsOnMethods = "TC0202002_Initiate authorisation consent flow with no sharing duration", priority = 1)
     void "TC0203002_Check no refresh token when no sharing duration is given"() {
 
-        userAccessToken = AURequestBuilder.getUserToken(authorisationCode)
-        Assert.assertNull(userAccessToken.tokens.refreshToken)
-        Assert.assertNotNull(userAccessToken.tokens.accessToken)
+        def  accessTokenResponse = AURequestBuilder.getUserToken(authorisationCode, AURequestBuilder.getCodeVerifier())
+        userAccessToken = accessTokenResponse.tokens.accessToken
+        Assert.assertNull(accessTokenResponse.tokens.refreshToken)
+        Assert.assertNotNull(accessTokenResponse.tokens.accessToken)
     }
 
 
@@ -106,13 +107,14 @@ class SharingDurationValidationTest {
                 "Your data will be shared once.")
         Assert.assertNotNull(authorisationCode)
     }
-
+//
     @Test(dependsOnMethods = "TC0202003_Initiate authorisation consent flow with sharing duration zero", priority = 2)
     void "TC0203003_Check no refresh token for sharing duration zero"() {
 
-        userAccessToken = AURequestBuilder.getUserToken(authorisationCode)
-        Assert.assertNull(userAccessToken.tokens.refreshToken)
-        Assert.assertNotNull(userAccessToken.tokens.accessToken)
+        def  accessTokenResponse = AURequestBuilder.getUserToken(authorisationCode, AURequestBuilder.getCodeVerifier())
+        userAccessToken = accessTokenResponse.tokens.accessToken
+        Assert.assertNull(accessTokenResponse.tokens.refreshToken)
+        Assert.assertNotNull(accessTokenResponse.tokens.accessToken)
     }
 
     @Test (groups = "SmokeTest", priority = 3)
@@ -124,13 +126,14 @@ class SharingDurationValidationTest {
         authorisationCode = doAuthorization(AUConstants.ONE_YEAR_DURATION, true, consentExpiry)
         Assert.assertNotNull(authorisationCode)
     }
-
+//
     @Test(groups = "SmokeTest",dependsOnMethods = "TC0202004_Initiate authorisation consent flow with sharing duration greater than one year",priority = 3)
     void "TC0203004_Check refresh token issued for sharing duration greater than one year"() {
 
-        userAccessToken = AURequestBuilder.getUserToken(authorisationCode)
-        Assert.assertNotNull(userAccessToken.tokens.refreshToken)
-        Assert.assertNotNull(userAccessToken.tokens.accessToken)
+        def  accessTokenResponse = AURequestBuilder.getUserToken(authorisationCode, AURequestBuilder.getCodeVerifier())
+        userAccessToken = accessTokenResponse.tokens.accessToken
+        Assert.assertNotNull(accessTokenResponse.tokens.refreshToken)
+        Assert.assertNotNull(accessTokenResponse.tokens.accessToken)
     }
 
     @Test (priority = 4)

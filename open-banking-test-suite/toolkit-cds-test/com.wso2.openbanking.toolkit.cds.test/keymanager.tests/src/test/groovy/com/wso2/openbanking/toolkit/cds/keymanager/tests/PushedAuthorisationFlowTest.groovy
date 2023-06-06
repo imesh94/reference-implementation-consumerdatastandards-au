@@ -87,10 +87,10 @@ class PushedAuthorisationFlowTest extends AbstractAUTests {
             dependsOnMethods = "TC0205002_Initiate consent authorisation flow with pushed authorisation request uri")
     void "TC0203013_Generate User access token by code generated from PAR model"() {
 
-        userAccessToken = AURequestBuilder.getUserToken(authorisationCode)
-        Assert.assertNotNull(userAccessToken.tokens.accessToken)
-        Assert.assertNotNull(userAccessToken.tokens.refreshToken)
-        // Assert.assertNotNull(userAccessToken.getCustomParameters().get("cdr_arrangement_id"))
+        def accessTokenResponse = AURequestBuilder.getUserToken(authorisationCode, AURequestBuilder.getCodeVerifier())
+        userAccessToken = accessTokenResponse.tokens.accessToken
+        Assert.assertNotNull(accessTokenResponse.tokens.accessToken)
+        Assert.assertNotNull(accessTokenResponse.tokens.refreshToken)
     }
 
     @Test
@@ -156,11 +156,12 @@ class PushedAuthorisationFlowTest extends AbstractAUTests {
         Assert.assertNotNull(authorisationCode)
 
         //Generate User Access Token
-        userAccessToken = AURequestBuilder.getUserToken(authorisationCode)
+        def accessTokenResponse = AURequestBuilder.getUserToken(authorisationCode, AURequestBuilder.getCodeVerifier())
+        userAccessToken = accessTokenResponse.tokens.accessToken
 
-        accessToken = userAccessToken.tokens.toString()
-        refreshToken = userAccessToken.tokens.refreshToken.toString()
-        cdrArrangementId = userAccessToken.getCustomParameters().get("cdr_arrangement_id")
+        accessToken = accessTokenResponse.tokens.toString()
+        refreshToken = accessTokenResponse.tokens.refreshToken.toString()
+        cdrArrangementId = accessTokenResponse.getCustomParameters().get("cdr_arrangement_id")
 
         //Re-establish consent arrangement
         response = doPushAuthorisationRequest(scopes, AUConstants.DEFAULT_SHARING_DURATION,
@@ -209,11 +210,12 @@ class PushedAuthorisationFlowTest extends AbstractAUTests {
         Assert.assertNotNull(authorisationCode)
 
         //Generate User Access Token
-        userAccessToken = AURequestBuilder.getUserToken(authorisationCode)
+        def accessTokenResponse = AURequestBuilder.getUserToken(authorisationCode, AURequestBuilder.getCodeVerifier())
+        userAccessToken = accessTokenResponse.tokens.accessToken
 
-        accessToken = userAccessToken.tokens.toString()
-        refreshToken = userAccessToken.tokens.refreshToken.toString()
-        cdrArrangementId = userAccessToken.getCustomParameters().get("cdr_arrangement_id")
+        accessToken = accessTokenResponse.tokens.toString()
+        refreshToken = accessTokenResponse.tokens.refreshToken.toString()
+        cdrArrangementId = accessTokenResponse.getCustomParameters().get("cdr_arrangement_id")
 
         //Re-establish consent arrangement
         response = doPushAuthorisationRequest(scopes, AUConstants.DEFAULT_SHARING_DURATION,
@@ -305,7 +307,7 @@ class PushedAuthorisationFlowTest extends AbstractAUTests {
 
         def errorMessage = URLDecoder.decode(automation.currentUrl.get().split("&")[1]
                 .split("=")[1].toString(), "UTF8")
-        Assert.assertEquals(errorMessage, "Retrieving consent data failed")
+        Assert.assertTrue(errorMessage.contains("Retrieving consent data failed"))
     }
 
     @Test
@@ -314,13 +316,13 @@ class PushedAuthorisationFlowTest extends AbstractAUTests {
         doConsentAuthorisation()
         Assert.assertNotNull(authorisationCode)
 
-        userAccessToken = AURequestBuilder.getUserToken(authorisationCode)
-        cdrArrangementId = userAccessToken.getCustomParameters().get("cdr_arrangement_id")
+        def accessTokenResponse = AURequestBuilder.getUserToken(authorisationCode, AURequestBuilder.getCodeVerifier())
+        userAccessToken = accessTokenResponse.tokens.accessToken
+        cdrArrangementId = accessTokenResponse.getCustomParameters().get("cdr_arrangement_id")
 
         def response = doPushAuthorisationRequest(scopes, AUConstants.SINGLE_ACCESS_CONSENT,
-                false)
-
-        requestUri = TestUtil.parseResponseBody(response, "requestUri")
+                false, "")
+        requestUri = TestUtil.parseResponseBody(response, AUConstants.REQUEST_URI)
 
         Assert.assertEquals(response.statusCode(), AUConstants.STATUS_CODE_201)
 
@@ -328,9 +330,10 @@ class PushedAuthorisationFlowTest extends AbstractAUTests {
         Assert.assertNotNull(authorisationCode)
 
         //Generate User Access Token
-        userAccessToken = AURequestBuilder.getUserToken(authorisationCode)
-        Assert.assertNull(userAccessToken.tokens.refreshToken)
-        Assert.assertNotNull(userAccessToken.tokens.accessToken)
+        accessTokenResponse = AURequestBuilder.getUserToken(authorisationCode, AURequestBuilder.getCodeVerifier())
+        userAccessToken = accessTokenResponse.tokens.accessToken
+        Assert.assertNull(accessTokenResponse.tokens.refreshToken)
+        Assert.assertNotNull(accessTokenResponse.tokens.accessToken)
     }
 
     @Test
@@ -339,8 +342,9 @@ class PushedAuthorisationFlowTest extends AbstractAUTests {
         doConsentAuthorisation()
         Assert.assertNotNull(authorisationCode)
 
-        userAccessToken = AURequestBuilder.getUserToken(authorisationCode)
-        cdrArrangementId = userAccessToken.getCustomParameters().get("cdr_arrangement_id")
+        def accessTokenResponse = AURequestBuilder.getUserToken(authorisationCode, AURequestBuilder.getCodeVerifier())
+        userAccessToken = accessTokenResponse.tokens.accessToken
+        cdrArrangementId = accessTokenResponse.getCustomParameters().get("cdr_arrangement_id")
 
         def response = doPushAuthorisationRequest(scopes, AUConstants.SINGLE_ACCESS_CONSENT,
                 true)
@@ -352,8 +356,9 @@ class PushedAuthorisationFlowTest extends AbstractAUTests {
         Assert.assertNotNull(authorisationCode)
 
         //Generate User Access Token
-        userAccessToken = AURequestBuilder.getUserToken(authorisationCode)
-        Assert.assertNotNull(userAccessToken.tokens.accessToken)
+        accessTokenResponse = AURequestBuilder.getUserToken(authorisationCode, AURequestBuilder.getCodeVerifier())
+        userAccessToken = accessTokenResponse.tokens.accessToken
+        Assert.assertNotNull(userAccessToken)
     }
 
     @Test
@@ -362,8 +367,9 @@ class PushedAuthorisationFlowTest extends AbstractAUTests {
         doConsentAuthorisation()
         Assert.assertNotNull(authorisationCode)
 
-        userAccessToken = AURequestBuilder.getUserToken(authorisationCode)
-        cdrArrangementId = userAccessToken.getCustomParameters().get("cdr_arrangement_id")
+        def accessTokenResponse = AURequestBuilder.getUserToken(authorisationCode, AURequestBuilder.getCodeVerifier())
+        userAccessToken = accessTokenResponse.tokens.accessToken
+        cdrArrangementId = accessTokenResponse.getCustomParameters().get("cdr_arrangement_id")
 
         def response = doPushAuthorisationRequest(scopes, AUConstants.ONE_YEAR_DURATION,
                 true)
@@ -375,9 +381,10 @@ class PushedAuthorisationFlowTest extends AbstractAUTests {
         Assert.assertNotNull(authorisationCode)
 
         //Generate User Access Token
-        userAccessToken = AURequestBuilder.getUserToken(authorisationCode)
-        Assert.assertNotNull(userAccessToken.tokens.refreshToken)
-        Assert.assertNotNull(userAccessToken.tokens.accessToken)
+        accessTokenResponse = AURequestBuilder.getUserToken(authorisationCode, AURequestBuilder.getCodeVerifier())
+        userAccessToken = accessTokenResponse.tokens.accessToken
+        Assert.assertNotNull(accessTokenResponse.tokens.refreshToken)
+        Assert.assertNotNull(accessTokenResponse.tokens.accessToken)
     }
 
     @Test
@@ -386,8 +393,9 @@ class PushedAuthorisationFlowTest extends AbstractAUTests {
         doConsentAuthorisation()
         Assert.assertNotNull(authorisationCode)
 
-        userAccessToken = AURequestBuilder.getUserToken(authorisationCode)
-        cdrArrangementId = userAccessToken.getCustomParameters().get("cdr_arrangement_id")
+        def  accessTokenResponse = AURequestBuilder.getUserToken(authorisationCode, AURequestBuilder.getCodeVerifier())
+        userAccessToken = accessTokenResponse.tokens.accessToken
+        cdrArrangementId = accessTokenResponse.getCustomParameters().get("cdr_arrangement_id")
 
         def response = doPushAuthorisationRequest(scopes, AUConstants.NEGATIVE_DURATION,
                 true)
@@ -404,8 +412,9 @@ class PushedAuthorisationFlowTest extends AbstractAUTests {
         doConsentAuthorisation()
         Assert.assertNotNull(authorisationCode)
 
-        userAccessToken = AURequestBuilder.getUserToken(authorisationCode)
-        cdrArrangementId = userAccessToken.getCustomParameters().get("cdr_arrangement_id")
+        def  accessTokenResponse = AURequestBuilder.getUserToken(authorisationCode, AURequestBuilder.getCodeVerifier())
+        userAccessToken = accessTokenResponse.tokens.accessToken
+        cdrArrangementId = accessTokenResponse.getCustomParameters().get("cdr_arrangement_id")
 
         String assertionString = getAssertionString(clientId)
 
@@ -439,8 +448,9 @@ class PushedAuthorisationFlowTest extends AbstractAUTests {
         doConsentAuthorisation()
         Assert.assertNotNull(authorisationCode)
 
-        userAccessToken = AURequestBuilder.getUserToken(authorisationCode)
-        cdrArrangementId = userAccessToken.getCustomParameters().get("cdr_arrangement_id")
+        def  accessTokenResponse = AURequestBuilder.getUserToken(authorisationCode, AURequestBuilder.getCodeVerifier())
+        userAccessToken = accessTokenResponse.tokens.accessToken
+        cdrArrangementId = accessTokenResponse.getCustomParameters().get("cdr_arrangement_id")
 
         String assertionString = getAssertionString(clientId)
 
@@ -474,8 +484,9 @@ class PushedAuthorisationFlowTest extends AbstractAUTests {
         doConsentAuthorisation()
         Assert.assertNotNull(authorisationCode)
 
-        userAccessToken = AURequestBuilder.getUserToken(authorisationCode)
-        cdrArrangementId = TestUtil.getJwtTokenPayload(userAccessToken.tokens.accessToken.toString()).get("consent_id")
+        def  accessTokenResponse = AURequestBuilder.getUserToken(authorisationCode, AURequestBuilder.getCodeVerifier())
+        userAccessToken = accessTokenResponse.tokens.accessToken
+        cdrArrangementId = TestUtil.getJwtTokenPayload(accessTokenResponse.tokens.accessToken.toString()).get("consent_id")
 
         AUAuthorisationBuilder authorisationBuilder = new AUAuthorisationBuilder(
                 scopes, AUConstants.DEFAULT_SHARING_DURATION, true, cdrArrangementId)

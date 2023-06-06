@@ -101,7 +101,7 @@ class DynamicClientRegistrationRetrievalTest extends AbstractAUTests {
 
         def registrationResponse = AURegistrationRequestBuilder.buildBasicRequestWithContentTypeJson(accessToken)
                 .when()
-                .get(registrationPath + clientId)
+                .get(registrationPath + invalidClientId)
 
         Assert.assertEquals(registrationResponse.statusCode(), AUConstants.STATUS_CODE_401)
     }

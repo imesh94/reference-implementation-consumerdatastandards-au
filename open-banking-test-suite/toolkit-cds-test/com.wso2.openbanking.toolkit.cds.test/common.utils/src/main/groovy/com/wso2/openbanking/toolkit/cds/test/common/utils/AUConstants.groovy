@@ -431,4 +431,6 @@ class AUConstants {
         }
         return productEndpoint
     }
+
+    public static final String REQUEST_URI = "requestUri"
 }

@@ -37,7 +37,7 @@ class MultiTppConsentValidationTests extends AbstractAUTests {
 
 	private String clientId
 	File xmlFile = new File(System.getProperty("user.dir").toString()
-					.concat("/../../../resources/test-config.xml"))
+			.concat("/../../../resources/test-config.xml"))
 	static final String CDS_PATH = AUConstants.CDS_PATH
 	def appConfigReader = new AppConfigReader()
 
@@ -57,7 +57,7 @@ class MultiTppConsentValidationTests extends AbstractAUTests {
 
 		//Write Client Id of TPP2 to config file.
 		TestUtil.writeXMLContent(xmlFile.toString(), "Application", "ClientID", clientId,
-						appConfigReader.tppNumber)
+				appConfigReader.tppNumber)
 	}
 
 	@Test
@@ -70,16 +70,17 @@ class MultiTppConsentValidationTests extends AbstractAUTests {
 		Assert.assertNotNull(authorisationCode)
 
 		//obtain cdr_arrangement_id from token response
-		def userAccessToken = AURequestBuilder.getUserToken(authorisationCode)
-		String cdrArrangementId = userAccessToken.getCustomParameters().get("cdr_arrangement_id")
+		def accessTokenResponse = AURequestBuilder.getUserToken(authorisationCode, AURequestBuilder.getCodeVerifier())
+		userAccessToken = accessTokenResponse.tokens.accessToken
+		String cdrArrangementId = accessTokenResponse.getCustomParameters().get("cdr_arrangement_id")
 		Assert.assertNotNull(cdrArrangementId)
 
 		//retrieve consumer data successfully
 		Response response = AURequestBuilder
-						.buildBasicRequest(userAccessToken.tokens.accessToken.toString(),
-										AUConstants.CDR_ENDPOINT_VERSION)
-						.baseUri(AUTestUtil.getBaseUrl(AUConstants.BASE_PATH_TYPE_ACCOUNT))
-						.get("${CDS_PATH}${AUConstants.BULK_ACCOUNT_PATH}")
+				.buildBasicRequest(userAccessToken,
+						AUConstants.CDR_ENDPOINT_VERSION)
+				.baseUri(AUTestUtil.getBaseUrl(AUConstants.BASE_PATH_TYPE_ACCOUNT))
+				.get("${CDS_PATH}${AUConstants.BULK_ACCOUNT_PATH}")
 
 		Assert.assertEquals(response.statusCode(), AUConstants.STATUS_CODE_200)
 
@@ -105,31 +106,25 @@ class MultiTppConsentValidationTests extends AbstractAUTests {
 		Assert.assertNotNull(authorisationCode)
 
 		//obtain cdr_arrangement_id from token response
-		def userAccessToken = AURequestBuilder.getUserToken(authorisationCode)
-		String cdrArrangementId = userAccessToken.getCustomParameters().get("cdr_arrangement_id")
+		def accessTokenResponse = AURequestBuilder.getUserToken(authorisationCode, AURequestBuilder.getCodeVerifier())
+		userAccessToken = accessTokenResponse.tokens.accessToken
+		String cdrArrangementId = accessTokenResponse.getCustomParameters().get("cdr_arrangement_id")
 		Assert.assertNotNull(cdrArrangementId)
 
 		//retrieve consumer data successfully
-		Response response = getAccountRetrieval(userAccessToken.tokens.accessToken.toString())
+		Response response = getAccountRetrieval(userAccessToken)
 		Assert.assertEquals(response.statusCode(), AUConstants.STATUS_CODE_200)
-
-		//Send PAR request.
-		def parResponse = doPushAuthorisationRequestWithPkjwt(scopes, AUConstants.DEFAULT_SHARING_DURATION,
-						true, cdrArrangementId)
-
-		def requestUri = TestUtil.parseResponseBody(parResponse, "request_uri").toURI()
-		Assert.assertEquals(parResponse.statusCode(), AUConstants.STATUS_CODE_201)
 
 		appConfigReader.setTppNumber(1)
 		//Send consent authorisation using request_uri bound to TPP1 with client id of TPP2
-		AUAuthorisationBuilder authorisationBuilder = new AUAuthorisationBuilder(scopes, requestUri, clientId)
+		AUAuthorisationBuilder authorisationBuilder = new AUAuthorisationBuilder(scopes, requestUri.toURI(), clientId)
 
 		def automation = new BrowserAutomation(BrowserAutomation.DEFAULT_DELAY)
-						.addStep(new BasicAuthErrorStep(authorisationBuilder.authoriseUrl))
-						.execute()
+				.addStep(new BasicAuthErrorStep(authorisationBuilder.authoriseUrl))
+				.execute()
 
 		Assert.assertTrue(TestUtil.getErrorDescriptionFromUrl(automation.currentUrl.get())
-						.contains("Request Object and Authorization request contains unmatched client_id"))
+				.contains("Request Object and Authorization request contains unmatched client_id"))
 
 	}
 
@@ -142,14 +137,15 @@ class MultiTppConsentValidationTests extends AbstractAUTests {
 		Assert.assertNotNull(authorisationCode)
 
 		//obtain cdr_arrangement_id from token response
-		def userAccessToken = AURequestBuilder.getUserToken(authorisationCode)
-		String cdrArrangementId = userAccessToken.getCustomParameters().get("cdr_arrangement_id")
+		def accessTokenResponse = AURequestBuilder.getUserToken(authorisationCode, AURequestBuilder.getCodeVerifier())
+		userAccessToken = accessTokenResponse.tokens.accessToken
+		String cdrArrangementId = accessTokenResponse.getCustomParameters().get("cdr_arrangement_id")
 		Assert.assertNotNull(cdrArrangementId)
 
 		appConfigReader.setTppNumber(1)
 		//Send PAR request.
 		def parResponse = doPushAuthorisationRequestWithPkjwt(scopes, AUConstants.DEFAULT_SHARING_DURATION,
-						true, cdrArrangementId, clientId)
+				true, cdrArrangementId, clientId)
 
 		Assert.assertEquals(parResponse.statusCode(), AUConstants.STATUS_CODE_400)
 	}
@@ -168,6 +164,6 @@ class MultiTppConsentValidationTests extends AbstractAUTests {
 
 		//Remove Client Id of TPP2 from config file.
 		TestUtil.writeXMLContent(xmlFile.toString(), "Application", "ClientID", "",
-						appConfigReader.tppNumber)
+				appConfigReader.tppNumber)
 	}
 }
