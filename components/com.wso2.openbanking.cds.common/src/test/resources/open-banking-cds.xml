@@ -74,4 +74,12 @@
         <Audience>DummyAudience</Audience>
         <JWKSUrl>DummyJWKS</JWKSUrl>
     </JWTAuthentication>
+    <BNR>
+        <PrioritizeSharableAccountsResponse>true</PrioritizeSharableAccountsResponse>
+        <ValidateAccountsOnRetrieval>true</ValidateAccountsOnRetrieval>
+        <EnableConsentRevocation>true</EnableConsentRevocation>
+    </BNR>
+    <SecondaryUserAccounts>
+        <Enable>true</Enable>
+    </SecondaryUserAccounts>
 </Server>

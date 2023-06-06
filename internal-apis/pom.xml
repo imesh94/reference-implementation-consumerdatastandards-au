@@ -28,6 +28,7 @@
         <module>internal-webapps/com.wso2.openbanking.cds.metadata.mgt.endpoint</module>
         <module>internal-webapps/com.wso2.openbanking.cds.metrics.endpoint</module>
         <module>internal-webapps/com.wso2.openbanking.cds.arrangement.revocation.endpoint</module>
+        <module>internal-webapps/com.wso2.openbanking.cds.account.type.management.endpoint</module>
     </modules>
 
 </project>

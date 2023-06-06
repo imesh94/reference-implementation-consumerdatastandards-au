@@ -80,8 +80,14 @@ public class CDSDataClusterRetrievalStep implements ConsentRetrievalStep {
                     }
                     JSONArray dataCluster = getDataClusterFromScopes(commonScopes, customerType);
                     JSONArray newDataCluster = getDataClusterFromScopes(newScopes, customerType);
+                    JSONArray businessDataCluster = getDataClusterFromScopes(commonScopes,
+                            CDSConsentExtensionConstants.ORGANISATION);
+                    JSONArray newBusinessDataCluster = getDataClusterFromScopes(newScopes,
+                            CDSConsentExtensionConstants.ORGANISATION);
                     jsonObject.put(CDSConsentExtensionConstants.DATA_REQUESTED, dataCluster);
                     jsonObject.put(CDSConsentExtensionConstants.NEW_DATA_REQUESTED, newDataCluster);
+                    jsonObject.put(CDSConsentExtensionConstants.BUSINESS_DATA_CLUSTER, businessDataCluster);
+                    jsonObject.put(CDSConsentExtensionConstants.NEW_BUSINESS_DATA_CLUSTER, newBusinessDataCluster);
                 } else {
                     log.error("Permissions not found for the given consent");
                     throw new ConsentException(ResponseStatus.INTERNAL_SERVER_ERROR,
@@ -89,7 +95,10 @@ public class CDSDataClusterRetrievalStep implements ConsentRetrievalStep {
                 }
             } else {
                 JSONArray dataCluster = getDataClusterFromScopes(scopes, customerType);
+                JSONArray businessDataCluster = getDataClusterFromScopes(scopes,
+                        CDSConsentExtensionConstants.ORGANISATION);
                 jsonObject.put(CDSConsentExtensionConstants.DATA_REQUESTED, dataCluster);
+                jsonObject.put(CDSConsentExtensionConstants.BUSINESS_DATA_CLUSTER, businessDataCluster);
             }
         }
     }

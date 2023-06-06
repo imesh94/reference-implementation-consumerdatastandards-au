@@ -1,14 +1,12 @@
-<%--
-  ~ Copyright (c) 2021, WSO2 Inc. (http://www.wso2.com). All Rights Reserved.
-  ~
-  ~ This software is the property of WSO2 Inc. and its suppliers, if any.
-  ~ Dissemination of any information or reproduction of any material contained
-  ~ herein is strictly forbidden, unless permitted by WSO2 in accordance with
-  ~ the WSO2 Software License available at https://wso2.com/licenses/eula/3.1.
-  ~ For specific language governing the permissions and limitations under this
-  ~ license, please see the license as well as any agreement you’ve entered into
-  ~ with WSO2 governing the purchase of this software and any associated services.
-  --%>
+<!--
+~ Copyright (c) 2021-2023, WSO2 LLC. (https://www.wso2.com). All Rights Reserved.
+~
+~ This software is the property of WSO2 LLC. and its suppliers, if any.
+~ Dissemination of any information or reproduction of any material contained
+~ herein in any form is strictly forbidden, unless permitted by WSO2 expressly.
+~ You may not alter or remove any copyright or other notice from copies of this content.
+~
+-->
 
 <%@ page import="org.owasp.encoder.Encode" %>
 <%@ page import="org.wso2.carbon.identity.mgt.endpoint.util.IdentityManagementEndpointUtil" %>
@@ -28,7 +26,7 @@
         idpAuthenticatorMapping = (Map<String, String>) request.getAttribute(Constants.IDP_AUTHENTICATOR_MAP);
     }
 
-    String errorMessage = IdentityManagementEndpointUtil.i18n(recoveryResourceBundle,"error.retry");
+    String errorMessage = IdentityManagementEndpointUtil.i18n(resourceBundle,"error.retry");
     String authenticationFailed = "false";
 
     //Get SMSOTP properties from application-authentication.xml
@@ -46,10 +44,10 @@
             errorMessage = request.getParameter(Constants.AUTH_FAILURE_MSG);
 
             if (errorMessage.equalsIgnoreCase("authentication.fail.message")) {
-                errorMessage = IdentityManagementEndpointUtil.i18n(recoveryResourceBundle,"error.retry");
+                errorMessage = IdentityManagementEndpointUtil.i18n(resourceBundle,"error.retry");
             }
             if (errorMessage.equalsIgnoreCase(SMSOTPConstants.TOKEN_EXPIRED_VALUE)) {
-                errorMessage = IdentityManagementEndpointUtil.i18n(recoveryResourceBundle,"error.code.expired.resend");
+                errorMessage = IdentityManagementEndpointUtil.i18n(resourceBundle,"error.code.expired.resend");
             }
         }
     }
@@ -76,6 +74,7 @@
         <script src="js/html5shiv.min.js"></script>
         <script src="js/respond.min.js"></script>
         <![endif]-->
+        <link rel = "stylesheet" type = "text/css" href = "extensions/identifier-style.css" />
     </head>
 
     <body class="login-portal layout sms-otp-portal-layout">
@@ -93,7 +92,7 @@
 
                 <div class="ui segment">
                     <!-- page content -->
-                    <h2><%=IdentityManagementEndpointUtil.i18n(recoveryResourceBundle, "auth.with.smsotp")%></h2>
+                    <h3 class="ui header"><%=IdentityManagementEndpointUtil.i18n(resourceBundle, "auth.with.smsotp")%></h3>
                     <div class="ui divider hidden"></div>
                     <%
                         if ("true".equals(authenticationFailed)) {
@@ -113,7 +112,7 @@
                                     if (authFailureMsg != null && "login.fail.message".equals(authFailureMsg)) {
                             %>
                                 <div class="ui visible negative message">
-                                    <%=IdentityManagementEndpointUtil.i18n(recoveryResourceBundle, "error.retry")%>
+                                    <%=IdentityManagementEndpointUtil.i18n(resourceBundle, "error.retry")%>
                                 </div>
                                 <div class="ui divider hidden"></div>
                             <% } }  %>
@@ -121,13 +120,13 @@
                             <% if (request.getParameter("screenvalue") != null) { %>
                             <div class="field">
                                 <label for="password">
-                                    <%=IdentityManagementEndpointUtil.i18n(recoveryResourceBundle, "enter.code.sent")%><%=Encode.forHtmlContent(request.getParameter("screenvalue"))%>
+                                    <%=IdentityManagementEndpointUtil.i18n(resourceBundle, "enter.code.sent.smsotp")%><%=Encode.forHtmlContent(request.getParameter("screenvalue"))%>
                                 </label>
                                 <input type="password" id='OTPcode' name="OTPcode"
                                         size='30'/>
                             <% } else { %>
                             <div class="field">
-                                <label for="password"><%=IdentityManagementEndpointUtil.i18n(recoveryResourceBundle, "enter.code.sent")%></label>
+                                <label for="password"><%=IdentityManagementEndpointUtil.i18n(resourceBundle, "enter.code.sent.smsotp")%></label>
                                 <input type="password" id='OTPcode' name="OTPcode"
                                 size='30'/>
                             <% } %>
@@ -144,22 +143,22 @@
                                         if ("true".equals(reSendCode)) {
                                 %>
                                     <div id="resendCodeLinkDiv" class="ui button link-button">
-                                        <a id="resend"><%=IdentityManagementEndpointUtil.i18n(recoveryResourceBundle, "resend.code")%></a>
+                                        <a id="resend"><%=IdentityManagementEndpointUtil.i18n(resourceBundle, "resend.code")%></a>
                                     </div>
                                 <% } } %>
                                 <input
                                     type="button" name="authenticate" id="authenticate"
-                                    value="<%=IdentityManagementEndpointUtil.i18n(recoveryResourceBundle, "authenticate")%>" class="ui primary button"/>
+                                    value="<%=IdentityManagementEndpointUtil.i18n(resourceBundle, "authenticate.button")%>" class="ui primary button"/>
                             </div>
                             <input type='hidden' name='resendCode' id='resendCode' value='false'/>
                             <div class="col-xs-12 col-sm-12 col-md-12 col-lg-12 form-group">
                                <hr class="separator">
                                <%
-				  File disclaimerFile = new File(getServletContext().getRealPath("extensions/toolkit-disclaimer.jsp"));
-				  if (disclaimerFile.exists()) {
-			       %>
-			            <jsp:include page="extensions/toolkit-disclaimer.jsp"/>
-			      <% } %>
+                  File disclaimerFile = new File(getServletContext().getRealPath("extensions/toolkit-disclaimer.jsp"));
+                  if (disclaimerFile.exists()) {
+                   %>
+                        <jsp:include page="extensions/toolkit-disclaimer.jsp"/>
+                  <% } %>
                             </div>
                         </form>
                     </div>
@@ -196,7 +195,7 @@
                     var OTPcode = document.getElementById("OTPcode").value;
                     if (OTPcode == "") {
                         document.getElementById('alertDiv').innerHTML
-                            = '<div id="error-msg" class="ui negative message"><%=IdentityManagementEndpointUtil.i18n(recoveryResourceBundle, "please.enter.code")%></div><div class="ui divider hidden"></div>';
+                            = '<div id="error-msg" class="ui negative message"><%=IdentityManagementEndpointUtil.i18n(resourceBundle, "please.enter.code")%></div><div class="ui divider hidden"></div>';
                     } else {
                         $('#pin_form').data("submitted", true);
                         $('#pin_form').submit();
@@ -219,13 +218,13 @@
                 var counter = document.getElementById("otpTimeout");
                 if (minutes == 0 && seconds == 0) {
                     counter.innerHTML = "The OTP is expired";
-		    counter.style.color="#ff5e5e";
+            counter.style.color="#ff5e5e";
                 } else {
                   counter.innerHTML = "The OTP will expire in " +
                     minutes.toString() + ":" + (seconds < 10 ? "0" : "") + String(seconds);
                     if (minutes == 0 && seconds <= 10 ) {
-			counter.style.color="orange";
-	            }
+            counter.style.color="orange";
+                }
                 }
                 seconds--;
                 if (seconds >= 0) {

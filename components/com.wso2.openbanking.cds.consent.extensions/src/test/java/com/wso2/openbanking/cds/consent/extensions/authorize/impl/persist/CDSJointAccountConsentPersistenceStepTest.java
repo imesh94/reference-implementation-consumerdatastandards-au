@@ -107,19 +107,20 @@ public class CDSJointAccountConsentPersistenceStepTest {
         ArgumentCaptor<Object> jointAccountIdWithUsersCaptor = ArgumentCaptor.forClass(Object.class);
         ArgumentCaptor<Object> usersWithMultipleJointAccountsCaptor = ArgumentCaptor.forClass(Object.class);
 
-        verify(consentPersistDataMock).addMetadata(eq(CDSConsentExtensionConstants.MAP_JOINT_ACCOUNTS_ID_WITH_USERS),
-                jointAccountIdWithUsersCaptor.capture());
-        Map<String, List<String>> jointAccountIdWithUsersCaptorValue =
-                (Map<String, List<String>>) jointAccountIdWithUsersCaptor.getValue();
+        verify(consentPersistDataMock).addMetadata(eq(CDSConsentExtensionConstants.
+                        NON_PRIMARY_ACCOUNT_ID_AGAINST_USERS_MAP), jointAccountIdWithUsersCaptor.capture());
+        Map<String, Map<String, String>> jointAccountIdWithUsersCaptorValue =
+                (Map<String, Map<String, String>>) jointAccountIdWithUsersCaptor.getValue();
 
-        verify(consentPersistDataMock).addMetadata(eq(CDSConsentExtensionConstants.MAP_USER_ID_WITH_JOINT_ACCOUNTS),
-                usersWithMultipleJointAccountsCaptor.capture());
+        verify(consentPersistDataMock).addMetadata(eq(CDSConsentExtensionConstants.
+                        USER_ID_AGAINST_NON_PRIMARY_ACCOUNTS_MAP), usersWithMultipleJointAccountsCaptor.capture());
         Map<String, List<String>> usersWithMultipleJointAccountsCaptorValue =
                 (Map<String, List<String>>) usersWithMultipleJointAccountsCaptor.getValue();
 
         assertTrue(jointAccountIdWithUsersCaptorValue.containsKey("joint-account-id"));
-        assertTrue(jointAccountIdWithUsersCaptorValue.get("joint-account-id").contains("john@wso2.com@carbon.super"));
-        assertTrue(jointAccountIdWithUsersCaptorValue.get("joint-account-id").contains("amy@wso2.com@carbon.super"));
+        assertTrue(jointAccountIdWithUsersCaptorValue.get("joint-account-id").
+                containsKey("john@wso2.com@carbon.super"));
+        assertTrue(jointAccountIdWithUsersCaptorValue.get("joint-account-id").containsKey("amy@wso2.com@carbon.super"));
 
         assertTrue(usersWithMultipleJointAccountsCaptorValue.containsKey("john@wso2.com@carbon.super"));
         assertTrue(usersWithMultipleJointAccountsCaptorValue.containsKey("amy@wso2.com@carbon.super"));

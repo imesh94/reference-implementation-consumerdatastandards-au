@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2021, WSO2 Inc. (http://www.wso2.com). All Rights Reserved.
+ * Copyright (c) 2021 - 2023, WSO2 Inc. (http://www.wso2.com). All Rights Reserved.
  *
  * This software is the property of WSO2 Inc. and its suppliers, if any.
  * Dissemination of any information or reproduction of any material contained
@@ -61,14 +61,14 @@ class AdminApiValidationTests extends AbstractAUTests {
 
         def response = TestSuite.buildRequest()
                 .header(AUConstants.CONTENT_TYPE, "application/json")
-                .header(AUConstants.X_V_HEADER, AUConstants.X_V_HEADER_METRICS)
+                .header(AUConstants.X_V_HEADER, 1)
                 .header(TestConstants.AUTHORIZATION_HEADER_KEY, "Bearer ${accessToken}")
                 .baseUri(AUTestUtil.getBaseUrl(AUConstants.BASE_PATH_TYPE_ADMIN))
                 .body(requestBody)
                 .post("${CDS_PATH}${AUConstants.GET_META}")
 
         Assert.assertEquals(response.statusCode(), AUConstants.STATUS_CODE_200)
-        Assert.assertEquals(response.getHeader(AUConstants.X_V_HEADER).toInteger(), AUConstants.X_V_HEADER_METRICS)
+        Assert.assertEquals(response.getHeader(AUConstants.X_V_HEADER), AUConstants.X_V_HEADER_METRICS)
     }
 
     @Test
@@ -113,8 +113,7 @@ class AdminApiValidationTests extends AbstractAUTests {
         Assert.assertEquals(response.statusCode(), AUConstants.STATUS_CODE_200)
     }
 
-    //TODO: Enable the tests case after implementing the feature
-    @Test(enabled = false)
+    @Test
     void "Meta Data Update with authorisation code type access token"() {
 
         doConsentAuthorisation()
@@ -185,7 +184,7 @@ class AdminApiValidationTests extends AbstractAUTests {
     @Test
     void "TC1002003_Metrics Data Historic"() {
 
-        accessToken = accessTokenJWTDTO.getJWT(AUConstants.ADMIN_API_ISSUER, AUConstants.ADMIN_API_AUDIENCE)
+        accessToken = accessTokenJWTDTO.getJwt(AUConstants.ADMIN_API_ISSUER, AUConstants.ADMIN_API_AUDIENCE)
 
         def response = TestSuite.buildRequest()
                 .header(AUConstants.CONTENT_TYPE, "application/json")

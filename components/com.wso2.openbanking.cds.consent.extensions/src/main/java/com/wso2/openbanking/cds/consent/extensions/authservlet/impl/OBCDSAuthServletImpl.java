@@ -1,19 +1,17 @@
 /*
- * Copyright (c) 2021, WSO2 Inc. (http://www.wso2.com). All Rights Reserved.
+ * Copyright (c) 2021-2023, WSO2 LLC. (https://www.wso2.com). All Rights Reserved.
  *
- * This software is the property of WSO2 Inc. and its suppliers, if any.
+ * This software is the property of WSO2 LLC. and its suppliers, if any.
  * Dissemination of any information or reproduction of any material contained
- * herein is strictly forbidden, unless permitted by WSO2 in accordance with
- * the WSO2 Software License available at https://wso2.com/licenses/eula/3.1. For specific
- * language governing the permissions and limitations under this license,
- * please see the license as well as any agreement you’ve entered into with
- * WSO2 governing the purchase of this software and any associated services.
+ * herein in any form is strictly forbidden, unless permitted by WSO2 expressly.
+ * You may not alter or remove any copyright or other notice from copies of this content.
  */
 package com.wso2.openbanking.cds.consent.extensions.authservlet.impl;
 
 import com.wso2.openbanking.accelerator.consent.extensions.authservlet.model.OBAuthServletInterface;
 import com.wso2.openbanking.cds.common.config.OpenBankingCDSConfigParser;
 import com.wso2.openbanking.cds.consent.extensions.common.CDSConsentExtensionConstants;
+import org.apache.commons.lang3.StringUtils;
 import org.json.JSONArray;
 import org.json.JSONObject;
 
@@ -30,21 +28,41 @@ import javax.servlet.http.HttpServletRequest;
  */
 public class OBCDSAuthServletImpl implements OBAuthServletInterface {
 
+    String preSelectedProfileId;
     @Override
     public Map<String, Object> updateRequestAttribute(HttpServletRequest httpServletRequest, JSONObject dataSet,
                                                       ResourceBundle resourceBundle) {
 
         Map<String, Object> returnMaps = new HashMap<>();
+        preSelectedProfileId = "";
 
         // Set "data_requested" that contains the human-readable scope-requested information
         JSONArray dataRequestedJsonArray = dataSet.getJSONArray(CDSConsentExtensionConstants.DATA_REQUESTED);
+        JSONArray businessDataClusterArray = dataSet.getJSONArray(CDSConsentExtensionConstants.BUSINESS_DATA_CLUSTER);
         Map<String, List<String>> dataRequested = getRequestedDataMap(dataRequestedJsonArray);
+        Map<String, List<String>> businessDataCluster = getRequestedDataMap(businessDataClusterArray);
         returnMaps.put(CDSConsentExtensionConstants.DATA_REQUESTED, dataRequested);
+        returnMaps.put(CDSConsentExtensionConstants.BUSINESS_DATA_CLUSTER, businessDataCluster);
 
         // Add accounts list
         JSONArray accountsArray = dataSet.getJSONArray(CDSConsentExtensionConstants.ACCOUNTS);
         List<Map<String, Object>> accountsData = getAccountsDataMap(accountsArray);
         httpServletRequest.setAttribute(CDSConsentExtensionConstants.ACCOUNTS_DATA, accountsData);
+
+        // Add customer profiles list
+        if (dataSet.has(CDSConsentExtensionConstants.CUSTOMER_PROFILES_ATTRIBUTE)) {
+            JSONArray profilesArray = dataSet.getJSONArray(CDSConsentExtensionConstants.CUSTOMER_PROFILES_ATTRIBUTE);
+            List<Map<String, Object>> customerProfilesData = getCustomerProfileDataList(profilesArray);
+            httpServletRequest.setAttribute(CDSConsentExtensionConstants.PROFILES_DATA_ATTRIBUTE, customerProfilesData);
+        }
+
+        // Add selected profile if available (This can be available either in the consent amendment flow or
+        // when only a single profile is present for the user.)
+        if (dataSet.has(CDSConsentExtensionConstants.PRE_SELECTED_PROFILE_ID)) {
+            httpServletRequest.setAttribute(CDSConsentExtensionConstants.PRE_SELECTED_PROFILE_ID,
+                    dataSet.get(CDSConsentExtensionConstants.PRE_SELECTED_PROFILE_ID));
+            preSelectedProfileId = (String) dataSet.get(CDSConsentExtensionConstants.PRE_SELECTED_PROFILE_ID);
+        }
 
         //Consent amendment flow
         if (dataSet.has(CDSConsentExtensionConstants.IS_CONSENT_AMENDMENT) &&
@@ -65,6 +83,8 @@ public class OBCDSAuthServletImpl implements OBAuthServletInterface {
         // Add additional attributes to be displayed
         httpServletRequest.setAttribute(CDSConsentExtensionConstants.SP_FULL_NAME,
                 dataSet.getString(CDSConsentExtensionConstants.SP_FULL_NAME));
+        httpServletRequest.setAttribute(CDSConsentExtensionConstants.REDIRECT_URL,
+                dataSet.getString(CDSConsentExtensionConstants.REDIRECT_URL));
         // Check for zero sharing duration and display as once off consent
         if (CDSConsentExtensionConstants.ZERO.equals(dataSet.getString(CDSConsentExtensionConstants.CONSENT_EXPIRY))) {
             httpServletRequest.setAttribute(CDSConsentExtensionConstants.CONSENT_EXPIRY,
@@ -93,6 +113,10 @@ public class OBCDSAuthServletImpl implements OBAuthServletInterface {
         String[] accounts = httpServletRequest.getParameter(
                 CDSConsentExtensionConstants.ACCOUNTS_ARRAY).split(":");
         returnMaps.put(CDSConsentExtensionConstants.ACCOUNT_IDS, new JSONArray(accounts));
+        returnMaps.put(CDSConsentExtensionConstants.SELECTED_PROFILE_ID, httpServletRequest.getParameter(
+                CDSConsentExtensionConstants.SELECTED_PROFILE_ID));
+        returnMaps.put(CDSConsentExtensionConstants.SELECTED_PROFILE_NAME, httpServletRequest.getParameter(
+                CDSConsentExtensionConstants.SELECTED_PROFILE_NAME));
 
         return returnMaps;
     }
@@ -104,11 +128,17 @@ public class OBCDSAuthServletImpl implements OBAuthServletInterface {
 
     @Override
     public String getJSPPath() {
-        return "/ob_cds_default.jsp";
+        // If profile is already selected, skip the profile selection page
+        if (StringUtils.isBlank(preSelectedProfileId)) {
+            return "/ob_cds_profile_selection.jsp";
+        } else {
+            return "/ob_cds_account_selection.jsp";
+        }
     }
 
     private void updateJointAccountAttributes(JSONObject account, Map<String, Object> data) {
-        if (account != null && account.getBoolean(CDSConsentExtensionConstants.IS_JOINT_ACCOUNT_RESPONSE)) {
+        if (account != null && (account.getBoolean(CDSConsentExtensionConstants.IS_JOINT_ACCOUNT_RESPONSE))
+                && !account.getBoolean(CDSConsentExtensionConstants.IS_SECONDARY_ACCOUNT_RESPONSE)) {
             data.put(CDSConsentExtensionConstants.IS_JOINT_ACCOUNT, true);
 
             String consentElectionStatus = String
@@ -124,6 +154,33 @@ public class OBCDSAuthServletImpl implements OBAuthServletInterface {
         }
     }
 
+    /**
+     * Update Secondary Account Details.
+     *
+     * @param account: account object
+     * @param data: data map
+     * @return
+     */
+    private void updateSecondaryAccountAttributes(JSONObject account, Map<String, Object> data) {
+        if (account != null && account.getBoolean(CDSConsentExtensionConstants.IS_SECONDARY_ACCOUNT_RESPONSE)) {
+            data.put(CDSConsentExtensionConstants.IS_SECONDARY_ACCOUNT, true);
+
+            // secondaryAccountPrivilegeStatus depicts whether the account is enabled for secondary user data sharing
+            Boolean secondaryAccountPrivilegeStatus = Boolean.valueOf(String
+                    .valueOf(account.get(CDSConsentExtensionConstants.SECONDARY_ACCOUNT_PRIVILEGE_STATUS)));
+
+            // handle secondary joint accounts
+            if (account.getBoolean(CDSConsentExtensionConstants.IS_JOINT_ACCOUNT_RESPONSE)) {
+                String consentElectionStatus = String
+                        .valueOf(account.get(CDSConsentExtensionConstants.JOINT_ACCOUNT_CONSENT_ELECTION_STATUS));
+                Boolean isPreApproved = CDSConsentExtensionConstants.JOINT_ACCOUNT_PRE_APPROVAL
+                        .equalsIgnoreCase(consentElectionStatus);
+                data.put(CDSConsentExtensionConstants.IS_SELECTABLE, isPreApproved && secondaryAccountPrivilegeStatus);
+            } else {
+                data.put(CDSConsentExtensionConstants.IS_SELECTABLE, secondaryAccountPrivilegeStatus);
+            }
+        }
+    }
 
     private Map<String, List<String>> getRequestedDataMap(JSONArray dataRequestedJsonArray) {
 
@@ -152,6 +209,7 @@ public class OBCDSAuthServletImpl implements OBAuthServletInterface {
             String displayName = account.getString(CDSConsentExtensionConstants.DISPLAY_NAME);
             String isPreSelectedAccount = "false";
             updateJointAccountAttributes(account, data);
+            updateSecondaryAccountAttributes(account, data);
 
             if (account.has(CDSConsentExtensionConstants.IS_PRE_SELECTED_ACCOUNT)) {
                 isPreSelectedAccount = account.getString(CDSConsentExtensionConstants.IS_PRE_SELECTED_ACCOUNT);
@@ -162,6 +220,37 @@ public class OBCDSAuthServletImpl implements OBAuthServletInterface {
             accountsData.add(data);
         }
         return accountsData;
+    }
+
+    /**
+     * Get the customer profile data list
+     *
+     * @param customerProfilesArray customer profiles array
+     * @return customer profile data list
+     */
+    private List<Map<String, Object>> getCustomerProfileDataList(JSONArray customerProfilesArray) {
+
+        List<Map<String, Object>> profileDataList = new ArrayList<>();
+        for (int i = 0; i < customerProfilesArray.length(); i++) {
+            JSONObject customerProfile = customerProfilesArray.getJSONObject(i);
+            String profileId = customerProfile.getString(CDSConsentExtensionConstants.PROFILE_ID);
+            String profileName = customerProfile.getString(CDSConsentExtensionConstants.PROFILE_NAME);
+            JSONArray accountIdsArray = customerProfile.getJSONArray(CDSConsentExtensionConstants.ACCOUNT_IDS);
+
+            List<String> accountIdsList = new ArrayList<>();
+            for (int j = 0; j < accountIdsArray.length(); j++) {
+                String accountId = accountIdsArray.getString(j);
+                accountIdsList.add(accountId);
+            }
+
+            Map<String, Object> customerProfileMap = new HashMap<>();
+            customerProfileMap.put(CDSConsentExtensionConstants.PROFILE_ID, profileId);
+            customerProfileMap.put(CDSConsentExtensionConstants.PROFILE_NAME, profileName);
+            customerProfileMap.put(CDSConsentExtensionConstants.ACCOUNT_IDS, accountIdsList);
+
+            profileDataList.add(customerProfileMap);
+        }
+        return profileDataList;
     }
 
 }

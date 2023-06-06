@@ -184,8 +184,13 @@ id_token_token.enable = false
 device.enable = true
 
 [[oauth.custom_response_type]]
+name = "code"
+class = "com.wso2.openbanking.accelerator.identity.auth.extensions.response.handler.OBCodeResponseTypeHandlerExtension"
+
+[[oauth.custom_response_type]]
 name = "code id_token"
 class = "com.wso2.openbanking.accelerator.identity.auth.extensions.response.handler.OBHybridResponseTypeHandlerExtension"
+validator = "com.wso2.openbanking.accelerator.identity.auth.extensions.response.validator.OBHybridResponseTypeValidator"
 
 [[event_listener]]
 id = "token_revocation"
@@ -434,9 +439,13 @@ grant_handler="com.wso2.openbanking.accelerator.identity.grant.type.handlers.OBC
 claim_callback_handler="com.wso2.openbanking.accelerator.identity.claims.OBDefaultOIDCClaimsCallbackHandler"
 request_object_validator = "com.wso2.openbanking.accelerator.identity.auth.extensions.request.validator.OBRequestObjectValidationExtension"
 id_token_builder = "com.wso2.openbanking.accelerator.identity.idtoken.OBIDTokenBuilder"
+oauth_authz_request_class = "com.wso2.openbanking.accelerator.identity.auth.extensions.authz.request.OBOAuthAuthzRequest"
 
 [transport.https.sslHostConfig.properties]
 ciphers="TLS_DHE_RSA_WITH_AES_128_GCM_SHA256,TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256,TLS_DHE_RSA_WITH_AES_256_GCM_SHA384,TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384"
+
+[application_mgt]
+enable_role_validation = true
 #================configs related to identity-event.properties=============
 
 [[event_handler]]
@@ -482,8 +491,9 @@ name = "cdr-register"
 name = "IdentifierExecutor"
 display = "ob-identifier-first"
 
-#[open_banking.sca.idp]
-#name = ""
+[open_banking.sca.idp]
+name = "SMSAuthentication"
+step = 2
 
 [open_banking.dcr.registration.grant_types]
 allowed_values = ["authorization_code", "refresh_token", "client_credentials"]
@@ -728,13 +738,25 @@ priority = 3
 class = "com.wso2.openbanking.cds.consent.extensions.authorize.impl.retrieval.CDSAccountListRetrievalStep"
 priority = 4
 
+[[open_banking.consent.authorize_steps.retrieve]]
+class = "com.wso2.openbanking.cds.consent.extensions.authorize.impl.retrieval.CDSProfileListRetrievalStep"
+priority = 5
+
 [[open_banking.consent.authorize_steps.persist]]
-class = "com.wso2.openbanking.cds.consent.extensions.authorize.impl.persist.CDSJointAccountConsentPersistenceStep"
+class = "com.wso2.openbanking.cds.consent.extensions.authorize.impl.persist.CDSBusinessAccountConsentPersistenceStep"
 priority = 1
 
 [[open_banking.consent.authorize_steps.persist]]
-class = "com.wso2.openbanking.cds.consent.extensions.authorize.impl.persist.CDSConsentPersistStep"
+class = "com.wso2.openbanking.cds.consent.extensions.authorize.impl.persist.CDSSecondaryAccountConsentPersistenceStep"
 priority = 2
+
+[[open_banking.consent.authorize_steps.persist]]
+class = "com.wso2.openbanking.cds.consent.extensions.authorize.impl.persist.CDSJointAccountConsentPersistenceStep"
+priority = 3
+
+[[open_banking.consent.authorize_steps.persist]]
+class = "com.wso2.openbanking.cds.consent.extensions.authorize.impl.persist.CDSConsentPersistStep"
+priority = 4
 
 [open_banking.consent.manage]
 handler="com.wso2.openbanking.accelerator.consent.extensions.manage.impl.DefaultConsentManageHandler"
@@ -803,7 +825,7 @@ expiry=2
 update_period=4
 data_recipients_discovery_url="https://api.cdr.gov.au/cdr-register/v1/banking/data-recipients"
 dcr_internal_url="https://IS_HOSTNAME:9446/api/openbanking/dynamic-client-registration/register"
-apim_application_search_url="https://APIM_HOSTNAME:9443/api/am/admin/v2/applications"
+apim_application_search_url="https://APIM_HOSTNAME:9443/api/am/admin/v4/applications"
 http_request_retry_count=2
 dataholder_responsibilities.bulk_execution=true
 dataholder_responsibilities.bulk_execution_hour=2
@@ -825,3 +847,11 @@ class = "com.wso2.openbanking.accelerator.identity.token.validators.MTLSEnforcem
 
 [[open_banking_cds.filter_validators.par_filter_validators]]
 class = "com.wso2.openbanking.accelerator.identity.token.validators.MTLSEnforcementValidator"
+
+[open_banking_cds.bnr]
+prioritize_sharable_accounts_response=true
+enable_consent_revocation=true
+validate_accounts_on_retrieval=true
+
+[open_banking_cds.secondary_user_accounts]
+enable = true

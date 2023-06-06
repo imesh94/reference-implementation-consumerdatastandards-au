@@ -207,7 +207,7 @@ public class TestConstants {
 
     //Second Factor Authenticator
     public static final String OTP_CODE = "123456";
-    public static final String LBL_SMSOTP_AUTHENTICATOR = "//h2[text()='Authenticating with SMSOTP']";
+    public static final String LBL_SMSOTP_AUTHENTICATOR = "//h3[text()='Authenticating with SMSOTP']";
     public static final String TXT_OTP_CODE = "OTPcode";
     public static final String BTN_AUTHENTICATE = "//input[@id='authenticate']";
 

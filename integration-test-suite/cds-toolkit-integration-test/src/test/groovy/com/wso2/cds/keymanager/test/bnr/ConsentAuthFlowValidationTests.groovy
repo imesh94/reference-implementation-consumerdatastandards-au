@@ -18,6 +18,7 @@ import com.wso2.cds.test.framework.constant.AUPageObjects
 import com.wso2.cds.test.framework.utility.AUTestUtil
 import com.wso2.openbanking.test.framework.automation.AutomationMethod
 import org.openqa.selenium.By
+import org.openqa.selenium.WebElement
 import org.testng.Assert
 import org.testng.annotations.BeforeClass
 import org.testng.annotations.Test
@@ -62,7 +63,7 @@ class ConsentAuthFlowValidationTests extends AUTest{
         response = auAuthorisationBuilder.doPushAuthorisationRequest(scopes, AUConstants.DEFAULT_SHARING_DURATION,
                 true, "")
         requestUri = AUTestUtil.parseResponseBody(response, AUConstants.REQUEST_URI)
-        authoriseUrl = auAuthorisationBuilder.getAuthorizationRequest(scopes, requestUri)
+        authoriseUrl = auAuthorisationBuilder.getAuthorizationRequest(scopes, requestUri.toURI()).toURI().toString()
                 .toURI().toString()
 
         //Consent Authorisation UI Flow
@@ -89,14 +90,14 @@ class ConsentAuthFlowValidationTests extends AUTest{
     @Test (priority = 1)
     void "CDS-543_Verify customer language in consent page for individual consumer"() {
 
-        auConfiguration.setPsuNumber(1)
+        auConfiguration.setPsuNumber(0)
         List<AUAccountScope> scopes = [AUAccountScope.BANK_CUSTOMER_BASIC_READ]
 
         //Get Authorisation URL
         response = auAuthorisationBuilder.doPushAuthorisationRequest(scopes, AUConstants.DEFAULT_SHARING_DURATION,
                 true, "")
         requestUri = AUTestUtil.parseResponseBody(response, AUConstants.REQUEST_URI)
-        authoriseUrl = auAuthorisationBuilder.getAuthorizationRequest(scopes, requestUri)
+        authoriseUrl = auAuthorisationBuilder.getAuthorizationRequest(scopes, requestUri.toURI()).toURI().toString()
                 .toURI().toString()
 
         //Consent Authorisation UI Flow
@@ -116,13 +117,16 @@ class ConsentAuthFlowValidationTests extends AUTest{
                         assert authWebDriver.isElementDisplayed(AUTestUtil.getSingleAccountXPath())
                         authWebDriver.clickButtonXpath(AUTestUtil.getSingleAccountXPath())
 
-                        Assert.assertTrue(authWebDriver.getElementAttribute(AUPageObjects.LBL_PERMISSION_HEADER,
-                                AUPageObjects.TEXT).trim().contains(AUConstants.BANK_CUSTOMER_BASIC_READ_INDIVIDUAL))
+                        //Click Confirm Button
+                        authWebDriver.clickButtonXpath(AUPageObjects.CONSENT_CONFIRM_XPATH)
+
+                        Assert.assertTrue(authWebDriver.getAttributeText(AUPageObjects.LBL_PERMISSION_HEADER)
+                                .contains(AUConstants.BANK_CUSTOMER_BASIC_READ_INDIVIDUAL))
                         authWebDriver.clickButtonXpath(AUPageObjects.LBL_PERMISSION_HEADER)
-                        Assert.assertEquals(authWebDriver.getElementAttribute(AUPageObjects.LBL_PERMISSION_LIST_ITEM_1,
-                                AUPageObjects.TEXT).trim(), AUConstants.LBL_NAME)
-                        Assert.assertEquals(authWebDriver.getElementAttribute(AUPageObjects.LBL_PERMISSION_LIST_ITEM_2,
-                                AUPageObjects.TEXT), AUConstants.LBL_OCCUPATION)
+                        Assert.assertEquals(authWebDriver.getAttributeText(AUPageObjects.LBL_PERMISSION_LIST_ITEM_1),
+                                AUConstants.LBL_NAME)
+                        Assert.assertEquals(authWebDriver.getAttributeText(AUPageObjects.LBL_PERMISSION_LIST_ITEM_2),
+                                AUConstants.LBL_OCCUPATION)
 
                     } else {
                         assert authWebDriver.isElementDisplayed(AUTestUtil.getSingleAccountXPath())
@@ -141,7 +145,7 @@ class ConsentAuthFlowValidationTests extends AUTest{
         response = auAuthorisationBuilder.doPushAuthorisationRequest(scopes, AUConstants.DEFAULT_SHARING_DURATION,
                 true, "")
         requestUri = AUTestUtil.parseResponseBody(response, AUConstants.REQUEST_URI)
-        authoriseUrl = auAuthorisationBuilder.getAuthorizationRequest(scopes, requestUri)
+        authoriseUrl = auAuthorisationBuilder.getAuthorizationRequest(scopes, requestUri.toURI()).toURI().toString()
                 .toURI().toString()
 
         //Consent Authorisation UI Flow
@@ -161,32 +165,31 @@ class ConsentAuthFlowValidationTests extends AUTest{
                         assert authWebDriver.isElementDisplayed(AUTestUtil.getBusinessAccount1CheckBox())
                         authWebDriver.clickButtonXpath(AUTestUtil.getBusinessAccount1CheckBox())
 
+                        //Click Confirm Button
+                        authWebDriver.clickButtonXpath(AUPageObjects.CONSENT_CONFIRM_XPATH)
+
                         //Verify Consent Page
                         assert authWebDriver.isElementDisplayed(AUTestUtil.getBusinessAccount1Label())
-                        Assert.assertTrue(authWebDriver.getElementAttribute(AUPageObjects.LBL_PERMISSION_HEADER,
-                                AUPageObjects.TEXT).trim().contains(AUConstants.BANK_CUSTOMER_BASIC_READ))
-                        Assert.assertEquals(authWebDriver.getElementAttribute(AUPageObjects.LBL_PERMISSION_HEADER_ORG_PROFILE +
-                                AUPageObjects.LBL_PERMISSION_LIST_ITEM_1, AUPageObjects.TEXT),
+                        Assert.assertTrue(authWebDriver.getAttributeText(AUPageObjects.LBL_PERMISSION_HEADER)
+                                .contains(AUConstants.BANK_CUSTOMER_BASIC_READ))
+
+                        //Expand Permission List
+                        authWebDriver.clickButtonXpath(AUPageObjects.LBL_PERMISSION_HEADER)
+                        Assert.assertEquals(authWebDriver.getAttributeText(AUPageObjects.LBL_PERMISSION_LIST_ITEM_1),
                                 AUConstants.LBL_AGENT_NAME_AND_ROLE)
-                        Assert.assertEquals(authWebDriver.getElementAttribute(AUPageObjects.LBL_PERMISSION_HEADER_ORG_PROFILE +
-                                AUPageObjects.LBL_PERMISSION_LIST_ITEM_2, AUPageObjects.TEXT),
+                        Assert.assertEquals(authWebDriver.getAttributeText(AUPageObjects.LBL_PERMISSION_LIST_ITEM_2),
                                 AUConstants.LBL_ORGANISATION_NAME)
-                        Assert.assertEquals(authWebDriver.getElementAttribute(AUPageObjects.LBL_PERMISSION_HEADER_ORG_PROFILE +
-                                AUPageObjects.LBL_PERMISSION_LIST_ITEM_3, AUPageObjects.TEXT),
+                        Assert.assertEquals(authWebDriver.getAttributeText(AUPageObjects.LBL_PERMISSION_LIST_ITEM_3),
                                 AUConstants.LBL_ORGANISATION_NUMBER)
-                        Assert.assertEquals(authWebDriver.getElementAttribute(AUPageObjects.LBL_PERMISSION_HEADER_ORG_PROFILE +
-                                AUPageObjects.LBL_PERMISSION_LIST_ITEM_4, AUPageObjects.TEXT),
+                        Assert.assertEquals(authWebDriver.getAttributeText(AUPageObjects.LBL_PERMISSION_LIST_ITEM_4),
                                 AUConstants.LBL_CHARITY_STATUS)
-                        Assert.assertEquals(authWebDriver.getElementAttribute(AUPageObjects.LBL_PERMISSION_HEADER_ORG_PROFILE +
-                                AUPageObjects.LBL_PERMISSION_LIST_ITEM_5, AUPageObjects.TEXT),
+                        Assert.assertEquals(authWebDriver.getAttributeText(AUPageObjects.LBL_PERMISSION_LIST_ITEM_5),
                                 AUConstants.LBL_ESTABLISHMENT_DATE)
-                        Assert.assertEquals(authWebDriver.getElementAttribute(AUPageObjects.LBL_PERMISSION_HEADER_ORG_PROFILE +
-                                AUPageObjects.LBL_PERMISSION_LIST_ITEM_6, AUPageObjects.TEXT), AUConstants.LBL_INDUSTRY)
-                        Assert.assertEquals(authWebDriver.getElementAttribute(AUPageObjects.LBL_PERMISSION_HEADER_ORG_PROFILE +
-                                AUPageObjects.LBL_PERMISSION_LIST_ITEM_7, AUPageObjects.TEXT),
+                        Assert.assertEquals(authWebDriver.getAttributeText(AUPageObjects.LBL_PERMISSION_LIST_ITEM_6),
+                                AUConstants.LBL_INDUSTRY)
+                        Assert.assertEquals(authWebDriver.getAttributeText(AUPageObjects.LBL_PERMISSION_LIST_ITEM_7),
                                 AUConstants.LBL_ORGANISATION_TYPE)
-                        Assert.assertEquals(authWebDriver.getElementAttribute(AUPageObjects.LBL_PERMISSION_HEADER_ORG_PROFILE +
-                                AUPageObjects.LBL_PERMISSION_LIST_ITEM_8, AUPageObjects.TEXT),
+                        Assert.assertEquals(authWebDriver.getAttributeText(AUPageObjects.LBL_PERMISSION_LIST_ITEM_8),
                                 AUConstants.LBL_COUNTRY_OF_REGISTRATION)
 
                     } else {
@@ -198,13 +201,13 @@ class ConsentAuthFlowValidationTests extends AUTest{
     }
 
     @Test
-    void "CDS-484_Verify a Consent denial flow after Business Profile selection"() {
+    void "CDS-484_Verify a Consent cancellation flow after Business Profile selection"() {
 
         //Get Authorisation URL
         response = auAuthorisationBuilder.doPushAuthorisationRequest(scopes, AUConstants.DEFAULT_SHARING_DURATION,
                 true, "")
         requestUri = AUTestUtil.parseResponseBody(response, AUConstants.REQUEST_URI)
-        authoriseUrl = auAuthorisationBuilder.getAuthorizationRequest(scopes, requestUri)
+        authoriseUrl = auAuthorisationBuilder.getAuthorizationRequest(scopes, requestUri.toURI()).toURI().toString()
                 .toURI().toString()
 
         //Consent Authorisation UI Flow
@@ -218,9 +221,8 @@ class ConsentAuthFlowValidationTests extends AUTest{
 
                         //Select Individual Profile
                         authWebDriver.selectOption(AUPageObjects.ORGANIZATION_A_PROFILE_SELECTION)
-                        authWebDriver.clickButtonXpath(AUPageObjects.PROFILE_SELECTION_NEXT_BUTTON)
 
-                        authWebDriver.clickButtonXpath(AUPageObjects.CONSENT_DENY_XPATH)
+                        authWebDriver.clickButtonXpath(AUPageObjects.CONSENT_CANCEL_XPATH)
                         driver.findElement(By.xpath(AUPageObjects.CONFIRM_CONSENT_DENY_XPATH)).click()
 
                     } else {
@@ -237,13 +239,13 @@ class ConsentAuthFlowValidationTests extends AUTest{
     }
 
     @Test
-    void "CDS-588_Verify a Consent denial flow after Business Account selection"() {
+    void "CDS-588_Verify a Consent cancellation flow after Business Account selection"() {
 
         //Get Authorisation URL
         response = auAuthorisationBuilder.doPushAuthorisationRequest(scopes, AUConstants.DEFAULT_SHARING_DURATION,
                 true, "")
         requestUri = AUTestUtil.parseResponseBody(response, AUConstants.REQUEST_URI)
-        authoriseUrl = auAuthorisationBuilder.getAuthorizationRequest(scopes, requestUri)
+        authoriseUrl = auAuthorisationBuilder.getAuthorizationRequest(scopes, requestUri.toURI()).toURI().toString()
                 .toURI().toString()
 
         //Consent Authorisation UI Flow
@@ -264,7 +266,7 @@ class ConsentAuthFlowValidationTests extends AUTest{
                                 AUPageObjects.VALUE)
                         authWebDriver.clickButtonXpath(AUTestUtil.getBusinessAccount1CheckBox())
 
-                        authWebDriver.clickButtonXpath(AUPageObjects.CONSENT_DENY_XPATH)
+                        authWebDriver.clickButtonXpath(AUPageObjects.CONSENT_CANCEL_XPATH)
                         driver.findElement(By.xpath(AUPageObjects.CONFIRM_CONSENT_DENY_XPATH)).click()
 
                     } else {
@@ -287,13 +289,20 @@ class ConsentAuthFlowValidationTests extends AUTest{
         //Check the permissions of nominated representatives
         def permissionsResponse = getStakeholderPermissions(nominatedRepUserID2, accountID)
         Assert.assertEquals(permissionsResponse.statusCode(), AUConstants.OK)
-        Assert.assertEquals(AUTestUtil.parseResponseBody(permissionsResponse, AUTestUtil.getPermissionForUser(accountID)),
-                AUBusinessUserPermission.VIEW.getPermissionString())
+        Assert.assertTrue(AUTestUtil.parseResponseBody(permissionsResponse, "permissionStatus")
+                .contains("${nominatedRepUserID2}:${AUBusinessUserPermission.VIEW.getPermissionString()}"))
 
         //Change Permission from View to Authorise
         def permissionUpdateResponse = updateSingleBusinessUserPermission(clientHeader, accountID,
                 accountOwnerUserID, nominatedRepUserID2, AUBusinessUserPermission.AUTHORIZE.getPermissionString())
         Assert.assertEquals(permissionUpdateResponse.statusCode(), AUConstants.OK)
+
+        //Get Authorisation URL
+        response = auAuthorisationBuilder.doPushAuthorisationRequest(scopes, AUConstants.DEFAULT_SHARING_DURATION,
+                true, "")
+        requestUri = AUTestUtil.parseResponseBody(response, AUConstants.REQUEST_URI)
+        authoriseUrl = auAuthorisationBuilder.getAuthorizationRequest(scopes, requestUri.toURI()).toURI().toString()
+                .toURI().toString()
 
         //Consent Authorisation UI Flow to check the Authorize Permission
         def automation2 = getBrowserAutomation(AUConstants.DEFAULT_DELAY)
@@ -327,13 +336,20 @@ class ConsentAuthFlowValidationTests extends AUTest{
         //Check the permissions of nominated representatives
         def permissionsResponse = getStakeholderPermissions(nominatedRepUserID2, accountID)
         Assert.assertEquals(permissionsResponse.statusCode(), AUConstants.OK)
-        Assert.assertEquals(AUTestUtil.parseResponseBody(permissionsResponse, AUTestUtil.getPermissionForUser(accountID)),
-                AUBusinessUserPermission.AUTHORIZE.getPermissionString())
+        Assert.assertTrue(AUTestUtil.parseResponseBody(permissionsResponse, AUConstants.PARAM_PERMISSION_STATUS)
+                .contains("${nominatedRepUserID2}:${AUBusinessUserPermission.AUTHORIZE.getPermissionString()}"))
 
         //Change Permission from View to Authorise
         def permissionUpdateResponse = updateSingleBusinessUserPermission(clientHeader, accountID,
                 accountOwnerUserID, nominatedRepUserID2, AUBusinessUserPermission.VIEW.getPermissionString())
         Assert.assertEquals(permissionUpdateResponse.statusCode(), AUConstants.OK)
+
+        //Get Authorisation URL
+        response = auAuthorisationBuilder.doPushAuthorisationRequest(scopes, AUConstants.DEFAULT_SHARING_DURATION,
+                true, "")
+        requestUri = AUTestUtil.parseResponseBody(response, AUConstants.REQUEST_URI)
+        authoriseUrl = auAuthorisationBuilder.getAuthorizationRequest(scopes, requestUri.toURI()).toURI().toString()
+                .toURI().toString()
 
         //Consent Authorisation UI Flow to check the VIEW Permission
         def automation2 = getBrowserAutomation(AUConstants.DEFAULT_DELAY)
@@ -344,12 +360,10 @@ class ConsentAuthFlowValidationTests extends AUTest{
                     //Select Profile and Accounts
                     if (auConfiguration.getProfileSelectionEnabled()) {
 
-                        //Select Individual Profile
-                        authWebDriver.selectOption(AUPageObjects.ORGANIZATION_A_PROFILE_SELECTION)
-                        authWebDriver.clickButtonXpath(AUPageObjects.PROFILE_SELECTION_NEXT_BUTTON)
-
-                        //Check the account selection disabled
-                        Assert.assertFalse(authWebDriver.isElementEnabled(AUTestUtil.getBusinessAccount1CheckBox()))
+                        //Organization A should not be visible in the profile selection page
+                        // as the user has VIEW permission for the particular account
+                        List<WebElement> elements = driver.findElements(By.id(AUPageObjects.ORGANIZATION_A_PROFILE_SELECTION))
+                        Assert.assertTrue(elements.isEmpty(), "Element is present")
 
                     } else {
                         assert authWebDriver.isElementDisplayed(AUTestUtil.getSingleAccountXPath())
@@ -366,7 +380,7 @@ class ConsentAuthFlowValidationTests extends AUTest{
         response = auAuthorisationBuilder.doPushAuthorisationRequest(scopes, AUConstants.DEFAULT_SHARING_DURATION,
                 true, "")
         requestUri = AUTestUtil.parseResponseBody(response, AUConstants.REQUEST_URI)
-        authoriseUrl = auAuthorisationBuilder.getAuthorizationRequest(scopes, requestUri)
+        authoriseUrl = auAuthorisationBuilder.getAuthorizationRequest(scopes, requestUri.toURI()).toURI().toString()
                 .toURI().toString()
 
         //Consent Authorisation UI Flow
@@ -394,14 +408,16 @@ class ConsentAuthFlowValidationTests extends AUTest{
                 .execute()
     }
 
-    @Test
+    //TODO: To run the test case set prioritize_sharable_accounts_response=false in IS deployment.toml file
+    @Test (priority = 1)
     void "CDS-510_Verify Users with View Permission are not able to Authorize Consents"() {
 
+        auConfiguration.setPsuNumber(3)
         //Get Authorisation URL
         response = auAuthorisationBuilder.doPushAuthorisationRequest(scopes, AUConstants.DEFAULT_SHARING_DURATION,
                 true, "")
         requestUri = AUTestUtil.parseResponseBody(response, AUConstants.REQUEST_URI)
-        authoriseUrl = auAuthorisationBuilder.getAuthorizationRequest(scopes, requestUri)
+        authoriseUrl = auAuthorisationBuilder.getAuthorizationRequest(scopes, requestUri.toURI()).toURI().toString()
                 .toURI().toString()
 
         //Consent Authorisation UI Flow
@@ -413,12 +429,10 @@ class ConsentAuthFlowValidationTests extends AUTest{
                     //Select Profile and Accounts
                     if (auConfiguration.getProfileSelectionEnabled()) {
 
-                        //Select Individual Profile
-                        authWebDriver.selectOption(AUPageObjects.ORGANIZATION_A_PROFILE_SELECTION)
-                        authWebDriver.clickButtonXpath(AUPageObjects.PROFILE_SELECTION_NEXT_BUTTON)
-
-                        //Check the account selection disabled
-                        Assert.assertFalse(authWebDriver.isElementEnabled(AUTestUtil.getBusinessAccount1CheckBox()))
+                        //Organization A should not be visible in the profile selection page
+                        // as the user has VIEW permission for the particular account
+                        List<WebElement> elements = driver.findElements(By.id(AUPageObjects.ORGANIZATION_A_PROFILE_SELECTION))
+                        Assert.assertTrue(elements.isEmpty(), "Element is present")
 
                     } else {
                         assert authWebDriver.isElementDisplayed(AUTestUtil.getSingleAccountXPath())
@@ -437,7 +451,7 @@ class ConsentAuthFlowValidationTests extends AUTest{
         response = auAuthorisationBuilder.doPushAuthorisationRequest(scopes, AUConstants.DEFAULT_SHARING_DURATION,
                 true, "")
         requestUri = AUTestUtil.parseResponseBody(response, AUConstants.REQUEST_URI)
-        authoriseUrl = auAuthorisationBuilder.getAuthorizationRequest(scopes, requestUri)
+        authoriseUrl = auAuthorisationBuilder.getAuthorizationRequest(scopes, requestUri.toURI()).toURI().toString()
                 .toURI().toString()
 
         //Consent Authorisation UI Flow
@@ -449,12 +463,8 @@ class ConsentAuthFlowValidationTests extends AUTest{
                     //Select Profile and Accounts
                     if (auConfiguration.getProfileSelectionEnabled()) {
 
-                        //Select Individual Profile
-                        authWebDriver.selectOption(AUPageObjects.ORGANIZATION_A_PROFILE_SELECTION)
-                        authWebDriver.clickButtonXpath(AUPageObjects.PROFILE_SELECTION_NEXT_BUTTON)
-
-                        //Check the error message
-                        Assert.assertFalse(authWebDriver.isElementDisplayed(AUPageObjects.LBL_NO_ELIGIBLE_ACCOUNTS))
+                        //Profile selection page not displayed and directly loading the account selection page.
+                        Assert.assertTrue(authWebDriver.isElementDisplayed(AUTestUtil.getSingleAccountXPath()))
 
                     } else {
                         assert authWebDriver.isElementDisplayed(AUTestUtil.getSingleAccountXPath())
@@ -467,12 +477,12 @@ class ConsentAuthFlowValidationTests extends AUTest{
     @Test (priority = 1)
     void "CDS-541_Verify same user nominated for multiple accounts"() {
 
-        auConfiguration.setPsuNumber(3)
+        auConfiguration.setPsuNumber(2)
         //Get Authorisation URL
         response = auAuthorisationBuilder.doPushAuthorisationRequest(scopes, AUConstants.DEFAULT_SHARING_DURATION,
                 true, "")
         requestUri = AUTestUtil.parseResponseBody(response, AUConstants.REQUEST_URI)
-        authoriseUrl = auAuthorisationBuilder.getAuthorizationRequest(scopes, requestUri)
+        authoriseUrl = auAuthorisationBuilder.getAuthorizationRequest(scopes, requestUri.toURI()).toURI().toString()
                 .toURI().toString()
 
         //Consent Authorisation UI Flow
@@ -485,12 +495,12 @@ class ConsentAuthFlowValidationTests extends AUTest{
                     if (auConfiguration.getProfileSelectionEnabled()) {
 
                         //Select Individual Profile
-                        authWebDriver.selectOption(AUPageObjects.ORGANIZATION_A_PROFILE_SELECTION)
+                        authWebDriver.selectOption(AUPageObjects.ORGANIZATION_B_PROFILE_SELECTION)
                         authWebDriver.clickButtonXpath(AUPageObjects.PROFILE_SELECTION_NEXT_BUTTON)
 
                         //Check account selection page has multiple accounts
-                        Assert.assertTrue(authWebDriver.isElementEnabled(AUTestUtil.getBusinessAccount1Label()))
-                        Assert.assertTrue(authWebDriver.isElementEnabled(AUTestUtil.getBusinessAccount2Label()))
+                        Assert.assertTrue(authWebDriver.isElementEnabled(AUTestUtil.getBusinessAccount2CheckBox()))
+                        Assert.assertTrue(authWebDriver.isElementEnabled(AUTestUtil.getBusinessAccount3CheckBox()))
 
                     } else {
                         assert authWebDriver.isElementDisplayed(AUTestUtil.getSingleAccountXPath())

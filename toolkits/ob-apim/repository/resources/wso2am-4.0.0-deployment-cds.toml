@@ -53,7 +53,7 @@ validationQuery="SELECT 1"
 #Use below for oracle
 #validationQuery="SELECT 1 FROM DUAL"
 validationInterval="30000"
-defaultAutoCommit=false
+defaultAutoCommit=true
 
 # for api manager data
 [database.apim_db]
@@ -71,7 +71,7 @@ validationQuery="SELECT 1"
 #Use below for oracle
 #validationQuery="SELECT 1 FROM DUAL"
 validationInterval="30000"
-defaultAutoCommit=false
+defaultAutoCommit=true
 
 # for am-config registry
 [database.config]
@@ -89,7 +89,7 @@ validationQuery="SELECT 1"
 #Use below for oracle
 #validationQuery="SELECT 1 FROM DUAL"
 validationInterval="30000"
-defaultAutoCommit=false
+defaultAutoCommit=true
 
 # for user management data
 [[datasource]]
@@ -107,7 +107,7 @@ pool_options.validationQuery="SELECT 1"
 #Use below for oracle
 #validationQuery="SELECT 1 FROM DUAL"
 pool_options.validationInterval="30000"
-pool_options.defaultAutoCommit=false
+pool_options.defaultAutoCommit=true
 
 [tenant_mgt]
 enable_email_domain = true
@@ -191,10 +191,10 @@ properties.'stream.processor.rest.api.url' = "https://BI_HOSTNAME:7444"
 properties.'stream.processor.rest.api.username' = "admin@wso2.com@carbon.super"
 properties.'stream.processor.rest.api.password' = "$ref{super_admin.password}"
 
-[apim.key_manager]
-service_url = "https://IS_HOSTNAME:9446${carbon.context}services/"
-type = "WSO2-IS"
-key_manager_client_impl = "org.wso2.carbon.apimgt.impl.AMDefaultKeyManagerImpl"
+#[apim.key_manager]
+#service_url = "https://IS_HOSTNAME:9446${carbon.context}services/"
+#type = "WSO2-IS"
+#key_manager_client_impl = "org.wso2.carbon.apimgt.impl.AMDefaultKeyManagerImpl"
 #username = "$ref{super_admin.username}"
 #password = "$ref{super_admin.password}"
 #pool.init_idle_capacity = 50
@@ -422,12 +422,6 @@ url = "jdbc:h2:./repository/database/WSO2CARBON_DB;DB_CLOSE_ON_EXIT=FALSE"
 username="$ref{super_admin.username}"
 password="$ref{super_admin.password}"
 
-#[[open_banking.dcr.apim_rest_endpoints]]
-#app_creation = ""
-#key_generation = ""
-#api_retrieve = ""
-#api_subscribe = ""
-
 [open_banking.dcr]
 jwks_endpoint_name = "jwks_uri"
 app_name_claim = "client_name"
@@ -437,6 +431,13 @@ use_softwareIdForAppName = true
 #[open_banking.dcr.jwks_retriever]
 #connection_timeout = 3000
 #read_timeout = 3000
+
+[open_banking.dcr.apim_rest_endpoints]
+app_creation = "api/am/devportal/v3/applications"
+key_generation = "api/am/devportal/v3/applications/application-id/map-keys"
+api_retrieve = "api/am/devportal/v3/apis"
+api_subscribe = "api/am/devportal/v3/subscriptions/multiple"
+retrieve_subscribe="api/am/devportal/v3/subscriptions"
 
 [[open_banking.dcr.regulatory_api]]
 api_name = "CDRDynamicClientRegistrationAPI"

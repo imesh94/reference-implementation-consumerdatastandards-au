@@ -11,7 +11,7 @@ class AUPayloads {
      * @return
      */
     static String getSingleUserNominationPayload(String accountId, String accountOwnerUserID, String nominatedRepUserID,
-                                          String permissionType) {
+                                                 String permissionType) {
 
         return """
                {
@@ -42,7 +42,7 @@ class AUPayloads {
      * @return
      */
     static String getMultiUserNominationPayload(String accountId, String accountOwnerUserID, String nominatedRepUserID,
-                                         String permissionType, String nominatedRepUserID2, String permissionType2) {
+                                                String permissionType, String nominatedRepUserID2, String permissionType2) {
 
         return """
                {
@@ -79,20 +79,18 @@ class AUPayloads {
 
         return """
                {
-                    "data":[
-                         {
-                         "accountID":"${accountId}",
-                         "accountOwners":[                     
-                                "${accountOwnerUserID}"
-                             ],
-                          "nominatedRepresentatives":[
-                             {
-                                "name": "${nominatedRepUserID}"
-                              }
-                            ]
-                         }
+                  "data":[
+                     {
+                        "accountID":"${accountId}",
+                        "accountOwners":[
+                            "${accountOwnerUserID}"
+                        ],
+                        "nominatedRepresentatives":[
+                           "${nominatedRepUserID}"
                         ]
-                 }
+                     }
+                  ]
+               }
             """.stripIndent()
     }
 
@@ -104,7 +102,7 @@ class AUPayloads {
      * @return
      */
     static String getMultiUserDeletePayload(String accountId, String accountOwnerUserID, String nominatedRepUserID,
-                                             String nominatedRepUserID2) {
+                                            String nominatedRepUserID2) {
 
         return """
                {
@@ -125,6 +123,63 @@ class AUPayloads {
                          }
                         ]
                  }
+            """.stripIndent()
+    }
+
+    /**
+     * Get the incorrect payload for Single User Nomination.
+     * @param accountId
+     * @param accountOwnerUserID
+     * @param nominatedRepUserID
+     * @param permissionType
+     * @return
+     */
+    static String getIncorrectNominationPayload(String accountId, String accountOwnerUserID, String nominatedRepUserID,
+                                                 String permissionType) {
+
+        return """
+               {
+                    "data":[
+                         {
+                         "accountID":${accountId},
+                         "accountOwners":[                     
+                                "${accountOwnerUserID}"
+                             ],
+                          "nominatedRepresentatives":[
+                             {
+                                "name": "${nominatedRepUserID}",
+                                "permission": "${permissionType}"
+                              }
+                            ]
+                         }
+                        ]
+                 }
+            """.stripIndent()
+    }
+
+    /**
+     * Get incorrect payload to delete Single Business User Nomination
+     * @param accountId
+     * @param accountOwnerUserID
+     * @param nominatedRepUserID
+     * @return
+     */
+    static String getIncorrectUserDeletePayload(String accountId, String accountOwnerUserID, String nominatedRepUserID) {
+
+        return """
+               {
+                  "data":[
+                     {
+                        "accountID":${accountId},
+                        "accountOwners":[
+                            "${accountOwnerUserID}"
+                        ],
+                        "nominatedRepresentatives":[
+                           "${nominatedRepUserID}"
+                        ]
+                     }
+                  ]
+               }
             """.stripIndent()
     }
 }

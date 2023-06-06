@@ -1,15 +1,11 @@
 /*
- * Copyright (c) 2021, WSO2 Inc. (http://www.wso2.com). All Rights Reserved.
+ * Copyright (c) 2021-2023, WSO2 LLC. (https://www.wso2.com). All Rights Reserved.
  *
- * This software is the property of WSO2 Inc. and its suppliers, if any.
+ * This software is the property of WSO2 LLC. and its suppliers, if any.
  * Dissemination of any information or reproduction of any material contained
- * herein is strictly forbidden, unless permitted by WSO2 in accordance with
- * the WSO2 Software License available at https://wso2.com/licenses/eula/3.1. For specific
- * language governing the permissions and limitations under this license,
- * please see the license as well as any agreement you’ve entered into with
- * WSO2 governing the purchase of this software and any associated services.
+ * herein in any form is strictly forbidden, unless permitted by WSO2 expressly.
+ * You may not alter or remove any copyright or other notice from copies of this content.
  */
-
 package com.wso2.openbanking.cds.demo.backend.services;
 
 import com.wso2.openbanking.cds.demo.backend.BankException;
@@ -38,6 +34,7 @@ public class BankAccountService {
             "            \"customerAccountType\": \"Individual\",\n" +
             "            \"type\": \"TRANS_AND_SAVINGS_ACCOUNTS\",\n" +
             "            \"isEligible\": true,\n" +
+            "            \"isSecondaryAccount\" : false,\n" +
             "            \"isJointAccount\": false,\n" +
             "            \"jointAccountConsentElectionStatus\": false\n" +
             "        },\n" +
@@ -49,6 +46,7 @@ public class BankAccountService {
             "            \"customerAccountType\": \"Individual\",\n" +
             "            \"type\": \"TRANS_AND_SAVINGS_ACCOUNTS\",\n" +
             "            \"isEligible\": true,\n" +
+            "            \"isSecondaryAccount\" : false,\n" +
             "            \"isJointAccount\": false,\n" +
             "            \"jointAccountConsentElectionStatus\": false\n" +
             "        },\n" +
@@ -61,6 +59,7 @@ public class BankAccountService {
             "            \"type\": \"TRANS_AND_SAVINGS_ACCOUNTS\",\n" +
             "            \"isEligible\": true,\n" +
             "            \"isJointAccount\": true,\n" +
+            "            \"isSecondaryAccount\" : false,\n" +
             "            \"jointAccountConsentElectionStatus\": \"ELECTED\",\n" +
             "            \"jointAccountinfo\": {\n" +
             "              \"linkedMember\": [\n" +
@@ -85,6 +84,7 @@ public class BankAccountService {
             "            \"type\": \"TRANS_AND_SAVINGS_ACCOUNTS\",\n" +
             "            \"isEligible\": true,\n" +
             "            \"isJointAccount\": true,\n" +
+            "            \"isSecondaryAccount\" : false,\n" +
             "            \"jointAccountConsentElectionStatus\": \"UNAVAILABLE\",\n" +
             "            \"jointAccountinfo\": {\n" +
             "                \"linkedMember\": [\n" +
@@ -95,8 +95,261 @@ public class BankAccountService {
             "                ]\n" +
             "            },\n" +
             "            \"meta\": {}\n" +
-            "        }" +
-            "    ]\n" +
+            "        },\n" +
+            "        {\n" +
+            "          \"accountId\": \"143-000-B1234\",\n" +
+            "          \"displayName\": \"business_account_1\",\n" +
+            "          \"authorizationMethod\": \"single\",\n" +
+            "          \"nickName\": \"not-working\",\n" +
+            "          \"customerAccountType\": \"Business\",\n" +
+            "          \"profileName\": \"Organization A\",\n" +
+            "          \"profileId\": \"00001\",\n" +
+            "          \"type\": \"TRANS_AND_SAVINGS_ACCOUNTS\",\n" +
+            "          \"isEligible\": true,\n" +
+            "          \"isJointAccount\": false,\n" +
+            "          \"isSecondaryAccount\" : false,\n" +
+            "          \"jointAccountConsentElectionStatus\": false,\n" +
+            "          \"isSecondaryAccount\": false,\n" +
+            "          \"businessAccountInfo\": {\n" +
+            "              \"AccountOwners\": [\n" +
+            "                  {\n" +
+            "                  \"memberId\":\"user1@wso2.com@carbon.super\",\n" +
+            "                  \"meta\":{}\n" +
+            "                  },\n" +
+            "                  {\n" +
+            "                  \"memberId\":\"user2@wso2.com@carbon.super\",\n" +
+            "                  \"meta\":{}\n" +
+            "                 }\n" +
+            "             ],\n" +
+            "             \"NominatedRepresentatives\":[\n" +
+            "                 {\n" +
+            "                 \"memberId\":\"nominatedUser1@wso2.com@carbon.super\",\n" +
+            "                 \"meta\":{}\n" +
+            "                 },\n" +
+            "                 {\n" +
+            "                 \"memberId\":\"nominatedUser2@wso2.com@carbon.super\",\n" +
+            "                 \"meta\":{}\n" +
+            "                 },\n" +
+            "                 {\n" +
+            "                 \"memberId\":\"admin@wso2.com@carbon.super\",\n" +
+            "                 \"meta\":{}\n" +
+            "                 }\n" +
+            "              ]\n" +
+            "           }\n" +
+            "        },\n" +
+            "        {\n" +
+            "          \"accountId\": \"153-000-C1234\",\n" +
+            "          \"displayName\": \"business_account_2\",\n" +
+            "          \"authorizationMethod\": \"single\",\n" +
+            "          \"nickName\": \"not-working\",\n" +
+            "          \"customerAccountType\": \"Business\",\n" +
+            "          \"profileName\": \"Organization B\",\n" +
+            "          \"profileId\": \"00002\",\n" +
+            "          \"type\": \"TRANS_AND_SAVINGS_ACCOUNTS\",\n" +
+            "          \"isEligible\": true,\n" +
+            "          \"isJointAccount\": false,\n" +
+            "          \"isSecondaryAccount\" : false,\n" +
+            "          \"jointAccountConsentElectionStatus\": false,\n" +
+            "          \"isSecondaryAccount\": false,\n" +
+            "          \"businessAccountInfo\": {\n" +
+            "              \"AccountOwners\": [\n" +
+            "                  {\n" +
+            "                  \"memberId\":\"user1@wso2.com@carbon.super\",\n" +
+            "                  \"meta\":{}\n" +
+            "                  },\n" +
+            "                  {\n" +
+            "                  \"memberId\":\"user3@wso2.com@carbon.super\",\n" +
+            "                  \"meta\":{}\n" +
+            "                 }\n" +
+            "             ],\n" +
+            "             \"NominatedRepresentatives\":[\n" +
+            "                 {\n" +
+            "                 \"memberId\":\"nominatedUser1@wso2.com@carbon.super\",\n" +
+            "                 \"meta\":{}\n" +
+            "                 },\n" +
+            "                 {\n" +
+            "                 \"memberId\":\"nominatedUser2@wso2.com@carbon.super\",\n" +
+            "                 \"meta\":{}\n" +
+            "                 },\n" +
+            "                 {\n" +
+            "                 \"memberId\":\"admin@wso2.com@carbon.super\",\n" +
+            "                 \"meta\":{}\n" +
+            "                 }\n" +
+            "              ]\n" +
+            "           }\n" +
+            "        },\n" +
+            "        {\n" +
+            "          \"accountId\": \"586-522-B0025\",\n" +
+            "          \"displayName\": \"business_account_3\",\n" +
+            "          \"authorizationMethod\": \"single\",\n" +
+            "          \"nickName\": \"not-working\",\n" +
+            "          \"customerAccountType\": \"Business\",\n" +
+            "          \"profileName\": \"Organization B\",\n" +
+            "          \"profileId\": \"00002\",\n" +
+            "          \"type\": \"TRANS_AND_SAVINGS_ACCOUNTS\",\n" +
+            "          \"isEligible\": true,\n" +
+            "          \"isJointAccount\": false,\n" +
+            "          \"isSecondaryAccount\" : false,\n" +
+            "          \"jointAccountConsentElectionStatus\": false,\n" +
+            "          \"isSecondaryAccount\": false,\n" +
+            "          \"businessAccountInfo\": {\n" +
+            "              \"AccountOwners\": [\n" +
+            "                  {\n" +
+            "                  \"memberId\":\"nominatedUser3@wso2.com@carbon.super\",\n" +
+            "                  \"meta\":{}\n" +
+            "                  },\n" +
+            "                  {\n" +
+            "                  \"memberId\":\"user2@wso2.com@carbon.super\",\n" +
+            "                  \"meta\":{}\n" +
+            "                  }\n" +
+            "             ],\n" +
+            "             \"NominatedRepresentatives\":[\n" +
+            "                 {\n" +
+            "                 \"memberId\":\"user1@wso2.com@carbon.super\",\n" +
+            "                 \"meta\":{}\n" +
+            "                 },\n" +
+            "                 {\n" +
+            "                 \"memberId\":\"nominatedUser1@wso2.com@carbon.super\",\n" +
+            "                 \"meta\":{}\n" +
+            "                 },\n" +
+            "                 {\n" +
+            "                 \"memberId\":\"admin@wso2.com@carbon.super\",\n" +
+            "                 \"meta\":{}\n" +
+            "                 },\n" +
+            "                 {\n" +
+            "                 \"memberId\":\"nominatedUser4@wso2.com@carbon.super\",\n" +
+            "                 \"meta\":{}\n" +
+            "                 }\n" +
+            "              ]\n" +
+            "           }\n" +
+            "        },\n" +
+            "        {\n" +
+            "            \"accountId\": \"30080098763500\",\n" +
+            "            \"displayName\": \"secondary_account_1\",\n" +
+            "            \"authorizationMethod\": \"single\",\n" +
+            "            \"nickName\": \"not-working\",\n" +
+            "            \"customerAccountType\": \"Secondary\",\n" +
+            "            \"type\": \"TRANS_AND_SAVINGS_ACCOUNTS\",\n" +
+            "            \"isEligible\": true,\n" +
+            "            \"isJointAccount\": false,\n" +
+            "            \"jointAccountConsentElectionStatus\": false,\n" +
+            "            \"isSecondaryAccount\" : true,\n" +
+            "            \"secondaryAccountPrivilegeStatus\" : true,\n" +
+            "            \"secondaryAccountInfo\": {\n" +
+            "              \"accountOwner\": [\n" +
+            "                {\n" +
+            "                  \"memberId\": \"amy@gold.com@carbon.super\",\n" +
+            "                  \"meta\": {}\n" +
+            "                },\n" +
+            "              ]\n" +
+            "            },\n" +
+            "            \"meta\": {}\n" +
+            "        },\n" +
+            "        {\n" +
+            "            \"accountId\": \"30080098763501\",\n" +
+            "            \"displayName\": \"secondary_account_2\",\n" +
+            "            \"authorizationMethod\": \"single\",\n" +
+            "            \"nickName\": \"not-working\",\n" +
+            "            \"customerAccountType\": \"Secondary\",\n" +
+            "            \"type\": \"TRANS_AND_SAVINGS_ACCOUNTS\",\n" +
+            "            \"isEligible\": true,\n" +
+            "            \"isJointAccount\": false,\n" +
+            "            \"jointAccountConsentElectionStatus\": false,\n" +
+            "            \"isSecondaryAccount\" : true,\n" +
+            "            \"secondaryAccountPrivilegeStatus\" : false,\n" +
+            "            \"secondaryAccountInfo\": {\n" +
+            "              \"accountOwner\": [\n" +
+            "                {\n" +
+            "                  \"memberId\": \"ann@gold.com@carbon.super\",\n" +
+            "                  \"meta\": {}\n" +
+            "                },\n" +
+            "              ]\n" +
+            "            },\n" +
+            "            \"meta\": {}\n" +
+            "        },\n" +
+            "        {\n" +
+            "            \"accountId\": \"7500101550\",\n" +
+            "            \"displayName\": \"secondary_joint_account_1\",\n" +
+            "            \"authorizationMethod\": \"single\",\n" +
+            "            \"nickName\": \"secondary_joint_account_1\",\n" +
+            "            \"customerAccountType\": \"Secondary\",\n" +
+            "            \"type\": \"TRANS_AND_SAVINGS_ACCOUNTS\",\n" +
+            "            \"isEligible\": true,\n" +
+            "            \"isSecondaryAccount\" : true,\n" +
+            "            \"isJointAccount\": true,\n" +
+            "            \"jointAccountConsentElectionStatus\": \"ELECTED\",\n" +
+            "            \"secondaryAccountPrivilegeStatus\" : true,\n" +
+            "            \"secondaryAccountInfo\": {\n" +
+            "              \"accountOwner\": [\n" +
+            "                     {\n" +
+            "                  \"memberId\": \"amy@gold.com@carbon.super\",\n" +
+            "                  \"meta\": {}\n" +
+            "                },\n" +
+            "                {\n" +
+            "                  \"memberId\": \"ann@gold.com@carbon.super\",\n" +
+            "                  \"meta\": {}\n" +
+            "                }" +
+            "                ]\n" +
+            "            },\n" +
+            "            \"meta\": {}\n" +
+            "        },\n" +
+            "        {\n" +
+            "            \"accountId\": \"7500101555\",\n" +
+            "            \"displayName\": \"secondary_joint_account_2\",\n" +
+            "            \"authorizationMethod\": \"single\",\n" +
+            "            \"nickName\": \"secondary_joint_account_2\",\n" +
+            "            \"customerAccountType\": \"Secondary\",\n" +
+            "            \"type\": \"TRANS_AND_SAVINGS_ACCOUNTS\",\n" +
+            "            \"isEligible\": true,\n" +
+            "            \"isSecondaryAccount\" : true,\n" +
+            "            \"isJointAccount\": true,\n" +
+            "            \"jointAccountConsentElectionStatus\": \"ELECTED\",\n" +
+            "            \"secondaryAccountPrivilegeStatus\" : false,\n" +
+            "            \"secondaryAccountInfo\": {\n" +
+            "              \"accountOwner\": [\n" +
+            "                     {\n" +
+            "                  \"memberId\": \"john@gold.com@carbon.super\",\n" +
+            "                  \"meta\": {}\n" +
+            "                },\n" +
+            "                {\n" +
+            "                  \"memberId\": \"peter@gold.com@carbon.super\",\n" +
+            "                  \"meta\": {}\n" +
+            "                }" +
+            "                ]\n" +
+            "            },\n" +
+            "            \"meta\": {}\n" +
+            "        },\n" +
+            "        {\n" +
+            "            \"accountId\": \"7500101558\",\n" +
+            "            \"displayName\": \"secondary_joint_account_3\",\n" +
+            "            \"authorizationMethod\": \"single\",\n" +
+            "            \"nickName\": \"secondary_joint_account_1\",\n" +
+            "            \"customerAccountType\": \"Secondary\",\n" +
+            "            \"type\": \"TRANS_AND_SAVINGS_ACCOUNTS\",\n" +
+            "            \"isEligible\": true,\n" +
+            "            \"isSecondaryAccount\" : true,\n" +
+            "            \"isJointAccount\": true,\n" +
+            "            \"jointAccountConsentElectionStatus\": \"UNAVAILABLE\",\n" +
+            "            \"secondaryAccountPrivilegeStatus\" : true,\n" +
+            "            \"secondaryAccountInfo\": {\n" +
+            "              \"accountOwner\": [\n" +
+            "                     {\n" +
+            "                  \"memberId\": \"john@gold.com@carbon.super\",\n" +
+            "                  \"meta\": {}\n" +
+            "                },\n" +
+            "                     {\n" +
+            "                  \"memberId\": \"amy@gold.com@carbon.super\",\n" +
+            "                  \"meta\": {}\n" +
+            "                },\n" +
+            "                {\n" +
+            "                  \"memberId\": \"ann@gold.com@carbon.super\",\n" +
+            "                  \"meta\": {}\n" +
+            "                }" +
+            "                ]\n" +
+            "            },\n" +
+            "            \"meta\": {}\n" +
+            "        }\n" +
+            "      ]\n" +
             "}";
     @GET
     @Path("/payable-accounts")
