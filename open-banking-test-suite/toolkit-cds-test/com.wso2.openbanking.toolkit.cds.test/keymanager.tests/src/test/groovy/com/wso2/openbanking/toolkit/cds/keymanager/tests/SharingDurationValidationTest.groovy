@@ -107,7 +107,7 @@ class SharingDurationValidationTest {
                 "Your data will be shared once.")
         Assert.assertNotNull(authorisationCode)
     }
-//
+
     @Test(dependsOnMethods = "TC0202003_Initiate authorisation consent flow with sharing duration zero", priority = 2)
     void "TC0203003_Check no refresh token for sharing duration zero"() {
 
@@ -126,7 +126,7 @@ class SharingDurationValidationTest {
         authorisationCode = doAuthorization(AUConstants.ONE_YEAR_DURATION, true, consentExpiry)
         Assert.assertNotNull(authorisationCode)
     }
-//
+
     @Test(groups = "SmokeTest",dependsOnMethods = "TC0202004_Initiate authorisation consent flow with sharing duration greater than one year",priority = 3)
     void "TC0203004_Check refresh token issued for sharing duration greater than one year"() {
 

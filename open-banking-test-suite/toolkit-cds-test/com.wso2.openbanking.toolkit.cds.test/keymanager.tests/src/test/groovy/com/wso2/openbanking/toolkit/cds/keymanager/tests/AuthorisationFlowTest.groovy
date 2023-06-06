@@ -17,6 +17,7 @@ import com.wso2.openbanking.test.framework.automation.AUBasicAuthAutomationStep
 import com.wso2.openbanking.test.framework.automation.BasicAuthErrorStep
 import com.wso2.openbanking.test.framework.automation.BrowserAutomation
 import com.wso2.openbanking.test.framework.automation.WaitForRedirectAutomationStep
+import com.wso2.openbanking.test.framework.util.AppConfigReader
 import com.wso2.openbanking.test.framework.util.ConfigParser
 import com.wso2.openbanking.test.framework.util.TestConstants
 import com.wso2.openbanking.test.framework.util.TestUtil
@@ -44,9 +45,6 @@ class AuthorisationFlowTest extends AbstractAUTests{
             AUConstants.SCOPES.BANK_CUSTOMER_DETAIL_READ
     ]
 
-    private String authorisationCode
-    private AccessTokenResponse userAccessToken
-
     @BeforeClass (alwaysRun = true)
     void "Initialize Test Suite"() {
 
@@ -56,23 +54,7 @@ class AuthorisationFlowTest extends AbstractAUTests{
     @Test (groups = "SmokeTest")
     void "TC0202001_Initiate authorisation consent flow"() {
 
-        AUAuthorisationBuilder authorisationBuilder = new AUAuthorisationBuilder(
-                scopes, AUConstants.DEFAULT_SHARING_DURATION, true
-        )
-
-        def automation = new BrowserAutomation(BrowserAutomation.DEFAULT_DELAY)
-                .addStep(new AUBasicAuthAutomationStep(authorisationBuilder.authoriseUrl))
-                .addStep { driver, context ->
-                    driver.findElement(By.xpath(AUTestUtil.getSingleAccountXPath())).click()
-                    driver.findElement(By.xpath(AUConstants.CONSENT_SUBMIT_XPATH)).click()
-                    driver.findElement(By.xpath(AUConstants.CONSENT_CONFIRM_XPATH)).click()
-                }
-                .addStep(new WaitForRedirectAutomationStep())
-                .execute()
-
-        // Get Code From URL
-        authorisationCode = TestUtil.getHybridCodeFromUrl(automation.currentUrl.get())
-
+        doConsentAuthorisation()
         Assert.assertNotNull(authorisationCode)
 
     }
@@ -80,10 +62,12 @@ class AuthorisationFlowTest extends AbstractAUTests{
     @Test(groups = "SmokeTest", dependsOnMethods = "TC0202001_Initiate authorisation consent flow")
     void "TC0203001_Exchange authorisation code for access token"() {
 
-        userAccessToken = AURequestBuilder.getUserToken(authorisationCode)
-        Assert.assertNotNull(userAccessToken.tokens.accessToken)
-        Assert.assertNotNull(userAccessToken.tokens.refreshToken)
-        Assert.assertNotNull(userAccessToken.getCustomParameters().get("cdr_arrangement_id"))
+        def accessTokenResponse = AURequestBuilder.getUserToken(authorisationCode,
+                AURequestBuilder.getCodeVerifier())
+        userAccessToken = accessTokenResponse.tokens.accessToken
+        Assert.assertNotNull(userAccessToken)
+        Assert.assertNotNull(accessTokenResponse.tokens.refreshToken)
+        Assert.assertNotNull(accessTokenResponse.getCustomParameters().get("cdr_arrangement_id"))
     }
 
     @Test(groups = "SmokeTest",
@@ -91,7 +75,7 @@ class AuthorisationFlowTest extends AbstractAUTests{
     void "TC0203006_Check the status of the access token after generating user access token"() {
 
         def response = AURequestBuilder
-                .buildIntrospectionRequest(userAccessToken.tokens.accessToken.toString())
+                .buildIntrospectionRequest(userAccessToken)
                 .post(AUConstants.INTROSPECTION_ENDPOINT)
 
         Assert.assertTrue(response.jsonPath().get("active").equals(true))
@@ -104,7 +88,8 @@ class AuthorisationFlowTest extends AbstractAUTests{
                 true, AUConstants.UUID)
         requestUri = TestUtil.parseResponseBody(response, AUConstants.REQUEST_URI)
         AUAuthorisationBuilder authorisationBuilder = new AUAuthorisationBuilder(
-                scopes, AUConstants.DEFAULT_SHARING_DURATION, true, "", AppConfigReader.getClientId())
+                scopes, AUConstants.DEFAULT_SHARING_DURATION, true, "",
+                AppConfigReader.getClientId())
 
         String errorMessage = "Request object validation failed.The claim cdr_arrangement_id is only accepted in par initiated requests."
 
@@ -130,7 +115,8 @@ class AuthorisationFlowTest extends AbstractAUTests{
                 true, AppConfigReader.getClientId())
         requestUri = TestUtil.parseResponseBody(response, AUConstants.REQUEST_URI)
         AUAuthorisationBuilder authorisationBuilder = new AUAuthorisationBuilder(
-                scopes, AUConstants.DEFAULT_SHARING_DURATION, true, "", AppConfigReader.getClientId())
+                scopes, AUConstants.DEFAULT_SHARING_DURATION, true, "",
+                AppConfigReader.getClientId())
 
         def automation = new BrowserAutomation(BrowserAutomation.DEFAULT_DELAY)
                 .addStep(new AUBasicAuthAutomationStep(authorisationBuilder.authoriseUrl))
@@ -167,7 +153,8 @@ class AuthorisationFlowTest extends AbstractAUTests{
                 true, AppConfigReader.getClientId())
         requestUri = TestUtil.parseResponseBody(response, AUConstants.REQUEST_URI)
         AUAuthorisationBuilder authorisationBuilder = new AUAuthorisationBuilder(
-                scopes, AUConstants.DEFAULT_SHARING_DURATION, true, "", AppConfigReader.getClientId())
+                scopes, AUConstants.DEFAULT_SHARING_DURATION, true, "",
+                AppConfigReader.getClientId())
 
         def automation = new BrowserAutomation(BrowserAutomation.DEFAULT_DELAY)
                 .addStep(new AUBasicAuthAutomationStep(authorisationBuilder.authoriseUrl))
@@ -184,7 +171,8 @@ class AuthorisationFlowTest extends AbstractAUTests{
 
         Assert.assertNotNull(authorisationCode)
 
-        def accessTokenResponse = AURequestBuilder.getUserToken(authorisationCode, AURequestBuilder.getCodeVerifier())
+        def accessTokenResponse = AURequestBuilder.getUserToken(authorisationCode,
+                AURequestBuilder.getCodeVerifier())
         userAccessToken = accessTokenResponse.tokens.accessToken
         Assert.assertNotNull(userAccessToken)
 
@@ -282,7 +270,8 @@ class AuthorisationFlowTest extends AbstractAUTests{
                 true, AppConfigReader.getClientId())
         requestUri = TestUtil.parseResponseBody(response, AUConstants.REQUEST_URI)
         AUAuthorisationBuilder authorisationBuilder = new AUAuthorisationBuilder(
-                scopes, AUConstants.DEFAULT_SHARING_DURATION, true, "", AppConfigReader.getClientId())
+                scopes, AUConstants.DEFAULT_SHARING_DURATION, true, "",
+                AppConfigReader.getClientId())
 
         def automation = new BrowserAutomation(BrowserAutomation.DEFAULT_DELAY)
                 .addStep(new AUBasicAuthAutomationStep(authorisationBuilder.authoriseUrl))
@@ -314,7 +303,8 @@ class AuthorisationFlowTest extends AbstractAUTests{
                 true, AppConfigReader.getClientId())
         requestUri = TestUtil.parseResponseBody(response, AUConstants.REQUEST_URI)
         AUAuthorisationBuilder authorisationBuilder = new AUAuthorisationBuilder(
-                scopes, AUConstants.DEFAULT_SHARING_DURATION, true, "", AppConfigReader.getClientId())
+                scopes, AUConstants.DEFAULT_SHARING_DURATION, true, "",
+                AppConfigReader.getClientId())
 
         def automation = new BrowserAutomation(BrowserAutomation.DEFAULT_DELAY)
                 .addStep(new AUBasicAuthAutomationStep(authorisationBuilder.authoriseUrl))
@@ -368,7 +358,8 @@ class AuthorisationFlowTest extends AbstractAUTests{
                 true, AppConfigReader.getClientId())
         requestUri = TestUtil.parseResponseBody(response, AUConstants.REQUEST_URI)
         AUAuthorisationBuilder authorisationBuilder = new AUAuthorisationBuilder(
-                scopes, AUConstants.DEFAULT_SHARING_DURATION, true, "", AppConfigReader.getClientId())
+                scopes, AUConstants.DEFAULT_SHARING_DURATION, true, "",
+                AppConfigReader.getClientId())
 
         String errorMessage = "No valid scopes found in the request"
 
