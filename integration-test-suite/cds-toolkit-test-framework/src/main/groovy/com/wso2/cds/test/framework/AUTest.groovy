@@ -990,5 +990,54 @@ class AUTest extends OBTest {
 
         return automationResponse
     }
+
+    /**
+     * Update Business Use rPermission With Incorrect Payload.
+     * @param headerString basic auth header
+     * @param accountID account id
+     * @param accountOwnerUserID account owner id
+     * @param nominatedRepUserID nominated rep id
+     * @param permissionType permission type
+     * @return response
+     */
+    Response updateBusinessUserPermissionWithIncorrectPayload(String headerString, String accountID, String accountOwnerUserID, String nominatedRepUserID,
+                                                String permissionType) {
+
+        def requestBody = AUPayloads.getIncorrectNominationPayload(accountID, accountOwnerUserID, nominatedRepUserID, permissionType)
+
+        return AURestAsRequestBuilder.buildBasicRequest()
+                .header(AUConstants.AUTHORIZATION_HEADER_KEY, AUConstants.BASIC_HEADER_KEY + " " +
+                        Base64.encoder.encodeToString(
+                                "${auConfiguration.getUserBasicAuthName()}:${auConfiguration.getUserBasicAuthPWD()}"
+                                        .getBytes(Charset.forName("UTF-8"))))
+                .contentType(AUConstants.CONTENT_TYPE_APPLICATION_JSON)
+                .body(requestBody)
+                .baseUri(auConfiguration.getServerAuthorisationServerURL())
+                .put("${AUConstants.CONSENT_STATUS_AU_ENDPOINT}${AUConstants.UPDATE_BUSINESS_USER}")
+    }
+
+    /**
+     * Delete Single Business User Nomination with incorrect payload.
+     * @param headerString
+     * @param accountID
+     * @param accountOwnerUserID
+     * @param nominatedRepUserID
+     * @return response
+     */
+    Response deleteBusinessUserWithIncorrectPayload(String headerString, String accountID, String accountOwnerUserID, String nominatedRepUserID) {
+
+        def requestBody = AUPayloads.getIncorrectUserDeletePayload(accountID, accountOwnerUserID, nominatedRepUserID)
+
+        return AURestAsRequestBuilder.buildRequest()
+                .header(AUConstants.AUTHORIZATION_HEADER_KEY, AUConstants.BASIC_HEADER_KEY + " " +
+                        Base64.encoder.encodeToString(
+                                "${auConfiguration.getUserBasicAuthName()}:${auConfiguration.getUserBasicAuthPWD()}"
+                                        .getBytes(Charset.forName("UTF-8"))))
+                .contentType(AUConstants.CONTENT_TYPE_APPLICATION_JSON)
+                .body(requestBody)
+                .baseUri(getAuConfiguration().getServerAuthorisationServerURL())
+                .delete("${AUConstants.CONSENT_STATUS_AU_ENDPOINT}${AUConstants.UPDATE_BUSINESS_USER}")
+    }
+
 }
 

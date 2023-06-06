@@ -383,6 +383,7 @@ class AUConstants extends OBConstants {
     public static final String PARAM_PROFILE_NAME = "profileName"
     public static final String USER_DENIED_THE_CONSENT = "User denied the consent"
     public static final String CDR_ARRANGEMENT_ID = "cdr_arrangement_id"
+    public static final String INVALID_REQUEST = "invalid request"
 
 }
 

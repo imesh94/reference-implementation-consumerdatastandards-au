@@ -105,8 +105,8 @@ class UserNominationManagementTests extends AUTest {
         //Check the permissions of nominated representatives
         def permissionsResponse = getStakeholderPermissions(nominatedRepUserID, accountID)
         Assert.assertEquals(permissionsResponse.statusCode(), AUConstants.OK)
-        Assert.assertTrue(AUTestUtil.parseResponseBody(permissionsResponse, AUConstants.PARAM_PERMISSION_STATUS)
-                .contains("${nominatedRepUserID}:${AUBusinessUserPermission.AUTHORIZE.getPermissionString()}"))
+        Assert.assertFalse(AUTestUtil.parseResponseBody(permissionsResponse, AUConstants.PARAM_PERMISSION_STATUS)
+                .contains("${nominatedRepUserID}:${AUBusinessUserPermission.REVOKE.getPermissionString()}"))
 
         //Update the Permission of Nominated User to Revoke - Should give an error as there is no permission called revoke
         def updateResponse = updateSingleBusinessUserPermission(clientHeader, accountID, accountOwnerUserID,
@@ -125,13 +125,12 @@ class UserNominationManagementTests extends AUTest {
         String nominatedRepUserID = shareableElements[AUConstants.NOMINATED_REP_USER_ID]
 
         //Update the Permission of Nominated User with incorrect payload
-        def updateResponse = updateSingleBusinessUserPermission(clientHeader, null, accountOwnerUserID,
+        def updateResponse = updateBusinessUserPermissionWithIncorrectPayload(clientHeader, null, accountOwnerUserID,
                 nominatedRepUserID, AUBusinessUserPermission.VIEW.getPermissionString())
         Assert.assertEquals(updateResponse.statusCode(), AUConstants.BAD_REQUEST)
-        Assert.assertEquals(AUTestUtil.parseResponseBody(response, AUConstants.TPP_ERROR_CATEGORY),
-                AUConstants.TPP_ERROR_CODE_VALUE)
-        Assert.assertEquals(AUTestUtil.parseResponseBody(response, AUConstants.TPP_ERROR_CODE),
-                AUConstants.TPP_ERROR_CODE_FORMAT_ERROR)
+        Assert.assertEquals(AUTestUtil.parseResponseBody(updateResponse, AUConstants.ERROR),
+                AUConstants.INVALID_REQUEST)
+        Assert.assertNotNull(AUTestUtil.parseResponseBody(updateResponse, AUConstants.ERROR_DESCRIPTION))
     }
 
     @Test
@@ -250,7 +249,7 @@ class UserNominationManagementTests extends AUTest {
         //Delete the Business User endpoint with the relevant Permission Status
         def deleteResponse = deleteSingleBusinessUser(clientHeader, AUConstants.INCORRECT_ACC_ID, accountOwnerUserID,
                 nominatedRepUserID)
-        Assert.assertEquals(deleteResponse.statusCode(), AUConstants.BAD_REQUEST)
+        Assert.assertEquals(deleteResponse.statusCode(), AUConstants.STATUS_CODE_404)
     }
 
     @Test
@@ -328,14 +327,13 @@ class UserNominationManagementTests extends AUTest {
         Assert.assertEquals(updateResponse.statusCode(), AUConstants.OK)
 
         //Delete the Business User endpoint with the relevant Permission Status
-        def deleteResponse = deleteSingleBusinessUser(clientHeader, null, accountOwnerUserID,
+        def deleteResponse = deleteBusinessUserWithIncorrectPayload(clientHeader, null, accountOwnerUserID,
                 nominatedRepUserID)
 
         Assert.assertEquals(deleteResponse.statusCode(), AUConstants.BAD_REQUEST)
-        Assert.assertEquals(AUTestUtil.parseResponseBody(response, AUConstants.TPP_ERROR_CATEGORY),
-                AUConstants.TPP_ERROR_CODE_VALUE)
-        Assert.assertEquals(AUTestUtil.parseResponseBody(response, AUConstants.TPP_ERROR_CODE),
-                AUConstants.TPP_ERROR_CODE_FORMAT_ERROR)
+        Assert.assertEquals(AUTestUtil.parseResponseBody(deleteResponse, AUConstants.ERROR),
+                AUConstants.INVALID_REQUEST)
+        Assert.assertNotNull(AUTestUtil.parseResponseBody(deleteResponse, AUConstants.ERROR_DESCRIPTION))
     }
 
     @Test

@@ -125,4 +125,61 @@ class AUPayloads {
                  }
             """.stripIndent()
     }
+
+    /**
+     * Get the incorrect payload for Single User Nomination.
+     * @param accountId
+     * @param accountOwnerUserID
+     * @param nominatedRepUserID
+     * @param permissionType
+     * @return
+     */
+    static String getIncorrectNominationPayload(String accountId, String accountOwnerUserID, String nominatedRepUserID,
+                                                 String permissionType) {
+
+        return """
+               {
+                    "data":[
+                         {
+                         "accountID":${accountId},
+                         "accountOwners":[                     
+                                "${accountOwnerUserID}"
+                             ],
+                          "nominatedRepresentatives":[
+                             {
+                                "name": "${nominatedRepUserID}",
+                                "permission": "${permissionType}"
+                              }
+                            ]
+                         }
+                        ]
+                 }
+            """.stripIndent()
+    }
+
+    /**
+     * Get incorrect payload to delete Single Business User Nomination
+     * @param accountId
+     * @param accountOwnerUserID
+     * @param nominatedRepUserID
+     * @return
+     */
+    static String getIncorrectUserDeletePayload(String accountId, String accountOwnerUserID, String nominatedRepUserID) {
+
+        return """
+               {
+                  "data":[
+                     {
+                        "accountID":${accountId},
+                        "accountOwners":[
+                            "${accountOwnerUserID}"
+                        ],
+                        "nominatedRepresentatives":[
+                           "${nominatedRepUserID}"
+                        ]
+                     }
+                  ]
+               }
+            """.stripIndent()
+    }
 }
