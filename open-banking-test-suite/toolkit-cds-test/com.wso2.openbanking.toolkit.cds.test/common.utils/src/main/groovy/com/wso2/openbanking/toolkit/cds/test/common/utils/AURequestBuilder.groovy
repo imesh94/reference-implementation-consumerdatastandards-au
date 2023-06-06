@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2021, WSO2 Inc. (http://www.wso2.com). All Rights Reserved.
+ * Copyright (c) 2021 - 2023, WSO2 Inc. (http://www.wso2.com). All Rights Reserved.
  *
  * This software is the property of WSO2 Inc. and its suppliers, if any.
  * Dissemination of any information or reproduction of any material contained
@@ -26,6 +26,7 @@ import com.nimbusds.oauth2.sdk.auth.PrivateKeyJWT
 import com.nimbusds.oauth2.sdk.http.HTTPRequest
 import com.nimbusds.oauth2.sdk.http.HTTPResponse
 import com.nimbusds.oauth2.sdk.id.ClientID
+import com.nimbusds.oauth2.sdk.pkce.CodeVerifier
 import com.wso2.openbanking.test.framework.TestSuite
 import com.wso2.openbanking.test.framework.model.AccessTokenJwtDto
 import com.wso2.openbanking.test.framework.model.ApplicationAccessTokenDto
@@ -50,6 +51,7 @@ class AURequestBuilder {
     private static ConfigParser configParser = ConfigParser.getInstance()
     private static cdsClient = "${AppConfigReader.getClientId()}:${AppConfigReader.getClientSecret()}"
     private static clientHeader = "${Base64.encoder.encodeToString(cdsClient.getBytes(Charset.defaultCharset()))}"
+    private static CodeVerifier codeVerifier = new CodeVerifier()
 
     static RequestSpecification buildBasicRequest(String userAccessToken, int version) {
 
@@ -82,13 +84,13 @@ class AURequestBuilder {
      * @param client_id
      * @return token response
      */
-    static AccessTokenResponse getUserToken(String code, String clientId = null) {
+    static AccessTokenResponse getUserToken(String code, CodeVerifier codeVerifier, String clientId = null) {
 
         def config = ConfigParser.getInstance()
 
         AuthorizationCode grant = new AuthorizationCode(code)
         URI callbackUri = new URI(AppConfigReader.getRedirectURL())
-        AuthorizationGrant codeGrant = new AuthorizationCodeGrant(grant, callbackUri)
+        AuthorizationGrant codeGrant = new AuthorizationCodeGrant(grant, callbackUri, codeVerifier)
 
         String assertionString = new AccessTokenJwtDto().getJwt(clientId)
 
@@ -301,5 +303,13 @@ class AURequestBuilder {
                 .formParams("token", token)
                 .formParams("token_type_hint", "access_token")
                 .baseUri(ConfigParser.instance.authorisationServerUrl)
+    }
+
+    /**
+     * Get Code Verifier.
+     * @return
+     *  */
+    static CodeVerifier getCodeVerifier() {
+        return codeVerifier
     }
 }
