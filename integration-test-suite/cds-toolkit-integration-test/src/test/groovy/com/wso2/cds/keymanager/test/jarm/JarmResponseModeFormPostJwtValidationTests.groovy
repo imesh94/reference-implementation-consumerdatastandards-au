@@ -57,7 +57,7 @@ class JarmResponseModeFormPostJwtValidationTests extends AUTest {
         Assert.assertNotNull(responseValue)
 
         //Extract JWT
-        jwtPayload = AUJWTGenerator.extractJwt(responseJwt)
+        jwtPayload = AUJWTGenerator.extractJwt(responseValue)
         authorisationCode = jwtPayload.getStringClaim(AUConstants.CODE_KEY)
 
         //Navigate through Authorisation web app
@@ -93,7 +93,7 @@ class JarmResponseModeFormPostJwtValidationTests extends AUTest {
         Assert.assertNotNull(responseValue)
 
         //Extract JWT
-        jwtPayload = AUJWTGenerator.extractJwt(responseJwt)
+        jwtPayload = AUJWTGenerator.extractJwt(responseValue)
         authorisationCode = jwtPayload.getStringClaim(AUConstants.CODE_KEY)
     }
 
@@ -122,7 +122,7 @@ class JarmResponseModeFormPostJwtValidationTests extends AUTest {
         Assert.assertNotNull(responseValue)
 
         //Extract JWT
-        jwtPayload = AUJWTGenerator.extractJwt(responseJwt)
+        jwtPayload = AUJWTGenerator.extractJwt(responseValue)
         authorisationCode = jwtPayload.getStringClaim(AUConstants.CODE_KEY)
     }
 
