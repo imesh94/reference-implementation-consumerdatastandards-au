@@ -9,6 +9,8 @@
 
 package com.wso2.cds.test.framework
 
+import com.nimbusds.oauth2.sdk.ResponseMode
+import com.nimbusds.oauth2.sdk.ResponseType
 import com.wso2.cds.test.framework.constant.AUAccountProfile
 import com.wso2.cds.test.framework.constant.AUAccountScope
 import com.wso2.cds.test.framework.constant.AUConfigConstants
@@ -22,6 +24,7 @@ import com.nimbusds.oauth2.sdk.AccessTokenResponse
 import com.wso2.openbanking.test.framework.OBTest
 import com.wso2.cds.test.framework.configuration.AUConfigurationService
 import com.wso2.openbanking.test.framework.automation.AutomationMethod
+import com.wso2.openbanking.test.framework.automation.NavigationAutomationStep
 import com.wso2.openbanking.test.framework.configuration.OBConfigParser
 import io.restassured.response.Response
 import org.apache.logging.log4j.LogManager
@@ -990,36 +993,6 @@ class AUTest extends OBTest {
 
         return automationResponse
     }
-
-    /**
-     * jarm_test
-     * Authorisation FLow UI Navigation Method.
-     * @param authoriseUrl
-     * @param profiles
-     * @param isStateParamPresent
-     * @return
-     */
-    def doAuthorisationFlowNavigation(String authoriseUrl, AUAccountProfile profiles = null,
-                                      boolean isStateParamPresent = true) {
-
-        automationResponse = getBrowserAutomation(AUConstants.DEFAULT_DELAY)
-                .addStep(new AUBasicAuthAutomationStep(authoriseUrl))
-                .addStep { driver, context ->
-                    AutomationMethod authWebDriver = new AutomationMethod(driver)
-
-                    //Select Profile and Accounts
-                    selectProfileAndAccount(authWebDriver, profiles, isStateParamPresent)
-
-                    //Click Confirm Button
-                    authWebDriver.clickButtonXpath(AUPageObjects.CONSENT_CONFIRM_XPATH)
-
-                    //Click Authorise Button
-                    authWebDriver.clickButtonXpath(AUPageObjects.CONSENT_CONFIRM_XPATH)
-                }
-                .execute()
-
-        return automationResponse
-    }
   
     /**
      * Update Business Use rPermission With Incorrect Payload.
@@ -1067,6 +1040,71 @@ class AUTest extends OBTest {
                 .body(requestBody)
                 .baseUri(getAuConfiguration().getServerAuthorisationServerURL())
                 .delete("${AUConstants.CONSENT_STATUS_AU_ENDPOINT}${AUConstants.UPDATE_BUSINESS_USER}")
+    }
+
+    /**
+     * Do Consent Authorisation with Response_Mode and Response Type
+     * @param responseMode
+     * @param clientId
+     * @param profiles
+     */
+    void doConsentAuthorisation(ResponseMode responseMode, ResponseType responseType = ResponseType.CODE_IDTOKEN, String clientId = null,
+                                AUAccountProfile profiles = AUAccountProfile.INDIVIDUAL, boolean isStateParamPresent = true) {
+
+        def response
+
+        if (clientId == null) {
+            response = auAuthorisationBuilder.doPushAuthorisationRequest(scopes, AUConstants.DEFAULT_SHARING_DURATION,
+                    true, "", "", auConfiguration.getAppInfoRedirectURL(), responseType.toString())
+            requestUri = AUTestUtil.parseResponseBody(response, AUConstants.REQUEST_URI)
+            doConsentAuthorisationViaRequestUri(scopes, requestUri.toURI(), responseMode, responseType,
+                    null, profiles, isStateParamPresent)
+        } else {
+            response = auAuthorisationBuilder.doPushAuthorisationRequest(scopes, AUConstants.DEFAULT_SHARING_DURATION,
+                    true, "", clientId, auConfiguration.getAppInfoRedirectURL(), responseType.toString())
+            requestUri = AUTestUtil.parseResponseBody(response, AUConstants.REQUEST_URI)
+            doConsentAuthorisationViaRequestUri(scopes, requestUri.toURI(), responseMode, responseType,
+                    clientId, profiles, isStateParamPresent)
+        }
+    }
+
+    /**
+     * Consent authorization method with Request URI and Response Mode
+     * @param scopes
+     * @param requestUri
+     * @param clientId
+     * @param profiles
+     */
+    void doConsentAuthorisationViaRequestUri(List<AUAccountScope> scopes, URI requestUri, ResponseMode responseMode,
+                                             ResponseType responseType = ResponseType.CODE_IDTOKEN,
+                                             String clientId = null, AUAccountProfile profiles = null,
+                                             boolean isStateParamPresent = true) {
+
+        if (clientId != null) {
+            authoriseUrl = auAuthorisationBuilder.getAuthorizationRequest(scopes, requestUri, responseMode, clientId,
+                    responseType, isStateParamPresent).toURI().toString()
+        } else {
+            authoriseUrl = auAuthorisationBuilder.getAuthorizationRequest(scopes, requestUri, responseMode, "",
+                    responseType, isStateParamPresent).toURI().toString()
+        }
+
+        //UI Flow Navigation
+        automationResponse = doAuthorisationFlowNavigation(authoriseUrl, profiles, true)
+    }
+
+    /**
+     * Authorisation FLow UI Navigation Method for Error Scenarios.
+     * @param authoriseUrl authorisation request URL
+     * @return automationResponse
+     */
+    def doAuthorisationErrorFlow(String authoriseUrl) {
+
+        def automation = getBrowserAutomation(AUConstants.DEFAULT_DELAY)
+                .addStep(new NavigationAutomationStep(authoriseUrl, 10))
+                .execute()
+
+        // Get Code From URL
+        return automation
     }
 }
 

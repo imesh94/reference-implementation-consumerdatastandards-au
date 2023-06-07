@@ -12,6 +12,7 @@
 
 package com.wso2.cds.keymanager.test.jarm
 
+import com.nimbusds.jwt.JWTClaimsSet
 import com.nimbusds.oauth2.sdk.ResponseMode
 import com.nimbusds.oauth2.sdk.ResponseType
 import com.wso2.cds.test.framework.AUTest
@@ -28,72 +29,77 @@ class JarmResponseModeQueryJwtValidationTests extends AUTest {
 
     String authResponseUrl
     String responseJwt
-    HashMap<String, String> mapPayload
+    JWTClaimsSet jwtPayload
 
-    @Test
+    @Test (priority = 1)
     void "CDS-458_Verify response_mode query jwt navigates to Authorization Flow"() {
 
-        doConsentAuthorisation(ResponseMode.QUERY_JWT)
+        doConsentAuthorisation(ResponseMode.QUERY_JWT, ResponseType.CODE, auConfiguration.getAppInfoClientID())
         authResponseUrl = automationResponse.currentUrl.get()
         responseJwt = authResponseUrl.split(AUConstants.HTML_RESPONSE_ATTR)[1]
         Assert.assertNotNull(responseJwt)
-        mapPayload = AUJWTGenerator.extractJwt(responseJwt)
+        jwtPayload = AUJWTGenerator.extractJwt(responseJwt)
     }
 
-    @Test (dependsOnMethods = "CDS-458_Verify response_mode query jwt navigates to Authorization Flow")
+    @Test (priority = 1, dependsOnMethods = "CDS-458_Verify response_mode query jwt navigates to Authorization Flow")
     void "CDS-460_Verify the '?' Sign' authorization server need to send the authorization response as HTTP redirect to the redirect URI"() {
 
         Assert.assertTrue(authResponseUrl.split(AUConstants.HTML_RESPONSE_ATTR)[0].contains("?"))
     }
 
-    @Test (dependsOnMethods = "CDS-458_Verify response_mode query jwt navigates to Authorization Flow")
+    @Test (priority = 1, dependsOnMethods = "CDS-458_Verify response_mode query jwt navigates to Authorization Flow")
     void "CDS-461_Verify the decryption of the Response received from query jwt"() {
 
-        Assert.assertNotNull(mapPayload.get(AUConstants.CODE_KEY))
-        Assert.assertNotNull(mapPayload.get(AUConstants.STATE_KEY))
-        Assert.assertTrue(mapPayload.get(AUConstants.AUDIENCE_KEY).equalsIgnoreCase(auConfiguration.getAppInfoClientID()))
-        Assert.assertTrue(mapPayload.get(AUConstants.ISSUER_KEY).equalsIgnoreCase(auConfiguration.getConsentAudienceValue()))
+        Assert.assertNotNull(jwtPayload.getStringClaim(AUConstants.CODE_KEY))
+        Assert.assertNotNull(jwtPayload.getStringClaim(AUConstants.STATE_KEY))
+        Assert.assertTrue(jwtPayload.getAudience()[0].toString().equalsIgnoreCase(auConfiguration.getAppInfoClientID()))
+        Assert.assertTrue(jwtPayload.getIssuer().equalsIgnoreCase(auConfiguration.getConsentAudienceValue()))
     }
 
     @Test
     void "CDS-587_Verify in query jwt response mode if response_type = code"() {
 
-        doConsentAuthorisation(ResponseMode.QUERY_JWT, ResponseType.CODE)
+        doConsentAuthorisation(ResponseMode.QUERY_JWT, ResponseType.CODE, auConfiguration.getAppInfoClientID())
         authResponseUrl = automationResponse.currentUrl.get()
         responseJwt = authResponseUrl.split(AUConstants.HTML_RESPONSE_ATTR)[1]
         Assert.assertNotNull(responseJwt)
-        mapPayload = AUJWTGenerator.extractJwt(responseJwt)
+        jwtPayload = AUJWTGenerator.extractJwt(responseJwt)
 
-        Assert.assertNotNull(mapPayload.get(AUConstants.CODE_KEY))
+        Assert.assertNotNull(jwtPayload.getStringClaim(AUConstants.CODE_KEY))
     }
 
     @Test
     void "CDS-561_Verify in query jwt response mode if response_type = token"() {
 
-        doConsentAuthorisation(ResponseMode.QUERY_JWT, ResponseType.TOKEN)
+        doConsentAuthorisation(ResponseMode.QUERY_JWT, ResponseType.TOKEN, auConfiguration.getAppInfoClientID())
         authResponseUrl = automationResponse.currentUrl.get()
-        Assert.assertTrue(AUTestUtil.getDecodedUrl(authResponseUrl).contains(AUConstants.UNSUPPORTED_RESPONSE_MODE))
+
+        //Since the default config enables response_type=token, the response will be a string in json format.
+        Assert.assertTrue(authResponseUrl.contains(AUConstants.ACCESS_TOKEN))
     }
 
     @Test
     void "CDS-562_Verify in query jwt response mode if response_type = code id_token"() {
 
-        doConsentAuthorisation(ResponseMode.QUERY_JWT, ResponseType.CODE_IDTOKEN)
+        doConsentAuthorisation(ResponseMode.QUERY_JWT, ResponseType.CODE_IDTOKEN, auConfiguration.getAppInfoClientID())
         authResponseUrl = automationResponse.currentUrl.get()
-        Assert.assertTrue(AUTestUtil.getDecodedUrl(authResponseUrl).contains(AUConstants.UNSUPPORTED_RESPONSE_MODE))
+
+        //Since the AU spec supports code id_token, the response will be a string without jwt format.
+        Assert.assertTrue(authResponseUrl.contains(AUConstants.CODE_KEY))
+        Assert.assertTrue(authResponseUrl.contains(AUConstants.ID_TOKEN_KEY))
     }
 
     @Test
     void "CDS-563_Verify a User access Token call with the Code received from query jwt"() {
 
         //Consent Authorisation
-        doConsentAuthorisation(ResponseMode.QUERY_JWT, ResponseType.CODE)
+        doConsentAuthorisation(ResponseMode.QUERY_JWT, ResponseType.CODE, auConfiguration.getAppInfoClientID())
         authResponseUrl = automationResponse.currentUrl.get()
         responseJwt = authResponseUrl.split(AUConstants.HTML_RESPONSE_ATTR)[1]
         Assert.assertNotNull(responseJwt)
-        mapPayload = AUJWTGenerator.extractJwt(responseJwt)
+        jwtPayload = AUJWTGenerator.extractJwt(responseJwt)
 
-        authorisationCode = mapPayload.get(AUConstants.CODE_KEY)
+        authorisationCode = jwtPayload.getStringClaim(AUConstants.CODE_KEY)
         Assert.assertNotNull(authorisationCode)
 
         //Generate User Access Token
