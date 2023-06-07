@@ -133,10 +133,13 @@ public class UsersAccountsLegalEntitiesDTO {
      */
     public static class LegalEntity {
         private String legalEntityID;
+
+        private String legalEntityName;
         private String legalEntitySharingStatus;
 
-        public LegalEntity(String legalEntityID, String legalEntitySharingStatus) {
+        public LegalEntity(String legalEntityID, String legalEntityName, String legalEntitySharingStatus) {
             this.legalEntityID = legalEntityID;
+            this.legalEntityName = legalEntityName;
             this.legalEntitySharingStatus = legalEntitySharingStatus;
         }
 
@@ -147,6 +150,15 @@ public class UsersAccountsLegalEntitiesDTO {
 
         public void setLegalEntityID(String legalEntityID) {
             this.legalEntityID = legalEntityID;
+        }
+
+        // legalEntityName
+        public String getLegalEntityName() {
+            return legalEntityName;
+        }
+
+        public void setLegalEntityName(String legalEntityName) {
+            this.legalEntityName = legalEntityName;
         }
 
         // legalEntitySharingStatus

@@ -169,15 +169,13 @@ public class CDSConsentValidator implements ConsentValidator {
         try {
             CommonServiceProviderRetriever commonServiceProviderRetriever = new CommonServiceProviderRetriever();
 
-
-            String secondaryUserId = consentValidateData.getUserId().replace("@carbon.super", "");
+            String secondaryUserId = consentValidateData.getUserId();
             String legalEntityId = commonServiceProviderRetriever.
                     getAppPropertyFromSPMetaData(consentValidateData.getClientId(), "legal_entity_id");
 
 
             for (ConsentMappingResource consentMappingResource : consentValidateData.
                     getComprehensiveConsent().getConsentMappingResources()) {
-
                 String accountId = consentMappingResource.getAccountID();
                 String responseLegalEntities = accountMetadataService.getAccountMetadataByKey
                         (accountId, secondaryUserId, "BLOCKED_LEGAL_ENTITIES");
@@ -191,10 +189,10 @@ public class CDSConsentValidator implements ConsentValidator {
                         }
                     }
                 }
-
             }
         } catch (Exception e) {
             log.info(e.getMessage());
+
         }
         consentValidateData.getComprehensiveConsent().setConsentMappingResources(distinctMappingResources);
     }

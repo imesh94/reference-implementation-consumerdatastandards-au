@@ -13,14 +13,14 @@ import javax.validation.constraints.NotEmpty;
 /**
  * Ceasing Secondary User - BlockedLegalEntityItemDTO
  */
-public class LegalEntityItemDTO {
-    @NotEmpty(message = "Bad request : expected field not present for the field \"secondaryUserID\" ")
+public class LegalEntityItemBlockUnblockDTO {
+    @NotEmpty(message = "Expected field not present for the field \"secondaryUserID\"")
     private String secondaryUserID;
 
-    @NotEmpty(message = "Bad request : expected field not present for the field \"accountID\" ")
+    @NotEmpty(message = "Expected field not present for the field \"accountID\"")
     private String accountID;
 
-    @NotEmpty(message = "Bad request : expected field not present for the field \"legalEntityID\" ")
+    @NotEmpty(message = "Expected field not present for the field \"legalEntityID\"")
     private String legalEntityID;
 
     public String getSecondaryUserID() {

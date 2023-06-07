@@ -10,6 +10,7 @@ package com.wso2.openbanking.cds.account.type.management.endpoint.ceasing.second
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.wso2.openbanking.accelerator.common.exception.OpenBankingException;
 import com.wso2.openbanking.accelerator.consent.mgt.dao.models.AuthorizationResource;
 import com.wso2.openbanking.accelerator.consent.mgt.dao.models.DetailedConsentResource;
 import com.wso2.openbanking.accelerator.consent.mgt.service.ConsentCoreService;
@@ -19,7 +20,9 @@ import com.wso2.openbanking.cds.account.type.management.endpoint.ceasing.seconda
 import com.wso2.openbanking.cds.account.type.management.endpoint.ceasing.secondary.user.sharing.handler.
         CeasingSecondaryUserHandler;
 import com.wso2.openbanking.cds.account.type.management.endpoint.ceasing.secondary.user.sharing.models.
-        LegalEntityListDTO;
+        LegalEntityListBlockUnblockDTO;
+import com.wso2.openbanking.cds.account.type.management.endpoint.ceasing.secondary.user.sharing.models.
+        LegalEntityListUpdateDTO;
 import com.wso2.openbanking.cds.account.type.management.endpoint.ceasing.secondary.user.sharing.models.
         UsersAccountsLegalEntitiesDTO;
 import com.wso2.openbanking.cds.account.type.management.endpoint.model.ErrorDTO;
@@ -29,13 +32,18 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
 import java.util.ArrayList;
+import java.util.Locale;
 import javax.ws.rs.core.Response;
+
+import static com.wso2.openbanking.cds.account.type.management.endpoint.ceasing.secondary.user.sharing.constants.
+        CeasingSecondaryUserConstants.CARBON_TENANT_DOMAIN;
+import static com.wso2.openbanking.cds.account.type.management.endpoint.ceasing.secondary.user.sharing.constants.
+        CeasingSecondaryUserConstants.SECONDARY_ACCOUNT_OWNER;
 
 /**
  * Ceasing Secondary User - Impl
  */
 public class CeasingSecondaryUserApiImpl implements CeasingSecondaryUserApi {
-
 
     private static final Log log = LogFactory.getLog(CeasingSecondaryUserApiImpl.class);
     CeasingSecondaryUserHandler ceasingSecondaryUserHandler = new CeasingSecondaryUserHandler();
@@ -43,13 +51,13 @@ public class CeasingSecondaryUserApiImpl implements CeasingSecondaryUserApi {
     /**
      * {@inheritDoc}
      */
-    public Response blockLegalEntitySharingStatus(String requestBody) {
+    public Response blockLegalEntitySharingStatus(String requestBody) throws OpenBankingException {
 
         ObjectMapper objectMapper = new ObjectMapper();
-        LegalEntityListDTO legalEntityListDTO;
+        LegalEntityListBlockUnblockDTO legalEntityListDTO;
 
         try {
-            legalEntityListDTO = objectMapper.readValue(requestBody, LegalEntityListDTO.class);
+            legalEntityListDTO = objectMapper.readValue(requestBody, LegalEntityListBlockUnblockDTO.class);
 
             //Validating the requestBody
             String validationError = ValidationUtil.getFirstViolationMessage(legalEntityListDTO);
@@ -57,9 +65,8 @@ public class CeasingSecondaryUserApiImpl implements CeasingSecondaryUserApi {
             if (validationError.isEmpty()) {
                 ceasingSecondaryUserHandler.blockLegalEntitySharingStatus(legalEntityListDTO);
 
-                log.info("Success!, the sharing status for legal entity/entities has been blocked.");
-                return Response.ok().
-                        entity("Success!, the sharing status for legal entity/entities has been blocked.").build();
+                log.debug("Success!, the sharing status for legal entity/entities has been blocked.");
+                return Response.ok().build();
             } else {
                 log.error("Error occurred while blocking the sharing status for a legal entity/entities.");
                 ErrorDTO errorDTO = new ErrorDTO(ErrorStatusEnum.INVALID_REQUEST,
@@ -79,14 +86,13 @@ public class CeasingSecondaryUserApiImpl implements CeasingSecondaryUserApi {
     /**
      * {@inheritDoc}
      */
-    public Response unblockLegalEntitySharingStatus(String requestBody) {
-
+    public Response unblockLegalEntitySharingStatus(String requestBody) throws OpenBankingException {
 
         ObjectMapper objectMapper = new ObjectMapper();
-        LegalEntityListDTO legalEntityListDTO;
+        LegalEntityListBlockUnblockDTO legalEntityListDTO;
 
         try {
-            legalEntityListDTO = objectMapper.readValue(requestBody, LegalEntityListDTO.class);
+            legalEntityListDTO = objectMapper.readValue(requestBody, LegalEntityListBlockUnblockDTO.class);
 
             //Validating the requestBody
             String validationError = ValidationUtil.getFirstViolationMessage(legalEntityListDTO);
@@ -94,9 +100,42 @@ public class CeasingSecondaryUserApiImpl implements CeasingSecondaryUserApi {
             if (validationError.isEmpty()) {
                 ceasingSecondaryUserHandler.unblockLegalEntitySharingStatus(legalEntityListDTO);
 
-                log.info("Success!, the sharing status for legal entity/entities has been unblocked.");
-                return Response.ok().
-                        entity("Success!, the sharing status for legal entity/entities has been unblocked.").build();
+                log.debug("Success!, the sharing status for legal entity/entities has been unblocked.");
+                return Response.ok().build();
+            } else {
+                log.error("Error occurred while unblocking the sharing status for a legal entity/entities.");
+                ErrorDTO errorDTO = new ErrorDTO(ErrorStatusEnum.INVALID_REQUEST,
+                        "Error occurred while unblocking the sharing status for a legal entity/entities.");
+                return Response.status(Response.Status.BAD_REQUEST).entity(errorDTO).build();
+            }
+
+        } catch (JsonProcessingException e) {
+            log.error("Error occurred while processing the JSON object.", e);
+            ErrorDTO errorDTO = new ErrorDTO(ErrorStatusEnum.INVALID_REQUEST,
+                    "Error occurred while processing the JSON object.");
+            return Response.status(Response.Status.BAD_REQUEST)
+                    .entity(errorDTO).build();
+        }
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    public Response updateLegalEntitySharingStatus(String requestBody) throws OpenBankingException {
+        ObjectMapper objectMapper = new ObjectMapper();
+        LegalEntityListUpdateDTO legalEntityListDTO;
+
+        try {
+            legalEntityListDTO = objectMapper.readValue(requestBody, LegalEntityListUpdateDTO.class);
+
+            //Validating the requestBody
+            String validationError = ValidationUtil.getFirstViolationMessage(legalEntityListDTO);
+
+            if (validationError.isEmpty()) {
+                ceasingSecondaryUserHandler.updateLegalEntitySharingStatus(legalEntityListDTO);
+
+                log.debug("Success!, the sharing status for legal entity/entities has been unblocked.");
+                return Response.ok().build();
             } else {
                 log.error("Error occurred while unblocking the sharing status for a legal entity/entities.");
                 ErrorDTO errorDTO = new ErrorDTO(ErrorStatusEnum.INVALID_REQUEST,
@@ -119,6 +158,11 @@ public class CeasingSecondaryUserApiImpl implements CeasingSecondaryUserApi {
     public Response getUsersAccountsLegalEntities(String userID) {
 
         String userIDError = null;
+
+        // Add carbon tenant domain to the userID if it does not exist
+        if (!userID.toLowerCase(Locale.ENGLISH).endsWith(CARBON_TENANT_DOMAIN)) {
+            userID = userID + CARBON_TENANT_DOMAIN;
+        }
 
         try {
             ConsentCoreService consentCoreService = new ConsentCoreServiceImpl();
@@ -156,7 +200,7 @@ public class CeasingSecondaryUserApiImpl implements CeasingSecondaryUserApi {
                 // Authorization Resource
                 for (AuthorizationResource authorizationResource : detailedConsent.getAuthorizationResources()) {
                     if (authorizationResource.getUserID().equals(userID) &&
-                            authorizationResource.getAuthorizationType().equals("secondary_account_owner")) {
+                            authorizationResource.getAuthorizationType().equals(SECONDARY_ACCOUNT_OWNER)) {
                         isSecondaryAccountOwner = true;
                         break;
                     }
@@ -183,7 +227,6 @@ public class CeasingSecondaryUserApiImpl implements CeasingSecondaryUserApi {
             log.error("Error occurred while retrieving users,accounts and legal entities.", e);
             return Response.status(Response.Status.BAD_REQUEST).entity(e.getMessage()).build();
         }
-
     }
 }
 

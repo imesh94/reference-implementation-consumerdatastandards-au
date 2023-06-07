@@ -11,19 +11,20 @@ package com.wso2.openbanking.cds.account.type.management.endpoint.ceasing.second
 import java.util.List;
 import javax.validation.Valid;
 
+
 /**
  * Ceasing Secondary User - BlockedLegalEntityListDTO
  */
-public class LegalEntityListDTO {
+public class LegalEntityListUpdateDTO {
 
     @Valid
-    private List<LegalEntityItemDTO> data;
+    private List<LegalEntityItemUpdateDTO> data;
 
-    public List<LegalEntityItemDTO> getData() {
+    public List<LegalEntityItemUpdateDTO> getData() {
         return data;
     }
 
-    public void setData(List<LegalEntityItemDTO> data) {
+    public void setData(List<LegalEntityItemUpdateDTO> data) {
         this.data = data;
     }
 }

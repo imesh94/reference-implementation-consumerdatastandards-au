@@ -9,6 +9,7 @@
 
 package com.wso2.openbanking.cds.account.type.management.endpoint.ceasing.secondary.user.sharing.api;
 
+import com.wso2.openbanking.accelerator.common.exception.OpenBankingException;
 import io.swagger.annotations.ApiOperation;
 import io.swagger.annotations.ApiParam;
 import io.swagger.annotations.ApiResponse;
@@ -17,8 +18,8 @@ import io.swagger.annotations.ApiResponses;
 import javax.ws.rs.GET;
 import javax.ws.rs.PUT;
 import javax.ws.rs.Path;
+import javax.ws.rs.PathParam;
 import javax.ws.rs.Produces;
-import javax.ws.rs.QueryParam;
 import javax.ws.rs.core.Response;
 
 /**
@@ -36,14 +37,14 @@ public interface CeasingSecondaryUserApi {
      * @return success or error message when updating the sharing status of legal entities.
      */
     @PUT
-    @Path("/block-legalentitiy")
+    @Path("/block-legal-entity")
     @Produces({"application/json"})
     @ApiOperation(value = "This API is used to block the sharing status for a legal entity", tags = {"Legal Entity"})
     @ApiResponses(value = {
             @ApiResponse(code = 200, message = "Success!, blocked the legal entity"),
             @ApiResponse(code = 400, message = "Error!, failed to block the legal entity")})
     Response blockLegalEntitySharingStatus(@ApiParam(value = "Block the sharing status for a legal entity",
-            required = true) String requestBody);
+            required = true) String requestBody) throws OpenBankingException;
 
     /**
      * ----- Unblock the sharing status for a legal entity -----
@@ -54,27 +55,45 @@ public interface CeasingSecondaryUserApi {
      * @return success or error message when updating the sharing status of legal entities.
      */
     @PUT
-    @Path("/unblock-legalentitiy")
+    @Path("/unblock-legal-entity")
     @Produces({"application/json"})
     @ApiOperation(value = "This API is used to unblock the sharing status for a legal entity", tags = {"Legal Entity"})
     @ApiResponses(value = {
             @ApiResponse(code = 200, message = "Success!, unblocked the legal entity"),
             @ApiResponse(code = 400, message = "Error!, failed to unblock the legal entity")})
     Response unblockLegalEntitySharingStatus(@ApiParam(value = "Unblock the sharing status for a legal entity",
-            required = true) String requestBody);
+            required = true) String requestBody) throws OpenBankingException;
+
+    /**
+     * ----- Update the sharing status for a legal entity -----
+     * An endpoint should be designed to allow an account holder to update a legal entity sharing status.
+     *
+     * @param requestBody - List of legal entities to be blocked/unblocked
+     * @return success or error message when updating the sharing status of legal entities.
+     */
+    @PUT
+    @Path("/update-legal-entity")
+    @Produces({"application/json"})
+    @ApiOperation(value = "This API is used to block/unblock the sharing status for a legal entity",
+            tags = {"Legal Entity"})
+    @ApiResponses(value = {
+            @ApiResponse(code = 200, message = "Success!, updated the sharing status for legal entity"),
+            @ApiResponse(code = 400, message = "Error!, failed to update the sharing status for legal entity")})
+    Response updateLegalEntitySharingStatus(@ApiParam(value = "Update the sharing status for a legal entity",
+            required = true) String requestBody) throws OpenBankingException;
 
 
     /**
-     * ----- Get accounts, secondary users, legal entities and their sharing status -----
+     * ----- Get users, accounts, legal entities and their sharing status -----
      * An endpoint should be designed to get all accounts, secondary users, legal entities and their sharing status
      * bound to the account holder in the consent manager dashboard.
      *
-     *@param userID - The userID of the account holder
-     *@return All accounts, secondary users, legal entities and their sharing status
-     *        bound to the account holder in the consent manager dashboard.
+     * @param userID - The userID of the account holder
+     * @return All accounts, secondary users, legal entities and their sharing status
+     * bound to the account holder in the consent manager dashboard.
      */
     @GET
-    @Path("/get-users-accounts-legalentities-details")
+    @Path("/legal-entity-list/{userID}")
     @Produces({"application/json"})
     @ApiOperation(value = "This API is used to get accounts, secondary users, legal entities and their sharing status",
             tags = {"Legal Entity"})
@@ -85,6 +104,5 @@ public interface CeasingSecondaryUserApi {
                     + "and their sharing status")})
     Response getUsersAccountsLegalEntities(@ApiParam(value = "Get accounts, secondary users, legal entities and their "
             + "sharing status",
-            required = true) @QueryParam("userID") String userID);
-
+            required = true) @PathParam("userID") String userID);
 }
