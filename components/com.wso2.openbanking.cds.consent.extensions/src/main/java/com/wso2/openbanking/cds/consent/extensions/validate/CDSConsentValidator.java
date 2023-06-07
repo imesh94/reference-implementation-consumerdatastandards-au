@@ -174,7 +174,7 @@ public class CDSConsentValidator implements ConsentValidator {
         consentValidateData.getComprehensiveConsent().setConsentMappingResources(distinctMappingResources);
     }
 
-    private void removeInactiveDOMSAccountConsentMappings(ConsentValidateData consentValidateData)
+    public void removeInactiveDOMSAccountConsentMappings(ConsentValidateData consentValidateData)
             throws ConsentException {
         ArrayList<ConsentMappingResource> distinctMappingResources = consentValidateData.getComprehensiveConsent()
                 .getConsentMappingResources();
@@ -183,7 +183,7 @@ public class CDSConsentValidator implements ConsentValidator {
         while (iterator.hasNext()) {
             ConsentMappingResource mappingResource = iterator.next();
             try {
-                if (!isDomsStatusEligibleForDataSharing(mappingResource.getAccountID())) {
+                if (!isDOMSStatusEligibleForDataSharing(mappingResource.getAccountID())) {
                     iterator.remove();
                 }
             } catch (OpenBankingException e) {
@@ -194,7 +194,7 @@ public class CDSConsentValidator implements ConsentValidator {
         }
         consentValidateData.getComprehensiveConsent().setConsentMappingResources(distinctMappingResources);
     }
-    public Boolean isDomsStatusEligibleForDataSharing(String accountID) throws OpenBankingException {
+    public Boolean isDOMSStatusEligibleForDataSharing(String accountID) throws OpenBankingException {
         AccountMetadataService accountMetadataService = AccountMetadataServiceImpl.getInstance();
         Map<String, String> accountMetadata = accountMetadataService.getGlobalAccountMetadataMap(accountID);
 

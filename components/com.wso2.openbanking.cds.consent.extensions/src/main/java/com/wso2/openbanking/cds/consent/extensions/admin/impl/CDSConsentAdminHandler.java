@@ -512,7 +512,7 @@ public class CDSConsentAdminHandler implements ConsentAdminHandler {
         }
         return false;
     }
-    private void updateDOMSStatusForConsentData(ConsentAdminData consentAdminData) {
+    public void updateDOMSStatusForConsentData(ConsentAdminData consentAdminData) {
         try {
             AccountMetadataService accountMetadataService = AccountMetadataServiceImpl.getInstance();
 
