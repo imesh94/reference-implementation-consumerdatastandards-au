@@ -1,11 +1,12 @@
-<%--
-  ~ Copyright (c) 2022, WSO2 LLC. (https://www.wso2.com). All Rights Reserved.
-
-  ~ This software is the property of WSO2 LLC. and its suppliers, if any.
-  ~ Dissemination of any information or reproduction of any material contained
-  ~ herein in any form is strictly forbidden, unless permitted by WSO2 expressly.
-  ~ You may not alter or remove any copyright or other notice from copies of this content.
---%>
+<!--
+~ Copyright (c) 2021-2023, WSO2 LLC. (https://www.wso2.com). All Rights Reserved.
+~
+~ This software is the property of WSO2 LLC. and its suppliers, if any.
+~ Dissemination of any information or reproduction of any material contained
+~ herein in any form is strictly forbidden, unless permitted by WSO2 expressly.
+~ You may not alter or remove any copyright or other notice from copies of this content.
+~
+-->
 
 <!-- localize.jsp MUST already be included in the calling script -->
 <%@include file="../includes/localize.jsp" %>
@@ -16,9 +17,8 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-<link rel="icon" href="libs/theme/assets/images/favicon.ico" type="image/x-icon"/>
-<link href="libs/theme/wso2-default.min.css" rel="stylesheet">
-<link href="libs/themes/default/theme.min.css" rel="stylesheet">
+<link rel="icon" href="extensions/theme/assets/images/favicon.ico" type="image/x-icon"/>
+<link href="extensions/theme/wso2-default.min.css" rel="stylesheet">
 <title><%=AuthenticationEndpointUtil.i18n(resourceBundle, "wso2.identity.server")%></title>
 
 
@@ -52,7 +52,7 @@
 
     main.center-segment > .ui.container > .ui.segment {
         background-image: linear-gradient(to bottom, #1a1f28 0%,#2e3b41 100%);
-        background-image: url(extensions/images/login-back.svg), linear-gradient(to bottom, #1a1f28 0%,#2e3b41 100%);
+        background-image: url(extensions/theme/assets/images/login-back.svg), linear-gradient(to bottom, #1a1f28 0%,#2e3b41 100%);
         background-repeat: no-repeat;
         background-position: left bottom;
         background-size: contain;
@@ -145,4 +145,4 @@
 }
 </style>
 
-<script src="libs/jquery_3.6.0/jquery-3.6.0.js"></script>
+<script src="libs/jquery_3.6.0/jquery-3.6.0.min.js"></script>

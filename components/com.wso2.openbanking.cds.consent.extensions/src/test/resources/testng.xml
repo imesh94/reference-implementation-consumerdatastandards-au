@@ -18,6 +18,7 @@
         <classes>
             <class name="com.wso2.openbanking.cds.consent.extensions.authorize.impl.retrieval.CDSConsentRetrievalStepTests"/>
             <class name="com.wso2.openbanking.cds.consent.extensions.authorize.impl.retrieval.CDSAccountListRetrievalStepTests"/>
+            <class name="com.wso2.openbanking.cds.consent.extensions.authorize.impl.retrieval.CDSProfileListRetrievalStepTests"/>
             <class name="com.wso2.openbanking.cds.consent.extensions.authorize.impl.retrieval.CDSDataClusterRetrievalStepTests"/>
             <class name="com.wso2.openbanking.cds.consent.extensions.authorize.impl.persist.CDSConsentPersistStepTests"/>
             <class name="com.wso2.openbanking.cds.consent.extensions.validate.CDSConsentValidatorTest"/>
@@ -26,6 +27,7 @@
             <class name="com.wso2.openbanking.cds.consent.extensions.event.executor.CDSConsentEventExecutorTests"/>
             <class name="com.wso2.openbanking.cds.consent.extensions.admin.impl.CDSConsentAdminHandlerTest"/>
             <class name="com.wso2.openbanking.cds.consent.extensions.authorize.impl.persist.CDSJointAccountConsentPersistenceStepTest"/>
+            <class name="com.wso2.openbanking.cds.consent.extensions.authorize.impl.persist.CDSBusinessAccountConsentPersistenceStepTest"/>
         </classes>
     </test>
 </suite>

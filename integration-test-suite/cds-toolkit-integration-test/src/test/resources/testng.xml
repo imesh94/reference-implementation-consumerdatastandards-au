@@ -50,4 +50,12 @@
             <class name="com.wso2.cds.integration.test.common_api.CustomerDetailsRetrievalTest"/>
         </classes>
     </test>
+    <test parallel="false" enabled="true" name="Business Nominated Representative">
+        <classes>
+            <class name="com.wso2.cds.keymanager.test.bnr.BnrEndToEndTest"/>
+            <class name="com.wso2.cds.keymanager.test.bnr.ConsentAmendmentFlowTests"/>
+            <class name="com.wso2.cds.keymanager.test.bnr.ConsentAuthFlowValidationTests"/>
+            <class name="com.wso2.cds.keymanager.test.bnr.UserNominationManagementTests"/>
+        </classes>
+    </test>
 </suite>

@@ -567,12 +567,10 @@ class AccountsRetrievalTest extends AbstractAUTests {
         softAssertion.assertEquals(response.statusCode(), AUConstants.STATUS_CODE_403)
         softAssertion.assertEquals(response.getHeader(AUConstants.X_V_HEADER).toInteger(), AUConstants.X_V_HEADER_ACCOUNTS)
 
-        Assert.assertEquals(TestUtil.parseResponseBody(response, AUConstants.ERROR_CODE),
-                AUConstants.ERROR_CODE_RESOURCE_FORBIDDEN)
-        Assert.assertEquals(TestUtil.parseResponseBody(response, AUConstants.ERROR_DETAIL),
+        Assert.assertEquals(TestUtil.parseResponseBody(response, AUConstants.ERROR_DESCRIPTION),
                 AUConstants.TOKEN_NOT_ALLOWED_TO_ACCESS_RESOURCE)
-        Assert.assertEquals(TestUtil.parseResponseBody(response, AUConstants.ERROR_TITLE), AUConstants
-                .RESOURCE_FORBIDDEN)
+        Assert.assertEquals(TestUtil.parseResponseBody(response, AUConstants.ERROR),
+                AUConstants.INSUFFICIENT_SCOPE)
         softAssertion.assertAll()
     }
 
@@ -599,12 +597,10 @@ class AccountsRetrievalTest extends AbstractAUTests {
         softAssertion.assertEquals(response.statusCode(), AUConstants.STATUS_CODE_403)
         softAssertion.assertEquals(response.getHeader(AUConstants.X_V_HEADER).toInteger(), AUConstants.X_V_HEADER_ACCOUNTS)
 
-        Assert.assertEquals(TestUtil.parseResponseBody(response, AUConstants.ERROR_CODE),
-                AUConstants.ERROR_CODE_RESOURCE_FORBIDDEN)
-        Assert.assertEquals(TestUtil.parseResponseBody(response, AUConstants.ERROR_DETAIL),
+        Assert.assertEquals(TestUtil.parseResponseBody(response, AUConstants.ERROR_DESCRIPTION),
                 AUConstants.TOKEN_NOT_ALLOWED_TO_ACCESS_RESOURCE)
-        Assert.assertEquals(TestUtil.parseResponseBody(response, AUConstants.ERROR_TITLE), AUConstants
-                .RESOURCE_FORBIDDEN)
+        Assert.assertEquals(TestUtil.parseResponseBody(response, AUConstants.ERROR),
+                AUConstants.INSUFFICIENT_SCOPE)
         softAssertion.assertAll()
     }
 
@@ -631,12 +627,11 @@ class AccountsRetrievalTest extends AbstractAUTests {
         SoftAssert softAssertion = new SoftAssert()
         softAssertion.assertEquals(response.statusCode(), AUConstants.STATUS_CODE_403)
         softAssertion.assertEquals(response.getHeader(AUConstants.X_V_HEADER).toInteger(), AUConstants.X_V_HEADER_ACCOUNTS)
-        Assert.assertEquals(TestUtil.parseResponseBody(response, AUConstants.ERROR_CODE),
-                AUConstants.ERROR_CODE_RESOURCE_FORBIDDEN)
-        Assert.assertEquals(TestUtil.parseResponseBody(response, AUConstants.ERROR_DETAIL),
+
+        Assert.assertEquals(TestUtil.parseResponseBody(response, AUConstants.ERROR_DESCRIPTION),
                 AUConstants.TOKEN_NOT_ALLOWED_TO_ACCESS_RESOURCE)
-        Assert.assertEquals(TestUtil.parseResponseBody(response, AUConstants.ERROR_TITLE), AUConstants
-                .RESOURCE_FORBIDDEN)
+        Assert.assertEquals(TestUtil.parseResponseBody(response, AUConstants.ERROR),
+                AUConstants.INSUFFICIENT_SCOPE)
         softAssertion.assertAll()
     }
 
@@ -699,12 +694,10 @@ class AccountsRetrievalTest extends AbstractAUTests {
         softAssertion.assertEquals(response.statusCode(), AUConstants.STATUS_CODE_403)
         softAssertion.assertEquals(response.getHeader(AUConstants.X_V_HEADER).toInteger(), AUConstants.X_V_HEADER_ACCOUNTS)
 
-        Assert.assertEquals(TestUtil.parseResponseBody(response, AUConstants.ERROR_CODE),
-                AUConstants.ERROR_CODE_RESOURCE_FORBIDDEN)
-        Assert.assertEquals(TestUtil.parseResponseBody(response, AUConstants.ERROR_TITLE), AUConstants
-                .RESOURCE_FORBIDDEN)
-        Assert.assertEquals(TestUtil.parseResponseBody(response, AUConstants.ERROR_DETAIL),
+        Assert.assertEquals(TestUtil.parseResponseBody(response, AUConstants.ERROR_DESCRIPTION),
                 AUConstants.TOKEN_NOT_ALLOWED_TO_ACCESS_RESOURCE)
+        Assert.assertEquals(TestUtil.parseResponseBody(response, AUConstants.ERROR),
+                AUConstants.INSUFFICIENT_SCOPE)
         softAssertion.assertAll()
     }
 
@@ -729,12 +722,11 @@ class AccountsRetrievalTest extends AbstractAUTests {
         softAssertion.assertEquals(response.statusCode(), AUConstants.STATUS_CODE_403)
         softAssertion.assertEquals(response.getHeader(AUConstants.X_V_HEADER).toInteger(), AUConstants.X_V_HEADER_ACCOUNTS)
 
-        Assert.assertEquals(TestUtil.parseResponseBody(response, AUConstants.ERROR_CODE),
-                AUConstants.ERROR_CODE_RESOURCE_FORBIDDEN)
-        Assert.assertEquals(TestUtil.parseResponseBody(response, AUConstants.ERROR_TITLE), AUConstants
-                .RESOURCE_FORBIDDEN)
-        Assert.assertEquals(TestUtil.parseResponseBody(response, AUConstants.ERROR_DETAIL),
+        Assert.assertEquals(TestUtil.parseResponseBody(response, AUConstants.ERROR_DESCRIPTION),
                 AUConstants.TOKEN_NOT_ALLOWED_TO_ACCESS_RESOURCE)
+        Assert.assertEquals(TestUtil.parseResponseBody(response, AUConstants.ERROR),
+                AUConstants.INSUFFICIENT_SCOPE)
+        softAssertion.assertAll()
     }
 
     @Test(priority = 3)
@@ -758,12 +750,11 @@ class AccountsRetrievalTest extends AbstractAUTests {
         SoftAssert softAssertion = new SoftAssert()
         softAssertion.assertEquals(response.statusCode(), AUConstants.STATUS_CODE_403)
         softAssertion.assertEquals(response.getHeader(AUConstants.X_V_HEADER).toInteger(), AUConstants.X_V_HEADER_ACCOUNTS)
-        Assert.assertEquals(TestUtil.parseResponseBody(response, AUConstants.ERROR_CODE),
-                AUConstants.ERROR_CODE_RESOURCE_FORBIDDEN)
-        Assert.assertEquals(TestUtil.parseResponseBody(response, AUConstants.ERROR_TITLE), AUConstants
-                .RESOURCE_FORBIDDEN)
-        Assert.assertEquals(TestUtil.parseResponseBody(response, AUConstants.ERROR_DETAIL),
+
+        Assert.assertEquals(TestUtil.parseResponseBody(response, AUConstants.ERROR_DESCRIPTION),
                 AUConstants.TOKEN_NOT_ALLOWED_TO_ACCESS_RESOURCE)
+        Assert.assertEquals(TestUtil.parseResponseBody(response, AUConstants.ERROR),
+                AUConstants.INSUFFICIENT_SCOPE)
         softAssertion.assertAll()
     }
 }

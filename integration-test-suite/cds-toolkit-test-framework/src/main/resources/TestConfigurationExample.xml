@@ -226,14 +226,34 @@
         <RedirectURL>NonRegulatoryApplication.RedirectURL</RedirectURL>
     </NonRegulatoryApplication>
 
-    <!-- PSU Info -->
-    <PSUInfo>
-        <!--Sample Values: admin@wso2.com -->
-        <User>PSUInfo.User</User>
-
-        <!--Sample Values: wso2123 -->
-        <Password>PSUInfo.Password</Password>
-    </PSUInfo>
+    <!-- PSU_INFO List - Can Add Multiple PSUInfo sets as required-->
+    <PSUList>
+        <!-- Common PSU Info -->
+        <PSUInfo>
+            <User>admin@wso2.com</User>
+            <Password>wso2123</Password>
+        </PSUInfo>
+        <!-- Individual PSU Info -->
+        <PSUInfo>
+            <Psu>psu1@wso2.com</Psu>
+            <PsuPassword>wso2123</PsuPassword>
+        </PSUInfo>
+        <!-- Business User 1-->
+        <PSUInfo>
+            <Psu>nominatedUser1@wso2.com</Psu>
+            <PsuPassword>wso2123</PsuPassword>
+        </PSUInfo>
+        <!-- Business User 2 (Multiple NR)-->
+        <PSUInfo>
+            <Psu>nominatedUser2@wso2.com</Psu>
+            <PsuPassword>wso2123</PsuPassword>
+        </PSUInfo>
+        <!-- Account Owner-->
+        <PSUInfo>
+            <Psu>user2@wso2.com</Psu>
+            <PsuPassword>wso2123</PsuPassword>
+        </PSUInfo>
+    </PSUList>
 
     <!-- Publisher Info -->
     <PublisherInfo>

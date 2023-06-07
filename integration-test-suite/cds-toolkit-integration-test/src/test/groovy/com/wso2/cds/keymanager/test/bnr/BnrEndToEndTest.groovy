@@ -1,18 +1,16 @@
 /*
- * Copyright (c) 2023, WSO2 Inc. (http://www.wso2.com). All Rights Reserved.
+ * Copyright (c) 2023, WSO2 LLC. (https://www.wso2.com). All Rights Reserved.
  *
- * This software is the property of WSO2 Inc. and its suppliers, if any.
+ * This software is the property of WSO2 LLC. and its suppliers, if any.
  * Dissemination of any information or reproduction of any material contained
- * herein is strictly forbidden, unless permitted by WSO2 in accordance with
- * the WSO2 Software License available at https://wso2.com/licenses/eula/3.1. For specific
- * language governing the permissions and limitations under this license,
- * please see the license as well as any agreement you’ve entered into with
- * WSO2 governing the purchase of this software and any associated services.
+ * herein in any form is strictly forbidden, unless permitted by WSO2 expressly.
+ * You may not alter or remove any copyright or other notice from copies of this content.
  */
 
 package com.wso2.cds.keymanager.test.bnr
 
 import com.wso2.cds.test.framework.AUTest
+import com.wso2.cds.test.framework.configuration.AUConfigurationService
 import com.wso2.cds.test.framework.constant.AUAccountProfile
 import com.wso2.cds.test.framework.constant.AUBusinessUserPermission
 import com.wso2.cds.test.framework.constant.AUConstants
@@ -31,9 +29,11 @@ import java.nio.charset.Charset
 class BnrEndToEndTest extends AUTest{
 
     def clientHeader
+    AUConfigurationService auConfiguration = new AUConfigurationService()
 
     @BeforeClass(alwaysRun = true)
     void "Nominate Business User Representative"() {
+        auConfiguration.setPsuNumber(2)
         clientHeader = "${Base64.encoder.encodeToString(getCDSClient().getBytes(Charset.defaultCharset()))}"
 
         //Get Sharable Account List and Nominate Business Representative with Authorize Permission
@@ -52,7 +52,7 @@ class BnrEndToEndTest extends AUTest{
     void "CDS-486_Verify an accounts retrieval call after business profile selection and business accounts consented"(resourcePath) {
 
         //Consent Authorisation
-        doConsentAuthorisation(null, AUAccountProfile.ORGANIZATION_A)
+        doConsentAuthorisation(null, AUAccountProfile.ORGANIZATION_B)
         generateUserAccessToken()
 
         //Get Accounts

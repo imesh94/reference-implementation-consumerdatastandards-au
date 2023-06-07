@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2021, WSO2 Inc. (http://www.wso2.com). All Rights Reserved.
+ * Copyright (c) 2021 - 2023, WSO2 Inc. (http://www.wso2.com). All Rights Reserved.
  *
  * This software is the property of WSO2 Inc. and its suppliers, if any.
  * Dissemination of any information or reproduction of any material contained
@@ -333,6 +333,7 @@ class AUConstants {
     static final INVALID_CDR_ARRANGEMENT_ID = "Invalid cdr_arrangement_id"
     static final INVALID_REQUEST_OBJECT = "invalid_request_object"
     static final INVALID_REQUEST = "invalid_request"
+    static final INSUFFICIENT_SCOPE = "insufficient_scope"
     static final MISSING_REQUIRED_FIELD = "Missing Required Field"
     static final TOKEN_NOT_ALLOWED_TO_ACCESS_RESOURCE = "The access token does not allow you to access the requested resource"
 
@@ -430,4 +431,6 @@ class AUConstants {
         }
         return productEndpoint
     }
+
+    public static final String REQUEST_URI = "requestUri"
 }

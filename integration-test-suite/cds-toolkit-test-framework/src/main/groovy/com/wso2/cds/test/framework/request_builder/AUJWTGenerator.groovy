@@ -12,7 +12,7 @@
 
 package com.wso2.cds.test.framework.request_builder
 
-
+import com.nimbusds.oauth2.sdk.id.State
 import com.wso2.bfsi.test.framework.exception.TestFrameworkException
 import com.nimbusds.jose.JOSEObjectType
 import com.nimbusds.jose.JWSAlgorithm
@@ -159,7 +159,8 @@ class AUJWTGenerator {
                                    String cdrArrangementId, String redirect_uri, String clientId, String responseType,
                                    boolean isStateRequired = true, String state) {
 
-        def expiryDate = Instant.now().plus(1, ChronoUnit.DAYS)
+        def expiryDate = Instant.now().plus(1, ChronoUnit.HOURS)
+        def notBefore = Instant.now()
         String claims
 
         JSONObject acr = new JSONObject().put("essential", true).put("values", new ArrayList<String>() {
@@ -168,7 +169,9 @@ class AUJWTGenerator {
             }
         })
         JSONObject userInfoString = new JSONObject().put("given_name", null).put("family_name", null)
-        JSONObject claimsString = new JSONObject().put("id_token", new JSONObject().put("acr", acr)).put("userinfo", userInfoString)
+        JSONObject authTimeString = new JSONObject().put("essential", true)
+        JSONObject claimsString = new JSONObject().put("id_token", new JSONObject().put("acr", acr).put("auth_time", authTimeString))
+                .put("userinfo", userInfoString)
         if (sharingDuration.intValue() != 0 || sendSharingDuration) {
             claimsString.put("sharing_duration", sharingDuration)
         }
@@ -187,6 +190,8 @@ class AUJWTGenerator {
                     .addScope(scopeString)
                     .addState(state)
                     .addNonce()
+                    .addCustomValue("max_age", 86400)
+                    .addCustomValue("nbf", notBefore.getEpochSecond().toLong())
                     .addCustomJson("claims", claimsString)
                     .getJsonObject().toString()
         } else {
