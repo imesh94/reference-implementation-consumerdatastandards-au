@@ -13,6 +13,7 @@ import com.wso2.openbanking.accelerator.account.metadata.service.service.Account
 import com.wso2.openbanking.accelerator.account.metadata.service.service.AccountMetadataServiceImpl;
 import com.wso2.openbanking.accelerator.common.exception.OpenBankingException;
 
+import com.wso2.openbanking.cds.account.type.management.endpoint.disclosure.options.constants.DisclosureOptionStatusConstants;
 import net.minidev.json.JSONArray;
 import net.minidev.json.JSONObject;
 import net.minidev.json.parser.JSONParser;
@@ -38,16 +39,18 @@ public class DisclosureOptionsApiHandler {
 
         try {
             JSONObject requestBodyJSON = (JSONObject) parser.parse(requestBody);
-            JSONArray requestBodyJSONData = (JSONArray) requestBodyJSON.get("data");
+            JSONArray requestBodyJSONData = (JSONArray) requestBodyJSON.get(DisclosureOptionStatusConstants.DATA);
 
             for (Object requestBodyJSONDataItem : requestBodyJSONData) {
 
-                String accountId = ((JSONObject) requestBodyJSONDataItem).getAsString("accountID");
-                String disclosureOption = ((JSONObject) requestBodyJSONDataItem).getAsString("disclosureOption");
+                String accountId = ((JSONObject) requestBodyJSONDataItem).
+                        getAsString(DisclosureOptionStatusConstants.ACCOUNT_ID);
+                String disclosureOption = ((JSONObject) requestBodyJSONDataItem).
+                        getAsString(DisclosureOptionStatusConstants.DISCLOSURE_OPTION);
 
                 // Add the disclosureOption value to a HashMap
                 HashMap<String, String> disclosureOptionsMap = new HashMap<String, String>();
-                disclosureOptionsMap.put("DISCLOSURE_OPTIONS_STATUS", disclosureOption);
+                disclosureOptionsMap.put(DisclosureOptionStatusConstants.DISCLOSURE_OPTION_STATUS, disclosureOption);
 
                 // Call the addOrUpdateGlobalAccountMetadata method from the AccountMetadataService class
                 accountMetadataService.addOrUpdateGlobalAccountMetadata(accountId, disclosureOptionsMap);

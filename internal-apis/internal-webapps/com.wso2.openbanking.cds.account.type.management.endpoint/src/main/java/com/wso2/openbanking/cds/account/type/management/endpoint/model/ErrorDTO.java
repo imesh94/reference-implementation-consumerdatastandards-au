@@ -8,6 +8,8 @@
  */
 package com.wso2.openbanking.cds.account.type.management.endpoint.model;
 
+import com.fasterxml.jackson.annotation.JsonProperty;
+
 /**
  * ErrorDTO model class.
  */
@@ -25,6 +27,7 @@ public class ErrorDTO {
         return error;
     }
 
+    @JsonProperty("error_description")
     public String getErrorDescription() {
         return errorDescription;
     }
