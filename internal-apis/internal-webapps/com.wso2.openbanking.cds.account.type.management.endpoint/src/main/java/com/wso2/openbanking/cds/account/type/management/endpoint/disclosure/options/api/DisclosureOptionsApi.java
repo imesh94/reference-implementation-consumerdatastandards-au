@@ -6,23 +6,28 @@
  * herein in any form is strictly forbidden, unless permitted by WSO2 expressly.
  * You may not alter or remove any copyright or other notice from copies of this content.
  */
+
 package com.wso2.openbanking.cds.account.type.management.endpoint.disclosure.options.api;
+
 import io.swagger.annotations.ApiOperation;
 import io.swagger.annotations.ApiParam;
 import io.swagger.annotations.ApiResponse;
 import io.swagger.annotations.ApiResponses;
+
 import javax.ws.rs.PUT;
 import javax.ws.rs.Path;
 import javax.ws.rs.Produces;
 import javax.ws.rs.core.Response;
+
 /**
  * Disclosure Options API
  */
+
 @Path("/account-type-management")
 public interface DisclosureOptionsApi {
     /**
-     * Disclosure Options API
-     * REST API endpoint that updates the disclosure options of the CDS account by
+     * Disclosure Options API for Joint Accounts
+     * REST API endpoint that updates the disclosure options of the joint CDS accounts by
      * sending a JSON payload in the request body.
      */
     @PUT
@@ -36,6 +41,5 @@ public interface DisclosureOptionsApi {
     })
     Response updateCDSAccountDisclosureOptions(@ApiParam(value = "Array of account disclosure option details.\n",
             required = true) String requestBody); }
-
 
 

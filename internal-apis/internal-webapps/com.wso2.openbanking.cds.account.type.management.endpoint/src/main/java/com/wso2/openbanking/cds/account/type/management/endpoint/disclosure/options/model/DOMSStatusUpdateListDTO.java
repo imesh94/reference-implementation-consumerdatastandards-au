@@ -15,16 +15,16 @@ import javax.validation.Valid;
 /**
  * Disclosure Options Management - DOMSStatusUpdateDTOList
  */
-public class DOMSStatusUpdateDTOList {
+public class DOMSStatusUpdateListDTO {
 
     @Valid
-    private List<DOMSStatusUpdateDTOItem> data;
+    private List<DOMSStatusUpdateDTO> data;
 
-    public List<DOMSStatusUpdateDTOItem> getData() {
+    public List<DOMSStatusUpdateDTO> getData() {
         return data;
     }
 
-    public void setData(List<DOMSStatusUpdateDTOItem> data) {
+    public void setData(List<DOMSStatusUpdateDTO> data) {
         this.data = data;
     }
 
