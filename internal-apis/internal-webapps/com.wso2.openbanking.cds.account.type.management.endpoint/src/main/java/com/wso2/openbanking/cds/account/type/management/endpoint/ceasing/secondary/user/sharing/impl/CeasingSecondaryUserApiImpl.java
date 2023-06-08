@@ -20,8 +20,6 @@ import com.wso2.openbanking.cds.account.type.management.endpoint.ceasing.seconda
 import com.wso2.openbanking.cds.account.type.management.endpoint.ceasing.secondary.user.sharing.handler.
         CeasingSecondaryUserHandler;
 import com.wso2.openbanking.cds.account.type.management.endpoint.ceasing.secondary.user.sharing.models.
-        LegalEntityListBlockUnblockDTO;
-import com.wso2.openbanking.cds.account.type.management.endpoint.ceasing.secondary.user.sharing.models.
         LegalEntityListUpdateDTO;
 import com.wso2.openbanking.cds.account.type.management.endpoint.ceasing.secondary.user.sharing.models.
         UsersAccountsLegalEntitiesDTO;
@@ -47,76 +45,6 @@ public class CeasingSecondaryUserApiImpl implements CeasingSecondaryUserApi {
 
     private static final Log log = LogFactory.getLog(CeasingSecondaryUserApiImpl.class);
     CeasingSecondaryUserHandler ceasingSecondaryUserHandler = new CeasingSecondaryUserHandler();
-
-    /**
-     * {@inheritDoc}
-     */
-    public Response blockLegalEntitySharingStatus(String requestBody) throws OpenBankingException {
-
-        ObjectMapper objectMapper = new ObjectMapper();
-        LegalEntityListBlockUnblockDTO legalEntityListDTO;
-
-        try {
-            legalEntityListDTO = objectMapper.readValue(requestBody, LegalEntityListBlockUnblockDTO.class);
-
-            //Validating the requestBody
-            String validationError = ValidationUtil.getFirstViolationMessage(legalEntityListDTO);
-
-            if (validationError.isEmpty()) {
-                ceasingSecondaryUserHandler.blockLegalEntitySharingStatus(legalEntityListDTO);
-
-                log.debug("Success!, the sharing status for legal entity/entities has been blocked.");
-                return Response.ok().build();
-            } else {
-                log.error("Error occurred while blocking the sharing status for a legal entity/entities.");
-                ErrorDTO errorDTO = new ErrorDTO(ErrorStatusEnum.INVALID_REQUEST,
-                        "Error occurred while blocking the sharing status for a legal entity/entities.");
-                return Response.status(Response.Status.BAD_REQUEST).entity(errorDTO).build();
-            }
-
-        } catch (JsonProcessingException e) {
-            log.error("Error occurred while processing the JSON object.", e);
-            ErrorDTO errorDTO = new ErrorDTO(ErrorStatusEnum.INVALID_REQUEST,
-                    "Error occurred while processing the JSON object.");
-            return Response.status(Response.Status.BAD_REQUEST)
-                    .entity(errorDTO).build();
-        }
-    }
-
-    /**
-     * {@inheritDoc}
-     */
-    public Response unblockLegalEntitySharingStatus(String requestBody) throws OpenBankingException {
-
-        ObjectMapper objectMapper = new ObjectMapper();
-        LegalEntityListBlockUnblockDTO legalEntityListDTO;
-
-        try {
-            legalEntityListDTO = objectMapper.readValue(requestBody, LegalEntityListBlockUnblockDTO.class);
-
-            //Validating the requestBody
-            String validationError = ValidationUtil.getFirstViolationMessage(legalEntityListDTO);
-
-            if (validationError.isEmpty()) {
-                ceasingSecondaryUserHandler.unblockLegalEntitySharingStatus(legalEntityListDTO);
-
-                log.debug("Success!, the sharing status for legal entity/entities has been unblocked.");
-                return Response.ok().build();
-            } else {
-                log.error("Error occurred while unblocking the sharing status for a legal entity/entities.");
-                ErrorDTO errorDTO = new ErrorDTO(ErrorStatusEnum.INVALID_REQUEST,
-                        "Error occurred while unblocking the sharing status for a legal entity/entities.");
-                return Response.status(Response.Status.BAD_REQUEST).entity(errorDTO).build();
-            }
-
-        } catch (JsonProcessingException e) {
-            log.error("Error occurred while processing the JSON object.", e);
-            ErrorDTO errorDTO = new ErrorDTO(ErrorStatusEnum.INVALID_REQUEST,
-                    "Error occurred while processing the JSON object.");
-            return Response.status(Response.Status.BAD_REQUEST)
-                    .entity(errorDTO).build();
-        }
-    }
 
     /**
      * {@inheritDoc}

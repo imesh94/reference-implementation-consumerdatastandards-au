@@ -19,11 +19,7 @@ import com.wso2.openbanking.accelerator.consent.mgt.dao.models.DetailedConsentRe
 import com.wso2.openbanking.cds.account.type.management.endpoint.ceasing.secondary.user.sharing.constants.
         CeasingSecondaryUserEnum;
 import com.wso2.openbanking.cds.account.type.management.endpoint.ceasing.secondary.user.sharing.models.
-        LegalEntityItemBlockUnblockDTO;
-import com.wso2.openbanking.cds.account.type.management.endpoint.ceasing.secondary.user.sharing.models.
         LegalEntityItemUpdateDTO;
-import com.wso2.openbanking.cds.account.type.management.endpoint.ceasing.secondary.user.sharing.models.
-        LegalEntityListBlockUnblockDTO;
 import com.wso2.openbanking.cds.account.type.management.endpoint.ceasing.secondary.user.sharing.models.
         LegalEntityListUpdateDTO;
 import com.wso2.openbanking.cds.account.type.management.endpoint.ceasing.secondary.user.sharing.models.
@@ -34,7 +30,6 @@ import org.apache.commons.logging.LogFactory;
 
 import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.List;
 import java.util.Locale;
 import java.util.Objects;
 
@@ -59,58 +54,51 @@ public class CeasingSecondaryUserHandler {
 
     /**
      * ----- Block the sharing status for a legal entity -----
-     * This endpoint is designed to allow an account holder to block a legal entity in order to cease the
+     * This method is used to allow an account holder to block a legal entity in order to cease the
      * disclosure initiated by a secondary user for a particular account to that legal entity.
      */
-    public void blockLegalEntitySharingStatus(LegalEntityListBlockUnblockDTO legalEntityListDTO)
+    public void blockLegalEntitySharingStatus(String accountID, String secondaryUserID, String legalEntityID)
             throws OpenBankingException {
 
         log.debug("Blocking the legal entity sharing status");
 
         try {
-            for (LegalEntityItemBlockUnblockDTO legalEntityListItemDTO : legalEntityListDTO.getData()) {
 
-                // Extracting fields in the legalEntityListItemDTO
-                String accountID = legalEntityListItemDTO.getAccountID();
-                String secondaryUserID = legalEntityListItemDTO.getSecondaryUserID();
-                String legalEntityID = legalEntityListItemDTO.getLegalEntityID();
+            // Add carbon tenant domain to the secondaryUserID if it does not exist
+            if (!secondaryUserID.toLowerCase(Locale.ENGLISH).endsWith(CARBON_TENANT_DOMAIN)) {
+                secondaryUserID = secondaryUserID + CARBON_TENANT_DOMAIN;
+            }
 
-                // Add carbon tenant domain to the secondaryUserID if it does not exist
-                if (!secondaryUserID.toLowerCase(Locale.ENGLISH).endsWith(CARBON_TENANT_DOMAIN)) {
-                    secondaryUserID = secondaryUserID + CARBON_TENANT_DOMAIN;
-                }
+            // Generating the hashmap
+            HashMap<String, String> blockedLegalEntityMap = new HashMap<String, String>();
 
-                // Generating the hashmap
-                HashMap<String, String> blockedLegalEntityMap = new HashMap<String, String>();
+            // Checking the existence of a record in the OB_ACCOUNT_METADATA table for the corresponding
+            // to a particular accountID, secondaryUserID and metadataKey
+            String responseLegalEntities = accountMetadataService.getAccountMetadataByKey
+                    (accountID, secondaryUserID, METADATA_KEY_BLOCKED_LEGAL_ENTITIES);
 
-                // Checking the existence of a record in the OB_ACCOUNT_METADATA table for the corresponding
-                // to a particular accountID, secondaryUserID and metadataKey
-                String responseLegalEntities = accountMetadataService.getAccountMetadataByKey
-                        (accountID, secondaryUserID, METADATA_KEY_BLOCKED_LEGAL_ENTITIES);
+            if (responseLegalEntities == null) {
+                // Legal entities does not exist for corresponding accountID and secondaryUserID
+                blockedLegalEntityMap.put(METADATA_KEY_BLOCKED_LEGAL_ENTITIES, legalEntityID);
+                accountMetadataService.
+                        addOrUpdateAccountMetadata(accountID, secondaryUserID, blockedLegalEntityMap);
+                log.info("Legal Entity: " + legalEntityID + ", has been successfully blocked!");
+            } else {
+                // Legal entities exist for corresponding accountID and secondaryUserID
+                StringBuilder legalEntitiesMetaDataValue = new StringBuilder(responseLegalEntities);
 
-                if (responseLegalEntities == null) {
-                    // Legal entities does not exist for corresponding accountID and secondaryUserID
-                    blockedLegalEntityMap.put(METADATA_KEY_BLOCKED_LEGAL_ENTITIES, legalEntityID);
-                    accountMetadataService.
-                            addOrUpdateAccountMetadata(accountID, secondaryUserID, blockedLegalEntityMap);
-                    log.info("Legal Entity: " + legalEntityID + ", has been successfully blocked!");
+                // Appending legalEntityID to the existing legalEntityIDs for corresponding accountID and
+                // secondaryUserID
+                if (legalEntitiesMetaDataValue.indexOf(legalEntityID) != -1) {
+                    log.info("Legal Entity: " + legalEntityID + ", has been already blocked!");
                 } else {
-                    // Legal entities exist for corresponding accountID and secondaryUserID
-                    StringBuilder legalEntitiesMetaDataValue = new StringBuilder(responseLegalEntities);
-
-                    // Appending legalEntityID to the existing legalEntityIDs for corresponding accountID and
-                    // secondaryUserID
-                    if (legalEntitiesMetaDataValue.indexOf(legalEntityID) != -1) {
-                        log.info("Legal Entity: " + legalEntityID + ", has been already blocked!");
-                    } else {
-                        legalEntitiesMetaDataValue.append(",");
-                        legalEntitiesMetaDataValue.append(legalEntityID);
-                        blockedLegalEntityMap.put(METADATA_KEY_BLOCKED_LEGAL_ENTITIES,
-                                legalEntitiesMetaDataValue.toString());
-                        accountMetadataService.addOrUpdateAccountMetadata
-                                (accountID, secondaryUserID, blockedLegalEntityMap);
-                        log.info("Legal Entity: " + legalEntityID + ", has been successfully blocked!");
-                    }
+                    legalEntitiesMetaDataValue.append(",");
+                    legalEntitiesMetaDataValue.append(legalEntityID);
+                    blockedLegalEntityMap.put(METADATA_KEY_BLOCKED_LEGAL_ENTITIES,
+                            legalEntitiesMetaDataValue.toString());
+                    accountMetadataService.addOrUpdateAccountMetadata
+                            (accountID, secondaryUserID, blockedLegalEntityMap);
+                    log.info("Legal Entity: " + legalEntityID + ", has been successfully blocked!");
                 }
             }
         } catch (OpenBankingException e) {
@@ -121,75 +109,67 @@ public class CeasingSecondaryUserHandler {
 
     /**
      * ----- Unblock the sharing status for a legal entity -----
-     * This endpoint is designed to allow an account holder to block a legal entity in order to cease the
+     * This method is used to allow an account holder to block a legal entity in order to cease the
      * disclosure initiated by a secondary user for a particular account to that legal entity.
      */
-    public void unblockLegalEntitySharingStatus(LegalEntityListBlockUnblockDTO legalEntityListDTO)
+    public void unblockLegalEntitySharingStatus(String accountID, String secondaryUserID, String legalEntityID)
             throws OpenBankingException {
 
         log.debug("Unblocking the legal entity sharing status");
 
         try {
-            for (LegalEntityItemBlockUnblockDTO legalEntityListItemDTO : legalEntityListDTO.getData()) {
+            // Add carbon tenant domain to the secondaryUserID if it does not exist
+            if (!secondaryUserID.toLowerCase(Locale.ENGLISH).endsWith(CARBON_TENANT_DOMAIN)) {
+                secondaryUserID = secondaryUserID + CARBON_TENANT_DOMAIN;
+            }
 
-                // Extracting fields in the legalEntityListItemDTO
-                String accountID = legalEntityListItemDTO.getAccountID();
-                String secondaryUserID = legalEntityListItemDTO.getSecondaryUserID();
-                String legalEntityID = legalEntityListItemDTO.getLegalEntityID();
+            // Checking the existence of a record in the OB_ACCOUNT_METADATA table for the corresponding
+            // to a particular accountID, secondaryUserID and metadataKey
+            String responseLegalEntities = accountMetadataService.getAccountMetadataByKey
+                    (accountID, secondaryUserID, METADATA_KEY_BLOCKED_LEGAL_ENTITIES);
 
-                // Add carbon tenant domain to the secondaryUserID if it does not exist
-                if (!secondaryUserID.toLowerCase(Locale.ENGLISH).endsWith(CARBON_TENANT_DOMAIN)) {
-                    secondaryUserID = secondaryUserID + CARBON_TENANT_DOMAIN;
-                }
+            if (responseLegalEntities == null) {
+                //Legal entities does not exist for corresponding accountID and secondaryUserID
+                log.info("Legal Entity : " + legalEntityID + ", has not been blocked!");
+            } else {
+                // Legal entities exist for corresponding accountID and secondaryUserID
+                StringBuilder legalEntitiesMetaDataValue = new StringBuilder(responseLegalEntities);
 
-                // Checking the existence of a record in the OB_ACCOUNT_METADATA table for the corresponding
-                // to a particular accountID, secondaryUserID and metadataKey
-                String responseLegalEntities = accountMetadataService.getAccountMetadataByKey
-                        (accountID, secondaryUserID, METADATA_KEY_BLOCKED_LEGAL_ENTITIES);
-
-                if (responseLegalEntities == null) {
-                    //Legal entities does not exist for corresponding accountID and secondaryUserID
+                // Removing legalEntityID to the existing legalEntityIDs for corresponding accountID and
+                // secondaryUserID
+                if (legalEntitiesMetaDataValue.indexOf(legalEntityID) == -1) {
                     log.info("Legal Entity : " + legalEntityID + ", has not been blocked!");
                 } else {
-                    // Legal entities exist for corresponding accountID and secondaryUserID
-                    StringBuilder legalEntitiesMetaDataValue = new StringBuilder(responseLegalEntities);
+                    String[] blockedLegalEntities = responseLegalEntities.split(",");
+                    String[] newBlockedLegalEntities = new String[blockedLegalEntities.length - 1];
 
-                    // Removing legalEntityID to the existing legalEntityIDs for corresponding accountID and
-                    // secondaryUserID
-                    if (legalEntitiesMetaDataValue.indexOf(legalEntityID) == -1) {
-                        log.info("Legal Entity : " + legalEntityID + ", has not been blocked!");
-                    } else {
-                        String[] blockedLegalEntities = responseLegalEntities.split(",");
-                        String[] newBlockedLegalEntities = new String[blockedLegalEntities.length - 1];
-
-                        for (int i = 0, j = 0; i < blockedLegalEntities.length; i++) {
-                            if (blockedLegalEntities[i].equals(legalEntityID)) {
-                                continue;
-                            }
-                            newBlockedLegalEntities[j++] = blockedLegalEntities[i];
+                    for (int i = 0, j = 0; i < blockedLegalEntities.length; i++) {
+                        if (blockedLegalEntities[i].equals(legalEntityID)) {
+                            continue;
                         }
-
-                        HashMap<String, String> newBlockedLegalEntityMap = new HashMap<String, String>();
-                        StringBuilder newBlockedLegalEntitiesSB = new StringBuilder();
-
-                        for (int i = 0; i < newBlockedLegalEntities.length; i++) {
-                            newBlockedLegalEntitiesSB.append(newBlockedLegalEntities[i]);
-                            if (i != newBlockedLegalEntities.length - 1) {
-                                newBlockedLegalEntitiesSB.append(",");
-                            }
-                        }
-                        newBlockedLegalEntityMap.put(METADATA_KEY_BLOCKED_LEGAL_ENTITIES,
-                                newBlockedLegalEntitiesSB.toString());
-                        accountMetadataService.addOrUpdateAccountMetadata
-                                (accountID, secondaryUserID, newBlockedLegalEntityMap);
-
-                        if (accountMetadataService.getAccountMetadataByKey
-                                (accountID, secondaryUserID, METADATA_KEY_BLOCKED_LEGAL_ENTITIES).isEmpty()) {
-                            accountMetadataService.removeAccountMetadataByKey(accountID, secondaryUserID,
-                                    METADATA_KEY_BLOCKED_LEGAL_ENTITIES);
-                        }
-                        log.info("Legal Entity : " + legalEntityID + ", has been unblocked!");
+                        newBlockedLegalEntities[j++] = blockedLegalEntities[i];
                     }
+
+                    HashMap<String, String> newBlockedLegalEntityMap = new HashMap<String, String>();
+                    StringBuilder newBlockedLegalEntitiesSB = new StringBuilder();
+
+                    for (int i = 0; i < newBlockedLegalEntities.length; i++) {
+                        newBlockedLegalEntitiesSB.append(newBlockedLegalEntities[i]);
+                        if (i != newBlockedLegalEntities.length - 1) {
+                            newBlockedLegalEntitiesSB.append(",");
+                        }
+                    }
+                    newBlockedLegalEntityMap.put(METADATA_KEY_BLOCKED_LEGAL_ENTITIES,
+                            newBlockedLegalEntitiesSB.toString());
+                    accountMetadataService.addOrUpdateAccountMetadata
+                            (accountID, secondaryUserID, newBlockedLegalEntityMap);
+
+                    if (accountMetadataService.getAccountMetadataByKey
+                            (accountID, secondaryUserID, METADATA_KEY_BLOCKED_LEGAL_ENTITIES).isEmpty()) {
+                        accountMetadataService.removeAccountMetadataByKey(accountID, secondaryUserID,
+                                METADATA_KEY_BLOCKED_LEGAL_ENTITIES);
+                    }
+                    log.info("Legal Entity : " + legalEntityID + ", has been unblocked!");
                 }
             }
         } catch (OpenBankingException e) {
@@ -198,10 +178,9 @@ public class CeasingSecondaryUserHandler {
         }
     }
 
-
     /**
      * ----- Update the sharing status for a legal entity -----
-     * This endpoint is designed to allow an account holder to block/unblock a legal entity in order to cease the
+     * This method is used to allow an account holder to block/unblock a legal entity in order to cease the
      * disclosure initiated by a secondary user for a particular account to that legal entity.
      */
     public void updateLegalEntitySharingStatus(LegalEntityListUpdateDTO legalEntityListDTO)
@@ -220,43 +199,19 @@ public class CeasingSecondaryUserHandler {
 
                 // Blocking the legal entity, if the legalEntitySharing Status is blocked
                 if (Objects.equals(legalEntitySharingStatus, CeasingSecondaryUserEnum.BLOCKED.getValue())) {
-                    LegalEntityItemBlockUnblockDTO legalEntityItemBlockDTO =
-                            new LegalEntityItemBlockUnblockDTO();
-                    legalEntityItemBlockDTO.setAccountID(accountID);
-                    legalEntityItemBlockDTO.setSecondaryUserID(secondaryUserID);
-                    legalEntityItemBlockDTO.setLegalEntityID(legalEntityID);
-
-                    List<LegalEntityItemBlockUnblockDTO> data = new ArrayList<>();
-                    data.add(legalEntityItemBlockDTO);
-
-                    LegalEntityListBlockUnblockDTO legalEntityListDTONew = new LegalEntityListBlockUnblockDTO();
-                    legalEntityListDTONew.setData(data);
-                    blockLegalEntitySharingStatus(legalEntityListDTONew);
+                    blockLegalEntitySharingStatus(accountID, secondaryUserID, legalEntityID);
                 }
 
                 // Unblocking the legal entity, if the legalEntitySharing Status is blocked
                 if (Objects.equals(legalEntitySharingStatus, CeasingSecondaryUserEnum.ACTIVE.getValue())) {
-                    LegalEntityItemBlockUnblockDTO legalEntityItemUnblockDTO =
-                            new LegalEntityItemBlockUnblockDTO();
-                    legalEntityItemUnblockDTO.setAccountID(accountID);
-                    legalEntityItemUnblockDTO.setSecondaryUserID(secondaryUserID);
-                    legalEntityItemUnblockDTO.setLegalEntityID(legalEntityID);
-
-                    List<LegalEntityItemBlockUnblockDTO> data = new ArrayList<>();
-                    data.add(legalEntityItemUnblockDTO);
-
-                    LegalEntityListBlockUnblockDTO legalEntityListDTONew = new LegalEntityListBlockUnblockDTO();
-                    legalEntityListDTONew.setData(data);
-                    unblockLegalEntitySharingStatus(legalEntityListDTONew);
+                    unblockLegalEntitySharingStatus(accountID, secondaryUserID, legalEntityID);
                 }
             }
         } catch (OpenBankingException e) {
             log.warn(e.getMessage());
             throw e;
         }
-
     }
-
 
     /**
      * ----- Get accounts, secondary users, legal entities and their sharing status -----

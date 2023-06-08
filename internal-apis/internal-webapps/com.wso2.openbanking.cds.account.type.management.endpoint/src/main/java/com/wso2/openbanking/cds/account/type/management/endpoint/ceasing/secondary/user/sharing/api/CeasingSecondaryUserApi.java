@@ -29,42 +29,6 @@ import javax.ws.rs.core.Response;
 public interface CeasingSecondaryUserApi {
 
     /**
-     * ----- Block the sharing status for a legal entity -----
-     * An endpoint should be designed to allow an account holder to block a legal entity in order to cease the
-     * disclosure initiated by a secondary user for a particular account to that legal entity.
-     *
-     * @param requestBody - List of legal entities to be blocked
-     * @return success or error message when updating the sharing status of legal entities.
-     */
-    @PUT
-    @Path("/block-legal-entity")
-    @Produces({"application/json"})
-    @ApiOperation(value = "This API is used to block the sharing status for a legal entity", tags = {"Legal Entity"})
-    @ApiResponses(value = {
-            @ApiResponse(code = 200, message = "Success!, blocked the legal entity"),
-            @ApiResponse(code = 400, message = "Error!, failed to block the legal entity")})
-    Response blockLegalEntitySharingStatus(@ApiParam(value = "Block the sharing status for a legal entity",
-            required = true) String requestBody) throws OpenBankingException;
-
-    /**
-     * ----- Unblock the sharing status for a legal entity -----
-     * An endpoint should be designed to allow an account holder to unblock a legal entity that has been
-     * blocked previously.
-     *
-     * @param requestBody - List of legal entities to be unblocked
-     * @return success or error message when updating the sharing status of legal entities.
-     */
-    @PUT
-    @Path("/unblock-legal-entity")
-    @Produces({"application/json"})
-    @ApiOperation(value = "This API is used to unblock the sharing status for a legal entity", tags = {"Legal Entity"})
-    @ApiResponses(value = {
-            @ApiResponse(code = 200, message = "Success!, unblocked the legal entity"),
-            @ApiResponse(code = 400, message = "Error!, failed to unblock the legal entity")})
-    Response unblockLegalEntitySharingStatus(@ApiParam(value = "Unblock the sharing status for a legal entity",
-            required = true) String requestBody) throws OpenBankingException;
-
-    /**
      * ----- Update the sharing status for a legal entity -----
      * An endpoint should be designed to allow an account holder to update a legal entity sharing status.
      *
@@ -72,7 +36,7 @@ public interface CeasingSecondaryUserApi {
      * @return success or error message when updating the sharing status of legal entities.
      */
     @PUT
-    @Path("/update-legal-entity")
+    @Path("/legal-entity")
     @Produces({"application/json"})
     @ApiOperation(value = "This API is used to block/unblock the sharing status for a legal entity",
             tags = {"Legal Entity"})
