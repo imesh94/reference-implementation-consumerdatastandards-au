@@ -176,10 +176,11 @@ public class CDSConsentValidator implements ConsentValidator {
 
     public void removeInactiveDOMSAccountConsentMappings(ConsentValidateData consentValidateData)
             throws ConsentException {
+
         ArrayList<ConsentMappingResource> distinctMappingResources = consentValidateData.getComprehensiveConsent()
                 .getConsentMappingResources();
-
         Iterator<ConsentMappingResource> iterator = distinctMappingResources.iterator();
+
         while (iterator.hasNext()) {
             ConsentMappingResource mappingResource = iterator.next();
             try {
@@ -194,7 +195,9 @@ public class CDSConsentValidator implements ConsentValidator {
         }
         consentValidateData.getComprehensiveConsent().setConsentMappingResources(distinctMappingResources);
     }
+
     public Boolean isDOMSStatusEligibleForDataSharing(String accountID) throws OpenBankingException {
+
         AccountMetadataService accountMetadataService = AccountMetadataServiceImpl.getInstance();
         Map<String, String> accountMetadata = accountMetadataService.getGlobalAccountMetadataMap(accountID);
 
@@ -271,4 +274,3 @@ public class CDSConsentValidator implements ConsentValidator {
         return errorPayload.toString();
     }
 }
-

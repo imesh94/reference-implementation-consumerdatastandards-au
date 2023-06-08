@@ -512,7 +512,9 @@ public class CDSConsentAdminHandler implements ConsentAdminHandler {
         }
         return false;
     }
+
     public void updateDOMSStatusForConsentData(ConsentAdminData consentAdminData) {
+
         try {
             AccountMetadataService accountMetadataService = AccountMetadataServiceImpl.getInstance();
 
@@ -525,10 +527,8 @@ public class CDSConsentAdminHandler implements ConsentAdminHandler {
                 for (Object consentMappingResource : consentMappingResourcesArray) {
                     JSONObject cmrJSONObject = (JSONObject) consentMappingResource;
                     String accountId = cmrJSONObject.getAsString(CDSConsentExtensionConstants.ACCOUNT_ID);
-
                     Map<String, String> disclosureOptionsMap = accountMetadataService.getGlobalAccountMetadataMap
                             (accountId);
-
                     String disclosureOptionStatus = disclosureOptionsMap.get(CDSConsentExtensionConstants.DOMS_STATUS);
 
                     if (disclosureOptionStatus == null) {
@@ -537,11 +537,13 @@ public class CDSConsentAdminHandler implements ConsentAdminHandler {
                     cmrJSONObject.put("domsStatus", disclosureOptionStatus);
                 }
             }
+
         } catch (OpenBankingException e) {
             throw new ConsentException(ResponseStatus.INTERNAL_SERVER_ERROR,
-                    "Exception occurred while revoking consents");
+                    "An error occurred while updating the DOMS status for consent data");
         }
     }
+
     @Override
     public void handleConsentFileSearch(ConsentAdminData consentAdminData) throws ConsentException {
         this.defaultConsentAdminHandler.handleConsentFileSearch(consentAdminData);
