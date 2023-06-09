@@ -520,21 +520,24 @@ public class CDSConsentAdminHandler implements ConsentAdminHandler {
 
             for (Object item : (JSONArray) consentAdminData.getResponsePayload().
                     get(CDSConsentExtensionConstants.DATA)) {
+
                 JSONObject itemJSONObject = (JSONObject) item;
                 JSONArray consentMappingResourcesArray = (JSONArray) itemJSONObject.get(CDSConsentExtensionConstants.
                         CONSENT_MAPPING_RESOURCES);
 
                 for (Object consentMappingResource : consentMappingResourcesArray) {
-                    JSONObject cmrJSONObject = (JSONObject) consentMappingResource;
-                    String accountId = cmrJSONObject.getAsString(CDSConsentExtensionConstants.ACCOUNT_ID);
+                    JSONObject consentMappingResourceObject = (JSONObject) consentMappingResource;
+                    String accountId = consentMappingResourceObject.getAsString(CDSConsentExtensionConstants.ACCOUNT_ID);
                     Map<String, String> disclosureOptionsMap = accountMetadataService.getGlobalAccountMetadataMap
                             (accountId);
                     String disclosureOptionStatus = disclosureOptionsMap.get(CDSConsentExtensionConstants.DOMS_STATUS);
 
+                    // If the disclosure option status is not available or has not been set,
+                    // default value is set to the pre-approval status
                     if (disclosureOptionStatus == null) {
                         disclosureOptionStatus = CDSConsentExtensionConstants.DOMS_STATUS_PRE_APPROVAL;
                     }
-                    cmrJSONObject.put("domsStatus", disclosureOptionStatus);
+                    consentMappingResourceObject.put("domsStatus", disclosureOptionStatus);
                 }
             }
 
