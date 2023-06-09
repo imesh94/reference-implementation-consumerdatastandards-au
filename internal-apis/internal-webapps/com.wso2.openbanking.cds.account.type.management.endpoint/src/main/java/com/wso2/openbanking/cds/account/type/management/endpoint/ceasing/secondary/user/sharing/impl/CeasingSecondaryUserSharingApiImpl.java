@@ -17,11 +17,13 @@ import com.wso2.openbanking.accelerator.consent.mgt.service.ConsentCoreService;
 import com.wso2.openbanking.accelerator.consent.mgt.service.impl.ConsentCoreServiceImpl;
 import com.wso2.openbanking.cds.account.type.management.endpoint.ceasing.secondary.user.sharing.api.
         CeasingSecondaryUserSharingApi;
-import com.wso2.openbanking.cds.account.type.management.endpoint.ceasing.secondary.user.sharing.handler.CeasingSecondaryUserSharingHandler;
+import com.wso2.openbanking.cds.account.type.management.endpoint.ceasing.secondary.user.sharing.handler.
+        CeasingSecondaryUserSharingHandler;
 import com.wso2.openbanking.cds.account.type.management.endpoint.ceasing.secondary.user.sharing.models.
         LegalEntityListUpdateDTO;
 import com.wso2.openbanking.cds.account.type.management.endpoint.ceasing.secondary.user.sharing.models.
         UsersAccountsLegalEntitiesDTO;
+import com.wso2.openbanking.cds.account.type.management.endpoint.constants.AccountTypeManagementConstants;
 import com.wso2.openbanking.cds.account.type.management.endpoint.model.ErrorDTO;
 import com.wso2.openbanking.cds.account.type.management.endpoint.model.ErrorStatusEnum;
 import com.wso2.openbanking.cds.account.type.management.endpoint.util.ValidationUtil;
@@ -32,10 +34,6 @@ import java.util.ArrayList;
 import java.util.Locale;
 import javax.ws.rs.core.Response;
 
-import static com.wso2.openbanking.cds.account.type.management.endpoint.ceasing.secondary.user.sharing.constants.
-        CeasingSecondaryUserConstants.CARBON_TENANT_DOMAIN;
-import static com.wso2.openbanking.cds.account.type.management.endpoint.ceasing.secondary.user.sharing.constants.
-        CeasingSecondaryUserConstants.SECONDARY_ACCOUNT_OWNER;
 
 /**
  * Implementation Class for Ceasing Secondary User Sharing
@@ -87,8 +85,8 @@ public class CeasingSecondaryUserSharingApiImpl implements CeasingSecondaryUserS
         String userIDError = null;
 
         // Add carbon tenant domain to the userID if it does not exist
-        if (!userID.toLowerCase(Locale.ENGLISH).endsWith(CARBON_TENANT_DOMAIN)) {
-            userID = userID + CARBON_TENANT_DOMAIN;
+        if (!userID.toLowerCase(Locale.ENGLISH).endsWith(AccountTypeManagementConstants.CARBON_TENANT_DOMAIN)) {
+            userID = userID + AccountTypeManagementConstants.CARBON_TENANT_DOMAIN;
         }
 
         try {
@@ -127,7 +125,8 @@ public class CeasingSecondaryUserSharingApiImpl implements CeasingSecondaryUserS
                 // Authorization Resource
                 for (AuthorizationResource authorizationResource : detailedConsent.getAuthorizationResources()) {
                     if (authorizationResource.getUserID().equals(userID) &&
-                            authorizationResource.getAuthorizationType().equals(SECONDARY_ACCOUNT_OWNER)) {
+                            authorizationResource.getAuthorizationType().
+                                    equals(AccountTypeManagementConstants.SECONDARY_ACCOUNT_OWNER)) {
                         isSecondaryAccountOwner = true;
                         break;
                     }

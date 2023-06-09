@@ -24,25 +24,14 @@ import com.wso2.openbanking.cds.account.type.management.endpoint.ceasing.seconda
         LegalEntityListUpdateDTO;
 import com.wso2.openbanking.cds.account.type.management.endpoint.ceasing.secondary.user.sharing.models.
         UsersAccountsLegalEntitiesDTO;
-
+import com.wso2.openbanking.cds.account.type.management.endpoint.constants.AccountTypeManagementConstants;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Locale;
 import java.util.Objects;
 
-import static com.wso2.openbanking.cds.account.type.management.endpoint.ceasing.secondary.user.sharing.constants.
-        CeasingSecondaryUserConstants.CARBON_TENANT_DOMAIN;
-import static com.wso2.openbanking.cds.account.type.management.endpoint.ceasing.secondary.user.sharing.constants.
-        CeasingSecondaryUserConstants.LEGAL_ENTITY_ID;
-import static com.wso2.openbanking.cds.account.type.management.endpoint.ceasing.secondary.user.sharing.constants.
-        CeasingSecondaryUserConstants.LEGAL_ENTITY_NAME;
-import static com.wso2.openbanking.cds.account.type.management.endpoint.ceasing.secondary.user.sharing.constants.
-        CeasingSecondaryUserConstants.METADATA_KEY_BLOCKED_LEGAL_ENTITIES;
-import static com.wso2.openbanking.cds.account.type.management.endpoint.ceasing.secondary.user.sharing.constants.
-        CeasingSecondaryUserConstants.PRIMARY_MEMBER;
 
 /**
  * Handler Class for Ceasing Secondary User Sharing
@@ -65,8 +54,9 @@ public class CeasingSecondaryUserSharingHandler {
         try {
 
             // Add carbon tenant domain to the secondaryUserID if it does not exist
-            if (!secondaryUserID.toLowerCase(Locale.ENGLISH).endsWith(CARBON_TENANT_DOMAIN)) {
-                secondaryUserID = secondaryUserID + CARBON_TENANT_DOMAIN;
+            if (!secondaryUserID.toLowerCase(Locale.ENGLISH).endsWith
+                    (AccountTypeManagementConstants.CARBON_TENANT_DOMAIN)) {
+                secondaryUserID = secondaryUserID + AccountTypeManagementConstants.CARBON_TENANT_DOMAIN;
             }
 
             // Generating the hashmap
@@ -75,11 +65,12 @@ public class CeasingSecondaryUserSharingHandler {
             // Checking the existence of a record in the OB_ACCOUNT_METADATA table for the corresponding
             // to a particular accountID, secondaryUserID and metadataKey
             String responseLegalEntities = accountMetadataService.getAccountMetadataByKey
-                    (accountID, secondaryUserID, METADATA_KEY_BLOCKED_LEGAL_ENTITIES);
+                    (accountID, secondaryUserID, AccountTypeManagementConstants.METADATA_KEY_BLOCKED_LEGAL_ENTITIES);
 
             if (responseLegalEntities == null) {
                 // Legal entities does not exist for corresponding accountID and secondaryUserID
-                blockedLegalEntityMap.put(METADATA_KEY_BLOCKED_LEGAL_ENTITIES, legalEntityID);
+                blockedLegalEntityMap.put
+                        (AccountTypeManagementConstants.METADATA_KEY_BLOCKED_LEGAL_ENTITIES, legalEntityID);
                 accountMetadataService.
                         addOrUpdateAccountMetadata(accountID, secondaryUserID, blockedLegalEntityMap);
                 log.info("Legal Entity: " + legalEntityID + ", has been successfully blocked!");
@@ -94,7 +85,7 @@ public class CeasingSecondaryUserSharingHandler {
                 } else {
                     legalEntitiesMetaDataValue.append(",");
                     legalEntitiesMetaDataValue.append(legalEntityID);
-                    blockedLegalEntityMap.put(METADATA_KEY_BLOCKED_LEGAL_ENTITIES,
+                    blockedLegalEntityMap.put(AccountTypeManagementConstants.METADATA_KEY_BLOCKED_LEGAL_ENTITIES,
                             legalEntitiesMetaDataValue.toString());
                     accountMetadataService.addOrUpdateAccountMetadata
                             (accountID, secondaryUserID, blockedLegalEntityMap);
@@ -119,14 +110,15 @@ public class CeasingSecondaryUserSharingHandler {
 
         try {
             // Add carbon tenant domain to the secondaryUserID if it does not exist
-            if (!secondaryUserID.toLowerCase(Locale.ENGLISH).endsWith(CARBON_TENANT_DOMAIN)) {
-                secondaryUserID = secondaryUserID + CARBON_TENANT_DOMAIN;
+            if (!secondaryUserID.toLowerCase(Locale.ENGLISH).
+                    endsWith(AccountTypeManagementConstants.CARBON_TENANT_DOMAIN)) {
+                secondaryUserID = secondaryUserID + AccountTypeManagementConstants.CARBON_TENANT_DOMAIN;
             }
 
             // Checking the existence of a record in the OB_ACCOUNT_METADATA table for the corresponding
             // to a particular accountID, secondaryUserID and metadataKey
             String responseLegalEntities = accountMetadataService.getAccountMetadataByKey
-                    (accountID, secondaryUserID, METADATA_KEY_BLOCKED_LEGAL_ENTITIES);
+                    (accountID, secondaryUserID, AccountTypeManagementConstants.METADATA_KEY_BLOCKED_LEGAL_ENTITIES);
 
             if (responseLegalEntities == null) {
                 //Legal entities does not exist for corresponding accountID and secondaryUserID
@@ -159,15 +151,16 @@ public class CeasingSecondaryUserSharingHandler {
                             newBlockedLegalEntitiesSB.append(",");
                         }
                     }
-                    newBlockedLegalEntityMap.put(METADATA_KEY_BLOCKED_LEGAL_ENTITIES,
+                    newBlockedLegalEntityMap.put(AccountTypeManagementConstants.METADATA_KEY_BLOCKED_LEGAL_ENTITIES,
                             newBlockedLegalEntitiesSB.toString());
                     accountMetadataService.addOrUpdateAccountMetadata
                             (accountID, secondaryUserID, newBlockedLegalEntityMap);
 
                     if (accountMetadataService.getAccountMetadataByKey
-                            (accountID, secondaryUserID, METADATA_KEY_BLOCKED_LEGAL_ENTITIES).isEmpty()) {
+                            (accountID, secondaryUserID,
+                                    AccountTypeManagementConstants.METADATA_KEY_BLOCKED_LEGAL_ENTITIES).isEmpty()) {
                         accountMetadataService.removeAccountMetadataByKey(accountID, secondaryUserID,
-                                METADATA_KEY_BLOCKED_LEGAL_ENTITIES);
+                                AccountTypeManagementConstants.METADATA_KEY_BLOCKED_LEGAL_ENTITIES);
                     }
                     log.info("Legal Entity : " + legalEntityID + ", has been unblocked!");
                 }
@@ -232,7 +225,8 @@ public class CeasingSecondaryUserSharingHandler {
                 // Looping through Authorization Resources for each Consent
                 for (AuthorizationResource authorizationResource : detailedConsent.getAuthorizationResources()) {
 
-                    if (authorizationResource.getAuthorizationType().equals(PRIMARY_MEMBER)) {
+                    if (authorizationResource.getAuthorizationType().
+                            equals(AccountTypeManagementConstants.PRIMARY_MEMBER)) {
 
                         // Inserting a non-duplicate secondaryUser to the secondary user list in the
                         // responseUsersAccountsLegalEntitiesDTO
@@ -333,13 +327,17 @@ public class CeasingSecondaryUserSharingHandler {
                                     clientID = detailedConsent.getClientID();
 
                                     legalEntityID = commonServiceProviderRetriever.
-                                            getAppPropertyFromSPMetaData(clientID, LEGAL_ENTITY_ID);
+                                            getAppPropertyFromSPMetaData(clientID,
+                                                    AccountTypeManagementConstants.LEGAL_ENTITY_ID);
                                     legalEntityName = commonServiceProviderRetriever.
-                                            getAppPropertyFromSPMetaData(clientID, LEGAL_ENTITY_NAME);
+                                            getAppPropertyFromSPMetaData(clientID,
+                                                    AccountTypeManagementConstants.LEGAL_ENTITY_NAME);
 
                                     String responseLegalEntities = accountMetadataService.
                                             getAccountMetadataByKey
-                                                    (accountID, secondaryUserID, METADATA_KEY_BLOCKED_LEGAL_ENTITIES);
+                                                    (accountID, secondaryUserID,
+                                                            AccountTypeManagementConstants.
+                                                                    METADATA_KEY_BLOCKED_LEGAL_ENTITIES);
 
                                     if (responseLegalEntities != null) {
                                         String[] blockedLegalEntities = responseLegalEntities.split(",");
@@ -384,7 +382,7 @@ public class CeasingSecondaryUserSharingHandler {
 
             // Removing the carbon tenant domain from userID in the response object
             if (responseUsersAccountsLegalEntitiesDTO.getUserID().
-                    toLowerCase(Locale.ENGLISH).endsWith(CARBON_TENANT_DOMAIN)) {
+                    toLowerCase(Locale.ENGLISH).endsWith(AccountTypeManagementConstants.CARBON_TENANT_DOMAIN)) {
                 responseUsersAccountsLegalEntitiesDTO.setUserID
                         (responseUsersAccountsLegalEntitiesDTO.getUserID()
                                 .replaceAll("@carbon\\.super$", ""));
@@ -394,7 +392,8 @@ public class CeasingSecondaryUserSharingHandler {
             for (UsersAccountsLegalEntitiesDTO.SecondaryUser secondaryUser :
                     responseUsersAccountsLegalEntitiesDTO.getSecondaryUsers()) {
 
-                if (secondaryUser.getSecondaryUserID().toLowerCase(Locale.ENGLISH).endsWith(CARBON_TENANT_DOMAIN)) {
+                if (secondaryUser.getSecondaryUserID().toLowerCase(Locale.ENGLISH).
+                        endsWith(AccountTypeManagementConstants.CARBON_TENANT_DOMAIN)) {
                     secondaryUser.setSecondaryUserID
                             (secondaryUser.getSecondaryUserID()
                                     .replaceAll("@carbon\\.super$", ""));
