@@ -136,6 +136,11 @@ public class CDSConsentValidator implements ConsentValidator {
         // Remove inactive and duplicate consent mappings
         removeInactiveAndDuplicateConsentMappings(consentValidateData);
 
+        // Filter accounts based on the sharing status of legal entity
+        if (openBankingCDSConfigParser.isCeasingSecondaryUserSharingEnabled()) {
+            removeBlockedLegalEntityConsentMappings(consentValidateData);
+        }
+
         // filter inactive secondary user accounts
         if (openBankingCDSConfigParser.getSecondaryUserAccountsEnabled()) {
             removeInactiveSecondaryUserAccountConsentMappings(consentValidateData);
@@ -165,36 +170,54 @@ public class CDSConsentValidator implements ConsentValidator {
                     distinctMappingResources.add(distinctMapping);
                 });
 
-        // Filter accounts based on the sharing status of legal entity
+        consentValidateData.getComprehensiveConsent().setConsentMappingResources(distinctMappingResources);
+    }
+
+    /**
+     * Method to filter accounts based on the sharing status of legal entity
+     *
+     * @param consentValidateData consentValidateData
+     */
+    private void removeBlockedLegalEntityConsentMappings(ConsentValidateData consentValidateData) throws
+            ConsentException {
+        ArrayList<ConsentMappingResource> validMappingResources = new ArrayList<>();
+
         try {
             CommonServiceProviderRetriever commonServiceProviderRetriever = new CommonServiceProviderRetriever();
 
             String secondaryUserId = consentValidateData.getUserId();
             String legalEntityId = commonServiceProviderRetriever.
-                    getAppPropertyFromSPMetaData(consentValidateData.getClientId(), "legal_entity_id");
-
+                    getAppPropertyFromSPMetaData(consentValidateData.getClientId(),
+                            CDSConsentExtensionConstants.LEGAL_ENTITY_ID);
 
             for (ConsentMappingResource consentMappingResource : consentValidateData.
                     getComprehensiveConsent().getConsentMappingResources()) {
                 String accountId = consentMappingResource.getAccountID();
                 String responseLegalEntities = accountMetadataService.getAccountMetadataByKey
-                        (accountId, secondaryUserId, "BLOCKED_LEGAL_ENTITIES");
+                        (accountId, secondaryUserId, CDSConsentExtensionConstants.METADATA_KEY_BLOCKED_LEGAL_ENTITIES);
 
                 if (responseLegalEntities != null) {
                     String[] blockedLegalEntities = responseLegalEntities.split(",");
-
+                    boolean isLegalEntitySharingStatusBlocked = false;
                     for (String blockedLegalEntity : blockedLegalEntities) {
                         if (legalEntityId.equals(blockedLegalEntity)) {
-                            distinctMappingResources.remove(consentMappingResource);
+                            isLegalEntitySharingStatusBlocked = true;
+                            break;
                         }
                     }
+                    if (!isLegalEntitySharingStatusBlocked) {
+                        validMappingResources.add(consentMappingResource);
+                    }
+                } else {
+                    validMappingResources.add(consentMappingResource);
                 }
             }
-        } catch (Exception e) {
-            log.info(e.getMessage());
-
+            consentValidateData.getComprehensiveConsent().setConsentMappingResources(validMappingResources);
+        } catch (OpenBankingException e) {
+            log.error("Error occurred while retrieving account metadata");
+            throw new ConsentException(ResponseStatus.INTERNAL_SERVER_ERROR,
+                    "Error occurred while retrieving account metadata");
         }
-        consentValidateData.getComprehensiveConsent().setConsentMappingResources(distinctMappingResources);
     }
 
     /**
