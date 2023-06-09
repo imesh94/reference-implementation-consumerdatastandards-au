@@ -16,9 +16,8 @@ import com.wso2.openbanking.accelerator.consent.mgt.dao.models.DetailedConsentRe
 import com.wso2.openbanking.accelerator.consent.mgt.service.ConsentCoreService;
 import com.wso2.openbanking.accelerator.consent.mgt.service.impl.ConsentCoreServiceImpl;
 import com.wso2.openbanking.cds.account.type.management.endpoint.ceasing.secondary.user.sharing.api.
-        CeasingSecondaryUserApi;
-import com.wso2.openbanking.cds.account.type.management.endpoint.ceasing.secondary.user.sharing.handler.
-        CeasingSecondaryUserHandler;
+        CeasingSecondaryUserSharingApi;
+import com.wso2.openbanking.cds.account.type.management.endpoint.ceasing.secondary.user.sharing.handler.CeasingSecondaryUserSharingHandler;
 import com.wso2.openbanking.cds.account.type.management.endpoint.ceasing.secondary.user.sharing.models.
         LegalEntityListUpdateDTO;
 import com.wso2.openbanking.cds.account.type.management.endpoint.ceasing.secondary.user.sharing.models.
@@ -39,12 +38,12 @@ import static com.wso2.openbanking.cds.account.type.management.endpoint.ceasing.
         CeasingSecondaryUserConstants.SECONDARY_ACCOUNT_OWNER;
 
 /**
- * Ceasing Secondary User - Impl
+ * Implementation Class for Ceasing Secondary User Sharing
  */
-public class CeasingSecondaryUserApiImpl implements CeasingSecondaryUserApi {
+public class CeasingSecondaryUserSharingApiImpl implements CeasingSecondaryUserSharingApi {
 
-    private static final Log log = LogFactory.getLog(CeasingSecondaryUserApiImpl.class);
-    CeasingSecondaryUserHandler ceasingSecondaryUserHandler = new CeasingSecondaryUserHandler();
+    private static final Log log = LogFactory.getLog(CeasingSecondaryUserSharingApiImpl.class);
+    CeasingSecondaryUserSharingHandler ceasingSecondaryUserHandler = new CeasingSecondaryUserSharingHandler();
 
     /**
      * {@inheritDoc}
@@ -65,9 +64,9 @@ public class CeasingSecondaryUserApiImpl implements CeasingSecondaryUserApi {
                 log.debug("Success!, the sharing status for legal entity/entities has been unblocked.");
                 return Response.ok().build();
             } else {
-                log.error("Error occurred while unblocking the sharing status for a legal entity/entities.");
+                log.error("Error occurred while updating the sharing status for a legal entity/entities.");
                 ErrorDTO errorDTO = new ErrorDTO(ErrorStatusEnum.INVALID_REQUEST,
-                        "Error occurred while unblocking the sharing status for a legal entity/entities.");
+                        "Error occurred while updating the sharing status for a legal entity/entities.");
                 return Response.status(Response.Status.BAD_REQUEST).entity(errorDTO).build();
             }
 

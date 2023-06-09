@@ -45,11 +45,11 @@ import static com.wso2.openbanking.cds.account.type.management.endpoint.ceasing.
         CeasingSecondaryUserConstants.PRIMARY_MEMBER;
 
 /**
- * Ceasing Secondary User - Handler
+ * Handler Class for Ceasing Secondary User Sharing
  */
-public class CeasingSecondaryUserHandler {
+public class CeasingSecondaryUserSharingHandler {
 
-    private static final Log log = LogFactory.getLog(CeasingSecondaryUserHandler.class);
+    private static final Log log = LogFactory.getLog(CeasingSecondaryUserSharingHandler.class);
     AccountMetadataService accountMetadataService = AccountMetadataServiceImpl.getInstance();
 
     /**
@@ -197,13 +197,11 @@ public class CeasingSecondaryUserHandler {
                 String legalEntityID = legalEntityListItemDTO.getLegalEntityID();
                 String legalEntitySharingStatus = legalEntityListItemDTO.getLegalEntitySharingStatus();
 
-                // Blocking the legal entity, if the legalEntitySharing Status is blocked
                 if (Objects.equals(legalEntitySharingStatus, CeasingSecondaryUserEnum.BLOCKED.getValue())) {
+                    // Blocking the legal entity, if the legalEntitySharing Status is blocked
                     blockLegalEntitySharingStatus(accountID, secondaryUserID, legalEntityID);
-                }
-
-                // Unblocking the legal entity, if the legalEntitySharing Status is blocked
-                if (Objects.equals(legalEntitySharingStatus, CeasingSecondaryUserEnum.ACTIVE.getValue())) {
+                } else {
+                    // Unblocking the legal entity, if the legalEntitySharing Status is active
                     unblockLegalEntitySharingStatus(accountID, secondaryUserID, legalEntityID);
                 }
             }
@@ -228,14 +226,16 @@ public class CeasingSecondaryUserHandler {
             CommonServiceProviderRetriever commonServiceProviderRetriever = new CommonServiceProviderRetriever();
 
             // Updating - Secondary Users
-            // Consent
+            // Looping through Consents
             for (DetailedConsentResource detailedConsent : responseDetailedConsents) {
 
-                // Authorization Resource
+                // Looping through Authorization Resources for each Consent
                 for (AuthorizationResource authorizationResource : detailedConsent.getAuthorizationResources()) {
 
                     if (authorizationResource.getAuthorizationType().equals(PRIMARY_MEMBER)) {
 
+                        // Inserting a non-duplicate secondaryUser to the secondary user list in the
+                        // responseUsersAccountsLegalEntitiesDTO
                         UsersAccountsLegalEntitiesDTO.SecondaryUser uniqueSecondaryUser = new
                                 UsersAccountsLegalEntitiesDTO.
                                         SecondaryUser(authorizationResource.getUserID(), null);
@@ -264,10 +264,10 @@ public class CeasingSecondaryUserHandler {
             for (UsersAccountsLegalEntitiesDTO.SecondaryUser secondaryUser :
                     responseUsersAccountsLegalEntitiesDTO.getSecondaryUsers()) {
 
-                // Consent
+                // Looping through Consents
                 for (DetailedConsentResource detailedConsent : responseDetailedConsents) {
 
-                    // Authorization Resource
+                    // Looping through Authorization Resources for each Consent
                     for (AuthorizationResource authorizationResource :
                             detailedConsent.getAuthorizationResources()) {
                         String authorizationID = authorizationResource.getAuthorizationID();
@@ -278,6 +278,8 @@ public class CeasingSecondaryUserHandler {
                             if (consentMappingResource.getAuthorizationID().equals(authorizationID) &&
                                     authorizationResource.getUserID().equals(secondaryUser.getSecondaryUserID())) {
 
+                                // Inserting a non-duplicate account to the account list for a secondary user in the
+                                // responseUsersAccountsLegalEntitiesDTO
                                 UsersAccountsLegalEntitiesDTO.Account uniqueAccount =
                                         new UsersAccountsLegalEntitiesDTO.
                                                 Account(consentMappingResource.getAccountID(), null);
@@ -315,14 +317,14 @@ public class CeasingSecondaryUserHandler {
                     String legalEntityName = null;
                     String legalEntitySharingStatus = null;
 
-                    // Consent
+                    // Looping through Consents
                     for (DetailedConsentResource detailedConsent : responseDetailedConsents) {
 
-                        // Authorization Resource
+                        // Looping through Authorization Resources for each Consent
                         for (AuthorizationResource authorizationResource :
                                 detailedConsent.getAuthorizationResources()) {
 
-                            // Consent Mapping Resource
+                            // Looping through Mapping Resources for each Authorization Resource
                             for (ConsentMappingResource consentMappingResource :
                                     detailedConsent.getConsentMappingResources()) {
 
@@ -334,7 +336,6 @@ public class CeasingSecondaryUserHandler {
                                             getAppPropertyFromSPMetaData(clientID, LEGAL_ENTITY_ID);
                                     legalEntityName = commonServiceProviderRetriever.
                                             getAppPropertyFromSPMetaData(clientID, LEGAL_ENTITY_NAME);
-                                    log.info(legalEntityName);
 
                                     String responseLegalEntities = accountMetadataService.
                                             getAccountMetadataByKey
@@ -355,6 +356,8 @@ public class CeasingSecondaryUserHandler {
                                         legalEntitySharingStatus = CeasingSecondaryUserEnum.ACTIVE.getValue();
                                     }
 
+                                    // Inserting a non-duplicate legal entity to the legal entity list for an account
+                                    // of a secondary user in the responseUsersAccountsLegalEntitiesDTO
                                     UsersAccountsLegalEntitiesDTO.LegalEntity uniqueLegalEntity =
                                             new UsersAccountsLegalEntitiesDTO.
                                                     LegalEntity(legalEntityID, legalEntityName,
@@ -379,7 +382,7 @@ public class CeasingSecondaryUserHandler {
                 }
             }
 
-            // Removing the carbon tenant domain from userID and secondaryUserID's in the response object
+            // Removing the carbon tenant domain from userID in the response object
             if (responseUsersAccountsLegalEntitiesDTO.getUserID().
                     toLowerCase(Locale.ENGLISH).endsWith(CARBON_TENANT_DOMAIN)) {
                 responseUsersAccountsLegalEntitiesDTO.setUserID
@@ -399,7 +402,7 @@ public class CeasingSecondaryUserHandler {
             }
             return responseUsersAccountsLegalEntitiesDTO;
         } catch (OpenBankingException e) {
-            log.warn(e.getMessage());
+            log.warn("Error in retrieving data!");
             throw e;
         }
     }

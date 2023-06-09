@@ -23,10 +23,10 @@ import javax.ws.rs.Produces;
 import javax.ws.rs.core.Response;
 
 /**
- * Ceasing Secondary User - API
+ * API Class for Ceasing Secondary User Sharing
  */
 @Path("/account-type-management")
-public interface CeasingSecondaryUserApi {
+public interface CeasingSecondaryUserSharingApi {
 
     /**
      * ----- Update the sharing status for a legal entity -----
