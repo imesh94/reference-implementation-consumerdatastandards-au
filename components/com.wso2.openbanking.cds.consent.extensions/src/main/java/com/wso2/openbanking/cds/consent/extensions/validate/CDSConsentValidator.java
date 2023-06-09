@@ -193,13 +193,13 @@ public class CDSConsentValidator implements ConsentValidator {
             for (ConsentMappingResource consentMappingResource : consentValidateData.
                     getComprehensiveConsent().getConsentMappingResources()) {
                 String accountId = consentMappingResource.getAccountID();
-                String responseLegalEntities = accountMetadataService.getAccountMetadataByKey
+                String blockedLegalEntityList = accountMetadataService.getAccountMetadataByKey
                         (accountId, secondaryUserId, CDSConsentExtensionConstants.METADATA_KEY_BLOCKED_LEGAL_ENTITIES);
 
-                if (responseLegalEntities != null) {
-                    String[] blockedLegalEntities = responseLegalEntities.split(",");
+                if (blockedLegalEntityList != null) {
+                    String[] blockedLegalEntityArray = blockedLegalEntityList.split(",");
                     boolean isLegalEntitySharingStatusBlocked = false;
-                    for (String blockedLegalEntity : blockedLegalEntities) {
+                    for (String blockedLegalEntity : blockedLegalEntityArray) {
                         if (legalEntityId.equals(blockedLegalEntity)) {
                             isLegalEntitySharingStatusBlocked = true;
                             break;
