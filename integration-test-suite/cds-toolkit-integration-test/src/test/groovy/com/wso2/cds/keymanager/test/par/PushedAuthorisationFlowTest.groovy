@@ -9,6 +9,7 @@ import com.wso2.cds.test.framework.request_builder.AURequestBuilder
 import com.wso2.cds.test.framework.utility.AURestAsRequestBuilder
 import com.wso2.cds.test.framework.utility.AUTestUtil
 import com.wso2.openbanking.test.framework.automation.NavigationAutomationStep
+import com.wso2.openbanking.test.framework.model.AccessTokenJwtDto
 import io.restassured.RestAssured
 import io.restassured.response.Response
 import org.testng.Assert
@@ -64,13 +65,15 @@ class PushedAuthorisationFlowTest extends AUTest {
                     (AUConstants.CLIENT_ASSERTION_KEY)     : assertionString,
             ]
 
+            String requestObjectClaims = generator.getRequestObjectClaim(scopeString, AUConstants.DEFAULT_SHARING_DURATION,
+                    true, cdrArrangementId, auConfiguration.getAppInfoRedirectURL(),
+                    clientId, "code id_token", false, "")
+
             def parResponse = AURestAsRequestBuilder.buildBasicRequest()
                     .contentType(AUConstants.ACCESS_TOKEN_CONTENT_TYPE)
                     .formParams(bodyContent)
                     .formParams(AUConstants.REQUEST_KEY,
-                            generator.getSignedAuthRequestObject(scopeString, AUConstants.DEFAULT_SHARING_DURATION,
-                                    true, cdrArrangementId, auConfiguration.getAppInfoRedirectURL(),
-                                    clientId, "code id_token", false, "").serialize())
+                            generator.getSignedAuthRequestObject(requestObjectClaims).serialize())
                     .baseUri(AUConstants.PUSHED_AUTHORISATION_BASE_PATH)
                     .post(AUConstants.PAR_ENDPOINT)
 

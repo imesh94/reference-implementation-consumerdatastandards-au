@@ -12,6 +12,7 @@
 
 package com.wso2.cds.test.framework.request_builder
 
+import com.nimbusds.oauth2.sdk.ResponseMode
 import com.nimbusds.oauth2.sdk.pkce.CodeChallengeMethod
 import com.nimbusds.oauth2.sdk.pkce.CodeVerifier
 import com.wso2.cds.test.framework.constant.AUAccountScope
@@ -64,13 +65,14 @@ class AUAuthorisationBuilder {
         AUJWTGenerator generator = new AUJWTGenerator()
         String scopeString = "openid ${String.join(" ", scopes.collect({ it.scopeString }))}"
 
+        String requestObjectClaims = generator.getRequestObjectClaim(scopes, sharingDuration, sendSharingDuration, cdrArrangementId,
+                getRedirectURI().toString(), null, response_type.toString(), true, getState().toString())
+
         request = new AuthorizationRequest.Builder(response_type, new ClientID(clientID))
                 .responseType(response_type)
                 .endpointURI(getEndpoint())
                 .redirectionURI(getRedirectURI())
-                .requestObject(generator.getSignedAuthRequestObject(scopeString, sharingDuration, sendSharingDuration, cdrArrangementId,
-                        getRedirectURI().toString(), null, response_type.toString(), true,
-                        getState().toString()))
+                .requestObject(generator.getSignedAuthRequestObject(requestObjectClaims))
                 .scope(new Scope(scopeString))
                 .state(getState())
                 .customParameter("prompt", "login")
@@ -211,22 +213,27 @@ class AUAuthorisationBuilder {
                 (AUConstants.CLIENT_ASSERTION_KEY)     : assertionString,
         ]
 
+        String requestObjectClaims
+
         if(isStateParamRequired) {
+            requestObjectClaims = generator.getRequestObjectClaim(scopes, sharingDuration, sendSharingDuration,
+                    cdrArrangementId, redirectUrl, clientId, responseType, true, state)
+
             parResponse = AURestAsRequestBuilder.buildRequest()
                     .contentType(AUConstants.ACCESS_TOKEN_CONTENT_TYPE)
                     .formParams(bodyContent)
-                    .formParams(AUConstants.REQUEST_KEY, generator.getSignedAuthRequestObject(scopeString,
-                            sharingDuration, sendSharingDuration, cdrArrangementId, redirectUrl, clientId, responseType,
-                            true, state).serialize())
+                    .formParams(AUConstants.REQUEST_KEY, generator.getSignedAuthRequestObject(requestObjectClaims).serialize())
                     .baseUri(AUConstants.PUSHED_AUTHORISATION_BASE_PATH)
                     .post(AUConstants.PAR_ENDPOINT)
         } else {
+
+            requestObjectClaims = generator.getRequestObjectClaim(scopes, sharingDuration, sendSharingDuration,
+                    cdrArrangementId, redirectUrl, clientId, responseType, false, state)
+
             parResponse = AURestAsRequestBuilder.buildRequest()
                     .contentType(AUConstants.ACCESS_TOKEN_CONTENT_TYPE)
                     .formParams(bodyContent)
-                    .formParams(AUConstants.REQUEST_KEY, generator.getSignedAuthRequestObject(scopeString,
-                            sharingDuration, sendSharingDuration, cdrArrangementId, redirectUrl, clientId, responseType,
-                            false, state).serialize())
+                    .formParams(AUConstants.REQUEST_KEY, generator.getSignedAuthRequestObject(requestObjectClaims).serialize())
                     .baseUri(AUConstants.PUSHED_AUTHORISATION_BASE_PATH)
                     .post(AUConstants.PAR_ENDPOINT)
         }
@@ -250,7 +257,6 @@ class AUAuthorisationBuilder {
                                                  String responseType = getResponseType().toString()) {
 
         AUJWTGenerator generator = new AUJWTGenerator()
-        String scopeString = "openid ${String.join(" ", scopes.collect({ it.scopeString }))}"
 
         String assertionString = new SignedObject().getJwt()
 
@@ -259,12 +265,13 @@ class AUAuthorisationBuilder {
                            (AUConstants.CLIENT_ASSERTION_KEY)     : assertionString,
                            "cdr_arrangement_id"                   : cdrArrangementId]
 
+        String requestObjectClaims = generator.getRequestObjectClaim(scopes, sharingDuration, sendSharingDuration,
+                cdrArrangementId, redirectUrl, clientId, responseType, false, state.toString())
+
         def parResponse = AURestAsRequestBuilder.buildRequest()
                 .contentType(AUConstants.ACCESS_TOKEN_CONTENT_TYPE)
                 .formParams(bodyContent)
-                .formParams(AUConstants.REQUEST_KEY, generator.getSignedAuthRequestObject(scopeString,
-                        sharingDuration, sendSharingDuration, cdrArrangementId, redirectUrl, clientId, responseType,
-                        false, state).serialize())
+                .formParams(AUConstants.REQUEST_KEY, generator.getSignedAuthRequestObject(requestObjectClaims).serialize())
                 .baseUri(AUConstants.PUSHED_AUTHORISATION_BASE_PATH)
                 .post(AUConstants.PAR_ENDPOINT)
 
@@ -457,6 +464,120 @@ class AUAuthorisationBuilder {
                         cdrArrangementId, redirectUrl, clientId, responseType).serialize())
                 .baseUri(AUConstants.PUSHED_AUTHORISATION_BASE_PATH)
                 .post(AUConstants.PAR_ENDPOINT)
+
+        return parResponse
+    }
+
+    /**
+     * AU Push Authorisation Request Builder without Request Object.
+     * @param clientId
+     * @return
+     */
+    Response doPushAuthorisationRequestWithoutRequestObject(String clientId = getClientID().getValue()) {
+
+        AUJWTGenerator generator = new AUJWTGenerator()
+        Response parResponse
+
+        String assertionString = generator.getClientAssertionJwt(clientId)
+
+        def bodyContent = [
+                (AUConstants.CLIENT_ID_KEY)            : (clientId),
+                (AUConstants.CLIENT_ASSERTION_TYPE_KEY): (AUConstants.CLIENT_ASSERTION_TYPE),
+                (AUConstants.CLIENT_ASSERTION_KEY)     : assertionString,
+        ]
+
+        parResponse = AURestAsRequestBuilder.buildRequest()
+                    .contentType(AUConstants.ACCESS_TOKEN_CONTENT_TYPE)
+                    .formParams(bodyContent)
+                    .formParams(AUConstants.REQUEST_KEY, "")
+                    .baseUri(AUConstants.PUSHED_AUTHORISATION_BASE_PATH)
+                    .post(AUConstants.PAR_ENDPOINT)
+
+        return parResponse
+    }
+
+    /**
+     * AU Authorisation Builder for Pushed Authorisation Flow with unsigned Request Object.
+     * @param scopes - List of scopes
+     * @param sharingDuration - Sharing Duration
+     * @param cdrArrangementId - CDR Arrangement Id
+     * @param clientId - Client Id
+     * @param redirectUrl - Redirect Url
+     * @param responseType - Response Type
+     * @return - Response
+     */
+    Response doPushAuthorisationRequestWithUnsignedRequestObject(List<AUAccountScope> scopes, Long sharingDuration,
+                                                                 boolean sendSharingDuration,
+                                                                 String cdrArrangementId,
+                                                                 String clientId = getClientID().getValue(),
+                                                                 String redirectUrl = getRedirectURI().toString(),
+                                                                 String responseType = getResponseType().toString()) {
+
+
+        AUJWTGenerator generator = new AUJWTGenerator()
+        Response parResponse
+
+        String assertionString = generator.getClientAssertionJwt(clientId)
+
+        def bodyContent = [
+                (AUConstants.CLIENT_ID_KEY)            : (clientId),
+                (AUConstants.CLIENT_ASSERTION_TYPE_KEY): (AUConstants.CLIENT_ASSERTION_TYPE),
+                (AUConstants.CLIENT_ASSERTION_KEY)     : assertionString,
+        ]
+
+        String claims = generator.getRequestObjectClaim(scopes, sharingDuration, sendSharingDuration,
+                cdrArrangementId, redirectUrl, clientId, responseType, true, state.toString())
+
+        parResponse = AURestAsRequestBuilder.buildRequest()
+                .contentType(AUConstants.ACCESS_TOKEN_CONTENT_TYPE)
+                .formParams(bodyContent)
+                .formParams(AUConstants.REQUEST_KEY, claims)
+                .baseUri(AUConstants.PUSHED_AUTHORISATION_BASE_PATH)
+                .post(AUConstants.PAR_ENDPOINT)
+
+        return parResponse
+    }
+
+    /**
+     * AU Authorisation Builder for Pushed Authorisation Flow with modified request object.
+     * @param scopes List of scopes
+     * @param requestObjectClaims Modified request object claims
+     * @param clientId  Client ID
+     * @param isStateParamRequired Boolean value to check if state param is required
+     * @return Response
+     */
+    Response doPushAuthorisationRequest(String requestObjectClaims, String clientId = getClientID().getValue(),
+                                        boolean isStateParamRequired = true) {
+
+        AUJWTGenerator generator = new AUJWTGenerator()
+
+        Response parResponse
+
+        String assertionString = generator.getClientAssertionJwt(clientId)
+
+        def bodyContent = [
+                (AUConstants.CLIENT_ID_KEY)            : (clientId),
+                (AUConstants.CLIENT_ASSERTION_TYPE_KEY): (AUConstants.CLIENT_ASSERTION_TYPE),
+                (AUConstants.CLIENT_ASSERTION_KEY)     : assertionString,
+        ]
+
+        if(isStateParamRequired) {
+
+            parResponse = AURestAsRequestBuilder.buildRequest()
+                    .contentType(AUConstants.ACCESS_TOKEN_CONTENT_TYPE)
+                    .formParams(bodyContent)
+                    .formParams(AUConstants.REQUEST_KEY, generator.getSignedAuthRequestObject(requestObjectClaims).serialize())
+                    .baseUri(AUConstants.PUSHED_AUTHORISATION_BASE_PATH)
+                    .post(AUConstants.PAR_ENDPOINT)
+        } else {
+
+            parResponse = AURestAsRequestBuilder.buildRequest()
+                    .contentType(AUConstants.ACCESS_TOKEN_CONTENT_TYPE)
+                    .formParams(bodyContent)
+                    .formParams(AUConstants.REQUEST_KEY, generator.getSignedAuthRequestObject(requestObjectClaims).serialize())
+                    .baseUri(AUConstants.PUSHED_AUTHORISATION_BASE_PATH)
+                    .post(AUConstants.PAR_ENDPOINT)
+        }
 
         return parResponse
     }

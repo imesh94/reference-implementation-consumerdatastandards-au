@@ -451,7 +451,7 @@ class AURequestBuilder {
         def bodyContent = [(AUConstants.CLIENT_ID_KEY)            : (clientId),
                            (AUConstants.CLIENT_ASSERTION_TYPE_KEY): (AUConstants.CLIENT_ASSERTION_TYPE),
                            (AUConstants.CLIENT_ASSERTION_KEY)     : assertionString,
-                           "cdr_arrangement_id"                   : cdrArrangementId]
+                           (AUConstants.CDR_ARRANGEMENT_ID)     : cdrArrangementId]
 
         def response = AURestAsRequestBuilder.buildRequest()
                 .contentType(AUConstants.ACCESS_TOKEN_CONTENT_TYPE)
@@ -462,4 +462,3 @@ class AURequestBuilder {
     }
 
 }
-

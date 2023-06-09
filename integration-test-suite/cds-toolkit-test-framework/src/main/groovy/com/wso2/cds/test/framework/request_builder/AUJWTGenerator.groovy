@@ -12,7 +12,9 @@
 
 package com.wso2.cds.test.framework.request_builder
 
-import com.nimbusds.oauth2.sdk.id.State
+import com.fasterxml.jackson.databind.JsonNode
+import com.fasterxml.jackson.databind.ObjectMapper
+import com.fasterxml.jackson.databind.node.ObjectNode
 import com.wso2.bfsi.test.framework.exception.TestFrameworkException
 import com.nimbusds.jose.JOSEObjectType
 import com.nimbusds.jose.JWSAlgorithm
@@ -23,6 +25,7 @@ import com.nimbusds.jose.Payload
 import com.nimbusds.jose.crypto.RSASSASigner
 import com.nimbusds.jwt.JWT
 import com.nimbusds.jwt.SignedJWT
+import com.wso2.cds.test.framework.constant.AUAccountScope
 import com.wso2.openbanking.test.framework.request_builder.JSONRequestGenerator
 import com.wso2.openbanking.test.framework.request_builder.PayloadGenerator
 import com.wso2.cds.test.framework.configuration.AUConfigurationService
@@ -79,8 +82,9 @@ class AUJWTGenerator {
 
     /**
      * Get Signed object
-     * @param claims
-     * @return
+     * @param claims JSON object
+     * @param algorithm Signing algorithm
+     * @return Signed object
      */
     String getSignedRequestObject(String claims) {
         Key signingKey
@@ -121,7 +125,13 @@ class AUJWTGenerator {
                 .addClientAssertion(payload).addRedirectUri().getPayload()
         return accessTokenJWT
     }
-     String getClientAssertionJwt(String clientId=null) {
+
+    /**
+     * Get Client Assertion.
+     * @param clientId - Client ID
+     * @return clientAssertion - Client Assertion
+     */
+    String getClientAssertionJwt(String clientId=null) {
         JSONObject clientAssertion = new JSONRequestGenerator().addIssuer(clientId)
                 .addSubject(clientId).addAudience().addExpireDate().addIssuedAt().addJti().getJsonObject()
 
@@ -155,63 +165,12 @@ class AUJWTGenerator {
      * @param clientId
      * @return
      */
-    JWT getSignedAuthRequestObject(String scopeString, Long sharingDuration, Boolean sendSharingDuration,
-                                   String cdrArrangementId, String redirect_uri, String clientId, String responseType,
-                                   boolean isStateRequired = true, String state) {
+    JWT getSignedAuthRequestObject(String requestObjectPayload) {
 
-        def expiryDate = Instant.now().plus(1, ChronoUnit.HOURS)
-        def notBefore = Instant.now()
-        String claims
-
-        JSONObject acr = new JSONObject().put("essential", true).put("values", new ArrayList<String>() {
-            {
-                add("urn:cds.au:cdr:3")
-            }
-        })
-        JSONObject userInfoString = new JSONObject().put("given_name", null).put("family_name", null)
-        JSONObject authTimeString = new JSONObject().put("essential", true)
-        JSONObject claimsString = new JSONObject().put("id_token", new JSONObject().put("acr", acr).put("auth_time", authTimeString))
-                .put("userinfo", userInfoString)
-        if (sharingDuration.intValue() != 0 || sendSharingDuration) {
-            claimsString.put("sharing_duration", sharingDuration)
-        }
-        if (!StringUtils.isEmpty(cdrArrangementId)) {
-            claimsString.put("cdr_arrangement_id", cdrArrangementId)
-        }
-
-        if (isStateRequired) {
-            claims = new JSONRequestGenerator()
-                    .addAudience()
-                    .addResponseType(responseType)
-                    .addExpireDate(expiryDate.getEpochSecond().toLong())
-                    .addClientID(clientId)
-                    .addIssuer(clientId)
-                    .addRedirectURI(redirect_uri)
-                    .addScope(scopeString)
-                    .addState(state)
-                    .addNonce()
-                    .addCustomValue("max_age", 86400)
-                    .addCustomValue("nbf", notBefore.getEpochSecond().toLong())
-                    .addCustomJson("claims", claimsString)
-                    .getJsonObject().toString()
-        } else {
-            claims = new JSONRequestGenerator()
-                    .addAudience()
-                    .addResponseType(responseType)
-                    .addExpireDate(expiryDate.getEpochSecond().toLong())
-                    .addClientID(clientId)
-                    .addIssuer(clientId)
-                    .addRedirectURI(redirect_uri)
-                    .addScope(scopeString)
-                    .addNonce()
-                    .addCustomJson("claims", claimsString)
-                    .getJsonObject().toString()
-        }
-
-        String payload = getSignedRequestObject(claims)
+        String payload = getSignedRequestObject(requestObjectPayload)
 
         Reporter.log("Authorisation Request Object")
-        Reporter.log("JWS Payload ${new Payload(claims).toString()}")
+        Reporter.log("JWS Payload ${new Payload(payload).toString()}")
 
         return SignedJWT.parse(payload)
     }
@@ -291,50 +250,101 @@ class AUJWTGenerator {
     }
 
     /**
-     * Return signed JWT for Authorization request without scopes.
-     * The method is used for testing the auth request without scopes.
-     * @param sharingDuration
-     * @param sendSharingDuration
-     * @param cdrArrangementId
-     * @param redirect_uri
-     * @param clientId
-     * @return
+     * Utility function to generate a regular claim set with default values
+     * @param scopeString - scope string
+     * @param sharingDuration - sharing duration
+     * @param sendSharingDuration - send sharing duration
+     * @param cdrArrangementId - cdr arrangement id
+     * @param redirect_uri - redirect uri
+     * @param clientId - client id
+     * @param responseType - response type
+     * @param isStateRequired - is state required
+     * @param state - state
+     * @param expiryDate - expiry date
+     * @param notBefore - not before
+     * @return claimSet
      */
-    JWT getSignedAuthRequestObjectWithoutScopes(long sharingDuration, String cdrArrangementId, String redirect_uri,
-                                                String clientId, String responseType) {
-
-        def expiryDate = Instant.now().plus(1, ChronoUnit.DAYS)
+    String getRequestObjectClaim(List<AUAccountScope> scopes, long sharingDuration, Boolean sendSharingDuration,
+                                 String cdrArrangementId, String redirect_uri, String clientId, String responseType,
+                                 boolean isStateRequired = true, String state,
+                                 Instant expiryDate = Instant.now().plus(1, ChronoUnit.HOURS),
+                                 Instant notBefore = Instant.now()) {
         String claims
 
+        String scopeString = "openid ${String.join(" ", scopes.collect({ it.scopeString }))}"
+
+        //Define additional claims
         JSONObject acr = new JSONObject().put("essential", true).put("values", new ArrayList<String>() {
             {
                 add("urn:cds.au:cdr:3")
             }
         })
         JSONObject userInfoString = new JSONObject().put("given_name", null).put("family_name", null)
-        JSONObject claimsString = new JSONObject().put("id_token", new JSONObject().put("acr", acr)).put("userinfo", userInfoString)
-        claimsString.put("sharing_duration", sharingDuration)
+        JSONObject authTimeString = new JSONObject().put("essential", true)
+        JSONObject claimsString = new JSONObject().put("id_token", new JSONObject().put("acr", acr).put("auth_time", authTimeString))
+        if (sharingDuration.intValue() != 0 || sendSharingDuration) {
+            claimsString.put("sharing_duration", sharingDuration)
+        }
         if (!StringUtils.isEmpty(cdrArrangementId)) {
             claimsString.put("cdr_arrangement_id", cdrArrangementId)
         }
-        claims = new JSONRequestGenerator()
-                .addAudience()
-                .addResponseType(responseType)
-                .addExpireDate(expiryDate.getEpochSecond().toLong())
-                .addClientID(clientId)
-                .addIssuer(clientId)
-                .addRedirectURI(redirect_uri)
-                .addNonce()
-                .addCustomJson("claims", claimsString)
-                .getJsonObject().toString()
+
+        if (isStateRequired) {
+            claims = new JSONRequestGenerator()
+                    .addAudience()
+                    .addResponseType(responseType)
+                    .addExpireDate(expiryDate.getEpochSecond().toLong())
+                    .addClientID(clientId)
+                    .addIssuer(clientId)
+                    .addRedirectURI(redirect_uri)
+                    .addScope(scopeString)
+                    .addState(state)
+                    .addNonce()
+                    .addCustomValue("max_age", 86400)
+                    .addCustomValue("nbf", notBefore.getEpochSecond().toLong())
+                    .addCustomJson("claims", claimsString)
+                    .getJsonObject().toString()
+        } else {
+            claims = new JSONRequestGenerator()
+                    .addAudience()
+                    .addResponseType(responseType)
+                    .addExpireDate(expiryDate.getEpochSecond().toLong())
+                    .addClientID(clientId)
+                    .addIssuer(clientId)
+                    .addRedirectURI(redirect_uri)
+                    .addScope(scopeString)
+                    .addNonce()
+                    .addCustomJson("claims", claimsString)
+                    .getJsonObject().toString()
+        }
+        return claims
+    }
+
+    /**
+     * Remove claims from Request Object.
+     * @param claims - Request Object
+     * @param nodeToBeRemoved - Node to be removed from the Request Object
+     * @return modifiedJsonPayload - Modified Request Object
+     */
+    String removeClaimsFromRequestObject(String claims, String nodeToBeRemoved) {
 
         String payload = getSignedRequestObject(claims)
 
-        Reporter.log("Authorisation Request Object")
-        Reporter.log("JWS Payload ${new Payload(claims).toString()}")
+        // Parse the JSON payload
+        ObjectMapper objectMapper = new ObjectMapper()
+        JsonNode rootNode = objectMapper.readTree(payload)
 
-        return SignedJWT.parse(payload)
+        // Remove elements from the JSON payload
+        if (rootNode instanceof ObjectNode) {
+            ObjectNode objectNode = (ObjectNode) rootNode
+            objectNode.remove(nodeToBeRemoved)
+        }
+
+        // Convert the modified JSON back to a string
+        String modifiedJsonPayload = objectMapper.writeValueAsString(rootNode)
+        System.out.println(modifiedJsonPayload)
+
+        return modifiedJsonPayload
     }
-
 }
 

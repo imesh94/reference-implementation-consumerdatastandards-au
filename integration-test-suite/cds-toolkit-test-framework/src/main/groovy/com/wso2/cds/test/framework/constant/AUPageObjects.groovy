@@ -198,10 +198,5 @@ class AUPageObjects {
     public static String LBL_NO_ELIGIBLE_ACCOUNTS = "//form[@id='oauth2_authz_consent']//div//p"
     public static String BTN_CANCEL = "//input[@id='cancel']"
 
-    public static String LBL_BUSINESS_ACCOUNT_1 = "//strong[contains(text(),'business_account_1')]"
-    public static String LBL_BUSINESS_ACCOUNT_2 = "//strong[contains(text(),'business_account_2')]"
-    public static String BTN_SELECT_ALL = "//button[contains(text(),'Select all')]"
-    public static String LBL_NO_ELIGIBLE_ACCOUNTS = "//form[@id='oauth2_authz_consent']//div//p"
-
 }
 

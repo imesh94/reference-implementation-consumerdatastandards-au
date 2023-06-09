@@ -32,7 +32,7 @@ class AUBasicAuthAutomationStep implements BrowserAutomationStep {
 
     private String authorizeUrl
     private AUConfigurationService auConfiguration
-    private static final Log log = LogFactory.getLog(AUBasicAuthAutomationStep.class);
+//    private static final Log log = LogFactory.getLog(AUBasicAuthAutomationStep.class);
 
     /**
      * Initialize Basic Auth Flow.
@@ -64,7 +64,7 @@ class AUBasicAuthAutomationStep implements BrowserAutomationStep {
                 driver.waitTimeRange(30)
             }
         } catch (NoSuchElementException e) {
-            log.info("Second Factor Authentication Step is not required")
+//            log.info("Second Factor Authentication Step is not required")
         }
     }
 }

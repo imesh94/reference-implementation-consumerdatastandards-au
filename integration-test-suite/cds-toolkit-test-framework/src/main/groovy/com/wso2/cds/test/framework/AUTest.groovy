@@ -14,6 +14,7 @@ package com.wso2.cds.test.framework
 
 import com.nimbusds.oauth2.sdk.ResponseMode
 import com.nimbusds.oauth2.sdk.ResponseType
+import com.nimbusds.oauth2.sdk.token.RefreshToken
 import com.wso2.cds.test.framework.constant.AUAccountProfile
 import com.wso2.cds.test.framework.constant.AUAccountScope
 import com.wso2.cds.test.framework.constant.AUConfigConstants
@@ -24,13 +25,16 @@ import com.wso2.cds.test.framework.constant.ContextConstants
 import com.wso2.cds.test.framework.automation.consent.AUAccountSelectionStep
 import com.wso2.cds.test.framework.automation.consent.AUBasicAuthAutomationStep
 import com.nimbusds.oauth2.sdk.AccessTokenResponse
+import com.wso2.cds.test.framework.request_builder.AUJWTGenerator
 import com.wso2.openbanking.test.framework.OBTest
 import com.wso2.cds.test.framework.configuration.AUConfigurationService
 import com.wso2.openbanking.test.framework.automation.AutomationMethod
 import com.wso2.openbanking.test.framework.configuration.OBConfigParser
+import com.wso2.openbanking.test.framework.request_builder.JSONRequestGenerator
 import io.restassured.response.Response
 import org.apache.logging.log4j.LogManager
 import org.apache.logging.log4j.Logger
+import org.json.JSONObject
 import org.openqa.selenium.By
 import org.testng.Assert
 import org.testng.ITestContext
@@ -87,7 +91,7 @@ class AUTest extends OBTest {
     public String requestUri
     public String authoriseUrl
     public String authFlowError
-    public Response response
+    public Response response, revocationResponse
     public def automationResponse
     public String productId
     public Response deletionResponse
@@ -225,19 +229,6 @@ class AUTest extends OBTest {
         // Get Code From URL
         String authCode = AUTestUtil.getHybridCodeFromUrl(automation.currentUrl.get())
         return authCode
-    }
-
-    /**
-     * Method for get user access token response
-     * @return
-     */
-    AccessTokenResponse getUserAccessTokenResponse(String clientId = null) {
-        try {
-            return AURequestBuilder.getUserToken(authorisationCode, auAuthorisationBuilder.getCodeVerifier(), clientId)
-        }
-        catch (Exception e) {
-            log.error(e)
-        }
     }
 
     /**
@@ -609,14 +600,15 @@ class AUTest extends OBTest {
      * @param clientId
      * @param profiles
      */
-    void doConsentAuthorisationViaRequestUriDenyFlow(List<AUAccountScope> scopes, URI requestUri,
-                                                     String clientId = null , AUAccountProfile profiles = null) {
+    String doConsentAuthorisationViaRequestUriDenyFlow(List<AUAccountScope> scopes, URI requestUri,
+                                                     String clientId = null , AUAccountProfile profiles = null,
+                                                       boolean isStateParamPresent = true) {
         if (clientId != null) {
-            authoriseUrl = auAuthorisationBuilder.getAuthorizationRequest(scopes, requestUri, clientId)
-                    .toURI().toString()
+        authoriseUrl = auAuthorisationBuilder.getAuthorizationRequest(scopes, requestUri,
+                auConfiguration.getAppInfoClientID(), isStateParamPresent).toURI().toString()
         } else {
-            authoriseUrl = auAuthorisationBuilder.getAuthorizationRequest(scopes, requestUri)
-                    .toURI().toString()
+            authoriseUrl = auAuthorisationBuilder.getAuthorizationRequest(scopes, requestUri, null,
+                    isStateParamPresent).toURI().toString()
         }
 
         def automation = getBrowserAutomation(AUConstants.DEFAULT_DELAY)
@@ -636,8 +628,7 @@ class AUTest extends OBTest {
                 }
                 .execute()
 
-        // Get Error From URL
-        authFlowError = AUTestUtil.getErrorDescriptionFromUrl(automation.currentUrl.get())
+        return automation.currentUrl.get()
     }
 
     /**
@@ -1056,6 +1047,65 @@ class AUTest extends OBTest {
                 .body(requestBody)
                 .baseUri(getAuConfiguration().getServerAuthorisationServerURL())
                 .delete("${AUConstants.CONSENT_STATUS_AU_ENDPOINT}${AUConstants.UPDATE_BUSINESS_USER}")
+    }
+
+    /**
+     * Verify Scope of Token Response.
+     * @param scopesString scope list
+     * @param eliminatedScope scope to be eliminated
+     */
+    void verifyScopes(String scopesString, String eliminatedScope = null) {
+        if (eliminatedScope != null) {
+            Assert.assertFalse(scopesString.contains(eliminatedScope))
+        } else {
+            for (AUAccountScope scope : scopes) {
+                Assert.assertTrue(scopesString.contains(scope.getScopeString()))
+            }
+        }
+    }
+
+    /**
+     * Method for get user access token response
+     * @return
+     */
+    AccessTokenResponse getUserAccessTokenFormRefreshToken(RefreshToken refreshToken) {
+            try {
+                return AURequestBuilder.getUserTokenFromRefreshToken(refreshToken)
+            }
+            catch (Exception e) {
+                log.error(e)
+            }
+        }
+
+    /**
+     * Method for get user access token response
+     * @return
+     */
+    AccessTokenResponse getUserAccessTokenResponse(String clientId = null) {
+        try {
+            return AURequestBuilder.getUserToken(authorisationCode, auAuthorisationBuilder.getCodeVerifier(), clientId)
+        }
+        catch (Exception e) {
+            log.error(e)
+        }
+    }
+
+    Response doRevokeCdrArrangement(String clientId, String cdrArrangementId){
+
+        String assertionString = AUJWTGenerator.getClientAssertionJwt(clientId)
+
+        def bodyContent = [(AUConstants.CLIENT_ID_KEY): (clientId),
+                           (AUConstants.CLIENT_ASSERTION_TYPE_KEY): (AUConstants.CLIENT_ASSERTION_TYPE),
+                           (AUConstants.CLIENT_ASSERTION_KEY)     : assertionString,
+                           (AUConstants.CDR_ARRANGEMENT_ID)       : cdrArrangementId]
+
+        revocationResponse = AURestAsRequestBuilder.buildRequest()
+                .contentType(AUConstants.ACCESS_TOKEN_CONTENT_TYPE)
+                .formParams(bodyContent)
+                .baseUri(AUTestUtil.getBaseUrl(AUConstants.BASE_PATH_TYPE_CDR_ARRANGEMENT))
+                .post("${AUConstants.CDR_ARRANGEMENT_ENDPOINT}${AUConstants.REVOKE_PATH}")
+
+        return revocationResponse
     }
 }
 

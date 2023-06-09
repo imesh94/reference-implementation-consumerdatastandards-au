@@ -76,6 +76,7 @@ class AUConstants extends OBConstants {
     public static final long NEGATIVE_DURATION = -3000
     public static final long AMENDED_SHARING_DURATION = 90000
     public static final long SHORT_SHARING_DURATION = 20
+    static final long NEGATIVE_SHARING_DURATION = -3000
 
     public static final String BULK_ACCOUNT_PATH = "/banking/accounts"
     public static final String SINGLE_ACCOUNT_PATH = "/banking/accounts/" + accountID
@@ -402,5 +403,21 @@ class AUConstants extends OBConstants {
     public static final String PARAM_PROFILE_NAME = "profileName"
     public static final String USER_DENIED_THE_CONSENT = "User denied the consent"
     public static final String INVALID_REQUEST = "invalid request"
+    public static final INVALID_SHARING_DURATION = "Invalid sharing duration"
+    public static final EXPIRES_IN = "expires_in"
+    public static final INVALID_CREDENTIALS = "Invalid Credentials"
+
+    public static final INVALID_REQUEST_BODY = "Invalid request body"
+    public static final MALFORMED_PAR_REQUEST= "The request is malformed."
+    public static final INVALID_ALGORITHM = "Signature validation failed"
+    public static final INVALID_RESPONSE_TYPE = "Invalid response type"
+    public static final MISSING_AUD_VALUE= "Bad audience value found in the request object"
+    public static final MISSING_ISS_VALUE= "Issuer value not found in the request object"
+    public static final MISSING_EXP_VALUE= "exp is a required value"
+    public static final MISSING_NBF_VALUE= "nbf is a required value"
+    public static final INVALID_FUTURE_EXPIRY_TIME = "Invalid expiry time. 'exp' claim must be a future value."
+    public static final INVALID_EXPIRY_TIME = "Invalid expiry time. The claim 'exp' should have a lifetime of no longer than 60 minutes after the 'nbf' claim."
+    public static final INVALID_FUTURE_NBF_TIME = "Invalid not before time. 'nbf' must be a past value."
+
 }
 
