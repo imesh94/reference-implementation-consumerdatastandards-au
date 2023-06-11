@@ -121,9 +121,7 @@ public class CDSPushAuthRequestValidator  extends PushAuthRequestValidator {
                 throw new PushAuthRequestValidatorException(HttpStatus.SC_BAD_REQUEST,
                         PushAuthRequestConstants.INVALID_REQUEST_OBJECT,
                         errorDescription);
-            }
-
-            if (!CDSIdentityConstants.AUTHORIZED.equalsIgnoreCase(detailedConsentResource.getCurrentStatus())) {
+            } else if (!CDSIdentityConstants.AUTHORIZED.equalsIgnoreCase(detailedConsentResource.getCurrentStatus())) {
                 errorDescription = "Invalid cdr-arrangement-id or consent is not in Authorised state";
                 log.error(errorDescription);
                 throw new PushAuthRequestValidatorException(HttpStatus.SC_BAD_REQUEST,
@@ -158,9 +156,9 @@ public class CDSPushAuthRequestValidator  extends PushAuthRequestValidator {
         long nowInEpochSeconds = OffsetDateTime.now(ZoneOffset.UTC).toEpochSecond();
         long validForInSeconds = detailedConsentResource.getValidityPeriod() - nowInEpochSeconds;
 
-        // Consents that have expired cannot be amended.
-        // As a consent with a 0 sharing duration is, in effect, immediately expired then amendment would not be
-        // possible.
+         /* Consents that have expired cannot be amended.
+         As a consent with a 0 sharing duration is, in effect, immediately expired then amendment would not be
+         possible. */
         return 0 == detailedConsentResource.getValidityPeriod() || validForInSeconds <= 0;
     }
 }
