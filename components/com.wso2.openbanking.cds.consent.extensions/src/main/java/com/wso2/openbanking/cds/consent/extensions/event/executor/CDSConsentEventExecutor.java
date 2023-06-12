@@ -1,13 +1,10 @@
 /*
- * Copyright (c) 2021, WSO2 Inc. (http://www.wso2.com). All Rights Reserved.
+ * Copyright (c) 2021-2023, WSO2 LLC. (https://www.wso2.com). All Rights Reserved.
  *
- * This software is the property of WSO2 Inc. and its suppliers, if any.
+ * This software is the property of WSO2 LLC. and its suppliers, if any.
  * Dissemination of any information or reproduction of any material contained
- * herein is strictly forbidden, unless permitted by WSO2 in accordance with
- * the WSO2 Software License available at https://wso2.com/licenses/eula/3.1. For specific
- * language governing the permissions and limitations under this license,
- * please see the license as well as any agreement you’ve entered into with
- * WSO2 governing the purchase of this software and any associated services.
+ * herein in any form is strictly forbidden, unless permitted by WSO2 expressly.
+ * You may not alter or remove any copyright or other notice from copies of this content.
  */
 
 package com.wso2.openbanking.cds.consent.extensions.event.executor;
@@ -253,7 +250,8 @@ public class CDSConsentEventExecutor implements OBEventExecutor {
         httpPost.setHeader(HTTPConstants.HEADER_AUTHORIZATION,
                 "Bearer " + generateJWT(jwtPayload.toString(), SignatureAlgorithm.PS256));
         List<NameValuePair> params = new ArrayList<>();
-        params.add(new BasicNameValuePair(CDSConsentExtensionConstants.CDR_ARRANGEMENT_ID, consentId));
+        String cdrArrangementJwt = getCdrArrangementJwt(jwtPayload, consentId);
+        params.add(new BasicNameValuePair(CDSConsentExtensionConstants.CDR_ARRANGEMENT_JWT, cdrArrangementJwt));
         httpPost.setEntity(new UrlEncodedFormEntity(params));
 
         return httpPost;
@@ -275,7 +273,8 @@ public class CDSConsentEventExecutor implements OBEventExecutor {
         JSONObject jwtPayload = new JSONObject();
         jwtPayload.put(CommonConstants.ISSURE_CLAIM, dataHolderId);
         jwtPayload.put(CommonConstants.SUBJECT_CLAIM, dataHolderId);
-        jwtPayload.put(CommonConstants.AUDIENCE_CLAIM, recipientBaseUri);
+        jwtPayload.put(CommonConstants.AUDIENCE_CLAIM, recipientBaseUri
+                + DATA_RECIPIENT_CDR_ARRANGEMENT_REVOCATION_PATH);
         jwtPayload.put(CommonConstants.IAT_CLAIM, getIatFromCurrentTime(currentTime));
         jwtPayload.put(CommonConstants.EXP_CLAIM, getExpFromCurrentTime(currentTime));
         jwtPayload.put(CommonConstants.JTI_CLAIM, currentTime);
@@ -283,5 +282,20 @@ public class CDSConsentEventExecutor implements OBEventExecutor {
         return jwtPayload;
     }
 
+    /**
+     * Method to get signed jwt when the cdr-arrangement-id is given
+     *
+     * @param cdrArrangementId - cdr-arrangement-id
+     * @return signed jwt with cdr-arrangement-id
+     */
+    public String getCdrArrangementJwt(JSONObject jwtPayload, String cdrArrangementId)
+            throws OpenBankingException {
 
+        //Adding cdr_arrangement_id
+        jwtPayload.put(CDSConsentExtensionConstants.CDR_ARRANGEMENT_ID, cdrArrangementId);
+        //Add offset to jti to make jti unique from authorization header jti value.
+        long jti = Long.parseLong(jwtPayload.get(CommonConstants.JTI_CLAIM).toString());
+        jwtPayload.put(CommonConstants.JTI_CLAIM, Long.toString(jti + 100));
+        return generateJWT(jwtPayload.toString(), SignatureAlgorithm.PS256);
+    }
 }
