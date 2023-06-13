@@ -160,7 +160,10 @@ public class CDSConsentExtensionConstants {
     // constants related to secondary accounts
     public static final String INSTRUCTION_STATUS = "secondaryAccountInstructionStatus";
     public static final String SECONDARY_ACCOUNT_USER = "secondary_account_user";
-    public static final String SECONDARY_ACCOUNT_OWNER = "secondary_account_owner";
+    public static Map<String, String> SECONDARY_ACCOUNT_OWNER_TYPES = new HashMap<String, String>() {{
+        put("JOINT", "secondary_joint_account_owner");
+        put("INDIVIDUAL", "secondary_individual_account_owner");
+    }};
     public static final String ACTIVE_STATUS = "active";
     public static final String IS_SECONDARY_ACCOUNT_RESPONSE = "isSecondaryAccount";
     public static final String IS_SECONDARY_ACCOUNT = "is_secondary_account";

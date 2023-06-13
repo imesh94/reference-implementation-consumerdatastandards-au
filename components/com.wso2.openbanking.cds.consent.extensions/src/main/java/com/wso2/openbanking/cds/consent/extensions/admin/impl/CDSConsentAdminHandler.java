@@ -39,6 +39,7 @@ import org.wso2.carbon.identity.oauth2.IdentityOAuth2Exception;
 
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 import static com.wso2.openbanking.cds.consent.extensions.common.CDSConsentExtensionConstants.AUTH_RESOURCE_TYPE_PRIMARY;
@@ -391,8 +392,8 @@ public class CDSConsentAdminHandler implements ConsentAdminHandler {
             for (Object consentAuthResourceObj : consentAuthResources) {
                 if (consentAuthResourceObj instanceof JSONObject) {
                     JSONObject authResource = (JSONObject) consentAuthResourceObj;
-                    if (authResource.get(CDSConsentExtensionConstants.AUTH_TYPE)
-                            .equals(CDSConsentExtensionConstants.SECONDARY_ACCOUNT_OWNER)) {
+                    if (CDSConsentExtensionConstants.SECONDARY_ACCOUNT_OWNER_TYPES.containsValue(
+                            authResource.get(CDSConsentExtensionConstants.AUTH_TYPE))) {
                         secondaryAccountOwnerAuthResources.add(authResource);
                     } else if (authResource.get(CDSConsentExtensionConstants.AUTH_TYPE)
                             .equals(CDSConsentExtensionConstants.AUTH_RESOURCE_TYPE_PRIMARY)) {

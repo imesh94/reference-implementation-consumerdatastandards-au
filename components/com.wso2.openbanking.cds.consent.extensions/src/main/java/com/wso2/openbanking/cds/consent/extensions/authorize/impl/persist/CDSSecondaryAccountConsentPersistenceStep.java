@@ -144,6 +144,9 @@ public class CDSSecondaryAccountConsentPersistenceStep implements ConsentPersist
     private Map<String, String> getOwnersOfSecondaryAccount(JSONObject secondaryAccount) {
         Map<String, String> userIdPrivilegeMap = new HashMap<>();
         Object secondaryAccountInfo = secondaryAccount.get(CDSConsentExtensionConstants.SECONDARY_ACCOUNT_INFO);
+        Boolean isJointAccount = Boolean.parseBoolean(secondaryAccount.getAsString(
+                CDSConsentExtensionConstants.IS_JOINT_ACCOUNT_RESPONSE));
+
         if (secondaryAccountInfo instanceof JSONObject) {
             Object accountOwners = ((JSONObject) secondaryAccountInfo)
                     .get(CDSConsentExtensionConstants.SECONDARY_ACCOUNT_OWNER_LIST);
@@ -152,7 +155,10 @@ public class CDSSecondaryAccountConsentPersistenceStep implements ConsentPersist
                     if (accountOwner instanceof JSONObject) {
                         String accountOwnerId = ((JSONObject) accountOwner)
                                 .getAsString(CDSConsentExtensionConstants.LINKED_MEMBER_ID);
-                        userIdPrivilegeMap.put(accountOwnerId, CDSConsentExtensionConstants.SECONDARY_ACCOUNT_OWNER);
+                        // Add AUTH_TYPE based on account type
+                        userIdPrivilegeMap.put(accountOwnerId,
+                                isJointAccount ? CDSConsentExtensionConstants.SECONDARY_ACCOUNT_OWNER_TYPES.get("JOINT")
+                                       : CDSConsentExtensionConstants.SECONDARY_ACCOUNT_OWNER_TYPES.get("INDIVIDUAL"));
                         if (log.isDebugEnabled()) {
                             log.debug("Added secondary account owner:" + accountOwnerId + " to the list of users " +
                                     "to be persisted");
