@@ -12,7 +12,6 @@ package com.wso2.openbanking.cds.consent.extensions.validate;
 import com.wso2.openbanking.accelerator.account.metadata.service.service.AccountMetadataService;
 import com.wso2.openbanking.accelerator.account.metadata.service.service.AccountMetadataServiceImpl;
 import com.wso2.openbanking.accelerator.common.exception.OpenBankingException;
-import com.wso2.openbanking.accelerator.common.identity.retriever.sp.CommonServiceProviderRetriever;
 import com.wso2.openbanking.accelerator.consent.extensions.common.ConsentException;
 import com.wso2.openbanking.accelerator.consent.extensions.common.ResponseStatus;
 import com.wso2.openbanking.accelerator.consent.extensions.validate.model.ConsentValidateData;
@@ -24,6 +23,7 @@ import com.wso2.openbanking.cds.common.error.handling.util.ErrorConstants;
 import com.wso2.openbanking.cds.common.metadata.domain.MetadataValidationResponse;
 import com.wso2.openbanking.cds.common.metadata.status.validator.service.MetadataService;
 import com.wso2.openbanking.cds.consent.extensions.common.CDSConsentExtensionConstants;
+import com.wso2.openbanking.cds.consent.extensions.utils.CDSConsentExtensionUtils;
 import com.wso2.openbanking.cds.consent.extensions.validate.utils.CDSConsentValidatorUtil;
 import net.minidev.json.JSONObject;
 import net.minidev.json.parser.JSONParser;
@@ -47,6 +47,8 @@ public class CDSConsentValidator implements ConsentValidator {
     private static final Log log = LogFactory.getLog(CDSConsentValidator.class);
 
     AccountMetadataService accountMetadataService = AccountMetadataServiceImpl.getInstance();
+
+    CDSConsentExtensionUtils cdsConsentExtensionUtils = new CDSConsentExtensionUtils();
 
     @Override
     public void validate(ConsentValidateData consentValidateData, ConsentValidationResult consentValidationResult)
@@ -183,32 +185,19 @@ public class CDSConsentValidator implements ConsentValidator {
         ArrayList<ConsentMappingResource> validMappingResources = new ArrayList<>();
 
         try {
-            CommonServiceProviderRetriever commonServiceProviderRetriever = new CommonServiceProviderRetriever();
 
-            String secondaryUserId = consentValidateData.getUserId();
-            String legalEntityId = commonServiceProviderRetriever.
-                    getAppPropertyFromSPMetaData(consentValidateData.getClientId(),
-                            CDSConsentExtensionConstants.LEGAL_ENTITY_ID);
+            String secondaryUserID = consentValidateData.getUserId();
 
             for (ConsentMappingResource consentMappingResource : consentValidateData.
                     getComprehensiveConsent().getConsentMappingResources()) {
-                String accountId = consentMappingResource.getAccountID();
-                String blockedLegalEntities = accountMetadataService.getAccountMetadataByKey
-                        (accountId, secondaryUserId, CDSConsentExtensionConstants.METADATA_KEY_BLOCKED_LEGAL_ENTITIES);
 
-                if (blockedLegalEntities != null) {
-                    String[] blockedLegalEntityArray = blockedLegalEntities.split(",");
-                    boolean isLegalEntitySharingStatusBlocked = false;
-                    for (String blockedLegalEntity : blockedLegalEntityArray) {
-                        if (legalEntityId.equals(blockedLegalEntity)) {
-                            isLegalEntitySharingStatusBlocked = true;
-                            break;
-                        }
-                    }
-                    if (!isLegalEntitySharingStatusBlocked) {
-                        validMappingResources.add(consentMappingResource);
-                    }
-                } else {
+                String accountID = consentMappingResource.getAccountID();
+                String clientID = consentValidateData.getClientId();
+
+                boolean isLegalEntitySharingStatusBlocked = cdsConsentExtensionUtils.
+                        isLegalEntityBlockedForAccountAndUser(accountID, secondaryUserID, clientID);
+
+                if (!isLegalEntitySharingStatusBlocked) {
                     validMappingResources.add(consentMappingResource);
                 }
             }

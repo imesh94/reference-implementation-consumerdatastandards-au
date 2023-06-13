@@ -24,7 +24,8 @@ public class LegalEntityItemUpdateDTO {
     @NotEmpty(message = "Expected field not present for the field \"legalEntityID\"")
     private String legalEntityID;
 
-    @NotEmpty(message = "Expected field not present for the field \"legalEntitySharingStatus\"")
+    @NotEmpty(message = "Expected field not present for the field \"legalEntitySharingStatus\". " +
+            "Must be active or blocked")
     @Pattern(regexp = "^(active|blocked)?$", message = "Expected field not present for the field " +
             "\"legalEntitySharingStatus\". Must be active or blocked")
     private String legalEntitySharingStatus;
