@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2021, WSO2 Inc. (http://www.wso2.com). All Rights Reserved.
+ * Copyright (c) 2021 - 2023, WSO2 Inc. (http://www.wso2.com). All Rights Reserved.
  *
  * This software is the property of WSO2 Inc. and its suppliers, if any.
  * Dissemination of any information or reproduction of any material contained
@@ -14,6 +14,7 @@ package com.wso2.openbanking.toolkit.cds.keymanager.tests
 
 import com.nimbusds.oauth2.sdk.AccessTokenResponse
 import com.nimbusds.oauth2.sdk.TokenErrorResponse
+import com.nimbusds.oauth2.sdk.token.RefreshToken
 import com.wso2.openbanking.test.framework.automation.AUBasicAuthAutomationStep
 import com.wso2.openbanking.test.framework.automation.BrowserAutomation
 import com.wso2.openbanking.test.framework.automation.WaitForRedirectAutomationStep
@@ -39,22 +40,15 @@ import org.testng.annotations.Test
  */
 class ConsentAmendmentFlowTest extends AbstractAUTests{
 
-    private List<AUConstants.SCOPES> scopes = [
-            AUConstants.SCOPES.BANK_ACCOUNT_BASIC_READ,
-            AUConstants.SCOPES.BANK_ACCOUNT_DETAIL_READ,
-            AUConstants.SCOPES.BANK_TRANSACTION_READ,
-            AUConstants.SCOPES.BANK_REGULAR_PAYMENTS_READ,
-            AUConstants.SCOPES.BANK_CUSTOMER_BASIC_READ,
-            AUConstants.SCOPES.BANK_CUSTOMER_DETAIL_READ
-    ]
-
     private String authorisationCode, secondAuthorisationCode = null
-    private AccessTokenResponse userAccessToken, secondUserAccessToken = null
+    private String secondUserAccessToken = null
     private String cdrArrangementId = ""
     private Response parResponse
     private String requestUri
     private String account1Id, account2Id
     private String headerString = ConfigParser.instance.getBasicAuthUser() + ":" + ConfigParser.instance.getBasicAuthUserPassword()
+    private def accessTokenResponse, accessTokenResponse2
+    private RefreshToken refreshToken, secondRefreshToken
 
     @BeforeClass(alwaysRun = true)
     void "Initialize Test Suite"() {
@@ -69,8 +63,11 @@ class ConsentAmendmentFlowTest extends AbstractAUTests{
         Assert.assertNotNull(authorisationCode)
 
         // Retrieve the user access token by auth code
-        userAccessToken = AURequestBuilder.getUserToken(authorisationCode)
-        cdrArrangementId = userAccessToken.getCustomParameters().get("cdr_arrangement_id")
+        accessTokenResponse = AURequestBuilder.getUserToken(authorisationCode, AURequestBuilder.getCodeVerifier())
+        userAccessToken = accessTokenResponse.tokens.accessToken
+        refreshToken = accessTokenResponse.tokens.refreshToken
+
+        cdrArrangementId = accessTokenResponse.getCustomParameters().get("cdr_arrangement_id")
         Assert.assertNotNull(cdrArrangementId)
 
         //remove an existing scope and add a new scope to amend the consent
@@ -87,9 +84,12 @@ class ConsentAmendmentFlowTest extends AbstractAUTests{
         Assert.assertNotNull(secondAuthorisationCode)
 
         //Retrieve the second user access token and assert the CDR arrangement ID is the same.
-        secondUserAccessToken = AURequestBuilder.getUserToken(secondAuthorisationCode)
-        verifyScopes(secondUserAccessToken.toJSONObject().get("scope").toString(), scopes)
-        Assert.assertEquals(cdrArrangementId, secondUserAccessToken.getCustomParameters().get("cdr_arrangement_id"),
+        accessTokenResponse2 = AURequestBuilder.getUserToken(secondAuthorisationCode, AURequestBuilder.getCodeVerifier())
+        secondUserAccessToken = accessTokenResponse2.tokens.accessToken
+        secondRefreshToken = accessTokenResponse2.tokens.refreshToken
+
+        verifyScopes(accessTokenResponse2.toJSONObject().get("scope").toString(), scopes)
+        Assert.assertEquals(cdrArrangementId, accessTokenResponse2.getCustomParameters().get("cdr_arrangement_id"),
                 "Amended CDR id is not original CDR id ")
     }
 
@@ -100,7 +100,7 @@ class ConsentAmendmentFlowTest extends AbstractAUTests{
         Response response = TestSuite.buildRequest()
                 .header(AUConstants.X_V_HEADER, AUConstants.X_V_HEADER_ACCOUNTS)
                 .header(AUConstants.X_FAPI_AUTH_DATE, AUConstants.DATE)
-                .header(TestConstants.AUTHORIZATION_HEADER_KEY, "Bearer " + secondUserAccessToken.tokens.accessToken.toString())
+                .header(TestConstants.AUTHORIZATION_HEADER_KEY, "Bearer " + secondUserAccessToken)
                 .baseUri(AUTestUtil.getBaseUrl(AUConstants.BASE_PATH_TYPE_ACCOUNT))
                 .get("${AUConstants.CDS_100_PATH}${AUConstants.BULK_ACCOUNT_PATH}/")
 
@@ -118,21 +118,21 @@ class ConsentAmendmentFlowTest extends AbstractAUTests{
         Response response = TestSuite.buildRequest()
                 .header(AUConstants.X_V_HEADER, AUConstants.X_V_HEADER_ACCOUNTS)
                 .header(AUConstants.X_FAPI_AUTH_DATE, AUConstants.DATE)
-                .header(TestConstants.AUTHORIZATION_HEADER_KEY, "Bearer " + userAccessToken.tokens.accessToken.toString())
+                .header(TestConstants.AUTHORIZATION_HEADER_KEY, "Bearer " + userAccessToken)
                 .baseUri(AUTestUtil.getBaseUrl(AUConstants.BASE_PATH_TYPE_ACCOUNT))
                 .get("${AUConstants.CDS_100_PATH}${AUConstants.BULK_ACCOUNT_PATH}/")
 
         // Assert if details of selected accounts cannot be retrieved via accounts get call
         Assert.assertEquals(response.statusCode(), AUConstants.STATUS_CODE_401)
-        Assert.assertTrue(response.jsonPath().get("errors.code").toString().contains("AU.CDR.Unauthorized"))
-        Assert.assertTrue(response.jsonPath().get("errors.title").toString().contains("Invalid Authorisation Header"))
+        Assert.assertTrue(response.jsonPath().get("error_description").toString().contains("Invalid Credentials"))
+        Assert.assertTrue(response.jsonPath().get("error").toString().contains("invalid_client"))
     }
 
     @Test(dependsOnMethods = "TC001_Verify Consent Amendment flow when both sharing duration and scope has been amended")
     void "TC004_Verify Token Introspection for newly amended consent user access Token"() {
 
         Response response = AURequestBuilder
-                .buildIntrospectionRequest(secondUserAccessToken.tokens.accessToken.toString())
+                .buildIntrospectionRequest(secondUserAccessToken)
                 .post(AUConstants.INTROSPECTION_ENDPOINT)
 
         // Assert if Token status is active for latest consent amendment
@@ -143,7 +143,7 @@ class ConsentAmendmentFlowTest extends AbstractAUTests{
     void "TC005_Verify Token Introspection for previous user access Token"() {
 
         Response response = AURequestBuilder
-                .buildIntrospectionRequest(userAccessToken.tokens.accessToken.toString())
+                .buildIntrospectionRequest(userAccessToken)
                 .post(AUConstants.INTROSPECTION_ENDPOINT)
 
         // Assert if Token status is NOT active for previous consent amendment - user access token
@@ -153,16 +153,14 @@ class ConsentAmendmentFlowTest extends AbstractAUTests{
     @Test(dependsOnMethods = "TC001_Verify Consent Amendment flow when both sharing duration and scope has been amended")
     void "TC006_Verify regenerate Access Token using Refresh Token for amended Consent"() {
 
-        AccessTokenResponse userAccessToken = AUTestUtil.getUserTokenFromRefreshToken(
-                secondUserAccessToken.tokens.refreshToken)
+        AccessTokenResponse userAccessToken = AUTestUtil.getUserTokenFromRefreshToken(secondRefreshToken)
         Assert.assertNotNull(userAccessToken.tokens.accessToken)
     }
 
     @Test(dependsOnMethods = "TC001_Verify Consent Amendment flow when both sharing duration and scope has been amended")
     void "TC007_Verify regenerate Access Token using Refresh Token for original Consent"() {
 
-        TokenErrorResponse userAccessToken = AUTestUtil.getUserTokenFromRefreshTokenErrorResponse(
-                userAccessToken.tokens.refreshToken)
+        TokenErrorResponse userAccessToken = AUTestUtil.getUserTokenFromRefreshTokenErrorResponse(refreshToken)
         Assert.assertEquals(userAccessToken.toJSONObject().get("error_description"), "Persisted access token data not found")
     }
 
@@ -183,9 +181,10 @@ class ConsentAmendmentFlowTest extends AbstractAUTests{
         String authorisationCode = doConsentAmendmentAuthorisationViaRequestUri(scopes, requestUri.toURI(), false)
         Assert.assertNotNull(authorisationCode)
 
-        AccessTokenResponse userAccessToken = AURequestBuilder.getUserToken(authorisationCode)
-        verifyScopes(userAccessToken.toJSONObject().get("scope").toString(), scopes)
-        Assert.assertEquals(cdrArrangementId, userAccessToken.getCustomParameters().get("cdr_arrangement_id"),
+        def accessTokenResponse = AURequestBuilder.getUserToken(authorisationCode, AURequestBuilder.getCodeVerifier())
+        userAccessToken = accessTokenResponse.tokens.accessToken
+        verifyScopes(accessTokenResponse.toJSONObject().get("scope").toString(), scopes)
+        Assert.assertEquals(cdrArrangementId, accessTokenResponse.getCustomParameters().get("cdr_arrangement_id"),
                 "Amended CDR id is not original CDR id ")
     }
 
@@ -230,8 +229,10 @@ class ConsentAmendmentFlowTest extends AbstractAUTests{
 
         authorisationCode = doAuthorization(scopes, AUConstants.DEFAULT_SHARING_DURATION, true)
         Assert.assertNotNull(authorisationCode)
-        userAccessToken = AURequestBuilder.getUserToken(authorisationCode)
-        cdrArrangementId = userAccessToken.getCustomParameters().get("cdr_arrangement_id")
+
+        def accessTokenResponse = AURequestBuilder.getUserToken(authorisationCode, AURequestBuilder.getCodeVerifier())
+        userAccessToken = accessTokenResponse.tokens.accessToken
+        cdrArrangementId = accessTokenResponse.getCustomParameters().get("cdr_arrangement_id")
         Assert.assertNotNull(cdrArrangementId)
 
         scopes.remove(AUConstants.SCOPES.BANK_TRANSACTION_READ)
@@ -243,11 +244,12 @@ class ConsentAmendmentFlowTest extends AbstractAUTests{
 
         secondAuthorisationCode = doConsentAmendmentAuthorisationViaRequestUri(scopes, requestUri.toURI(), true)
         Assert.assertNotNull(secondAuthorisationCode)
-        secondUserAccessToken = AURequestBuilder.getUserToken(secondAuthorisationCode)
+        def secondUserAccessTokenResponse = AURequestBuilder.getUserToken(secondAuthorisationCode,
+                AURequestBuilder.getCodeVerifier())
 
         sleep(25000)
         TokenErrorResponse userAccessToken = AUTestUtil.getUserTokenFromRefreshTokenErrorResponse(
-                secondUserAccessToken.tokens.refreshToken)
+                secondUserAccessTokenResponse.tokens.refreshToken)
         Assert.assertEquals(userAccessToken.toJSONObject().get("error_description"), "Refresh token is expired.")
     }
 
@@ -259,8 +261,9 @@ class ConsentAmendmentFlowTest extends AbstractAUTests{
         Assert.assertNotNull(authorisationCode)
 
         // Retrieve the user access token by auth code
-        userAccessToken = AURequestBuilder.getUserToken(authorisationCode)
-        cdrArrangementId = userAccessToken.getCustomParameters().get("cdr_arrangement_id")
+        def accessTokenResponse = AURequestBuilder.getUserToken(authorisationCode, AURequestBuilder.getCodeVerifier())
+        userAccessToken = accessTokenResponse.tokens.accessToken
+        cdrArrangementId = accessTokenResponse.getCustomParameters().get("cdr_arrangement_id")
         Assert.assertNotNull(cdrArrangementId)
 
         //remove an existing scope and add a new scope to amend the consent

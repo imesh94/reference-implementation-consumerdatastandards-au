@@ -113,6 +113,7 @@ public class CDSConsentExtensionConstants {
     public static final String BUSINESS_ACCOUNT_OWNER = "business_account_owner";
     public static final String NOMINATED_REPRESENTATIVE = "nominated_representative";
     public static final String CUSTOMER_ACCOUNT_TYPE = "customerAccountType";
+    public static final String IS_ELIGIBLE = "isEligible";
     public static final String BNR_PERMISSION = "bnr-permission";
     public static final String BNR_AUTHORIZE_PERMISSION = "AUTHORIZE";
     public static final String BNR_VIEW_PERMISSION = "VIEW";

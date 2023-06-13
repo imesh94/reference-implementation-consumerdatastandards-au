@@ -68,5 +68,8 @@ class AUConfigConstants {
     //Profile Selection configuration constants
     public static final String PROFILE_SELECTION = "ProfileSelection"
     public static final String PROFILE_SELECTION_ENABLED = "Enabled"
+
+    //Sharable Account URL
+    public static final String SHARABLE_ACCOUNT_URL = "SharableAccountsURL"
 }
 

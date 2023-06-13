@@ -50,7 +50,7 @@ class AUBasicAuthAutomationStep implements BrowserAutomationStep {
         driver.executeTextField(AUPageObjects.AU_USERNAME_FIELD_ID, auConfiguration.getUserPSUName())
 
         //Click on SignIn Button
-        driver.submitButtonXpath(AUPageObjects.AU_AUTH_SIGNIN_XPATH)
+        driver.clickButtonXpath(AUPageObjects.AU_AUTH_SIGNIN_XPATH)
         driver.waitTimeRange(30)
 
         //Second Factor Authentication Step
@@ -58,7 +58,7 @@ class AUBasicAuthAutomationStep implements BrowserAutomationStep {
             if (driver.isElementDisplayed(AUPageObjects.AU_BTN_AUTHENTICATE)) {
                 driver.executeSMSOTP(AUPageObjects.AU_LBL_SMSOTP_AUTHENTICATOR, AUPageObjects.AU_TXT_OTP_CODE_ID, AUConstants.AU_OTP_CODE)
                 driver.clickButtonXpath(AUPageObjects.AU_BTN_AUTHENTICATE)
-                wait.until(ExpectedConditions.invisibilityOfElementLocated(By.xpath(AUPageObjects.AU_BTN_AUTHENTICATE)))
+                driver.waitTimeRange(30)
             }
         } catch (NoSuchElementException e) {
             log.info("Second Factor Authentication Step is not required")
