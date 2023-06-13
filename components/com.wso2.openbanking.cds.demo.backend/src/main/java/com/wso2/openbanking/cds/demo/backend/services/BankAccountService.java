@@ -97,6 +97,27 @@ public class BankAccountService {
             "            \"meta\": {}\n" +
             "        },\n" +
             "        {\n" +
+            "            \"accountId\": \"7500101545\",\n" +
+            "            \"displayName\": \"joint_account_3\",\n" +
+            "            \"authorizationMethod\": \"single\",\n" +
+            "            \"nickName\": \"joint-account-3\",\n" +
+            "            \"customerAccountType\": \"Individual\",\n" +
+            "            \"type\": \"TRANS_AND_SAVINGS_ACCOUNTS\",\n" +
+            "            \"isEligible\": true,\n" +
+            "            \"isJointAccount\": true,\n" +
+            "            \"isSecondaryAccount\" : false,\n" +
+            "            \"jointAccountConsentElectionStatus\": \"ELECTED\",\n" +
+            "            \"jointAccountinfo\": {\n" +
+            "                \"linkedMember\": [\n" +
+            "                    {\n" +
+            "                        \"memberId\": \"mark@gold.com@carbon.super\",\n" +
+            "                        \"meta\": {}\n" +
+            "                    }\n" +
+            "                ]\n" +
+            "            },\n" +
+            "            \"meta\": {}\n" +
+            "        },\n" +
+            "        {\n" +
             "          \"accountId\": \"143-000-B1234\",\n" +
             "          \"displayName\": \"business_account_1\",\n" +
             "          \"authorizationMethod\": \"single\",\n" +
@@ -261,6 +282,28 @@ public class BankAccountService {
             "              \"accountOwner\": [\n" +
             "                {\n" +
             "                  \"memberId\": \"ann@gold.com@carbon.super\",\n" +
+            "                  \"meta\": {}\n" +
+            "                },\n" +
+            "              ]\n" +
+            "            },\n" +
+            "            \"meta\": {}\n" +
+            "        },\n" +
+            "        {\n" +
+            "            \"accountId\": \"30080098763510\",\n" +
+            "            \"displayName\": \"secondary_account_3\",\n" +
+            "            \"authorizationMethod\": \"single\",\n" +
+            "            \"nickName\": \"not-working\",\n" +
+            "            \"customerAccountType\": \"Secondary\",\n" +
+            "            \"type\": \"TRANS_AND_SAVINGS_ACCOUNTS\",\n" +
+            "            \"isEligible\": true,\n" +
+            "            \"isJointAccount\": false,\n" +
+            "            \"jointAccountConsentElectionStatus\": false,\n" +
+            "            \"isSecondaryAccount\" : true,\n" +
+            "            \"secondaryAccountPrivilegeStatus\" : true,\n" +
+            "            \"secondaryAccountInfo\": {\n" +
+            "              \"accountOwner\": [\n" +
+            "                {\n" +
+            "                  \"memberId\": \"mark@gold.com@carbon.super\",\n" +
             "                  \"meta\": {}\n" +
             "                },\n" +
             "              ]\n" +
