@@ -16,6 +16,7 @@ import com.wso2.openbanking.accelerator.consent.extensions.common.ResponseStatus
 import com.wso2.openbanking.cds.consent.extensions.authorize.utils.CDSConsentCommonUtil;
 import com.wso2.openbanking.cds.consent.extensions.authorize.utils.CDSConsentPersistUtil;
 import com.wso2.openbanking.cds.consent.extensions.common.CDSConsentExtensionConstants;
+import com.wso2.openbanking.cds.consent.extensions.common.SecondaryAccountOwnerTypeEnum;
 import com.wso2.openbanking.cds.consent.extensions.validate.utils.CDSConsentValidatorUtil;
 import net.minidev.json.JSONArray;
 import net.minidev.json.JSONObject;
@@ -157,8 +158,8 @@ public class CDSSecondaryAccountConsentPersistenceStep implements ConsentPersist
                                 .getAsString(CDSConsentExtensionConstants.LINKED_MEMBER_ID);
                         // Add AUTH_TYPE based on account type
                         userIdPrivilegeMap.put(accountOwnerId,
-                                isJointAccount ? CDSConsentExtensionConstants.SECONDARY_ACCOUNT_OWNER_TYPES.get("JOINT")
-                                       : CDSConsentExtensionConstants.SECONDARY_ACCOUNT_OWNER_TYPES.get("INDIVIDUAL"));
+                                isJointAccount ? SecondaryAccountOwnerTypeEnum.JOINT.getValue() :
+                                        SecondaryAccountOwnerTypeEnum.INDIVIDUAL.getValue());
                         if (log.isDebugEnabled()) {
                             log.debug("Added secondary account owner:" + accountOwnerId + " to the list of users " +
                                     "to be persisted");
