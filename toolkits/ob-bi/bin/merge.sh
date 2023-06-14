@@ -55,6 +55,10 @@ echo -e "\nRemoving default AuthenticationDataSubmissionApp\n"
 echo -e "================================================\n"
 rm ${WSO2_OB_BI_HOME}/deployment/siddhi-files/AuthenticationDataSubmissionApp.siddhi
 
+echo -e "\nRemoving old open banking artifacts from base product\n"
+find "${WSO2_OB_IS_HOME}"/repository/components/dropins -name "com.wso2.openbanking.cds.*" -exec rm -rf {} \;
+find "${WSO2_OB_IS_HOME}"/repository/components/lib -name "com.wso2.openbanking.cds.*" -exec rm -rf {} \;
+
 echo -e "\nCopying open banking artifacts\n"
 echo -e "================================================\n"
 cp -r ${TOOLKIT_HOME}/carbon-home/* "${WSO2_OB_BI_HOME}"/

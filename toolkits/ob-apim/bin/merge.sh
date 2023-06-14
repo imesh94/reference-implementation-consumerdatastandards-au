@@ -18,10 +18,10 @@
 
 WSO2_OB_APIM_HOME=$1
 
-# set accelerator home
+# set toolkit home
 cd ../
-ACCELERATOR_HOME=$(pwd)
-echo "Accelerator home is: ${ACCELERATOR_HOME}"
+TOOLKIT_HOME=$(pwd)
+echo "Toolkit home is: ${TOOLKIT_HOME}"
 
 # set product home
 if [ "${WSO2_OB_APIM_HOME}" == "" ];
@@ -43,9 +43,13 @@ echo -e "\nRemoving default backend war\n"
 echo -e "================================================\n"
 rm ${WSO2_OB_APIM_HOME}/repository/deployment/server/webapps/api#openbanking#backend.war
 
+echo -e "\nRemoving old open banking artifacts from base product\n"
+find "${WSO2_OB_IS_HOME}"/repository/components/dropins -name "com.wso2.openbanking.cds.*" -exec rm -rf {} \;
+find "${WSO2_OB_IS_HOME}"/repository/components/lib -name "com.wso2.openbanking.cds.*" -exec rm -rf {} \;
+
 echo -e "\nCopying open banking artifacts\n"
 echo -e "================================================\n"
-cp -r ${ACCELERATOR_HOME}/carbon-home/* "${WSO2_OB_APIM_HOME}"/
+cp -r ${TOOLKIT_HOME}/carbon-home/* "${WSO2_OB_APIM_HOME}"/
 echo -e "\nCopying .swagger-validator file\n"
-cp ${ACCELERATOR_HOME}/carbon-home/.swagger-validator "${WSO2_OB_APIM_HOME}"/
+cp ${TOOLKIT_HOME}/carbon-home/.swagger-validator "${WSO2_OB_APIM_HOME}"/
 echo -e "\nComplete!\n"
