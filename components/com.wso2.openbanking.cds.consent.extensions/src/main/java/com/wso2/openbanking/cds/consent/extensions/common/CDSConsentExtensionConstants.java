@@ -41,6 +41,7 @@ public class CDSConsentExtensionConstants {
     public static final String PERMISSIONS = "permissions";
     public static final String SHARING_DURATION_VALUE = "sharing_duration_value";
     public static final String CDR_ARRANGEMENT_ID = "cdr_arrangement_id";
+    public static final String CDR_ARRANGEMENT_JWT = "cdr_arrangement_jwt";
     public static final String AUTH_RESOURCE_ID = "authResourceId";
     public static final String AUTH_TYPE = "authorizationType";
     public static final String MAPPING_STATUS = "mappingStatus";

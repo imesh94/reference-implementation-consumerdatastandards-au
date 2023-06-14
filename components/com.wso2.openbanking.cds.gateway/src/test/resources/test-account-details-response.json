@@ -7,6 +7,25 @@
       "maturityDate": "2019-09-01T15:43:00.12345Z",
       "maturityCurrency": "AUD"
     },
+    "loan": {
+      "originalStartDate": "2019-09-01T15:43:00.12345Z",
+      "originalLoanAmount": "200.00",
+      "originalLoanCurrency": "AUD",
+      "loanEndDate": "2019-09-01T15:43:00.12345Z",
+      "nextInstalmentDate": "2019-09-01T15:43:00.12345Z",
+      "minInstalmentAmount": "10.00",
+      "minInstalmentCurrency": "AUD",
+      "maxRedraw": "10.00",
+      "maxRedrawCurrency": "AUD",
+      "minRedraw": "10.00",
+      "minRedrawCurrency": "AUD",
+      "offsetAccountEnabled": true,
+      "offsetAccountIds": [
+        "1111",
+        "2222"
+      ],
+      "repaymentType": "INTEREST_ONLY"
+    },
     "fees": {
       "amount": "10.00",
       "discounts": {
