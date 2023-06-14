@@ -12,6 +12,8 @@
 
 package com.wso2.cds.test.framework.request_builder
 
+import com.nimbusds.oauth2.sdk.pkce.CodeChallengeMethod
+import com.nimbusds.oauth2.sdk.pkce.CodeVerifier
 import com.wso2.cds.test.framework.constant.AUAccountScope
 import com.wso2.cds.test.framework.constant.AUConstants
 import com.nimbusds.oauth2.sdk.AuthorizationRequest
@@ -41,6 +43,7 @@ class AUAuthorisationBuilder {
     private URI redirectURI
     private State state
     private int tppNumber
+    private static CodeVerifier codeVerifier = new CodeVerifier()
 
     AUAuthorisationBuilder() {
         auConfiguration = new AUConfigurationService()
@@ -76,20 +79,40 @@ class AUAuthorisationBuilder {
 
     /**
      * AU Authorisation Builder for Pushed Authorisation Flow
-     * @param scopes
-     * @param requestUri
-     * @param client_id
+     * @param scopes  scope of the request
+     * @param requestUri request uri
+     * @param clientID client id of the application
+     * @param isStateParamPresent state parameter is present or not
+     * @return AuthorizationRequest
      */
-    AuthorizationRequest getAuthorizationRequest(List<AUAccountScope> scopes, URI requestUri, String clientID = getClientID().getValue()) {
+    AuthorizationRequest getAuthorizationRequest(List<AUAccountScope> scopes, URI requestUri,
+                                                 String clientID = getClientID().getValue(),
+                                                 boolean isStateParamPresent = true) {
         String scopeString = "openid ${String.join(" ", scopes.collect({ it.scopeString }))}"
-        request = new AuthorizationRequest.Builder(getResponseType(), new ClientID(clientID))
-                .responseType(ResponseType.parse("code id_token"))
-                .scope(new Scope(scopeString))
-                .requestURI(requestUri)
-                .redirectionURI(getRedirectURI())
-                .endpointURI(getEndpoint())
-                .customParameter("prompt", "login")
-                .build()
+
+        if(isStateParamPresent) {
+            request = new AuthorizationRequest.Builder(getResponseType(), new ClientID(clientID))
+                    .responseType(ResponseType.parse("code id_token"))
+                    .scope(new Scope(scopeString))
+                    .requestURI(requestUri)
+                    .redirectionURI(getRedirectURI())
+                    .state(getState())
+                    .codeChallenge(getCodeVerifier(), CodeChallengeMethod.S256)
+                    .endpointURI(getEndpoint())
+                    .customParameter("prompt", "login")
+                    .build()
+        } else {
+            request = new AuthorizationRequest.Builder(getResponseType(), new ClientID(clientID))
+                    .responseType(ResponseType.parse("code id_token"))
+                    .scope(new Scope(scopeString))
+                    .requestURI(requestUri)
+                    .redirectionURI(getRedirectURI())
+                    .codeChallenge(getCodeVerifier(), CodeChallengeMethod.S256)
+                    .endpointURI(getEndpoint())
+                    .customParameter("prompt", "login")
+                    .build()
+        }
+
         return request
     }
 
@@ -128,10 +151,13 @@ class AUAuthorisationBuilder {
                                         boolean sendSharingDuration, String cdrArrangementId,
                                         String clientId = getClientID().getValue(),
                                         String redirectUrl = getRedirectURI().toString(),
-                                        String responseType = getResponseType().toString()) {
+                                        String responseType = getResponseType().toString(),
+                                        String state = getState().toString(),
+                                        boolean isStateParamRequired = true) {
 
         AUJWTGenerator generator = new AUJWTGenerator()
         String scopeString = "openid ${String.join(" ", scopes.collect({ it.scopeString }))}"
+        Response parResponse
 
         String assertionString = generator.getClientAssertionJwt(clientId)
 
@@ -140,13 +166,26 @@ class AUAuthorisationBuilder {
                 (AUConstants.CLIENT_ASSERTION_TYPE_KEY): (AUConstants.CLIENT_ASSERTION_TYPE),
                 (AUConstants.CLIENT_ASSERTION_KEY)     : assertionString,
         ]
-        Response parResponse = AURestAsRequestBuilder.buildRequest()
-                .contentType(AUConstants.ACCESS_TOKEN_CONTENT_TYPE)
-                .formParams(bodyContent)
-                .formParams(AUConstants.REQUEST_KEY, generator.getSignedAuthRequestObject(scopeString,
-                        sharingDuration, sendSharingDuration, cdrArrangementId, redirectUrl, clientId, responseType).serialize())
-                .baseUri(AUConstants.PUSHED_AUTHORISATION_BASE_PATH)
-                .post(AUConstants.PAR_ENDPOINT)
+
+        if(isStateParamRequired) {
+            parResponse = AURestAsRequestBuilder.buildRequest()
+                    .contentType(AUConstants.ACCESS_TOKEN_CONTENT_TYPE)
+                    .formParams(bodyContent)
+                    .formParams(AUConstants.REQUEST_KEY, generator.getSignedAuthRequestObject(scopeString,
+                            sharingDuration, sendSharingDuration, cdrArrangementId, redirectUrl, clientId, responseType,
+                            true, state).serialize())
+                    .baseUri(AUConstants.PUSHED_AUTHORISATION_BASE_PATH)
+                    .post(AUConstants.PAR_ENDPOINT)
+        } else {
+            parResponse = AURestAsRequestBuilder.buildRequest()
+                    .contentType(AUConstants.ACCESS_TOKEN_CONTENT_TYPE)
+                    .formParams(bodyContent)
+                    .formParams(AUConstants.REQUEST_KEY, generator.getSignedAuthRequestObject(scopeString,
+                            sharingDuration, sendSharingDuration, cdrArrangementId, redirectUrl, clientId, responseType,
+                            false, state).serialize())
+                    .baseUri(AUConstants.PUSHED_AUTHORISATION_BASE_PATH)
+                    .post(AUConstants.PAR_ENDPOINT)
+        }
 
         return parResponse
     }
@@ -294,5 +333,12 @@ class AUAuthorisationBuilder {
         this.state = new State(state)
     }
 
+    /**
+     * Get Code Verifier.
+     * @return
+     *  */
+    CodeVerifier getCodeVerifier() {
+        return codeVerifier
+    }
 }
 
