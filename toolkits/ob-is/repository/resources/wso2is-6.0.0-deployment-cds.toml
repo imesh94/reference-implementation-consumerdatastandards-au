@@ -433,6 +433,9 @@ token_context_dialect_uri = "http://wso2.org/claims"
 [oauth.token_generation]
 access_token_type = "self_contained"
 
+[oauth.introspection]
+filtered_claims = ["username"]
+
 [oauth.grant_type.uma_ticket]
 retrieve_uma_permission_info_through_introspection = true
 
