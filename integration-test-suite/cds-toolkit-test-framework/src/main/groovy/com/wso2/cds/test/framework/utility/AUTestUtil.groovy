@@ -12,6 +12,7 @@
 
 package com.wso2.cds.test.framework.utility
 
+import com.wso2.cds.test.framework.constant.AUAccountProfile
 import com.wso2.cds.test.framework.constant.AUAccountScope
 import com.wso2.cds.test.framework.constant.AUConstants
 import com.wso2.bfsi.test.framework.exception.TestFrameworkException
@@ -145,16 +146,24 @@ class AUTestUtil extends OBTestUtil {
      * Get Business Account 1 XPath
      * @return SingleAccountXPath
      */
-    static String getBusinessAccount1XPath() {
-        return AUPageObjects.BUSINESS_ACCOUNT_1
+    static String getBusinessAccount1CheckBox() {
+        return AUPageObjects.CHK_ORG_A_BUSINESS_ACCOUNT_1
     }
 
     /**
      * Get Business Account 2 XPath
      * @return SingleAccountXPath
      */
-    static String getBusinessAccount2XPath() {
-        return AUPageObjects.BUSINESS_ACCOUNT_2
+    static String getBusinessAccount2CheckBox() {
+        return AUPageObjects.CHK_ORG_B_BUSINESS_ACCOUNT_1
+    }
+
+    /**
+     * Get Business Account 3 XPath
+     * @return SingleAccountXPath
+     */
+    static String getBusinessAccount3CheckBox() {
+        return AUPageObjects.CHK_ORG_B_BUSINESS_ACCOUNT_2
     }
 
     /**
@@ -173,5 +182,59 @@ class AUTestUtil extends OBTestUtil {
         return AUPageObjects.SECONDARY_ACCOUNT_2
     }
 
+    /**
+     * Get Business Account 1 Label XPath
+     * @return BusinessAccount1LabelXPath
+     */
+    static String getBusinessAccount1Label() {
+        return AUPageObjects.LBL_BUSINESS_ACCOUNT_1
+    }
+
+    /**
+     * Get Business Account 2 Label XPath
+     * @return BusinessAccount2LabelXPath
+     */
+    static String getBusinessAccount2Label() {
+        return AUPageObjects.LBL_BUSINESS_ACCOUNT_2
+    }
+
+    /**
+     * Get Shareable Accounts List required Params based on Input Values
+     * @param shareableAccountsResponse
+     * @return ShareableAccountMap
+     */
+    static Map getSharableAccountsList(Response shareableAccountsResponse,
+                                       String profile = AUAccountProfile.ORGANIZATION_A.getProperty(AUConstants.VALUE_KEY)) {
+
+        //Get the response of the shareable endpoint and map the required values according to the profile selection.
+        def sharableAccountList = shareableAccountsResponse.jsonPath().get(AUConstants.DATA)
+
+        def  ShareableAccountMap = [:]
+
+        for (sharableAccount in sharableAccountList) {
+            if (sharableAccount[AUConstants.PARAM_PROFILE_NAME] == profile) {
+                ShareableAccountMap [AUConstants.PARAM_ACCOUNT_ID] = sharableAccount[AUConstants.ACCOUNT_ID]
+                ShareableAccountMap [AUConstants.ACCOUNT_OWNER_USER_ID] =
+                        sharableAccount[AUConstants.BUSINESS_ACCOUNT_INFO][AUConstants.ACCOUNT_OWNERS][AUConstants.MEMBER_ID][0]
+                ShareableAccountMap [AUConstants.NOMINATED_REP_USER_ID] =
+                        sharableAccount[AUConstants.BUSINESS_ACCOUNT_INFO][AUConstants.NOMINATED_REPRESENTATIVES][AUConstants.MEMBER_ID][0]
+                ShareableAccountMap [AUConstants.ACCOUNT_OWNER_USER_ID] =
+                        sharableAccount[AUConstants.BUSINESS_ACCOUNT_INFO][AUConstants.ACCOUNT_OWNERS][AUConstants.MEMBER_ID][1]
+                ShareableAccountMap [AUConstants.NOMINATED_REP_USER_ID2] =
+                        sharableAccount[AUConstants.BUSINESS_ACCOUNT_INFO][AUConstants.NOMINATED_REPRESENTATIVES][AUConstants.MEMBER_ID][1]
+                break
+            }
+        }
+        return ShareableAccountMap
+    }
+
+    /**
+     * Get Json Path of the response of get permission request.
+     * @param accountId
+     * @return Json Path
+     */
+    static String getPermissionForUser(String accountId) {
+        return "$AUConstants.PARAM_PERMISSION_STATUS.$accountId"
+    }
 }
 

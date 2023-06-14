@@ -30,6 +30,7 @@ import com.wso2.openbanking.accelerator.consent.mgt.service.constants.ConsentCor
 import com.wso2.openbanking.accelerator.consent.mgt.service.impl.ConsentCoreServiceImpl;
 import com.wso2.openbanking.cds.consent.extensions.authorize.utils.PermissionsEnum;
 import com.wso2.openbanking.cds.consent.extensions.common.CDSConsentExtensionConstants;
+import com.wso2.openbanking.cds.consent.extensions.common.SecondaryAccountOwnerTypeEnum;
 import com.wso2.openbanking.cds.consent.extensions.validate.utils.CDSConsentValidatorUtil;
 
 
@@ -399,8 +400,8 @@ public class CDSConsentAdminHandler implements ConsentAdminHandler {
             for (Object consentAuthResourceObj : consentAuthResources) {
                 if (consentAuthResourceObj instanceof JSONObject) {
                     JSONObject authResource = (JSONObject) consentAuthResourceObj;
-                    if (authResource.get(CDSConsentExtensionConstants.AUTH_TYPE)
-                            .equals(CDSConsentExtensionConstants.SECONDARY_ACCOUNT_OWNER)) {
+                    if (SecondaryAccountOwnerTypeEnum.isValidOwnerType(
+                            authResource.getAsString(CDSConsentExtensionConstants.AUTH_TYPE))) {
                         secondaryAccountOwnerAuthResources.add(authResource);
                     } else if (authResource.get(CDSConsentExtensionConstants.AUTH_TYPE)
                             .equals(CDSConsentExtensionConstants.AUTH_RESOURCE_TYPE_PRIMARY)) {

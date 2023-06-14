@@ -6,6 +6,7 @@
  * herein in any form is strictly forbidden, unless permitted by WSO2 expressly.
  * You may not alter or remove any copyright or other notice from copies of this content.
  */
+
 package com.wso2.openbanking.cds.consent.extensions.common;
 
 import java.util.Arrays;
@@ -115,6 +116,7 @@ public class CDSConsentExtensionConstants {
     public static final String BUSINESS_ACCOUNT_OWNER = "business_account_owner";
     public static final String NOMINATED_REPRESENTATIVE = "nominated_representative";
     public static final String CUSTOMER_ACCOUNT_TYPE = "customerAccountType";
+    public static final String IS_ELIGIBLE = "isEligible";
     public static final String BNR_PERMISSION = "bnr-permission";
     public static final String BNR_AUTHORIZE_PERMISSION = "AUTHORIZE";
     public static final String BNR_VIEW_PERMISSION = "VIEW";
@@ -161,7 +163,6 @@ public class CDSConsentExtensionConstants {
     // constants related to secondary accounts
     public static final String INSTRUCTION_STATUS = "secondaryAccountInstructionStatus";
     public static final String SECONDARY_ACCOUNT_USER = "secondary_account_user";
-    public static final String SECONDARY_ACCOUNT_OWNER = "secondary_account_owner";
     public static final String ACTIVE_STATUS = "active";
     public static final String IS_SECONDARY_ACCOUNT_RESPONSE = "isSecondaryAccount";
     public static final String IS_SECONDARY_ACCOUNT = "is_secondary_account";
