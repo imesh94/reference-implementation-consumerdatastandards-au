@@ -84,7 +84,8 @@ public class CDSPushAuthRequestValidator  extends PushAuthRequestValidator {
         try {
             sharingDuration = StringUtils.isEmpty(sharingDurationString) ? 0 : Integer.parseInt(sharingDurationString);
         } catch (NumberFormatException e) {
-            log.error(e);
+            log.error(String.format("Error while parsing %s value: '%s' to a number.",
+                    SHARING_DURATION, sharingDurationString), e);
             return false;
         }
 
