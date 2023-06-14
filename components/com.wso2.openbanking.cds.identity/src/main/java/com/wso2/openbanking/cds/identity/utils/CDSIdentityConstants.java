@@ -18,7 +18,7 @@ public class CDSIdentityConstants {
     public static final String INVALID_PUSH_AUTH_REQUEST = "Invalid push authorisation request";
     public static final String INVALID_SHARING_DURATION = "Invalid sharing_duration value";
 
-    // Status constants
+    // Consent status constants.
     public static final String AUTHORIZED = "authorized";
 
 }

@@ -84,6 +84,7 @@ public class CDSPushAuthRequestValidator  extends PushAuthRequestValidator {
         try {
             sharingDuration = StringUtils.isEmpty(sharingDurationString) ? 0 : Integer.parseInt(sharingDurationString);
         } catch (NumberFormatException e) {
+            log.error(e);
             return false;
         }
 
@@ -109,8 +110,8 @@ public class CDSPushAuthRequestValidator  extends PushAuthRequestValidator {
             DetailedConsentResource detailedConsentResource;
             try {
                 detailedConsentResource = consentCoreService.getDetailedConsent(cdrArrangementId);
-            } catch (ConsentManagementException exception) {
-                log.error(exception);
+            } catch (ConsentManagementException e) {
+                log.error(errorDescription, e);
                 throw new PushAuthRequestValidatorException(HttpStatus.SC_BAD_REQUEST,
                         PushAuthRequestConstants.INVALID_REQUEST_OBJECT,
                         errorDescription);
@@ -154,11 +155,11 @@ public class CDSPushAuthRequestValidator  extends PushAuthRequestValidator {
      */
     private boolean isConsentExpired(DetailedConsentResource detailedConsentResource) {
         long nowInEpochSeconds = OffsetDateTime.now(ZoneOffset.UTC).toEpochSecond();
-        long validForInSeconds = detailedConsentResource.getValidityPeriod() - nowInEpochSeconds;
+        long validityDurationInSeconds = detailedConsentResource.getValidityPeriod() - nowInEpochSeconds;
 
          /* Consents that have expired cannot be amended.
          As a consent with a 0 sharing duration is, in effect, immediately expired then amendment would not be
          possible. */
-        return 0 == detailedConsentResource.getValidityPeriod() || validForInSeconds <= 0;
+        return 0 == detailedConsentResource.getValidityPeriod() || validityDurationInSeconds <= 0;
     }
 }
