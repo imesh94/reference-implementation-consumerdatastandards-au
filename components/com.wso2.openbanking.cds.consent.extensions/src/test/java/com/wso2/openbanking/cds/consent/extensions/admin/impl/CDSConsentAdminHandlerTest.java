@@ -8,8 +8,11 @@
  */
 package com.wso2.openbanking.cds.consent.extensions.admin.impl;
 
+import com.wso2.openbanking.accelerator.account.metadata.service.service.AccountMetadataService;
+import com.wso2.openbanking.accelerator.account.metadata.service.service.AccountMetadataServiceImpl;
 import com.wso2.openbanking.accelerator.common.config.OpenBankingConfigParser;
 import com.wso2.openbanking.accelerator.common.exception.ConsentManagementException;
+import com.wso2.openbanking.accelerator.common.exception.OpenBankingException;
 import com.wso2.openbanking.accelerator.consent.extensions.admin.model.ConsentAdminData;
 import com.wso2.openbanking.accelerator.consent.extensions.common.ConsentException;
 import com.wso2.openbanking.accelerator.consent.extensions.common.ResponseStatus;
@@ -18,8 +21,14 @@ import com.wso2.openbanking.accelerator.consent.mgt.dao.models.ConsentHistoryRes
 import com.wso2.openbanking.accelerator.consent.mgt.dao.models.ConsentMappingResource;
 import com.wso2.openbanking.accelerator.consent.mgt.dao.models.DetailedConsentResource;
 import com.wso2.openbanking.accelerator.consent.mgt.service.impl.ConsentCoreServiceImpl;
+import com.wso2.openbanking.cds.consent.extensions.common.CDSConsentExtensionConstants;
 import com.wso2.openbanking.cds.consent.extensions.util.CDSConsentValidateTestConstants;
+
+import net.minidev.json.JSONArray;
+import net.minidev.json.JSONObject;
 import org.mockito.ArgumentCaptor;
+import org.mockito.Mock;
+
 import org.powermock.api.mockito.PowerMockito;
 import org.powermock.core.classloader.annotations.PowerMockIgnore;
 import org.powermock.core.classloader.annotations.PrepareForTest;
@@ -39,6 +48,7 @@ import static com.wso2.openbanking.cds.consent.extensions.common.CDSConsentExten
 import static com.wso2.openbanking.cds.consent.extensions.common.CDSConsentExtensionConstants.AUTH_RESOURCE_TYPE_PRIMARY;
 import static org.junit.Assert.assertTrue;
 import static org.mockito.Matchers.any;
+import static org.mockito.Matchers.anyInt;
 import static org.mockito.Matchers.anyObject;
 import static org.mockito.Matchers.anyString;
 import static org.mockito.Mockito.doReturn;
@@ -50,7 +60,8 @@ import static org.powermock.api.mockito.PowerMockito.mockStatic;
 /**
  * Test class for CDSConsentAdminHandler.
  */
-@PrepareForTest({OpenBankingConfigParser.class})
+@PrepareForTest({OpenBankingConfigParser.class, AccountMetadataService.class, ConsentAdminData.class, JSONObject.class,
+        JSONArray.class})
 @PowerMockIgnore({"com.wso2.openbanking.accelerator.consent.extensions.common.*", "jdk.internal.reflect.*"})
 public class CDSConsentAdminHandlerTest extends PowerMockTestCase {
 
@@ -66,6 +77,9 @@ public class CDSConsentAdminHandlerTest extends PowerMockTestCase {
     private CDSConsentAdminHandler uut;
     private ConsentCoreServiceImpl consentCoreServiceMock;
     private DetailedConsentResource detailedConsentResource;
+
+    @Mock
+    private AccountMetadataService accountMetadataServiceMock;
 
     @BeforeClass
     public void setUp() throws ConsentManagementException {
@@ -212,4 +226,67 @@ public class CDSConsentAdminHandlerTest extends PowerMockTestCase {
 
         uut.handleConsentAmendmentHistoryRetrieval(consentAdminDataMock);
     }
+
+    @Test
+    public void testUpdateDOMSStatusForConsentData() throws OpenBankingException {
+
+        ConsentAdminData consentAdminDataMock = mock(ConsentAdminData.class);
+        PowerMockito.mockStatic(AccountMetadataServiceImpl.class);
+
+        when(AccountMetadataServiceImpl.getInstance()).
+                thenReturn((AccountMetadataServiceImpl) accountMetadataServiceMock);
+        when(accountMetadataServiceMock.getGlobalAccountMetadataMap(anyString()))
+                .thenReturn(Collections.singletonMap(JOINT_ACCOUNT_ID, "pre-approval"));
+
+        JSONObject itemJSONObject = mock(JSONObject.class);
+        when(consentAdminDataMock.getResponsePayload()).thenReturn(itemJSONObject);
+
+        JSONArray consentMappingResourcesArray = mock(JSONArray.class);
+        when(itemJSONObject.get(CDSConsentExtensionConstants.CONSENT_MAPPING_RESOURCES))
+                .thenReturn(consentMappingResourcesArray);
+
+        JSONObject consentMappingResourceObject = mock(JSONObject.class);
+        when(consentMappingResourcesArray.get(anyInt())).thenReturn(consentMappingResourceObject);
+        when(consentMappingResourceObject.
+                getAsString(CDSConsentExtensionConstants.ACCOUNT_ID)).thenReturn("6500001232");
+
+        // Call the method under test
+        uut.updateDOMSStatusForConsentData(consentAdminDataMock);
+
+        // Verify the expected behavior
+        verify(accountMetadataServiceMock).getGlobalAccountMetadataMap("6500001232");
+        verify(consentMappingResourceObject).put("domsStatus", "pre-approval");
+    }
+
+
+    @Test(expectedExceptions = ConsentException.class)
+    public void testUpdateDOMSStatusForConsentDataException() throws OpenBankingException {
+        // Create test data and set up the behavior of mocked objects
+        ConsentAdminData consentAdminDataMock = mock(ConsentAdminData.class);
+        // Set up the behavior of other mocked objects and method calls
+
+        PowerMockito.mockStatic(AccountMetadataServiceImpl.class);
+
+        when(AccountMetadataServiceImpl.getInstance()).
+                thenReturn((AccountMetadataServiceImpl) accountMetadataServiceMock);
+        when(accountMetadataServiceMock.getGlobalAccountMetadataMap(anyString()))
+                .thenThrow(new OpenBankingException("Error"));
+
+        JSONObject itemJSONObject = mock(JSONObject.class);
+        when(consentAdminDataMock.getResponsePayload()).thenReturn(itemJSONObject);
+
+        JSONArray consentMappingResourcesArray = mock(JSONArray.class);
+        when(itemJSONObject.get(CDSConsentExtensionConstants.CONSENT_MAPPING_RESOURCES))
+                .thenReturn(consentMappingResourcesArray);
+
+        JSONObject consentMappingResourceObject = mock(JSONObject.class);
+        when(consentMappingResourcesArray.get(anyInt())).thenReturn(consentMappingResourceObject);
+        when(consentMappingResourceObject.
+                getAsString(CDSConsentExtensionConstants.ACCOUNT_ID)).thenReturn("6500001232");
+
+        // Call the method under test
+        uut.updateDOMSStatusForConsentData(consentAdminDataMock);
+    }
 }
+
+

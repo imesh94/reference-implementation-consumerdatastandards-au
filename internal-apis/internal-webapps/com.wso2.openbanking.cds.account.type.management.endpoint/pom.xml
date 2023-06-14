@@ -80,11 +80,6 @@
             <artifactId>com.wso2.openbanking.cds.common</artifactId>
             <scope>provided</scope>
         </dependency>
-        <dependency>
-            <groupId>com.wso2</groupId>
-            <artifactId>com.wso2.openbanking.accelerator.account.metadata.service</artifactId>
-            <scope>provided</scope>
-        </dependency>
     </dependencies>
 
     <build>
