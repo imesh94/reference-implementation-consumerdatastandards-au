@@ -15,6 +15,8 @@ import com.wso2.openbanking.accelerator.consent.extensions.common.ConsentExcepti
 import com.wso2.openbanking.cds.consent.extensions.authorize.utils.CDSConsentCommonUtil;
 import com.wso2.openbanking.cds.consent.extensions.authorize.utils.CDSConsentPersistUtil;
 import com.wso2.openbanking.cds.consent.extensions.common.CDSConsentExtensionConstants;
+import com.wso2.openbanking.cds.consent.extensions.common.SecondaryAccountOwnerTypeEnum;
+import com.wso2.openbanking.cds.consent.extensions.validate.utils.CDSConsentValidatorUtil;
 import net.minidev.json.JSONArray;
 import net.minidev.json.JSONObject;
 import org.apache.commons.logging.Log;
@@ -106,6 +108,9 @@ public class CDSSecondaryAccountConsentPersistenceStep implements ConsentPersist
     private Map<String, String> getOwnersOfSecondaryAccount(JSONObject secondaryAccount) {
         Map<String, String> userIdPrivilegeMap = new HashMap<>();
         Object secondaryAccountInfo = secondaryAccount.get(CDSConsentExtensionConstants.SECONDARY_ACCOUNT_INFO);
+        Boolean isJointAccount = Boolean.parseBoolean(secondaryAccount.getAsString(
+                CDSConsentExtensionConstants.IS_JOINT_ACCOUNT_RESPONSE));
+
         if (secondaryAccountInfo instanceof JSONObject) {
             Object accountOwners = ((JSONObject) secondaryAccountInfo)
                     .get(CDSConsentExtensionConstants.SECONDARY_ACCOUNT_OWNER_LIST);
@@ -114,7 +119,10 @@ public class CDSSecondaryAccountConsentPersistenceStep implements ConsentPersist
                     if (accountOwner instanceof JSONObject) {
                         String accountOwnerId = ((JSONObject) accountOwner)
                                 .getAsString(CDSConsentExtensionConstants.LINKED_MEMBER_ID);
-                        userIdPrivilegeMap.put(accountOwnerId, CDSConsentExtensionConstants.SECONDARY_ACCOUNT_OWNER);
+                        // Add AUTH_TYPE based on account type
+                        userIdPrivilegeMap.put(accountOwnerId,
+                                isJointAccount ? SecondaryAccountOwnerTypeEnum.JOINT.getValue() :
+                                        SecondaryAccountOwnerTypeEnum.INDIVIDUAL.getValue());
                         if (log.isDebugEnabled()) {
                             log.debug("Added secondary account owner:" + accountOwnerId + " to the list of users " +
                                     "to be persisted");

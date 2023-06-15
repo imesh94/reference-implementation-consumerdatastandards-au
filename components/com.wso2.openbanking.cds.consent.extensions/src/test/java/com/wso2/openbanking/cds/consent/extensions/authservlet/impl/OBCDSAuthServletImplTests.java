@@ -113,6 +113,9 @@ public class OBCDSAuthServletImplTests extends PowerMockTestCase {
         // add accounts data
         accJsonElement.put(CDSConsentExtensionConstants.ACCOUNT_ID, "1234");
         accJsonElement.put(CDSConsentExtensionConstants.DISPLAY_NAME, "test-account");
+        accJsonElement.put(CDSConsentExtensionConstants.IS_ELIGIBLE, true);
+        accJsonElement.put(CDSConsentExtensionConstants.CUSTOMER_ACCOUNT_TYPE,
+                CDSConsentExtensionConstants.INDIVIDUAL_PROFILE_TYPE);
         accJsonElement.put(CDSConsentExtensionConstants.IS_JOINT_ACCOUNT_RESPONSE, true);
         accJsonElement.put(CDSConsentExtensionConstants.JOINT_ACCOUNT_CONSENT_ELECTION_STATUS,
                 CDSConsentExtensionConstants.JOINT_ACCOUNT_PRE_APPROVAL);
