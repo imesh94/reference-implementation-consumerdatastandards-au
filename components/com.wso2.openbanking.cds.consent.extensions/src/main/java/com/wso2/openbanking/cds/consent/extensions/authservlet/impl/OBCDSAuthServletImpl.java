@@ -136,6 +136,21 @@ public class OBCDSAuthServletImpl implements OBAuthServletInterface {
         }
     }
 
+    /**
+     * Update Individual Personal Account Details.
+     *
+     * @param account: account object
+     * @param data: data map
+     */
+    private void updateIndividualPersonalAccountAttributes(JSONObject account, Map<String, Object> data) {
+        if ((account != null && account.getBoolean(CDSConsentExtensionConstants.IS_ELIGIBLE)) &&
+                (CDSConsentExtensionConstants.INDIVIDUAL_PROFILE_TYPE.equalsIgnoreCase(
+                        account.getString(CDSConsentExtensionConstants.CUSTOMER_ACCOUNT_TYPE))
+                        && !account.getBoolean(CDSConsentExtensionConstants.IS_JOINT_ACCOUNT_RESPONSE))) {
+            data.put(CDSConsentExtensionConstants.IS_SELECTABLE, true);
+        }
+    }
+
     private void updateJointAccountAttributes(JSONObject account, Map<String, Object> data) {
         if (account != null && (account.getBoolean(CDSConsentExtensionConstants.IS_JOINT_ACCOUNT_RESPONSE))
                 && !account.getBoolean(CDSConsentExtensionConstants.IS_SECONDARY_ACCOUNT_RESPONSE)) {
@@ -159,7 +174,6 @@ public class OBCDSAuthServletImpl implements OBAuthServletInterface {
      *
      * @param account: account object
      * @param data: data map
-     * @return
      */
     private void updateSecondaryAccountAttributes(JSONObject account, Map<String, Object> data) {
         if (account != null && account.getBoolean(CDSConsentExtensionConstants.IS_SECONDARY_ACCOUNT_RESPONSE)) {
@@ -208,6 +222,7 @@ public class OBCDSAuthServletImpl implements OBAuthServletInterface {
             String accountId = account.getString(CDSConsentExtensionConstants.ACCOUNT_ID);
             String displayName = account.getString(CDSConsentExtensionConstants.DISPLAY_NAME);
             String isPreSelectedAccount = "false";
+            updateIndividualPersonalAccountAttributes(account, data);
             updateJointAccountAttributes(account, data);
             updateSecondaryAccountAttributes(account, data);
 
