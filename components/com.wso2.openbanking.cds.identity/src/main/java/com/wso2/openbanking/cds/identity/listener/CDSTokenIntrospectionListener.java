@@ -35,7 +35,7 @@ public class CDSTokenIntrospectionListener extends AbstractOAuthEventInterceptor
         if (oAuth2IntrospectionResponseDTO.isActive() &&
                 !REFRESH.equalsIgnoreCase(oAuth2IntrospectionResponseDTO.getTokenType())) {
             // CDS specified only to support refresh token introspection.
-            // As in rfc7662 section-2.2 : returning as inactive, for the tokens that are not allowed to introspect,
+            // As in rfc7662 section-2.2 : returning as inactive, for the tokens that are not allowed to introspect.
             oAuth2IntrospectionResponseDTO.setActive(false);
             oAuth2IntrospectionResponseDTO.setError("Introspection is supported only for refresh tokens.");
             return;
