@@ -533,11 +533,13 @@ public class CDSConsentAdminHandler implements ConsentAdminHandler {
                 JSONArray consentAuthResourcesArray = (JSONArray) itemJSONObject.
                         get(CDSConsentExtensionConstants.AUTHORIZATION_RESOURCES);
 
-
                 List<String> authIDs = consentAuthResourcesArray.stream()
                         .map(obj -> (JSONObject) obj)
-                        .filter(obj -> obj.getAsString(CDSConsentExtensionConstants.AUTH_TYPE).
-                                equals(CDSConsentExtensionConstants.AUTH_RESOURCE_TYPE_LINKED))
+                        .filter(obj -> {
+                            String authType = obj.getAsString(CDSConsentExtensionConstants.AUTH_TYPE);
+                            return authType.equals(CDSConsentExtensionConstants.AUTH_RESOURCE_TYPE_LINKED) ||
+                                    SecondaryAccountOwnerTypeEnum.JOINT.getValue().equals(authType);
+                        })
                         .map(obj -> obj.getAsString(CDSConsentExtensionConstants.AUTH_RESOURCE_ID))
                         .collect(Collectors.toList());
 
