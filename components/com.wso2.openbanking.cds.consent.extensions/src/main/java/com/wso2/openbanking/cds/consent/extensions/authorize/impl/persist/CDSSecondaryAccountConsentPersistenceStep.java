@@ -12,7 +12,6 @@ package com.wso2.openbanking.cds.consent.extensions.authorize.impl.persist;
 import com.wso2.openbanking.accelerator.consent.extensions.authorize.model.ConsentPersistData;
 import com.wso2.openbanking.accelerator.consent.extensions.authorize.model.ConsentPersistStep;
 import com.wso2.openbanking.accelerator.consent.extensions.common.ConsentException;
-import com.wso2.openbanking.accelerator.consent.extensions.common.ResponseStatus;
 import com.wso2.openbanking.cds.consent.extensions.authorize.utils.CDSConsentCommonUtil;
 import com.wso2.openbanking.cds.consent.extensions.authorize.utils.CDSConsentPersistUtil;
 import com.wso2.openbanking.cds.consent.extensions.common.CDSConsentExtensionConstants;
@@ -59,7 +58,7 @@ public class CDSSecondaryAccountConsentPersistenceStep implements ConsentPersist
                     final String consentedAccountId = account.getAsString(CDSConsentExtensionConstants.ACCOUNT_ID);
 
                     try {
-                        if (isValidSecondaryAccount(userId, account, consentedAccountIdList)) {
+                        if (isValidSecondaryAccount(account, consentedAccountIdList)) {
                             secondaryAccountIdWithOwners.put(consentedAccountId, getOwnersOfSecondaryAccount(account));
 
                             // update consent mapping permissions for secondary accounts
@@ -82,15 +81,13 @@ public class CDSSecondaryAccountConsentPersistenceStep implements ConsentPersist
     }
 
     /**
-     * Check whether secondary account is sharable.
+     * Check whether the account is a secondary account.
      *
-     * @param userId:                secondary user id
      * @param consentedAccountIdList: consented account id list
      * @param account:                account received from bank backend
-     * @return true if user has secondaryAccountPrivilege and secondaryAccountInstruction
-     * statuses are in an active state for account
+     * @return true if account is a secondary account and is available in consented account list
      */
-    private boolean isValidSecondaryAccount(String userId, JSONObject account, List<String> consentedAccountIdList)
+    private boolean isValidSecondaryAccount(JSONObject account, List<String> consentedAccountIdList)
             throws ConsentException {
 
         final boolean isSecondaryAccount = Boolean.parseBoolean(account
@@ -98,42 +95,8 @@ public class CDSSecondaryAccountConsentPersistenceStep implements ConsentPersist
                 CDSConsentExtensionConstants.SECONDARY_ACCOUNT_TYPE.equals(account.getAsString(
                 CDSConsentExtensionConstants.CUSTOMER_ACCOUNT_TYPE));
 
-        if (isSecondaryAccount) {
-            final String accountId = account.getAsString(CDSConsentExtensionConstants.ACCOUNT_ID);
-
-            /* secondaryAccountPrivilegeStatus depicts whether the user has granted permission to share data from
-             the secondary account */
-            Boolean secondaryAccountPrivilegeStatus = Boolean.valueOf(String
-                    .valueOf(account.get(CDSConsentExtensionConstants.SECONDARY_ACCOUNT_PRIVILEGE_STATUS)));
-
-            // secondaryAccountInstructionStatus depicts whether the account is enabled for secondary user data sharing
-            Boolean secondaryAccountInstructionStatus =
-                    CDSConsentValidatorUtil.isUserEligibleForSecondaryAccountDataSharing(
-                    account.getAsString(CDSConsentExtensionConstants.ACCOUNT_ID), userId);
-
-            Boolean isShareableAccount = secondaryAccountInstructionStatus && secondaryAccountPrivilegeStatus;
-
-            if (!isShareableAccount) {
-                log.error("Secondary account instruction is not granted for account: " + accountId);
-                throw new ConsentException(ResponseStatus.PRECONDITION_FAILED,
-                                "Secondary account instruction is not granted for account: " + accountId);
-            }
-
-            // validate secondary user joint accounts
-            if (Boolean.parseBoolean(account
-                    .getAsString(CDSConsentExtensionConstants.IS_JOINT_ACCOUNT_RESPONSE))) {
-                final String consentElectionStatus = account
-                        .getAsString(CDSConsentExtensionConstants.JOINT_ACCOUNT_CONSENT_ELECTION_STATUS);
-
-                final boolean isPreApproved = CDSConsentExtensionConstants.JOINT_ACCOUNT_PRE_APPROVAL
-                        .equalsIgnoreCase(consentElectionStatus);
-
-                return (isPreApproved && isShareableAccount) && consentedAccountIdList.contains(accountId);
-            }
-
-            return isShareableAccount && consentedAccountIdList.contains(accountId);
-        }
-        return false;
+        return isSecondaryAccount && consentedAccountIdList.contains(account.getAsString(
+                CDSConsentExtensionConstants.ACCOUNT_ID));
     }
 
     /**
