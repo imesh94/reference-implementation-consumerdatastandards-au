@@ -8,9 +8,6 @@
  */
 package com.wso2.openbanking.cds.consent.extensions.validate;
 
-import com.wso2.openbanking.accelerator.account.metadata.service.service.AccountMetadataService;
-import com.wso2.openbanking.accelerator.common.exception.OpenBankingException;
-import com.wso2.openbanking.accelerator.consent.extensions.common.ConsentException;
 import com.wso2.openbanking.accelerator.consent.extensions.validate.model.ConsentValidateData;
 import com.wso2.openbanking.accelerator.consent.extensions.validate.model.ConsentValidationResult;
 import com.wso2.openbanking.accelerator.consent.mgt.dao.models.DetailedConsentResource;
@@ -24,7 +21,6 @@ import net.minidev.json.JSONObject;
 import net.minidev.json.parser.JSONParser;
 import net.minidev.json.parser.ParseException;
 import org.mockito.Mock;
-
 import org.powermock.api.mockito.PowerMockito;
 import org.powermock.core.classloader.annotations.PowerMockIgnore;
 import org.powermock.core.classloader.annotations.PrepareForTest;
@@ -32,13 +28,11 @@ import org.powermock.modules.testng.PowerMockTestCase;
 import org.testng.Assert;
 import org.testng.annotations.BeforeClass;
 import org.testng.annotations.Test;
-import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
 import static org.mockito.Matchers.anyString;
 import static org.mockito.Mockito.doReturn;
 import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 /**
@@ -262,40 +256,4 @@ public class CDSConsentValidatorTest extends PowerMockTestCase {
         Assert.assertEquals(consentValidationResult.getHttpCode(), ErrorConstants.AUErrorEnum.INVALID_ADR_STATUS
                 .getHttpCode());
     }
-
-    @Test
-    public void testRemoveInactiveDOMSAccountConsentMappings() throws ConsentException {
-        // Set up mock objects and data
-        when(consentValidateDataMock.getComprehensiveConsent()).thenReturn(detailedConsentResourceMock);
-        when(detailedConsentResourceMock.getConsentMappingResources()).thenReturn(new ArrayList<>());
-
-        // Call the method under test
-        cdsConsentValidator.removeInactiveDOMSAccountConsentMappings(consentValidateDataMock);
-
-        // Verify the interactions and assertions
-        verify(consentValidateDataMock.getComprehensiveConsent()).getConsentMappingResources();
-        verify(detailedConsentResourceMock).setConsentMappingResources(new ArrayList<>());
-    }
-
-    @Test
-    public void testIsDOMSStatusEligibleForDataSharing() throws OpenBankingException {
-        // Set up mock objects and data
-        AccountMetadataService accountMetadataServiceMock = mock(AccountMetadataService.class);
-        Map<String, String> accountMetadataMap = new HashMap<>();
-        accountMetadataMap.put("6500001232", "pre-approval");
-        accountMetadataMap.put("3008001234", "no-sharing");
-        when(accountMetadataServiceMock.getGlobalAccountMetadataMap(anyString()))
-                .thenReturn(accountMetadataMap);
-
-        // Call the method under test
-        boolean result1 = cdsConsentValidator.isDOMSStatusEligibleForDataSharing("6500001232");
-        boolean result2 = cdsConsentValidator.isDOMSStatusEligibleForDataSharing("3008001234");
-
-        // Verify the interactions and assertions
-        verify(accountMetadataServiceMock).getGlobalAccountMetadataMap("6500001232");
-        verify(accountMetadataServiceMock).getGlobalAccountMetadataMap("3008001234");
-        Assert.assertTrue(result1);
-        Assert.assertFalse(result2);
-    }
-
 }

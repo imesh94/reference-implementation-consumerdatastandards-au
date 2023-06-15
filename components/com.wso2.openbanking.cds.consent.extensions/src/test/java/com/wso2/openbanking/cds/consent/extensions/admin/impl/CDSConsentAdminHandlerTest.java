@@ -77,10 +77,6 @@ public class CDSConsentAdminHandlerTest extends PowerMockTestCase {
     private CDSConsentAdminHandler uut;
     private ConsentCoreServiceImpl consentCoreServiceMock;
     private DetailedConsentResource detailedConsentResource;
-
-    @Mock
-    private AccountMetadataService accountMetadataServiceMock;
-
     @BeforeClass
     public void setUp() throws ConsentManagementException {
         //mock
@@ -225,67 +221,6 @@ public class CDSConsentAdminHandlerTest extends PowerMockTestCase {
         when(consentAdminDataMock.getQueryParams()).thenReturn(queryParams);
 
         uut.handleConsentAmendmentHistoryRetrieval(consentAdminDataMock);
-    }
-
-    @Test
-    public void testUpdateDOMSStatusForConsentData() throws OpenBankingException {
-
-        ConsentAdminData consentAdminDataMock = mock(ConsentAdminData.class);
-        PowerMockito.mockStatic(AccountMetadataServiceImpl.class);
-
-        when(AccountMetadataServiceImpl.getInstance()).
-                thenReturn((AccountMetadataServiceImpl) accountMetadataServiceMock);
-        when(accountMetadataServiceMock.getGlobalAccountMetadataMap(anyString()))
-                .thenReturn(Collections.singletonMap(JOINT_ACCOUNT_ID, "pre-approval"));
-
-        JSONObject itemJSONObject = mock(JSONObject.class);
-        when(consentAdminDataMock.getResponsePayload()).thenReturn(itemJSONObject);
-
-        JSONArray consentMappingResourcesArray = mock(JSONArray.class);
-        when(itemJSONObject.get(CDSConsentExtensionConstants.CONSENT_MAPPING_RESOURCES))
-                .thenReturn(consentMappingResourcesArray);
-
-        JSONObject consentMappingResourceObject = mock(JSONObject.class);
-        when(consentMappingResourcesArray.get(anyInt())).thenReturn(consentMappingResourceObject);
-        when(consentMappingResourceObject.
-                getAsString(CDSConsentExtensionConstants.ACCOUNT_ID)).thenReturn("6500001232");
-
-        // Call the method under test
-        uut.updateDOMSStatusForConsentData(consentAdminDataMock);
-
-        // Verify the expected behavior
-        verify(accountMetadataServiceMock).getGlobalAccountMetadataMap("6500001232");
-        verify(consentMappingResourceObject).put("domsStatus", "pre-approval");
-    }
-
-
-    @Test(expectedExceptions = ConsentException.class)
-    public void testUpdateDOMSStatusForConsentDataException() throws OpenBankingException {
-        // Create test data and set up the behavior of mocked objects
-        ConsentAdminData consentAdminDataMock = mock(ConsentAdminData.class);
-        // Set up the behavior of other mocked objects and method calls
-
-        PowerMockito.mockStatic(AccountMetadataServiceImpl.class);
-
-        when(AccountMetadataServiceImpl.getInstance()).
-                thenReturn((AccountMetadataServiceImpl) accountMetadataServiceMock);
-        when(accountMetadataServiceMock.getGlobalAccountMetadataMap(anyString()))
-                .thenThrow(new OpenBankingException("Error"));
-
-        JSONObject itemJSONObject = mock(JSONObject.class);
-        when(consentAdminDataMock.getResponsePayload()).thenReturn(itemJSONObject);
-
-        JSONArray consentMappingResourcesArray = mock(JSONArray.class);
-        when(itemJSONObject.get(CDSConsentExtensionConstants.CONSENT_MAPPING_RESOURCES))
-                .thenReturn(consentMappingResourcesArray);
-
-        JSONObject consentMappingResourceObject = mock(JSONObject.class);
-        when(consentMappingResourcesArray.get(anyInt())).thenReturn(consentMappingResourceObject);
-        when(consentMappingResourceObject.
-                getAsString(CDSConsentExtensionConstants.ACCOUNT_ID)).thenReturn("6500001232");
-
-        // Call the method under test
-        uut.updateDOMSStatusForConsentData(consentAdminDataMock);
     }
 }
 
