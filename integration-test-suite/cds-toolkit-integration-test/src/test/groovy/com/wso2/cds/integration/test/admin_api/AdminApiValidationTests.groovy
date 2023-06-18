@@ -22,10 +22,12 @@ import org.testng.annotations.Test
  */
 class AdminApiValidationTests extends AUTest {
 
+    AUJWTGenerator generator = new AUJWTGenerator()
+
     @Test
     void "TC1001001_Retrieve critical update to the metadata for Accredited Data Recipients"() {
 
-        String assertionString = AUJWTGenerator.getClientAssertionJwt(auConfiguration.getAppInfoClientID())
+        String assertionString = generator.getClientAssertionJwt(AUConstants.ADMIN_API_ISSUER, AUConstants.ADMIN_API_AUDIENCE)
 
         String requestBody = """
             {
@@ -36,11 +38,11 @@ class AdminApiValidationTests extends AUTest {
             }
         """.stripIndent()
 
-        def response = AURequestBuilder.buildBasicRequest(assertionString, AUConstants.X_V_HEADER_METRICS)
+        def response = AURequestBuilder.buildBasicRequest(assertionString, AUConstants.X_V_HEADER_METADATA)
                 .header(AUConstants.CONTENT_TYPE, "application/json")
                 .baseUri(AUTestUtil.getBaseUrl(AUConstants.BASE_PATH_TYPE_ADMIN))
                 .body(requestBody)
-                .post("${AUConstants.CDS_PATH}${AUConstants.GET_META}")
+                .post("${AUConstants.CDS_ADMIN_PATH}${AUConstants.GET_META}")
 
         Assert.assertEquals(response.statusCode(), AUConstants.STATUS_CODE_200)
         Assert.assertEquals(response.getHeader(AUConstants.X_V_HEADER).toInteger(), AUConstants.X_V_HEADER_METRICS)
@@ -49,12 +51,12 @@ class AdminApiValidationTests extends AUTest {
     @Test
     void "TC1002001_Retrieve operational statistics from the Data Holder"() {
 
-        String assertionString = AUJWTGenerator.getClientAssertionJwt(auConfiguration.getAppInfoClientID())
+        String assertionString = generator.getClientAssertionJwt(AUConstants.ADMIN_API_ISSUER, AUConstants.ADMIN_API_AUDIENCE)
 
         def response = AURequestBuilder.buildBasicRequest(assertionString, AUConstants.X_V_HEADER_METRICS)
                 .header(AUConstants.CONTENT_TYPE, "application/json")
                 .baseUri(AUTestUtil.getBaseUrl(AUConstants.BASE_PATH_TYPE_ADMIN))
-                .get("${AUConstants.CDS_PATH}${AUConstants.GET_STAT}")
+                .get("${AUConstants.CDS_ADMIN_PATH}${AUConstants.GET_STAT}")
 
         Assert.assertEquals(response.statusCode(), AUConstants.STATUS_CODE_200)
         Assert.assertEquals(response.getHeader(AUConstants.X_V_HEADER).toInteger(), AUConstants.X_V_HEADER_METRICS)
@@ -63,7 +65,7 @@ class AdminApiValidationTests extends AUTest {
     @Test
     void "Meta Data"() {
 
-        String assertionString = AUJWTGenerator.getClientAssertionJwt(auConfiguration.getAppInfoClientID())
+        String assertionString = generator.getClientAssertionJwt(AUConstants.ADMIN_API_ISSUER, AUConstants.ADMIN_API_AUDIENCE)
 
         String requestBody = """
             {
@@ -74,12 +76,12 @@ class AdminApiValidationTests extends AUTest {
             }
          """.stripIndent()
 
-        def response = AURequestBuilder.buildBasicRequest(assertionString, AUConstants.X_V_HEADER_METRICS)
+        def response = AURequestBuilder.buildBasicRequest(assertionString, AUConstants.X_V_HEADER_METADATA)
                 .header(AUConstants.CONTENT_TYPE, "application/json")
                 .header(AUConstants.X_MIN_HEADER, AUConstants.X_V_MIN_HEADER_METRICS)
                 .baseUri(AUTestUtil.getBaseUrl(AUConstants.BASE_PATH_TYPE_ADMIN))
                 .body(requestBody)
-                .post("${AUConstants.CDS_PATH}${AUConstants.GET_META}")
+                .post("${AUConstants.CDS_ADMIN_PATH}${AUConstants.GET_META}")
 
         Assert.assertEquals(response.statusCode(), AUConstants.STATUS_CODE_200)
     }
@@ -88,7 +90,7 @@ class AdminApiValidationTests extends AUTest {
     void "Meta Data Update with authorisation code type access token"() {
 
         doConsentAuthorisation()
-        generateUserAccessToken()
+        String assertionString = generator.getClientAssertionJwt(AUConstants.ADMIN_API_ISSUER, AUConstants.ADMIN_API_AUDIENCE)
 
         String requestBody = """
             {
@@ -99,12 +101,12 @@ class AdminApiValidationTests extends AUTest {
             }
          """.stripIndent()
 
-        def response = AURequestBuilder.buildBasicRequest(userAccessToken, AUConstants.X_V_HEADER_METRICS)
+        def response = AURequestBuilder.buildBasicRequest(assertionString, AUConstants.X_V_HEADER_METADATA)
                 .header(AUConstants.CONTENT_TYPE, "application/json")
                 .header(AUConstants.X_MIN_HEADER, AUConstants.X_V_MIN_HEADER_METRICS)
                 .baseUri(AUTestUtil.getBaseUrl(AUConstants.BASE_PATH_TYPE_ADMIN))
                 .body(requestBody)
-                .post("${AUConstants.CDS_PATH}${AUConstants.GET_META}")
+                .post("${AUConstants.CDS_ADMIN_PATH}${AUConstants.GET_META}")
 
         Assert.assertEquals(response.statusCode(), AUConstants.STATUS_CODE_200)
     }
@@ -112,14 +114,14 @@ class AdminApiValidationTests extends AUTest {
     @Test
     void "TC1002002_Metrics Data Current"() {
 
-        String assertionString = AUJWTGenerator.getClientAssertionJwt(auConfiguration.getAppInfoClientID())
+        String assertionString = generator.getClientAssertionJwt(AUConstants.ADMIN_API_ISSUER, AUConstants.ADMIN_API_AUDIENCE)
 
         def response = AURequestBuilder.buildBasicRequest(assertionString, AUConstants.X_V_HEADER_METRICS)
                 .header(AUConstants.CONTENT_TYPE, "application/json")
                 .header(AUConstants.X_MIN_HEADER, AUConstants.X_V_MIN_HEADER_METRICS)
                 .queryParam(AUConstants.PERIOD, AUConstants.CURRENT)
                 .baseUri(AUTestUtil.getBaseUrl(AUConstants.BASE_PATH_TYPE_ADMIN))
-                .get("${AUConstants.CDS_PATH}${AUConstants.ADMIN_METRICS}")
+                .get("${AUConstants.CDS_ADMIN_PATH}${AUConstants.ADMIN_METRICS}")
 
         Assert.assertEquals(response.statusCode(), AUConstants.STATUS_CODE_200)
         Assert.assertEquals(response.getHeader(AUConstants.X_V_HEADER).toInteger(), AUConstants.X_V_HEADER_METRICS)
@@ -153,14 +155,14 @@ class AdminApiValidationTests extends AUTest {
     @Test
     void "TC1002003_Metrics Data Historic"() {
 
-        String assertionString = AUJWTGenerator.getClientAssertionJwt(auConfiguration.getAppInfoClientID())
+        String assertionString = generator.getClientAssertionJwt(AUConstants.ADMIN_API_ISSUER, AUConstants.ADMIN_API_AUDIENCE)
 
         def response = AURequestBuilder.buildBasicRequest(assertionString, AUConstants.X_V_HEADER_METRICS)
                 .header(AUConstants.CONTENT_TYPE, "application/json")
                 .header(AUConstants.X_MIN_HEADER, AUConstants.X_V_MIN_HEADER_METRICS)
                 .queryParam(AUConstants.PERIOD, AUConstants.HISTORIC)
                 .baseUri(AUTestUtil.getBaseUrl(AUConstants.BASE_PATH_TYPE_ADMIN))
-                .get("${AUConstants.CDS_PATH}${AUConstants.ADMIN_METRICS}")
+                .get("${AUConstants.CDS_ADMIN_PATH}${AUConstants.ADMIN_METRICS}")
 
         Assert.assertEquals(response.statusCode(), AUConstants.STATUS_CODE_200)
         Assert.assertEquals(response.getHeader(AUConstants.X_V_HEADER).toInteger(), AUConstants.X_V_HEADER_METRICS)
@@ -194,14 +196,14 @@ class AdminApiValidationTests extends AUTest {
     @Test (groups = "SmokeTest")
     void "TC1002004_Metrics Data All"() {
 
-        String assertionString = AUJWTGenerator.getClientAssertionJwt(auConfiguration.getAppInfoClientID())
+        String assertionString = generator.getClientAssertionJwt(AUConstants.ADMIN_API_ISSUER, AUConstants.ADMIN_API_AUDIENCE)
 
         def response = AURequestBuilder.buildBasicRequest(assertionString, AUConstants.X_V_HEADER_METRICS)
                 .header(AUConstants.CONTENT_TYPE, "application/json")
                 .header(AUConstants.X_MIN_HEADER, AUConstants.X_V_MIN_HEADER_METRICS)
                 .queryParam(AUConstants.PERIOD, AUConstants.ALL)
                 .baseUri(AUTestUtil.getBaseUrl(AUConstants.BASE_PATH_TYPE_ADMIN))
-                .get("${AUConstants.CDS_PATH}${AUConstants.ADMIN_METRICS}")
+                .get("${AUConstants.CDS_ADMIN_PATH}${AUConstants.ADMIN_METRICS}")
 
         Assert.assertEquals(response.statusCode(), AUConstants.STATUS_CODE_200)
         Assert.assertEquals(response.getHeader(AUConstants.X_V_HEADER).toInteger(), AUConstants.X_V_HEADER_METRICS)

@@ -140,6 +140,20 @@ class AUJWTGenerator {
     }
 
     /**
+     * Get Client Assertion with customized Issuer and Audience
+     * @param issuer Issuer
+     * @param audience Audience
+     * @return jwt
+     */
+    String getClientAssertionJwt(String issuer, String audience) {
+        JSONObject clientAssertion = new JSONRequestGenerator().addIssuer(issuer)
+                .addSubject(issuer).addAudience(audience).addExpireDate().addIssuedAt().addJti().getJsonObject()
+
+        String payload = getSignedRequestObject(clientAssertion.toString())
+        return payload
+    }
+
+    /**
      * Return JWT for user access token generation
      * @param code
      * @return

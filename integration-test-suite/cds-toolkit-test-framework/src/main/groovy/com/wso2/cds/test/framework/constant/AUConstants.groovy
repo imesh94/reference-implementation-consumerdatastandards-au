@@ -31,6 +31,7 @@ class AUConstants extends OBConstants {
     public static final int CDR_ENDPOINT_VERSION = 1
     public static final String CDS_100_PATH = "/cds-au/v1"
     public static final String CDS_PATH = "/cds-au/v1"
+    public static final String CDS_ADMIN_PATH = "/cds-au/v2"
     public static final String ACCEPT = "application/json"
     public static final String X_FAPI_INTERACTION_ID = "x-fapi-interaction-id"
     public static final String CONTENT_TYPE = "Content-Type"
@@ -61,6 +62,7 @@ class AUConstants extends OBConstants {
     public static final Integer X_V_HEADER_ACCOUNTS = 1
     public static final int X_V_HEADER_METRICS= 3
     public static final int X_V_MIN_HEADER_METRICS = 1
+    public static final int X_V_HEADER_METADATA= 1
     public static final Integer X_V_HEADER_CUSTOMER = 1
     public static final Integer X_V_HEADER_PRODUCTS = getProductEndpointVersion()
     public static final Integer UNSUPPORTED_X_V_VERSION = 10
