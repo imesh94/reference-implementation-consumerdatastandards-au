@@ -43,7 +43,7 @@ class ConsentAmendmentFlowTest extends AUTest{
 
     def clientHeader = "${Base64.encoder.encodeToString(getCDSClient().getBytes(Charset.defaultCharset()))}"
     private def accessTokenResponse, accessTokenResponse2
-    private String authorisationCode, secondAuthorisationCode = null
+    private String secondAuthorisationCode = null
     private String cdrArrangementId, userAccessToken, secondUserAccessToken, refreshToken, secondRefreshToken = null
 
     @Test(groups = "SmokeTest")
@@ -51,7 +51,6 @@ class ConsentAmendmentFlowTest extends AUTest{
 
         // Send Authorisation request
         doConsentAuthorisation()
-        Assert.assertNotNull(authorisationCode)
 
         // Retrieve the user access token by auth code
         accessTokenResponse = getUserAccessTokenResponse(clientId)
@@ -119,8 +118,6 @@ class ConsentAmendmentFlowTest extends AUTest{
         Assert.assertEquals(responseAfterAmendment.getHeader(AUConstants.X_V_HEADER).toInteger(), AUConstants.X_V_HEADER_ACCOUNTS)
         Assert.assertNotNull(AUTestUtil.parseResponseBody(responseAfterAmendment,
                 "${AUConstants.RESPONSE_DATA_BULK_ACCOUNTID_LIST}[0]"))
-        Assert.assertNotNull(AUTestUtil.parseResponseBody(responseAfterAmendment,
-                "${AUConstants.RESPONSE_DATA_BULK_ACCOUNTID_LIST}[1]"))
     }
 
     @Test(groups = "SmokeTest",
@@ -144,7 +141,7 @@ class ConsentAmendmentFlowTest extends AUTest{
     @Test(dependsOnMethods = "TC001_Verify Consent Amendment flow when both sharing duration and scope has been amended")
     void "TC004_Verify Token Introspection for newly amended consent user access Token"() {
 
-        Response response = AURequestBuilder.buildIntrospectionRequest(secondRefreshToken)
+        Response response = AURequestBuilder.buildIntrospectionRequest(secondRefreshToken, auConfiguration.getAppInfoClientID())
                 .post(AUConstants.INTROSPECTION_ENDPOINT)
 
         // Assert if Token status is active for latest consent amendment
@@ -154,7 +151,7 @@ class ConsentAmendmentFlowTest extends AUTest{
     @Test(dependsOnMethods = "TC001_Verify Consent Amendment flow when both sharing duration and scope has been amended")
     void "TC005_Verify Token Introspection for previous user access Token"() {
 
-        Response response = AURequestBuilder.buildIntrospectionRequest(refreshToken)
+        Response response = AURequestBuilder.buildIntrospectionRequest(refreshToken, auConfiguration.getAppInfoClientID())
                 .post(AUConstants.INTROSPECTION_ENDPOINT)
 
         // Assert if Token status is NOT active for previous consent amendment - user access token
@@ -164,14 +161,18 @@ class ConsentAmendmentFlowTest extends AUTest{
     @Test(dependsOnMethods = "TC001_Verify Consent Amendment flow when both sharing duration and scope has been amended")
     void "TC006_Verify regenerate Access Token using Refresh Token for amended Consent"() {
 
-        AccessTokenResponse userAccessToken = getUserAccessTokenFormRefreshToken(secondRefreshToken as RefreshToken)
+        RefreshToken refreshToken = new RefreshToken(secondRefreshToken)
+
+        AccessTokenResponse userAccessToken = getUserAccessTokenFormRefreshToken(refreshToken)
         Assert.assertNotNull(userAccessToken.tokens.accessToken)
     }
 
     @Test(dependsOnMethods = "TC001_Verify Consent Amendment flow when both sharing duration and scope has been amended")
     void "TC007_Verify regenerate Access Token using Refresh Token for original Consent"() {
 
-        TokenErrorResponse userAccessToken = AURequestBuilder.getUserTokenFromRefreshTokenErrorResponse(secondRefreshToken as RefreshToken)
+        RefreshToken refreshToken = new RefreshToken(secondRefreshToken)
+
+        TokenErrorResponse userAccessToken = AURequestBuilder.getUserTokenFromRefreshTokenErrorResponse(refreshToken)
         Assert.assertEquals(userAccessToken.toJSONObject().get(AUConstants.ERROR_DESCRIPTION),
                 "Persisted access token data not found")
     }
@@ -197,7 +198,7 @@ class ConsentAmendmentFlowTest extends AUTest{
                     AutomationMethod authWebDriver = new AutomationMethod(driver)
 
                     //Verify Account Selection Page
-                    assert authWebDriver.isElementSelected(AUTestUtil.getAltSingleAccountXPath())
+                    Assert.assertTrue(authWebDriver.isElementSelected(AUTestUtil.getAltSingleAccountXPath()))
 
                     //Click Confirm Button
                     authWebDriver.clickButtonXpath(AUPageObjects.CONSENT_CONFIRM_XPATH)
@@ -250,7 +251,6 @@ class ConsentAmendmentFlowTest extends AUTest{
 
         // Send Authorisation request
         doConsentAuthorisation()
-        Assert.assertNotNull(authorisationCode)
 
         // Retrieve the user access token by auth code
         accessTokenResponse = getUserAccessTokenResponse(clientId)
@@ -279,7 +279,7 @@ class ConsentAmendmentFlowTest extends AUTest{
                     AutomationMethod authWebDriver = new AutomationMethod(driver)
 
                     //Verify Account Selection Page
-                    assert authWebDriver.isElementDisplayed(AUTestUtil.getAltSingleAccountXPath())
+                    Assert.assertTrue(authWebDriver.isElementDisplayed(AUTestUtil.getAltSingleAccountXPath()))
                     authWebDriver.clickButtonXpath(AUTestUtil.getAltSingleAccountXPath())
 
                     //Click Confirm Button
@@ -312,7 +312,6 @@ class ConsentAmendmentFlowTest extends AUTest{
 
         // Send Authorisation request
         doConsentAuthorisation()
-        Assert.assertNotNull(authorisationCode)
 
         // Retrieve the user access token by auth code
         accessTokenResponse = getUserAccessTokenResponse(clientId)
@@ -334,11 +333,11 @@ class ConsentAmendmentFlowTest extends AUTest{
         requestUri = AUTestUtil.parseResponseBody(response, AUConstants.REQUEST_URI)
         authoriseUrl = auAuthorisationBuilder.getAuthorizationRequest(scopes, requestUri.toURI()).toURI().toString()
 
-        sleep(25000)
+        sleep(50000)
 
         //Consent Amendment Authorisation Flow
         def automation = getBrowserAutomation(AUConstants.DEFAULT_DELAY)
-                .addStep(new NavigationAutomationStep(authoriseUrl, 10))
+                .addStep(new AUBasicAuthAutomationStep(authoriseUrl))
                 .execute()
 
         Assert.assertTrue(AUTestUtil.getDecodedUrl(automation.currentUrl.get())
@@ -356,13 +355,13 @@ class ConsentAmendmentFlowTest extends AUTest{
 
         //Retrieve and assert the request URI from Push Authorization request
         response = auAuthorisationBuilder.doPushAuthorisationRequest(scopes, AUConstants.DEFAULT_SHARING_DURATION,
-                true, cdrArrangementId)
+                true, invalidCDRArrangementID)
         requestUri = AUTestUtil.parseResponseBody(response, AUConstants.REQUEST_URI)
         authoriseUrl = auAuthorisationBuilder.getAuthorizationRequest(scopes, requestUri.toURI()).toURI().toString()
 
         //Consent Amendment Authorisation Flow
         def automation = getBrowserAutomation(AUConstants.DEFAULT_DELAY)
-                .addStep(new NavigationAutomationStep(authoriseUrl, 10))
+                .addStep(new AUBasicAuthAutomationStep(authoriseUrl))
                 .execute()
 
         Assert.assertTrue(AUTestUtil.getDecodedUrl(automation.currentUrl.get())

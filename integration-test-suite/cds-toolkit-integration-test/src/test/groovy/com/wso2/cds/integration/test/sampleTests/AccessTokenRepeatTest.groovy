@@ -10,7 +10,7 @@
  * WSO2 governing the purchase of this software and any associated services.
  */
 
-package com.wso2.cds.integration.test
+package com.wso2.cds.integration.test.sampleTests
 
 import com.wso2.cds.test.framework.AUTest
 import org.testng.ITestContext
@@ -21,7 +21,7 @@ import org.testng.annotations.Test
  * for testing User access token with the test context
  * new User access token will be generated if there is no already generated user access token
  */
-class AccessTokenTest extends AUTest {
+class AccessTokenRepeatTest extends AUTest {
 
     @BeforeClass(alwaysRun = true)
     void "Initialize Test Suite"(ITestContext context) {
@@ -29,7 +29,7 @@ class AccessTokenTest extends AUTest {
     }
 
     @Test(priority = 1, groups = "consent")
-    void "Account ID Second"() {
+    void "Account ID"() {
         System.out.println("New Test Case")
         System.out.println(userAccessToken)
     }

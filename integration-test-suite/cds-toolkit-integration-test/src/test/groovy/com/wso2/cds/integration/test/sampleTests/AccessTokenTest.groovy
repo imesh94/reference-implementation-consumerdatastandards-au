@@ -10,27 +10,27 @@
  * WSO2 governing the purchase of this software and any associated services.
  */
 
-package com.wso2.cds.integration.test
+package com.wso2.cds.integration.test.sampleTests
 
 import com.wso2.cds.test.framework.AUTest
+import org.testng.ITestContext
 import org.testng.annotations.BeforeClass
 import org.testng.annotations.Test
 
 /**
- * for testing consent authorization using basic functions
- * user access token will not be saved in context
+ * for testing User access token with the test context
+ * new User access token will be generated if there is no already generated user access token
  */
-class ConsentAuthorizationTest extends AUTest {
+class AccessTokenTest extends AUTest {
 
     @BeforeClass(alwaysRun = true)
-    void "Initialize Test Suite"() {
-        doConsentAuthorisation()
-        generateUserAccessToken()
+    void "Initialize Test Suite"(ITestContext context) {
+        getUserAccessToken(context)
     }
 
     @Test(priority = 1, groups = "consent")
-    void "Consent Authorization"() {
-        System.out.println("Consent Authorization")
+    void "Account ID Second"() {
+        System.out.println("New Test Case")
         System.out.println(userAccessToken)
     }
 

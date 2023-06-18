@@ -14,6 +14,7 @@ import com.wso2.cds.test.framework.constant.AUConstants
 import com.wso2.cds.test.framework.request_builder.AURequestBuilder
 import com.wso2.cds.test.framework.utility.AURestAsRequestBuilder
 import com.wso2.cds.test.framework.utility.AUTestUtil
+import io.restassured.http.ContentType
 import io.restassured.response.Response
 import org.testng.Assert
 import org.testng.annotations.BeforeClass
@@ -374,6 +375,5 @@ class CustomerDetailsRetrievalHeaderValidationTests extends AUTest {
         Assert.assertNotNull(AUTestUtil.parseResponseBody(response, "data.outages.outageTime"))
         Assert.assertNotNull(AUTestUtil.parseResponseBody(response, "data.outages.duration"))
         Assert.assertNotNull(AUTestUtil.parseResponseBody(response, "data.outages.isPartial"))
-        Assert.assertNotNull(AUTestUtil.parseResponseBody(response, AUConstants.OK))
     }
 }

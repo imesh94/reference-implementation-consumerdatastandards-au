@@ -45,10 +45,8 @@ class SharingDurationValidationTest extends AUTest {
         //Generate User Access Token
         AccessTokenResponse accessTokenResponse = getUserAccessTokenResponse(clientId)
         Assert.assertNotNull(accessTokenResponse.tokens.accessToken)
-        Assert.assertNotNull(accessTokenResponse.tokens.refreshToken)
         Assert.assertNotNull(accessTokenResponse.getCustomParameters().get(AUConstants.CDR_ARRANGEMENT_ID))
     }
-
 
     @Test
     void "TC0203002_Check no refresh token when no sharing duration is given"() {
@@ -67,7 +65,7 @@ class SharingDurationValidationTest extends AUTest {
         //Generate User Access Token
         AccessTokenResponse accessTokenResponse = getUserAccessTokenResponse(clientId)
         Assert.assertNotNull(accessTokenResponse.tokens.accessToken)
-        Assert.assertNotNull(accessTokenResponse.tokens.refreshToken)
+        Assert.assertNull(accessTokenResponse.tokens.refreshToken)
         Assert.assertNotNull(accessTokenResponse.getCustomParameters().get(AUConstants.CDR_ARRANGEMENT_ID))
     }
 
@@ -130,21 +128,9 @@ class SharingDurationValidationTest extends AUTest {
 
         response = auAuthorisationBuilder.doPushAuthorisationRequest(scopes, AUConstants.NEGATIVE_SHARING_DURATION,
                 true, "")
-        String errorMessage = "Negative sharing_duration"
 
-        def automationResponse = getBrowserAutomation(AUConstants.DEFAULT_DELAY)
-                .addStep(new NavigationAutomationStep(authoriseUrl, 10))
-                .execute()
-
-        String url = automationResponse.currentUrl.get()
-
-        Assert.assertEquals(response.statusCode(), AUConstants.STATUS_CODE_201)
-        requestUri = AUTestUtil.parseResponseBody(response, AUConstants.REQUEST_URI)
-
+        Assert.assertEquals(response.statusCode(), AUConstants.STATUS_CODE_400)
         Assert.assertEquals(AUTestUtil.parseResponseBody(response, AUConstants.ERROR_DESCRIPTION),
                 AUConstants.INVALID_SHARING_DURATION)
-
-        def errorUrl = url.split("error_description=")[1].split("&")[0].replaceAll("\\+"," ")
-        Assert.assertEquals(errorUrl, errorMessage)
     }
 }

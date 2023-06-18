@@ -33,8 +33,8 @@ class RequestObjectValidationTest extends AUTest {
         response = auAuthorisationBuilder.doPushAuthorisationRequestWithoutRequestObject(auConfiguration.getAppInfoClientID())
 
         Assert.assertEquals(response.statusCode(), AUConstants.STATUS_CODE_400)
-        Assert.assertEquals(AUTestUtil.parseResponseBody(response, AUConstants.ERROR_DESCRIPTION), AUConstants.INVALID_REQUEST_BODY)
-        Assert.assertEquals(AUTestUtil.parseResponseBody(response, AUConstants.ERROR), AUConstants.INVALID_REQUEST)
+        Assert.assertEquals(AUTestUtil.parseResponseBody(response, AUConstants.ERROR_DESCRIPTION), AUConstants.UNABLE_TO_DECODE_JWT)
+        Assert.assertEquals(AUTestUtil.parseResponseBody(response, AUConstants.ERROR), AUConstants.INVALID_REQUEST_OBJECT)
     }
 
     @Test
@@ -45,23 +45,20 @@ class RequestObjectValidationTest extends AUTest {
 
         Assert.assertEquals(response.statusCode(), AUConstants.STATUS_CODE_400)
         Assert.assertEquals(AUTestUtil.parseResponseBody(response, AUConstants.ERROR_DESCRIPTION),
-                AUConstants.MALFORMED_PAR_REQUEST)
+                AUConstants.UNABLE_TO_DECODE_JWT)
         Assert.assertEquals(AUTestUtil.parseResponseBody(response, AUConstants.ERROR), AUConstants.INVALID_REQUEST_OBJECT)
     }
 
-    @Test
+    @Test (priority = 1)
     void "OB-1233_Initiate authorisation consent flow with 'RS256' signature algorithm"() {
-
-        AUJWTGenerator generator = new AUJWTGenerator()
 
         String claims = generator.getRequestObjectClaim(scopes, AUConstants.DEFAULT_SHARING_DURATION, true, "",
         auConfiguration.getAppInfoRedirectURL(), auConfiguration.getAppInfoClientID(),
                 auAuthorisationBuilder.getResponseType().toString(), true,
                 auAuthorisationBuilder.getState().toString())
 
-        generator.setSigningAlgorithm("RS256")
-
-        def response = auAuthorisationBuilder.doPushAuthorisationRequest(claims)
+        def response = auAuthorisationBuilder.doPushAuthorisationRequest(claims,
+                auConfiguration.getAppInfoClientID(), true, "RS256")
 
         Assert.assertEquals(response.statusCode(), AUConstants.STATUS_CODE_400)
         Assert.assertEquals(AUTestUtil.parseResponseBody(response, AUConstants.ERROR_DESCRIPTION),
@@ -69,7 +66,7 @@ class RequestObjectValidationTest extends AUTest {
         Assert.assertEquals(AUTestUtil.parseResponseBody(response, AUConstants.ERROR), AUConstants.INVALID_REQUEST_OBJECT)
     }
 
-    @Test
+    @Test (priority = 1)
     void "OB-1234_Initiate authorisation consent flow with 'PS512' signature algorithm"() {
 
         String claims = generator.getRequestObjectClaim(scopes, AUConstants.DEFAULT_SHARING_DURATION, true, "",
@@ -77,14 +74,13 @@ class RequestObjectValidationTest extends AUTest {
                 auAuthorisationBuilder.getResponseType().toString(), true,
                 auAuthorisationBuilder.getState().toString())
 
-        generator.setSigningAlgorithm("PS512")
-
-        def response = auAuthorisationBuilder.doPushAuthorisationRequest(claims)
+        def response = auAuthorisationBuilder.doPushAuthorisationRequest(claims,
+                auConfiguration.getAppInfoClientID(), true, "PS512")
 
         Assert.assertEquals(response.statusCode(), AUConstants.STATUS_CODE_400)
         Assert.assertEquals(AUTestUtil.parseResponseBody(response, AUConstants.ERROR_DESCRIPTION),
                 AUConstants.INVALID_ALGORITHM)
-        Assert.assertEquals(AUTestUtil.parseResponseBody(response, AUConstants.ERROR), AUConstants.INVALID_REQUEST_OBJECT)
+        Assert.assertEquals(AUTestUtil.parseResponseBody(response, AUConstants.ERROR), AUConstants.INVALID_REQUEST)
 
     }
 
@@ -100,9 +96,9 @@ class RequestObjectValidationTest extends AUTest {
 
         def response = auAuthorisationBuilder.doPushAuthorisationRequest(modifiedClaimSet)
 
-        Assert.assertEquals(response.statusCode(), AUConstants.STATUS_CODE_400)
+        Assert.assertEquals(response.statusCode(), AUConstants.STATUS_CODE_401)
         Assert.assertEquals(AUTestUtil.parseResponseBody(response, AUConstants.ERROR_DESCRIPTION), AUConstants.MISSING_AUD_VALUE)
-        Assert.assertEquals(AUTestUtil.parseResponseBody(response, AUConstants.ERROR), AUConstants.INVALID_REQUEST_OBJECT)
+        Assert.assertEquals(AUTestUtil.parseResponseBody(response, AUConstants.ERROR), AUConstants.INVALID_REQUEST)
     }
 
     @Test

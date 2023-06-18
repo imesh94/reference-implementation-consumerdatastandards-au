@@ -174,7 +174,7 @@ class ProductRetrievalValidationTest extends AUTest {
     }
 
     //TODO: Git issue : https://github.com/wso2-enterprise/financial-open-banking/issues/5638
-//    @Test
+    @Test (enabled = false)
     void "TC1101024_Retrieve banking products with invalid brand value"() {
 
         Response response = AURequestBuilder.buildBasicRequestWithoutAuthorisationHeader(AUConstants.X_V_HEADER_PRODUCTS)

@@ -40,7 +40,8 @@ class AuthorisationFlowTest extends AUTest {
     void "TC0203001_Exchange authorisation code for access token"() {
 
         AccessTokenResponse accessTokenResponse = getUserAccessTokenResponse(clientId)
-        Assert.assertNotNull(accessTokenResponse.tokens.accessToken)
+        userAccessToken = accessTokenResponse.tokens.accessToken
+        Assert.assertNotNull(userAccessToken)
         Assert.assertNotNull(accessTokenResponse.tokens.refreshToken)
         Assert.assertNotNull(accessTokenResponse.getCustomParameters().get(AUConstants.CDR_ARRANGEMENT_ID))
     }
@@ -49,7 +50,8 @@ class AuthorisationFlowTest extends AUTest {
             dependsOnMethods = "TC0203001_Exchange authorisation code for access token")
     void "TC0203006_Check the status of the access token after generating user access token"() {
 
-        def response = AURequestBuilder.buildIntrospectionRequest(userAccessToken)
+        def response = AURequestBuilder.buildIntrospectionRequest(userAccessToken,
+                auConfiguration.getAppInfoClientID(), 0)
                 .post(AUConstants.INTROSPECTION_ENDPOINT)
 
         Assert.assertTrue(response.jsonPath().get("active").equals(true))
@@ -72,7 +74,7 @@ class AuthorisationFlowTest extends AUTest {
                 .addStep(new NavigationAutomationStep(authoriseUrl, 10))
                 .execute()
 
-        String url = automation.currentUrl.get()
+        String url = automationResponse.currentUrl.get()
         String errorUrl
 
         errorUrl = url.split("error_description=")[1].split("&")[0].replaceAll("\\+"," ")
@@ -110,8 +112,8 @@ class AuthorisationFlowTest extends AUTest {
         String cdrArrangementId = accessTokenResponse.getCustomParameters().get(AUConstants.CDR_ARRANGEMENT_ID)
 
         //Check the status of the refresh token
-        def introspectResponse1 = AURequestBuilder
-                .buildIntrospectionRequest(refreshToken1)
+        def introspectResponse1 = AURequestBuilder.buildIntrospectionRequest(refreshToken1,
+                auConfiguration.getAppInfoClientID())
                 .post(AUConstants.INTROSPECTION_ENDPOINT)
 
         Assert.assertTrue(introspectResponse1.jsonPath().get("active").equals(true))
@@ -152,20 +154,20 @@ class AuthorisationFlowTest extends AUTest {
 
         //Generate Access Token for new consent
         AccessTokenResponse accessTokenResponse2 = getUserAccessTokenResponse(clientId)
-        String userAccessToken2 = accessTokenResponse.tokens.accessToken
-        String refreshToken2 = accessTokenResponse.tokens.refreshToken
-        String cdrArrangementId2 = accessTokenResponse.getCustomParameters().get(AUConstants.CDR_ARRANGEMENT_ID)
+        String userAccessToken2 = accessTokenResponse2.tokens.accessToken
+        String refreshToken2 = accessTokenResponse2.tokens.refreshToken
+        String cdrArrangementId2 = accessTokenResponse2.getCustomParameters().get(AUConstants.CDR_ARRANGEMENT_ID)
 
         //Check the status of the refresh token of the new consent
         def introspectResponse2 = AURequestBuilder
-                .buildIntrospectionRequest(refreshToken2)
+                .buildIntrospectionRequest(refreshToken2, auConfiguration.getAppInfoClientID())
                 .post(AUConstants.INTROSPECTION_ENDPOINT)
 
         Assert.assertTrue(introspectResponse2.jsonPath().get("active").equals(true))
 
         //Check the status of the refresh token of the previous consent
         introspectResponse1 = AURequestBuilder
-                .buildIntrospectionRequest(refreshToken1)
+                .buildIntrospectionRequest(refreshToken1, auConfiguration.getAppInfoClientID())
                 .post(AUConstants.INTROSPECTION_ENDPOINT)
 
         Assert.assertTrue(introspectResponse1.jsonPath().get("active").equals(false))
@@ -187,20 +189,21 @@ class AuthorisationFlowTest extends AUTest {
 
         //Introspect the refresh token to check the status
         def response1 = AURequestBuilder
-                .buildIntrospectionRequest(refreshToken)
+                .buildIntrospectionRequest(refreshToken, auConfiguration.getAppInfoClientID())
                 .post(AUConstants.INTROSPECTION_ENDPOINT)
 
         Assert.assertTrue(response1.jsonPath().get("active").equals(true))
 
         // Revoke access Token
-        def revokeResponse = AURequestBuilder.buildRevokeIntrospectionRequest(userAccessToken)
+        def revokeResponse = AURequestBuilder
+                .buildRevokeIntrospectionRequest(userAccessToken, auConfiguration.getAppInfoClientID())
                 .post(AUConstants.REVOKE_PATH)
 
         Assert.assertEquals(revokeResponse.statusCode(), AUConstants.STATUS_CODE_200)
 
         //Introspect the refresh token to check the status
         def response2 = AURequestBuilder
-                .buildIntrospectionRequest(refreshToken)
+                .buildIntrospectionRequest(refreshToken, auConfiguration.getAppInfoClientID())
                 .post(AUConstants.INTROSPECTION_ENDPOINT)
 
         Assert.assertTrue(response2.jsonPath().get("active").equals(false))
@@ -220,6 +223,7 @@ class AuthorisationFlowTest extends AUTest {
         Assert.assertNotNull(authorisationCode)
     }
 
+    //TODO: Issue: https://github.com/wso2-enterprise/financial-open-banking/issues/8293
     @Test (priority = 2)
     void "OB-1143_Initiate authorisation consent flow only with scopes that do not require account selection"() {
 
@@ -243,6 +247,7 @@ class AuthorisationFlowTest extends AUTest {
         response = auAuthorisationBuilder.doPushAuthorisationRequest(scopes, AUConstants.DEFAULT_SHARING_DURATION,
                 true, "")
         requestUri = AUTestUtil.parseResponseBody(response, AUConstants.REQUEST_URI)
+        String state = auAuthorisationBuilder.state.toString()
 
         String responseUrl = doConsentAuthorisationViaRequestUriDenyFlow(scopes, requestUri.toURI(),
                 auConfiguration.getAppInfoClientID(), AUAccountProfile.INDIVIDUAL)
@@ -250,8 +255,8 @@ class AuthorisationFlowTest extends AUTest {
         authFlowError = AUTestUtil.getErrorDescriptionFromUrl(responseUrl)
         Assert.assertEquals(authFlowError, AUConstants.USER_DENIED_THE_CONSENT)
 
-        def stateParam = responseUrl.split("state=")[1]
-        Assert.assertEquals(auAuthorisationBuilder.state, stateParam)
+        String stateParam = responseUrl.split("state=")[1].trim()
+        Assert.assertEquals(state, stateParam)
     }
 
     @Test
@@ -266,30 +271,19 @@ class AuthorisationFlowTest extends AUTest {
 
         //Consent Authorisation UI Flow
         def automation = getBrowserAutomation(AUConstants.DEFAULT_DELAY)
-                .addStep(new AUBasicAuthAutomationStep(authoriseUrl))
+                .addStep(new NavigationAutomationStep(authoriseUrl, 10))
                 .addStep { driver, context ->
                     AutomationMethod authWebDriver = new AutomationMethod(driver)
 
-                    //Select Profile and Accounts
-                    if (auConfiguration.getProfileSelectionEnabled()) {
-
-                        //Select Individual Profile
-                        authWebDriver.selectOption(AUPageObjects.INDIVIDUAL_PROFILE_SELECTION)
-
-                        authWebDriver.clickButtonXpath(AUPageObjects.CONSENT_CANCEL_XPATH)
-                        driver.findElement(By.xpath(AUPageObjects.CONFIRM_CONSENT_DENY_XPATH)).click()
-
-                    } else {
-                        assert authWebDriver.isElementDisplayed(AUTestUtil.getSingleAccountXPath())
-                        log.info("Profile Selection is Disabled")
-                    }
+                    authWebDriver.clickButtonXpath(AUPageObjects.CONSENT_CANCEL_XPATH)
+                    driver.findElement(By.xpath(AUPageObjects.CONFIRM_CONSENT_DENY_XPATH)).click()
                 }
                 .execute()
 
         def authUrl = automation.currentUrl.get()
         Assert.assertTrue(AUTestUtil.getDecodedUrl(authUrl).contains("User skip the consent flow"))
-        def stateParam = authUrl.split("state=")[1]
-        Assert.assertEquals(auAuthorisationBuilder.state, stateParam)
+        String stateParam = authUrl.split("state=")[1]
+        Assert.assertEquals(auAuthorisationBuilder.state.toString(), stateParam)
     }
 
     @Test
@@ -332,8 +326,8 @@ class AuthorisationFlowTest extends AUTest {
 
         def authUrl = automation.currentUrl.get()
         Assert.assertTrue(AUTestUtil.getDecodedUrl(authUrl).contains("User skip the consent flow"))
-        def stateParam = authUrl.split("state=")[1]
-        Assert.assertEquals(auAuthorisationBuilder.state, stateParam)
+        String stateParam = authUrl.split("state=")[1]
+        Assert.assertEquals(auAuthorisationBuilder.state.toString(), stateParam)
     }
 
     @Test
@@ -462,20 +456,10 @@ class AuthorisationFlowTest extends AUTest {
 
         response = auAuthorisationBuilder.doPushAuthorisationRequest(scopes, AUConstants.DEFAULT_SHARING_DURATION,
                 true, "")
-        requestUri = AUTestUtil.parseResponseBody(response, AUConstants.REQUEST_URI)
 
-        authoriseUrl = auAuthorisationBuilder.getAuthorizationRequest(scopes, requestUri.toURI(),
-                auConfiguration.getAppInfoClientID(), false).toURI().toString()
+        String errorMessage = "Invalid scopes in the request"
 
-        String errorMessage = "No valid scopes found in the request"
-
-        def automationResponse = getBrowserAutomation(AUConstants.DEFAULT_DELAY)
-                .addStep(new NavigationAutomationStep(authoriseUrl, 10))
-                .execute()
-
-        String url = automationResponse.currentUrl.get()
-        String errorUrl = url.split("error_description=")[1].split("&")[0].replaceAll("\\+"," ")
-        Assert.assertEquals(errorUrl, errorMessage)
+        Assert.assertEquals(AUTestUtil.parseResponseBody(response, AUConstants.ERROR_DESCRIPTION), errorMessage)
     }
 
     @Test
