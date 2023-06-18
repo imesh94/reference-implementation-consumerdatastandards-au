@@ -95,6 +95,7 @@ class AUTest extends OBTest {
     public def automationResponse
     public String productId
     public Response deletionResponse
+    public AUJWTGenerator generator
 
     /**
      * Set Scopes of application
@@ -204,10 +205,8 @@ class AUTest extends OBTest {
         }
 
         //UI Flow Navigation
-        def automation = doAuthorisationFlowNavigation(authoriseUrl, profiles, false)
-
-        //UI Flow Navigation
-        automationResponse = doAuthorisationFlowNavigation(authoriseUrl, profiles, true)
+        def automation = doAuthorisationFlowNavigation(authoriseUrl, profiles, true)
+        authorisationCode = AUTestUtil.getHybridCodeFromUrl(automation.currentUrl.get())
     }
 
     /**
@@ -624,7 +623,6 @@ class AUTest extends OBTest {
 
                     //Click Deny Button
                     authWebDriver.clickButtonXpath(AUPageObjects.CONSENT_DENY_XPATH)
-                    authWebDriver.clickButtonXpath(AUPageObjects.CONFIRM_CONSENT_DENY_XPATH)
                 }
                 .execute()
 
@@ -1092,7 +1090,8 @@ class AUTest extends OBTest {
 
     Response doRevokeCdrArrangement(String clientId, String cdrArrangementId){
 
-        String assertionString = AUJWTGenerator.getClientAssertionJwt(clientId)
+        generator = new AUJWTGenerator()
+        String assertionString = generator.getClientAssertionJwt(clientId)
 
         def bodyContent = [(AUConstants.CLIENT_ID_KEY): (clientId),
                            (AUConstants.CLIENT_ASSERTION_TYPE_KEY): (AUConstants.CLIENT_ASSERTION_TYPE),
@@ -1103,9 +1102,23 @@ class AUTest extends OBTest {
                 .contentType(AUConstants.ACCESS_TOKEN_CONTENT_TYPE)
                 .formParams(bodyContent)
                 .baseUri(AUTestUtil.getBaseUrl(AUConstants.BASE_PATH_TYPE_CDR_ARRANGEMENT))
-                .post("${AUConstants.CDR_ARRANGEMENT_ENDPOINT}${AUConstants.REVOKE_PATH}")
+                .post("${AUConstants.CDR_ARRANGEMENT_ENDPOINT}")
 
         return revocationResponse
+    }
+
+    /**
+     * Method to get consent status.
+     * @param headerString
+     * @param consentId
+     * @return
+     */
+    Response getConsentStatus(String clientHeader, String consentId) {
+
+        return AURestAsRequestBuilder.buildRequest()
+                .header(AUConstants.AUTHORIZATION_HEADER_KEY, "Basic " + clientHeader)
+                .baseUri(auConfiguration.getServerAuthorisationServerURL())
+                .get("${AUConstants.CONSENT_STATUS_ENDPOINT}${AUConstants.STATUS_PATH}?${consentId}")
     }
 }
 

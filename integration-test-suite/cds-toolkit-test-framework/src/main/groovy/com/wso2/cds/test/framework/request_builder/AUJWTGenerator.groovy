@@ -215,7 +215,8 @@ class AUJWTGenerator {
     JWT getSignedAuthRequestObjectForStringSharingDuration(String scopeString, String sharingDuration,
                                    String cdrArrangementId, String redirect_uri, String clientId, String responseType) {
 
-        def expiryDate = Instant.now().plus(1, ChronoUnit.DAYS)
+        def expiryDate = Instant.now().plus(1, ChronoUnit.HOURS)
+        Instant notBefore = Instant.now()
         String claims
 
         JSONObject acr = new JSONObject().put("essential", true).put("values", new ArrayList<String>() {
@@ -238,6 +239,7 @@ class AUJWTGenerator {
                 .addRedirectURI(redirect_uri)
                 .addScope(scopeString)
                 .addNonce()
+                .addCustomValue("nbf", notBefore.getEpochSecond().toLong())
                 .addCustomJson("claims", claimsString)
                 .getJsonObject().toString()
 
@@ -326,13 +328,11 @@ class AUJWTGenerator {
      * @param nodeToBeRemoved - Node to be removed from the Request Object
      * @return modifiedJsonPayload - Modified Request Object
      */
-    String removeClaimsFromRequestObject(String claims, String nodeToBeRemoved) {
-
-        String payload = getSignedRequestObject(claims)
+    static String removeClaimsFromRequestObject(String claims, String nodeToBeRemoved) {
 
         // Parse the JSON payload
         ObjectMapper objectMapper = new ObjectMapper()
-        JsonNode rootNode = objectMapper.readTree(payload)
+        JsonNode rootNode = objectMapper.readTree(claims)
 
         // Remove elements from the JSON payload
         if (rootNode instanceof ObjectNode) {

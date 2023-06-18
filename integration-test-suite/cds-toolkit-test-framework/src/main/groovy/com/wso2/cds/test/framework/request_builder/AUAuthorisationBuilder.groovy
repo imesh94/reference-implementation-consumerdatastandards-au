@@ -45,6 +45,7 @@ class AUAuthorisationBuilder {
     private State state
     private int tppNumber
     private static CodeVerifier codeVerifier = new CodeVerifier()
+    AUJWTGenerator generator = new AUJWTGenerator()
 
     AUAuthorisationBuilder() {
         auConfiguration = new AUConfigurationService()
@@ -75,6 +76,7 @@ class AUAuthorisationBuilder {
                 .requestObject(generator.getSignedAuthRequestObject(requestObjectClaims))
                 .scope(new Scope(scopeString))
                 .state(getState())
+                .codeChallenge(getCodeVerifier(), CodeChallengeMethod.S256)
                 .customParameter("prompt", "login")
                 .build()
         return request
@@ -201,8 +203,6 @@ class AUAuthorisationBuilder {
                                         String state = getState().toString(),
                                         boolean isStateParamRequired = true) {
 
-        AUJWTGenerator generator = new AUJWTGenerator()
-        String scopeString = "openid ${String.join(" ", scopes.collect({ it.scopeString }))}"
         Response parResponse
 
         String assertionString = generator.getClientAssertionJwt(clientId)
@@ -547,9 +547,7 @@ class AUAuthorisationBuilder {
      * @return Response
      */
     Response doPushAuthorisationRequest(String requestObjectClaims, String clientId = getClientID().getValue(),
-                                        boolean isStateParamRequired = true) {
-
-        AUJWTGenerator generator = new AUJWTGenerator()
+                                        boolean isStateParamRequired = true, String algorithm = null) {
 
         Response parResponse
 
@@ -561,7 +559,11 @@ class AUAuthorisationBuilder {
                 (AUConstants.CLIENT_ASSERTION_KEY)     : assertionString,
         ]
 
-        if(isStateParamRequired) {
+        if (algorithm != null) {
+            generator.setSigningAlgorithm(algorithm)
+        }
+
+        if (isStateParamRequired) {
 
             parResponse = AURestAsRequestBuilder.buildRequest()
                     .contentType(AUConstants.ACCESS_TOKEN_CONTENT_TYPE)

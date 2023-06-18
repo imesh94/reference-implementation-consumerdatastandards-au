@@ -53,16 +53,17 @@ class AUConstants extends OBConstants {
     public static final String GET_TRANSACTIONS = "/banking/accounts/" + accountID + "/transactions"
     public static final String GET_PRODUCTS = "/banking/products"
     public static final String TOKEN = "d94c5b2e-b615-366e-862b-374b429e4d5e"
-    public static final String accountID = "qu4WMZ-59LsndgjMN-kikFfJL4Z87VlRvoxej0mrh307U-WM2t9RagzY82qc7_xZVn-Agk_K8WIAWdgTgofMvmR-Kl9_PaageLbaVzytdVHpEudIRSQDvUivfs6FvgrA"
-    public static final String accountID2 = "qu4WMZ-59LsndgjMN-kikFfJL4Z87VlRvoxej0mrh33jm9OC5hnFFpVjCHirvpVGXcVo1GqNjL_PTaCcjZPe-lHCZx_QOOT_PIMnZSWijYkBTvXlMLnFszvdN28n3WWA"
+    public static final String accountID = "qu4WMZ-59LsndgjMN-kikL1DRXbNMP3Ya6IrjF99tmQYNau1p4RI-qZ6IuAVvKOo4oZIe5cwy9EwVa94ggeRp2idyLDUN-43WATQRbw0VSI"
+    public static final String accountID2 = "qu4WMZ-59LsndgjMN-kikL1DRXbNMP3Ya6IrjF99tmQYNau1p4RI-qZ6IuAVvKOowDi7mV1k5tXHBoljbiNJi1qQy9Sykg5kJOSYgFEnjFU"
     public static final String GET_META = "/admin/register/metadata"
     public static final String GET_STAT = "/admin/metrics"
     public static final String X_FAPI_FINANCIAL_ID = "x-fapi-financial-id"
     public static final Integer X_V_HEADER_ACCOUNTS = 1
-    public static final Integer X_V_HEADER_METRICS = 1
+    public static final int X_V_HEADER_METRICS= 3
+    public static final int X_V_MIN_HEADER_METRICS = 1
     public static final Integer X_V_HEADER_CUSTOMER = 1
     public static final Integer X_V_HEADER_PRODUCTS = getProductEndpointVersion()
-    public static final Integer UNSUPPORTED_X_V_VERSION = 5
+    public static final Integer UNSUPPORTED_X_V_VERSION = 10
     public static final String USERNAME = "admin@wso2.com"
     public static final String PASSWORD = "wso2123"
     public static final String ACCESS_TOKEN = "token"
@@ -90,13 +91,13 @@ class AUConstants extends OBConstants {
     public static final String DISCOVERY_STATUS = "/discovery/status"
     public static final String DISCOVERY_OUTAGES = "/discovery/outages"
     public static final String ACCOUNTS_CONSENT_PATH = "/au100/accounts-validation"
-    public static final String CDR_ARRANGEMENT_ENDPOINT = "/arrangements/1.0.0"
+    public static final String CDR_ARRANGEMENT_ENDPOINT = "/arrangements/1.0.0/revoke"
     public static final String INTROSPECTION_ENDPOINT = "/oauth2/introspect"
     public static final String CONSENT_STATUS_ENDPOINT = "/api/openbanking/consent-mgt/uk300"
     public static final String PUSHED_AUTHORISATION_BASE_PATH = auConfiguration.getServerAuthorisationServerURL() +
             "/api/openbanking/push-authorization"
     public static final String PAR_ENDPOINT = "/par"
-    public static final String REVOKE_PATH = "/revoke"
+    public static final String REVOKE_PATH = "/oauth2/revoke"
     public static final String STATUS_PATH = "/account-confirmation"
     public static final String CONSENT_STATUS_AU_ENDPOINT = "api/openbanking/account-type-mgt"
     public static final String UPDATE_BUSINESS_USER  = "/account-type-management/business-stakeholders"
@@ -174,7 +175,7 @@ class AUConstants extends OBConstants {
     public static final String CCPORTAL_URL = auConfiguration.getServerAuthorisationServerURL() + "/ccportal"
 
     public static final String ERROR = "error";
-    public static final String ERROR_DESCRIPTION = "errorDescription";
+    public static final String ERROR_DESCRIPTION = "error_description";
     public static final String ERROR_DETAIL = "errors[0].detail"
     public static final String ERROR_SOURCE_PARAMETER = "errors[0].source.parameter"
     public static final String ERROR_SOURCE_POINTER = "errors[0].source.pointer"
@@ -345,8 +346,8 @@ class AUConstants extends OBConstants {
         def productEndpoint = null
         if (API_VERSION.equalsIgnoreCase("1.2.0")) {
             productEndpoint = 2
-        } else if (API_VERSION.equalsIgnoreCase("1.3.0")) {
-            productEndpoint = 3
+        } else {
+            productEndpoint = 1
         }
         return productEndpoint
     }
@@ -392,6 +393,8 @@ class AUConstants extends OBConstants {
     public static final String UPDATED_SINCE = "UPDATED_SINCE"
     public static final String BRAND = "BRAND"
     public static final String EFFECTIVE = "EFFECTIVE"
+    public static final String PERIOD = "period"
+    public static final String HISTORIC = "HISTORIC"
 
     public static final String RESPONSE_DATA_CUSTOMERUTYPE = "data.customerUType"
     public static final String RESPONSE_DATA_PERSON = "data.person"
@@ -402,22 +405,36 @@ class AUConstants extends OBConstants {
     public static final String ERROR_NOT_ALLOWED_TO_ACCESS = "The access token does not allow you to access the requested resource"
     public static final String PARAM_PROFILE_NAME = "profileName"
     public static final String USER_DENIED_THE_CONSENT = "User denied the consent"
-    public static final String INVALID_REQUEST = "invalid request"
-    public static final INVALID_SHARING_DURATION = "Invalid sharing duration"
-    public static final EXPIRES_IN = "expires_in"
+    public static final String INVALID_REQUEST = "invalid_request"
+    public static final INVALID_SHARING_DURATION = "Invalid sharing_duration value"
+    public static final EXPIRES_IN = "expiresIn"
     public static final INVALID_CREDENTIALS = "Invalid Credentials"
 
     public static final INVALID_REQUEST_BODY = "Invalid request body"
     public static final MALFORMED_PAR_REQUEST= "The request is malformed."
-    public static final INVALID_ALGORITHM = "Signature validation failed"
+    public static final INVALID_ALGORITHM = "Invalid request object signing algorithm"
     public static final INVALID_RESPONSE_TYPE = "Invalid response type"
     public static final MISSING_AUD_VALUE= "Bad audience value found in the request object"
-    public static final MISSING_ISS_VALUE= "Issuer value not found in the request object"
-    public static final MISSING_EXP_VALUE= "exp is a required value"
-    public static final MISSING_NBF_VALUE= "nbf is a required value"
+    public static final MISSING_ISS_VALUE= "Invalid issuer in the request"
+    public static final MISSING_EXP_VALUE= "exp parameter is missing in the request object"
+    public static final MISSING_NBF_VALUE= "nbf parameter is missing in the request object"
     public static final INVALID_FUTURE_EXPIRY_TIME = "Invalid expiry time. 'exp' claim must be a future value."
-    public static final INVALID_EXPIRY_TIME = "Invalid expiry time. The claim 'exp' should have a lifetime of no longer than 60 minutes after the 'nbf' claim."
+    public static final INVALID_EXPIRY_TIME = "exp parameter in the request object is over 1 hour in the future"
     public static final INVALID_FUTURE_NBF_TIME = "Invalid not before time. 'nbf' must be a past value."
-
+    public static final UNSUPPORTED_X_FAPI_AUTH_DATE = "Requested x-fapi-auth-date header is not supported"
+    public static final NEWEST_TIME = "newest-time"
+    public static final OLDEST_TIME = "oldest-time"
+    public static final ERROR_CODE_GENERAL_EXPECTED_ERROR = "urn:au-cds:error:cds-all:GeneralError/Expected"
+    public static final INVALID_CONTENT_TYPE = "Request Content-Type header does not match any allowed types"
+    public static final INVALID_ACCEPT_HEADER = "Invalid Accept Header"
+    public static final ERROR_TITLE_GENERAL_EXPECTED_ERROR = "Expected Error Encountered"
+    public static final UNSUPPORTED_X_FAPI_IP_ADDRESS = "Requested x-fapi-customer-ip-address header is not supported"
+    public static final ERROR_CODE_MISSING_FIELD = "urn:au-cds:error:cds-all:Field/Missing"
+    public static final MISSING_FIELD = "Missing Required Field"
+    public static final String ADMIN_METRICS = "/admin/metrics"
+    public static final LBL_NEW_PAYEES_INDICATOR_XPATH = "//button[contains(text(),'Saved payees')]/span[contains(text()," +
+            "'New')]"
+    public static final String ERROR_INVALID_CLIENT_ID = "Cannot find an application associated with the given consumer key"
+    public static final String UNABLE_TO_DECODE_JWT = "Unable to decode JWT."
 }
 
