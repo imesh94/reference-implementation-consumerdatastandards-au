@@ -25,6 +25,7 @@ import com.wso2.openbanking.cds.common.error.handling.util.ErrorConstants;
 import com.wso2.openbanking.cds.common.metadata.domain.MetadataValidationResponse;
 import com.wso2.openbanking.cds.common.metadata.status.validator.service.MetadataService;
 import com.wso2.openbanking.cds.consent.extensions.common.CDSConsentExtensionConstants;
+import com.wso2.openbanking.cds.consent.extensions.util.CDSConsentExtensionsUtil;
 import com.wso2.openbanking.cds.consent.extensions.validate.utils.CDSConsentValidatorUtil;
 import net.minidev.json.JSONObject;
 import net.minidev.json.parser.JSONParser;
@@ -179,7 +180,7 @@ public class CDSConsentValidator implements ConsentValidator {
 
         for (ConsentMappingResource mappingResource : consentMappingResources) {
             if (CDSConsentExtensionConstants.SECONDARY_ACCOUNT_USER.equals(mappingResource.getPermission()) &&
-                    !CDSConsentValidatorUtil
+                    !CDSConsentExtensionsUtil
                             .isUserEligibleForSecondaryAccountDataSharing(mappingResource.getAccountID(),
                                     consentValidateData.getUserId())) {
                 consentMappingResources.remove(mappingResource);
