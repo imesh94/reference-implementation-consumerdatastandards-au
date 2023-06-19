@@ -197,6 +197,10 @@ class AUPageObjects {
     public static String BTN_SELECT_ALL = "//button[contains(text(),'Select all')]"
     public static String LBL_NO_ELIGIBLE_ACCOUNTS = "//form[@id='oauth2_authz_consent']//div//p"
     public static String BTN_CANCEL = "//input[@id='cancel']"
+    public static String LBL_ERROR_TRY_AGAIN = "//div[@id='error-msg']"
+    public static String BTN_AUTHENTICATE = "//input[@id='authenticate']"
+    public static String TXT_OTP_CODE = "OTPcode"
+    public static BTN_CONSENT_EXPIRY_XPATH = "//button[@id='consent-expiry-date']"
 
 }
 
