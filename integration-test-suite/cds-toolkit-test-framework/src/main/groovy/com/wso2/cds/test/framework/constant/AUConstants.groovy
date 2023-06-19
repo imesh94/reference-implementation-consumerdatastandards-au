@@ -152,9 +152,9 @@ class AUConstants extends OBConstants {
     public static final String LBL_SCHEDULE_PAYMENTS = "Scheduled payments"
     public static final String LBL_DETAILS_OF_SAVED_ACCOUNTS = "Names and details of accounts you have saved; " +
             "(e.g. their BSB and Account Number, BPay CRN and Biller code, or NPP PayID)"
-    public static final String LBL_WHERE_TO_MANAGE_INSTRUCTION = "You can review and manage this arrangement on " +
-            "the Data Sharing dashboard by going to Settings>Data Sharing on the Mock Company Inc.," +
-            "Mock Software website or app."
+    public static final String LBL_WHERE_TO_MANAGE_INSTRUCTION = "You can review and manage this arrangement on the " +
+            "Data Sharing dashboard by going to Settings>Data Sharing on the Mock Company Inc., Mock Software 1 " +
+            "website or app."
 
     public static final String LBL_AUTHORISED = 'Authorised'
     public static final String LBL_REVOKED = 'Revoked'
