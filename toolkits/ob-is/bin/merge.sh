@@ -44,8 +44,8 @@ echo -e "\nRemoving old open banking artifacts from the base product\n"
 echo -e "================================================\n"
 find "${WSO2_OB_IS_HOME}"/repository/components/dropins -name "com.wso2.openbanking.cds.*" -exec rm -rf {} \;
 find "${WSO2_OB_IS_HOME}"/repository/components/lib -name "com.wso2.openbanking.cds.*" -exec rm -rf {} \;
-find "${WSO2_OB_IS_HOME}"/repository/deployment/server/webapps -name "api#openbanking#account-type-mgt*" -exec rm -rf {} \;
-find "${WSO2_OB_IS_HOME}"/repository/deployment/server/webapps -name "consentmgr*" -exec rm -rf {} \;
+find "${WSO2_OB_IS_HOME}"/repository/deployment/server/webapps -name "api#openbanking#account-type-mgt.war" -exec rm -rf {} \;
+find "${WSO2_OB_IS_HOME}"/repository/deployment/server/webapps -name "consentmgr.war" -exec rm -rf {} \;
 
 echo -e "\nCopying open banking artifacts\n"
 echo -e "================================================\n"
