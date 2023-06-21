@@ -16,7 +16,6 @@ import com.wso2.openbanking.cds.consent.extensions.authorize.utils.CDSConsentCom
 import com.wso2.openbanking.cds.consent.extensions.authorize.utils.CDSConsentPersistUtil;
 import com.wso2.openbanking.cds.consent.extensions.common.CDSConsentExtensionConstants;
 import com.wso2.openbanking.cds.consent.extensions.common.SecondaryAccountOwnerTypeEnum;
-import com.wso2.openbanking.cds.consent.extensions.validate.utils.CDSConsentValidatorUtil;
 import net.minidev.json.JSONArray;
 import net.minidev.json.JSONObject;
 import org.apache.commons.logging.Log;

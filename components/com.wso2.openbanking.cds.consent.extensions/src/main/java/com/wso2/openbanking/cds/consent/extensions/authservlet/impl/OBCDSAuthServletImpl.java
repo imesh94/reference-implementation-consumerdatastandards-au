@@ -11,7 +11,7 @@ package com.wso2.openbanking.cds.consent.extensions.authservlet.impl;
 import com.wso2.openbanking.accelerator.consent.extensions.authservlet.model.OBAuthServletInterface;
 import com.wso2.openbanking.cds.common.config.OpenBankingCDSConfigParser;
 import com.wso2.openbanking.cds.consent.extensions.common.CDSConsentExtensionConstants;
-import com.wso2.openbanking.cds.consent.extensions.validate.utils.CDSConsentValidatorUtil;
+import com.wso2.openbanking.cds.consent.extensions.util.CDSConsentExtensionsUtil;
 import org.apache.commons.lang3.StringUtils;
 import org.json.JSONArray;
 import org.json.JSONObject;
@@ -190,7 +190,7 @@ public class OBCDSAuthServletImpl implements OBAuthServletInterface {
 
             // secondaryAccountInstructionStatus depicts whether the account is enabled for secondary user data sharing
             Boolean secondaryAccountInstructionStatus =
-                    CDSConsentValidatorUtil.isUserEligibleForSecondaryAccountDataSharing(
+                    CDSConsentExtensionsUtil.isUserEligibleForSecondaryAccountDataSharing(
                             account.getString(CDSConsentExtensionConstants.ACCOUNT_ID), userId);
 
             // Both secondaryAccountPrivilegeStatus and secondaryAccountInstructionStatus should be in active state
