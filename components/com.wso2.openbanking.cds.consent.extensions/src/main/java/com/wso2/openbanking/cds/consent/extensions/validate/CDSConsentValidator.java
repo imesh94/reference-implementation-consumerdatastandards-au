@@ -23,7 +23,7 @@ import com.wso2.openbanking.cds.common.error.handling.util.ErrorConstants;
 import com.wso2.openbanking.cds.common.metadata.domain.MetadataValidationResponse;
 import com.wso2.openbanking.cds.common.metadata.status.validator.service.MetadataService;
 import com.wso2.openbanking.cds.consent.extensions.common.CDSConsentExtensionConstants;
-import com.wso2.openbanking.cds.consent.extensions.utils.CDSConsentExtensionUtils;
+import com.wso2.openbanking.cds.consent.extensions.util.CDSConsentExtensionsUtil;
 import com.wso2.openbanking.cds.consent.extensions.validate.utils.CDSConsentValidatorUtil;
 import net.minidev.json.JSONObject;
 import net.minidev.json.parser.JSONParser;
@@ -47,8 +47,6 @@ public class CDSConsentValidator implements ConsentValidator {
     private static final Log log = LogFactory.getLog(CDSConsentValidator.class);
 
     AccountMetadataService accountMetadataService = AccountMetadataServiceImpl.getInstance();
-
-    CDSConsentExtensionUtils cdsConsentExtensionUtils = new CDSConsentExtensionUtils();
 
     @Override
     public void validate(ConsentValidateData consentValidateData, ConsentValidationResult consentValidationResult)
@@ -194,7 +192,7 @@ public class CDSConsentValidator implements ConsentValidator {
                 String accountID = consentMappingResource.getAccountID();
                 String clientID = consentValidateData.getClientId();
 
-                boolean isLegalEntitySharingStatusBlocked = cdsConsentExtensionUtils.
+                boolean isLegalEntitySharingStatusBlocked = CDSConsentExtensionsUtil.
                         isLegalEntityBlockedForAccountAndUser(accountID, secondaryUserID, clientID);
 
                 if (!isLegalEntitySharingStatusBlocked) {
@@ -202,7 +200,7 @@ public class CDSConsentValidator implements ConsentValidator {
                 }
             }
             consentValidateData.getComprehensiveConsent().setConsentMappingResources(validMappingResources);
-        } catch (OpenBankingException e) {
+        } catch (ConsentException e) {
             log.error("Error occurred while retrieving account metadata");
             throw new ConsentException(ResponseStatus.INTERNAL_SERVER_ERROR,
                     "Error occurred while retrieving account metadata");
@@ -220,7 +218,7 @@ public class CDSConsentValidator implements ConsentValidator {
 
         for (ConsentMappingResource mappingResource : consentMappingResources) {
             if (CDSConsentExtensionConstants.SECONDARY_ACCOUNT_USER.equals(mappingResource.getPermission()) &&
-                    !CDSConsentValidatorUtil
+                    !CDSConsentExtensionsUtil
                             .isUserEligibleForSecondaryAccountDataSharing(mappingResource.getAccountID(),
                                     consentValidateData.getUserId())) {
                 consentMappingResources.remove(mappingResource);

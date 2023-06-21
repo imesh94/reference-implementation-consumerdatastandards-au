@@ -267,8 +267,11 @@ public class CDSConsentRetrievalStep implements ConsentRetrievalStep {
             if (jsonObject.containsKey(CDSConsentExtensionConstants.CLAIMS)) {
                 JSONObject claims = (JSONObject) jsonObject.get(CDSConsentExtensionConstants.CLAIMS);
                 if (claims.containsKey(CDSConsentExtensionConstants.SHARING_DURATION)) {
-                    sharingDuration = Long.parseLong(claims
-                            .get(CDSConsentExtensionConstants.SHARING_DURATION).toString());
+
+                    String sharingDurationStr = claims.get(CDSConsentExtensionConstants.SHARING_DURATION) == null ?
+                            StringUtils.EMPTY : claims.get(CDSConsentExtensionConstants.SHARING_DURATION).toString();
+
+                    sharingDuration = sharingDurationStr.isEmpty() ? 0 : Long.parseLong(sharingDurationStr);
 
                     if (sharingDuration > secondsInYear) {
                         sharingDuration = secondsInYear;

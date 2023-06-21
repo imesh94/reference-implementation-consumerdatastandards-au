@@ -18,8 +18,8 @@ import com.wso2.openbanking.cds.common.error.handling.util.ErrorConstants;
 import com.wso2.openbanking.cds.common.metadata.domain.MetadataValidationResponse;
 import com.wso2.openbanking.cds.common.metadata.status.validator.service.MetadataService;
 import com.wso2.openbanking.cds.consent.extensions.common.CDSConsentExtensionConstants;
+import com.wso2.openbanking.cds.consent.extensions.util.CDSConsentExtensionsUtil;
 import com.wso2.openbanking.cds.consent.extensions.util.CDSConsentValidateTestConstants;
-import com.wso2.openbanking.cds.consent.extensions.utils.CDSConsentExtensionUtils;
 import net.minidev.json.JSONObject;
 import net.minidev.json.parser.JSONParser;
 import net.minidev.json.parser.ParseException;
@@ -44,7 +44,7 @@ import static org.mockito.Mockito.when;
 /**
  * Test class for CDS consent Validator
  */
-@PrepareForTest({OpenBankingCDSConfigParser.class, MetadataService.class, CDSConsentExtensionUtils.class})
+@PrepareForTest({OpenBankingCDSConfigParser.class, MetadataService.class, CDSConsentExtensionsUtil.class})
 @PowerMockIgnore("jdk.internal.reflect.*")
 public class CDSConsentValidatorTest extends PowerMockTestCase {
 
@@ -287,8 +287,8 @@ public class CDSConsentValidatorTest extends PowerMockTestCase {
         when(consentValidateDataMock.getComprehensiveConsent().getConsentMappingResources()).
                 thenReturn(consentMappingResourceList);
 
-        PowerMockito.mockStatic(CDSConsentExtensionUtils.class);
-        when(CDSConsentExtensionUtils.isLegalEntityBlockedForAccountAndUser
+        PowerMockito.mockStatic(CDSConsentExtensionsUtil.class);
+        when(CDSConsentExtensionsUtil.isLegalEntityBlockedForAccountAndUser
                 (Mockito.anyString(), Mockito.anyString(), Mockito.anyString())).thenReturn(true);
 
         ConsentValidationResult consentValidationResult = new ConsentValidationResult();
@@ -318,8 +318,8 @@ public class CDSConsentValidatorTest extends PowerMockTestCase {
         when(consentValidateDataMock.getComprehensiveConsent().getConsentMappingResources()).
                 thenReturn(consentMappingResourceList);
 
-        PowerMockito.mockStatic(CDSConsentExtensionUtils.class);
-        when(CDSConsentExtensionUtils.isLegalEntityBlockedForAccountAndUser
+        PowerMockito.mockStatic(CDSConsentExtensionsUtil.class);
+        when(CDSConsentExtensionsUtil.isLegalEntityBlockedForAccountAndUser
                 (Mockito.anyString(), Mockito.anyString(), Mockito.anyString())).thenReturn(false);
 
         ConsentValidationResult consentValidationResult = new ConsentValidationResult();

@@ -508,10 +508,6 @@ allowed_values = ["private_key_jwt"]
 required = true
 allowed_values = ["code id_token"]
 
-[open_banking.dcr.registration.callback_uris]
-allowed_values = ["https://www.google.com/redirects/redirect1",
-    "https://www.google.com/redirects/redirect2"]
-
 [open_banking.dcr.registration.application_type]
 allowed_values = ["web"]
 

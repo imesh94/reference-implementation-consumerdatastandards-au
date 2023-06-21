@@ -17,6 +17,8 @@ public class CDSIdentityConstants {
     // Error messages.
     public static final String INVALID_PUSH_AUTH_REQUEST = "Invalid push authorisation request";
     public static final String INVALID_SHARING_DURATION = "Invalid sharing_duration value";
-    public static final String EMPTY_CDR_ARRANGEMENT_ID = "Empty cdr-arrangement-id sent in the request";
+
+    // Consent status constants.
+    public static final String AUTHORIZED = "authorized";
 
 }

@@ -11,6 +11,7 @@ package com.wso2.openbanking.cds.consent.extensions.authservlet.impl;
 import com.wso2.openbanking.accelerator.consent.extensions.authservlet.model.OBAuthServletInterface;
 import com.wso2.openbanking.cds.common.config.OpenBankingCDSConfigParser;
 import com.wso2.openbanking.cds.consent.extensions.common.CDSConsentExtensionConstants;
+import com.wso2.openbanking.cds.consent.extensions.util.CDSConsentExtensionsUtil;
 import org.apache.commons.lang3.StringUtils;
 import org.json.JSONArray;
 import org.json.JSONObject;
@@ -29,12 +30,17 @@ import javax.servlet.http.HttpServletRequest;
 public class OBCDSAuthServletImpl implements OBAuthServletInterface {
 
     String preSelectedProfileId;
+    private String userId;
+    private String clientID;
+
     @Override
     public Map<String, Object> updateRequestAttribute(HttpServletRequest httpServletRequest, JSONObject dataSet,
                                                       ResourceBundle resourceBundle) {
 
         Map<String, Object> returnMaps = new HashMap<>();
         preSelectedProfileId = "";
+        userId = dataSet.getString(CDSConsentExtensionConstants.USER_ID);
+        clientID = dataSet.getString(CDSConsentExtensionConstants.CLIENT_ID);
 
         // Set "data_requested" that contains the human-readable scope-requested information
         JSONArray dataRequestedJsonArray = dataSet.getJSONArray(CDSConsentExtensionConstants.DATA_REQUESTED);
@@ -136,6 +142,21 @@ public class OBCDSAuthServletImpl implements OBAuthServletInterface {
         }
     }
 
+    /**
+     * Update Individual Personal Account Details.
+     *
+     * @param account: account object
+     * @param data:    data map
+     */
+    private void updateIndividualPersonalAccountAttributes(JSONObject account, Map<String, Object> data) {
+        if ((account != null && account.getBoolean(CDSConsentExtensionConstants.IS_ELIGIBLE)) &&
+                (CDSConsentExtensionConstants.INDIVIDUAL_PROFILE_TYPE.equalsIgnoreCase(
+                        account.getString(CDSConsentExtensionConstants.CUSTOMER_ACCOUNT_TYPE))
+                        && !account.getBoolean(CDSConsentExtensionConstants.IS_JOINT_ACCOUNT_RESPONSE))) {
+            data.put(CDSConsentExtensionConstants.IS_SELECTABLE, true);
+        }
+    }
+
     private void updateJointAccountAttributes(JSONObject account, Map<String, Object> data) {
         if (account != null && (account.getBoolean(CDSConsentExtensionConstants.IS_JOINT_ACCOUNT_RESPONSE))
                 && !account.getBoolean(CDSConsentExtensionConstants.IS_SECONDARY_ACCOUNT_RESPONSE)) {
@@ -158,16 +179,31 @@ public class OBCDSAuthServletImpl implements OBAuthServletInterface {
      * Update Secondary Account Details.
      *
      * @param account: account object
-     * @param data: data map
-     * @return
+     * @param data:    data map
      */
     private void updateSecondaryAccountAttributes(JSONObject account, Map<String, Object> data) {
         if (account != null && account.getBoolean(CDSConsentExtensionConstants.IS_SECONDARY_ACCOUNT_RESPONSE)) {
             data.put(CDSConsentExtensionConstants.IS_SECONDARY_ACCOUNT, true);
 
-            // secondaryAccountPrivilegeStatus depicts whether the account is enabled for secondary user data sharing
+            // secondaryAccountPrivilegeStatus depicts whether the user has granted permission to share data from
+            // the secondary account
             Boolean secondaryAccountPrivilegeStatus = Boolean.valueOf(String
                     .valueOf(account.get(CDSConsentExtensionConstants.SECONDARY_ACCOUNT_PRIVILEGE_STATUS)));
+
+            // secondaryAccountInstructionStatus depicts whether the account is enabled for secondary user data sharing
+            Boolean secondaryAccountInstructionStatus =
+                    CDSConsentExtensionsUtil.isUserEligibleForSecondaryAccountDataSharing(
+                            account.getString(CDSConsentExtensionConstants.ACCOUNT_ID), userId);
+
+            // Check whether the legal entity is blocked for secondary account of a user
+            boolean isLegalEntitySharingStatusBlocked =
+                    CDSConsentExtensionsUtil.isLegalEntityBlockedForAccountAndUser
+                            (account.getString(CDSConsentExtensionConstants.ACCOUNT_ID), userId, clientID);
+
+            // Both secondaryAccountPrivilegeStatus and secondaryAccountInstructionStatus should be in active state and
+            // legal entity is not in blocked state for secondary account to be selectable
+            Boolean isSelectable = secondaryAccountPrivilegeStatus && secondaryAccountInstructionStatus
+                    && !isLegalEntitySharingStatusBlocked;
 
             // handle secondary joint accounts
             if (account.getBoolean(CDSConsentExtensionConstants.IS_JOINT_ACCOUNT_RESPONSE)) {
@@ -175,9 +211,10 @@ public class OBCDSAuthServletImpl implements OBAuthServletInterface {
                         .valueOf(account.get(CDSConsentExtensionConstants.JOINT_ACCOUNT_CONSENT_ELECTION_STATUS));
                 Boolean isPreApproved = CDSConsentExtensionConstants.JOINT_ACCOUNT_PRE_APPROVAL
                         .equalsIgnoreCase(consentElectionStatus);
-                data.put(CDSConsentExtensionConstants.IS_SELECTABLE, isPreApproved && secondaryAccountPrivilegeStatus);
+                // For secondary joint account to be selectable, account also should be in pre-approved state.
+                data.put(CDSConsentExtensionConstants.IS_SELECTABLE, isPreApproved && isSelectable);
             } else {
-                data.put(CDSConsentExtensionConstants.IS_SELECTABLE, secondaryAccountPrivilegeStatus);
+                data.put(CDSConsentExtensionConstants.IS_SELECTABLE, isSelectable);
             }
         }
     }
@@ -208,6 +245,7 @@ public class OBCDSAuthServletImpl implements OBAuthServletInterface {
             String accountId = account.getString(CDSConsentExtensionConstants.ACCOUNT_ID);
             String displayName = account.getString(CDSConsentExtensionConstants.DISPLAY_NAME);
             String isPreSelectedAccount = "false";
+            updateIndividualPersonalAccountAttributes(account, data);
             updateJointAccountAttributes(account, data);
             updateSecondaryAccountAttributes(account, data);
 
