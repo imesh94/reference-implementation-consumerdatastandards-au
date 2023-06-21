@@ -6,6 +6,7 @@
  * herein in any form is strictly forbidden, unless permitted by WSO2 expressly.
  * You may not alter or remove any copyright or other notice from copies of this content.
  */
+
 package com.wso2.openbanking.cds.consent.extensions.utils;
 
 import com.wso2.openbanking.accelerator.account.metadata.service.service.AccountMetadataService;
@@ -23,7 +24,7 @@ import org.apache.commons.logging.LogFactory;
 public class CDSConsentExtensionUtils {
     private static final Log log = LogFactory.getLog(CDSConsentValidator.class);
 
-    AccountMetadataService accountMetadataService = AccountMetadataServiceImpl.getInstance();
+    static AccountMetadataService accountMetadataService = AccountMetadataServiceImpl.getInstance();
 
     /**
      * Method to retrieve the sharing status of a legal entity for an accountID and secondaryUserID and legalEntityID
@@ -34,7 +35,7 @@ public class CDSConsentExtensionUtils {
      * @return true/false based on the sharing status of a legal entity for an accountID and secondaryUserID and
      * legalEntityID
      */
-    public boolean isLegalEntityBlockedForAccountAndUser(String accountID, String userID, String clientID)
+    public static boolean isLegalEntityBlockedForAccountAndUser(String accountID, String userID, String clientID)
             throws OpenBankingException {
 
         try {
