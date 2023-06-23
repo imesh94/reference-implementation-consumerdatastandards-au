@@ -13,6 +13,8 @@
 <%@ taglib prefix="fn" uri="http://java.sun.com/jsp/jstl/functions" %>
 
 <jsp:include page="includes/consent_top.jsp"/>
+<%@ page import ="javax.servlet.RequestDispatcher"%>
+<%@ page import="org.owasp.encoder.Encode" %>
 <%
     String preSelectedProfileId = (String) request.getAttribute("preSelectedProfileId");
     String selectedProfileId = (preSelectedProfileId == null || "".equals(preSelectedProfileId)) ?
@@ -39,6 +41,34 @@
     }
     if (session.getAttribute("new_business_data_cluster") == null || isConsentAmendment) {
         session.setAttribute("new_business_data_cluster", request.getAttribute("new_business_data_cluster"));
+    }
+    if (session.getAttribute("skipAccounts") == null || isConsentAmendment) {
+        session.setAttribute("skipAccounts", request.getAttribute("customerScopesOnly"));
+    }
+    
+    boolean skipAccounts = (boolean) session.getAttribute("skipAccounts");
+    if (skipAccounts) {
+    	RequestDispatcher requestDispatcher = request.getRequestDispatcher("/oauth2_authz_consent.do");
+        request.setAttribute("sessionDataKeyConsent", Encode.forHtmlAttribute(
+                String.valueOf(session.getAttribute("sessionDataKeyConsent"))));
+        request.setAttribute("isConsentAmendment", isConsentAmendment);
+        Object isSharingDurationUpdated = request.getAttribute("isSharingDurationUpdated") != null ?
+                request.getAttribute("isSharingDurationUpdated") : session.getAttribute("isSharingDurationUpdated");
+        request.setAttribute("isSharingDurationUpdated", isSharingDurationUpdated);
+        request.setAttribute("accountsArry[]", "unavailable");
+        request.setAttribute("accNames", "");
+        Object app = request.getAttribute("app") != null ? request.getAttribute("app") : session.getAttribute("app");
+        request.setAttribute("app", app);
+        Object spFullName = request.getAttribute("sp_full_name") != null ?
+                request.getAttribute("sp_full_name") : session.getAttribute("sp_full_name");
+        request.setAttribute("spFullName", spFullName);
+        request.setAttribute("selectedProfileId", selectedProfileId);
+        request.setAttribute("selectedProfileName", session.getAttribute("selectedProfileName"));
+        Object consentExpiryDateTime = request.getAttribute("consent_expiration") != null ?
+                request.getAttribute("consent_expiration") : session.getAttribute("consent_expiration");
+        request.setAttribute("consent-expiry-date", consentExpiryDateTime);
+        request.setAttribute("accountMaskingEnabled", session.getAttribute("account_masking_enabled"));
+        requestDispatcher.forward(request, response);
     }
 %>
 

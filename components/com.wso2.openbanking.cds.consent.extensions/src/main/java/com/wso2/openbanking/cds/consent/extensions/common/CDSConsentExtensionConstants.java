@@ -102,6 +102,8 @@ public class CDSConsentExtensionConstants {
     public static final String COMMON_CUSTOMER_DETAIL_READ_SCOPE = "common:customer.detail:read";
     public static final String COMMON_ACCOUNTS_BASIC_READ_SCOPE = "bank:accounts.basic:read";
     public static final String COMMON_ACCOUNTS_DETAIL_READ_SCOPE = "bank:accounts.detail:read";
+    public static final String TRANSACTIONS_READ_SCOPE = "bank:transactions:read";
+    public static final String REGULAR_PAYMENTS_READ_SCOPE = "bank:regular_payments:read";
     public static final String COMMON_SUBSTRING = "common:";
     public static final Map<String, Map<String, List<String>>> CDS_DATA_CLUSTER;
     public static final Map<String, Map<String, List<String>>> BUSINESS_CDS_DATA_CLUSTER;
@@ -203,6 +205,7 @@ public class CDSConsentExtensionConstants {
     public static final String CONTACT_CLAIMS = "contactClaims";
     public static final Map<String, String[]> CONTACT_CLUSTER_CLAIMS;
     public static final int CDS_DEFAULT_EXPIRY = 86400; // 1 day
+    public static final String CUSTOMER_SCOPES_ONLY = "customerScopesOnly";
 
     static {
         Map<String, Map<String, List<String>>> dataCluster = new HashMap<>();

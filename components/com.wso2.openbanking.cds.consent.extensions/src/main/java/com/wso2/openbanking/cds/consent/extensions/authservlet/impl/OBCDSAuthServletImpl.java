@@ -107,7 +107,8 @@ public class OBCDSAuthServletImpl implements OBAuthServletInterface {
         }
         httpServletRequest.setAttribute(CDSConsentExtensionConstants.ACCOUNT_MASKING_ENABLED,
                 OpenBankingCDSConfigParser.getInstance().isAccountMaskingEnabled());
-
+        returnMaps.put(CDSConsentExtensionConstants.CUSTOMER_SCOPES_ONLY,
+                dataSet.getBoolean(CDSConsentExtensionConstants.CUSTOMER_SCOPES_ONLY));
         return returnMaps;
     }
 

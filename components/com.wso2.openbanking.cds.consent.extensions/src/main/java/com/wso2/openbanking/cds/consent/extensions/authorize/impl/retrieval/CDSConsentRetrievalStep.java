@@ -113,6 +113,9 @@ public class CDSConsentRetrievalStep implements ConsentRetrievalStep {
                                     requiredData.get(CDSConsentExtensionConstants.CDR_ARRANGEMENT_ID));
                             consentData.addData(CDSConsentExtensionConstants.AUTH_RESOURCE_ID, authId);
                             consentData.addData(CDSConsentExtensionConstants.AUTH_RESOURCE_STATUS, authStatus);
+                            consentData.addData(CDSConsentExtensionConstants.PRE_SELECTED_PROFILE_ID,
+                                    consentResource.getConsentAttributes()
+                                            .get(CDSConsentExtensionConstants.SELECTED_PROFILE_ID));
 
                             // Get pre-selected account list
                             JSONArray preSelectedAccounts = new JSONArray();
@@ -216,6 +219,17 @@ public class CDSConsentRetrievalStep implements ConsentRetrievalStep {
 
             // append consent expiry date
             jsonObject.appendField(CDSConsentExtensionConstants.CONSENT_EXPIRY, expiry);
+
+            //check the scopes has "bank:" scopes to skip account selection
+            String scopesString = consentData.getScopeString();
+            if (scopesString.contains(CDSConsentExtensionConstants.COMMON_ACCOUNTS_BASIC_READ_SCOPE) ||
+                    scopesString.contains(CDSConsentExtensionConstants.COMMON_ACCOUNTS_DETAIL_READ_SCOPE) ||
+                    scopesString.contains(CDSConsentExtensionConstants.TRANSACTIONS_READ_SCOPE) ||
+                    scopesString.contains(CDSConsentExtensionConstants.REGULAR_PAYMENTS_READ_SCOPE)) {
+                jsonObject.appendField(CDSConsentExtensionConstants.CUSTOMER_SCOPES_ONLY, false);
+            } else {
+                jsonObject.appendField(CDSConsentExtensionConstants.CUSTOMER_SCOPES_ONLY, true);
+            }
 
             // append service provider full name
             if (StringUtils.isNotBlank(consentData.getClientId())) {
