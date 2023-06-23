@@ -1,13 +1,10 @@
 /*
- * Copyright (c) 2021, WSO2 Inc. (http://www.wso2.com). All Rights Reserved.
+ * Copyright (c) 2021-2023, WSO2 LLC. (https://www.wso2.com). All Rights Reserved.
  *
- * This software is the property of WSO2 Inc. and its suppliers, if any.
+ * This software is the property of WSO2 LLC. and its suppliers, if any.
  * Dissemination of any information or reproduction of any material contained
- * herein is strictly forbidden, unless permitted by WSO2 in accordance with
- * the WSO2 Software License available at https://wso2.com/licenses/eula/3.1. For specific
- * language governing the permissions and limitations under this license,
- * please see the license as well as any agreement you’ve entered into with
- * WSO2 governing the purchase of this software and any associated services.
+ * herein in any form is strictly forbidden, unless permitted by WSO2 expressly.
+ * You may not alter or remove any copyright or other notice from copies of this content.
  */
 package com.wso2.openbanking.cds.identity.auth.extensions.response.handler;
 
@@ -17,6 +14,7 @@ import com.wso2.openbanking.accelerator.identity.auth.extensions.response.handle
 import com.wso2.openbanking.accelerator.identity.util.IdentityCommonConstants;
 import com.wso2.openbanking.accelerator.identity.util.IdentityCommonUtil;
 import com.wso2.openbanking.cds.identity.utils.CDSIdentityUtil;
+import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
 import org.apache.commons.lang.ArrayUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.logging.Log;
@@ -32,6 +30,11 @@ public class CDSResponseTypeHandlerImpl implements OBResponseTypeHandler {
 
     private static final Log log = LogFactory.getLog(CDSResponseTypeHandlerImpl.class);
 
+    @SuppressFBWarnings("PZLA_PREFER_ZERO_LENGTH_ARRAYS")
+    // Suppressed content - return null
+    // Suppression reason - False Positive : Returning of null values are handled accordingly just like the other
+    //                                       values returned in this method.
+    // Suppressed warning count - 1
     @Override
     public String[] updateApprovedScopes(OAuthAuthzReqMessageContext oAuthAuthzReqMessageContext) {
 
