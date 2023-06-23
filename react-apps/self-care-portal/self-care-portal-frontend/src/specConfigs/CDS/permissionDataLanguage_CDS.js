@@ -66,6 +66,47 @@ export const permissionDataLanguage_CDS = [
     dataCluster: "Contact details",
     permissions: ["Phone", "Email address", "Mail address", "Residential address"]
   },
+  // profile scope and standard claim clusters
+  {
+    scope: "NAME",
+    dataCluster: "Name",
+    permissions: ["Full name and title(s)"]
+  },
+  {
+    scope: "EMAIL",
+    dataCluster: "Contact Details",
+    permissions: ["Email address"]
+  },
+  {
+    scope: "MAIL",
+    dataCluster: "Contact Details",
+    permissions: ["Mail address"]
+  },
+  {
+    scope: "PHONE",
+    dataCluster: "Contact Details",
+    permissions: ["Phone number"]
+  },
+  {
+    scope: "EMAIL_MAIL",
+    dataCluster: "Contact Details",
+    permissions: ["Email address", "Mail address"]
+  },
+  {
+    scope: "EMAIL_PHONE",
+    dataCluster: "Contact Details",
+    permissions: ["Email address", "Phone number"]
+  },
+  {
+    scope: "MAIL_PHONE",
+    dataCluster: "Contact Details",
+    permissions: ["Mail address", "Phone number"]
+  },
+  {
+    scope: "EMAIL_MAIL_PHONE",
+    dataCluster: "Contact Details",
+    permissions: ["Email address", "Mail address", "Phone number"]
+  },
   //3.0.0 clusters
   {
     scope: "ReadAccountsDetail",
