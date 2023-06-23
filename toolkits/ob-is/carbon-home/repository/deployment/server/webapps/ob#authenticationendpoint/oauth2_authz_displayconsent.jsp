@@ -62,6 +62,9 @@
         }
     }
     session.setAttribute("isSharedWithinDay", isSharedWithinDay);
+    String nameClaims = (String) session.getAttribute("nameClaims");
+    String contactClaims = (String) session.getAttribute("contactClaims");
+    boolean skipAccounts = (boolean) session.getAttribute("skipAccounts");
 %>
 <div class="col-xs-12 col-sm-12 col-md-12 col-lg-12">
     <div class="clearfix"></div>
@@ -130,6 +133,13 @@
                                             <li>${record_data}</li>
                                         </c:forEach>
                                     </ul>
+                                    <c:if test="${(record.key eq 'Name')}">
+                                        <u class="ui body col-md-12"> Updated claims & scopes : <%=nameClaims%>
+                                        </u>
+                                    </c:if>
+                                    <c:if test="${(record.key eq 'Contact Details')}">
+                                        <u class="ui body col-md-12"> Updated claims : <%=contactClaims%> </u>
+                                    </c:if>
                                     <c:if test="${(record.key eq 'Account name, type, and balance') ||
                                     (record.key eq 'Account balance and details') || (record.key eq 'Transaction details')
                                     || (record.key eq 'Direct debits and scheduled payments')}">

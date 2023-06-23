@@ -307,6 +307,15 @@ public class CDSConsentPersistStep implements ConsentPersistStep {
                     get(CDSConsentExtensionConstants.CONSENT_ATTRIBUTES);
             consentAttributes.putAll(persistStepsAttributes);
         }
+        // Add userinfo and id token claims as consent attributes.
+        if (consentData.getMetaDataMap().containsKey(CDSConsentExtensionConstants.USERINFO_CLAIMS)) {
+            consentAttributes.put(CDSConsentExtensionConstants.USERINFO_CLAIMS,
+                    consentData.getMetaDataMap().get(CDSConsentExtensionConstants.USERINFO_CLAIMS).toString());
+        }
+        if (consentData.getMetaDataMap().containsKey(CDSConsentExtensionConstants.ID_TOKEN_CLAIMS)) {
+            consentAttributes.put(CDSConsentExtensionConstants.ID_TOKEN_CLAIMS,
+                    consentData.getMetaDataMap().get(CDSConsentExtensionConstants.ID_TOKEN_CLAIMS).toString());
+        }
 
         return consentAttributes;
     }

@@ -37,6 +37,9 @@ import java.io.InputStream;
 import java.net.HttpURLConnection;
 import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 
@@ -84,10 +87,24 @@ public class CDSDataClusterRetrievalStep implements ConsentRetrievalStep {
                             CDSConsentExtensionConstants.ORGANISATION);
                     JSONArray newBusinessDataCluster = getDataClusterFromScopes(newScopes,
                             CDSConsentExtensionConstants.ORGANISATION);
+                    // Add profile scope and standard claim data clusters
+                    JSONObject profileDataJsonObject = processProfileDataClusters(dataCluster, newDataCluster,
+                            businessDataCluster, newBusinessDataCluster, commonScopes, newScopes);
+                    dataCluster = (JSONArray) profileDataJsonObject.get(CDSConsentExtensionConstants.DATA_CLUSTER);
+                    newDataCluster = (JSONArray) profileDataJsonObject
+                            .get(CDSConsentExtensionConstants.NEW_DATA_CLUSTER);
+                    businessDataCluster = (JSONArray) profileDataJsonObject
+                            .get(CDSConsentExtensionConstants.BUSINESS_DATA_CLUSTER);
+                    newBusinessDataCluster = (JSONArray) profileDataJsonObject
+                            .get(CDSConsentExtensionConstants.NEW_BUSINESS_DATA_CLUSTER);
                     jsonObject.put(CDSConsentExtensionConstants.DATA_REQUESTED, dataCluster);
                     jsonObject.put(CDSConsentExtensionConstants.NEW_DATA_REQUESTED, newDataCluster);
                     jsonObject.put(CDSConsentExtensionConstants.BUSINESS_DATA_CLUSTER, businessDataCluster);
                     jsonObject.put(CDSConsentExtensionConstants.NEW_BUSINESS_DATA_CLUSTER, newBusinessDataCluster);
+                    jsonObject.put(CDSConsentExtensionConstants.NAME_CLAIMS,
+                            profileDataJsonObject.get(CDSConsentExtensionConstants.NAME_CLAIMS));
+                    jsonObject.put(CDSConsentExtensionConstants.CONTACT_CLAIMS,
+                            profileDataJsonObject.get(CDSConsentExtensionConstants.CONTACT_CLAIMS));
                 } else {
                     log.error("Permissions not found for the given consent");
                     throw new ConsentException(ResponseStatus.INTERNAL_SERVER_ERROR,
@@ -97,6 +114,12 @@ public class CDSDataClusterRetrievalStep implements ConsentRetrievalStep {
                 JSONArray dataCluster = getDataClusterFromScopes(scopes, customerType);
                 JSONArray businessDataCluster = getDataClusterFromScopes(scopes,
                         CDSConsentExtensionConstants.ORGANISATION);
+                // Add profile scope and standard claim data clusters
+                JSONObject processedDataClusters = processProfileDataClusters(new JSONArray(), dataCluster,
+                        new JSONArray(), businessDataCluster, new JSONArray(), scopes);
+                dataCluster = (JSONArray) processedDataClusters.get(CDSConsentExtensionConstants.NEW_DATA_CLUSTER);
+                businessDataCluster = (JSONArray) processedDataClusters
+                        .get(CDSConsentExtensionConstants.NEW_BUSINESS_DATA_CLUSTER);
                 jsonObject.put(CDSConsentExtensionConstants.DATA_REQUESTED, dataCluster);
                 jsonObject.put(CDSConsentExtensionConstants.BUSINESS_DATA_CLUSTER, businessDataCluster);
             }
@@ -196,5 +219,152 @@ public class CDSDataClusterRetrievalStep implements ConsentRetrievalStep {
             dataCluster.add(dataClusterItem);
         }
         return dataCluster;
+    }
+
+    /**
+     * Get profile data clusters for the given scopes.
+     *
+     * @param dataCluster            previous data cluster
+     * @param newDataCluster         new data cluster
+     * @param businessDataCluster    previous business data cluster
+     * @param newBusinessDataCluster new business data cluster
+     * @param previousScopes         previous scopes array
+     * @param newScopes              new scopes array
+     * @return modified data clusters with profile data
+     */
+    private static JSONObject processProfileDataClusters(JSONArray dataCluster, JSONArray
+            newDataCluster, JSONArray businessDataCluster, JSONArray
+                                                                 newBusinessDataCluster, JSONArray previousScopes,
+                                                         JSONArray newScopes) {
+
+        ArrayList<String> newlyRequestedProfileClaims = new ArrayList<>();
+        ArrayList<String> previouslyRequestedProfileClaims = new ArrayList<>();
+        ArrayList<String> nameClaims = new ArrayList<>();
+        ArrayList<String> contactClaims = new ArrayList<>();
+
+        // Processing name cluster related scopes and claims.
+        for (String claim : CDSConsentExtensionConstants.NAME_CLUSTER_PERMISSIONS) {
+            if (newScopes.contains(PermissionsEnum.fromValue(claim))) {
+                newlyRequestedProfileClaims.add(CDSConsentExtensionConstants.NAME_CLUSTER);
+                // Remove previous name data clusters if exists.
+                previouslyRequestedProfileClaims.remove(CDSConsentExtensionConstants.NAME_CLUSTER);
+                break;
+            } else if (!previouslyRequestedProfileClaims.contains(CDSConsentExtensionConstants.NAME_CLUSTER) &&
+                    previousScopes.contains(PermissionsEnum.fromValue(claim))) {
+                previouslyRequestedProfileClaims.add(CDSConsentExtensionConstants.NAME_CLUSTER);
+            }
+        }
+        //Add all requested claims related to name cluster for consent amendment UI display
+        for (String claim : CDSConsentExtensionConstants.NAME_CLUSTER_PERMISSIONS) {
+            // Add all requested claims related to name cluster for consent amendment UI display
+            if (previousScopes.contains(PermissionsEnum.fromValue(claim)) ||
+                    newScopes.contains(PermissionsEnum.fromValue(claim))) {
+                nameClaims.add(claim);
+            }
+        }
+
+        // Processing contact cluster related claims.
+        ArrayList<String> newContactPermissions = new ArrayList<>();
+        ArrayList<String> previousContactPermissions = new ArrayList<>();
+        for (Map.Entry<String, String[]> cluster : CDSConsentExtensionConstants.CONTACT_CLUSTER_CLAIMS.entrySet()) {
+            String clusterName = cluster.getKey();
+            String[] clusterClaims = cluster.getValue();
+            for (String claim : clusterClaims) {
+                if (newScopes.contains(PermissionsEnum.fromValue(claim))) {
+                    newContactPermissions.add(clusterName);
+                    break;
+                } else if (previousScopes.contains(PermissionsEnum.fromValue(claim))) {
+                    previousContactPermissions.add(clusterName);
+                }
+            }
+            // Add all requested claims related to contact cluster for consent amendment UI display
+            for (String claim : clusterClaims) {
+                if (previousScopes.contains(PermissionsEnum.fromValue(claim)) ||
+                        newScopes.contains(PermissionsEnum.fromValue(claim))) {
+                    contactClaims.add(claim);
+                }
+            }
+        }
+
+        if (newContactPermissions.size() > 0) {
+            newContactPermissions.addAll(previousContactPermissions);
+            newlyRequestedProfileClaims.add(processContactClaims(newContactPermissions));
+        } else if (previousContactPermissions.size() > 0) {
+            previouslyRequestedProfileClaims.add(processContactClaims(previousContactPermissions));
+        }
+
+        Map<String, JSONArray> newDataClusters =
+                addProfileDataClusters(newlyRequestedProfileClaims, newDataCluster, newBusinessDataCluster);
+        Map<String, JSONArray> previousDataClusters =
+                addProfileDataClusters(previouslyRequestedProfileClaims, dataCluster, businessDataCluster);
+
+        JSONObject profileDataObject = new JSONObject();
+        profileDataObject.put(CDSConsentExtensionConstants.DATA_CLUSTER,
+                previousDataClusters.get(CDSConsentExtensionConstants.DATA_CLUSTER));
+        profileDataObject.put(CDSConsentExtensionConstants.NEW_DATA_CLUSTER,
+                newDataClusters.get(CDSConsentExtensionConstants.DATA_CLUSTER));
+        profileDataObject.put(CDSConsentExtensionConstants.BUSINESS_DATA_CLUSTER,
+                previousDataClusters.get(CDSConsentExtensionConstants.BUSINESS_DATA_CLUSTER));
+        profileDataObject.put(CDSConsentExtensionConstants.NEW_BUSINESS_DATA_CLUSTER,
+                newDataClusters.get(CDSConsentExtensionConstants.BUSINESS_DATA_CLUSTER));
+        profileDataObject.put(CDSConsentExtensionConstants.NAME_CLAIMS, String.join(", ", nameClaims));
+        profileDataObject.put(CDSConsentExtensionConstants.CONTACT_CLAIMS, String.join(", ", contactClaims));
+
+        return profileDataObject;
+    }
+
+    /**
+     * Process contact claims and build the contact cluster name.
+     * @param contactPermissions contact permissions
+     * @return contact cluster name
+     */
+    private static String processContactClaims(ArrayList<String> contactPermissions) {
+
+        HashSet<String> contactPermissionSet = new HashSet<>(contactPermissions);
+        Object[] permissionsArray = contactPermissionSet.toArray();
+        Arrays.sort(permissionsArray);
+        StringBuilder clusterName = new StringBuilder(CDSConsentExtensionConstants.CONTACT_CLUSTER);
+
+        for (Object permission : permissionsArray) {
+            clusterName.append("_");
+            clusterName.append(permission.toString());
+        }
+        return String.valueOf(clusterName);
+    }
+
+    /**
+     * Add profile scope and other standard claims related data clusters for the provided claims.
+     * @param profileClaims profile claims
+     * @param individualDataCluster individual customer data cluster
+     * @param businessDataCluster business customer data cluster
+     * @return map of individual and business data clusters
+     */
+    private static Map<String, JSONArray> addProfileDataClusters(ArrayList<String> profileClaims,
+                                                                 JSONArray individualDataCluster,
+                                                                 JSONArray businessDataCluster) {
+
+        for (String claimCluster : profileClaims) {
+            Map<String, List<String>> cluster =
+                    CDSConsentExtensionConstants.PROFILE_DATA_CLUSTER.get(claimCluster);
+            if (cluster == null) {
+                log.warn(String.format("No data found for profile scope claim: %s requested.", claimCluster));
+            } else {
+                JSONObject dataClusterItem = new JSONObject();
+                for (Map.Entry<String, List<String>> entry : cluster.entrySet()) {
+                    dataClusterItem.put(CDSConsentExtensionConstants.TITLE, entry.getKey());
+                    JSONArray requestedData = new JSONArray();
+                    requestedData.addAll(entry.getValue());
+                    dataClusterItem.put(CDSConsentExtensionConstants.DATA, requestedData);
+                }
+
+                individualDataCluster.add(dataClusterItem);
+                businessDataCluster.add(dataClusterItem);
+            }
+        }
+        Map<String, JSONArray> dataClusters = new HashMap<>();
+        dataClusters.put(CDSConsentExtensionConstants.DATA_CLUSTER, individualDataCluster);
+        dataClusters.put(CDSConsentExtensionConstants.BUSINESS_DATA_CLUSTER, businessDataCluster);
+
+        return dataClusters;
     }
 }

@@ -17,19 +17,27 @@
     String preSelectedProfileId = (String) request.getAttribute("preSelectedProfileId");
     String selectedProfileId = (preSelectedProfileId == null || "".equals(preSelectedProfileId)) ?
             request.getParameter("selectedProfileId") : preSelectedProfileId;
-    if (session.getAttribute("profiles_data") == null) {
+    boolean isConsentAmendment = request.getAttribute("isConsentAmendment") != null ?
+            (boolean) request.getAttribute("isConsentAmendment") : false;
+    Object nameClaims = request.getAttribute("nameClaims");
+    String nameClaimsString = nameClaims != null ? (String) nameClaims : "";
+    session.setAttribute("nameClaims", nameClaimsString);
+    Object contactClaims = request.getAttribute("contactClaims");
+    String contactClaimsString = contactClaims != null ? (String) contactClaims : "";
+    session.setAttribute("contactClaims", contactClaimsString);
+    if (session.getAttribute("profiles_data") == null || isConsentAmendment) {
         session.setAttribute("profiles_data", request.getAttribute("profiles_data"));
     }
-    if (session.getAttribute("configParamsMap") == null) {
+    if (session.getAttribute("configParamsMap") == null || isConsentAmendment) {
         session.setAttribute("configParamsMap", request.getAttribute("data_requested"));
     }
-    if (session.getAttribute("newConfigParamsMap") == null) {
+    if (session.getAttribute("newConfigParamsMap") == null || isConsentAmendment) {
         session.setAttribute("newConfigParamsMap", request.getAttribute("new_data_requested"));
     }
-    if (session.getAttribute("business_data_cluster") == null) {
+    if (session.getAttribute("business_data_cluster") == null || isConsentAmendment) {
         session.setAttribute("business_data_cluster", request.getAttribute("business_data_cluster"));
     }
-    if (session.getAttribute("new_business_data_cluster") == null) {
+    if (session.getAttribute("new_business_data_cluster") == null || isConsentAmendment) {
         session.setAttribute("new_business_data_cluster", request.getAttribute("new_business_data_cluster"));
     }
 %>

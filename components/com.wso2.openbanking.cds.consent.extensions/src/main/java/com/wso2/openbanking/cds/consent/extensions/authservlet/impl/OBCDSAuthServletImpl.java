@@ -80,6 +80,10 @@ public class OBCDSAuthServletImpl implements OBAuthServletInterface {
                 httpServletRequest.setAttribute(CDSConsentExtensionConstants.IS_SHARING_DURATION_UPDATED,
                         dataSet.get(CDSConsentExtensionConstants.IS_SHARING_DURATION_UPDATED));
             }
+            returnMaps.put(CDSConsentExtensionConstants.NAME_CLAIMS,
+                    dataSet.getString(CDSConsentExtensionConstants.NAME_CLAIMS));
+            returnMaps.put(CDSConsentExtensionConstants.CONTACT_CLAIMS,
+                    dataSet.getString(CDSConsentExtensionConstants.CONTACT_CLAIMS));
         } else {
             httpServletRequest.setAttribute(CDSConsentExtensionConstants.IS_CONSENT_AMENDMENT, false);
         }
