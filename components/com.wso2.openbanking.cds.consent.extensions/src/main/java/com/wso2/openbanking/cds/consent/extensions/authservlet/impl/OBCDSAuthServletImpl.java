@@ -75,6 +75,10 @@ public class OBCDSAuthServletImpl implements OBAuthServletInterface {
             JSONArray newDataRequestedJsonArray = dataSet.getJSONArray(CDSConsentExtensionConstants.NEW_DATA_REQUESTED);
             Map<String, List<String>> newDataRequested = getRequestedDataMap(newDataRequestedJsonArray);
             returnMaps.put(CDSConsentExtensionConstants.NEW_DATA_REQUESTED, newDataRequested);
+            JSONArray newBusinessDataRequestedJsonArray =
+                    dataSet.getJSONArray(CDSConsentExtensionConstants.NEW_BUSINESS_DATA_CLUSTER);
+            Map<String, List<String>> newBusinessDataRequested = getRequestedDataMap(newBusinessDataRequestedJsonArray);
+            returnMaps.put(CDSConsentExtensionConstants.NEW_BUSINESS_DATA_CLUSTER, newBusinessDataRequested);
             httpServletRequest.setAttribute(CDSConsentExtensionConstants.IS_CONSENT_AMENDMENT, true);
             if (dataSet.has(CDSConsentExtensionConstants.IS_SHARING_DURATION_UPDATED)) {
                 httpServletRequest.setAttribute(CDSConsentExtensionConstants.IS_SHARING_DURATION_UPDATED,
