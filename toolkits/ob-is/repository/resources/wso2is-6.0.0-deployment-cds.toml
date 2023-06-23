@@ -506,17 +506,17 @@ allowed_values = ["private_key_jwt"]
 
 [open_banking.dcr.registration.response_types]
 required = true
-allowed_values = ["code id_token"]
+allowed_values = ["code"]
 
 [open_banking.dcr.registration.application_type]
 allowed_values = ["web"]
 
 [open_banking.dcr.registration.id_token_encryption_response_alg]
-required = true
+required = false
 allowed_values = ["RSA-OAEP", "RSA-OAEP-256"]
 
 [open_banking.dcr.registration.id_token_encryption_response_enc]
-required = true
+required = false
 allowed_values = ["A256GCM", "A128CBC-HS256"]
 
 [open_banking.dcr.registration.token_endpoint_auth_signing_alg]
