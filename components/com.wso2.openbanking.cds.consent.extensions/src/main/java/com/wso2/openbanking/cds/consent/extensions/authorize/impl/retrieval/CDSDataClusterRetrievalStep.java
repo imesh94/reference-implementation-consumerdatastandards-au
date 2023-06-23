@@ -81,8 +81,10 @@ public class CDSDataClusterRetrievalStep implements ConsentRetrievalStep {
                             newScopes.add(scope);
                         }
                     }
-                    JSONArray dataCluster = getDataClusterFromScopes(commonScopes, customerType);
-                    JSONArray newDataCluster = getDataClusterFromScopes(newScopes, customerType);
+                    JSONArray dataCluster = getDataClusterFromScopes(commonScopes,
+                            CDSConsentExtensionConstants.INDIVIDUAL_PROFILE_TYPE);
+                    JSONArray newDataCluster = getDataClusterFromScopes(newScopes,
+                            CDSConsentExtensionConstants.INDIVIDUAL_PROFILE_TYPE);
                     JSONArray businessDataCluster = getDataClusterFromScopes(commonScopes,
                             CDSConsentExtensionConstants.ORGANISATION);
                     JSONArray newBusinessDataCluster = getDataClusterFromScopes(newScopes,
@@ -111,7 +113,8 @@ public class CDSDataClusterRetrievalStep implements ConsentRetrievalStep {
                             "Permissions not found for the given consent");
                 }
             } else {
-                JSONArray dataCluster = getDataClusterFromScopes(scopes, customerType);
+                JSONArray dataCluster = getDataClusterFromScopes(scopes,
+                        CDSConsentExtensionConstants.INDIVIDUAL_PROFILE_TYPE);
                 JSONArray businessDataCluster = getDataClusterFromScopes(scopes,
                         CDSConsentExtensionConstants.ORGANISATION);
                 // Add profile scope and standard claim data clusters
