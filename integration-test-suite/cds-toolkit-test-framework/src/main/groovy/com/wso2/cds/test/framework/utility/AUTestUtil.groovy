@@ -12,6 +12,10 @@
 
 package com.wso2.cds.test.framework.utility
 
+import com.google.gson.Gson
+import com.google.gson.JsonArray
+import com.google.gson.JsonElement
+import com.google.gson.JsonObject
 import com.wso2.cds.test.framework.constant.AUAccountProfile
 import com.wso2.cds.test.framework.constant.AUAccountScope
 import com.wso2.cds.test.framework.constant.AUConstants
@@ -21,7 +25,9 @@ import com.wso2.openbanking.test.framework.utility.OBTestUtil
 import com.wso2.cds.test.framework.configuration.AUConfigurationService
 import org.apache.http.conn.ssl.SSLSocketFactory
 import org.testng.Assert
-import io.restassured.response.Response;
+import io.restassured.response.Response
+
+import java.nio.charset.Charset;
 
 /**
  * Domain specific AU layer Class to contain utility classes used for Test Framework.
@@ -235,6 +241,127 @@ class AUTestUtil extends OBTestUtil {
      */
     static String getPermissionForUser(String accountId) {
         return "$AUConstants.PARAM_PERMISSION_STATUS.$accountId"
+    }
+
+    /**
+     * Retrieve the required Joint Account IDs from the shareable Accounts endpoint
+     * @param shareableAccountsResponse - shareable Accounts endpoint response
+     * @return accountIdList.
+     */
+    static List<String> getJointAccountIds(Response shareableAccountsResponse) {
+
+        List<String> accountIdList = new ArrayList<>()
+        def sharableAccountList = shareableAccountsResponse.jsonPath().get(AUConstants.DATA)
+
+        for (sharableAccount in sharableAccountList) {
+            if (sharableAccount["isJointAccount"]) {
+                accountIdList.add(sharableAccount[AUConstants.PARAM_ACCOUNT_ID].toString())
+            }
+        }
+        return accountIdList
+    }
+
+    /**
+     * Retrieve the required Normal Individual Account IDs from the shareable Accounts endpoint
+     * @param shareableAccountsResponse - shareable Accounts endpoint response
+     * @return accountIdList.
+     */
+    static List<String> getSingleAccountIds(Response shareableAccountsResponse) {
+
+        List<String> normalAccountIdList = new ArrayList<>()
+        def sharableAccountList = shareableAccountsResponse.jsonPath().get(AUConstants.DATA)
+
+        for (sharableAccount in sharableAccountList) {
+            normalAccountIdList.add(sharableAccount[AUConstants.PARAM_ACCOUNT_ID].toString())
+        }
+
+        return normalAccountIdList
+    }
+
+    /**
+     * Get the required Secondary Account IDs from the shareable Accounts endpoint
+     * @param shareableAccountsResponse - shareable Accounts endpoint response
+     * @return ShareableAccountMap
+     */
+    static Map getSecondaryUserDetails(Response shareableAccountsResponse, boolean isSecondarySingleAccount = true) {
+
+        //Asserting sharableBankAccountsResponse response and sec
+        def sharableAccountList = shareableAccountsResponse.jsonPath().get(AUConstants.DATA)
+
+        def  ShareableAccountMap = [:]
+
+        for (sharableAccount in sharableAccountList) {
+            if (sharableAccount[AUConstants.IS_SECONDARY_ACCOUNT]) {
+                if (isSecondarySingleAccount && !sharableAccount[AUConstants.IS_JOINT_ACCOUNT]) {
+
+                    ShareableAccountMap [AUConstants.PARAM_ACCOUNT_ID] = sharableAccount[AUConstants.ACCOUNT_ID]
+                    break
+                } else if (!isSecondarySingleAccount && sharableAccount[AUConstants.IS_JOINT_ACCOUNT]){
+                    ShareableAccountMap[AUConstants.PARAM_ACCOUNT_ID] = sharableAccount[AUConstants.ACCOUNT_ID]
+                    break
+                }
+                break
+            }
+        }
+        return ShareableAccountMap
+    }
+
+    /**
+     * Get List of Legal Entity IDs.
+     * @param legalEntityListResponse - Legal Entity List Response
+     * @param userId - User ID
+     * @param accountId - Account ID
+     * @return List of Legal Entity IDs
+     */
+    static List<String> getLegalEntityIdList(Response legalEntityListResponse, String userId, String accountId) {
+
+        // Parse the payload using Gson
+        Gson gson = new Gson();
+        JsonObject payloadObj = gson.fromJson(legalEntityListResponse.getBody(), JsonObject.class)
+
+        // Get the secondary users array
+        JsonArray secondaryUsersArray = payloadObj.getAsJsonArray(AUConstants.PAYLOAD_SECONDARY_USERS)
+
+        // List to store legal entity IDs
+        List<String> legalEntityIds = new ArrayList<>()
+
+        // Iterate through the secondary users
+        for (JsonElement secondaryUserElement : secondaryUsersArray) {
+            JsonObject secondaryUserObj = secondaryUserElement.getAsJsonObject()
+
+            // Check if the user ID matches
+            if (secondaryUserObj.get(AUConstants.SECONDARY_USERS_USERID).getAsString().equals(userId)) {
+
+                // Get the legal entity details array for the given user
+                JsonArray legalEntityDetailsArray = secondaryUserObj.getAsJsonArray(AUConstants.LEGAL_ENTITY_DETAILS)
+
+                // Iterate through the legal entity details
+                for (JsonElement legalEntityDetailsElement : legalEntityDetailsArray) {
+                    JsonObject legalEntityDetailsObj = legalEntityDetailsElement.getAsJsonObject()
+
+                    // Check if the account ID matches
+                    if (legalEntityDetailsObj.get(AUConstants.PAYLOAD_PARAM_ACCOUNT_ID).getAsString().equals(accountId)) {
+
+                        // Get the legal entities array for the given account
+                        JsonArray legalEntitiesArray = legalEntityDetailsObj.getAsJsonArray(AUConstants.LEGAL_ENTITIES)
+
+                        // Iterate through the legal entities
+                        for (JsonElement legalEntityElement : legalEntitiesArray) {
+                            JsonObject legalEntityObj = legalEntityElement.getAsJsonObject()
+
+                            // Get the legal entity ID
+                            String legalEntityId = legalEntityObj.get(AUConstants.LEGAL_ENTITY_ID).getAsString()
+
+                            // Add legal entity ID to the list
+                            legalEntityIds.add(legalEntityId)
+                        }
+                        break
+                    }
+                }
+                break
+            }
+        }
+        return legalEntityIds
     }
 }
 

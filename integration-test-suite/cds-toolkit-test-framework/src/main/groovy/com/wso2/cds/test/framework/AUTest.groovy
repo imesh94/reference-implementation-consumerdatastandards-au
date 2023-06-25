@@ -9,6 +9,9 @@
 
 package com.wso2.cds.test.framework
 
+import com.google.gson.JsonArray
+import com.google.gson.JsonElement
+import com.google.gson.JsonObject
 import com.wso2.cds.test.framework.constant.AUAccountProfile
 import com.wso2.cds.test.framework.constant.AUAccountScope
 import com.wso2.cds.test.framework.constant.AUConfigConstants
@@ -39,6 +42,7 @@ import com.wso2.cds.test.framework.utility.AUTestUtil
 import java.nio.charset.Charset
 import java.time.OffsetDateTime
 import java.time.ZoneOffset
+import com.google.gson.Gson
 
 /**
  * Class for defining common methods that needed in test classes.
@@ -47,9 +51,10 @@ import java.time.ZoneOffset
  */
 class AUTest extends OBTest {
 
-    AUConfigurationService auConfiguration
+    static AUConfigurationService auConfiguration
     protected static Logger log = LogManager.getLogger(AUTest.class.getName())
     AUAuthorisationBuilder auAuthorisationBuilder
+    private boolean adrNameCheck
 
     @BeforeClass(alwaysRun = true)
     void "Initialize Test Suite"() {
@@ -84,6 +89,7 @@ class AUTest extends OBTest {
     public String authFlowError
     public Response response
     public def automationResponse
+    public String secondaryAccountId, secondaryUserId
 
     /**
      * Set Scopes of application
@@ -401,73 +407,18 @@ class AUTest extends OBTest {
      * @param profiles
      * @param isSelectMultipleAccounts
      */
-    void selectSecondaryAccount(AutomationMethod authWebDriver, AUAccountProfile profiles = null,
-                                 boolean isSelectMultipleAccounts = false) {
+    void selectSecondaryAccount(AutomationMethod authWebDriver, boolean isSelectMultipleAccounts = false) {
 
-        //If Profile Selection Enabled
-        if (auConfiguration.getProfileSelectionEnabled()) {
-            if (profiles == AUAccountProfile.ORGANIZATION_B) {
+        //Select Account 1
+        consentedAccount = authWebDriver.getElementAttribute(AUTestUtil.getSecondaryAccount1XPath(),
+                AUPageObjects.VALUE)
+        authWebDriver.clickButtonXpath(AUTestUtil.getSecondaryAccount1XPath())
 
-                //Select Business Profile
-                authWebDriver.selectOption(AUPageObjects.ORGANIZATION_B_PROFILE_SELECTION)
-                authWebDriver.clickButtonXpath(AUPageObjects.PROFILE_SELECTION_NEXT_BUTTON)
-
-                //Select Business Account 1
-                consentedAccount = authWebDriver.getElementAttribute(AUTestUtil.getBusinessAccount1CheckBox(),
-                        AUPageObjects.VALUE)
-                authWebDriver.clickButtonXpath(AUTestUtil.getBusinessAccount1CheckBox())
-
-                if (isSelectMultipleAccounts) {
-                    //Select Business Account 2
-                    consentedAccount = authWebDriver.getElementAttribute(AUTestUtil.getBusinessAccount2CheckBox(),
-                            AUPageObjects.VALUE)
-                    authWebDriver.clickButtonXpath(AUTestUtil.getBusinessAccount2CheckBox())
-                }
-            } else if(profiles == AUAccountProfile.ORGANIZATION_A) {
-
-                //Select Business Profile
-                authWebDriver.selectOption(AUPageObjects.ORGANIZATION_A_PROFILE_SELECTION)
-                authWebDriver.clickButtonXpath(AUPageObjects.PROFILE_SELECTION_NEXT_BUTTON)
-
-                //Select Business Account 1
-                consentedAccount = authWebDriver.getElementAttribute(AUTestUtil.getBusinessAccount1CheckBox(),
-                        AUPageObjects.VALUE)
-                authWebDriver.clickButtonXpath(AUTestUtil.getBusinessAccount1CheckBox())
-
-            } else {
-                //Select Individual Profile
-                authWebDriver.selectOption(AUPageObjects.INDIVIDUAL_PROFILE_SELECTION)
-                authWebDriver.clickButtonXpath(AUPageObjects.PROFILE_SELECTION_NEXT_BUTTON)
-
-                //Select Individual Account 1
-                consentedAccount = authWebDriver.getElementAttribute(AUTestUtil.getSingleAccountXPath(),
-                        AUPageObjects.VALUE)
-                authWebDriver.clickButtonXpath(AUTestUtil.getSingleAccountXPath())
-
-                if(isSelectMultipleAccounts) {
-                    //Select Individual Account 2
-                    consentedAccount = authWebDriver.getElementAttribute(AUTestUtil.getAltSingleAccountXPath(),
-                            AUPageObjects.VALUE)
-                    authWebDriver.clickButtonXpath(AUTestUtil.getAltSingleAccountXPath())
-                }
-            }
-        }
-        //If Profile Selection Disabled
-        else {
-            //Verify the secondary account label
-            Assert.assertTrue(authWebDriver.isElementDisplayed(AUPageObjects.LBL_SECONDARY_ACCOUNT_INDICATION))
-
-            //Select Account 1
-            consentedAccount = authWebDriver.getElementAttribute(AUTestUtil.getSecondaryAccount1XPath(),
+        if (isSelectMultipleAccounts) {
+            //Select Account 2
+            consentedAccount = authWebDriver.getElementAttribute(AUTestUtil.getSecondaryAccount2XPath(),
                     AUPageObjects.VALUE)
-            authWebDriver.clickButtonXpath(AUTestUtil.getSecondaryAccount1XPath())
-
-            if (isSelectMultipleAccounts) {
-                //Select Account 2
-                consentedAccount = authWebDriver.getElementAttribute(AUTestUtil.getSecondaryAccount2XPath(),
-                        AUPageObjects.VALUE)
-                authWebDriver.clickButtonXpath(AUTestUtil.getSecondaryAccount2XPath())
-            }
+            authWebDriver.clickButtonXpath(AUTestUtil.getSecondaryAccount2XPath())
         }
     }
 
@@ -545,7 +496,7 @@ class AUTest extends OBTest {
      * @param profiles
      */
     void doConsentAuthorisationViaRequestUriLargeSharingDue(List<AUAccountScope> scopes, URI requestUri,
-                                                          String clientId = null , AUAccountProfile profiles = null) {
+                                                            String clientId = null , AUAccountProfile profiles = null) {
         if (clientId != null) {
             authoriseUrl = auAuthorisationBuilder.getAuthorizationRequest(scopes, requestUri, clientId)
                     .toURI().toString()
@@ -663,8 +614,10 @@ class AUTest extends OBTest {
 
                     //Click Confirm Button
                     authWebDriver.clickButtonXpath(AUPageObjects.CONSENT_SUBMIT_XPATH)
+
+                    //Click Confirm Button
+                    authWebDriver.clickButtonXpath(AUPageObjects.CONSENT_SUBMIT_XPATH)
                 }
-                .addStep(getWaitForRedirectAutomationStep())
                 .execute()
 
         // Get Code From URL
@@ -678,8 +631,9 @@ class AUTest extends OBTest {
      * @param clientId
      * @param profiles
      */
-    void doSecondaryAccountSelection(List<AUAccountScope> scopes, URI requestUri,
-                                     String clientId = null , AUAccountProfile profiles = null) {
+    void doSecondaryAccountSelection(List<AUAccountScope> scopes, URI requestUri, String clientId = null,
+                                     boolean isMultipleAccountsSelect = false) {
+
         if (clientId != null) {
             authoriseUrl = auAuthorisationBuilder.getAuthorizationRequest(scopes, requestUri, clientId)
                     .toURI().toString()
@@ -693,11 +647,8 @@ class AUTest extends OBTest {
                 .addStep { driver, context ->
                     AutomationMethod authWebDriver = new AutomationMethod(driver)
 
-                    Assert.assertTrue(authWebDriver.getElementAttribute(AUPageObjects.ADR_NAME_HEADER_XPATH, AUPageObjects.TEXT)
-                            .contains(auConfiguration.getAppDCRSoftwareId()))
-
                     //Select Secondary Account
-                    selectSecondaryAccount(authWebDriver, profiles, true)
+                    selectSecondaryAccount(authWebDriver, isMultipleAccountsSelect)
 
                     //Click Submit/Next Button
                     authWebDriver.clickButtonXpath(AUPageObjects.CONSENT_SUBMIT_XPATH)
@@ -705,7 +656,6 @@ class AUTest extends OBTest {
                     //Click Confirm Button
                     authWebDriver.clickButtonXpath(AUPageObjects.CONSENT_CONFIRM_XPATH)
                 }
-                .addStep(getWaitForRedirectAutomationStep())
                 .execute()
 
         // Get Code From URL
@@ -739,7 +689,7 @@ class AUTest extends OBTest {
                             .contains(auConfiguration.getAppDCRSoftwareId()))
 
                     //Select Secondary Account
-                    selectSecondaryAccount(authWebDriver, profiles, true)
+                    selectSecondaryAccount(authWebDriver, true)
 
                     //Verify the Unavailable Accounts Topic
                     Assert.assertTrue(authWebDriver.isElementDisplayed(AUPageObjects.LBL_ACCOUNTS_UNAVAILABLE_TO_SHARE))
@@ -799,12 +749,20 @@ class AUTest extends OBTest {
         return response
     }
 
-    Response doConsentStatusRetrieval(String userAccessToken, int accountEndpointVersion = AUConstants.CDR_ENDPOINT_VERSION) {
+    /**
+     * Send Consent Search Request.
+     * @return consent search request
+     */
+    Response doConsentSearch() {
 
-        response = AURequestBuilder.buildBasicRequest(userAccessToken, accountEndpointVersion)
-                .header(AUConstants.PARAM_FAPI_AUTH_DATE,AUConstants.VALUE_FAPI_AUTH_DATE)
-                .baseUri(AUTestUtil.getBaseUrl(AUConstants.BASE_PATH_TYPE_ACCOUNT))
-                .get("${AUConstants.CDS_PATH}${AUConstants.BULK_ACCOUNT_PATH}")
+        response = AURestAsRequestBuilder.buildBasicRequest()
+                .header(AUConstants.AUTHORIZATION_HEADER_KEY, AUConstants.BASIC_HEADER_KEY + " " +
+                        Base64.encoder.encodeToString(
+                                "${auConfiguration.getUserBasicAuthName()}:${auConfiguration.getUserBasicAuthPWD()}"
+                                        .getBytes(Charset.forName("UTF-8"))))
+                .queryParam(AUConstants.QUERY_PARAM_USERID, auConfiguration.getUserPSUName())
+                .baseUri(auConfiguration.getServerAuthorisationServerURL())
+                .get("${AUConstants.CONSENT_SEARCH_ENDPOINT}")
 
         return response
     }
@@ -1001,7 +959,7 @@ class AUTest extends OBTest {
      * @return response
      */
     Response updateBusinessUserPermissionWithIncorrectPayload(String headerString, String accountID, String accountOwnerUserID, String nominatedRepUserID,
-                                                String permissionType) {
+                                                              String permissionType) {
 
         def requestBody = AUPayloads.getIncorrectNominationPayload(accountID, accountOwnerUserID, nominatedRepUserID, permissionType)
 
@@ -1039,5 +997,250 @@ class AUTest extends OBTest {
                 .delete("${AUConstants.CONSENT_STATUS_AU_ENDPOINT}${AUConstants.UPDATE_BUSINESS_USER}")
     }
 
-}
+    /**
+     * Authorisation Flow Navigation Method for Joint Accounts.
+     * @param authoriseUrl - Authorise URL
+     * @param isSelectMultipleAccounts - Select Multiple Accounts
+     * @return Automation Response
+     */
+    def doAuthorisationFlowForJointAccounts(List<AUAccountScope> scopes, URI requestUri,
+                                            String clientId = null, boolean isSelectMultipleAccounts = true) {
 
+        if (clientId != null) {
+            authoriseUrl = auAuthorisationBuilder.getAuthorizationRequest(scopes, requestUri, clientId)
+                    .toURI().toString()
+        } else {
+            authoriseUrl = auAuthorisationBuilder.getAuthorizationRequest(scopes, requestUri)
+                    .toURI().toString()
+        }
+
+        automationResponse = getBrowserAutomation(AUConstants.DEFAULT_DELAY)
+                .addStep(new AUBasicAuthAutomationStep(authoriseUrl))
+                .addStep { driver, context ->
+                    AutomationMethod authWebDriver = new AutomationMethod(driver)
+
+                    //Select Profile and Accounts
+                    //If Profile Selection Enabled
+                    if (auConfiguration.getProfileSelectionEnabled()) {
+
+                        //Select Individual Profile
+                        authWebDriver.selectOption(AUPageObjects.INDIVIDUAL_PROFILE_SELECTION)
+                        authWebDriver.clickButtonXpath(AUPageObjects.PROFILE_SELECTION_NEXT_BUTTON)
+
+                        //Select Joint Account 1
+                        consentedAccount = authWebDriver.getElementAttribute(AUPageObjects.JOINT_ACCOUNT_XPATH,
+                                AUPageObjects.VALUE)
+                        authWebDriver.clickButtonXpath(AUPageObjects.JOINT_ACCOUNT_XPATH)
+
+                        if(isSelectMultipleAccounts) {
+                            //Select Joint Account 2
+                            consentedAccount = authWebDriver.getElementAttribute(AUPageObjects.ALT_JOINT_ACCOUNT_XPATH,
+                                    AUPageObjects.VALUE)
+                            authWebDriver.clickButtonXpath(AUPageObjects.ALT_JOINT_ACCOUNT_XPATH)
+                        }
+                    }
+                    //If Profile Selection Disabled
+                    else {
+                        //Select Account 1
+                        consentedAccount = authWebDriver.getElementAttribute(AUPageObjects.JOINT_ACCOUNT_XPATH,
+                                AUPageObjects.VALUE)
+                        authWebDriver.clickButtonXpath(AUPageObjects.JOINT_ACCOUNT_XPATH)
+
+                        if (isSelectMultipleAccounts) {
+                            //Select Account 2
+                            consentedAccount = authWebDriver.getElementAttribute(AUPageObjects.ALT_JOINT_ACCOUNT_XPATH,
+                                    AUPageObjects.VALUE)
+                            authWebDriver.clickButtonXpath(AUPageObjects.ALT_JOINT_ACCOUNT_XPATH)
+                        }
+                    }
+
+                    //Click Confirm Button
+                    authWebDriver.clickButtonXpath(AUPageObjects.CONSENT_CONFIRM_XPATH)
+
+                    //Click Authorise Button
+                    authWebDriver.clickButtonXpath(AUPageObjects.CONSENT_CONFIRM_XPATH)
+                }
+                .execute()
+
+        return automationResponse
+    }
+
+    /**
+     * Joint Accounts Consent Authorization method
+     * @param clientId - Client Id
+     * @param isSelectMultipleAccounts - true/false
+     */
+    def doJointAccountConsentAuthorisation(String clientId = null, boolean isSelectMultipleAccounts = true) {
+
+        def response
+
+        if (clientId == null) {
+            response = auAuthorisationBuilder.doPushAuthorisationRequest(scopes, AUConstants.DEFAULT_SHARING_DURATION,
+                    true, "")
+            requestUri = AUTestUtil.parseResponseBody(response, AUConstants.REQUEST_URI)
+            automationResponse = doAuthorisationFlowForJointAccounts(scopes, requestUri.toURI(),
+                    null, isSelectMultipleAccounts)
+        } else {
+            response = auAuthorisationBuilder.doPushAuthorisationRequest(scopes, AUConstants.DEFAULT_SHARING_DURATION,
+                    true, "", clientId)
+            requestUri = AUTestUtil.parseResponseBody(response, AUConstants.REQUEST_URI)
+            automationResponse = doAuthorisationFlowForJointAccounts(scopes, requestUri.toURI(),
+                    clientId, isSelectMultipleAccounts)
+        }
+        return automationResponse
+    }
+
+    /**
+     * Update Disclosure Options Mgt Service Status.
+     * @param headerString - Header String
+     * @param jointAccountIdList - Joint Account Id List
+     * @param statusList - Status List
+     * @return response.
+     */
+    Response updateDisclosureOptionsMgtService(String headerString, List <String> jointAccountIdList,
+                                               List <String> statusList) {
+
+        def requestBody = AUPayloads.getDOMSStatusUpdatePayload(jointAccountIdList, statusList)
+
+        return AURestAsRequestBuilder.buildRequest()
+                .header(AUConstants.AUTHORIZATION_HEADER_KEY, AUConstants.BASIC_HEADER_KEY + Base64.encoder.encodeToString(
+                        headerString.getBytes(Charset.forName("UTF-8"))))
+                .contentType(AUConstants.CONTENT_TYPE_APPLICATION_JSON)
+                .body(requestBody)
+                .baseUri(getAuConfiguration().getISServerUrl())
+                .put("${AUConstants.CONSENT_STATUS_AU_ENDPOINT}${AUConstants.DISCLOSURE_OPTIONS_ENDPOINT}")
+    }
+
+    /**
+     * Ceasing legal entity of secondary user
+     * @param headerString
+     * @param secondaryUserId - Secondary User ID
+     * @param accountId - Secondary Account ID
+     * @param legalEntityId - Legal Entity ID
+     * @param legalEntityStatus - Sharing Status
+     * @param isMultipleLegalEntity - Multiple Legal Entity
+     * @param secondaryUserId2 - Secondary User ID (Pass only if isMultipleLegalEntity is true)
+     * @param accountId2 - Secondary Account ID (Pass only if isMultipleLegalEntity is true)
+     * @param legalEntityId2 - Legal Entity ID (Pass only if isMultipleLegalEntity is true)
+     * @param legalEntityStatus2 - Sharing Status (Pass only if isMultipleLegalEntity is true)
+     * @return response.
+     */
+    static Response updateLegalEntityStatus(String headerString, String accountId, String secondaryUserId,
+                                            String legalEntityId, String legalEntityStatus,
+                                            boolean isMultipleLegalEntity = false,
+                                            String secondaryUserId2 = null, String accountId2 = null,
+                                            String legalEntityId2 = null, String legalEntityStatus2 = null) {
+
+        def requestBody = AUPayloads.getBlockLegalEntityPayload(secondaryUserId, accountId, legalEntityId,
+                legalEntityStatus, isMultipleLegalEntity, secondaryUserId2, accountId2, legalEntityId2, legalEntityStatus2)
+
+        Response secondUserUpdateResponse = AURestAsRequestBuilder.buildRequest()
+                .header(AUConstants.AUTHORIZATION_HEADER_KEY, AUConstants.BASIC_HEADER_KEY + Base64.encoder.encodeToString(
+                        headerString.getBytes(Charset.forName("UTF-8"))))
+                .contentType(AUConstants.CONTENT_TYPE_APPLICATION_JSON)
+                .body(requestBody)
+                .baseUri(auConfiguration.getServerAuthorisationServerURL())
+                .put("${AUConstants.CONSENT_STATUS_AU_ENDPOINT}${AUConstants.SECONDARY_ACCOUNT_ENDPOINT}")
+
+        return secondUserUpdateResponse
+    }
+
+    /**
+     * Update Secondary User Instruction Permission.
+     * @param headerString - Header String
+     * @param secondaryAccId - Secondary Account Id
+     * @param userId - User Id
+     * @param secondaryAccountInstructionStatus - Secondary Account Instruction Status
+     * @return response.
+     */
+    static Response updateSecondaryUserInstructionPermission(String secondaryAccId, String userId,
+                                                             String secondaryAccountInstructionStatus) {
+
+        def requestBody = AUPayloads.getSecondaryUserInstructionPermissionPayload(secondaryAccId, userId,
+                secondaryAccountInstructionStatus)
+
+        Response secondUserUpdateResponse = AURestAsRequestBuilder.buildRequest()
+                .header(AUConstants.AUTHORIZATION_HEADER_KEY, AUConstants.BASIC_HEADER_KEY + " " +
+                        Base64.encoder.encodeToString(
+                                "${auConfiguration.getUserBasicAuthName()}:${auConfiguration.getUserBasicAuthPWD()}"
+                                        .getBytes(Charset.forName("UTF-8"))))
+                .contentType(AUConstants.CONTENT_TYPE_APPLICATION_JSON)
+                .body(requestBody)
+                .baseUri(auConfiguration.getServerAuthorisationServerURL())
+                .put("${AUConstants.CONSENT_STATUS_AU_ENDPOINT}${AUConstants.SECONDARY_ACCOUNT_ENDPOINT}")
+
+        return secondUserUpdateResponse
+    }
+
+    /**
+     * Get Legal Entity IDs of User.
+     * @param userID - User ID
+     * @return response.
+     */
+    static Response getLegalEntityIds(String userID) {
+
+        return AURestAsRequestBuilder.buildRequest()
+                .header(AUConstants.AUTHORIZATION_HEADER_KEY, AUConstants.BASIC_HEADER_KEY + " " +
+                        Base64.encoder.encodeToString(
+                                "${auConfiguration.getUserBasicAuthName()}:${auConfiguration.getUserBasicAuthPWD()}"
+                                        .getBytes(Charset.forName("UTF-8"))))
+                .contentType(AUConstants.CONTENT_TYPE_APPLICATION_JSON)
+                .queryParam(AUConstants.QUERY_PARAM_USERID, userID)
+                .baseUri(getAuConfiguration().getISServerUrl())
+                .get("${AUConstants.CONSENT_STATUS_ENDPOINT}${AUConstants.LEGAL_ENTITY_LIST_ENDPOINT}")
+    }
+
+    /**
+     * Get Legal Entity IDs of User.
+     * @param legalEntityList - Legal Entity List
+     * @param userId - User ID
+     * @param accountId - Account ID
+     * @param legalEntityId - Legal Entity ID
+     * @return response.
+     */
+    static String getSharingStatusOfUserAccount(String legalEntityList, String userId, String accountId, String legalEntityId) {
+
+        // Create a Gson instance
+        Gson gson = new Gson()
+
+        // Parse the payload into a JsonObject
+        JsonObject jsonObject = gson.fromJson(legalEntityList, JsonObject.class)
+
+        // Retrieve the SecondaryUsers array
+        JsonArray secondaryUsersArray = jsonObject.getAsJsonArray(AUConstants.PAYLOAD_SECONDARY_USERS)
+
+        // Iterate through the secondary users
+        for (JsonElement secondaryUserElement : secondaryUsersArray) {
+            JsonObject secondaryUserObj = secondaryUserElement.getAsJsonObject()
+
+            // Check if the user ID matches
+            if (secondaryUserObj.get(AUConstants.SECONDARY_USERS_USERID).getAsString().equals(userId)) {
+
+                // Get the legal entity details array for the given user
+                JsonArray legalEntityDetailsArray = secondaryUserObj.getAsJsonArray(AUConstants.LEGAL_ENTITY_DETAILS)
+
+                // Iterate through the legal entity details
+                for (JsonElement legalEntityDetailsElement : legalEntityDetailsArray) {
+                    JsonObject legalEntityDetailsObj = legalEntityDetailsElement.getAsJsonObject();
+
+                    // Check if the account ID matches
+                    if (legalEntityDetailsObj.get(AUConstants.PAYLOAD_PARAM_ACCOUNT_ID).getAsString().equals(accountId)) {
+
+                        // Get the legal entities array for the given account
+                        JsonArray legalEntitiesArray = legalEntityDetailsObj.getAsJsonArray(AUConstants.LEGAL_ENTITIES)
+
+                        // Iterate through the legal entities
+                        for (JsonElement legalEntityElement : legalEntitiesArray) {
+                            JsonObject legalEntityObj = legalEntityElement.getAsJsonObject()
+
+                            // Check if the legal entity ID matches
+                            if (legalEntityObj.get(AUConstants.LEGAL_ENTITY_ID).getAsString().equals(legalEntityId)) {
+                                return legalEntityObj.get(AUConstants.SHARING_STATUS).getAsString()
+                            }
+                        }
+                    }
+                }
+            }
+        }
+    }
+}

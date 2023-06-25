@@ -102,6 +102,11 @@ class AUConstants extends OBConstants {
     public static final String SHARABLE_BANK_ACCOUNT_SERVICE= "/api/openbanking/cds/backend"
     public static final String BANK_ACCOUNT_SERVICE  = "/services/bankaccounts/bankaccountservice/sharable-accounts"
     public static final String BUSINESS_USER_PERMISSION  = "/account-type-management/business-stakeholders/permission"
+    public static final String CONSENT_SEARCH_ENDPOINT = "/api/openbanking/consent/admin/search"
+    public static final String DISCLOSURE_OPTIONS_ENDPOINT = "/account-type-management/disclosure-options"
+    public static final String SECONDARY_ACCOUNT_ENDPOINT = "/account-type-management/secondary-accounts"
+    public static final String LEGAL_ENTITY_LIST_ENDPOINT = "/account-type-management/get-users-accounts-legalentities-details"
+    public static final String UPDATE_LEGAL_ENTITY_SHARING_STATUS = "/account-type-management/block-legal-entity"
 
     public static final String BANK_CUSTOMER_BASIC_READ = "Organisation profile and contact details"
     public static final String BANK_CUSTOMER_DETAIL_READ = "Organisation profile and contact details*‡"
@@ -246,6 +251,10 @@ class AUConstants extends OBConstants {
     public static final String ACCOUNT_OWNERS = "AccountOwners"
     public static final String NOMINATED_REPRESENTATIVES = "NominatedRepresentatives"
     public static final String MEMBER_ID = "memberId"
+    public static final String SECONDARY_ACCOUNT_INFO = "secondaryAccountInfo"
+    public static final String IS_SECONDARY_ACCOUNT = "isSecondaryAccount"
+    public static final String PARAM_USERID_1 = "userId1"
+    public static final String PARAM_USERID_2 = "userId2"
 
     public static final String VALUE_FAPI_AUTH_DATE = "Tue, 78 Jan 1312 80:05:73 GMT"
 
@@ -384,6 +393,18 @@ class AUConstants extends OBConstants {
     public static final String USER_DENIED_THE_CONSENT = "User denied the consent"
     public static final String CDR_ARRANGEMENT_ID = "cdr_arrangement_id"
     public static final String INVALID_REQUEST = "invalid request"
+    public static final String ACTIVE = "active"
+    public static final String INACTIVE = "inactive"
+    public static final String IS_JOINT_ACCOUNT = "isJointAccount"
+    public static final String LEGAL_ENTITY_DETAILS = "LegalEntityDetails"
+    public static final String SECONDARY_USERS_USERID = "SecondaryUserId"
+    public static final String PAYLOAD_SECONDARY_USERS = "SecondaryUsers"
+    public static final String LEGAL_ENTITIES = "LegalEntities"
+    public static final String LEGAL_ENTITY_ID = "LegalEntityId"
+    public static final String LEGAL_ENTITY_ID2 = "LegalEntityId2"
+    public static final String SHARING_STATUS = "SharingStatus"
+    public static final String PAYLOAD_PARAM_ACCOUNT_ID = "AccountId"
+    public static final String BLOCK_ENTITY = "BLOCKED"
 
 }
 
