@@ -102,6 +102,7 @@ public class InfoSecDataPublishingFilter implements Filter {
                                                          String messageId) {
 
         Map<String, Object> requestData = new HashMap<>();
+        String contentLength = response.getHeader(CDSFilterConstants.CONTENT_LENGTH);
 
         requestData.put("consentId", null);
         requestData.put("clientId", extractClientId(request));
@@ -110,8 +111,7 @@ public class InfoSecDataPublishingFilter implements Filter {
         requestData.put("userAgent", null);
         requestData.put("statusCode", response.getStatus());
         requestData.put("httpMethod", request.getMethod());
-        requestData.put("responsePayloadSize",
-                Long.parseLong(String.valueOf(response.getHeader(CDSFilterConstants.CONTENT_LENGTH))));
+        requestData.put("responsePayloadSize", contentLength != null ? Long.parseLong(contentLength) : null);
         String[] apiData = getApiData(request.getRequestURI());
         requestData.put("electedResource", apiData[0]);
         requestData.put("apiName", apiData[1]);
