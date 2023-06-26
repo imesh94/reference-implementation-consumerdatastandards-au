@@ -616,6 +616,11 @@ public class OpenBankingCDSConfigParser {
         }
     }
 
+    /**
+     * Get legal entity sharing status.
+     *
+     * @return boolean
+     */
     public boolean isCeasingSecondaryUserSharingEnabled() {
         Object config = getConfigElementFromKey(CommonConstants.CEASING_SECONDARY_USER_SHARING_ENABLED);
         if (config != null) {

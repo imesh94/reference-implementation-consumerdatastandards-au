@@ -94,7 +94,7 @@ public class CeasingSecondaryUserSharingHandler {
             }
         } catch (OpenBankingException e) {
             log.warn(e.getMessage());
-            throw e;
+            throw new OpenBankingException("Error occurred while retrieving account metadata");
         }
     }
 
@@ -167,7 +167,7 @@ public class CeasingSecondaryUserSharingHandler {
             }
         } catch (OpenBankingException e) {
             log.warn(e.getMessage());
-            throw e;
+            throw new OpenBankingException("Error occurred while retrieving account metadata");
         }
     }
 
@@ -200,7 +200,7 @@ public class CeasingSecondaryUserSharingHandler {
             }
         } catch (OpenBankingException e) {
             log.warn(e.getMessage());
-            throw e;
+            throw new OpenBankingException("Error occurred while retrieving account metadata");
         }
     }
 
@@ -219,10 +219,8 @@ public class CeasingSecondaryUserSharingHandler {
             CommonServiceProviderRetriever commonServiceProviderRetriever = new CommonServiceProviderRetriever();
 
             // Updating - Secondary Users
-            // Looping through Consents
             for (DetailedConsentResource detailedConsent : responseDetailedConsents) {
 
-                // Looping through Authorization Resources for each Consent
                 for (AuthorizationResource authorizationResource : detailedConsent.getAuthorizationResources()) {
 
                     if (authorizationResource.getAuthorizationType().
@@ -258,14 +256,12 @@ public class CeasingSecondaryUserSharingHandler {
             for (UsersAccountsLegalEntitiesDTO.SecondaryUser secondaryUser :
                     responseUsersAccountsLegalEntitiesDTO.getSecondaryUsers()) {
 
-                // Looping through Consents
                 for (DetailedConsentResource detailedConsent : responseDetailedConsents) {
 
-                    // Looping through Authorization Resources for each Consent
                     for (AuthorizationResource authorizationResource :
                             detailedConsent.getAuthorizationResources()) {
                         String authorizationID = authorizationResource.getAuthorizationID();
-                        // Consent Mapping Resource
+
                         for (ConsentMappingResource consentMappingResource : detailedConsent.
                                 getConsentMappingResources()) {
 
@@ -311,14 +307,11 @@ public class CeasingSecondaryUserSharingHandler {
                     String legalEntityName = null;
                     String legalEntitySharingStatus = null;
 
-                    // Looping through Consents
                     for (DetailedConsentResource detailedConsent : responseDetailedConsents) {
 
-                        // Looping through Authorization Resources for each Consent
                         for (AuthorizationResource authorizationResource :
                                 detailedConsent.getAuthorizationResources()) {
 
-                            // Looping through Mapping Resources for each Authorization Resource
                             for (ConsentMappingResource consentMappingResource :
                                     detailedConsent.getConsentMappingResources()) {
 
@@ -402,7 +395,7 @@ public class CeasingSecondaryUserSharingHandler {
             return responseUsersAccountsLegalEntitiesDTO;
         } catch (OpenBankingException e) {
             log.warn("Error in retrieving data!");
-            throw e;
+            throw new OpenBankingException("Error occurred while retrieving account metadata");
         }
     }
 }

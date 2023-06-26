@@ -136,14 +136,14 @@ public class CDSConsentValidator implements ConsentValidator {
         // Remove inactive and duplicate consent mappings
         removeInactiveAndDuplicateConsentMappings(consentValidateData);
 
-        // Filter accounts based on the sharing status of legal entity
-        if (openBankingCDSConfigParser.isCeasingSecondaryUserSharingEnabled()) {
-            removeBlockedLegalEntityConsentMappings(consentValidateData);
-        }
-
         // filter inactive secondary user accounts
         if (openBankingCDSConfigParser.getSecondaryUserAccountsEnabled()) {
             removeInactiveSecondaryUserAccountConsentMappings(consentValidateData);
+        }
+
+        // Filter accounts based on the sharing status of legal entity
+        if (openBankingCDSConfigParser.isCeasingSecondaryUserSharingEnabled()) {
+            removeBlockedLegalEntityConsentMappings(consentValidateData);
         }
 
         // Remove accounts with revoked BNR permission if the configuration is enabled.

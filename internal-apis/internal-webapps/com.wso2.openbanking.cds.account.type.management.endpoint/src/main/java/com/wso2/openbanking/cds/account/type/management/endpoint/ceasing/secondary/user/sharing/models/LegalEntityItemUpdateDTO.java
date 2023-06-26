@@ -6,6 +6,7 @@
  * herein in any form is strictly forbidden, unless permitted by WSO2 expressly.
  * You may not alter or remove any copyright or other notice from copies of this content.
  */
+
 package com.wso2.openbanking.cds.account.type.management.endpoint.ceasing.secondary.user.sharing.models;
 
 import javax.validation.constraints.NotEmpty;
@@ -15,18 +16,18 @@ import javax.validation.constraints.Pattern;
  * Ceasing Secondary User - BlockedLegalEntityItemDTO
  */
 public class LegalEntityItemUpdateDTO {
-    @NotEmpty(message = "Expected field not present for the field \"secondaryUserID\"")
+    @NotEmpty(message = "Invalid value for \"secondaryUserID\"")
     private String secondaryUserID;
 
-    @NotEmpty(message = "Expected field not present for the field \"accountID\"")
+    @NotEmpty(message = "Invalid value for \"accountID\"")
     private String accountID;
 
-    @NotEmpty(message = "Expected field not present for the field \"legalEntityID\"")
+    @NotEmpty(message = "Invalid value for \"legalEntityID\"")
     private String legalEntityID;
 
-    @NotEmpty(message = "Expected field not present for the field \"legalEntitySharingStatus\". " +
+    @NotEmpty(message = "Invalid value for  \"legalEntitySharingStatus\". " +
             "Must be active or blocked")
-    @Pattern(regexp = "^(active|blocked)?$", message = "Expected field not present for the field " +
+    @Pattern(regexp = "^(active|blocked)?$", message = "Invalid value for " +
             "\"legalEntitySharingStatus\". Must be active or blocked")
     private String legalEntitySharingStatus;
 

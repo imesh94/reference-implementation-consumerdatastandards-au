@@ -56,6 +56,14 @@ public class CDSConsentExtensionsUtil {
         }
     }
 
+    /**
+     * Method to retrieve the sharing status of a legal entity for the given accountID, secondaryUserID and
+     * legalEntityID
+     * @param accountID
+     * @param userID
+     * @param clientID
+     * @return true/false based on the sharing status of a legal entity
+     */
     public static boolean isLegalEntityBlockedForAccountAndUser(String accountID, String userID, String clientID)
             throws ConsentException {
 
@@ -70,15 +78,12 @@ public class CDSConsentExtensionsUtil {
 
             if (blockedLegalEntities != null) {
                 String[] blockedLegalEntityArray = blockedLegalEntities.split(",");
-                boolean isLegalEntitySharingStatusBlocked = false;
                 for (String blockedLegalEntity : blockedLegalEntityArray) {
                     if (legalEntityID.equals(blockedLegalEntity)) {
-                        isLegalEntitySharingStatusBlocked = true;
-                        break;
+                        return true;
                     }
                 }
-                return isLegalEntitySharingStatusBlocked;
-
+                return false;
             } else {
                 return false;
             }
