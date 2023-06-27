@@ -1049,8 +1049,8 @@ class AUTest extends OBTest {
 
     /**
      * Verify Scope of Token Response.
-     * @param scopesString scope list
-     * @param eliminatedScope scope to be eliminated
+     * @param scopesString - scope list
+     * @param eliminatedScope - scope to be eliminated
      */
     void verifyScopes(String scopesString, String eliminatedScope = null) {
         if (eliminatedScope != null) {

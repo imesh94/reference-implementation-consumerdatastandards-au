@@ -97,7 +97,7 @@ class AUAuthorisationBuilder {
 
         if(isStateParamPresent) {
             request = new AuthorizationRequest.Builder(getResponseType(), new ClientID(clientID))
-                    .responseType(ResponseType.parse("code id_token"))
+                    .responseType(ResponseType.parse("code"))
                     .scope(new Scope(scopeString))
                     .requestURI(requestUri)
                     .redirectionURI(getRedirectURI())
@@ -108,7 +108,7 @@ class AUAuthorisationBuilder {
                     .build()
         } else {
             request = new AuthorizationRequest.Builder(getResponseType(), new ClientID(clientID))
-                    .responseType(ResponseType.parse("code id_token"))
+                    .responseType(ResponseType.parse("code"))
                     .scope(new Scope(scopeString))
                     .requestURI(requestUri)
                     .redirectionURI(getRedirectURI())
@@ -132,7 +132,7 @@ class AUAuthorisationBuilder {
     AuthorizationRequest getAuthorizationRequest(List<AUAccountScope> scopes, URI requestUri, String client_id, String redirect_uri) {
         String scopeString = "openid ${String.join(" ", scopes.collect({ it.scopeString }))}"
         request = new AuthorizationRequest.Builder(getResponseType(), new ClientID(client_id))
-                .responseType(ResponseType.parse("code id_token"))
+                .responseType(ResponseType.parse("code"))
                 .scope(new Scope(scopeString))
                 .requestURI(requestUri)
                 .redirectionURI(redirect_uri.toURI())
@@ -324,7 +324,7 @@ class AUAuthorisationBuilder {
 
     private ResponseType getResponseType() {
         if (responseType == null) {
-            responseType = new ResponseType("code id_token")
+            responseType = new ResponseType("code")
         }
         return responseType
     }
