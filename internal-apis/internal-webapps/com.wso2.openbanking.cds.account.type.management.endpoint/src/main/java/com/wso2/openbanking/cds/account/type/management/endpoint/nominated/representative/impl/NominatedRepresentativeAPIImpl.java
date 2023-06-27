@@ -10,6 +10,7 @@ package com.wso2.openbanking.cds.account.type.management.endpoint.nominated.repr
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.google.gson.Gson;
 import com.wso2.openbanking.accelerator.account.metadata.service.service.AccountMetadataServiceImpl;
 import com.wso2.openbanking.accelerator.common.exception.OpenBankingException;
 import com.wso2.openbanking.accelerator.consent.mgt.dao.models.AuthorizationResource;
@@ -234,6 +235,7 @@ public class NominatedRepresentativeAPIImpl implements NominatedRepresentativeAP
     public Response updateNominatedRepresentativePermissions(String requestBody) {
 
         ObjectMapper objectMapper = new ObjectMapper();
+        Gson gson = new Gson();
         AccountListUpdateDTO accountListUpdateDTO;
 
         try {
@@ -250,17 +252,17 @@ public class NominatedRepresentativeAPIImpl implements NominatedRepresentativeAP
                     // Return internal server error if an error occurred in the accelerator account metadata service.
                     ErrorDTO errorDTO = new ErrorDTO(ErrorStatusEnum.INTERNAL_SERVER_ERROR,
                             "Error occurred while persisting updated nominated representative data");
-                    return Response.status(Response.Status.INTERNAL_SERVER_ERROR).entity(errorDTO).build();
+                    return Response.status(Response.Status.INTERNAL_SERVER_ERROR).entity(gson.toJson(errorDTO)).build();
                 }
             } else {
                 ErrorDTO errorDTO = new ErrorDTO(ErrorStatusEnum.INVALID_REQUEST, validationError);
-                return Response.status(Response.Status.BAD_REQUEST).entity(errorDTO).build();
+                return Response.status(Response.Status.BAD_REQUEST).entity(gson.toJson(errorDTO)).build();
             }
         } catch (JsonProcessingException e) {
             log.error(e.getMessage());
             ErrorDTO errorDTO = new ErrorDTO(ErrorStatusEnum.INVALID_REQUEST,
                     "Error occurred while parsing the request body");
-            return Response.status(Response.Status.BAD_REQUEST).entity(errorDTO).build();
+            return Response.status(Response.Status.BAD_REQUEST).entity(gson.toJson(errorDTO)).build();
         }
     }
 
@@ -271,6 +273,7 @@ public class NominatedRepresentativeAPIImpl implements NominatedRepresentativeAP
     public Response revokeNominatedRepresentativePermissions(String requestBody) {
 
         ObjectMapper objectMapper = new ObjectMapper();
+        Gson gson = new Gson();
         AccountListDeleteDTO accountListDeleteDTO;
 
         try {
@@ -279,7 +282,7 @@ public class NominatedRepresentativeAPIImpl implements NominatedRepresentativeAP
             String validationError = ValidationUtil.getFirstViolationMessage(accountListDeleteDTO);
             if (!validationError.isEmpty()) {
                 ErrorDTO errorDTO = new ErrorDTO(ErrorStatusEnum.INVALID_REQUEST, validationError);
-                return Response.status(Response.Status.BAD_REQUEST).entity(errorDTO).build();
+                return Response.status(Response.Status.BAD_REQUEST).entity(gson.toJson(errorDTO)).build();
             }
             // Check if all user-ids in the request body are available in the database.
             List<String> unavailableAccountMetadata = getUnavailableAccountMetadataFromAccountListDeleteDTO(
@@ -288,7 +291,7 @@ public class NominatedRepresentativeAPIImpl implements NominatedRepresentativeAP
                 String unavailableAccountMetadataString = StringUtils.join(unavailableAccountMetadata, ", ");
                 ErrorDTO errorDTO = new ErrorDTO(ErrorStatusEnum.RESOURCE_NOT_FOUND, "AccountID UserID " +
                         "pair(s) " + unavailableAccountMetadataString + " not found in the database.");
-                return Response.status(Response.Status.NOT_FOUND).entity(errorDTO).build();
+                return Response.status(Response.Status.NOT_FOUND).entity(gson.toJson(errorDTO)).build();
             }
             // Proceed with revoking nominated representative data.
             boolean successfullyPersisted = persistRevokedNominatedRepresentativeData(accountListDeleteDTO);
@@ -298,17 +301,17 @@ public class NominatedRepresentativeAPIImpl implements NominatedRepresentativeAP
                 // Return internal server error if an error occurred in the accelerator account metadata service.
                 ErrorDTO errorDTO = new ErrorDTO(ErrorStatusEnum.INTERNAL_SERVER_ERROR,
                         "Error occurred while persisting revoked nominated representative data");
-                return Response.status(Response.Status.INTERNAL_SERVER_ERROR).entity(errorDTO).build();
+                return Response.status(Response.Status.INTERNAL_SERVER_ERROR).entity(gson.toJson(errorDTO)).build();
             }
         } catch (JsonProcessingException e) {
             log.error(e.getMessage());
             ErrorDTO errorDTO = new ErrorDTO(ErrorStatusEnum.INVALID_REQUEST,
                     "Error occurred while parsing the request body");
-            return Response.status(Response.Status.BAD_REQUEST).entity(errorDTO).build();
+            return Response.status(Response.Status.BAD_REQUEST).entity(gson.toJson(errorDTO)).build();
         } catch (OpenBankingException e) {
             ErrorDTO errorDTO = new ErrorDTO(ErrorStatusEnum.INTERNAL_SERVER_ERROR,
                     "Error occurred while validating the user-Ids in the database");
-            return Response.status(Response.Status.INTERNAL_SERVER_ERROR).entity(errorDTO).build();
+            return Response.status(Response.Status.INTERNAL_SERVER_ERROR).entity(gson.toJson(errorDTO)).build();
         }
     }
 
@@ -318,16 +321,18 @@ public class NominatedRepresentativeAPIImpl implements NominatedRepresentativeAP
     @Override
     public Response retrieveNominatedRepresentativePermissions(String accountId, String userId) {
 
+        Gson gson = new Gson();
+
         // Validate userId and accountId
         if (StringUtils.isBlank(accountId)) {
             ErrorDTO errorDTO = new ErrorDTO(ErrorStatusEnum.INVALID_REQUEST,
                     "Account ID is required to proceed.");
-            return Response.status(Response.Status.BAD_REQUEST).entity(errorDTO).build();
+            return Response.status(Response.Status.BAD_REQUEST).entity(gson.toJson(errorDTO)).build();
         }
         if (StringUtils.isBlank(userId)) {
             ErrorDTO errorDTO = new ErrorDTO(ErrorStatusEnum.INVALID_REQUEST,
                     "User ID is required to proceed.");
-            return Response.status(Response.Status.BAD_REQUEST).entity(errorDTO).build();
+            return Response.status(Response.Status.BAD_REQUEST).entity(gson.toJson(errorDTO)).build();
         }
         AccountMetadataServiceImpl accountMetadataService = AccountMetadataServiceImpl.getInstance();
 
@@ -341,13 +346,13 @@ public class NominatedRepresentativeAPIImpl implements NominatedRepresentativeAP
                 // Return not found if no nominated representative data is found for the given account ID and user ID.
                 ErrorDTO errorDTO = new ErrorDTO(ErrorStatusEnum.RESOURCE_NOT_FOUND,
                         "No nominated representative data found for the given account ID and user ID");
-                return Response.status(Response.Status.NOT_FOUND).entity(errorDTO).build();
+                return Response.status(Response.Status.NOT_FOUND).entity(gson.toJson(errorDTO)).build();
             }
         } catch (OpenBankingException e) {
             log.error(e.getMessage());
             ErrorDTO errorDTO = new ErrorDTO(ErrorStatusEnum.INTERNAL_SERVER_ERROR,
                     "Error occurred while retrieving nominated representative permissions");
-            return Response.status(Response.Status.INTERNAL_SERVER_ERROR).entity(errorDTO).build();
+            return Response.status(Response.Status.INTERNAL_SERVER_ERROR).entity(gson.toJson(errorDTO)).build();
         }
     }
 
