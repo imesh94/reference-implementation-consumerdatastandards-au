@@ -98,6 +98,7 @@ class AUAuthorisationBuilder {
         if(isStateParamPresent) {
             request = new AuthorizationRequest.Builder(getResponseType(), new ClientID(clientID))
                     .responseType(ResponseType.parse("code"))
+                    .responseMode(ResponseMode.JWT)
                     .scope(new Scope(scopeString))
                     .requestURI(requestUri)
                     .redirectionURI(getRedirectURI())
@@ -109,6 +110,7 @@ class AUAuthorisationBuilder {
         } else {
             request = new AuthorizationRequest.Builder(getResponseType(), new ClientID(clientID))
                     .responseType(ResponseType.parse("code"))
+                    .responseMode(ResponseMode.JWT)
                     .scope(new Scope(scopeString))
                     .requestURI(requestUri)
                     .redirectionURI(getRedirectURI())
@@ -133,6 +135,7 @@ class AUAuthorisationBuilder {
         String scopeString = "openid ${String.join(" ", scopes.collect({ it.scopeString }))}"
         request = new AuthorizationRequest.Builder(getResponseType(), new ClientID(client_id))
                 .responseType(ResponseType.parse("code"))
+                .responseMode(ResponseMode.JWT)
                 .scope(new Scope(scopeString))
                 .requestURI(requestUri)
                 .redirectionURI(redirect_uri.toURI())
