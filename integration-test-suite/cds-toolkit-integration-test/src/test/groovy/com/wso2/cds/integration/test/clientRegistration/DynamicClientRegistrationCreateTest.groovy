@@ -48,7 +48,7 @@ class DynamicClientRegistrationCreateTest extends AUTest{
                 .when()
                 .post(AUConstants.DCR_REGISTRATION_ENDPOINT)
 
-        clientId = AUTestUtil.parseResponseBody(registrationResponse, "client_id")
+        clientId = AUTestUtil.parseResponseBody(registrationResponse, AUConstants.CLIENT_ID)
         // add to context using key value pair
         context.setAttribute(ContextConstants.CLIENT_ID,clientId)
         AUTestUtil.writeXMLContent(auConfiguration.getOBXMLFile().toString(), "Application",
@@ -182,33 +182,39 @@ class DynamicClientRegistrationCreateTest extends AUTest{
     @Test(priority = 5)
     void "TC0101012_Create application without ID Token Encrypted Response Algorithm"() {
 
+        AUConfigurationService auConfiguration = new AUConfigurationService()
         AURegistrationRequestBuilder dcr = new AURegistrationRequestBuilder()
+
+        deleteApplicationIfExists(clientId)
         def registrationResponse = AURegistrationRequestBuilder
                 .buildRegistrationRequest(dcr.getClaimsWithoutIdTokenAlg())
                 .when()
                 .post(AUConstants.DCR_REGISTRATION_ENDPOINT)
 
-        Assert.assertEquals(registrationResponse.statusCode(), AUConstants.STATUS_CODE_400)
-        Assert.assertEquals(parseResponseBody(registrationResponse, AUConstants.ERROR),
-                AUConstants.INVALID_CLIENT_METADATA)
-        Assert.assertEquals(parseResponseBody(registrationResponse, AUConstants.ERROR_DESCRIPTION),
-                AUConstants.DCR_WITHOUT_ID_TOKEN_RESPONSE_ALGO)
+        Assert.assertEquals(registrationResponse.statusCode(), AUConstants.STATUS_CODE_201)
+        clientId = parseResponseBody(registrationResponse, AUConstants.CLIENT_ID)
+
+        AUTestUtil.writeXMLContent(auConfiguration.getOBXMLFile().toString(), "Application",
+                "ClientID", clientId, auConfiguration.getTppNumber())
     }
 
     @Test(priority = 5)
     void "TC0101013_Create application without ID Token Encrypted Response Encryption Method"() {
 
+        AUConfigurationService auConfiguration = new AUConfigurationService()
         AURegistrationRequestBuilder dcr = new AURegistrationRequestBuilder()
+
+        deleteApplicationIfExists(clientId)
         def registrationResponse = AURegistrationRequestBuilder
                 .buildRegistrationRequest(dcr.getClaimsWithoutIdTokenEnc())
                 .when()
                 .post(AUConstants.DCR_REGISTRATION_ENDPOINT)
 
-        Assert.assertEquals(registrationResponse.statusCode(), AUConstants.STATUS_CODE_400)
-        Assert.assertEquals(parseResponseBody(registrationResponse, AUConstants.ERROR),
-                AUConstants.INVALID_CLIENT_METADATA)
-        Assert.assertEquals(parseResponseBody(registrationResponse, AUConstants.ERROR_DESCRIPTION),
-                AUConstants.DCR_WITHOUT_ID_TOKEN_ENCRYPTION_METHOD)
+        Assert.assertEquals(registrationResponse.statusCode(), AUConstants.STATUS_CODE_201)
+        clientId = parseResponseBody(registrationResponse, AUConstants.CLIENT_ID)
+
+        AUTestUtil.writeXMLContent(auConfiguration.getOBXMLFile().toString(), "Application",
+                "ClientID", clientId, auConfiguration.getTppNumber())
     }
 
     @Test(priority = 5)
@@ -284,7 +290,7 @@ class DynamicClientRegistrationCreateTest extends AUTest{
                 .post(AUConstants.DCR_REGISTRATION_ENDPOINT)
 
         Assert.assertEquals(registrationResponse.statusCode(), AUConstants.STATUS_CODE_201)
-        clientId = parseResponseBody(registrationResponse, "client_id")
+        clientId = parseResponseBody(registrationResponse, AUConstants.CLIENT_ID)
 
         AUTestUtil.writeXMLContent(auConfiguration.getOBXMLFile().toString(), "Application",
                 "ClientID", clientId, auConfiguration.getTppNumber())
@@ -385,7 +391,7 @@ class DynamicClientRegistrationCreateTest extends AUTest{
         Assert.assertEquals(registrationResponse.statusCode(), AUConstants.STATUS_CODE_201)
         Assert.assertNotNull(parseResponseBody(registrationResponse, "request_object_signing_alg"))
 
-        clientId = parseResponseBody(registrationResponse, "client_id")
+        clientId = parseResponseBody(registrationResponse, AUConstants.CLIENT_ID)
         deleteApplicationIfExists(clientId)
 
         registrationResponse = AURegistrationRequestBuilder
@@ -394,7 +400,7 @@ class DynamicClientRegistrationCreateTest extends AUTest{
                 .post(AUConstants.DCR_REGISTRATION_ENDPOINT)
 
         Assert.assertEquals(registrationResponse.statusCode(), AUConstants.STATUS_CODE_201)
-        clientId = parseResponseBody(registrationResponse, "client_id")
+        clientId = parseResponseBody(registrationResponse, AUConstants.CLIENT_ID)
 
         AUTestUtil.writeXMLContent(auConfiguration.getOBXMLFile().toString(), "Application",
                 "ClientID", clientId, auConfiguration.getTppNumber())
@@ -410,12 +416,29 @@ class DynamicClientRegistrationCreateTest extends AUTest{
                 .when()
                 .post(AUConstants.DCR_REGISTRATION_ENDPOINT)
 
-        clientId = parseResponseBody(registrationResponse, "client_id")
+        clientId = parseResponseBody(registrationResponse, AUConstants.CLIENT_ID)
         AUTestUtil.writeXMLContent(auConfiguration.getOBXMLFile().toString(), "Application",
                 "ClientID", clientId, auConfiguration.getTppNumber())
 
         Assert.assertEquals(registrationResponse.statusCode(), AUConstants.STATUS_CODE_201)
         Assert.assertNotNull(parseResponseBody(registrationResponse, "redirect_uris"))
+    }
+
+    @Test(priority = 5)
+    void "CDS-651_Create application with hybrid response type"() {
+
+        jtiVal = String.valueOf(System.currentTimeMillis())
+        AURegistrationRequestBuilder registrationRequestBuilder = new AURegistrationRequestBuilder()
+        def registrationResponse = AURegistrationRequestBuilder
+                .buildRegistrationRequest(registrationRequestBuilder.getAURegularClaimsWithHybridResponseType())
+                .when()
+                .post(AUConstants.DCR_REGISTRATION_ENDPOINT)
+
+        Assert.assertEquals(registrationResponse.statusCode(), AUConstants.STATUS_CODE_400)
+        Assert.assertEquals(parseResponseBody(registrationResponse, AUConstants.ERROR),
+                AUConstants.INVALID_CLIENT_METADATA)
+        Assert.assertEquals(parseResponseBody(registrationResponse, AUConstants.ERROR_DESCRIPTION),
+                "Unsupported response_type value. Only code response type is allowed.")
     }
 
 //    @AfterClass(alwaysRun = true)

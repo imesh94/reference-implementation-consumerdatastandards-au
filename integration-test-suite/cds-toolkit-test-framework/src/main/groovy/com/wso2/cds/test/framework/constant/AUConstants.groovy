@@ -405,6 +405,7 @@ class AUConstants extends OBConstants {
     public static final String SHARING_STATUS = "SharingStatus"
     public static final String PAYLOAD_PARAM_ACCOUNT_ID = "AccountId"
     public static final String BLOCK_ENTITY = "BLOCKED"
+    public static final String CLIENT_ID = "client_id"
 
 }
 
