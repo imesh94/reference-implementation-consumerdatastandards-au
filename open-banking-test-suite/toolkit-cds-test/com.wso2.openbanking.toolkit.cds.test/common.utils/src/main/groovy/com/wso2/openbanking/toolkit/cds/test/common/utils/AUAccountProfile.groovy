@@ -7,18 +7,24 @@
  * You may not alter or remove any copyright or other notice from copies of this content.
  */
 
-package com.wso2.openbanking.cds.identity.utils;
+package com.wso2.openbanking.toolkit.cds.test.common.utils
 
 /**
- * Identity Constants Class
+ * Enum class for keeping account Profiles Eg: Business and Individual.
  */
-public class CDSIdentityConstants {
+enum AUAccountProfile {
 
-    // Error messages.
-    public static final String INVALID_PUSH_AUTH_REQUEST = "Invalid push authorisation request";
-    public static final String INVALID_SHARING_DURATION = "Invalid sharing_duration value";
+    ORGANIZATION_A("Organization A"),
+    ORGANIZATION_B("Organization B"),
+    INDIVIDUAL("Individual"),
 
-    // Consent status constants.
-    public static final String AUTHORIZED = "authorized";
+    private String value
 
+    AUAccountProfile(String value) {
+        this.value = value
+    }
+
+    String getProfileString() {
+        return this.value
+    }
 }

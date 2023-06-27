@@ -474,6 +474,25 @@ public class BankingService {
                 "        \"maturityInstructions\": \"ROLLED_OVER\"\n" +
                 "      }" +
                 "    ],\n" +
+                "    \"loan\": {\n" +
+                "       \"originalStartDate\": \"2019-09-01T15:43:00.12345Z\",\n" +
+                "       \"originalLoanAmount\": \"200.00\",\n" +
+                "       \"originalLoanCurrency\": \"AUD\",\n" +
+                "       \"loanEndDate\": \"2020-09-01T15:43:00.12345Z\",\n" +
+                "       \"nextInstalmentDate\": \"2019-10-01T15:43:00.12345Z\",\n" +
+                "       \"minInstalmentAmount\": \"10.00\",\n" +
+                "       \"minInstalmentCurrency\": \"AUD\",\n" +
+                "       \"maxRedraw\": \"200.00\",\n" +
+                "       \"maxRedrawCurrency\": \"AUD\",\n" +
+                "       \"minRedraw\": \"10.00\",\n" +
+                "       \"minRedrawCurrency\": \"AUD\",\n" +
+                "       \"offsetAccountEnabled\": true,\n" +
+                "       \"offsetAccountIds\": [\n" +
+                "           \"1111\",\n" +
+                "           \"2222\"\n" +
+                "       ],\n" +
+                "       \"repaymentType\": \"INTEREST_ONLY\"\n" +
+                "       },\n" +
                 "    \"depositRate\": \"23\",\n" +
                 "    \"lendingRate\": \"34\",\n" +
                 "    \"depositRates\": [\n" +

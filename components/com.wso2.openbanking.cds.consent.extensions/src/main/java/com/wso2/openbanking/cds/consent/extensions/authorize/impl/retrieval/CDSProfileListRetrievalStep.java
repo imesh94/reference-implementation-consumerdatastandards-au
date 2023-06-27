@@ -99,6 +99,9 @@ public class CDSProfileListRetrievalStep implements ConsentRetrievalStep {
                 }
                 profileIdAccountsMap = getProfileIdAccountsMapForIndividualAccounts(profileIdAccountsMap,
                         profileMap, accountJSON);
+                JSONArray customerProfilesJson = getCustomerProfilesAsJson(profileMap, profileIdAccountsMap);
+                jsonObject.put(CDSConsentExtensionConstants.CUSTOMER_PROFILES_ATTRIBUTE, customerProfilesJson);
+                jsonObject.put(CDSConsentExtensionConstants.USER_ID, consentData.getUserId());
             }
         }
 

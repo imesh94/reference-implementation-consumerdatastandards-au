@@ -14,6 +14,7 @@ package com.wso2.cds.test.framework.configuration
 
 import com.wso2.cds.test.framework.constant.AUConfigConstants
 import com.wso2.openbanking.test.framework.configuration.OBConfigurationService
+import com.wso2.openbanking.test.framework.constant.OBConfigConstants
 
 /**
  * Class for provide configuration data to the AU layers and AU tests
@@ -240,5 +241,11 @@ class AUConfigurationService extends OBConfigurationService {
         return configuration.get(AUConfigConstants.PROFILE_SELECTION + "." + AUConfigConstants.PROFILE_SELECTION_ENABLED)
     }
 
+    /**
+     * Get Sharable Account Url
+     */
+    String getSharableAccountUrl() {
+        return configuration.get(OBConfigConstants.SERVER + "." + AUConfigConstants.SHARABLE_ACCOUNT_URL)
+    }
 }
 

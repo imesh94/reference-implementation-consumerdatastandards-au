@@ -12,9 +12,6 @@
 
 package com.wso2.openbanking.cds.consent.extensions.validate.utils;
 
-import com.wso2.openbanking.accelerator.account.metadata.service.service.AccountMetadataService;
-import com.wso2.openbanking.accelerator.account.metadata.service.service.AccountMetadataServiceImpl;
-import com.wso2.openbanking.accelerator.common.exception.OpenBankingException;
 import com.wso2.openbanking.accelerator.consent.extensions.common.ConsentException;
 import com.wso2.openbanking.accelerator.consent.extensions.common.ResponseStatus;
 import com.wso2.openbanking.accelerator.consent.extensions.validate.model.ConsentValidateData;
@@ -30,7 +27,6 @@ import java.time.format.DateTimeParseException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
-import java.util.Map;
 
 /**
  * Consent validate util class for CDS specification.
@@ -41,6 +37,7 @@ public class CDSConsentValidatorUtil {
 
     /**
      * Validate whether consent is expired
+     *
      * @param expDateVal
      * @return
      * @throws ConsentException
@@ -64,13 +61,14 @@ public class CDSConsentValidatorUtil {
 
     /**
      * Method to validate account ids in post request body
+     *
      * @param consentValidateData
      * @return
      */
     public static String validAccountIdsInPostRequest(ConsentValidateData consentValidateData) {
 
         List<String> requestedAccountsList = new ArrayList<>();
-        for (Object element: (ArrayList) ((JSONObject) consentValidateData.getPayload()
+        for (Object element : (ArrayList) ((JSONObject) consentValidateData.getPayload()
                 .get(CDSConsentExtensionConstants.DATA)).get(CDSConsentExtensionConstants.ACCOUNT_IDS)) {
             if (element != null) {
                 requestedAccountsList.add(element.toString());
@@ -97,6 +95,7 @@ public class CDSConsentValidatorUtil {
 
     /**
      * Method to validate whether account id is valid
+     *
      * @param consentValidateData
      * @return
      */
@@ -115,31 +114,5 @@ public class CDSConsentValidatorUtil {
             }
         }
         return false;
-    }
-
-    /**
-     * Get secondary user instruction data
-     * User is eligible for data sharing from the secondary account
-     * only if secondary user instruction is in active state
-     *
-     * @param accountId
-     * @param userId
-     * @throws ConsentException
-     */
-    public static Boolean isUserEligibleForSecondaryAccountDataSharing(String accountId, String userId)
-            throws ConsentException {
-        AccountMetadataService accountMetadataService = AccountMetadataServiceImpl.getInstance();
-
-        try {
-            Map<String, String> accountMetadata = accountMetadataService.getAccountMetadataMap(accountId, userId);
-            if (!accountMetadata.isEmpty()) {
-                return CDSConsentExtensionConstants.ACTIVE_STATUS
-                        .equalsIgnoreCase(accountMetadata.get(CDSConsentExtensionConstants.INSTRUCTION_STATUS));
-            } else {
-                return false;
-            }
-        } catch (OpenBankingException e) {
-            throw new ConsentException(ResponseStatus.INTERNAL_SERVER_ERROR, e.getMessage());
-        }
     }
 }
