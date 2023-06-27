@@ -268,6 +268,23 @@ name = "org.wso2.carbon.identity.oauth2.token.handler.clientauth.jwt.PrivateKeyJ
 order = "899"
 enable = false
 
+[[event_listener]]
+id = "introspection_response_interceptor"
+type = "org.wso2.carbon.identity.core.handler.AbstractIdentityHandler"
+name="org.wso2.carbon.identity.oauth2.token.handler.clientauth.mutualtls.introspection.IntrospectionResponseInterceptor"
+order= "900"
+enable=true
+
+[[event_listener]]
+id = "cds_token_introspection_listener"
+type = "org.wso2.carbon.identity.core.handler.AbstractIdentityHandler"
+name = "com.wso2.openbanking.cds.identity.listener.CDSTokenIntrospectionListener"
+order = "901"
+enable = true
+
+[event_listener.properties]
+EndpointAlias = "https://localhost:9446/oauth2/introspect"
+
 [oauth.grant_type]
 iwa_ntlm.enable = false
 jwt_bearer.enable = true
@@ -415,6 +432,9 @@ token_context_dialect_uri = "http://wso2.org/claims"
 
 [oauth.token_generation]
 access_token_type = "self_contained"
+
+[oauth.introspection]
+filtered_claims = ["username"]
 
 [oauth.grant_type.uma_ticket]
 retrieve_uma_permission_info_through_introspection = true
