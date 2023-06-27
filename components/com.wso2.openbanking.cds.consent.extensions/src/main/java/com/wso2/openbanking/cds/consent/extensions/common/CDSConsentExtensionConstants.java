@@ -96,6 +96,7 @@ public class CDSConsentExtensionConstants {
     public static final String CHAR_SET = "UTF-8";
     public static final String CUSTOMER_TYPE = "customerUType";
     public static final String ORGANISATION = "Organisation";
+    public static final String PERSON = "Person";
     public static final String DATA_REQUESTED = "data_requested";
     public static final String NEW_DATA_REQUESTED = "new_data_requested";
     public static final String COMMON_CUSTOMER_BASIC_READ_SCOPE = "common:customer.basic:read";
@@ -106,6 +107,7 @@ public class CDSConsentExtensionConstants {
     public static final Map<String, Map<String, List<String>>> CDS_DATA_CLUSTER;
     public static final Map<String, Map<String, List<String>>> BUSINESS_CDS_DATA_CLUSTER;
     public static final Map<String, Map<String, List<String>>> INDIVIDUAL_CDS_DATA_CLUSTER;
+    public static final Map<String, Map<String, List<String>>> PROFILE_DATA_CLUSTER;
 
     //Nominated Representative Constants
     public static final String BUSINESS_ACCOUNT_INFO = "businessAccountInfo";
@@ -124,6 +126,7 @@ public class CDSConsentExtensionConstants {
     //Multi Profile Constants
     public static final String INDIVIDUAL_PROFILE_TYPE = "Individual";
     public static final String INDIVIDUAL_PROFILE_ID = "individual_profile";
+    public static final String ORGANISATION_PROFILE_ID = "organisation_profile";
     public static final String BUSINESS_PROFILE_TYPE = "Business";
     public static final String PROFILE_ID = "profileId";
     public static final String PROFILE_NAME = "profileName";
@@ -182,6 +185,7 @@ public class CDSConsentExtensionConstants {
 
     public static final int CDS_DEFAULT_EXPIRY = 86400; // 1 day
 
+    // CDS data cluster
     static {
         Map<String, Map<String, List<String>>> dataCluster = new HashMap<>();
 
@@ -219,6 +223,7 @@ public class CDSConsentExtensionConstants {
         CDS_DATA_CLUSTER = Collections.unmodifiableMap(dataCluster);
     }
 
+    // Business data cluster
     static {
         Map<String, Map<String, List<String>>> dataCluster = new HashMap<>();
 
@@ -239,6 +244,7 @@ public class CDSConsentExtensionConstants {
         BUSINESS_CDS_DATA_CLUSTER = Collections.unmodifiableMap(dataCluster);
     }
 
+    // Individual data cluster
     static {
         Map<String, Map<String, List<String>>> dataCluster = new HashMap<>();
 
@@ -252,5 +258,44 @@ public class CDSConsentExtensionConstants {
         dataCluster.put("common:customer.detail:read", permissionLanguage);
 
         INDIVIDUAL_CDS_DATA_CLUSTER = Collections.unmodifiableMap(dataCluster);
+    }
+
+    // Profile scope data cluster
+    static {
+        Map<String, Map<String, List<String>>> dataCluster = new HashMap<>();
+
+        Map<String, List<String>> permissionLanguage = new LinkedHashMap<>();
+        permissionLanguage.put("Name", Arrays.asList("Full name and title(s)"));
+        dataCluster.put("profile_name", permissionLanguage);
+
+        permissionLanguage = new LinkedHashMap();
+        permissionLanguage.put("Contact Details", Arrays.asList("Phone number", "Email address", "Mail address"));
+        dataCluster.put("profile_contactDetails_EMAIL_MAIL_PHONE", permissionLanguage);
+
+        permissionLanguage = new LinkedHashMap();
+        permissionLanguage.put("Contact Details", Arrays.asList("Email address", "Mail address"));
+        dataCluster.put("profile_contactDetails_EMAIL_MAIL", permissionLanguage);
+
+        permissionLanguage = new LinkedHashMap();
+        permissionLanguage.put("Contact Details", Arrays.asList("Phone number", "Email address"));
+        dataCluster.put("profile_contactDetails_EMAIL_PHONE", permissionLanguage);
+
+        permissionLanguage = new LinkedHashMap();
+        permissionLanguage.put("Contact Details", Arrays.asList("Mail address", "Phone number"));
+        dataCluster.put("profile_contactDetails_MAIL_PHONE", permissionLanguage);
+
+        permissionLanguage = new LinkedHashMap();
+        permissionLanguage.put("Contact Details", Arrays.asList("Email address"));
+        dataCluster.put("profile_contactDetails_EMAIL", permissionLanguage);
+
+        permissionLanguage = new LinkedHashMap();
+        permissionLanguage.put("Contact Details", Arrays.asList("Mail address"));
+        dataCluster.put("profile_contactDetails_MAIL", permissionLanguage);
+
+        permissionLanguage = new LinkedHashMap();
+        permissionLanguage.put("Contact Details", Arrays.asList("Phone number"));
+        dataCluster.put("profile_contactDetails_PHONE", permissionLanguage);
+
+        PROFILE_DATA_CLUSTER = Collections.unmodifiableMap(dataCluster);
     }
 }

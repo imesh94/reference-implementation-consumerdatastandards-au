@@ -110,6 +110,8 @@ public class CDSProfileListRetrievalStepTests extends PowerMockTestCase {
         openBankingCDSConfigParserMock = mock(OpenBankingCDSConfigParser.class);
         doReturn(true).when(openBankingCDSConfigParserMock).
                 isBNRPrioritizeSharableAccountsResponseEnabled();
+        doReturn("profile_selection").when(openBankingCDSConfigParserMock).
+                getBNRCustomerTypeSelectionMethod();
 
         PowerMockito.mockStatic(OpenBankingCDSConfigParser.class);
         PowerMockito.when(OpenBankingCDSConfigParser.getInstance()).thenReturn(openBankingCDSConfigParserMock);
