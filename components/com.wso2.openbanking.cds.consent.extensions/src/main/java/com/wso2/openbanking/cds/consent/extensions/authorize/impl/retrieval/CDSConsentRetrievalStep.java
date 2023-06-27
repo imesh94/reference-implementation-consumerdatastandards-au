@@ -204,6 +204,9 @@ public class CDSConsentRetrievalStep implements ConsentRetrievalStep {
             jsonObject.appendField(CDSConsentExtensionConstants.REDIRECT_URL, CDSDataRetrievalUtil
                     .getRedirectURL(consentData.getSpQueryParams()));
 
+            // appending state to be retrieved in authentication webapp
+            jsonObject.appendField(CDSConsentExtensionConstants.STATE, consentData.getState());
+
             // appending openid_scopes to be retrieved in authentication webapp
             jsonObject.appendField(CDSConsentExtensionConstants.OPENID_SCOPES, permissions);
 
