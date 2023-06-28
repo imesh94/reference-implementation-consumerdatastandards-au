@@ -8,9 +8,13 @@
  */
 package com.wso2.openbanking.cds.consent.extensions.authservlet.impl;
 
+import com.wso2.openbanking.accelerator.common.exception.OpenBankingException;
 import com.wso2.openbanking.accelerator.consent.extensions.authservlet.model.OBAuthServletInterface;
+import com.wso2.openbanking.accelerator.consent.extensions.common.ConsentException;
+import com.wso2.openbanking.accelerator.consent.extensions.common.ResponseStatus;
 import com.wso2.openbanking.cds.common.config.OpenBankingCDSConfigParser;
 import com.wso2.openbanking.cds.consent.extensions.common.CDSConsentExtensionConstants;
+import com.wso2.openbanking.cds.consent.extensions.validate.CDSConsentValidator;
 import org.apache.commons.lang3.StringUtils;
 import org.json.JSONArray;
 import org.json.JSONObject;
@@ -29,6 +33,7 @@ import javax.servlet.http.HttpServletRequest;
 public class OBCDSAuthServletImpl implements OBAuthServletInterface {
 
     String preSelectedProfileId;
+
     @Override
     public Map<String, Object> updateRequestAttribute(HttpServletRequest httpServletRequest, JSONObject dataSet,
                                                       ResourceBundle resourceBundle) {
@@ -139,12 +144,29 @@ public class OBCDSAuthServletImpl implements OBAuthServletInterface {
     private void updateJointAccountAttributes(JSONObject account, Map<String, Object> data) {
         if (account != null && (account.getBoolean(CDSConsentExtensionConstants.IS_JOINT_ACCOUNT_RESPONSE))
                 && !account.getBoolean(CDSConsentExtensionConstants.IS_SECONDARY_ACCOUNT_RESPONSE)) {
+
+            CDSConsentValidator cdsConsentValidator = new CDSConsentValidator();
+
+            // Check the eligibility of the joint account for data sharing
+            String accountID = account.getString("accountId");
+            boolean isJointAccount = account.getBoolean("isJointAccount");
+            boolean domsPreApprovalStatus = true;
+            try {
+                if (isJointAccount) {
+                    domsPreApprovalStatus = cdsConsentValidator.isDOMSStatusEligibleForDataSharing(accountID);
+                }
+            } catch (OpenBankingException e) {
+                throw new ConsentException(ResponseStatus.INTERNAL_SERVER_ERROR,
+                        "Error while checking DOMS status for the joint account for data sharing");
+            }
+
             data.put(CDSConsentExtensionConstants.IS_JOINT_ACCOUNT, true);
 
             String consentElectionStatus = String
                     .valueOf(account.get(CDSConsentExtensionConstants.JOINT_ACCOUNT_CONSENT_ELECTION_STATUS));
             data.put(CDSConsentExtensionConstants.IS_SELECTABLE,
-                    CDSConsentExtensionConstants.JOINT_ACCOUNT_PRE_APPROVAL.equalsIgnoreCase(consentElectionStatus));
+                    CDSConsentExtensionConstants.JOINT_ACCOUNT_PRE_APPROVAL.equalsIgnoreCase(consentElectionStatus)
+                            && domsPreApprovalStatus);
 
             JSONObject jointAccountInfo = account.getJSONObject(CDSConsentExtensionConstants.JOINT_ACCOUNT_INFO);
             if (jointAccountInfo != null) {
@@ -158,7 +180,7 @@ public class OBCDSAuthServletImpl implements OBAuthServletInterface {
      * Update Secondary Account Details.
      *
      * @param account: account object
-     * @param data: data map
+     * @param data:    data map
      * @return
      */
     private void updateSecondaryAccountAttributes(JSONObject account, Map<String, Object> data) {
@@ -169,15 +191,29 @@ public class OBCDSAuthServletImpl implements OBAuthServletInterface {
             Boolean secondaryAccountPrivilegeStatus = Boolean.valueOf(String
                     .valueOf(account.get(CDSConsentExtensionConstants.SECONDARY_ACCOUNT_PRIVILEGE_STATUS)));
 
+            // Check the eligibility of the secondary joint account for data sharing
+            CDSConsentValidator cdsConsentValidator = new CDSConsentValidator();
+            String accountID = account.getString("accountId");
+            boolean isJointAccount = account.getBoolean("isJointAccount");
+            boolean domsPreApprovalStatus = true;
+            try {
+                if (isJointAccount) {
+                    domsPreApprovalStatus = cdsConsentValidator.isDOMSStatusEligibleForDataSharing(accountID);
+                }
+            } catch (OpenBankingException e) {
+                throw new ConsentException(ResponseStatus.INTERNAL_SERVER_ERROR,
+                        "Error while checking DOMS status of the secondary joint accounts for data sharing");
+            }
+
             // handle secondary joint accounts
             if (account.getBoolean(CDSConsentExtensionConstants.IS_JOINT_ACCOUNT_RESPONSE)) {
                 String consentElectionStatus = String
                         .valueOf(account.get(CDSConsentExtensionConstants.JOINT_ACCOUNT_CONSENT_ELECTION_STATUS));
                 Boolean isPreApproved = CDSConsentExtensionConstants.JOINT_ACCOUNT_PRE_APPROVAL
                         .equalsIgnoreCase(consentElectionStatus);
-                data.put(CDSConsentExtensionConstants.IS_SELECTABLE, isPreApproved && secondaryAccountPrivilegeStatus);
+                data.put(CDSConsentExtensionConstants.IS_SELECTABLE, isPreApproved && secondaryAccountPrivilegeStatus && domsPreApprovalStatus);
             } else {
-                data.put(CDSConsentExtensionConstants.IS_SELECTABLE, secondaryAccountPrivilegeStatus);
+                data.put(CDSConsentExtensionConstants.IS_SELECTABLE, secondaryAccountPrivilegeStatus && domsPreApprovalStatus);
             }
         }
     }
