@@ -112,7 +112,7 @@ public class GatewayErrorMediator extends AbstractMediator {
             } else {
                 return true;
             }
-            errorData = prepareErrorData(errorEnum, statusCode, errorEnum.getDetail());
+            errorData = getErrorDataObject(errorEnum, statusCode, errorEnum.getDetail());
         }
 
         // Add x-fapi-interaction-id as a transport header if not exists
@@ -322,7 +322,7 @@ public class GatewayErrorMediator extends AbstractMediator {
             errorEnum = ErrorConstants.AUErrorEnum.EXPECTED_GENERAL_ERROR;
         }
 
-        return prepareErrorData(errorEnum, status, errorMessage);
+        return getErrorDataObject(errorEnum, status, errorMessage);
     }
 
     /**
@@ -350,7 +350,7 @@ public class GatewayErrorMediator extends AbstractMediator {
             errorEnum = ErrorConstants.AUErrorEnum.EXPECTED_GENERAL_ERROR;
         }
 
-        return prepareErrorData(errorEnum, status, errorDetail);
+        return getErrorDataObject(errorEnum, status, errorDetail);
     }
 
     /**
@@ -360,7 +360,7 @@ public class GatewayErrorMediator extends AbstractMediator {
      * @return
      */
     private static JSONObject getResponseSchemaValidationFailureResponse(String errorDetail) {
-       return prepareErrorData(ErrorConstants.AUErrorEnum.UNEXPECTED_ERROR,
+       return getErrorDataObject(ErrorConstants.AUErrorEnum.UNEXPECTED_ERROR,
                HttpStatus.SC_INTERNAL_SERVER_ERROR, errorDetail);
     }
 
@@ -405,8 +405,8 @@ public class GatewayErrorMediator extends AbstractMediator {
      * @param errorDetail - Error Details
      * @return Error Object
      */
-    private static JSONObject prepareErrorData(ErrorConstants.AUErrorEnum errorEnum, int errorStatus,
-                                               String errorDetail) {
+    private static JSONObject getErrorDataObject(ErrorConstants.AUErrorEnum errorEnum, int errorStatus,
+                                                 String errorDetail) {
         JSONObject errorData = new JSONObject();
         JSONArray errorList = new JSONArray();
         errorList.add(ErrorUtil.getErrorObject(errorEnum, errorDetail, new CDSErrorMeta()));
