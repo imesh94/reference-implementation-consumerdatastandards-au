@@ -218,6 +218,8 @@ public class CeasingSecondaryUserSharingHandler {
         try {
             CommonServiceProviderRetriever commonServiceProviderRetriever = new CommonServiceProviderRetriever();
 
+            ArrayList<String> secondaryUserIDList = new ArrayList<>();
+
             // Updating - Secondary Users
             for (DetailedConsentResource detailedConsent : responseDetailedConsents) {
 
@@ -228,26 +230,14 @@ public class CeasingSecondaryUserSharingHandler {
 
                         // Inserting a non-duplicate secondaryUser to the secondary user list in the
                         // responseUsersAccountsLegalEntitiesDTO
-                        UsersAccountsLegalEntitiesDTO.SecondaryUser uniqueSecondaryUser = new
-                                UsersAccountsLegalEntitiesDTO.
+                        UsersAccountsLegalEntitiesDTO.SecondaryUser uniqueSecondaryUser =
+                                new UsersAccountsLegalEntitiesDTO.
                                         SecondaryUser(authorizationResource.getUserID(), null);
 
-                        if (responseUsersAccountsLegalEntitiesDTO.getSecondaryUsers() == null) {
+                        if (!secondaryUserIDList.contains(uniqueSecondaryUser.getSecondaryUserID())) {
                             responseUsersAccountsLegalEntitiesDTO.addSecondaryUser(uniqueSecondaryUser);
-                        } else {
-                            boolean isUniqueSecondaryAccountUser = true;
-                            for (UsersAccountsLegalEntitiesDTO.SecondaryUser secondaryUser :
-                                    responseUsersAccountsLegalEntitiesDTO.getSecondaryUsers()) {
-                                if (secondaryUser.getSecondaryUserID().
-                                        equals(uniqueSecondaryUser.getSecondaryUserID())) {
-                                    isUniqueSecondaryAccountUser = false;
-                                    break;
-                                }
-                            }
-                            if (isUniqueSecondaryAccountUser) {
-                                responseUsersAccountsLegalEntitiesDTO.addSecondaryUser(uniqueSecondaryUser);
-                            }
                         }
+                        secondaryUserIDList.add(uniqueSecondaryUser.getSecondaryUserID());
                     }
                 }
             }
@@ -255,6 +245,8 @@ public class CeasingSecondaryUserSharingHandler {
             // Updating - Accounts
             for (UsersAccountsLegalEntitiesDTO.SecondaryUser secondaryUser :
                     responseUsersAccountsLegalEntitiesDTO.getSecondaryUsers()) {
+
+                ArrayList<String> accountIDList = new ArrayList<>();
 
                 for (DetailedConsentResource detailedConsent : responseDetailedConsents) {
 
@@ -274,21 +266,10 @@ public class CeasingSecondaryUserSharingHandler {
                                         new UsersAccountsLegalEntitiesDTO.
                                                 Account(consentMappingResource.getAccountID(), null);
 
-                                if (secondaryUser.getAccounts() == null) {
+                                if (!accountIDList.contains(uniqueAccount.getAccountID())) {
                                     secondaryUser.addAccount(uniqueAccount);
-                                } else {
-                                    boolean isUniqueAccount = true;
-                                    for (UsersAccountsLegalEntitiesDTO.Account account :
-                                            secondaryUser.getAccounts()) {
-                                        if (account.getAccountID().equals(uniqueAccount.getAccountID())) {
-                                            isUniqueAccount = false;
-                                            break;
-                                        }
-                                    }
-                                    if (isUniqueAccount) {
-                                        secondaryUser.addAccount(uniqueAccount);
-                                    }
                                 }
+                                accountIDList.add(uniqueAccount.getAccountID());
                             }
                         }
                     }
@@ -306,6 +287,7 @@ public class CeasingSecondaryUserSharingHandler {
                     String legalEntityID = null;
                     String legalEntityName = null;
                     String legalEntitySharingStatus = null;
+                    ArrayList<String> legalEntityIDList = new ArrayList<>();
 
                     for (DetailedConsentResource detailedConsent : responseDetailedConsents) {
 
@@ -354,18 +336,10 @@ public class CeasingSecondaryUserSharingHandler {
                                                     LegalEntity(legalEntityID, legalEntityName,
                                                     legalEntitySharingStatus);
 
-                                    if (account.getLegalEntities() == null) {
+                                    if (!legalEntityIDList.contains(uniqueLegalEntity.getLegalEntityID())) {
                                         account.addLegalEntity(uniqueLegalEntity);
-                                    } else {
-                                        for (UsersAccountsLegalEntitiesDTO.LegalEntity legalEntity :
-                                                account.getLegalEntities()) {
-                                            if (!legalEntity.getLegalEntityID().
-                                                    equals(uniqueLegalEntity.getLegalEntityID())) {
-                                                account.addLegalEntity(uniqueLegalEntity);
-                                                break;
-                                            }
-                                        }
                                     }
+                                    legalEntityIDList.add(uniqueLegalEntity.getLegalEntityID());
                                 }
                             }
                         }
