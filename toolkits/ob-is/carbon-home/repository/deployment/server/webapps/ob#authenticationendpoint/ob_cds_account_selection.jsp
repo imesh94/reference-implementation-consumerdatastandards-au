@@ -101,7 +101,10 @@
                             Select the accounts you wish to authorise:
                         </h4>
                         <div class="col-md-12" >
-                                <%--Display Selectable accounts--%>
+                            <%--Display Selectable accounts--%>
+                            <tr class="col-md-12" ><td colspan=2><br><button type="button" style='margin: 0; padding: 0;border: none;color: #00b4ff;background-color: transparent;text-decoration: underline;'
+                                onClick='toggle(this)'>Select all </button></td></tr>
+                            <tr ><td colspan=2></td><br></tr>
                             <c:forEach items="${accounts_data}" var="record">
                                 <c:if test="${fn:contains(profileAccountIds, record['accountId'])}">
                                     <c:choose>
@@ -312,6 +315,16 @@
         });
 
     });
+
+    function toggle(source) {
+        var items = document.getElementsByName('chkAccounts');
+        for (var i = 0; i < items.length; i++) {
+            if (items[i].type == 'checkbox') {
+                items[i].checked = true;
+            }
+        }
+        updateAcc();
+    }
 </script>
 
 <jsp:include page="includes/consent_bottom.jsp"/>

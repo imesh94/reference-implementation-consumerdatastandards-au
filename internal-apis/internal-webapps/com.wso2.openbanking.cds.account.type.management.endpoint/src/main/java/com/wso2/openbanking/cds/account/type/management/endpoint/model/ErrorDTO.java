@@ -8,12 +8,15 @@
  */
 package com.wso2.openbanking.cds.account.type.management.endpoint.model;
 
+import com.google.gson.annotations.SerializedName;
+
 /**
  * ErrorDTO model class.
  */
 public class ErrorDTO {
 
     private String error;
+    @SerializedName("error_description")
     private String errorDescription;
 
     public ErrorDTO(ErrorStatusEnum error, String errorDescription) {

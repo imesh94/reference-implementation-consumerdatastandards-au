@@ -96,6 +96,7 @@ public class CDSConsentExtensionConstants {
     public static final String CHAR_SET = "UTF-8";
     public static final String CUSTOMER_TYPE = "customerUType";
     public static final String ORGANISATION = "Organisation";
+    public static final String PERSON = "Person";
     public static final String DATA_REQUESTED = "data_requested";
     public static final String NEW_DATA_REQUESTED = "new_data_requested";
     public static final String COMMON_CUSTOMER_BASIC_READ_SCOPE = "common:customer.basic:read";
@@ -127,6 +128,7 @@ public class CDSConsentExtensionConstants {
     //Multi Profile Constants
     public static final String INDIVIDUAL_PROFILE_TYPE = "Individual";
     public static final String INDIVIDUAL_PROFILE_ID = "individual_profile";
+    public static final String ORGANISATION_PROFILE_ID = "organisation_profile";
     public static final String BUSINESS_PROFILE_TYPE = "Business";
     public static final String PROFILE_ID = "profileId";
     public static final String PROFILE_NAME = "profileName";
@@ -207,6 +209,7 @@ public class CDSConsentExtensionConstants {
     public static final int CDS_DEFAULT_EXPIRY = 86400; // 1 day
     public static final String CUSTOMER_SCOPES_ONLY = "customerScopesOnly";
 
+    // CDS data cluster
     static {
         Map<String, Map<String, List<String>>> dataCluster = new HashMap<>();
 
@@ -244,6 +247,7 @@ public class CDSConsentExtensionConstants {
         CDS_DATA_CLUSTER = Collections.unmodifiableMap(dataCluster);
     }
 
+    // Business data cluster
     static {
         Map<String, Map<String, List<String>>> dataCluster = new HashMap<>();
 
@@ -301,6 +305,7 @@ public class CDSConsentExtensionConstants {
         BUSINESS_CDS_DATA_CLUSTER = Collections.unmodifiableMap(dataCluster);
     }
 
+    // Individual data cluster
     static {
         Map<String, Map<String, List<String>>> dataCluster = new HashMap<>();
 
