@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2021-2022, WSO2 LLC. (https://www.wso2.com). All Rights Reserved.
+ * Copyright (c) 2021-2023, WSO2 LLC. (https://www.wso2.com). All Rights Reserved.
  *
  * This software is the property of WSO2 LLC. and its suppliers, if any.
  * Dissemination of any information or reproduction of any material contained
@@ -8,7 +8,6 @@
  */
 package com.wso2.openbanking.cds.consent.extensions.admin.impl;
 
-import com.wso2.openbanking.accelerator.account.metadata.service.service.AccountMetadataService;
 import com.wso2.openbanking.accelerator.account.metadata.service.service.AccountMetadataServiceImpl;
 import com.wso2.openbanking.accelerator.common.config.OpenBankingConfigParser;
 import com.wso2.openbanking.accelerator.common.exception.ConsentManagementException;
@@ -26,16 +25,17 @@ import com.wso2.openbanking.cds.consent.extensions.util.CDSConsentValidateTestCo
 
 import net.minidev.json.JSONArray;
 import net.minidev.json.JSONObject;
+import org.jetbrains.annotations.NotNull;
 import org.mockito.ArgumentCaptor;
 import org.mockito.Mock;
 
+import org.mockito.Mockito;
 import org.powermock.api.mockito.PowerMockito;
 import org.powermock.core.classloader.annotations.PowerMockIgnore;
 import org.powermock.core.classloader.annotations.PrepareForTest;
 import org.powermock.modules.testng.PowerMockTestCase;
 import org.testng.annotations.BeforeClass;
 import org.testng.annotations.Test;
-
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
@@ -43,12 +43,12 @@ import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
-
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
 import static com.wso2.openbanking.cds.consent.extensions.common.CDSConsentExtensionConstants.AUTH_RESOURCE_TYPE_LINKED;
 import static com.wso2.openbanking.cds.consent.extensions.common.CDSConsentExtensionConstants.AUTH_RESOURCE_TYPE_PRIMARY;
 import static org.junit.Assert.assertTrue;
 import static org.mockito.Matchers.any;
-import static org.mockito.Matchers.anyInt;
 import static org.mockito.Matchers.anyObject;
 import static org.mockito.Matchers.anyString;
 import static org.mockito.Mockito.doReturn;
@@ -56,12 +56,13 @@ import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 import static org.powermock.api.mockito.PowerMockito.mockStatic;
+import static org.testng.AssertJUnit.assertEquals;
 
 /**
  * Test class for CDSConsentAdminHandler.
  */
-@PrepareForTest({OpenBankingConfigParser.class, AccountMetadataService.class, ConsentAdminData.class, JSONObject.class,
-        JSONArray.class})
+@PrepareForTest({OpenBankingConfigParser.class, AccountMetadataServiceImpl.class, ConsentAdminData.class,
+        JSONObject.class, JSONArray.class})
 @PowerMockIgnore({"com.wso2.openbanking.accelerator.consent.extensions.common.*", "jdk.internal.reflect.*"})
 public class CDSConsentAdminHandlerTest extends PowerMockTestCase {
 
@@ -77,6 +78,9 @@ public class CDSConsentAdminHandlerTest extends PowerMockTestCase {
     private CDSConsentAdminHandler uut;
     private ConsentCoreServiceImpl consentCoreServiceMock;
     private DetailedConsentResource detailedConsentResource;
+    @Mock
+    private AccountMetadataServiceImpl accountMetadataServiceMock;
+
     @BeforeClass
     public void setUp() throws ConsentManagementException {
         //mock
@@ -221,6 +225,77 @@ public class CDSConsentAdminHandlerTest extends PowerMockTestCase {
         when(consentAdminDataMock.getQueryParams()).thenReturn(queryParams);
 
         uut.handleConsentAmendmentHistoryRetrieval(consentAdminDataMock);
+    }
+
+    @Test
+    public void testUpdateDOMSStatusForConsentData() throws OpenBankingException {
+
+        this.accountMetadataServiceMock = mock(AccountMetadataServiceImpl.class);
+        mockStatic(AccountMetadataServiceImpl.class);
+        when(AccountMetadataServiceImpl.getInstance()).thenReturn(accountMetadataServiceMock);
+
+        Map<String, String> accountMetadataMap = new HashMap<>();
+        accountMetadataMap.put("6500001232", CDSConsentExtensionConstants.DOMS_STATUS_PRE_APPROVAL);
+
+        JSONObject payload = detailedConsentToJSON(detailedConsentResource);
+        HttpServletRequest httpServletRequest = Mockito.mock(HttpServletRequest.class);
+        HttpServletResponse httpServletResponse = Mockito.mock(HttpServletResponse.class);
+        ConsentAdminData consentAdminData = new ConsentAdminData(new HashMap<>(), payload, new HashMap<>(),
+                "", httpServletRequest, httpServletResponse);
+        consentAdminData.setResponsePayload(payload);
+
+        String accountId = "6500001232";
+        Map<String, String> disclosureOptionsMap = new HashMap<>();
+        if (accountMetadataMap.containsKey(accountId)) {
+            String domsStatus = accountMetadataMap.get(accountId);
+            disclosureOptionsMap.put(CDSConsentExtensionConstants.DOMS_STATUS, domsStatus);
+        }
+        when(accountMetadataServiceMock.getGlobalAccountMetadataMap(anyString()))
+                .thenReturn(disclosureOptionsMap);
+
+        uut.updateDOMSStatusForConsentData(consentAdminData);
+
+        String domsStatus = disclosureOptionsMap.get(CDSConsentExtensionConstants.DOMS_STATUS);
+        assertEquals(CDSConsentExtensionConstants.DOMS_STATUS_PRE_APPROVAL, domsStatus);
+    }
+
+    public JSONObject detailedConsentToJSON(@NotNull DetailedConsentResource detailedConsentResource) {
+        JSONObject dataObject = new JSONObject();
+
+        JSONObject jsonObject = new JSONObject();
+        JSONArray authorizationResourcesArray = new JSONArray();
+        JSONArray consentMappingResourcesArray = new JSONArray();
+
+        for (AuthorizationResource authorizationResource : detailedConsentResource.getAuthorizationResources()) {
+            JSONObject authResourceJsonObject = new JSONObject();
+            authResourceJsonObject.put("authorizationId", authorizationResource.getAuthorizationID());
+            authResourceJsonObject.put("consentId", authorizationResource.getConsentID());
+            authResourceJsonObject.put("userId", authorizationResource.getUserID());
+            authResourceJsonObject.put("authorizationStatus", authorizationResource.getAuthorizationStatus());
+            authResourceJsonObject.put("authorizationType", authorizationResource.getAuthorizationType());
+            authResourceJsonObject.put("updatedTime", authorizationResource.getUpdatedTime());
+            authorizationResourcesArray.add(authResourceJsonObject);
+        }
+
+        for (ConsentMappingResource consentMappingResource : detailedConsentResource.getConsentMappingResources()) {
+            JSONObject consentMappingResourceObject = new JSONObject();
+            consentMappingResourceObject.put("mappingId", consentMappingResource.getMappingID());
+            consentMappingResourceObject.put("authorizationId", consentMappingResource.getAuthorizationID());
+            consentMappingResourceObject.put("accountId", consentMappingResource.getAccountID());
+            consentMappingResourceObject.put("permission", consentMappingResource.getPermission());
+            consentMappingResourceObject.put("mappingStatus", consentMappingResource.getMappingStatus());
+            consentMappingResourcesArray.add(consentMappingResourceObject);
+        }
+
+        jsonObject.put("authorizationResources", authorizationResourcesArray);
+        jsonObject.put("consentMappingResources", consentMappingResourcesArray);
+
+        JSONArray dataArray = new JSONArray();
+        dataArray.add(jsonObject);
+
+        dataObject.put("data", dataArray);
+
+        return dataObject;
     }
 }
 
