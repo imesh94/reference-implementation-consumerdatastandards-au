@@ -8,6 +8,8 @@
  */
 package com.wso2.openbanking.cds.consent.extensions.authorize.impl.retrieval;
 
+import com.wso2.openbanking.accelerator.account.metadata.service.service.AccountMetadataServiceImpl;
+import com.wso2.openbanking.accelerator.common.exception.OpenBankingException;
 import com.wso2.openbanking.accelerator.consent.extensions.authorize.model.ConsentData;
 import com.wso2.openbanking.cds.common.config.OpenBankingCDSConfigParser;
 import com.wso2.openbanking.cds.consent.extensions.authorize.utils.CDSConsentCommonUtil;
@@ -28,11 +30,12 @@ import static org.mockito.Matchers.anyString;
 import static org.mockito.Mockito.doReturn;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
+import static org.powermock.api.mockito.PowerMockito.mockStatic;
 
 /**
  * Test class for CDS Account Retrieval
  */
-@PrepareForTest({OpenBankingCDSConfigParser.class, CDSConsentCommonUtil.class})
+@PrepareForTest({OpenBankingCDSConfigParser.class, CDSConsentCommonUtil.class, AccountMetadataServiceImpl.class})
 @PowerMockIgnore({"com.wso2.openbanking.accelerator.consent.extensions.common.*", "jdk.internal.reflect.*"})
 public class CDSProfileListRetrievalStepTests extends PowerMockTestCase {
 
@@ -94,24 +97,38 @@ public class CDSProfileListRetrievalStepTests extends PowerMockTestCase {
 
     @Mock
     OpenBankingCDSConfigParser openBankingCDSConfigParserMock;
+    AccountMetadataServiceImpl accountMetadataServiceMock;
+
     @Mock
     ConsentData consentDataMock;
     private static CDSProfileListRetrievalStep cdsProfileListRetrievalStep;
 
     @BeforeClass
     public void initClass() {
+        openBankingCDSConfigParserMock = mock(OpenBankingCDSConfigParser.class);
+        PowerMockito.mockStatic(OpenBankingCDSConfigParser.class);
+        PowerMockito.when(OpenBankingCDSConfigParser.getInstance()).thenReturn(openBankingCDSConfigParserMock);
+
+        this.accountMetadataServiceMock = mock(AccountMetadataServiceImpl.class);
+        mockStatic(AccountMetadataServiceImpl.class);
+        when(AccountMetadataServiceImpl.getInstance()).thenReturn(accountMetadataServiceMock);
+
         cdsProfileListRetrievalStep = new CDSProfileListRetrievalStep();
         consentDataMock = mock(ConsentData.class);
     }
 
     @Test
-    public void testProfileDataRetrievalSuccessScenario() throws ParseException {
+    public void testProfileDataRetrievalSuccessScenario() throws ParseException, OpenBankingException {
 
         openBankingCDSConfigParserMock = mock(OpenBankingCDSConfigParser.class);
+        PowerMockito.mockStatic(OpenBankingCDSConfigParser.class);
+        PowerMockito.when(OpenBankingCDSConfigParser.getInstance()).thenReturn(openBankingCDSConfigParserMock);
         doReturn(true).when(openBankingCDSConfigParserMock).
                 isBNRPrioritizeSharableAccountsResponseEnabled();
         doReturn("profile_selection").when(openBankingCDSConfigParserMock).
                 getBNRCustomerTypeSelectionMethod();
+        doReturn("AUTHORIZE").when(accountMetadataServiceMock).getAccountMetadataByKey(anyString(),
+                anyString(), anyString());
 
         PowerMockito.mockStatic(OpenBankingCDSConfigParser.class);
         PowerMockito.when(OpenBankingCDSConfigParser.getInstance()).thenReturn(openBankingCDSConfigParserMock);

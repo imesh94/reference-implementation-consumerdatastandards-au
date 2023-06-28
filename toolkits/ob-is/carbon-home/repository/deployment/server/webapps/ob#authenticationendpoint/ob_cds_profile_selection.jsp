@@ -22,6 +22,7 @@
     session.setAttribute("consent_expiration", request.getAttribute("consent_expiration"));
     session.setAttribute("account_masking_enabled", request.getAttribute("account_masking_enabled"));
     session.setAttribute("isConsentAmendment", request.getAttribute("isConsentAmendment"));
+    session.setAttribute("skipAccounts", request.getAttribute("customerScopesOnly"));
     session.setAttribute("isSharingDurationUpdated", request.getAttribute("isSharingDurationUpdated"));
     session.setAttribute("app", request.getAttribute("app"));
     session.setAttribute("configParamsMap", request.getAttribute("data_requested"));
