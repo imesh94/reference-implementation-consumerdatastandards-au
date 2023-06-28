@@ -196,4 +196,11 @@
         <Enable>false</Enable>
         {% endif %}
     </SecondaryUserAccounts>
+    <DisclosureOptionsManagement>
+        {% if open_banking_cds.disclosure_options_management.enable is defined %}
+        <Enable>{{open_banking_cds.disclosure_options_management.enable}}</Enable>
+        {% else %}
+        <Enable>false</Enable>
+        {% endif %}
+    </DisclosureOptionsManagement>
 </Server>

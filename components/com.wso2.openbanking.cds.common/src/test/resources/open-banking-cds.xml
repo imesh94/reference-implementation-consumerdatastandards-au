@@ -82,4 +82,7 @@
     <SecondaryUserAccounts>
         <Enable>true</Enable>
     </SecondaryUserAccounts>
+    <DisclosureOptionsManagement>
+        <Enable>true</Enable>
+    </DisclosureOptionsManagement>
 </Server>

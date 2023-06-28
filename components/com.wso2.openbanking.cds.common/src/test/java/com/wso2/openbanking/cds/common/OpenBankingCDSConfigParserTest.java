@@ -226,7 +226,6 @@ public class OpenBankingCDSConfigParserTest {
         OpenBankingCDSConfigParser openBankingCDSConfigParser = OpenBankingCDSConfigParser.getInstance(dummyConfigFile);
         Assert.assertTrue(openBankingCDSConfigParser.getSecondaryUserAccountsEnabled());
     }
-
     @Test(priority = 8)
     public void testIsBNRPrioritizeSharableAccountsResponseEnabled() {
         String dummyConfigFile = absolutePathForTestResources + "/open-banking-cds.xml";
@@ -246,6 +245,13 @@ public class OpenBankingCDSConfigParserTest {
         String dummyConfigFile = absolutePathForTestResources + "/open-banking-cds.xml";
         OpenBankingCDSConfigParser openBankingCDSConfigParser = OpenBankingCDSConfigParser.getInstance(dummyConfigFile);
         Assert.assertEquals(openBankingCDSConfigParser.isBNRConsentRevocationEnabled(), true);
+    }
+
+    @Test(priority = 8)
+    public void testIsDOMSEnabled() {
+        String dummyConfigFile = absolutePathForTestResources + "/open-banking-cds.xml";
+        OpenBankingCDSConfigParser openBankingCDSConfigParser = OpenBankingCDSConfigParser.getInstance(dummyConfigFile);
+        Assert.assertTrue(openBankingCDSConfigParser.getDOMSEnabled());
     }
 
     private void injectEnvironmentVariable(String key, String value)

@@ -95,5 +95,8 @@ public class CommonConstants {
     // Secondary user account config constants
     public static final String SECONDARY_USER_ACCOUNTS_ENABLED = "SecondaryUserAccounts.Enable";
 
+    // Disclosure Options Management config constants
+    public static final String DISCLOSURE_OPTIONS_MANAGEMENT_ENABLED = "DisclosureOptionsManagement.Enable";
+
     private CommonConstants() {}
 }
