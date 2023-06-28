@@ -23,6 +23,7 @@ import com.wso2.openbanking.cds.common.data.publisher.CDSDataPublishingService;
 import com.wso2.openbanking.cds.common.utils.CommonConstants;
 import com.wso2.openbanking.cds.consent.extensions.common.CDSConsentExtensionConstants;
 import com.wso2.openbanking.cds.identity.utils.CDSIdentityUtil;
+import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.SignatureAlgorithm;
 import net.minidev.json.JSONObject;
@@ -138,6 +139,12 @@ public class CDSConsentEventExecutor implements OBEventExecutor {
      * @param consentId  revoked sharing arrangement (consent) ID
      * @param dataHolderId ID of the Data Holder obtained from the CDR Register
      */
+    @SuppressFBWarnings("RCN_REDUNDANT_NULLCHECK_WOULD_HAVE_BEEN_A_NPE")
+    // Suppressed content - try (CloseableHttpClient httpclient = HTTPClientUtils.getHttpsClient())
+    // Suppression reason - False Positive : This occurs with Java 11 when using try-with-resources and when that
+    //                                       resource is being referred within the try block. This is a known issue in
+    //                                       the plugin and therefore it is being suppressed.
+    //                                       https://github.com/spotbugs/spotbugs/issues/1694
     protected void sendArrangementRevocationRequestToADR(String clientId, String consentId, String dataHolderId)
             throws OpenBankingException {
 

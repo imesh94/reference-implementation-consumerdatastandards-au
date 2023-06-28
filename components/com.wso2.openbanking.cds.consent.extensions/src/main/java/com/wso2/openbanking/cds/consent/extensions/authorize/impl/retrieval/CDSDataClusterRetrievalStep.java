@@ -1,14 +1,12 @@
 /*
- * Copyright (c) 2021, WSO2 Inc. (http://www.wso2.com). All Rights Reserved.
+ * Copyright (c) 2021-2023, WSO2 LLC. (https://www.wso2.com). All Rights Reserved.
  *
- * This software is the property of WSO2 Inc. and its suppliers, if any.
+ * This software is the property of WSO2 LLC. and its suppliers, if any.
  * Dissemination of any information or reproduction of any material contained
- * herein is strictly forbidden, unless permitted by WSO2 in accordance with
- * the WSO2 Software License available at https://wso2.com/licenses/eula/3.1. For specific
- * language governing the permissions and limitations under this license,
- * please see the license as well as any agreement you’ve entered into with
- * WSO2 governing the purchase of this software and any associated services.
+ * herein in any form is strictly forbidden, unless permitted by WSO2 expressly.
+ * You may not alter or remove any copyright or other notice from copies of this content.
  */
+
 package com.wso2.openbanking.cds.consent.extensions.authorize.impl.retrieval;
 
 import com.wso2.openbanking.accelerator.common.exception.OpenBankingException;
@@ -20,6 +18,7 @@ import com.wso2.openbanking.accelerator.identity.util.HTTPClientUtils;
 import com.wso2.openbanking.cds.common.config.OpenBankingCDSConfigParser;
 import com.wso2.openbanking.cds.consent.extensions.authorize.utils.PermissionsEnum;
 import com.wso2.openbanking.cds.consent.extensions.common.CDSConsentExtensionConstants;
+import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
 import net.minidev.json.JSONArray;
 import net.minidev.json.JSONObject;
 import net.minidev.json.parser.JSONParser;
@@ -130,6 +129,12 @@ public class CDSDataClusterRetrievalStep implements ConsentRetrievalStep {
         return CDSConsentExtensionConstants.ORGANISATION;
     }
 
+    @SuppressFBWarnings("RCN_REDUNDANT_NULLCHECK_WOULD_HAVE_BEEN_A_NPE")
+    // Suppressed content - try (CloseableHttpClient client = HTTPClientUtils.getHttpsClient())
+    // Suppression reason - False Positive : This occurs with Java 11 when using try-with-resources and when that
+    //                                       resource is being referred within the try block. This is a known issue in
+    //                                       the plugin and therefore it is being suppressed.
+    //                                       https://github.com/spotbugs/spotbugs/issues/1694
     private static String getCustomerFromEndpoint(String customerDetailsUrl, String user) {
         user = user.substring(0, user.lastIndexOf("@"));
         String url = customerDetailsUrl.replace("{userId}", user);

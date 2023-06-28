@@ -15,6 +15,7 @@ import com.wso2.openbanking.cds.common.config.OpenBankingCDSConfigParser;
 import com.wso2.openbanking.cds.identity.dcr.constants.CDSValidationConstants;
 import com.wso2.openbanking.cds.identity.dcr.model.CDSSoftwareStatementBody;
 import com.wso2.openbanking.cds.identity.dcr.validation.annotation.ValidateSSASectorIdentifierUri;
+import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
 import org.apache.commons.io.IOUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -71,6 +72,12 @@ public class SSASectorIdentifierUriValidator implements ConstraintValidator<Vali
      * @return true if all the hostname of ssa callback uris matches hostnames of callback uris returned from
      * sector identifier uri
      */
+    @SuppressFBWarnings("RCN_REDUNDANT_NULLCHECK_WOULD_HAVE_BEEN_A_NPE")
+    // Suppressed content - try (CloseableHttpClient client = HTTPClientUtils.getHttpsClient())
+    // Suppression reason - False Positive : This occurs with Java 11 when using try-with-resources and when that
+    //                                       resource is being referred within the try block. This is a known issue in
+    //                                       the plugin and therefore it is being suppressed.
+    //                                       https://github.com/spotbugs/spotbugs/issues/1694
     private boolean validateSectorIdentifierURI(String sectorIdentifierUri, List<String> callBackUris) {
 
         try (CloseableHttpClient client = HTTPClientUtils.getHttpsClient()) {
