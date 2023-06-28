@@ -41,6 +41,7 @@ import java.nio.charset.Charset;
 import java.time.Instant;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.UUID;
 
 /**
  * CDS Gateway error mediator.
@@ -124,6 +125,17 @@ public class GatewayErrorMediator extends AbstractMediator {
                 return true;
             }
         }
+
+        // Add x-fapi-interaction-id as a transport header if not exists
+        org.apache.axis2.context.MessageContext axis2MessageContext =
+                ((Axis2MessageContext) messageContext).getAxis2MessageContext();
+        Map headers = (Map) axis2MessageContext
+                .getProperty(org.apache.axis2.context.MessageContext.TRANSPORT_HEADERS);
+
+        if (!headers.containsKey(GatewayConstants.X_FAPI_INTERACTION_ID)) {
+            headers.put(GatewayConstants.X_FAPI_INTERACTION_ID, UUID.randomUUID().toString());
+        }
+
         String errorResponse = errorData.get(GatewayConstants.ERROR_RESPONSE).toString();
         int status = (int) errorData.get(GatewayConstants.STATUS_CODE);
         setFaultPayload(messageContext, errorResponse, status);
