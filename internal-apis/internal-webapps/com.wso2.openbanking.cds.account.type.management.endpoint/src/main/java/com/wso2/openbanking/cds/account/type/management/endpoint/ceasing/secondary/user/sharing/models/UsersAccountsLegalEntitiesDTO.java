@@ -170,8 +170,7 @@ public class UsersAccountsLegalEntitiesDTO {
             this.legalEntitySharingStatus = legalEntitySharingStatus;
         }
     }
-
-
+    
     @Override
     public String toString() {
         return "UsersAccountsLegalEntitiesResource{" +

@@ -106,9 +106,6 @@ public class CeasingSecondaryUserSharingApiImpl implements CeasingSecondaryUserS
             // Checking the validity of the userID
             if (responseDetailedConsents.size() == 0) {
                 userIDError = "Error!, user not found with userID: " + userID;
-            }
-
-            if (userIDError != null) {
                 log.error(userIDError);
                 ErrorDTO errorDTO = new ErrorDTO(ErrorStatusEnum.INVALID_REQUEST,
                         userIDError);
@@ -119,10 +116,8 @@ public class CeasingSecondaryUserSharingApiImpl implements CeasingSecondaryUserS
             // Checking if the user is a secondary account owner
             boolean isSecondaryAccountOwner = false;
 
-            // Consent
             for (DetailedConsentResource detailedConsent : responseDetailedConsents) {
 
-                // Authorization Resource
                 for (AuthorizationResource authorizationResource : detailedConsent.getAuthorizationResources()) {
                     if (authorizationResource.getUserID().equals(userID) &&
                             authorizationResource.getAuthorizationType().
@@ -135,19 +130,17 @@ public class CeasingSecondaryUserSharingApiImpl implements CeasingSecondaryUserS
 
             if (!isSecondaryAccountOwner) {
                 userIDError = "Error, UserID: " + userID + " is not a secondary account owner";
-            }
-
-            if (userIDError == null) {
-                UsersAccountsLegalEntitiesDTO responseUsersAccountsLegalEntities = ceasingSecondaryUserHandler.
-                        getUsersAccountsLegalEntities(responseDetailedConsents, responseUsersAccountsLegalEntitiesDTO);
-                return Response.ok().entity(responseUsersAccountsLegalEntities).build();
-            } else {
                 log.error(userIDError);
                 ErrorDTO errorDTO = new ErrorDTO(ErrorStatusEnum.INVALID_REQUEST,
                         userIDError);
                 return Response.status(Response.Status.BAD_REQUEST)
                         .entity(errorDTO).build();
             }
+
+            UsersAccountsLegalEntitiesDTO responseUsersAccountsLegalEntities = ceasingSecondaryUserHandler.
+                    getUsersAccountsLegalEntities(responseDetailedConsents, responseUsersAccountsLegalEntitiesDTO);
+            return Response.ok().entity(responseUsersAccountsLegalEntities).build();
+
 
         } catch (Exception e) {
             log.error("Error occurred while retrieving users,accounts and legal entities.", e);

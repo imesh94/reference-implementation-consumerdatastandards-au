@@ -93,8 +93,8 @@ public class CeasingSecondaryUserSharingHandler {
                 }
             }
         } catch (OpenBankingException e) {
-            log.warn(e.getMessage());
-            throw new OpenBankingException("Error occurred while retrieving account metadata");
+            log.warn("Error occurred while retrieving account metadata", e);
+            throw new OpenBankingException("Error occurred while retrieving account metadata", e);
         }
     }
 
@@ -166,8 +166,8 @@ public class CeasingSecondaryUserSharingHandler {
                 }
             }
         } catch (OpenBankingException e) {
-            log.warn(e.getMessage());
-            throw new OpenBankingException("Error occurred while retrieving account metadata");
+            log.warn("Error occurred while retrieving account metadata", e);
+            throw new OpenBankingException("Error occurred while retrieving account metadata", e);
         }
     }
 
@@ -199,7 +199,7 @@ public class CeasingSecondaryUserSharingHandler {
                 }
             }
         } catch (OpenBankingException e) {
-            log.warn(e.getMessage());
+            log.warn("Error occurred while retrieving account metadata");
             throw new OpenBankingException("Error occurred while retrieving account metadata");
         }
     }
@@ -394,8 +394,8 @@ public class CeasingSecondaryUserSharingHandler {
             }
             return responseUsersAccountsLegalEntitiesDTO;
         } catch (OpenBankingException e) {
-            log.warn("Error in retrieving data!");
-            throw new OpenBankingException("Error occurred while retrieving account metadata");
+            log.warn("Error in retrieving data!", e);
+            throw new OpenBankingException("Error occurred while retrieving account metadata", e);
         }
     }
 }
