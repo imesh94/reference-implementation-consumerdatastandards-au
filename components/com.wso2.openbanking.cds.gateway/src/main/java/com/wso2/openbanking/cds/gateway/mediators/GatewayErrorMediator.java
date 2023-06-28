@@ -70,6 +70,7 @@ public class GatewayErrorMediator extends AbstractMediator {
                 }
             }
         }
+
         // Error handling logic.
         JSONObject errorData;
         if ((messageContext.getProperty(GatewayConstants.ERROR_CODE)) != null) {
@@ -103,24 +104,15 @@ public class GatewayErrorMediator extends AbstractMediator {
                 return true;
             }
             int statusCode = Integer.parseInt(statusCodeString);
-            JSONArray errorList = new JSONArray();
-            String errorResponse;
-            errorData = new JSONObject();
+            ErrorConstants.AUErrorEnum errorEnum;
             if (statusCodeString.startsWith("4")) {
-                errorList.add(ErrorUtil.getErrorObject(ErrorConstants.AUErrorEnum.EXPECTED_GENERAL_ERROR,
-                        ErrorConstants.AUErrorEnum.EXPECTED_GENERAL_ERROR.getDetail(), new CDSErrorMeta()));
-                errorResponse = ErrorUtil.getErrorJson(errorList);
-                errorData.put(GatewayConstants.STATUS_CODE, statusCode);
-                errorData.put(GatewayConstants.ERROR_RESPONSE, errorResponse);
+                errorEnum = ErrorConstants.AUErrorEnum.EXPECTED_GENERAL_ERROR;
             } else if (statusCodeString.startsWith("5")) {
-                errorList.add(ErrorUtil.getErrorObject(ErrorConstants.AUErrorEnum.UNEXPECTED_ERROR,
-                        ErrorConstants.AUErrorEnum.UNEXPECTED_ERROR.getDetail(), new CDSErrorMeta()));
-                errorResponse = ErrorUtil.getErrorJson(errorList);
-                errorData.put(GatewayConstants.STATUS_CODE, statusCode);
-                errorData.put(GatewayConstants.ERROR_RESPONSE, errorResponse);
+                errorEnum = ErrorConstants.AUErrorEnum.UNEXPECTED_ERROR;
             } else {
                 return true;
             }
+            errorData = prepareErrorData(errorEnum, statusCode, errorEnum.getDetail());
         }
 
         // Add x-fapi-interaction-id as a transport header if not exists
@@ -289,28 +281,27 @@ public class GatewayErrorMediator extends AbstractMediator {
         JSONObject errorData = new JSONObject();
         JSONArray errorList = new JSONArray();
         int status;
-        String errorResponse;
+        String errorResponse = null;
+        ErrorConstants.AUErrorEnum errorEnum = null;
 
         if (errorCode == GatewayConstants.API_AUTH_GENERAL_ERROR) {
             status = ErrorConstants.AUErrorEnum.UNEXPECTED_ERROR.getHttpCode();
-            errorList.add(ErrorUtil.getErrorObject(ErrorConstants.AUErrorEnum.UNEXPECTED_ERROR, errorMessage,
-                    new CDSErrorMeta()));
-            errorResponse = ErrorUtil.getErrorJson(errorList);
+            errorEnum = ErrorConstants.AUErrorEnum.UNEXPECTED_ERROR;
+        } else if (errorCode == GatewayConstants.API_AUTH_FORBIDDEN) {
+            status = HttpStatus.SC_FORBIDDEN;
+            errorEnum = ErrorConstants.AUErrorEnum.EXPECTED_GENERAL_ERROR;
         } else if (errorCode == GatewayConstants.INVALID_SCOPE) {
             status = HttpStatus.SC_FORBIDDEN;
             errorResponse = getOAuthErrorResponse("insufficient_scope", errorMessage);
-        } else if (errorCode == GatewayConstants.API_AUTH_FORBIDDEN) {
-            status = HttpStatus.SC_FORBIDDEN;
-            errorList.add(ErrorUtil.getErrorObject(ErrorConstants.AUErrorEnum.EXPECTED_GENERAL_ERROR, errorMessage,
-                    new CDSErrorMeta()));
-            errorResponse = ErrorUtil.getErrorJson(errorList);
-        } else if (errorCode == GatewayConstants.API_AUTH_MISSING_CREDENTIALS ||
-                errorCode == GatewayConstants.API_AUTH_INVALID_CREDENTIALS) {
-            status = ErrorConstants.AUErrorEnum.CLIENT_AUTH_FAILED.getHttpCode();
-            errorResponse = getOAuthErrorResponse("invalid_client", errorMessage);
         } else {
+            // This block will be executed for invalid/missing client credentials.
             status = ErrorConstants.AUErrorEnum.CLIENT_AUTH_FAILED.getHttpCode();
             errorResponse = getOAuthErrorResponse("invalid_client", errorMessage);
+        }
+
+        if (errorResponse == null && errorEnum != null) {
+            errorList.add(ErrorUtil.getErrorObject(errorEnum, errorMessage, new CDSErrorMeta()));
+            errorResponse = ErrorUtil.getErrorJson(errorList);
         }
         errorData.put(GatewayConstants.STATUS_CODE, status);
         errorData.put(GatewayConstants.ERROR_RESPONSE, errorResponse);
@@ -320,24 +311,18 @@ public class GatewayErrorMediator extends AbstractMediator {
 
     private static JSONObject getResourceFailureResponse(int errorCode, String errorMessage) {
 
-        JSONObject errorData = new JSONObject();
-        JSONArray errorList = new JSONArray();
-        String errorResponse;
         int status;
+        ErrorConstants.AUErrorEnum errorEnum;
 
         if (errorCode == 404) {
             status = ErrorConstants.AUErrorEnum.RESOURCE_NOT_FOUND.getHttpCode();
-            errorList.add(ErrorUtil.getErrorObject(ErrorConstants.AUErrorEnum.RESOURCE_NOT_FOUND, errorMessage,
-                    new CDSErrorMeta()));
+            errorEnum = ErrorConstants.AUErrorEnum.RESOURCE_NOT_FOUND;
         } else {
             status = errorCode;
-            errorList.add(ErrorUtil.getErrorObject(ErrorConstants.AUErrorEnum.EXPECTED_GENERAL_ERROR, errorMessage,
-                    new CDSErrorMeta()));
+            errorEnum = ErrorConstants.AUErrorEnum.EXPECTED_GENERAL_ERROR;
         }
-        errorResponse = ErrorUtil.getErrorJson(errorList);
-        errorData.put(GatewayConstants.STATUS_CODE, status);
-        errorData.put(GatewayConstants.ERROR_RESPONSE, errorResponse);
-        return errorData;
+
+        return prepareErrorData(errorEnum, status, errorMessage);
     }
 
     /**
@@ -349,33 +334,23 @@ public class GatewayErrorMediator extends AbstractMediator {
      */
     private static JSONObject getRequestSchemaValidationFailureResponse(int errorCode, String errorDetail) {
 
-        JSONObject errorData = new JSONObject();
-        JSONArray errorList = new JSONArray();
         int status;
-        String errorResponse;
+        ErrorConstants.AUErrorEnum errorEnum;
 
         if (errorCode == 400) {
+            status = HttpStatus.SC_BAD_REQUEST;
             if (errorDetail.contains(GatewayConstants.CONTENT_TYPE_TAG) ||
                     errorDetail.contains(GatewayConstants.ACCEPT_HEADER)) {
-                status = HttpStatus.SC_BAD_REQUEST;
-                errorList.add(ErrorUtil.getErrorObject(ErrorConstants.AUErrorEnum.INVALID_HEADER, errorDetail,
-                        new CDSErrorMeta()));
-                errorResponse = ErrorUtil.getErrorJson(errorList);
+                errorEnum = ErrorConstants.AUErrorEnum.INVALID_HEADER;
             } else {
-                status = HttpStatus.SC_BAD_REQUEST;
-                errorList.add(ErrorUtil.getErrorObject(ErrorConstants.AUErrorEnum.EXPECTED_GENERAL_ERROR, errorDetail,
-                        new CDSErrorMeta()));
-                errorResponse = ErrorUtil.getErrorJson(errorList);
+                errorEnum = ErrorConstants.AUErrorEnum.INVALID_FIELD;
             }
         } else {
             status = errorCode;
-            errorList.add(ErrorUtil.getErrorObject(ErrorConstants.AUErrorEnum.EXPECTED_GENERAL_ERROR, errorDetail,
-                    new CDSErrorMeta()));
-            errorResponse = ErrorUtil.getErrorJson(errorList);
+            errorEnum = ErrorConstants.AUErrorEnum.EXPECTED_GENERAL_ERROR;
         }
-        errorData.put(GatewayConstants.STATUS_CODE, status);
-        errorData.put(GatewayConstants.ERROR_RESPONSE, errorResponse);
-        return errorData;
+
+        return prepareErrorData(errorEnum, status, errorDetail);
     }
 
     /**
@@ -385,17 +360,8 @@ public class GatewayErrorMediator extends AbstractMediator {
      * @return
      */
     private static JSONObject getResponseSchemaValidationFailureResponse(String errorDetail) {
-
-        JSONObject errorData = new JSONObject();
-        JSONArray errorList = new JSONArray();
-
-        errorList.add(ErrorUtil.getErrorObject(ErrorConstants.AUErrorEnum.UNEXPECTED_ERROR, errorDetail,
-                new CDSErrorMeta()));
-        String errorResponse = ErrorUtil.getErrorJson(errorList);
-
-        errorData.put(GatewayConstants.STATUS_CODE, HttpStatus.SC_INTERNAL_SERVER_ERROR);
-        errorData.put(GatewayConstants.ERROR_RESPONSE, errorResponse);
-        return errorData;
+       return prepareErrorData(ErrorConstants.AUErrorEnum.UNEXPECTED_ERROR,
+               HttpStatus.SC_INTERNAL_SERVER_ERROR, errorDetail);
     }
 
     /**
@@ -430,7 +396,23 @@ public class GatewayErrorMediator extends AbstractMediator {
         }
         return statusCode;
     }
+
+    /**
+     * Method to get the common error JSON object
+     *
+     * @param errorEnum - Error Enum
+     * @param errorStatus - Error Status
+     * @param errorDetail - Error Details
+     * @return Error Object
+     */
+    private static JSONObject prepareErrorData(ErrorConstants.AUErrorEnum errorEnum, int errorStatus,
+                                               String errorDetail) {
+        JSONObject errorData = new JSONObject();
+        JSONArray errorList = new JSONArray();
+        errorList.add(ErrorUtil.getErrorObject(errorEnum, errorDetail, new CDSErrorMeta()));
+        String errorResponse = ErrorUtil.getErrorJson(errorList);
+        errorData.put(GatewayConstants.STATUS_CODE, errorStatus);
+        errorData.put(GatewayConstants.ERROR_RESPONSE, errorResponse);
+        return errorData;
+    }
 }
-
-
-
