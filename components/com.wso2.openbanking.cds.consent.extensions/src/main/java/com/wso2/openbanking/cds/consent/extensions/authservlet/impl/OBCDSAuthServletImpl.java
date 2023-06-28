@@ -211,9 +211,11 @@ public class OBCDSAuthServletImpl implements OBAuthServletInterface {
                         .valueOf(account.get(CDSConsentExtensionConstants.JOINT_ACCOUNT_CONSENT_ELECTION_STATUS));
                 Boolean isPreApproved = CDSConsentExtensionConstants.JOINT_ACCOUNT_PRE_APPROVAL
                         .equalsIgnoreCase(consentElectionStatus);
-                data.put(CDSConsentExtensionConstants.IS_SELECTABLE, isPreApproved && secondaryAccountPrivilegeStatus && domsPreApprovalStatus);
+                data.put(CDSConsentExtensionConstants.IS_SELECTABLE, isPreApproved && secondaryAccountPrivilegeStatus
+                        && domsPreApprovalStatus);
             } else {
-                data.put(CDSConsentExtensionConstants.IS_SELECTABLE, secondaryAccountPrivilegeStatus && domsPreApprovalStatus);
+                data.put(CDSConsentExtensionConstants.IS_SELECTABLE, secondaryAccountPrivilegeStatus
+                        && domsPreApprovalStatus);
             }
         }
     }
