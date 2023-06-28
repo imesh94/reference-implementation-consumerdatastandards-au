@@ -173,9 +173,9 @@ public class CDSDataClusterRetrievalStep implements ConsentRetrievalStep {
      * @param newScopes              new scopes array
      * @return modified data clusters with profile data
      */
-    private static JSONObject processProfileDataClusters(JSONArray dataCluster, JSONArray
-            newDataCluster, JSONArray businessDataCluster, JSONArray
-                                                                 newBusinessDataCluster, JSONArray previousScopes,
+    private static JSONObject processProfileDataClusters(JSONArray dataCluster, JSONArray newDataCluster,
+                                                         JSONArray businessDataCluster,
+                                                         JSONArray newBusinessDataCluster, JSONArray previousScopes,
                                                          JSONArray newScopes) {
 
         ArrayList<String> newlyRequestedProfileClaims = new ArrayList<>();
@@ -256,6 +256,7 @@ public class CDSDataClusterRetrievalStep implements ConsentRetrievalStep {
 
     /**
      * Process contact claims and build the contact cluster name.
+     *
      * @param contactPermissions contact permissions
      * @return contact cluster name
      */
@@ -275,9 +276,10 @@ public class CDSDataClusterRetrievalStep implements ConsentRetrievalStep {
 
     /**
      * Add profile scope and other standard claims related data clusters for the provided claims.
-     * @param profileClaims profile claims
+     *
+     * @param profileClaims         profile claims
      * @param individualDataCluster individual customer data cluster
-     * @param businessDataCluster business customer data cluster
+     * @param businessDataCluster   business customer data cluster
      * @return map of individual and business data clusters
      */
     private static Map<String, JSONArray> addProfileDataClusters(ArrayList<String> profileClaims,
