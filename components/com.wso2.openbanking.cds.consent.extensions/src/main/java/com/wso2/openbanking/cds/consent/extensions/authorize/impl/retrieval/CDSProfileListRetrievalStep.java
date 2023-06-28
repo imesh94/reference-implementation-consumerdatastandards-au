@@ -53,7 +53,8 @@ public class CDSProfileListRetrievalStep implements ConsentRetrievalStep {
         //Consent amendment flow. Get selected profile.
         if (jsonObject.containsKey(CDSConsentExtensionConstants.IS_CONSENT_AMENDMENT) &&
                 (boolean) jsonObject.get(CDSConsentExtensionConstants.IS_CONSENT_AMENDMENT)) {
-            executeConsentAmendmentFlow(accountsJSON, jsonObject);
+            jsonObject.put(CDSConsentExtensionConstants.PRE_SELECTED_PROFILE_ID,
+                    consentData.getMetaDataMap().get(CDSConsentExtensionConstants.PRE_SELECTED_PROFILE_ID));
         }
 
         // Get Customer Type Selection Method from config
@@ -201,45 +202,6 @@ public class CDSProfileListRetrievalStep implements ConsentRetrievalStep {
             }
         }
         return isEligible;
-    }
-
-    /**
-     * Execute profile list retrieval consent amendment flow.
-     * This method will get the pre-selected profile from the pre-selected accounts.
-     *
-     * @param accountsJSON - accountsJSON
-     * @param jsonObject   - jsonObject
-     */
-    public void executeConsentAmendmentFlow(JSONArray accountsJSON, JSONObject jsonObject) {
-
-        JSONArray preSelectedAccounts = (JSONArray) jsonObject.get(CDSConsentExtensionConstants.
-                PRE_SELECTED_ACCOUNT_LIST);
-
-        if (preSelectedAccounts != null) {
-            for (Object account : accountsJSON) {
-                JSONObject accountJson = (JSONObject) account;
-
-                if (accountJson.containsKey(CDSConsentExtensionConstants.ACCOUNT_ID) &&
-                        preSelectedAccounts.contains(accountJson.get(CDSConsentExtensionConstants.ACCOUNT_ID))) {
-                    String customerAccountType = (String) accountJson.get(
-                            CDSConsentExtensionConstants.CUSTOMER_ACCOUNT_TYPE);
-                    String preSelectedProfileId = CDSConsentExtensionConstants.INDIVIDUAL_PROFILE_ID;
-
-                    if (CDSConsentExtensionConstants.BUSINESS_PROFILE_TYPE.equals(customerAccountType)) {
-                        preSelectedProfileId = (String) accountJson.getOrDefault(
-                                CDSConsentExtensionConstants.PROFILE_ID, preSelectedProfileId);
-                    }
-
-                    jsonObject.put(CDSConsentExtensionConstants.PRE_SELECTED_PROFILE_ID, preSelectedProfileId);
-
-                    if (log.isDebugEnabled()) {
-                        log.debug("Profile id: " + preSelectedProfileId + " selected for the consent amendment " +
-                                "flow.");
-                    }
-                    break;
-                }
-            }
-        }
     }
 
     /**

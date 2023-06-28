@@ -24,6 +24,7 @@ export const DataSharedInfoCDS = ({consent, infoLabels}) => {
         permissionBindTypes.samePermissionSetForAllAccounts) {
         permissions = getValueFromConsent(
             specConfigurations.consent.permissionsView.permissionsAttribute, consent)
+        permissions = filterProfilePermissions(permissions);
         if (permissions === "" || permissions === undefined) {
             permissions = [];
         }
@@ -65,4 +66,60 @@ export const DataSharedInfoCDS = ({consent, infoLabels}) => {
             }
         </div>
     );
+
+    function filterProfilePermissions(permissions) {
+        const profilePermissions = [
+            {
+                name: "NAME",
+                scopes: ["PROFILE", "NAME", "GIVENNAME", "FAMILYNAME", "UPDATEDAT"]
+            }, {
+                name: "EMAIL",
+                scopes: ["EMAIL", "EMAILVERIFIED"]
+            }, {
+                name: "MAIL",
+                scopes: ["ADDRESS"]
+            }, {
+                name: "PHONE",
+                scopes: ["PHONENUMBER", "PHONENUMBERVERIFIED"]
+            }
+        ]
+        let updatedProfilePermissions = [];
+
+        for (let index = permissions.length - 1; index >= 0; index--) {
+            const element = permissions[index];
+
+            for (let i=0; i<profilePermissions.length; i++) {
+                let name = profilePermissions[i].name;
+                let scopes = profilePermissions[i].scopes;
+                processPermissions(name, scopes, element, index, permissions, updatedProfilePermissions);
+            }
+        }
+        updatedProfilePermissions.sort();
+
+        let contactPermission = "";
+
+        for (let i=0; i<updatedProfilePermissions.length; i++) {
+            let permission = updatedProfilePermissions[i];
+            if ("NAME" === permission) {
+                permissions.push("NAME");
+            } else {
+                contactPermission = contactPermission.concat("_", permission);
+            }
+        }
+        if (contactPermission !== "") {
+            permissions.push(contactPermission.slice(1));
+        }
+
+        return permissions;
+    }
+
+    function processPermissions(name, scopes, element, index, permissions, updatedProfilePermissions) {
+        if (scopes.includes(element)) {
+
+            permissions.splice(index, 1);
+            if (!updatedProfilePermissions.includes(name)) {
+                updatedProfilePermissions.push(name)
+            }
+        }
+    }
 };
