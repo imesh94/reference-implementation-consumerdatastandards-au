@@ -60,8 +60,9 @@ public class IDPermanenceExecutor implements OpenBankingGatewayExecutor {
             Gson gson = new Gson();
             JsonObject payloadJson;
             IdPermanenceValidationResponse idPermanenceValidationResponse;
-            if (!GatewayConstants.NULL_STRING.equals(obApiRequestContext.getRequestPayload())) {
-                payloadJson = gson.fromJson(obApiRequestContext.getRequestPayload(), JsonObject.class);
+            String requestBody = obApiRequestContext.getRequestPayload();
+            if (requestBody != null && !GatewayConstants.EMPTY_SOAP_BODY.equals(requestBody)) {
+                payloadJson = gson.fromJson(requestBody, JsonObject.class);
                 idPermanenceValidationResponse = IdPermanenceUtils.unmaskRequestBodyAccountIDs(payloadJson, SECRET_KEY);
             } else {
                 idPermanenceValidationResponse = new IdPermanenceValidationResponse();
@@ -79,6 +80,8 @@ public class IDPermanenceExecutor implements OpenBankingGatewayExecutor {
             // set decrypted resource ids to the request body
             obApiRequestContext.setModifiedPayload(gson.toJson(idPermanenceValidationResponse.
                     getDecryptedResourceIds()));
+        } else {
+
         }
 
         // handle requests with path params
