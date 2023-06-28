@@ -150,7 +150,7 @@ class AuthorisationFlowTest extends AUTest {
                 .execute()
 
         // Get Code From URL
-        authorisationCode = AUTestUtil.getHybridCodeFromUrl(automation.currentUrl.get())
+        authorisationCode = AUTestUtil.getCodeFromJwtResponse(automation.currentUrl.get())
 
         //Generate Access Token for new consent
         AccessTokenResponse accessTokenResponse2 = getUserAccessTokenResponse(clientId)

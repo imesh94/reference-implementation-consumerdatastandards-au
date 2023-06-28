@@ -103,7 +103,7 @@ class MetaDataConsentAmendment extends AUTest{
                 .execute()
 
         //Retrieve the second authorization code
-        authorisationCode = AUTestUtil.getHybridCodeFromUrl(automation.currentUrl.get())
+        authorisationCode = AUTestUtil.getCodeFromJwtResponse(automation.currentUrl.get())
         Assert.assertNotNull(authorisationCode)
 
         //Retrieve the second user access token and assert the CDR arrangement ID is the same.

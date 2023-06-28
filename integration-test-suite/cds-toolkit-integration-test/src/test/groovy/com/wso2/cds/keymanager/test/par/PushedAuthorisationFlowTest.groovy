@@ -167,7 +167,7 @@ class PushedAuthorisationFlowTest extends AUTest {
                 }
                 .execute()
 
-        authorisationCode = AUTestUtil.getHybridCodeFromUrl(automationResponse.currentUrl.get())
+        authorisationCode = AUTestUtil.getCodeFromJwtResponse(automationResponse.currentUrl.get())
         Assert.assertNotNull(authorisationCode)
     }
 

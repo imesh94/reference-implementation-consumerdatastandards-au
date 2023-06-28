@@ -91,7 +91,7 @@ class ConsentAmendmentFlowTest extends AUTest{
                 .execute()
 
         // Get Code From URL
-        authorisationCode = AUTestUtil.getHybridCodeFromUrl(automation.currentUrl.get())
+        authorisationCode = AUTestUtil.getCodeFromJwtResponse(automation.currentUrl.get())
 
         //Generate Token
         accessTokenResponse2 = getUserAccessTokenResponse(clientId)
@@ -209,7 +209,7 @@ class ConsentAmendmentFlowTest extends AUTest{
                 .execute()
 
         // Get Code From URL
-        authorisationCode = AUTestUtil.getHybridCodeFromUrl(automation.currentUrl.get())
+        authorisationCode = AUTestUtil.getCodeFromJwtResponse(automation.currentUrl.get())
 
         //Generate Token
         accessTokenResponse2 = getUserAccessTokenResponse(clientId)
@@ -291,7 +291,7 @@ class ConsentAmendmentFlowTest extends AUTest{
                 .execute()
 
         // Get Code From URL
-        authorisationCode = AUTestUtil.getHybridCodeFromUrl(automation.currentUrl.get())
+        authorisationCode = AUTestUtil.getCodeFromJwtResponse(automation.currentUrl.get())
         Assert.assertNotNull(secondAuthorisationCode)
 
         //Generate Token

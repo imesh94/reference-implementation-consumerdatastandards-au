@@ -176,7 +176,7 @@ class ConsentAmendmentFlowUIValidationTest extends AUTest {
                 .execute()
 
         // Get Code From URL
-        authorisationCode = AUTestUtil.getHybridCodeFromUrl(automation.currentUrl.get())
+        authorisationCode = AUTestUtil.getCodeFromJwtResponse(automation.currentUrl.get())
 
         //Generate Token
         AccessTokenResponse accessTokenResponse2 = getUserAccessTokenResponse(auConfiguration.getAppInfoClientID())

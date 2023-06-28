@@ -17,6 +17,7 @@ import com.wso2.cds.test.framework.constant.AUAccountScope
 import com.wso2.cds.test.framework.constant.AUConstants
 import com.wso2.bfsi.test.framework.exception.TestFrameworkException
 import com.wso2.cds.test.framework.constant.AUPageObjects
+import com.wso2.cds.test.framework.request_builder.AUJWTGenerator
 import com.wso2.openbanking.test.framework.utility.OBTestUtil
 import com.wso2.cds.test.framework.configuration.AUConfigurationService
 import org.apache.http.conn.ssl.SSLSocketFactory
@@ -252,6 +253,18 @@ class AUTestUtil extends OBTestUtil {
         Element element = doc.getElementsByAttribute(attribute)
 
         return element.toString()
+    }
+
+    /**
+     * Get Code From JWT Response.
+     * @param authResponseUrl - URL of the response
+     * @return Code
+     */
+    static String getCodeFromJwtResponse(String authResponseUrl) {
+
+        String responseJwt = authResponseUrl.split(AUConstants.HTML_RESPONSE_ATTR)[1]
+        Assert.assertNotNull(responseJwt)
+        return AUJWTGenerator.extractJwt(responseJwt).getClaim(AUConstants.CODE_KEY)
     }
 }
 

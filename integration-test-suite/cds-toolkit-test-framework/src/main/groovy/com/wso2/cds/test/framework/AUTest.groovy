@@ -206,7 +206,7 @@ class AUTest extends OBTest {
 
         //UI Flow Navigation
         def automation = doAuthorisationFlowNavigation(authoriseUrl, profiles, true)
-        authorisationCode = AUTestUtil.getHybridCodeFromUrl(automation.currentUrl.get())
+        authorisationCode = AUTestUtil.getCodeFromJwtResponse(automation.currentUrl.get())
     }
 
     /**
@@ -226,7 +226,7 @@ class AUTest extends OBTest {
                 .addStep(getWaitForRedirectAutomationStep())
                 .execute()
         // Get Code From URL
-        String authCode = AUTestUtil.getHybridCodeFromUrl(automation.currentUrl.get())
+        String authCode = AUTestUtil.getCodeFromJwtResponse(automation.currentUrl.get())
         return authCode
     }
 
@@ -518,7 +518,7 @@ class AUTest extends OBTest {
                 .execute()
 
         // Get Code From URL
-        authorisationCode = AUTestUtil.getHybridCodeFromUrl(automation.currentUrl.get())
+        authorisationCode = AUTestUtil.getCodeFromJwtResponse(automation.currentUrl.get())
     }
 
     /**
@@ -543,7 +543,7 @@ class AUTest extends OBTest {
         def automation = doAuthorisationFlowNavigation(authoriseUrl, profiles, false)
 
         // Get Code From URL
-        authorisationCode = AUTestUtil.getHybridCodeFromUrl(automation.currentUrl.get())
+        authorisationCode = AUTestUtil.getCodeFromJwtResponse(automation.currentUrl.get())
     }
 
     /**
@@ -589,7 +589,7 @@ class AUTest extends OBTest {
                 .execute()
 
         // Get Code From URL
-        authorisationCode = AUTestUtil.getHybridCodeFromUrl(automation.currentUrl.get())
+        authorisationCode = AUTestUtil.getCodeFromJwtResponse(automation.currentUrl.get())
     }
 
     /**
@@ -676,7 +676,7 @@ class AUTest extends OBTest {
                 .execute()
 
         // Get Code From URL
-        authorisationCode = AUTestUtil.getHybridCodeFromUrl(automation.currentUrl.get())
+        authorisationCode = AUTestUtil.getCodeFromJwtResponse(automation.currentUrl.get())
     }
 
     /**
@@ -717,7 +717,7 @@ class AUTest extends OBTest {
                 .execute()
 
         // Get Code From URL
-        authorisationCode = AUTestUtil.getHybridCodeFromUrl(automation.currentUrl.get())
+        authorisationCode = AUTestUtil.getCodeFromJwtResponse(automation.currentUrl.get())
     }
 
     /**
@@ -765,7 +765,7 @@ class AUTest extends OBTest {
                 .execute()
 
         // Get Code From URL
-        authorisationCode = AUTestUtil.getHybridCodeFromUrl(automation.currentUrl.get())
+        authorisationCode = AUTestUtil.getCodeFromJwtResponse(automation.currentUrl.get())
     }
 
     /**
@@ -787,7 +787,7 @@ class AUTest extends OBTest {
                 .execute()
 
         // Get Code From URL
-        authorisationCode = AUTestUtil.getHybridCodeFromUrl(automation.currentUrl.get())
+        authorisationCode = AUTestUtil.getCodeFromJwtResponse(automation.currentUrl.get())
         return authorisationCode
     }
 

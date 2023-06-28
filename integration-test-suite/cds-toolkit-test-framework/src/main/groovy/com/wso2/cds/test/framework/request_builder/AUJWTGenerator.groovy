@@ -15,6 +15,7 @@ package com.wso2.cds.test.framework.request_builder
 import com.fasterxml.jackson.databind.JsonNode
 import com.fasterxml.jackson.databind.ObjectMapper
 import com.fasterxml.jackson.databind.node.ObjectNode
+import com.nimbusds.jwt.JWTClaimsSet
 import com.wso2.bfsi.test.framework.exception.TestFrameworkException
 import com.nimbusds.jose.JOSEObjectType
 import com.nimbusds.jose.JWSAlgorithm
@@ -191,28 +192,15 @@ class AUJWTGenerator {
 
     /**
      * Extract JWT token and assign to a map.
-     * @param jwtToken
-     * @return map
+     * @param jwtToken jwt token
+     * @return jwt claim set
      */
-    static Map<String, String> extractJwt(String jwtToken) {
+    static JWTClaimsSet extractJwt(String jwtToken) {
 
-        Base64.Decoder decoder = Base64.getDecoder()
-        String payload = new String(decoder.decode(jwtToken))
+        SignedJWT signedJWT = SignedJWT.parse(jwtToken)
+        JWTClaimsSet claimsSet = signedJWT.getJWTClaimsSet()
 
-        Map<String, String> mapPayload = new HashMap<String, String>()
-        String[] partsPayload = payload.replaceAll("[{}]|\"", "").split(",")
-        for (String part : partsPayload) {
-            String[] keyValue = part.split(":")
-            String key = keyValue[0].trim()
-            String value = keyValue[1].trim()
-
-            if (keyValue.length >= 3) {
-                value = keyValue[1].trim() + ":" + keyValue[2].trim()
-            }
-
-            mapPayload.put(key, value)
-        }
-        return mapPayload
+        return claimsSet
     }
 
     /**

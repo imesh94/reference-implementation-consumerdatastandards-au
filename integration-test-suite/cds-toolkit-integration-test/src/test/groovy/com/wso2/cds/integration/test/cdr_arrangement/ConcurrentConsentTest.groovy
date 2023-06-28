@@ -254,7 +254,7 @@ class ConcurrentConsentTest extends AUTest {
                 .execute()
 
         // Get Code From URL
-        authorisationCode = AUTestUtil.getHybridCodeFromUrl(automation.currentUrl.get())
+        authorisationCode = AUTestUtil.getCodeFromJwtResponse(automation.currentUrl.get())
 
         //Get User Access Token
         def userAccessTokenResponse2 = AURequestBuilder.getUserToken(authorisationCode,

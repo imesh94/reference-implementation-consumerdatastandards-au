@@ -61,7 +61,7 @@ class JarmResponseModeFormPostJwtValidationTests extends AUTest {
         def automation = doAuthorisationFlowNavigation(authoriseUrl)
 
         //Get Code From URL
-        authorisationCode = AUTestUtil.getHybridCodeFromUrl(automation.currentUrl.get())
+        authorisationCode = AUTestUtil.getCodeFromJwtResponse(automation.currentUrl.get())
         Assert.assertEquals(mapPayload.get(AUConstants.CODE_KEY), authorisationCode)
     }
 

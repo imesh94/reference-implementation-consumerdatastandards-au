@@ -79,7 +79,7 @@ class DuplicateCommonAuthIdTest extends AUTest {
                 }
                 .execute(true)
 
-        authorisationCode = AUTestUtil.getHybridCodeFromUrl(automationResponse.currentUrl.get())
+        authorisationCode = AUTestUtil.getCodeFromJwtResponse(automationResponse.currentUrl.get())
         Assert.assertNotNull(authorisationCode)
     }
 
