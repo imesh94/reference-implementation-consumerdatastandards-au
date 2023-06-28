@@ -46,11 +46,37 @@ public class CDSConsentValidateTestConstants {
         return detailedConsentResource;
     }
 
+    public static DetailedConsentResource getDetailedConsentResourceForDOMS(String receipt, String accountId) {
+        DetailedConsentResource detailedConsentResource = new DetailedConsentResource();
+        detailedConsentResource.setConsentID("1234");
+        detailedConsentResource.setCurrentStatus("awaitingAuthorization");
+        detailedConsentResource.setCreatedTime(System.currentTimeMillis() / 1000);
+        detailedConsentResource.setUpdatedTime(System.currentTimeMillis() / 1000);
+        ArrayList<AuthorizationResource> authorizationResources = new ArrayList<>();
+        authorizationResources.add(CDSConsentValidateTestConstants.getAuthorizationResourceForDOMS());
+        detailedConsentResource.setAuthorizationResources(authorizationResources);
+        detailedConsentResource.setReceipt(receipt);
+        ArrayList<ConsentMappingResource> consentMappingResources = new ArrayList<>();
+        consentMappingResources.add(CDSConsentValidateTestConstants.getConsentMappingResourceForDOMS(accountId));
+        detailedConsentResource.setConsentMappingResources(consentMappingResources);
+
+        return detailedConsentResource;
+    }
+
     public static AuthorizationResource getAuthorizationResource() {
         AuthorizationResource authorizationResource = new AuthorizationResource();
         authorizationResource.setAuthorizationID("DummyAuthId");
         authorizationResource.setAuthorizationStatus("created");
         authorizationResource.setUpdatedTime((long) 163979797);
+        return authorizationResource;
+    }
+
+    public static AuthorizationResource getAuthorizationResourceForDOMS() {
+        AuthorizationResource authorizationResource = new AuthorizationResource();
+        authorizationResource.setAuthorizationID("DummyAuthId");
+        authorizationResource.setAuthorizationStatus("created");
+        authorizationResource.setUpdatedTime((long) 163979797);
+        authorizationResource.setAuthorizationType("linked_member");
         return authorizationResource;
     }
 
@@ -60,6 +86,15 @@ public class CDSConsentValidateTestConstants {
         consentMappingResource.setAuthorizationID("DummyAuthId");
         consentMappingResource.setMappingStatus("active");
         consentMappingResource.setAccountID(accountId);
+        return consentMappingResource;
+    }
+
+    public static ConsentMappingResource getConsentMappingResourceForDOMS(String accountId) {
+        ConsentMappingResource consentMappingResource = new ConsentMappingResource();
+        consentMappingResource.setMappingID("DummyMappingID");
+        consentMappingResource.setAuthorizationID("DummyAuthId");
+        consentMappingResource.setMappingStatus("active");
+        consentMappingResource.setAccountID("accountId");
         return consentMappingResource;
     }
 

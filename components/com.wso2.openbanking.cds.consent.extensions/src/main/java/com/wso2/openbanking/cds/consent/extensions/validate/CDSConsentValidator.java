@@ -20,12 +20,14 @@ import com.wso2.openbanking.accelerator.consent.extensions.common.ResponseStatus
 import com.wso2.openbanking.accelerator.consent.extensions.validate.model.ConsentValidateData;
 import com.wso2.openbanking.accelerator.consent.extensions.validate.model.ConsentValidationResult;
 import com.wso2.openbanking.accelerator.consent.extensions.validate.model.ConsentValidator;
+import com.wso2.openbanking.accelerator.consent.mgt.dao.models.AuthorizationResource;
 import com.wso2.openbanking.accelerator.consent.mgt.dao.models.ConsentMappingResource;
 import com.wso2.openbanking.cds.common.config.OpenBankingCDSConfigParser;
 import com.wso2.openbanking.cds.common.error.handling.util.ErrorConstants;
 import com.wso2.openbanking.cds.common.metadata.domain.MetadataValidationResponse;
 import com.wso2.openbanking.cds.common.metadata.status.validator.service.MetadataService;
 import com.wso2.openbanking.cds.consent.extensions.common.CDSConsentExtensionConstants;
+import com.wso2.openbanking.cds.consent.extensions.common.SecondaryAccountOwnerTypeEnum;
 import com.wso2.openbanking.cds.consent.extensions.validate.utils.CDSConsentValidatorUtil;
 import net.minidev.json.JSONObject;
 import net.minidev.json.parser.JSONParser;
@@ -140,8 +142,10 @@ public class CDSConsentValidator implements ConsentValidator {
         // Remove inactive and duplicate consent mappings
         removeInactiveAndDuplicateConsentMappings(consentValidateData);
 
-        //filter non-sharable joint accounts and remove them
-        removeInactiveDOMSAccountConsentMappings(consentValidateData);
+        // Filter joint accounts with no-sharing doms status
+        if (openBankingCDSConfigParser.getDOMSEnabled()) {
+            removeInactiveDOMSAccountConsentMappings(consentValidateData);
+        }
 
         // filter inactive secondary user accounts
         if (openBankingCDSConfigParser.getSecondaryUserAccountsEnabled()) {
@@ -177,15 +181,30 @@ public class CDSConsentValidator implements ConsentValidator {
     public void removeInactiveDOMSAccountConsentMappings(ConsentValidateData consentValidateData)
             throws ConsentException {
 
-        ArrayList<ConsentMappingResource> distinctMappingResources = consentValidateData.getComprehensiveConsent()
-                .getConsentMappingResources();
+        ArrayList<ConsentMappingResource> distinctMappingResources = new ArrayList<>(consentValidateData
+                .getComprehensiveConsent().getConsentMappingResources());
+
+        ArrayList<AuthorizationResource> authorizationResources = new ArrayList<>(consentValidateData
+                .getComprehensiveConsent().getAuthorizationResources());
+
         Iterator<ConsentMappingResource> iterator = distinctMappingResources.iterator();
 
         while (iterator.hasNext()) {
             ConsentMappingResource mappingResource = iterator.next();
             try {
-                if (!isDOMSStatusEligibleForDataSharing(mappingResource.getAccountID())) {
-                    iterator.remove();
+                for (AuthorizationResource authorizationResource : authorizationResources) {
+                    String authorizationType = authorizationResource.getAuthorizationType();
+                    boolean isAuthEqualMap = authorizationResource.getAuthorizationID().
+                            equals(mappingResource.getAuthorizationID());
+
+                    if ((authorizationType.equals(CDSConsentExtensionConstants.LINKED_MEMBER_AUTH_TYPE) ||
+                            authorizationType.equals(SecondaryAccountOwnerTypeEnum.JOINT.getValue()))
+                            && isAuthEqualMap) {
+                        if (!isDOMSStatusEligibleForDataSharing(mappingResource.getAccountID())) {
+                            iterator.remove();
+                            log.info("Removed mapping resource for accountID: " + mappingResource.getAccountID());
+                        }
+                    }
                 }
             } catch (OpenBankingException e) {
                 log.error("Error occurred while retrieving account metadata", e);
@@ -196,15 +215,16 @@ public class CDSConsentValidator implements ConsentValidator {
         consentValidateData.getComprehensiveConsent().setConsentMappingResources(distinctMappingResources);
     }
 
-    public Boolean isDOMSStatusEligibleForDataSharing(String accountID) throws OpenBankingException {
+    public boolean isDOMSStatusEligibleForDataSharing(String accountID) throws OpenBankingException {
 
         AccountMetadataService accountMetadataService = AccountMetadataServiceImpl.getInstance();
         Map<String, String> accountMetadata = accountMetadataService.getGlobalAccountMetadataMap(accountID);
 
         if (!accountMetadata.isEmpty()) {
-            return accountMetadata.containsValue(CDSConsentExtensionConstants.DOMS_STATUS_PRE_APPROVAL);
+            String status = accountMetadata.get(CDSConsentExtensionConstants.DOMS_STATUS);
+            return status.equals(CDSConsentExtensionConstants.DOMS_STATUS_PRE_APPROVAL);
         } else {
-            return false;
+            return true;
         }
     }
 
@@ -228,6 +248,7 @@ public class CDSConsentValidator implements ConsentValidator {
 
         consentValidateData.getComprehensiveConsent().setConsentMappingResources(consentMappingResources);
     }
+
     /**
      * Method to remove accounts which the user has "REVOKED" nominated representative permissions.
      *
