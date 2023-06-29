@@ -80,11 +80,19 @@ public class OBCDSAuthServletImpl implements OBAuthServletInterface {
             JSONArray newDataRequestedJsonArray = dataSet.getJSONArray(CDSConsentExtensionConstants.NEW_DATA_REQUESTED);
             Map<String, List<String>> newDataRequested = getRequestedDataMap(newDataRequestedJsonArray);
             returnMaps.put(CDSConsentExtensionConstants.NEW_DATA_REQUESTED, newDataRequested);
+            JSONArray newBusinessDataRequestedJsonArray =
+                    dataSet.getJSONArray(CDSConsentExtensionConstants.NEW_BUSINESS_DATA_CLUSTER);
+            Map<String, List<String>> newBusinessDataRequested = getRequestedDataMap(newBusinessDataRequestedJsonArray);
+            returnMaps.put(CDSConsentExtensionConstants.NEW_BUSINESS_DATA_CLUSTER, newBusinessDataRequested);
             httpServletRequest.setAttribute(CDSConsentExtensionConstants.IS_CONSENT_AMENDMENT, true);
             if (dataSet.has(CDSConsentExtensionConstants.IS_SHARING_DURATION_UPDATED)) {
                 httpServletRequest.setAttribute(CDSConsentExtensionConstants.IS_SHARING_DURATION_UPDATED,
                         dataSet.get(CDSConsentExtensionConstants.IS_SHARING_DURATION_UPDATED));
             }
+            returnMaps.put(CDSConsentExtensionConstants.NAME_CLAIMS,
+                    dataSet.getString(CDSConsentExtensionConstants.NAME_CLAIMS));
+            returnMaps.put(CDSConsentExtensionConstants.CONTACT_CLAIMS,
+                    dataSet.getString(CDSConsentExtensionConstants.CONTACT_CLAIMS));
         } else {
             httpServletRequest.setAttribute(CDSConsentExtensionConstants.IS_CONSENT_AMENDMENT, false);
         }
@@ -104,7 +112,8 @@ public class OBCDSAuthServletImpl implements OBAuthServletInterface {
         }
         httpServletRequest.setAttribute(CDSConsentExtensionConstants.ACCOUNT_MASKING_ENABLED,
                 OpenBankingCDSConfigParser.getInstance().isAccountMaskingEnabled());
-
+        returnMaps.put(CDSConsentExtensionConstants.CUSTOMER_SCOPES_ONLY,
+                dataSet.getBoolean(CDSConsentExtensionConstants.CUSTOMER_SCOPES_ONLY));
         return returnMaps;
     }
 

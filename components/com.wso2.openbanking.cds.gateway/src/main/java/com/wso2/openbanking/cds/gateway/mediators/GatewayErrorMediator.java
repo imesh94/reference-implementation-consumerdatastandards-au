@@ -1,13 +1,10 @@
 /*
- * Copyright (c) 2021, WSO2 Inc. (http://www.wso2.com). All Rights Reserved.
+ * Copyright (c) 2021-2023, WSO2 LLC. (https://www.wso2.com). All Rights Reserved.
  *
- * This software is the property of WSO2 Inc. and its suppliers, if any.
+ * This software is the property of WSO2 LLC. and its suppliers, if any.
  * Dissemination of any information or reproduction of any material contained
- * herein is strictly forbidden, unless permitted by WSO2 in accordance with
- * the WSO2 Software License available at https://wso2.com/licenses/eula/3.1.
- * For specific language governing the permissions and limitations under this
- * license, please see the license as well as any agreement you’ve entered into
- * with WSO2 governing the purchase of this software and any associated services.
+ * herein in any form is strictly forbidden, unless permitted by WSO2 expressly.
+ * You may not alter or remove any copyright or other notice from copies of this content.
  */
 
 package com.wso2.openbanking.cds.gateway.mediators;
@@ -41,6 +38,7 @@ import java.nio.charset.Charset;
 import java.time.Instant;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.UUID;
 
 /**
  * CDS Gateway error mediator.
@@ -124,6 +122,17 @@ public class GatewayErrorMediator extends AbstractMediator {
                 return true;
             }
         }
+
+        // Add x-fapi-interaction-id as a transport header if not exists
+        org.apache.axis2.context.MessageContext axis2MessageContext =
+                ((Axis2MessageContext) messageContext).getAxis2MessageContext();
+        Map headers = (Map) axis2MessageContext
+                .getProperty(org.apache.axis2.context.MessageContext.TRANSPORT_HEADERS);
+
+        if (!headers.containsKey(GatewayConstants.X_FAPI_INTERACTION_ID)) {
+            headers.put(GatewayConstants.X_FAPI_INTERACTION_ID, UUID.randomUUID().toString());
+        }
+
         String errorResponse = errorData.get(GatewayConstants.ERROR_RESPONSE).toString();
         int status = (int) errorData.get(GatewayConstants.STATUS_CODE);
         setFaultPayload(messageContext, errorResponse, status);

@@ -30,7 +30,7 @@ import { AppInfoContext } from "../context/AppInfoContext";
 export const AdvanceSearch = () => {
     const {currentContextUser} = useContext(UserContext);
     const {contextAppInfo} = useContext(AppInfoContext);
-    const{getContextConsentsForSearch} = useContext(ConsentContext);
+    const{getContextConsentForSearch} = useContext(ConsentContext);
     const {contextSearchObject,contextSearchUtilState,setContextSearchObject,setContextSearchUtilState} = useContext(SearchObjectContext);
 
     let searchObj = contextSearchObject;
@@ -85,7 +85,7 @@ export const AdvanceSearch = () => {
 
 
     function doSearchConsents(search) {
-        getContextConsentsForSearch(search, currentUser, appInfo);
+        getContextConsentForSearch(search, currentUser, appInfo);
     }
 
     return (

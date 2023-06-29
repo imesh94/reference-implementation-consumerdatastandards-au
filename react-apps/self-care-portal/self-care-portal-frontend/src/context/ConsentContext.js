@@ -66,7 +66,7 @@ const ConsentContextProvider = (props) => {
             .finally(()=>setContextConsentsRequestLoadingStatus(false))
     };
 
-    const getContextConsentsForSearch = (searchObj,user,appInfo) => {
+    const getContextConsentForSearch = (searchObj,user,appInfo) => {
         setContextConsentsRequestLoadingStatus(true)
         getConsentsFromAPIForSearch(searchObj,user,appInfo)
             .then((response)=>{
@@ -85,7 +85,7 @@ const ConsentContextProvider = (props) => {
         setContextConsentsRequestLoadingStatus,
         setContextConsentsMetadata, 
         getContextConsents,
-        getContextConsentsForSearch
+        getContextConsentForSearch
     }
 
     return (

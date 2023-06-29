@@ -105,6 +105,8 @@ public class CDSConsentExtensionConstants {
     public static final String COMMON_CUSTOMER_DETAIL_READ_SCOPE = "common:customer.detail:read";
     public static final String COMMON_ACCOUNTS_BASIC_READ_SCOPE = "bank:accounts.basic:read";
     public static final String COMMON_ACCOUNTS_DETAIL_READ_SCOPE = "bank:accounts.detail:read";
+    public static final String TRANSACTIONS_READ_SCOPE = "bank:transactions:read";
+    public static final String REGULAR_PAYMENTS_READ_SCOPE = "bank:regular_payments:read";
     public static final String COMMON_SUBSTRING = "common:";
     public static final Map<String, Map<String, List<String>>> CDS_DATA_CLUSTER;
     public static final Map<String, Map<String, List<String>>> BUSINESS_CDS_DATA_CLUSTER;
@@ -143,6 +145,8 @@ public class CDSConsentExtensionConstants {
     public static final String BUSINESS_PROFILE_TYPE_ATTRIBUTE = "business-profile";
     public static final String TOTAL = "total";
     public static final String COUNT = "count";
+    public static final String DATA_CLUSTER = "data_cluster";
+    public static final String NEW_DATA_CLUSTER = "new_data_cluster";
     public static final String BUSINESS_DATA_CLUSTER = "business_data_cluster";
     public static final String NEW_BUSINESS_DATA_CLUSTER = "new_business_data_cluster";
 
@@ -185,7 +189,27 @@ public class CDSConsentExtensionConstants {
     public static final String DATA_HOLDER_ID = "DataHolder.ClientId";
     public static final String RECIPIENT_BASE_URI = "recipient_base_uri";
 
+    // Constants related to profile scope and standard claims
+    public static final String ID_TOKEN = "id_token";
+    public static final String ID_TOKEN_CLAIMS = "id_token_claims";
+    public static final String USERINFO = "userinfo";
+    public static final String USERINFO_CLAIMS = "userinfo_claims";
+    public static final String[] NAME_CLUSTER_CLAIMS = {"name", "given_name", "family_name", "updated_at"};
+    public static final String[] NAME_CLUSTER_PERMISSIONS = {"profile", "name", "given_name", "family_name",
+            "updated_at"};
+    public static final String[] EMAIL_CLUSTER_CLAIMS = {"email", "email_verified"};
+    public static final String[] MAIL_CLUSTER_CLAIMS = {"address"};
+    public static final String[] PHONE_CLUSTER_CLAIMS = {"phone_number", "phone_number_verified"};
+    public static final String NAME_CLUSTER = "name";
+    public static final String EMAIL_CLUSTER = "email";
+    public static final String MAIL_CLUSTER = "mail";
+    public static final String PHONE_CLUSTER = "phone";
+    public static final String CONTACT_CLUSTER = "contactDetails";
+    public static final String NAME_CLAIMS = "nameClaims";
+    public static final String CONTACT_CLAIMS = "contactClaims";
+    public static final Map<String, String[]> CONTACT_CLUSTER_CLAIMS;
     public static final int CDS_DEFAULT_EXPIRY = 86400; // 1 day
+    public static final String CUSTOMER_SCOPES_ONLY = "customerScopesOnly";
 
     // CDS data cluster
     static {
@@ -229,6 +253,43 @@ public class CDSConsentExtensionConstants {
     static {
         Map<String, Map<String, List<String>>> dataCluster = new HashMap<>();
 
+        Map<String, List<String>> permissionLanguage = new LinkedHashMap<>();
+        permissionLanguage.put("Name", Collections.singletonList("Full name and title(s)"));
+        dataCluster.put("name", permissionLanguage);
+
+        permissionLanguage = new LinkedHashMap<>();
+        permissionLanguage.put("Contact Details", Collections.singletonList("Email address"));
+        dataCluster.put("contactDetails_email", permissionLanguage);
+
+        permissionLanguage = new LinkedHashMap<>();
+        permissionLanguage.put("Contact Details", Collections.singletonList("Mail address"));
+        dataCluster.put("contactDetails_mail", permissionLanguage);
+
+        permissionLanguage = new LinkedHashMap<>();
+        permissionLanguage.put("Contact Details", Collections.singletonList("Phone number"));
+        dataCluster.put("contactDetails_phone", permissionLanguage);
+
+        permissionLanguage = new LinkedHashMap<>();
+        permissionLanguage.put("Contact Details", Arrays.asList("Email address", "Mail address"));
+        dataCluster.put("contactDetails_email_mail", permissionLanguage);
+
+        permissionLanguage = new LinkedHashMap<>();
+        permissionLanguage.put("Contact Details", Arrays.asList("Email address", "Phone number"));
+        dataCluster.put("contactDetails_email_phone", permissionLanguage);
+
+        permissionLanguage = new LinkedHashMap<>();
+        permissionLanguage.put("Contact Details", Arrays.asList("Mail address", "Phone number"));
+        dataCluster.put("contactDetails_mail_phone", permissionLanguage);
+
+        permissionLanguage = new LinkedHashMap<>();
+        permissionLanguage.put("Contact Details", Arrays.asList("Email address", "Mail address", "Phone number"));
+        dataCluster.put("contactDetails_email_mail_phone", permissionLanguage);
+
+        PROFILE_DATA_CLUSTER = Collections.unmodifiableMap(dataCluster);
+    }
+
+    static {
+        Map<String, Map<String, List<String>>> dataCluster = new HashMap<>();
 
         Map<String, List<String>> permissionLanguage = new LinkedHashMap<>();
         permissionLanguage.put("Organisation profile", Arrays.asList("Agent name and role", "Organisation name",
@@ -262,42 +323,14 @@ public class CDSConsentExtensionConstants {
         INDIVIDUAL_CDS_DATA_CLUSTER = Collections.unmodifiableMap(dataCluster);
     }
 
-    // Profile scope data cluster
     static {
-        Map<String, Map<String, List<String>>> dataCluster = new HashMap<>();
-
-        Map<String, List<String>> permissionLanguage = new LinkedHashMap<>();
-        permissionLanguage.put("Name", Arrays.asList("Full name and title(s)"));
-        dataCluster.put("profile_name", permissionLanguage);
-
-        permissionLanguage = new LinkedHashMap();
-        permissionLanguage.put("Contact Details", Arrays.asList("Phone number", "Email address", "Mail address"));
-        dataCluster.put("profile_contactDetails_EMAIL_MAIL_PHONE", permissionLanguage);
-
-        permissionLanguage = new LinkedHashMap();
-        permissionLanguage.put("Contact Details", Arrays.asList("Email address", "Mail address"));
-        dataCluster.put("profile_contactDetails_EMAIL_MAIL", permissionLanguage);
-
-        permissionLanguage = new LinkedHashMap();
-        permissionLanguage.put("Contact Details", Arrays.asList("Phone number", "Email address"));
-        dataCluster.put("profile_contactDetails_EMAIL_PHONE", permissionLanguage);
-
-        permissionLanguage = new LinkedHashMap();
-        permissionLanguage.put("Contact Details", Arrays.asList("Mail address", "Phone number"));
-        dataCluster.put("profile_contactDetails_MAIL_PHONE", permissionLanguage);
-
-        permissionLanguage = new LinkedHashMap();
-        permissionLanguage.put("Contact Details", Arrays.asList("Email address"));
-        dataCluster.put("profile_contactDetails_EMAIL", permissionLanguage);
-
-        permissionLanguage = new LinkedHashMap();
-        permissionLanguage.put("Contact Details", Arrays.asList("Mail address"));
-        dataCluster.put("profile_contactDetails_MAIL", permissionLanguage);
-
-        permissionLanguage = new LinkedHashMap();
-        permissionLanguage.put("Contact Details", Arrays.asList("Phone number"));
-        dataCluster.put("profile_contactDetails_PHONE", permissionLanguage);
-
-        PROFILE_DATA_CLUSTER = Collections.unmodifiableMap(dataCluster);
+        Map<String, String[]> contactClusters = new HashMap<>();
+        contactClusters.put(CDSConsentExtensionConstants.EMAIL_CLUSTER,
+                CDSConsentExtensionConstants.EMAIL_CLUSTER_CLAIMS);
+        contactClusters.put(CDSConsentExtensionConstants.MAIL_CLUSTER,
+                CDSConsentExtensionConstants.MAIL_CLUSTER_CLAIMS);
+        contactClusters.put(CDSConsentExtensionConstants.PHONE_CLUSTER,
+                CDSConsentExtensionConstants.PHONE_CLUSTER_CLAIMS);
+        CONTACT_CLUSTER_CLAIMS = Collections.unmodifiableMap(contactClusters);
     }
 }
