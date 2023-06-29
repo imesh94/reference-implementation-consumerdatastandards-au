@@ -80,8 +80,6 @@ public class IDPermanenceExecutor implements OpenBankingGatewayExecutor {
             // set decrypted resource ids to the request body
             obApiRequestContext.setModifiedPayload(gson.toJson(idPermanenceValidationResponse.
                     getDecryptedResourceIds()));
-        } else {
-
         }
 
         // handle requests with path params
