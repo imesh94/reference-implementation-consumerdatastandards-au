@@ -141,7 +141,6 @@ public class CeasingSecondaryUserSharingApiImpl implements CeasingSecondaryUserS
                     getUsersAccountsLegalEntities(responseDetailedConsents, responseUsersAccountsLegalEntitiesDTO);
             return Response.ok().entity(responseUsersAccountsLegalEntities).build();
 
-
         } catch (Exception e) {
             log.error("Error occurred while retrieving users,accounts and legal entities.", e);
             return Response.status(Response.Status.BAD_REQUEST).entity(e.getMessage()).build();
