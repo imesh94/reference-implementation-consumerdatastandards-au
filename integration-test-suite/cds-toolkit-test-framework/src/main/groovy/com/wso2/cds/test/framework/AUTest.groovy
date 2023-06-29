@@ -1140,7 +1140,7 @@ class AUTest extends OBTest {
                 .contentType(AUConstants.CONTENT_TYPE_APPLICATION_JSON)
                 .body(requestBody)
                 .baseUri(auConfiguration.getServerAuthorisationServerURL())
-                .put("${AUConstants.CONSENT_STATUS_AU_ENDPOINT}${AUConstants.SECONDARY_ACCOUNT_ENDPOINT}")
+                .put("${AUConstants.CONSENT_STATUS_AU_ENDPOINT}${AUConstants.UPDATE_LEGAL_ENTITY_SHARING_STATUS}")
 
         return secondUserUpdateResponse
     }

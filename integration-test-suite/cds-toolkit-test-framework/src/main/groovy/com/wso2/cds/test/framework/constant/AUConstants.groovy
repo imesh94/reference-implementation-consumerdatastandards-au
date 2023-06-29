@@ -106,7 +106,7 @@ class AUConstants extends OBConstants {
     public static final String DISCLOSURE_OPTIONS_ENDPOINT = "/account-type-management/disclosure-options"
     public static final String SECONDARY_ACCOUNT_ENDPOINT = "/account-type-management/secondary-accounts"
     public static final String LEGAL_ENTITY_LIST_ENDPOINT = "/account-type-management/legal-entity-list"
-    public static final String UPDATE_LEGAL_ENTITY_SHARING_STATUS = "/account-type-management/block-legal-entity"
+    public static final String UPDATE_LEGAL_ENTITY_SHARING_STATUS = "/account-type-management/legal-entity"
 
     public static final String BANK_CUSTOMER_BASIC_READ = "Organisation profile and contact details"
     public static final String BANK_CUSTOMER_DETAIL_READ = "Organisation profile and contact details*‡"
