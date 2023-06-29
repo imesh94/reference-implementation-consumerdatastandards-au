@@ -19,6 +19,7 @@ import com.wso2.openbanking.accelerator.consent.mgt.service.impl.ConsentCoreServ
 import com.wso2.openbanking.accelerator.identity.push.auth.extension.request.validator.util.PushAuthRequestValidatorUtils;
 import com.wso2.openbanking.cds.consent.extensions.authorize.utils.CDSConsentCommonUtil;
 import com.wso2.openbanking.cds.consent.extensions.authorize.utils.CDSDataRetrievalUtil;
+import com.wso2.openbanking.cds.consent.extensions.common.CDSConsentExtensionConstants;
 import com.wso2.openbanking.cds.consent.extensions.util.CDSConsentAuthorizeTestConstants;
 import net.minidev.json.JSONObject;
 import org.mockito.Mockito;
@@ -36,6 +37,8 @@ import org.wso2.carbon.identity.oauth2.model.OAuth2Parameters;
 import java.time.LocalDateTime;
 import java.time.ZoneOffset;
 import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.Map;
 
 import static org.mockito.Mockito.anyString;
 import static org.powermock.api.mockito.PowerMockito.doReturn;
@@ -248,6 +251,10 @@ public class CDSConsentRetrievalStepTests extends PowerMockTestCase {
         detailedConsentResource.setReceipt(receipt);
         detailedConsentResource.setAuthorizationResources(authResourceList);
         detailedConsentResource.setConsentMappingResources(mappingResourceList);
+        Map<String, String> consentAttributes = new HashMap<>();
+        consentAttributes.put(CDSConsentExtensionConstants.SELECTED_PROFILE_ID,
+                CDSConsentExtensionConstants.INDIVIDUAL_PROFILE_ID);
+        detailedConsentResource.setConsentAttributes(consentAttributes);
 
         ConsentCoreServiceImpl consentCoreServiceMock = mock(ConsentCoreServiceImpl.class);
         when(consentCoreServiceMock.getDetailedConsent(anyString())).thenReturn(detailedConsentResource);

@@ -3,9 +3,9 @@
 hostname = "IS_HOSTNAME"
 node_ip = "127.0.0.1"
 base_path = "https://$ref{server.hostname}:${carbon.management.port}"
-serverDetails = "WSO2 IS as KM 5.11.0"
+serverDetails = "WSO2 IS as KM 6.0.0"
 mode = "single"
-userAgent = "WSO2 IS as KM 5.11.0"
+userAgent = "WSO2 IS as KM 6.0.0"
 offset = 3
 
 [keystore.primary]
@@ -268,6 +268,23 @@ name = "org.wso2.carbon.identity.oauth2.token.handler.clientauth.jwt.PrivateKeyJ
 order = "899"
 enable = false
 
+[[event_listener]]
+id = "introspection_response_interceptor"
+type = "org.wso2.carbon.identity.core.handler.AbstractIdentityHandler"
+name="org.wso2.carbon.identity.oauth2.token.handler.clientauth.mutualtls.introspection.IntrospectionResponseInterceptor"
+order= "900"
+enable=true
+
+[[event_listener]]
+id = "cds_token_introspection_listener"
+type = "org.wso2.carbon.identity.core.handler.AbstractIdentityHandler"
+name = "com.wso2.openbanking.cds.identity.listener.CDSTokenIntrospectionListener"
+order = "901"
+enable = true
+
+[event_listener.properties]
+EndpointAlias = "https://localhost:9446/oauth2/introspect"
+
 [oauth.grant_type]
 iwa_ntlm.enable = false
 jwt_bearer.enable = true
@@ -416,6 +433,9 @@ token_context_dialect_uri = "http://wso2.org/claims"
 [oauth.token_generation]
 access_token_type = "self_contained"
 
+[oauth.introspection]
+filtered_claims = ["username"]
+
 [oauth.grant_type.uma_ticket]
 retrieve_uma_permission_info_through_introspection = true
 
@@ -506,21 +526,17 @@ allowed_values = ["private_key_jwt"]
 
 [open_banking.dcr.registration.response_types]
 required = true
-allowed_values = ["code id_token"]
-
-[open_banking.dcr.registration.callback_uris]
-allowed_values = ["https://www.google.com/redirects/redirect1",
-    "https://www.google.com/redirects/redirect2"]
+allowed_values = ["code"]
 
 [open_banking.dcr.registration.application_type]
 allowed_values = ["web"]
 
 [open_banking.dcr.registration.id_token_encryption_response_alg]
-required = true
+required = false
 allowed_values = ["RSA-OAEP", "RSA-OAEP-256"]
 
 [open_banking.dcr.registration.id_token_encryption_response_enc]
-required = true
+required = false
 allowed_values = ["A256GCM", "A128CBC-HS256"]
 
 [open_banking.dcr.registration.token_endpoint_auth_signing_alg]
@@ -573,7 +589,7 @@ required=true
 [[open_banking.data_publishing.thrift.stream.attributes]]
 name="responsePayloadSize"
 priority=8
-required=true
+required=false
 type="long"
 [[open_banking.data_publishing.thrift.stream.attributes]]
 name="electedResource"
@@ -849,6 +865,7 @@ class = "com.wso2.openbanking.accelerator.identity.token.validators.MTLSEnforcem
 class = "com.wso2.openbanking.accelerator.identity.token.validators.MTLSEnforcementValidator"
 
 [open_banking_cds.bnr]
+customer_type_selection_method="profile_selection" # values: profile_selection, customer_utype, cookie_data
 prioritize_sharable_accounts_response=true
 enable_consent_revocation=true
 validate_accounts_on_retrieval=true

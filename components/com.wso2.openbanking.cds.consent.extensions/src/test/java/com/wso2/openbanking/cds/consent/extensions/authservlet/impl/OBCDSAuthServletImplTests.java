@@ -79,6 +79,8 @@ public class OBCDSAuthServletImplTests extends PowerMockTestCase {
         dataSet.put(CDSConsentExtensionConstants.SP_FULL_NAME, "TestServiceProvider");
         dataSet.put(CDSConsentExtensionConstants.REDIRECT_URL, "TestRedirectUrl");
         dataSet.put(CDSConsentExtensionConstants.CONSENT_EXPIRY, "ConsentExpiryDate");
+        dataSet.put(CDSConsentExtensionConstants.USER_ID, "user1@gold.com");
+        dataSet.put(CDSConsentExtensionConstants.CUSTOMER_SCOPES_ONLY, false);
 
         Map<String, Object> returnMap = obCdsAuthServlet.updateRequestAttribute(
                 httpServletRequest, dataSet, resourceBundle);
@@ -112,6 +114,9 @@ public class OBCDSAuthServletImplTests extends PowerMockTestCase {
         // add accounts data
         accJsonElement.put(CDSConsentExtensionConstants.ACCOUNT_ID, "1234");
         accJsonElement.put(CDSConsentExtensionConstants.DISPLAY_NAME, "test-account");
+        accJsonElement.put(CDSConsentExtensionConstants.IS_ELIGIBLE, true);
+        accJsonElement.put(CDSConsentExtensionConstants.CUSTOMER_ACCOUNT_TYPE,
+                CDSConsentExtensionConstants.INDIVIDUAL_PROFILE_TYPE);
         accJsonElement.put(CDSConsentExtensionConstants.IS_JOINT_ACCOUNT_RESPONSE, true);
         accJsonElement.put(CDSConsentExtensionConstants.JOINT_ACCOUNT_CONSENT_ELECTION_STATUS,
                 CDSConsentExtensionConstants.JOINT_ACCOUNT_PRE_APPROVAL);
@@ -125,6 +130,8 @@ public class OBCDSAuthServletImplTests extends PowerMockTestCase {
         dataSet.put(CDSConsentExtensionConstants.SP_FULL_NAME, "TestServiceProvider");
         dataSet.put(CDSConsentExtensionConstants.REDIRECT_URL, "TestRedirectUrl");
         dataSet.put(CDSConsentExtensionConstants.CONSENT_EXPIRY, "ConsentExpiryDate");
+        dataSet.put(CDSConsentExtensionConstants.USER_ID, "user1@gold.com");
+        dataSet.put(CDSConsentExtensionConstants.CUSTOMER_SCOPES_ONLY, false);
 
         Map<String, Object> returnMap = obCdsAuthServlet.updateRequestAttribute(
                 httpServletRequest, dataSet, resourceBundle);

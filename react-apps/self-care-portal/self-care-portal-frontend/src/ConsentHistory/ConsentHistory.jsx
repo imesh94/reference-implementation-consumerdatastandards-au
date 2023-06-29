@@ -30,7 +30,7 @@ import { UserContext } from "../context/UserContext";
 import { AppInfoContext } from "../context/AppInfoContext";
 
 export const ConsentHistory = ({ match }) => {
-        const {allContextConsents,getContextConsentsForSearch} = useContext(ConsentContext);
+        const {allContextConsents,getContextConsentForSearch} = useContext(ConsentContext);
         const {contextSearchObject} = useContext(SearchObjectContext);
         const {currentContextUser} = useContext(UserContext);
         const {contextAppInfo} = useContext(AppInfoContext)
@@ -52,7 +52,7 @@ export const ConsentHistory = ({ match }) => {
                 clientIDs: "",
                 consentStatuses: ""
             }
-            getContextConsentsForSearch(search,currentUser,appInfo)
+            getContextConsentForSearch(search,currentUser,appInfo)
             const matchedConsentId = match.params.id;
             let matchedConsent = consents.data.filter(
                 (consent) => consent.consentId === matchedConsentId

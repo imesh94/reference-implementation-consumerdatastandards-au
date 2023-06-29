@@ -20,22 +20,22 @@
 <jsp:include page="includes/consent_top.jsp"/>
 
 <%
-    String sessionDataKeyConsent = request.getParameter("sessionDataKeyConsent");
-    String isConsentAmendment = request.getParameter("isConsentAmendment");
-    String isSharingDurationUpdated = request.getParameter("isSharingDurationUpdated");
-    String accounts = request.getParameter("accountsArry[]");
-    String accounNames = request.getParameter("accNames");
-    String appName = request.getParameter("app");
-    String spFullName = request.getParameter("spFullName");
+    String sessionDataKeyConsent = getRequestAttribute(request, "sessionDataKeyConsent");
+    String isConsentAmendment = getRequestAttribute(request, "isConsentAmendment");
+    String isSharingDurationUpdated = getRequestAttribute(request, "isSharingDurationUpdated");
+    String accounts = getRequestAttribute(request, "accountsArry[]");
+    String accounNames = getRequestAttribute(request, "accNames");
+    String appName = getRequestAttribute(request, "app");
+    String spFullName = getRequestAttribute(request, "spFullName");
     String consentId = request.getParameter("id");
     String userName = request.getParameter("user");
-    String selectedProfileId = request.getParameter("selectedProfileId");
-    String selectedProfileName = request.getParameter("selectedProfileName");
+    String selectedProfileId = getRequestAttribute(request, "selectedProfileId");
+    String selectedProfileName = getRequestAttribute(request, "selectedProfileName");
     String[] accountList = accounNames.split(":");
     String[] accountIdList = accounts.split(":");
-    String consentExpiryDateTime = request.getParameter("consent-expiry-date");
+    String consentExpiryDateTime = getRequestAttribute(request, "consent-expiry-date");
     String consentExpiryDate = consentExpiryDateTime.split("T")[0];
-    String accountMaskingEnabled = request.getParameter("accountMaskingEnabled");
+    String accountMaskingEnabled = getRequestAttribute(request, "accountMaskingEnabled");
     DateTimeFormatter dtf = DateTimeFormatter.ofPattern("yyyy-MM-dd");
     LocalDateTime now = LocalDateTime.now();
     String currentDate = dtf.format(now);
@@ -62,6 +62,9 @@
         }
     }
     session.setAttribute("isSharedWithinDay", isSharedWithinDay);
+    String nameClaims = (String) session.getAttribute("nameClaims");
+    String contactClaims = (String) session.getAttribute("contactClaims");
+    boolean skipAccounts = (boolean) session.getAttribute("skipAccounts");
 %>
 <div class="col-xs-12 col-sm-12 col-md-12 col-lg-12">
     <div class="clearfix"></div>
@@ -73,28 +76,29 @@
                     <h3 class="ui header"><strong><%=spFullName%>
                     </strong> requests account details on your account.</h3>
 
-                    <div class="padding-top">
-                        <h4 class="section-heading-5 ui subheading">
-                            Accounts selected:
-                        </h4>
-                        <div class="padding-left">
-                            <ul class="scopes-list padding">
-                            <%
-                                for (int i = 0; i < accountList.length; i++) {
-                                %>
-                                    <li>
-                                        <strong><% out.println(accountList[i]); %></strong><br>
-                                        <span class ="accountIdClass" id="<% out.println(accountIdList[i]);%>">
-                                            <small><% out.println(accountIdList[i]);%></small>
-                                        </span>
-                                    </li><br>
+                    <% if (!skipAccounts) { %>
+                        <div class="padding-top">
+                            <h4 class="section-heading-5 ui subheading">
+                                Accounts selected:
+                            </h4>
+                            <div class="padding-left">
+                                <ul class="scopes-list padding">
                                 <%
-                                }
-                            %>
-                            </ul>
+                                    for (int i = 0; i < accountList.length; i++) {
+                                    %>
+                                        <li>
+                                            <strong><% out.println(accountList[i]); %></strong><br>
+                                            <span class ="accountIdClass" id="<% out.println(accountIdList[i]);%>">
+                                                <small><% out.println(accountIdList[i]);%></small>
+                                            </span>
+                                        </li><br>
+                                    <%
+                                    }
+                                %>
+                                </ul>
+                            </div>
                         </div>
-                    </div>
-
+                    <% }%>
                     <h4 class="section-heading-5 ui subheading">Data requested:</h4>
 
                     <!--Display requested data-->
@@ -130,6 +134,13 @@
                                             <li>${record_data}</li>
                                         </c:forEach>
                                     </ul>
+                                    <c:if test="${(record.key eq 'Name')}">
+                                        <u class="ui body col-md-12"> Updated claims & scopes : <%=nameClaims%>
+                                        </u>
+                                    </c:if>
+                                    <c:if test="${(record.key eq 'Contact Details')}">
+                                        <u class="ui body col-md-12"> Updated claims : <%=contactClaims%> </u>
+                                    </c:if>
                                     <c:if test="${(record.key eq 'Account name, type, and balance') ||
                                     (record.key eq 'Account balance and details') || (record.key eq 'Transaction details')
                                     || (record.key eq 'Direct debits and scheduled payments')}">
@@ -346,3 +357,16 @@
 </script>
 
 <jsp:include page="includes/consent_bottom.jsp"/>
+<%!
+    /**
+     * Method to retrieve request attributes from request attributes or request parameters.
+     *
+     * @param request http servlet request
+     * @param attributeName attribute name
+     * @return attribute value
+     */
+    private String getRequestAttribute(HttpServletRequest request, String attributeName) {
+        return String.valueOf(request.getAttribute(attributeName) != null ? request.getAttribute(attributeName) :
+                request.getParameter(attributeName));
+    }
+%>

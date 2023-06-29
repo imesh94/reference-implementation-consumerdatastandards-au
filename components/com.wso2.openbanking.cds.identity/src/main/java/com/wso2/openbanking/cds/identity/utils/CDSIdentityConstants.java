@@ -17,6 +17,12 @@ public class CDSIdentityConstants {
     // Error messages.
     public static final String INVALID_PUSH_AUTH_REQUEST = "Invalid push authorisation request";
     public static final String INVALID_SHARING_DURATION = "Invalid sharing_duration value";
-    public static final String EMPTY_CDR_ARRANGEMENT_ID = "Empty cdr-arrangement-id sent in the request";
+    public static final String UNSUPPORTED_RESPONSE_TYPE = "Unsupported response_type value. Only code response type " +
+            "is allowed.";
+    public static final String UNSUPPORTED_RESPONSE_MODE = "Unsupported response_mode value. Only jwt response mode " +
+            "is allowed.";
+
+    // Consent status constants.
+    public static final String AUTHORIZED = "authorized";
 
 }

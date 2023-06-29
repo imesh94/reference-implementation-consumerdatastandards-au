@@ -136,7 +136,6 @@ public class CDSDataRetrievalUtil {
             // Remove "openid", "profile" and "cdr:registration" from the scope list to display.
             List<String> openIdScopes = Stream.of(scopeString.split(" "))
                     .filter(x -> (!StringUtils.equalsIgnoreCase(x, CDSConsentExtensionConstants.OPENID_SCOPE)
-                            && !StringUtils.equalsIgnoreCase(x, CDSConsentExtensionConstants.PROFILE_SCOPE)
                             && !StringUtils.equalsIgnoreCase(x, CDSConsentExtensionConstants.CDR_REGISTRATION_SCOPE)))
                     .collect(Collectors.toList());
             for (String scope : openIdScopes) {

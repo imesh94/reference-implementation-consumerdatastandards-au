@@ -1,42 +1,77 @@
-<%--
-  ~ Copyright (c) 2021, WSO2 Inc. (http://www.wso2.com). All Rights Reserved.
-  ~
-  ~ This software is the property of WSO2 Inc. and its suppliers, if any.
-  ~ Dissemination of any information or reproduction of any material contained
-  ~ herein is strictly forbidden, unless permitted by WSO2 in accordance with
-  ~ the WSO2 Commercial License available at http://wso2.com/licenses. For specific
-  ~ language governing the permissions and limitations under this license,
-  ~ please see the license as well as any agreement you’ve entered into with
-  ~ WSO2 governing the purchase of this software and any associated services.
-  --%>
+<!--
+~ Copyright (c) 2021-2023, WSO2 LLC. (https://www.wso2.com). All Rights Reserved.
+~
+~ This software is the property of WSO2 LLC. and its suppliers, if any.
+~ Dissemination of any information or reproduction of any material contained
+~ herein in any form is strictly forbidden, unless permitted by WSO2 expressly.
+~ You may not alter or remove any copyright or other notice from copies of this content.
+~
+-->
 
 <%@ taglib prefix = "fmt" uri = "http://java.sun.com/jsp/jstl/fmt" %>
 <%@ taglib prefix = "c" uri = "http://java.sun.com/jsp/jstl/core" %>
 <%@ taglib prefix="fn" uri="http://java.sun.com/jsp/jstl/functions" %>
 
 <jsp:include page="includes/consent_top.jsp"/>
+<%@ page import ="javax.servlet.RequestDispatcher"%>
+<%@ page import="org.owasp.encoder.Encode" %>
 <%
     String preSelectedProfileId = (String) request.getAttribute("preSelectedProfileId");
     String selectedProfileId = (preSelectedProfileId == null || "".equals(preSelectedProfileId)) ?
             request.getParameter("selectedProfileId") : preSelectedProfileId;
-    if (session.getAttribute("profiles_data") == null) {
+    boolean isConsentAmendment = request.getAttribute("isConsentAmendment") != null ?
+            (boolean) request.getAttribute("isConsentAmendment") : false;
+    Object nameClaims = request.getAttribute("nameClaims");
+    String nameClaimsString = nameClaims != null ? (String) nameClaims : "";
+    session.setAttribute("nameClaims", nameClaimsString);
+    Object contactClaims = request.getAttribute("contactClaims");
+    String contactClaimsString = contactClaims != null ? (String) contactClaims : "";
+    session.setAttribute("contactClaims", contactClaimsString);
+    if (session.getAttribute("profiles_data") == null || isConsentAmendment) {
         session.setAttribute("profiles_data", request.getAttribute("profiles_data"));
     }
-    if (session.getAttribute("configParamsMap") == null) {
+    if (session.getAttribute("configParamsMap") == null || isConsentAmendment) {
         session.setAttribute("configParamsMap", request.getAttribute("data_requested"));
     }
-    if (session.getAttribute("newConfigParamsMap") == null) {
+    if (session.getAttribute("newConfigParamsMap") == null || isConsentAmendment) {
         session.setAttribute("newConfigParamsMap", request.getAttribute("new_data_requested"));
     }
-    if (session.getAttribute("business_data_cluster") == null) {
+    if (session.getAttribute("business_data_cluster") == null || isConsentAmendment) {
         session.setAttribute("business_data_cluster", request.getAttribute("business_data_cluster"));
     }
-    if (session.getAttribute("new_business_data_cluster") == null) {
+    if (session.getAttribute("new_business_data_cluster") == null || isConsentAmendment) {
         session.setAttribute("new_business_data_cluster", request.getAttribute("new_business_data_cluster"));
     }
-
-    String popoverTemplate = "<div class='popover dark-bg' role='tooltip'><div class='arrow'></div><h6 class='popover-title dark-bg'></h6><div class='popover-content'></div></div>";
+    if (session.getAttribute("skipAccounts") == null || isConsentAmendment) {
+        session.setAttribute("skipAccounts", request.getAttribute("customerScopesOnly"));
+    }
+    
+    boolean skipAccounts = (boolean) session.getAttribute("skipAccounts");
+    if (skipAccounts) {
+    	RequestDispatcher requestDispatcher = request.getRequestDispatcher("/oauth2_authz_consent.do");
+        request.setAttribute("sessionDataKeyConsent", Encode.forHtmlAttribute(
+                String.valueOf(session.getAttribute("sessionDataKeyConsent"))));
+        request.setAttribute("isConsentAmendment", isConsentAmendment);
+        Object isSharingDurationUpdated = request.getAttribute("isSharingDurationUpdated") != null ?
+                request.getAttribute("isSharingDurationUpdated") : session.getAttribute("isSharingDurationUpdated");
+        request.setAttribute("isSharingDurationUpdated", isSharingDurationUpdated);
+        request.setAttribute("accountsArry[]", "unavailable");
+        request.setAttribute("accNames", "");
+        Object app = request.getAttribute("app") != null ? request.getAttribute("app") : session.getAttribute("app");
+        request.setAttribute("app", app);
+        Object spFullName = request.getAttribute("sp_full_name") != null ?
+                request.getAttribute("sp_full_name") : session.getAttribute("sp_full_name");
+        request.setAttribute("spFullName", spFullName);
+        request.setAttribute("selectedProfileId", selectedProfileId);
+        request.setAttribute("selectedProfileName", session.getAttribute("selectedProfileName"));
+        Object consentExpiryDateTime = request.getAttribute("consent_expiration") != null ?
+                request.getAttribute("consent_expiration") : session.getAttribute("consent_expiration");
+        request.setAttribute("consent-expiry-date", consentExpiryDateTime);
+        request.setAttribute("accountMaskingEnabled", session.getAttribute("account_masking_enabled"));
+        requestDispatcher.forward(request, response);
+    }
 %>
+
 <div class="row data-container">
     <div class="clearfix"></div>
     <form action="${pageContext.request.contextPath}/oauth2_authz_consent.do" method="post" id="oauth2_authz_consent"
@@ -51,78 +86,83 @@
                 </div>
             </div>
 
-            <c:if test="${not empty accounts_data}">
-                <div class="form-group ui form select">
-                    <h5 class="ui body col-md-12">
-                        Select the accounts you wish to authorise:
-                    </h5>
-                    <div class="col-md-12" >
-                        <%--Get account ids for the selected profile--%>
-                        <c:set var="selectedProfileId" scope="session" value="<%=selectedProfileId%>"/>
-                        <c:forEach items="${profiles_data}" var="profile">
-                            <c:if test="${profile['profileId'] eq selectedProfileId}">
-                                <c:set var="profileAccountIds" value="${profile['accountIds']}" />
-                                <c:set var="selectedProfileName" value="${profile['profileName']}" />
-                            </c:if>
-                        </c:forEach>
-                        <%--Display filtered accounts--%>
-                        <c:forEach items="${accounts_data}" var="record">
-                            <c:if test="${fn:contains(profileAccountIds, record['accountId'])}">
-                                <label for="${record['displayName']}">
-                                    <input type="checkbox" id="${record['displayName']}" name="chkAccounts"
-                                        value="${record['accountId']}" onclick="updateAcc()"
-                                        ${record['isPreSelectedAccount'] ? 'checked' : ''}
-                                        ${record['is_joint_account'] ? record['is_selectable'] ? "" : "disabled='disabled'" : ""}
-                                        ${record['is_secondary_account'] ? record['is_selectable'] ? "" : "disabled='disabled'" : ""}
-                                    />
-                                    ${record['displayName']}
-                                </label>
+            <div>
+                <c:if test="${not empty accounts_data}">
+                    <%--Get account ids for the selected profile--%>
+                    <c:set var="selectedProfileId" scope="session" value="<%=selectedProfileId%>"/>
+                    <c:forEach items="${profiles_data}" var="profile">
+                        <c:if test="${profile['profileId'] eq selectedProfileId}">
+                            <c:set var="profileAccountIds" value="${profile['accountIds']}" />
+                            <c:set var="selectedProfileName" value="${profile['profileName']}" />
+                        </c:if>
+                    </c:forEach>
+                    <div class="form-group ui form select">
+                        <h4 class="ui body col-md-12">
+                            Select the accounts you wish to authorise:
+                        </h4>
+                        <div class="col-md-12" >
+                            <%--Display Selectable accounts--%>
+                            <tr class="col-md-12" ><td colspan=2><br><button type="button" style='margin: 0; padding: 0;border: none;color: #00b4ff;background-color: transparent;text-decoration: underline;'
+                                onClick='toggle(this)'>Select all </button></td></tr>
+                            <tr ><td colspan=2></td><br></tr>
+                            <c:forEach items="${accounts_data}" var="record">
+                                <c:if test="${fn:contains(profileAccountIds, record['accountId'])}">
+                                    <c:choose>
+                                        <c:when test="${record['is_selectable']}">
+                                            <label for="${record['displayName']}">
+                                                <input type="checkbox" id="${record['displayName']}" name="chkAccounts"
+                                                       value="${record['accountId']}" onclick="updateAcc()"
+                                                    ${record['isPreSelectedAccount'] ? 'checked' : ''}
+                                                />
+                                                    ${record['displayName']}
+                                            </label>
 
-                                <span id="joint-accounts-info">
-                                    <c:if test="${record['is_joint_account'] eq true}">
-                                        <c:if test="${record['is_selectable'] ne true}">
-                                            <%
-                                                String disabledPopoverContent = "<p style='text-align: left'> There are a range of reasons why certain accounts may not available to share."
-                                                    + "Please call the bank for more details.<br/><br/> For joint accounts, all account holders must elect to make the account available for sharing."
-                                                    + "This can be done via the Data Sharing dashboard in Internet Banking or the app. </p>";
-                                            %>
-                                            <a tabindex="0" role="button" data-html="true" data-placement="auto top" data-toggle="popover" data-template="<%=popoverTemplate%>"
-                                                data-trigger="focus" title="Why can't I share these?" data-content="<%=disabledPopoverContent%>">&#9432;</a>
-                                        </c:if>
-                                        <c:if test="${record['is_selectable'] eq true}">
-                                            <%
-                                                String selectablePopoverContent = "<span style='text-align: left'> other account holder(s) can share this joint account data at any time, "
-                                                    + "without each other&lsquo;s permission. <br/><br/> You can change sharing preferences for this account by going to &lsquo;Settings &gt;"
-                                                    + "Data sharing &gt; Account permissions&rsquo;</span>";
-                                            %>
-                                            <a tabindex="0" role="button" data-html="true" data-placement="auto top" data-toggle="popover" data-template="<%=popoverTemplate%>"
-                                                data-trigger="focus" title="&check; Pre-approval enabled" data-content="${record['linked_members_count']}<%=selectablePopoverContent%>">&#9432;</a>
-                                        </c:if>
-                                    </c:if>
-                                </span>
+                                            <span id="joint-accounts-info">
+                                                <c:if test="${record['is_joint_account'] eq true && record['is_secondary_account'] ne true}">
+                                                    <p class="hide data-container" id="selectablePopoverContent" style='color: rgb(0, 0, 0); text-align: left'> ${record['linked_members_count']} other account holder(s) can share this joint account data at any time,
+                                                        without each other&lsquo;s permission. <br/><br/> You can change sharing preferences for this account by going to &lsquo;Settings &gt;Data sharing &gt; Account permissions&rsquo;</p>
+                                                    <a id="selectablePopoverContentElement">&#9432;</a>
+                                                </c:if>
+                                            </span>
 
-                                <span id="secondary-accounts-info">
-                                    <c:if test="${record['is_secondary_account'] eq true}">
-                                        <c:if test="${record['is_selectable'] ne true}">
-                                            <%
-                                                String disabledPopoverContent = "<p style='text-align: left'> The account holder(s) must give you secondary user data sharing rights before you can share data from this account."
-                                                        + "<br/><br/>"
-                                                        + "Please call the bank for more details. </p>";
-                                            %>
-                                            <a tabindex="0" role="button" data-html="true" data-placement="auto top" data-toggle="popover" data-template="<%=popoverTemplate%>"
-                                               data-trigger="focus" title="Why can't I share these?" data-content="<%=disabledPopoverContent%>">&#9432;</a>
-                                        </c:if>
-                                    </c:if>
-                                </span>
-
-                                <div class="accountIdClass" id="${record['accountId']}">
-                                    <small>${record['accountId']}</small>
-                                </div><br/>
-                            </c:if>
-                        </c:forEach>
+                                            <div class="accountIdClass" id="${record['accountId']}">
+                                                <small>${record['accountId']}</small>
+                                            </div><br/>
+                                        </c:when>
+                                    </c:choose>
+                                </c:if>
+                            </c:forEach>
+                        </div>
                     </div>
-                </div>
-            </c:if>
+
+                    <div class="form-group ui form select">
+                        <hr class="separator">
+                        <h4 class="ui body col-md-12">
+                            Accounts Unavailable To Share:
+                        </h4>
+                        <div class="col-md-12 padding-bottom-double">
+                            <p id="UnavailableAccountPopover" class="hide" style='text-align: left'> There are a range of reasons why certain accounts may not available to share. Please call the bank for more details.
+                                <br><br> &#8211; For joint accounts, all account holders must elect to make the account available for sharing. <br> &#8211; For secondary user accounts, the account holder(s) must give you secondary user data sharing rights before you can share data from this account.
+                                <br><br>These can be done via the Data Sharing dashboard in Internet Banking or the app. </p>
+                            <p>Why can't I share these? <a id="unavailablePopoverContentElement">&#9432;</a></p>
+                        </div>
+                        <br><br>
+                        <div class="col-md-12" >
+                                <%--Display Unavailable accounts--%>
+                            <c:forEach items="${accounts_data}" var="record">
+                                <c:if test="${fn:contains(profileAccountIds, record['accountId']) && !record['is_selectable']}">
+                                    <label for="${record['displayName']}">
+                                            ${record['displayName']}
+                                    </label>
+                                    <div class="accountIdClass" id="${record['accountId']}">
+                                        <small>${record['accountId']}</small>
+                                    </div><br/>
+                                </c:if>
+                            </c:forEach>
+                        </div>
+                    </div>
+                </c:if>
+            </div>
 
             <div class="form-group ui form row">
                 <div class="ui body col-md-12">
@@ -235,9 +275,9 @@
 
         function maskAccountId(accountId) {
             var start = accountId.substring(0,4);
-            var end = accountId.slice(accountId.length - 3); 
+            var end = accountId.slice(accountId.length - 3);
             var mask = "*".repeat(accountId.length - 7); // 4+3
-            var maskedAccId = start + mask + end; 
+            var maskedAccId = start + mask + end;
             return maskedAccId;
         }
 
@@ -249,8 +289,42 @@
             }
         }
 
-        $('[data-toggle="popover"]').popover();
+        const popoverTemplate = ['<div class="popover" role="tooltip">',
+            '<div class="arrow"></div>',
+            '<h6 class="popover-title"></h6>',
+            '<div class="popover-content">',
+            '</div>',
+            '</div>'].join('');
+
+        $("#selectablePopoverContentElement").popover({
+            placement: 'right',
+            title: '&check; Pre-approval enabled',
+            content: $("#selectablePopoverContent").html(),
+            trigger: 'hover focus',
+            html: true,
+            template: popoverTemplate
+        });
+
+        $("#unavailablePopoverContentElement").popover({
+            placement: 'right',
+            title: 'Unavailable Accounts',
+            content: $("#UnavailableAccountPopover").html(),
+            trigger: 'hover focus',
+            html: true,
+            template: popoverTemplate
+        });
+
     });
+
+    function toggle(source) {
+        var items = document.getElementsByName('chkAccounts');
+        for (var i = 0; i < items.length; i++) {
+            if (items[i].type == 'checkbox') {
+                items[i].checked = true;
+            }
+        }
+        updateAcc();
+    }
 </script>
 
 <jsp:include page="includes/consent_bottom.jsp"/>
