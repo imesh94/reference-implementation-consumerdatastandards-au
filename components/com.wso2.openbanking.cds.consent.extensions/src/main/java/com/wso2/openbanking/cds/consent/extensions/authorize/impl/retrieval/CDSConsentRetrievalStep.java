@@ -94,13 +94,15 @@ public class CDSConsentRetrievalStep implements ConsentRetrievalStep {
                                     getAuthorizationResources();
 
                             // Check if this is a business-profile consent
-                            if (consentResource.getConsentAttributes().containsKey("customerProfileType") &&
-                                    consentResource.getConsentAttributes().get("customerProfileType").equals
-                                            ("business-profile")) {
+                            if (consentResource.getConsentAttributes().containsKey(CDSConsentExtensionConstants.
+                                    CUSTOMER_PROFILE_TYPE) && CDSConsentExtensionConstants.
+                                    BUSINESS_PROFILE_TYPE_ATTRIBUTE.equals(consentResource.getConsentAttributes().get(
+                                            CDSConsentExtensionConstants.CUSTOMER_PROFILE_TYPE))) {
                                 // For business accounts, only primary_member is allowed to amend the consent.
                                 String primaryUserId = "";
                                 for (AuthorizationResource authResource : authResourceList) {
-                                    if ("primary_member".equals(authResource.getAuthorizationType())) {
+                                    if (CDSConsentExtensionConstants.AUTH_RESOURCE_TYPE_PRIMARY.equals(
+                                            authResource.getAuthorizationType())) {
                                         primaryUserId = authResource.getUserID();
                                     }
                                 }
