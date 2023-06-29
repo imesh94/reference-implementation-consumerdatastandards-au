@@ -27,7 +27,6 @@ import org.testng.annotations.Test;
 import java.util.HashMap;
 import java.util.Map;
 
-
 import static org.powermock.api.mockito.PowerMockito.doNothing;
 import static org.powermock.api.mockito.PowerMockito.mock;
 import static org.powermock.api.mockito.PowerMockito.mockStatic;
@@ -125,6 +124,7 @@ public class GatewayErrorMediatorTest extends PowerMockTestCase {
         Map<String, Object> configs = new HashMap<>();
         configs.put("DataPublishing.Enabled", "true");
         configs.put(GatewayConstants.CLIENT_USER_AGENT, "dummyAgent");
+        configs.put(GatewayConstants.X_FAPI_INTERACTION_ID, "sample-id");
 
         mockStatic(OpenBankingConfigParser.class);
         OpenBankingConfigParser openBankingConfigParserMock = mock(OpenBankingConfigParser.class);
