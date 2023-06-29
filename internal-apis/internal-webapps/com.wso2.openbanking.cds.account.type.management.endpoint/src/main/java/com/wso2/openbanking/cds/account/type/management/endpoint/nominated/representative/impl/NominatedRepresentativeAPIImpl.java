@@ -139,7 +139,7 @@ public class NominatedRepresentativeAPIImpl implements NominatedRepresentativeAP
                 }
                 /* Check if there are any other users who have AUTHORIZE permission for the account
                    If there are none, remove all bnr-permission records for the account*/
-                Map<String, String> userIdAttributesMap = accountMetadataService.getUserAttributesForAccountIdAndKey(
+                Map<String, String> userIdAttributesMap = accountMetadataService.getUserMetadataForAccountIdAndKey(
                         accountID, BNR_PERMISSION);
                 if (!userIdAttributesMap.containsValue(BNRPermissionsEnum.AUTHORIZE.toString())) {
                     accountMetadataService.removeAccountMetadataByKeyForAllUsers(accountID, BNR_PERMISSION);
@@ -207,7 +207,7 @@ public class NominatedRepresentativeAPIImpl implements NominatedRepresentativeAP
             requestedUserIdList) throws OpenBankingException {
 
         AccountMetadataServiceImpl accountMetadataService = AccountMetadataServiceImpl.getInstance();
-        Map<String, String> availableUserIdMap = accountMetadataService.getUserAttributesForAccountIdAndKey(accountId,
+        Map<String, String> availableUserIdMap = accountMetadataService.getUserMetadataForAccountIdAndKey(accountId,
                 BNR_PERMISSION);
         List<String> unavailableUserIds = new ArrayList<>();
         for (String requestedUserId : requestedUserIdList) {
