@@ -24,7 +24,7 @@ import { AppInfoContext } from "../context/AppInfoContext";
 
 
 export const PaginationTable = ({currentTab}) => {
-    const {allContextConsents,getContextConsentsForSearch} = useContext(ConsentContext);
+    const {allContextConsents,getContextConsentForSearch} = useContext(ConsentContext);
     const {contextSearchObject,contextSearchUtilState,setContextSearchObject} = useContext(SearchObjectContext);
     const {currentContextUser} = useContext(UserContext);
     const {contextAppInfo} = useContext(AppInfoContext);
@@ -88,7 +88,7 @@ export const PaginationTable = ({currentTab}) => {
     }
 
     function doSearchConsents(search) {
-        getContextConsentsForSearch(search, currentUser, appInfo);
+        getContextConsentForSearch(search, currentUser, appInfo);
     }
 
     // to reset the page to 1 when tab changes

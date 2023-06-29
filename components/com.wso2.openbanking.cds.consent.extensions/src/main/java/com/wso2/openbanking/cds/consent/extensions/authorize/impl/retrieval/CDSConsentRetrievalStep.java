@@ -113,6 +113,9 @@ public class CDSConsentRetrievalStep implements ConsentRetrievalStep {
                                     requiredData.get(CDSConsentExtensionConstants.CDR_ARRANGEMENT_ID));
                             consentData.addData(CDSConsentExtensionConstants.AUTH_RESOURCE_ID, authId);
                             consentData.addData(CDSConsentExtensionConstants.AUTH_RESOURCE_STATUS, authStatus);
+                            consentData.addData(CDSConsentExtensionConstants.PRE_SELECTED_PROFILE_ID,
+                                    consentResource.getConsentAttributes()
+                                            .get(CDSConsentExtensionConstants.SELECTED_PROFILE_ID));
 
                             // Get pre-selected account list
                             JSONArray preSelectedAccounts = new JSONArray();
@@ -165,6 +168,13 @@ public class CDSConsentRetrievalStep implements ConsentRetrievalStep {
                         false);
             }
 
+            setClaimPermissions(consentData,
+                    (JSONObject) requiredData.get(CDSConsentExtensionConstants.USERINFO_CLAIMS),
+                    (JSONObject) requiredData.get(CDSConsentExtensionConstants.ID_TOKEN_CLAIMS));
+            consentData.addData(CDSConsentExtensionConstants.USERINFO_CLAIMS,
+                    requiredData.get(CDSConsentExtensionConstants.USERINFO_CLAIMS));
+            consentData.addData(CDSConsentExtensionConstants.ID_TOKEN_CLAIMS,
+                    requiredData.get(CDSConsentExtensionConstants.ID_TOKEN_CLAIMS));
             JSONArray permissions = new JSONArray();
             permissions.addAll(CDSDataRetrievalUtil.getPermissionList(consentData.getScopeString()));
             JSONArray consentDataJSON = new JSONArray();
@@ -209,6 +219,17 @@ public class CDSConsentRetrievalStep implements ConsentRetrievalStep {
 
             // append consent expiry date
             jsonObject.appendField(CDSConsentExtensionConstants.CONSENT_EXPIRY, expiry);
+
+            //check the scopes has "bank:" scopes to skip account selection
+            String scopesString = consentData.getScopeString();
+            if (scopesString.contains(CDSConsentExtensionConstants.COMMON_ACCOUNTS_BASIC_READ_SCOPE) ||
+                    scopesString.contains(CDSConsentExtensionConstants.COMMON_ACCOUNTS_DETAIL_READ_SCOPE) ||
+                    scopesString.contains(CDSConsentExtensionConstants.TRANSACTIONS_READ_SCOPE) ||
+                    scopesString.contains(CDSConsentExtensionConstants.REGULAR_PAYMENTS_READ_SCOPE)) {
+                jsonObject.appendField(CDSConsentExtensionConstants.CUSTOMER_SCOPES_ONLY, false);
+            } else {
+                jsonObject.appendField(CDSConsentExtensionConstants.CUSTOMER_SCOPES_ONLY, true);
+            }
 
             // append service provider full name
             if (StringUtils.isNotBlank(consentData.getClientId())) {
@@ -296,6 +317,15 @@ public class CDSConsentRetrievalStep implements ConsentRetrievalStep {
                     dataMap.put(CDSConsentExtensionConstants.CDR_ARRANGEMENT_ID,
                             claims.get(CDSConsentExtensionConstants.CDR_ARRANGEMENT_ID).toString());
                 }
+                String idTokenJsonString = claims.containsKey(CDSConsentExtensionConstants.ID_TOKEN) ?
+                        claims.get(CDSConsentExtensionConstants.ID_TOKEN).toString() : null;
+                String userInfoJsonString = claims.containsKey(CDSConsentExtensionConstants.USERINFO) ?
+                        claims.get(CDSConsentExtensionConstants.USERINFO).toString() : null;
+                JSONParser parser = new JSONParser();
+                dataMap.put(CDSConsentExtensionConstants.ID_TOKEN_CLAIMS, StringUtils.isNotBlank(idTokenJsonString) ?
+                        parser.parse(idTokenJsonString) : new JSONObject());
+                dataMap.put(CDSConsentExtensionConstants.USERINFO_CLAIMS, StringUtils.isNotBlank(userInfoJsonString) ?
+                        parser.parse(userInfoJsonString) : new JSONObject());
             }
         } catch (ParseException e) {
             log.error("Error while parsing the request object", e);
@@ -308,5 +338,31 @@ public class CDSConsentRetrievalStep implements ConsentRetrievalStep {
 
         OffsetDateTime currentTime = OffsetDateTime.now(ZoneOffset.UTC);
         return currentTime.plusSeconds(sharingDuration);
+    }
+
+    /**
+     * Set profile scope related individual claims as permissions.
+     *
+     * @param consentData    consent data
+     * @param userInfoClaims user info claims
+     * @param idTokenClaims  id token claims
+     */
+    private void setClaimPermissions(ConsentData consentData, JSONObject userInfoClaims, JSONObject idTokenClaims) {
+
+        StringBuilder scopeString = new StringBuilder(consentData.getScopeString());
+
+        String[][] clusters = {CDSConsentExtensionConstants.NAME_CLUSTER_CLAIMS,
+                CDSConsentExtensionConstants.PHONE_CLUSTER_CLAIMS,
+                CDSConsentExtensionConstants.EMAIL_CLUSTER_CLAIMS,
+                CDSConsentExtensionConstants.MAIL_CLUSTER_CLAIMS};
+        for (String[] cluster : clusters) {
+            for (String claim : cluster) {
+                if (userInfoClaims.containsKey(claim) || idTokenClaims.containsKey(claim)) {
+                    scopeString.append(" ");
+                    scopeString.append(claim);
+                }
+            }
+        }
+        consentData.setScopeString(scopeString.toString());
     }
 }

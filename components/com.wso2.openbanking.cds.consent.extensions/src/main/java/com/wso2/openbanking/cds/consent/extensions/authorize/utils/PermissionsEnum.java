@@ -28,7 +28,27 @@ public enum PermissionsEnum {
 
     CDRREADPAYMENTS("bank:regular_payments:read"),
 
-    CDRREADPAYEES("bank:payees:read");
+    CDRREADPAYEES("bank:payees:read"),
+
+    PROFILE("profile"),
+
+    NAME("name"),
+
+    GIVENNAME("given_name"),
+
+    FAMILYNAME("family_name"),
+
+    UPDATEDAT("updated_at"),
+
+    EMAIL("email"),
+
+    EMAILVERIFIED("email_verified"),
+
+    PHONENUMBER("phone_number"),
+
+    PHONENUMBERVERIFIED("phone_number_verified"),
+
+    ADDRESS("address");
 
     private String value;
 
