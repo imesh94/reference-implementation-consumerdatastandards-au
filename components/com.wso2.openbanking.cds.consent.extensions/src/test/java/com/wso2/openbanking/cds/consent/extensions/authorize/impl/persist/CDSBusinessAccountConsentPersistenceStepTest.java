@@ -141,7 +141,7 @@ public class CDSBusinessAccountConsentPersistenceStepTest extends PowerMockTestC
     @Test
     public void testExecute() throws Exception {
         doReturn(1).when(accountMetadataServiceMock).addOrUpdateAccountMetadata(Mockito.anyString(),
-                Mockito.anyString(), Mockito.anyObject());
+        Mockito.anyString(), Mockito.anyMap());
         CDSBusinessAccountConsentPersistenceStep businessAccountConsentPersistenceStep =
                 new CDSBusinessAccountConsentPersistenceStep();
         businessAccountConsentPersistenceStep.execute(this.consentPersistDataMock);

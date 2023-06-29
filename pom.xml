@@ -69,92 +69,93 @@
 
     <repositories>
         <!-- When building locally, uncomment the Updates 2 nexus repo and connect to VPN-->
-            <repository>
-                 <id>wso2-nexus-2</id>
-                 <name>WSO2 internal Repository</name>
-                 <url>https://support-maven.wso2.org/nexus/content/repositories/updates-2.0/</url>
-                 <releases>
-                     <enabled>true</enabled>
-                     <updatePolicy>daily</updatePolicy>
-                     <checksumPolicy>ignore</checksumPolicy>
-                 </releases>
-                 <snapshots>
-                     <enabled>false</enabled>
-                 </snapshots>
-             </repository>
-             <repository>
-                 <id>wso2-nexus</id>
-                 <name>WSO2 internal Repository</name>
-                 <url>https://maven.wso2.org/nexus/content/groups/wso2-public/</url>
-                 <releases>
-                     <enabled>true</enabled>
-                     <updatePolicy>daily</updatePolicy>
-                     <checksumPolicy>ignore</checksumPolicy>
-                 </releases>
-                 <snapshots>
-                     <enabled>false</enabled>
-                 </snapshots>
-             </repository>
-             <repository>
-                 <id>wso2.releases</id>
-                 <name>WSO2 internal Repository</name>
-                 <url>https://maven.wso2.org/nexus/content/repositories/releases/</url>
-                 <releases>
-                     <enabled>true</enabled>
-                     <updatePolicy>daily</updatePolicy>
-                     <checksumPolicy>ignore</checksumPolicy>
-                 </releases>
-                 <snapshots>
-                     <enabled>false</enabled>
-                 </snapshots>
-             </repository>
-             <repository>
-                 <id>wso2.snapshots</id>
-                 <name>Apache Snapshot Repository</name>
-                 <url>https://maven.wso2.org/nexus/content/repositories/snapshots/</url>
-                 <snapshots>
-                     <enabled>false</enabled>
-                     <updatePolicy>daily</updatePolicy>
-                 </snapshots>
-                 <releases>
-                     <enabled>false</enabled>
-                 </releases>
-             </repository>
-         </repositories>
+        <!--  <repository>
+               <id>wso2-nexus-2</id>
+               <name>WSO2 internal Repository</name>
+               <url>https://support-maven.wso2.org/nexus/content/repositories/updates-2.0/</url>
+               <releases>
+                   <enabled>true</enabled>
+                   <updatePolicy>daily</updatePolicy>
+                   <checksumPolicy>ignore</checksumPolicy>
+               </releases>
+               <snapshots>
+                   <enabled>false</enabled>
+               </snapshots>
+           </repository> -->
+        <repository>
+            <id>wso2-nexus</id>
+            <name>WSO2 internal Repository</name>
+            <url>https://maven.wso2.org/nexus/content/groups/wso2-public/</url>
+            <releases>
+                <enabled>true</enabled>
+                <updatePolicy>daily</updatePolicy>
+                <checksumPolicy>ignore</checksumPolicy>
+            </releases>
+            <snapshots>
+                <enabled>false</enabled>
+            </snapshots>
+        </repository>
+        <repository>
+            <id>wso2.releases</id>
+            <name>WSO2 internal Repository</name>
+            <url>https://maven.wso2.org/nexus/content/repositories/releases/</url>
+            <releases>
+                <enabled>true</enabled>
+                <updatePolicy>daily</updatePolicy>
+                <checksumPolicy>ignore</checksumPolicy>
+            </releases>
+            <snapshots>
+                <enabled>false</enabled>
+            </snapshots>
+        </repository>
+        <repository>
+            <id>wso2.snapshots</id>
+            <name>Apache Snapshot Repository</name>
+            <url>https://maven.wso2.org/nexus/content/repositories/snapshots/</url>
+            <snapshots>
+                <enabled>false</enabled>
+                <updatePolicy>daily</updatePolicy>
+            </snapshots>
+            <releases>
+                <enabled>false</enabled>
+            </releases>
+        </repository>
+    </repositories>
 
-         <pluginRepositories>
-             <pluginRepository>
-                 <id>wso2-maven2-repository-1</id>
-                 <url>http://dist.wso2.org/maven2</url>
-             </pluginRepository>
-             <pluginRepository>
-                 <id>wso2-maven2-repository-2</id>
-                 <url>http://dist.wso2.org/snapshots/maven2</url>
-             </pluginRepository>
-             <pluginRepository>
-                 <id>repository.dev.java.net-maven2</id>
-                 <name>Java.net Repository for Maven</name>
-                 <url>http://download.java.net/maven/2/</url>
-                 <layout>default</layout>
-             </pluginRepository>
-         </pluginRepositories>
+    <pluginRepositories>
+        <pluginRepository>
+            <id>wso2-maven2-repository-1</id>
+            <url>http://dist.wso2.org/maven2</url>
+        </pluginRepository>
+        <pluginRepository>
+            <id>wso2-maven2-repository-2</id>
+            <url>http://dist.wso2.org/snapshots/maven2</url>
+        </pluginRepository>
+        <pluginRepository>
+            <id>repository.dev.java.net-maven2</id>
+            <name>Java.net Repository for Maven</name>
+            <url>http://download.java.net/maven/2/</url>
+            <layout>default</layout>
+        </pluginRepository>
+    </pluginRepositories>
 
-         <scm>
-             <url>https://github.com/wso2-enterprise/ob-compliance-toolkit-cds.git</url>
-             <developerConnection>scm:git:https://github.com/wso2-enterprise/ob-compliance-toolkit-cds.git</developerConnection>
-             <connection>scm:git:https://github.com/wso2-enterprise/ob-compliance-toolkit-cds.git</connection>
-             <tag>HEAD</tag>
-         </scm>
+    <scm>
+        <url>https://github.com/wso2-enterprise/ob-compliance-toolkit-cds.git</url>
+        <developerConnection>scm:git:https://github.com/wso2-enterprise/ob-compliance-toolkit-cds.git
+        </developerConnection>
+        <connection>scm:git:https://github.com/wso2-enterprise/ob-compliance-toolkit-cds.git</connection>
+        <tag>HEAD</tag>
+    </scm>
 
-         <build>
-             <pluginManagement>
-                 <plugins>
-                     <plugin>
-                         <groupId>org.apache.maven.plugins</groupId>
-                         <artifactId>maven-assembly-plugin</artifactId>
-                         <version>${maven.assembly.version}</version>
-                     </plugin>
-                     <plugin><!-- Overridden from parent pom to exclude generated sources -->
+    <build>
+        <pluginManagement>
+            <plugins>
+                <plugin>
+                    <groupId>org.apache.maven.plugins</groupId>
+                    <artifactId>maven-assembly-plugin</artifactId>
+                    <version>${maven.assembly.version}</version>
+                </plugin>
+                <plugin><!-- Overridden from parent pom to exclude generated sources -->
                     <groupId>org.codehaus.mojo</groupId>
                     <artifactId>findbugs-maven-plugin</artifactId>
                     <version>${maven.findbugsplugin.version}</version>
@@ -453,7 +454,7 @@
         <commons-lang.version>3.4</commons-lang.version>
         <identity.inbound.auth.oauth.version>6.4.111</identity.inbound.auth.oauth.version>
         <accelerator.project.version>3.0.0</accelerator.project.version>
-        <accelerator.project.version.range>3.0.0.212</accelerator.project.version.range>
+        <accelerator.project.version.range>3.0.0.213</accelerator.project.version.range>
         <wso2.maven.compiler.source>1.8</wso2.maven.compiler.source>
         <wso2.maven.compiler.target>1.8</wso2.maven.compiler.target>
         <maven.bundle.plugin.version>3.2.0</maven.bundle.plugin.version>

@@ -12,7 +12,6 @@
 
 package com.wso2.openbanking.cds.consent.extensions.validate;
 
-import com.wso2.openbanking.accelerator.account.metadata.service.service.AccountMetadataService;
 import com.wso2.openbanking.accelerator.account.metadata.service.service.AccountMetadataServiceImpl;
 import com.wso2.openbanking.accelerator.common.exception.OpenBankingException;
 import com.wso2.openbanking.accelerator.consent.extensions.common.ConsentException;
@@ -42,7 +41,6 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Iterator;
 import java.util.List;
-import java.util.Map;
 
 import static com.wso2.openbanking.accelerator.consent.mgt.service.constants.ConsentCoreServiceConstants.
         INACTIVE_MAPPING_STATUS;
@@ -201,7 +199,8 @@ public class CDSConsentValidator implements ConsentValidator {
                     if ((authorizationType.equals(CDSConsentExtensionConstants.LINKED_MEMBER_AUTH_TYPE) ||
                             authorizationType.equals(SecondaryAccountOwnerTypeEnum.JOINT.getValue()))
                             && isAuthEqualMap) {
-                        if (!isDOMSStatusEligibleForDataSharing(mappingResource.getAccountID())) {
+                        if (!CDSConsentExtensionsUtil.isDOMSStatusEligibleForDataSharing
+                                (mappingResource.getAccountID())) {
                             iterator.remove();
                             log.info("Removed mapping resource for accountID: " + mappingResource.getAccountID());
                         }
@@ -214,19 +213,6 @@ public class CDSConsentValidator implements ConsentValidator {
             }
         }
         consentValidateData.getComprehensiveConsent().setConsentMappingResources(distinctMappingResources);
-    }
-
-    public boolean isDOMSStatusEligibleForDataSharing(String accountID) throws OpenBankingException {
-
-        AccountMetadataService accountMetadataService = AccountMetadataServiceImpl.getInstance();
-        Map<String, String> accountMetadata = accountMetadataService.getGlobalAccountMetadataMap(accountID);
-
-        if (!accountMetadata.isEmpty()) {
-            String status = accountMetadata.get(CDSConsentExtensionConstants.DOMS_STATUS);
-            return status.equals(CDSConsentExtensionConstants.DOMS_STATUS_PRE_APPROVAL);
-        } else {
-            return true;
-        }
     }
 
     /**

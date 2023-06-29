@@ -250,7 +250,7 @@ public class CDSConsentAdminHandlerTest extends PowerMockTestCase {
             String domsStatus = accountMetadataMap.get(accountId);
             disclosureOptionsMap.put(CDSConsentExtensionConstants.DOMS_STATUS, domsStatus);
         }
-        when(accountMetadataServiceMock.getGlobalAccountMetadataMap(anyString()))
+        when(accountMetadataServiceMock.getAccountMetadataMap(anyString()))
                 .thenReturn(disclosureOptionsMap);
 
         uut.updateDOMSStatusForConsentData(consentAdminData);

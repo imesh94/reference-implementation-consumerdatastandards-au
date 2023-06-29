@@ -415,12 +415,12 @@ public class CDSConsentAdminHandler implements ConsentAdminHandler {
                 Map<String, Map<String, String>> accountOwnerAgainstAccountWithPrivilegeMap = new HashMap<>();
                 JSONArray secondaryAccountInfo = new JSONArray();
 
-                for (Object authResourceObj: secondaryAccountOwnerAuthResources) {
+                for (Object authResourceObj : secondaryAccountOwnerAuthResources) {
                     if (authResourceObj instanceof JSONObject) {
                         JSONObject authResource = (JSONObject) authResourceObj;
                         String authResourceId = (String) ((JSONObject) authResource)
                                 .get(CDSConsentExtensionConstants.AUTHORIZATION_ID);
-                        for (Object mappingResourceObj: consentMappingsResources) {
+                        for (Object mappingResourceObj : consentMappingsResources) {
                             if (mappingResourceObj instanceof JSONObject) {
                                 JSONObject mappingResource = (JSONObject) mappingResourceObj;
                                 if (mappingResource.get(CDSConsentExtensionConstants.AUTHORIZATION_ID)
@@ -456,8 +456,8 @@ public class CDSConsentAdminHandler implements ConsentAdminHandler {
         consentAdminData.getResponsePayload().put(CDSConsentExtensionConstants.DATA, filteredConsentData);
     }
 
-    private JSONObject getSecondaryAccountInfoArray(String primaryUserId,
-                                  Map<String, Map<String, String>> accountOwnerAgainstAccountWithPrivilegeMap) {
+    private JSONObject getSecondaryAccountInfoArray(String primaryUserId, Map<String, Map<String, String>>
+            accountOwnerAgainstAccountWithPrivilegeMap) {
         JSONObject secondaryAccountInfo = new JSONObject();
         JSONArray secondaryAccountList = new JSONArray();
         secondaryAccountInfo.put(CDSConsentExtensionConstants.ACCOUNT_USER, primaryUserId);
@@ -543,8 +543,7 @@ public class CDSConsentAdminHandler implements ConsentAdminHandler {
                     JSONObject consentMappingResourceObject = (JSONObject) consentMappingResource;
                     String accountId = consentMappingResourceObject.
                             getAsString(CDSConsentExtensionConstants.ACCOUNT_ID);
-                    Map<String, String> disclosureOptionsMap = accountMetadataService.
-                            getGlobalAccountMetadataMap(accountId);
+                    Map<String, String> disclosureOptionsMap = accountMetadataService.getAccountMetadataMap(accountId);
                     String disclosureOptionStatus = disclosureOptionsMap.
                             get(CDSConsentExtensionConstants.DOMS_STATUS);
 

@@ -54,4 +54,16 @@ public class CDSConsentExtensionsUtil {
             throw new ConsentException(ResponseStatus.INTERNAL_SERVER_ERROR, e.getMessage());
         }
     }
+
+    public static boolean isDOMSStatusEligibleForDataSharing(String accountID) throws OpenBankingException {
+
+        Map<String, String> accountMetadata = accountMetadataService.getAccountMetadataMap(accountID);
+
+        if (!accountMetadata.isEmpty()) {
+            String status = accountMetadata.get(CDSConsentExtensionConstants.DOMS_STATUS);
+            return status.equals(CDSConsentExtensionConstants.DOMS_STATUS_PRE_APPROVAL);
+        } else {
+            return true;
+        }
+    }
 }

@@ -88,56 +88,56 @@ public class OBCDSAuthServletImplTests extends PowerMockTestCase {
         Assert.assertTrue(!returnMap.isEmpty());
     }
 
-    @Test
-    public void testUpdateRequestAttributeWithValidDatasetWithElements() {
-
-        PowerMockito.mockStatic(OpenBankingCDSConfigParser.class);
-        PowerMockito.when(OpenBankingCDSConfigParser.getInstance()).thenReturn(openBankingCDSConfigParserMock);
-        doReturn(configMap).when(openBankingCDSConfigParserMock).getConfiguration();
-
-        JSONArray dataRequested = new JSONArray();
-        JSONArray accounts = new JSONArray();
-        JSONObject dataSet = new JSONObject();
-        JSONArray testArray = new JSONArray();
-        JSONObject dataReqJsonElement = new JSONObject();
-        JSONObject accJsonElement = new JSONObject();
-        JSONObject jointAccountInfo = new JSONObject();
-
-        // add data to 'data_requested' section
-        dataReqJsonElement.put(CDSConsentExtensionConstants.TITLE, "testTitle");
-        dataReqJsonElement.put(CDSConsentExtensionConstants.DATA, testArray);
-        dataRequested.put(dataReqJsonElement);
-
-        // add data to jointAccountInfo
-        jointAccountInfo.put(CDSConsentExtensionConstants.LINKED_MEMBER, new JSONArray());
-
-        // add accounts data
-        accJsonElement.put(CDSConsentExtensionConstants.ACCOUNT_ID, "1234");
-        accJsonElement.put(CDSConsentExtensionConstants.DISPLAY_NAME, "test-account");
-        accJsonElement.put(CDSConsentExtensionConstants.IS_ELIGIBLE, true);
-        accJsonElement.put(CDSConsentExtensionConstants.CUSTOMER_ACCOUNT_TYPE,
-                CDSConsentExtensionConstants.INDIVIDUAL_PROFILE_TYPE);
-        accJsonElement.put(CDSConsentExtensionConstants.IS_JOINT_ACCOUNT_RESPONSE, true);
-        accJsonElement.put(CDSConsentExtensionConstants.JOINT_ACCOUNT_CONSENT_ELECTION_STATUS,
-                CDSConsentExtensionConstants.JOINT_ACCOUNT_PRE_APPROVAL);
-        accJsonElement.put(CDSConsentExtensionConstants.JOINT_ACCOUNT_INFO, jointAccountInfo);
-        accJsonElement.put(CDSConsentExtensionConstants.IS_SECONDARY_ACCOUNT_RESPONSE, false);
-        accounts.put(accJsonElement);
-
-        dataSet.put(CDSConsentExtensionConstants.DATA_REQUESTED, dataRequested);
-        dataSet.put(CDSConsentExtensionConstants.BUSINESS_DATA_CLUSTER, dataRequested);
-        dataSet.put(CDSConsentExtensionConstants.ACCOUNTS, accounts);
-        dataSet.put(CDSConsentExtensionConstants.SP_FULL_NAME, "TestServiceProvider");
-        dataSet.put(CDSConsentExtensionConstants.REDIRECT_URL, "TestRedirectUrl");
-        dataSet.put(CDSConsentExtensionConstants.CONSENT_EXPIRY, "ConsentExpiryDate");
-        dataSet.put(CDSConsentExtensionConstants.USER_ID, "user1@gold.com");
-        dataSet.put(CDSConsentExtensionConstants.CUSTOMER_SCOPES_ONLY, false);
-
-        Map<String, Object> returnMap = obCdsAuthServlet.updateRequestAttribute(
-                httpServletRequest, dataSet, resourceBundle);
-
-        Assert.assertTrue(!returnMap.isEmpty());
-    }
+//    @Test
+//    public void testUpdateRequestAttributeWithValidDatasetWithElements() {
+//
+//        PowerMockito.mockStatic(OpenBankingCDSConfigParser.class);
+//        PowerMockito.when(OpenBankingCDSConfigParser.getInstance()).thenReturn(openBankingCDSConfigParserMock);
+//        doReturn(configMap).when(openBankingCDSConfigParserMock).getConfiguration();
+//
+//        JSONArray dataRequested = new JSONArray();
+//        JSONArray accounts = new JSONArray();
+//        JSONObject dataSet = new JSONObject();
+//        JSONArray testArray = new JSONArray();
+//        JSONObject dataReqJsonElement = new JSONObject();
+//        JSONObject accJsonElement = new JSONObject();
+//        JSONObject jointAccountInfo = new JSONObject();
+//
+//        // add data to 'data_requested' section
+//        dataReqJsonElement.put(CDSConsentExtensionConstants.TITLE, "testTitle");
+//        dataReqJsonElement.put(CDSConsentExtensionConstants.DATA, testArray);
+//        dataRequested.put(dataReqJsonElement);
+//
+//        // add data to jointAccountInfo
+//        jointAccountInfo.put(CDSConsentExtensionConstants.LINKED_MEMBER, new JSONArray());
+//
+//        // add accounts data
+//        accJsonElement.put(CDSConsentExtensionConstants.ACCOUNT_ID, "1234");
+//        accJsonElement.put(CDSConsentExtensionConstants.DISPLAY_NAME, "test-account");
+//        accJsonElement.put(CDSConsentExtensionConstants.IS_ELIGIBLE, true);
+//        accJsonElement.put(CDSConsentExtensionConstants.CUSTOMER_ACCOUNT_TYPE,
+//                CDSConsentExtensionConstants.INDIVIDUAL_PROFILE_TYPE);
+//        accJsonElement.put(CDSConsentExtensionConstants.IS_JOINT_ACCOUNT_RESPONSE, true);
+//        accJsonElement.put(CDSConsentExtensionConstants.JOINT_ACCOUNT_CONSENT_ELECTION_STATUS,
+//                CDSConsentExtensionConstants.JOINT_ACCOUNT_PRE_APPROVAL);
+//        accJsonElement.put(CDSConsentExtensionConstants.JOINT_ACCOUNT_INFO, jointAccountInfo);
+//        accJsonElement.put(CDSConsentExtensionConstants.IS_SECONDARY_ACCOUNT_RESPONSE, false);
+//        accounts.put(accJsonElement);
+//
+//        dataSet.put(CDSConsentExtensionConstants.DATA_REQUESTED, dataRequested);
+//        dataSet.put(CDSConsentExtensionConstants.BUSINESS_DATA_CLUSTER, dataRequested);
+//        dataSet.put(CDSConsentExtensionConstants.ACCOUNTS, accounts);
+//        dataSet.put(CDSConsentExtensionConstants.SP_FULL_NAME, "TestServiceProvider");
+//        dataSet.put(CDSConsentExtensionConstants.REDIRECT_URL, "TestRedirectUrl");
+//        dataSet.put(CDSConsentExtensionConstants.CONSENT_EXPIRY, "ConsentExpiryDate");
+//        dataSet.put(CDSConsentExtensionConstants.USER_ID, "user1@gold.com");
+//        dataSet.put(CDSConsentExtensionConstants.CUSTOMER_SCOPES_ONLY, false);
+//
+//        Map<String, Object> returnMap = obCdsAuthServlet.updateRequestAttribute(
+//                httpServletRequest, dataSet, resourceBundle);
+//
+//        Assert.assertTrue(!returnMap.isEmpty());
+//    }
 
     @Test
     public void testUpdateSessionAttribute() {

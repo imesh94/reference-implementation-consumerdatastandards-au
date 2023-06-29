@@ -9,8 +9,6 @@
 package com.wso2.openbanking.cds.consent.extensions.validate;
 
 import com.wso2.openbanking.accelerator.account.metadata.service.service.AccountMetadataServiceImpl;
-//import com.wso2.openbanking.accelerator.common.exception.OpenBankingException;
-//import com.wso2.openbanking.accelerator.consent.extensions.common.ConsentException;
 import com.wso2.openbanking.accelerator.common.exception.OpenBankingException;
 import com.wso2.openbanking.accelerator.consent.extensions.validate.model.ConsentValidateData;
 import com.wso2.openbanking.accelerator.consent.extensions.validate.model.ConsentValidationResult;
@@ -22,6 +20,7 @@ import com.wso2.openbanking.cds.common.error.handling.util.ErrorConstants;
 import com.wso2.openbanking.cds.common.metadata.domain.MetadataValidationResponse;
 import com.wso2.openbanking.cds.common.metadata.status.validator.service.MetadataService;
 import com.wso2.openbanking.cds.consent.extensions.common.CDSConsentExtensionConstants;
+import com.wso2.openbanking.cds.consent.extensions.util.CDSConsentExtensionsUtil;
 import com.wso2.openbanking.cds.consent.extensions.util.CDSConsentValidateTestConstants;
 
 import net.minidev.json.JSONObject;
@@ -44,9 +43,6 @@ import static org.mockito.Mockito.doReturn;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 import static org.powermock.api.mockito.PowerMockito.mockStatic;
-//import static org.testng.Assert.assertNotEquals;
-//import static org.testng.AssertJUnit.assertEquals;
-
 
 /**
  * Test class for CDS consent Validator
@@ -280,7 +276,8 @@ public class CDSConsentValidatorTest extends PowerMockTestCase {
     }
 
     @Test
-    public void testRemoveInactiveDOMSAccountConsentMappingsForNonSharableJointAccounts() throws OpenBankingException {
+    public void testRemoveInactiveDOMSAccountConsentMappingsForNonSharableJointAccounts()
+            throws OpenBankingException {
         doReturn(detailedConsentResourceMock).when(consentValidateDataMock).getComprehensiveConsent();
         doReturn(CDSConsentValidateTestConstants
                 .getDetailedConsentResource(CDSConsentValidateTestConstants.VALID_RECEIPT, "123456")
@@ -301,13 +298,12 @@ public class CDSConsentValidatorTest extends PowerMockTestCase {
         ArrayList<ConsentMappingResource> consentMappingResourceList = new ArrayList<>();
         consentMappingResourceList.add(CDSConsentValidateTestConstants.
                 getConsentMappingResourceForDOMS(CDSConsentExtensionConstants.ACCOUNT_ID));
-        when(consentValidateDataMock.getComprehensiveConsent().getConsentMappingResources()).
-                thenReturn(consentMappingResourceList);
+        when(detailedConsentResourceMock.getConsentMappingResources()).thenReturn(consentMappingResourceList);
 
         // Creating and mocking retrieval of a list of AuthorizationResources.
         ArrayList<AuthorizationResource> authorizationResourceList = new ArrayList<>();
         authorizationResourceList.add(CDSConsentValidateTestConstants.getAuthorizationResourceForDOMS());
-        when(consentValidateDataMock.getComprehensiveConsent().getAuthorizationResources()).
+        when(detailedConsentResourceMock.getAuthorizationResources()).
                 thenReturn(authorizationResourceList);
 
         this.accountMetadataServiceMock = mock(AccountMetadataServiceImpl.class);
@@ -317,11 +313,11 @@ public class CDSConsentValidatorTest extends PowerMockTestCase {
         Map<String, String> accountMetadataMap = new HashMap<>();
         accountMetadataMap.put("DISCLOSURE_OPTIONS_STATUS", "no-sharing");
 
-        when(accountMetadataServiceMock.getGlobalAccountMetadataMap(anyString())).thenReturn(accountMetadataMap);
+        when(accountMetadataServiceMock.getAccountMetadataMap(anyString())).thenReturn(accountMetadataMap);
 
         // Checking if the DOMS status for the specified account ID is eligible for data sharing and storing the
         // result in the boolean variable isJointAccountSharable.
-        boolean isJointAccountSharable = cdsConsentValidator.
+        boolean isJointAccountSharable = CDSConsentExtensionsUtil.
                 isDOMSStatusEligibleForDataSharing(CDSConsentExtensionConstants.ACCOUNT_ID);
 
         Assert.assertFalse(isJointAccountSharable);
@@ -354,14 +350,12 @@ public class CDSConsentValidatorTest extends PowerMockTestCase {
         ArrayList<ConsentMappingResource> consentMappingResourceList = new ArrayList<>();
         consentMappingResourceList.add(CDSConsentValidateTestConstants.
                 getConsentMappingResourceForDOMS(CDSConsentExtensionConstants.ACCOUNT_ID));
-        when(consentValidateDataMock.getComprehensiveConsent().getConsentMappingResources()).
-                thenReturn(consentMappingResourceList);
+        when(detailedConsentResourceMock.getConsentMappingResources()).thenReturn(consentMappingResourceList);
 
         // Creating and mocking retrieval of a list of AuthorizationResources.
         ArrayList<AuthorizationResource> authorizationResourceList = new ArrayList<>();
         authorizationResourceList.add(CDSConsentValidateTestConstants.getAuthorizationResourceForDOMS());
-        when(consentValidateDataMock.getComprehensiveConsent().getAuthorizationResources()).
-                thenReturn(authorizationResourceList);
+        when(detailedConsentResourceMock.getAuthorizationResources()).thenReturn(authorizationResourceList);
 
         this.accountMetadataServiceMock = mock(AccountMetadataServiceImpl.class);
         mockStatic(AccountMetadataServiceImpl.class);
@@ -369,9 +363,10 @@ public class CDSConsentValidatorTest extends PowerMockTestCase {
 
         Map<String, String> accountMetadataMap = new HashMap<>();
 
-        when(accountMetadataServiceMock.getGlobalAccountMetadataMap(anyString())).thenReturn(accountMetadataMap);
+        when(accountMetadataServiceMock.getAccountMetadataMap(anyString())).thenReturn(accountMetadataMap);
 
-        boolean isJointAccountSharable = cdsConsentValidator.
+
+        boolean isJointAccountSharable = CDSConsentExtensionsUtil.
                 isDOMSStatusEligibleForDataSharing(CDSConsentExtensionConstants.ACCOUNT_ID);
         Assert.assertTrue(isJointAccountSharable);
 
@@ -381,4 +376,3 @@ public class CDSConsentValidatorTest extends PowerMockTestCase {
         Assert.assertTrue(consentValidationResult.isValid());
     }
 }
-
