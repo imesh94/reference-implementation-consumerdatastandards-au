@@ -105,7 +105,7 @@ class AUConstants extends OBConstants {
     public static final String CONSENT_SEARCH_ENDPOINT = "/api/openbanking/consent/admin/search"
     public static final String DISCLOSURE_OPTIONS_ENDPOINT = "/account-type-management/disclosure-options"
     public static final String SECONDARY_ACCOUNT_ENDPOINT = "/account-type-management/secondary-accounts"
-    public static final String LEGAL_ENTITY_LIST_ENDPOINT = "/account-type-management/get-users-accounts-legalentities-details"
+    public static final String LEGAL_ENTITY_LIST_ENDPOINT = "/account-type-management/legal-entity-list"
     public static final String UPDATE_LEGAL_ENTITY_SHARING_STATUS = "/account-type-management/block-legal-entity"
 
     public static final String BANK_CUSTOMER_BASIC_READ = "Organisation profile and contact details"
