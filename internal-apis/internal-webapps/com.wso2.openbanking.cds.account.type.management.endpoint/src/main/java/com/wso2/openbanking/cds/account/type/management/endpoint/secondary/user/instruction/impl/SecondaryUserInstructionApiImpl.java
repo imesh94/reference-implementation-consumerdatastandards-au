@@ -11,6 +11,7 @@ package com.wso2.openbanking.cds.account.type.management.endpoint.secondary.user
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.google.gson.Gson;
 import com.wso2.openbanking.accelerator.account.metadata.service.service.AccountMetadataService;
 import com.wso2.openbanking.accelerator.account.metadata.service.service.AccountMetadataServiceImpl;
 import com.wso2.openbanking.accelerator.common.exception.ConsentManagementException;
@@ -58,6 +59,7 @@ public class SecondaryUserInstructionApiImpl implements SecondaryUserInstruction
 
         log.debug("Handling secondary account status update request.");
         String errMsg;
+        Gson gson = new Gson();
 
         try {
             JSONParser parser = new JSONParser(JSONParser.MODE_PERMISSIVE);
@@ -79,7 +81,7 @@ public class SecondaryUserInstructionApiImpl implements SecondaryUserInstruction
                     log.error("Invalid request body in secondary account status update request: " +
                             validationError);
                     ErrorDTO errorDTO = new ErrorDTO(ErrorStatusEnum.INVALID_REQUEST, validationError);
-                    return Response.status(Response.Status.BAD_REQUEST).entity(errorDTO).build();
+                    return Response.status(Response.Status.BAD_REQUEST).entity(gson.toJson(errorDTO)).build();
                 } else {
                     // Proceed to store secondary account status data in database
                     if (accountMetadataService.addOrUpdateAccountMetadata(
@@ -187,8 +189,9 @@ public class SecondaryUserInstructionApiImpl implements SecondaryUserInstruction
      */
     private Response getInternalServerErrorResponse(String errMsg) {
         log.error(errMsg);
+        Gson gson = new Gson();
         ErrorDTO errorDTO = new ErrorDTO(ErrorStatusEnum.INTERNAL_SERVER_ERROR, errMsg);
-        return Response.status(Response.Status.INTERNAL_SERVER_ERROR).entity(errorDTO).build();
+        return Response.status(Response.Status.INTERNAL_SERVER_ERROR).entity(gson.toJson(errorDTO)).build();
     }
 
 }

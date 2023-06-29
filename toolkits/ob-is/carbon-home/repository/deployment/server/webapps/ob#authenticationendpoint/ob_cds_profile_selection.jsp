@@ -18,10 +18,11 @@
     session.setAttribute("accounts_data", request.getAttribute("accounts_data"));
     session.setAttribute("profiles_data", request.getAttribute("profiles_data"));
     session.setAttribute("sp_full_name", request.getAttribute("sp_full_name"));
-    session.setAttribute("redirectUrl", request.getAttribute("redirectUrl"));
+    session.setAttribute("redirectURL", request.getAttribute("redirectURL"));
     session.setAttribute("consent_expiration", request.getAttribute("consent_expiration"));
     session.setAttribute("account_masking_enabled", request.getAttribute("account_masking_enabled"));
     session.setAttribute("isConsentAmendment", request.getAttribute("isConsentAmendment"));
+    session.setAttribute("skipAccounts", request.getAttribute("customerScopesOnly"));
     session.setAttribute("isSharingDurationUpdated", request.getAttribute("isSharingDurationUpdated"));
     session.setAttribute("app", request.getAttribute("app"));
     session.setAttribute("configParamsMap", request.getAttribute("data_requested"));

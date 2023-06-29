@@ -8,6 +8,7 @@
  */
 package com.wso2.openbanking.cds.gateway.executors.idpermanence.utils;
 
+import com.google.gson.Gson;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
 import com.wso2.openbanking.cds.common.config.OpenBankingCDSConfigParser;
@@ -30,7 +31,6 @@ import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.nio.charset.StandardCharsets;
 
-
 /**
  * Test class for IDPermanenceUtils
  */
@@ -50,12 +50,17 @@ public class IDPermanenceUtilsTest extends PowerMockTestCase {
     private static final String ACCOUNT_ID = "accountId";
     private static final String ACCOUNT_IDS = "accountIds";
     private static final String SCHEDULED_PAYMENT_ID = "scheduledPaymentId";
+    private static final String OFFSET_ACCOUNT_IDS = "offsetAccountIds";
+    private static final String LOAN = "loan";
     private static final String DEC_ACCOUNT_ID = "30080012343456";
     private static final String ENC_ACCOUNT_ID_JSON = "{\"accountId\":encrypted-account-id}";
     private static final String ENC_ACCOUNT_IDS_JSON = "{\"data\":{\"accountIds\":[\"encrypted-account-id\"," +
             "\"encrypted-account-id\"]}}";
     private static final String ENCRYPTED_ID = "encrypted-account-id";
+    private static final String ENCRYPTED_OFFSET_ID = "encrypted-offset-account-id";
     private static final String DECRYPTED_ACCOUNT_STRING = "mark@gold.com@carbon.super@carbon.super:7:30080012343456";
+    private static final String DECRYPTED_OFFSET_ACCOUNT_STRING_1 = "mark@gold.com@carbon.super@carbon.super:7:1111";
+    private static final String DECRYPTED_OFFSET_ACCOUNT_STRING_2 = "mark@gold.com@carbon.super@carbon.super:7:2222";
     private static final String DECRYPTED_SCHEDULED_PAYMENT_STRING = "mark@gold.com@carbon.super@carbon.super:7:0123";
 
     @BeforeClass
@@ -103,6 +108,10 @@ public class IDPermanenceUtilsTest extends PowerMockTestCase {
 
         PowerMockito.mockStatic(IdEncryptorDecryptor.class);
         Mockito.when(IdEncryptorDecryptor.encrypt(DECRYPTED_ACCOUNT_STRING, ENC_KEY)).thenReturn(ENCRYPTED_ID);
+        Mockito.when(IdEncryptorDecryptor.encrypt(DECRYPTED_OFFSET_ACCOUNT_STRING_1, ENC_KEY))
+                .thenReturn(ENCRYPTED_OFFSET_ID);
+        Mockito.when(IdEncryptorDecryptor.encrypt(DECRYPTED_OFFSET_ACCOUNT_STRING_2, ENC_KEY))
+                .thenReturn(ENCRYPTED_OFFSET_ID);
 
         JsonObject encAccountsResponse = IdPermanenceUtils.maskResponseIDs(accountsResponse, ACCOUNT_DETAILS_URL,
                 MEMBER_ID, APP_ID, ENC_KEY);
@@ -112,6 +121,12 @@ public class IDPermanenceUtilsTest extends PowerMockTestCase {
         encAccountId = encAccountId.replaceAll("^\"|\"$", "");
 
         Assert.assertEquals(encAccountId, ENCRYPTED_ID);
+
+        Gson gson = new Gson();
+        String offsetAccounts = encAccountsResponse.getAsJsonObject(DATA).getAsJsonObject().get(LOAN)
+                .getAsJsonObject().get(OFFSET_ACCOUNT_IDS).toString();
+        String[] offsetAccountsArray = gson.fromJson(offsetAccounts, String[].class);
+        Assert.assertEquals(offsetAccountsArray[0], ENCRYPTED_OFFSET_ID);
     }
 
     @Test
