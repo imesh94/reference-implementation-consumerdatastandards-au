@@ -253,6 +253,12 @@ public class OpenBankingCDSConfigParserTest {
         OpenBankingCDSConfigParser openBankingCDSConfigParser = OpenBankingCDSConfigParser.getInstance(dummyConfigFile);
         Assert.assertTrue(openBankingCDSConfigParser.getDOMSEnabled());
     }
+    @Test(priority = 8)
+    public void testGetBNRCustomerTypeSelectionMethod() {
+        String dummyConfigFile = absolutePathForTestResources + "/open-banking-cds.xml";
+        OpenBankingCDSConfigParser openBankingCDSConfigParser = OpenBankingCDSConfigParser.getInstance(dummyConfigFile);
+        Assert.assertEquals(openBankingCDSConfigParser.getBNRCustomerTypeSelectionMethod(), "profile_selection");
+    }
 
     private void injectEnvironmentVariable(String key, String value)
             throws ReflectiveOperationException {

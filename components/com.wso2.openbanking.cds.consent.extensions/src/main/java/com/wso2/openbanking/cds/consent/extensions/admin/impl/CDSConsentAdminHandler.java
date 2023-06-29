@@ -31,7 +31,7 @@ import com.wso2.openbanking.accelerator.consent.mgt.service.impl.ConsentCoreServ
 import com.wso2.openbanking.cds.consent.extensions.authorize.utils.PermissionsEnum;
 import com.wso2.openbanking.cds.consent.extensions.common.CDSConsentExtensionConstants;
 import com.wso2.openbanking.cds.consent.extensions.common.SecondaryAccountOwnerTypeEnum;
-import com.wso2.openbanking.cds.consent.extensions.validate.utils.CDSConsentValidatorUtil;
+import com.wso2.openbanking.cds.consent.extensions.util.CDSConsentExtensionsUtil;
 
 import net.minidev.json.JSONArray;
 import net.minidev.json.JSONObject;
@@ -431,7 +431,7 @@ public class CDSConsentAdminHandler implements ConsentAdminHandler {
                                     Boolean isPrivileged = mappingResource
                                             .get(CDSConsentExtensionConstants.MAPPING_STATUS)
                                             .equals(CDSConsentExtensionConstants.ACTIVE_STATUS) &&
-                                            CDSConsentValidatorUtil.isUserEligibleForSecondaryAccountDataSharing(
+                                            CDSConsentExtensionsUtil.isUserEligibleForSecondaryAccountDataSharing(
                                                     accountId, primaryUserId);
 
                                     accountWithPrivilegeMap.put((String) mappingResource.get(
