@@ -37,6 +37,9 @@ public class CDSPushAuthRequestValidator  extends PushAuthRequestValidator {
     private static final String CDR_ARRANGEMENT_ID = "cdr_arrangement_id";
     private static final String CLIENT_ID = "client_id";
     private final ConsentCoreServiceImpl consentCoreService;
+    private static final String CODE_RESPONSE_TYPE = "code";
+    private static final String RESPONSE_MODE = "response_mode";
+    private static final String JWT_RESPONSE_MODE = "jwt";
 
     public CDSPushAuthRequestValidator() {
         this.consentCoreService = new ConsentCoreServiceImpl();
@@ -68,6 +71,22 @@ public class CDSPushAuthRequestValidator  extends PushAuthRequestValidator {
         }
 
         validateCDRArrangementId(requestObjectJsonBody);
+
+        // Validate response type - only code response type is allowed
+        Object responseType = requestObjectJsonBody.get(PushAuthRequestConstants.RESPONSE_TYPE);
+        if (responseType != null && !CODE_RESPONSE_TYPE.equalsIgnoreCase(responseType.toString())) {
+            log.error(CDSIdentityConstants.UNSUPPORTED_RESPONSE_TYPE);
+            throw new PushAuthRequestValidatorException(HttpStatus.SC_BAD_REQUEST,
+                    PushAuthRequestConstants.INVALID_REQUEST, CDSIdentityConstants.UNSUPPORTED_RESPONSE_TYPE);
+        }
+
+        // Validate response mode - only jwt response mode is allowed with response type code
+        Object responseMode = requestObjectJsonBody.get(RESPONSE_MODE);
+        if (responseMode != null && !JWT_RESPONSE_MODE.equalsIgnoreCase(responseMode.toString())) {
+            log.error(CDSIdentityConstants.UNSUPPORTED_RESPONSE_MODE);
+            throw new PushAuthRequestValidatorException(HttpStatus.SC_BAD_REQUEST,
+                    PushAuthRequestConstants.INVALID_REQUEST, CDSIdentityConstants.UNSUPPORTED_RESPONSE_MODE);
+        }
     }
 
     private boolean isValidSharingDuration(JSONObject requestObjectJsonBody) {

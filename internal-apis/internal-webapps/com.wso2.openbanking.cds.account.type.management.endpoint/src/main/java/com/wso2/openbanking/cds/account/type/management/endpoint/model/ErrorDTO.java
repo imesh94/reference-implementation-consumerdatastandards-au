@@ -8,7 +8,7 @@
  */
 package com.wso2.openbanking.cds.account.type.management.endpoint.model;
 
-import com.fasterxml.jackson.annotation.JsonProperty;
+import com.google.gson.annotations.SerializedName;
 
 /**
  * ErrorDTO model class.
@@ -16,6 +16,7 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 public class ErrorDTO {
 
     private String error;
+    @SerializedName("error_description")
     private String errorDescription;
 
     public ErrorDTO(ErrorStatusEnum error, String errorDescription) {
@@ -27,7 +28,6 @@ public class ErrorDTO {
         return error;
     }
 
-    @JsonProperty("error_description")
     public String getErrorDescription() {
         return errorDescription;
     }

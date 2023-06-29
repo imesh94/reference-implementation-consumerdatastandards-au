@@ -13,24 +13,62 @@
 <%@ taglib prefix="fn" uri="http://java.sun.com/jsp/jstl/functions" %>
 
 <jsp:include page="includes/consent_top.jsp"/>
+<%@ page import ="javax.servlet.RequestDispatcher"%>
+<%@ page import="org.owasp.encoder.Encode" %>
 <%
     String preSelectedProfileId = (String) request.getAttribute("preSelectedProfileId");
     String selectedProfileId = (preSelectedProfileId == null || "".equals(preSelectedProfileId)) ?
             request.getParameter("selectedProfileId") : preSelectedProfileId;
-    if (session.getAttribute("profiles_data") == null) {
+    boolean isConsentAmendment = request.getAttribute("isConsentAmendment") != null ?
+            (boolean) request.getAttribute("isConsentAmendment") : false;
+    Object nameClaims = request.getAttribute("nameClaims");
+    String nameClaimsString = nameClaims != null ? (String) nameClaims : "";
+    session.setAttribute("nameClaims", nameClaimsString);
+    Object contactClaims = request.getAttribute("contactClaims");
+    String contactClaimsString = contactClaims != null ? (String) contactClaims : "";
+    session.setAttribute("contactClaims", contactClaimsString);
+    if (session.getAttribute("profiles_data") == null || isConsentAmendment) {
         session.setAttribute("profiles_data", request.getAttribute("profiles_data"));
     }
-    if (session.getAttribute("configParamsMap") == null) {
+    if (session.getAttribute("configParamsMap") == null || isConsentAmendment) {
         session.setAttribute("configParamsMap", request.getAttribute("data_requested"));
     }
-    if (session.getAttribute("newConfigParamsMap") == null) {
+    if (session.getAttribute("newConfigParamsMap") == null || isConsentAmendment) {
         session.setAttribute("newConfigParamsMap", request.getAttribute("new_data_requested"));
     }
-    if (session.getAttribute("business_data_cluster") == null) {
+    if (session.getAttribute("business_data_cluster") == null || isConsentAmendment) {
         session.setAttribute("business_data_cluster", request.getAttribute("business_data_cluster"));
     }
-    if (session.getAttribute("new_business_data_cluster") == null) {
+    if (session.getAttribute("new_business_data_cluster") == null || isConsentAmendment) {
         session.setAttribute("new_business_data_cluster", request.getAttribute("new_business_data_cluster"));
+    }
+    if (session.getAttribute("skipAccounts") == null || isConsentAmendment) {
+        session.setAttribute("skipAccounts", request.getAttribute("customerScopesOnly"));
+    }
+    
+    boolean skipAccounts = (boolean) session.getAttribute("skipAccounts");
+    if (skipAccounts) {
+    	RequestDispatcher requestDispatcher = request.getRequestDispatcher("/oauth2_authz_consent.do");
+        request.setAttribute("sessionDataKeyConsent", Encode.forHtmlAttribute(
+                String.valueOf(session.getAttribute("sessionDataKeyConsent"))));
+        request.setAttribute("isConsentAmendment", isConsentAmendment);
+        Object isSharingDurationUpdated = request.getAttribute("isSharingDurationUpdated") != null ?
+                request.getAttribute("isSharingDurationUpdated") : session.getAttribute("isSharingDurationUpdated");
+        request.setAttribute("isSharingDurationUpdated", isSharingDurationUpdated);
+        request.setAttribute("accountsArry[]", "unavailable");
+        request.setAttribute("accNames", "");
+        Object app = request.getAttribute("app") != null ? request.getAttribute("app") : session.getAttribute("app");
+        request.setAttribute("app", app);
+        Object spFullName = request.getAttribute("sp_full_name") != null ?
+                request.getAttribute("sp_full_name") : session.getAttribute("sp_full_name");
+        request.setAttribute("spFullName", spFullName);
+        request.setAttribute("selectedProfileId", selectedProfileId);
+        request.setAttribute("selectedProfileName", session.getAttribute("selectedProfileName"));
+        Object consentExpiryDateTime = request.getAttribute("consent_expiration") != null ?
+                request.getAttribute("consent_expiration") : session.getAttribute("consent_expiration");
+        request.setAttribute("consent-expiry-date", consentExpiryDateTime);
+        request.setAttribute("accountMaskingEnabled", session.getAttribute("account_masking_enabled"));
+        requestDispatcher.forward(request, response);
     }
 %>
 
@@ -63,7 +101,10 @@
                             Select the accounts you wish to authorise:
                         </h4>
                         <div class="col-md-12" >
-                                <%--Display Selectable accounts--%>
+                            <%--Display Selectable accounts--%>
+                            <tr class="col-md-12" ><td colspan=2><br><button type="button" style='margin: 0; padding: 0;border: none;color: #00b4ff;background-color: transparent;text-decoration: underline;'
+                                onClick='toggle(this)'>Select all </button></td></tr>
+                            <tr ><td colspan=2></td><br></tr>
                             <c:forEach items="${accounts_data}" var="record">
                                 <c:if test="${fn:contains(profileAccountIds, record['accountId'])}">
                                     <c:choose>
@@ -274,6 +315,16 @@
         });
 
     });
+
+    function toggle(source) {
+        var items = document.getElementsByName('chkAccounts');
+        for (var i = 0; i < items.length; i++) {
+            if (items[i].type == 'checkbox') {
+                items[i].checked = true;
+            }
+        }
+        updateAcc();
+    }
 </script>
 
 <jsp:include page="includes/consent_bottom.jsp"/>

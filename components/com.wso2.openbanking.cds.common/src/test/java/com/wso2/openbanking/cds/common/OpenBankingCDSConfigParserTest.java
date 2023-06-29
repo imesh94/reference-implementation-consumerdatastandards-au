@@ -255,6 +255,13 @@ public class OpenBankingCDSConfigParserTest {
         Assert.assertEquals(openBankingCDSConfigParser.isBNRConsentRevocationEnabled(), true);
     }
 
+    @Test(priority = 8)
+    public void testGetBNRCustomerTypeSelectionMethod() {
+        String dummyConfigFile = absolutePathForTestResources + "/open-banking-cds.xml";
+        OpenBankingCDSConfigParser openBankingCDSConfigParser = OpenBankingCDSConfigParser.getInstance(dummyConfigFile);
+        Assert.assertEquals(openBankingCDSConfigParser.getBNRCustomerTypeSelectionMethod(), "profile_selection");
+    }
+
     private void injectEnvironmentVariable(String key, String value)
             throws ReflectiveOperationException {
 

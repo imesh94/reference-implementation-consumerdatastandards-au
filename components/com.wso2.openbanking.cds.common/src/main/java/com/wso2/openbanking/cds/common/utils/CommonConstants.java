@@ -32,6 +32,7 @@ public class CommonConstants {
     public static final String PRIORITIZE_SHARABLE_ACCOUNTS_RESPONSE = "BNR.PrioritizeSharableAccountsResponse";
     public static final String VALIDATE_ACCOUNTS_ON_RETRIEVAL = "BNR.ValidateAccountsOnRetrieval";
     public static final String ENABLE_CONSENT_REVOCATION = "BNR.EnableConsentRevocation";
+    public static final String CUSTOMER_TYPE_SELECTION_METHOD = "BNR.CustomerTypeSelectionMethod";
 
 
     // Http related constants

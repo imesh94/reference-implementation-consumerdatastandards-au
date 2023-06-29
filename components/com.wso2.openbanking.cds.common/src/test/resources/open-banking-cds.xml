@@ -75,6 +75,7 @@
         <JWKSUrl>DummyJWKS</JWKSUrl>
     </JWTAuthentication>
     <BNR>
+        <CustomerTypeSelectionMethod>profile_selection</CustomerTypeSelectionMethod>
         <PrioritizeSharableAccountsResponse>true</PrioritizeSharableAccountsResponse>
         <ValidateAccountsOnRetrieval>true</ValidateAccountsOnRetrieval>
         <EnableConsentRevocation>true</EnableConsentRevocation>
