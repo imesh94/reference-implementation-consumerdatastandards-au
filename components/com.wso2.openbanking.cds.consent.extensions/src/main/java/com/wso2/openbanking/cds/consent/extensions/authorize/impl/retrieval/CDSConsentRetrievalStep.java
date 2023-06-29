@@ -90,12 +90,32 @@ public class CDSConsentRetrievalStep implements ConsentRetrievalStep {
                         if (existingConsentExpiry.isAfter(currentDateTime)) {
                             // Add required data for the persistence step
                             String userId = CDSConsentCommonUtil.getUserIdWithTenantDomain(consentData.getUserId());
+                            ArrayList<AuthorizationResource> authResourceList = consentResource.
+                                    getAuthorizationResources();
+
+                            // Check if this is a business-profile consent
+                            if (consentResource.getConsentAttributes().containsKey("customerProfileType") &&
+                                    consentResource.getConsentAttributes().get("customerProfileType").equals
+                                            ("business-profile")) {
+                                // For business accounts, only primary_member is allowed to amend the consent.
+                                String primaryUserId = "";
+                                for (AuthorizationResource authResource : authResourceList) {
+                                    if ("primary_member".equals(authResource.getAuthorizationType())) {
+                                        primaryUserId = authResource.getUserID();
+                                    }
+                                }
+                                if (!userId.equals(primaryUserId)) {
+                                    String errorMessage = String.format("User %s is not authorized to amend the " +
+                                            "consent.", userId);
+                                    log.error(errorMessage + " Consent id: " + consentId);
+                                    throw new ConsentException(ResponseStatus.FORBIDDEN, errorMessage);
+                                }
+                            }
+
                             // Set userid with tenant domain to consent data
                             consentData.setUserId(userId);
                             String authId = null;
                             String authStatus = null;
-                            ArrayList<AuthorizationResource> authResourceList = consentResource.
-                                    getAuthorizationResources();
                             for (AuthorizationResource authResource : authResourceList) {
                                 if (userId.equals(authResource.getUserID())) {
                                     authId = authResource.getAuthorizationID();
