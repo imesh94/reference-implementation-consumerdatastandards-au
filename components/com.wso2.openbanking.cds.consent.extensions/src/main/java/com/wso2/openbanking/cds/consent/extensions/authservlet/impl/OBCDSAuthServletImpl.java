@@ -183,8 +183,7 @@ public class OBCDSAuthServletImpl implements OBAuthServletInterface {
     private void updateBusinessAccountAttributes(JSONObject account, Map<String, Object> data) {
         if ((account != null && account.getBoolean(CDSConsentExtensionConstants.IS_ELIGIBLE)) &&
                 (CDSConsentExtensionConstants.BUSINESS_PROFILE_TYPE.equalsIgnoreCase(
-                        account.getString(CDSConsentExtensionConstants.CUSTOMER_ACCOUNT_TYPE))
-                        && !account.getBoolean(CDSConsentExtensionConstants.IS_JOINT_ACCOUNT_RESPONSE))) {
+                        account.getString(CDSConsentExtensionConstants.CUSTOMER_ACCOUNT_TYPE)))) {
             boolean isSelectable = true;
             if (isConsentAmendment) {
                 try {

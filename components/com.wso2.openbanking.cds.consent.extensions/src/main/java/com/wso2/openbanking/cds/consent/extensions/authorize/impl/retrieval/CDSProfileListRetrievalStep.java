@@ -79,6 +79,8 @@ public class CDSProfileListRetrievalStep implements ConsentRetrievalStep {
                     CUSTOMER_ACCOUNT_TYPE) && StringUtils.equals((String) accountJSON.get(
                     CDSConsentExtensionConstants.CUSTOMER_ACCOUNT_TYPE), CDSConsentExtensionConstants.
                     BUSINESS_PROFILE_TYPE)) {
+                // Check if the logged-in user is a valid nominated user that has permission
+                // to authorize a consent for the account.
                 if (isUserEligibleForConsentAuthorization(userId, accountJSON)) {
                     if (customerType != null && customerType.equalsIgnoreCase(
                             CDSConsentExtensionConstants.ORGANISATION)) {
