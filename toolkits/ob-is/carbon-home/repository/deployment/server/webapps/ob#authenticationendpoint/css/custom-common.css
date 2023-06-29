@@ -658,3 +658,11 @@ li.sub::before {
     width: 130px;
     margin: 10px auto 0px auto;
 }
+
+.popover-content {
+    background: #1f5273;
+}
+
+.popover-title {
+    background: #233d56;
+}

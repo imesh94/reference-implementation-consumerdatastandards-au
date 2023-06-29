@@ -293,6 +293,7 @@
                             com.wso2.openbanking.cds.identity.claims.*;version="${project.version}",
                             com.wso2.openbanking.cds.identity.grant.type.handlers;version="${project.version}",
                             com.wso2.openbanking.cds.identity.grant.type.handlers.*;version="${project.version}",
+                            com.wso2.openbanking.cds.identity.listener;version="${project.version}",
                             com.wso2.openbanking.cds.identity.listener.application;version="${project.version}",
                             com.wso2.openbanking.cds.identity.metadata.periodical.updater;version="${project.version}",
                             com.wso2.openbanking.cds.identity.metadata.periodical.updater.*;version="${project.version}",

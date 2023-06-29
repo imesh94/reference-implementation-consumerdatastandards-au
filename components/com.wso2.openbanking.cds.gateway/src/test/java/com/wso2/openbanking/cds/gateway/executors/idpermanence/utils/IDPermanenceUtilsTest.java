@@ -50,6 +50,8 @@ public class IDPermanenceUtilsTest extends PowerMockTestCase {
     private static final String ACCOUNT_ID = "accountId";
     private static final String ACCOUNT_IDS = "accountIds";
     private static final String SCHEDULED_PAYMENT_ID = "scheduledPaymentId";
+    private static final String OFFSET_ACCOUNT_IDS = "offsetAccountIds";
+    private static final String LOAN = "loan";
     private static final String DEC_ACCOUNT_ID = "30080012343456";
     private static final String ENC_ACCOUNT_ID_JSON = "{\"accountId\":encrypted-account-id}";
     private static final String ENC_ACCOUNT_IDS_JSON = "{\"data\":{\"accountIds\":[\"encrypted-account-id\"," +
@@ -119,6 +121,12 @@ public class IDPermanenceUtilsTest extends PowerMockTestCase {
         encAccountId = encAccountId.replaceAll("^\"|\"$", "");
 
         Assert.assertEquals(encAccountId, ENCRYPTED_ID);
+
+        Gson gson = new Gson();
+        String offsetAccounts = encAccountsResponse.getAsJsonObject(DATA).getAsJsonObject().get(LOAN)
+                .getAsJsonObject().get(OFFSET_ACCOUNT_IDS).toString();
+        String[] offsetAccountsArray = gson.fromJson(offsetAccounts, String[].class);
+        Assert.assertEquals(offsetAccountsArray[0], ENCRYPTED_OFFSET_ID);
     }
 
     @Test
@@ -146,12 +154,6 @@ public class IDPermanenceUtilsTest extends PowerMockTestCase {
         encAccountId = encAccountId.replaceAll("^\"|\"$", "");
 
         Assert.assertEquals(encAccountId, ENCRYPTED_ID);
-
-        Gson gson = new Gson();
-        String offsetAccounts = encAccountsResponse.getAsJsonObject(DATA).getAsJsonObject().get("loan")
-                .getAsJsonObject().get("offsetAccountIds").toString();
-        String[] offsetAccountsArray = gson.fromJson(offsetAccounts, String[].class);
-        Assert.assertEquals(offsetAccountsArray[0], ENCRYPTED_OFFSET_ID);
     }
 
     @Test

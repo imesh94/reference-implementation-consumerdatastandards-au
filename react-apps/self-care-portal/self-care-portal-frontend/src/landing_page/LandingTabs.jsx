@@ -24,7 +24,7 @@ import { UserContext } from "../context/UserContext";
 
 
 export const LandingTabs = () => {
-    const {getContextConsentsForSearch} = useContext(ConsentContext);
+    const {getContextConsentForSearch} = useContext(ConsentContext);
     const {contextSearchObject,setContextSearchObject} = useContext(SearchObjectContext);
     const {contextAppInfo} = useContext(AppInfoContext);
     const {currentContextUser} = useContext(UserContext);
@@ -42,7 +42,7 @@ export const LandingTabs = () => {
             offset: 0
         }
         setContextSearchObject(search);
-        getContextConsentsForSearch(search, currentUser, appInfo);
+        getContextConsentForSearch(search, currentUser, appInfo);
     }, [key])
 
     return (
