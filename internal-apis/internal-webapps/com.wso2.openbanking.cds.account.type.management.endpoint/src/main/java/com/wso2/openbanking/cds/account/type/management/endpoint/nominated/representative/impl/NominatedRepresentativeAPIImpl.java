@@ -35,6 +35,7 @@ import org.apache.commons.logging.LogFactory;
 
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import javax.ws.rs.core.Response;
@@ -55,6 +56,7 @@ public class NominatedRepresentativeAPIImpl implements NominatedRepresentativeAP
 
     // Consent constants
     private static final String PRIMARY_MEMBER_AUTH_TYPE = "primary_member";
+    private static final String NOMINATED_REPRESENTATIVE_AUTH_TYPE = "nominated_representative";
     private static final String REVOKED_CONSENT_STATUS = "Revoked";
 
     // Error messages
@@ -116,7 +118,7 @@ public class NominatedRepresentativeAPIImpl implements NominatedRepresentativeAP
                 String accountID = accountDataDeleteDTO.getAccountID();
                 // Get a list of account owners and nominated representatives for the account
                 List<String> accountUsers = getUserIdListFromAccountDataDeleteDTO(accountDataDeleteDTO);
-                ArrayList<String> consentIds = new ArrayList<>();
+                HashSet<String> consentIds = new HashSet<>();
 
                 // Persist account owners
                 for (String accountUser : accountUsers) {
@@ -128,12 +130,12 @@ public class NominatedRepresentativeAPIImpl implements NominatedRepresentativeAP
                         List<AuthorizationResource> authResourcesForUser = consentCoreService.
                                 searchAuthorizationsForUser(accountUser);
                         for (AuthorizationResource authResource : authResourcesForUser) {
-                            if (PRIMARY_MEMBER_AUTH_TYPE.equals(authResource.getAuthorizationType())) {
+                            if (PRIMARY_MEMBER_AUTH_TYPE.equals(authResource.getAuthorizationType()) ||
+                                    NOMINATED_REPRESENTATIVE_AUTH_TYPE.equals(authResource.getAuthorizationType())) {
                                 consentIds.add(authResource.getConsentID());
                             }
                         }
                     }
-
                 }
                 /* Check if there are any other users who have AUTHORIZE permission for the account
                    If there are none, remove all bnr-permission records for the account*/
@@ -141,20 +143,21 @@ public class NominatedRepresentativeAPIImpl implements NominatedRepresentativeAP
                         accountID, BNR_PERMISSION);
                 if (!userIdAttributesMap.containsValue(BNRPermissionsEnum.AUTHORIZE.toString())) {
                     accountMetadataService.removeAccountMetadataByKeyForAllUsers(accountID, BNR_PERMISSION);
-                }
-                // Revoke the consent where the user is the primary member of the consent
-                if (consentIds.size() > 0) {
-                    List<DetailedConsentResource> detailedConsentResources = consentCoreService.searchDetailedConsents(
-                            consentIds, null, null, null, null, null, null, null, null, false);
-                    log.info(detailedConsentResources.size());
-                    for (DetailedConsentResource detailedConsentResource : detailedConsentResources) {
-                        List<ConsentMappingResource> consentMappingResources = detailedConsentResource.
-                                getConsentMappingResources();
-                        for (ConsentMappingResource consentMappingResource : consentMappingResources) {
-                            if (accountID.equals(consentMappingResource.getAccountID())) {
-                                consentCoreService.revokeConsentWithReason(detailedConsentResource.getConsentID(),
-                                        REVOKED_CONSENT_STATUS, null, true, "Revoked using BNR Dashboard");
-                                break;
+                    // Revoke the consent where the user is the last user with AUTHORIZE permission for the account
+                    // Todo: Fix the usecase for multiple accounts in the consent.
+                    if (consentIds.size() > 0) {
+                        List<DetailedConsentResource> detailedConsentResources = consentCoreService.
+                                searchDetailedConsents(new ArrayList<>(consentIds), null, null, null, null, null, null,
+                                        null, null, false);
+                        for (DetailedConsentResource detailedConsentResource : detailedConsentResources) {
+                            List<ConsentMappingResource> consentMappingResources = detailedConsentResource.
+                                    getConsentMappingResources();
+                            for (ConsentMappingResource consentMappingResource : consentMappingResources) {
+                                if (accountID.equals(consentMappingResource.getAccountID())) {
+                                    consentCoreService.revokeConsentWithReason(detailedConsentResource.getConsentID(),
+                                            REVOKED_CONSENT_STATUS, null, true, "Revoked using BNR Dashboard");
+                                    break;
+                                }
                             }
                         }
                     }
