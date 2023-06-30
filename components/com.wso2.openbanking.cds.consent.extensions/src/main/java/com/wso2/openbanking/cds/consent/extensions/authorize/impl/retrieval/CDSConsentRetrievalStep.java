@@ -36,6 +36,7 @@ import java.time.ZoneOffset;
 import java.util.ArrayList;
 import java.util.Base64;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.concurrent.TimeUnit;
 
@@ -377,11 +378,11 @@ public class CDSConsentRetrievalStep implements ConsentRetrievalStep {
 
         StringBuilder scopeString = new StringBuilder(consentData.getScopeString());
 
-        String[][] clusters = {CDSConsentExtensionConstants.NAME_CLUSTER_CLAIMS,
+        List[] clusters = {CDSConsentExtensionConstants.NAME_CLUSTER_CLAIMS,
                 CDSConsentExtensionConstants.PHONE_CLUSTER_CLAIMS,
                 CDSConsentExtensionConstants.EMAIL_CLUSTER_CLAIMS,
                 CDSConsentExtensionConstants.MAIL_CLUSTER_CLAIMS};
-        for (String[] cluster : clusters) {
+        for (List<String> cluster : clusters) {
             for (String claim : cluster) {
                 if (userInfoClaims.containsKey(claim) || idTokenClaims.containsKey(claim)) {
                     scopeString.append(" ");

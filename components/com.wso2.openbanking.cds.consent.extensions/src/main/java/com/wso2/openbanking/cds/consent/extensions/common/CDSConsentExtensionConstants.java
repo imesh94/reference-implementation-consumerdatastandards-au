@@ -197,12 +197,15 @@ public class CDSConsentExtensionConstants {
     public static final String ID_TOKEN_CLAIMS = "id_token_claims";
     public static final String USERINFO = "userinfo";
     public static final String USERINFO_CLAIMS = "userinfo_claims";
-    public static final String[] NAME_CLUSTER_CLAIMS = {"name", "given_name", "family_name", "updated_at"};
-    public static final String[] NAME_CLUSTER_PERMISSIONS = {"profile", "name", "given_name", "family_name",
-            "updated_at"};
-    public static final String[] EMAIL_CLUSTER_CLAIMS = {"email", "email_verified"};
-    public static final String[] MAIL_CLUSTER_CLAIMS = {"address"};
-    public static final String[] PHONE_CLUSTER_CLAIMS = {"phone_number", "phone_number_verified"};
+    public static final List<String> NAME_CLUSTER_CLAIMS = Collections.unmodifiableList(Arrays.asList("name",
+            "given_name", "family_name", "updated_at"));
+    public static final List<String> NAME_CLUSTER_PERMISSIONS = Collections.unmodifiableList(Arrays.asList("profile",
+            "name", "given_name", "family_name", "updated_at"));
+    public static final List<String> EMAIL_CLUSTER_CLAIMS = Collections.unmodifiableList(Arrays.asList("email",
+            "email_verified"));
+    public static final List<String> MAIL_CLUSTER_CLAIMS = Collections.unmodifiableList(Arrays.asList("address"));;
+    public static final List<String> PHONE_CLUSTER_CLAIMS = Collections.unmodifiableList(Arrays.asList("phone_number",
+            "phone_number_verified"));
     public static final String NAME_CLUSTER = "name";
     public static final String EMAIL_CLUSTER = "email";
     public static final String MAIL_CLUSTER = "mail";
@@ -210,7 +213,7 @@ public class CDSConsentExtensionConstants {
     public static final String CONTACT_CLUSTER = "contactDetails";
     public static final String NAME_CLAIMS = "nameClaims";
     public static final String CONTACT_CLAIMS = "contactClaims";
-    public static final Map<String, String[]> CONTACT_CLUSTER_CLAIMS;
+    public static final Map<String, List<String>> CONTACT_CLUSTER_CLAIMS;
     public static final int CDS_DEFAULT_EXPIRY = 86400; // 1 day
     public static final String CUSTOMER_SCOPES_ONLY = "customerScopesOnly";
 
@@ -327,7 +330,7 @@ public class CDSConsentExtensionConstants {
     }
 
     static {
-        Map<String, String[]> contactClusters = new HashMap<>();
+        Map<String, List<String>> contactClusters = new HashMap<>();
         contactClusters.put(CDSConsentExtensionConstants.EMAIL_CLUSTER,
                 CDSConsentExtensionConstants.EMAIL_CLUSTER_CLAIMS);
         contactClusters.put(CDSConsentExtensionConstants.MAIL_CLUSTER,

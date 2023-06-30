@@ -15,7 +15,6 @@ import com.wso2.openbanking.accelerator.consent.extensions.authorize.model.Conse
 import com.wso2.openbanking.accelerator.consent.extensions.authorize.model.ConsentRetrievalStep;
 import com.wso2.openbanking.accelerator.consent.extensions.common.ConsentException;
 import com.wso2.openbanking.accelerator.consent.extensions.common.ResponseStatus;
-import com.wso2.openbanking.cds.consent.extensions.authorize.utils.CDSConsentCommonUtil;
 import com.wso2.openbanking.cds.consent.extensions.authorize.utils.PermissionsEnum;
 import com.wso2.openbanking.cds.consent.extensions.common.CDSConsentExtensionConstants;
 import net.minidev.json.JSONArray;
@@ -47,7 +46,6 @@ public class CDSDataClusterRetrievalStep implements ConsentRetrievalStep {
             }
             JSONArray scopes = new JSONArray();
             scopes.addAll((ArrayList) consentData.getMetaDataMap().get(CDSConsentExtensionConstants.PERMISSIONS));
-            String customerType = CDSConsentCommonUtil.getCustomerType(consentData);
             // Consent amendment flow
             if (jsonObject.containsKey(CDSConsentExtensionConstants.IS_CONSENT_AMENDMENT) &&
                     (boolean) jsonObject.get(CDSConsentExtensionConstants.IS_CONSENT_AMENDMENT)) {
@@ -207,9 +205,9 @@ public class CDSDataClusterRetrievalStep implements ConsentRetrievalStep {
         // Processing contact cluster related claims.
         ArrayList<String> newContactPermissions = new ArrayList<>();
         ArrayList<String> previousContactPermissions = new ArrayList<>();
-        for (Map.Entry<String, String[]> cluster : CDSConsentExtensionConstants.CONTACT_CLUSTER_CLAIMS.entrySet()) {
+        for (Map.Entry<String, List<String>> cluster : CDSConsentExtensionConstants.CONTACT_CLUSTER_CLAIMS.entrySet()) {
             String clusterName = cluster.getKey();
-            String[] clusterClaims = cluster.getValue();
+            List<String> clusterClaims = cluster.getValue();
             for (String claim : clusterClaims) {
                 if (newScopes.contains(PermissionsEnum.fromValue(claim))) {
                     newContactPermissions.add(clusterName);

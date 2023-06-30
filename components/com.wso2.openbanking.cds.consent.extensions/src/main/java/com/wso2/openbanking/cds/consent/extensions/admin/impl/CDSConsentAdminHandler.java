@@ -29,7 +29,6 @@ import com.wso2.openbanking.cds.consent.extensions.authorize.utils.PermissionsEn
 import com.wso2.openbanking.cds.consent.extensions.common.CDSConsentExtensionConstants;
 import com.wso2.openbanking.cds.consent.extensions.common.SecondaryAccountOwnerTypeEnum;
 import com.wso2.openbanking.cds.consent.extensions.util.CDSConsentExtensionsUtil;
-
 import net.minidev.json.JSONArray;
 import net.minidev.json.JSONObject;
 import net.minidev.json.parser.JSONParser;
@@ -38,12 +37,11 @@ import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.wso2.carbon.identity.oauth2.IdentityOAuth2Exception;
+
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
-import java.util.stream.Collectors;
+
 import static com.wso2.openbanking.cds.consent.extensions.common.CDSConsentExtensionConstants.AUTH_RESOURCE_TYPE_PRIMARY;
 import static com.wso2.openbanking.cds.consent.extensions.common.CDSConsentExtensionConstants.CONSENT_STATUS_REVOKED;
 
@@ -414,7 +412,7 @@ public class CDSConsentAdminHandler implements ConsentAdminHandler {
                 for (Object authResourceObj : secondaryAccountOwnerAuthResources) {
                     if (authResourceObj instanceof JSONObject) {
                         JSONObject authResource = (JSONObject) authResourceObj;
-                        String authResourceId = (String) ((JSONObject) authResource)
+                        String authResourceId = (String) authResource
                                 .get(CDSConsentExtensionConstants.AUTHORIZATION_ID);
                         for (Object mappingResourceObj : consentMappingsResources) {
                             if (mappingResourceObj instanceof JSONObject) {
@@ -522,18 +520,6 @@ public class CDSConsentAdminHandler implements ConsentAdminHandler {
                 JSONObject itemJSONObject = (JSONObject) item;
                 JSONArray consentMappingResourcesArray = (JSONArray) itemJSONObject.
                         get(CDSConsentExtensionConstants.CONSENT_MAPPING_RESOURCES);
-                JSONArray consentAuthResourcesArray = (JSONArray) itemJSONObject.
-                        get(CDSConsentExtensionConstants.AUTHORIZATION_RESOURCES);
-
-                List<String> authIDs = consentAuthResourcesArray.stream()
-                        .map(obj -> (JSONObject) obj)
-                        .filter(obj -> {
-                            String authType = obj.getAsString(CDSConsentExtensionConstants.AUTH_TYPE);
-                            return Arrays.asList(CDSConsentExtensionConstants.AUTH_RESOURCE_TYPE_LINKED,
-                                    SecondaryAccountOwnerTypeEnum.JOINT.getValue()).contains(authType);
-                        })
-                        .map(obj -> obj.getAsString(CDSConsentExtensionConstants.AUTH_RESOURCE_ID))
-                        .collect(Collectors.toList());
 
                 for (Object consentMappingResource : consentMappingResourcesArray) {
                     JSONObject consentMappingResourceObject = (JSONObject) consentMappingResource;

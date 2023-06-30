@@ -8,13 +8,14 @@
  */
 package com.wso2.openbanking.cds.consent.extensions.authservlet.impl;
 
+import com.wso2.openbanking.accelerator.common.exception.OpenBankingException;
 import com.wso2.openbanking.cds.common.config.OpenBankingCDSConfigParser;
 import com.wso2.openbanking.cds.common.utils.CommonConstants;
 import com.wso2.openbanking.cds.consent.extensions.common.CDSConsentExtensionConstants;
+import com.wso2.openbanking.cds.consent.extensions.util.CDSConsentExtensionsUtil;
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
-import org.powermock.api.mockito.PowerMockito;
 import org.powermock.core.classloader.annotations.PowerMockIgnore;
 import org.powermock.core.classloader.annotations.PrepareForTest;
 import org.powermock.modules.testng.PowerMockTestCase;
@@ -27,15 +28,16 @@ import java.util.Map;
 import java.util.ResourceBundle;
 import javax.servlet.http.HttpServletRequest;
 
-
+import static org.mockito.Matchers.anyString;
 import static org.mockito.Mockito.doReturn;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
+import static org.powermock.api.mockito.PowerMockito.mockStatic;
 
 /**
  * Test class for CDS Auth Servlet
  */
-@PrepareForTest({OpenBankingCDSConfigParser.class})
+@PrepareForTest({OpenBankingCDSConfigParser.class, CDSConsentExtensionsUtil.class})
 @PowerMockIgnore({"com.wso2.openbanking.accelerator.consent.extensions.common.*", "jdk.internal.reflect.*"})
 public class OBCDSAuthServletImplTests extends PowerMockTestCase {
 
@@ -65,8 +67,8 @@ public class OBCDSAuthServletImplTests extends PowerMockTestCase {
     @Test
     public void testUpdateRequestAttributeWithValidDataset() {
 
-        PowerMockito.mockStatic(OpenBankingCDSConfigParser.class);
-        PowerMockito.when(OpenBankingCDSConfigParser.getInstance()).thenReturn(openBankingCDSConfigParserMock);
+        mockStatic(OpenBankingCDSConfigParser.class);
+        when(OpenBankingCDSConfigParser.getInstance()).thenReturn(openBankingCDSConfigParserMock);
         doReturn(configMap).when(openBankingCDSConfigParserMock).getConfiguration();
 
         JSONArray dataRequested = new JSONArray();
@@ -87,15 +89,17 @@ public class OBCDSAuthServletImplTests extends PowerMockTestCase {
         Map<String, Object> returnMap = obCdsAuthServlet.updateRequestAttribute(
                 httpServletRequest, dataSet, resourceBundle);
 
-        Assert.assertTrue(!returnMap.isEmpty());
+        Assert.assertFalse(returnMap.isEmpty());
     }
 
     @Test
-    public void testUpdateRequestAttributeWithValidDatasetWithElements() {
+    public void testUpdateRequestAttributeWithValidDatasetWithElements() throws OpenBankingException {
 
-        PowerMockito.mockStatic(OpenBankingCDSConfigParser.class);
-        PowerMockito.when(OpenBankingCDSConfigParser.getInstance()).thenReturn(openBankingCDSConfigParserMock);
+        mockStatic(OpenBankingCDSConfigParser.class);
+        when(OpenBankingCDSConfigParser.getInstance()).thenReturn(openBankingCDSConfigParserMock);
         doReturn(configMap).when(openBankingCDSConfigParserMock).getConfiguration();
+        mockStatic(CDSConsentExtensionsUtil.class);
+        when(CDSConsentExtensionsUtil.isDOMSStatusEligibleForDataSharing(anyString())).thenReturn(true);
 
         JSONArray dataRequested = new JSONArray();
         JSONArray accounts = new JSONArray();
@@ -140,7 +144,7 @@ public class OBCDSAuthServletImplTests extends PowerMockTestCase {
         Map<String, Object> returnMap = obCdsAuthServlet.updateRequestAttribute(
                 httpServletRequest, dataSet, resourceBundle);
 
-        Assert.assertTrue(!returnMap.isEmpty());
+        Assert.assertFalse(returnMap.isEmpty());
     }
 
     @Test
@@ -154,7 +158,7 @@ public class OBCDSAuthServletImplTests extends PowerMockTestCase {
     public void testUpdateConsentData() {
         when(httpServletRequest.getParameter("accounts[]")).thenReturn("1:2:3");
         Map<String, Object> returnMap = obCdsAuthServlet.updateConsentData(httpServletRequest);
-        Assert.assertTrue(!returnMap.isEmpty());
+        Assert.assertFalse(returnMap.isEmpty());
     }
 
     @Test
@@ -166,6 +170,6 @@ public class OBCDSAuthServletImplTests extends PowerMockTestCase {
     @Test
     public void testGetJSPPath() {
         String jspPath = obCdsAuthServlet.getJSPPath();
-        Assert.assertTrue("/ob_cds_profile_selection.jsp".equals(jspPath));
+        Assert.assertEquals(jspPath, "/ob_cds_profile_selection.jsp");
     }
 }
