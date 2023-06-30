@@ -29,6 +29,7 @@ class JarmResponseModeFragmentJwtValidationTests extends AUTest {
 
     String authResponseUrl
     String responseJwt
+    HashMap<String, String> mapPayload
     JWTClaimsSet jwtPayload
 
     @Test (priority = 1)

@@ -196,6 +196,11 @@
                 <version>${org.jsoup.version}</version>
                 <scope>test</scope>
             </dependency>
+            <dependency>
+                <groupId>com.auth0</groupId>
+                <artifactId>java-jwt</artifactId>
+                <version>${com.auth0.version}</version>
+            </dependency>
         </dependencies>
     </dependencyManagement>
 
@@ -335,6 +340,7 @@
         <com.nimbus.oauth2-oidc-sdk.version>9.35</com.nimbus.oauth2-oidc-sdk.version>
         <com.wso2.openbanking.test>1.0.0</com.wso2.openbanking.test>
         <org.jsoup.version>1.15.4</org.jsoup.version>
+        <com.auth0.version>3.18.0</com.auth0.version>
     </properties>
 
 </project>

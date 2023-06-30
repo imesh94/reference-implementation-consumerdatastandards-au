@@ -34,7 +34,7 @@ class JarmResponseModeJwtValidationTests extends AUTest{
     @Test
     void "CDS-577_Verify authorisation flow with response method jwt and response type code"() {
 
-        doConsentAuthorisation(ResponseMode.FORM_POST_JWT, ResponseType.CODE, auConfiguration.getAppInfoClientID())
+        doConsentAuthorisation(ResponseMode.JWT, ResponseType.CODE, auConfiguration.getAppInfoClientID())
         authResponseUrl = automationResponse.currentUrl.get()
         responseJwt = authResponseUrl.split(AUConstants.HTML_RESPONSE_ATTR)[1]
         Assert.assertNotNull(responseJwt)

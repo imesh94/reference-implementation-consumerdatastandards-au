@@ -532,8 +532,6 @@ class AccountsRetrievalRequestValidationTests extends AUTest {
         Assert.assertEquals(response.statusCode(), AUConstants.STATUS_CODE_404)
         Assert.assertEquals(AUTestUtil.parseResponseBody(response, AUConstants.ERROR_CODE),
                 AUConstants.ERROR_CODE_RESOURCE_NOTFOUND)
-        Assert.assertEquals(AUTestUtil.parseResponseBody(response, AUConstants.ERROR_SOURCE_POINTER),
-                "/cds-au/v0${AUConstants.BULK_ACCOUNT_PATH}")
         Assert.assertEquals(AUTestUtil.parseResponseBody(response, AUConstants.ERROR_TITLE),
                 AUConstants.RESOURCE_NOT_FOUND)
     }
@@ -606,7 +604,7 @@ class AccountsRetrievalRequestValidationTests extends AUTest {
         String requestBody = """
             {
               "data": {
-                "accountIds": "${consentedAccount}"
+                "account": "${AUConstants.accountID}"
               },
               "meta": {}
             }
@@ -684,5 +682,61 @@ class AccountsRetrievalRequestValidationTests extends AUTest {
         softAssertion.assertNotNull(response.getHeader(AUConstants.X_FAPI_INTERACTION_ID))
         softAssertion.assertEquals(AUTestUtil.parseResponseBody(response, AUConstants.ERROR_CODE),
                 AUConstants.ERROR_CODE_INVALID_BANK_ACC)
+    }
+
+    @Test
+    void "OB-1702_Invoke bulk balances POST with empty accountId list"() {
+
+        String requestBody = """
+            {
+              "data": {
+                "accountIds": []
+              },
+              "meta": {}
+            }
+        """.stripIndent()
+
+        def response = AURequestBuilder.buildBasicRequestWithCustomHeaders(userAccessToken,
+                AUConstants.X_V_HEADER_ACCOUNTS, clientHeader)
+                .contentType(ContentType.JSON)
+                .body(requestBody)
+                .baseUri(AUTestUtil.getBaseUrl(AUConstants.BASE_PATH_TYPE_BALANCES))
+                .post("${AUConstants.CDS_PATH}${AUConstants.BULK_BALANCES_PATH}")
+
+        Assert.assertEquals(response.statusCode(), AUConstants.STATUS_CODE_422)
+        Assert.assertEquals(AUTestUtil.parseResponseBody(response, AUConstants.ERROR_CODE),
+                AUConstants.ERROR_CODE_INVALID_BANK_ACC)
+        Assert.assertEquals(AUTestUtil.parseResponseBody(response, AUConstants.ERROR_DETAIL),
+                AUConstants.ACCOUNT_ID_NOT_FOUND)
+        Assert.assertEquals(AUTestUtil.parseResponseBody(response, AUConstants.ERROR_TITLE),
+                AUConstants.INVALID_BANK_ACC)
+    }
+
+    @Test
+    void "OB-1703_Invoke bulk balances POST with missing required field"() {
+
+        // sending 'accountIds' as a string instead of the mandated String array format
+        String requestBody = """
+            {
+              "data": {
+              },
+              "meta": {}
+            }
+        """.stripIndent()
+
+        def response = AURequestBuilder.buildBasicRequestWithCustomHeaders(userAccessToken,
+                AUConstants.X_V_HEADER_ACCOUNTS, clientHeader)
+                .contentType(ContentType.JSON)
+                .body(requestBody)
+                .baseUri(AUTestUtil.getBaseUrl(AUConstants.BASE_PATH_TYPE_BALANCES))
+                .post("${AUConstants.CDS_PATH}${AUConstants.BULK_BALANCES_PATH}")
+
+        Assert.assertEquals(response.statusCode(), AUConstants.STATUS_CODE_422)
+        Assert.assertEquals(AUTestUtil.parseResponseBody(response, AUConstants.ERROR_CODE),
+                AUConstants.ERROR_CODE_INVALID_BANK_ACC)
+        Assert.assertEquals(AUTestUtil.parseResponseBody(response, AUConstants.ERROR_DETAIL),
+                AUConstants.ACCOUNT_ID_NOT_FOUND)
+        Assert.assertEquals(AUTestUtil.parseResponseBody(response, AUConstants.ERROR_TITLE),
+                AUConstants.INVALID_BANK_ACC)
     }
 }

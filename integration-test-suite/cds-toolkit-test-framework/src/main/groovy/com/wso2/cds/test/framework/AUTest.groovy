@@ -1,16 +1,20 @@
 /*
- * Copyright (c) 2022-2023, WSO2 LLC. (https://www.wso2.com). All Rights Reserved.
+ * Copyright (c) 2022-2023, WSO2 Inc. (http://www.wso2.com). All Rights Reserved.
  *
- * This software is the property of WSO2 LLC. and its suppliers, if any.
+ * This software is the property of WSO2 Inc. and its suppliers, if any.
  * Dissemination of any information or reproduction of any material contained
- * herein in any form is strictly forbidden, unless permitted by WSO2 expressly.
- * You may not alter or remove any copyright or other notice from copies of this content.
+ * herein is strictly forbidden, unless permitted by WSO2 in accordance with
+ * the WSO2 Software License available at https://wso2.com/licenses/eula/3.1. For specific
+ * language governing the permissions and limitations under this license,
+ * please see the license as well as any agreement you’ve entered into with
+ * WSO2 governing the purchase of this software and any associated services.
  */
 
 package com.wso2.cds.test.framework
 
 import com.nimbusds.oauth2.sdk.ResponseMode
 import com.nimbusds.oauth2.sdk.ResponseType
+import com.nimbusds.oauth2.sdk.token.RefreshToken
 import com.wso2.cds.test.framework.constant.AUAccountProfile
 import com.wso2.cds.test.framework.constant.AUAccountScope
 import com.wso2.cds.test.framework.constant.AUConfigConstants
@@ -21,14 +25,17 @@ import com.wso2.cds.test.framework.constant.ContextConstants
 import com.wso2.cds.test.framework.automation.consent.AUAccountSelectionStep
 import com.wso2.cds.test.framework.automation.consent.AUBasicAuthAutomationStep
 import com.nimbusds.oauth2.sdk.AccessTokenResponse
+import com.wso2.cds.test.framework.request_builder.AUJWTGenerator
 import com.wso2.openbanking.test.framework.OBTest
 import com.wso2.cds.test.framework.configuration.AUConfigurationService
 import com.wso2.openbanking.test.framework.automation.AutomationMethod
 import com.wso2.openbanking.test.framework.automation.NavigationAutomationStep
 import com.wso2.openbanking.test.framework.configuration.OBConfigParser
+import com.wso2.openbanking.test.framework.request_builder.JSONRequestGenerator
 import io.restassured.response.Response
 import org.apache.logging.log4j.LogManager
 import org.apache.logging.log4j.Logger
+import org.json.JSONObject
 import org.openqa.selenium.By
 import org.testng.Assert
 import org.testng.ITestContext
@@ -85,8 +92,11 @@ class AUTest extends OBTest {
     public String requestUri
     public String authoriseUrl
     public String authFlowError
-    public Response response
+    public Response response, revocationResponse
     public def automationResponse
+    public String productId
+    public Response deletionResponse
+    public AUJWTGenerator generator
 
     /**
      * Set Scopes of application
@@ -152,6 +162,32 @@ class AUTest extends OBTest {
     }
 
     /**
+     * Do Consent Authorisation with Response_Mode and Response Type
+     * @param responseMode
+     * @param clientId
+     * @param profiles
+     */
+    void doConsentAuthorisation(ResponseMode responseMode, ResponseType responseType = ResponseType.CODE_IDTOKEN, String clientId = null,
+                                AUAccountProfile profiles = AUAccountProfile.INDIVIDUAL, boolean isStateParamPresent = true) {
+
+        def response
+
+        if (clientId == null) {
+            response = auAuthorisationBuilder.doPushAuthorisationRequest(scopes, AUConstants.DEFAULT_SHARING_DURATION,
+                    true, "", auConfiguration.getAppInfoRedirectURL(), responseType.toString())
+            requestUri = AUTestUtil.parseResponseBody(response, AUConstants.REQUEST_URI)
+            doConsentAuthorisationViaRequestUri(scopes, requestUri.toURI(), responseMode, responseType,
+                    null, profiles, isStateParamPresent)
+        } else {
+            response = auAuthorisationBuilder.doPushAuthorisationRequest(scopes, AUConstants.DEFAULT_SHARING_DURATION,
+                    true, "", clientId)
+            requestUri = AUTestUtil.parseResponseBody(response, AUConstants.REQUEST_URI)
+            doConsentAuthorisationViaRequestUri(scopes, requestUri.toURI(), responseMode, responseType,
+                    clientId, profiles, isStateParamPresent)
+        }
+    }
+
+    /**
      * Consent authorization method with Request URI
      * @param scopes
      * @param requestUri
@@ -170,10 +206,8 @@ class AUTest extends OBTest {
         }
 
         //UI Flow Navigation
-        def automation = doAuthorisationFlowNavigation(authoriseUrl, profiles, false)
-
-        // Get Code From URL
-        authorisationCode = AUTestUtil.getHybridCodeFromUrl(automation.currentUrl.get())
+        def automation = doAuthorisationFlowNavigation(authoriseUrl, profiles, true)
+        authorisationCode = AUTestUtil.getCodeFromJwtResponse(automation.currentUrl.get())
     }
 
     /**
@@ -193,21 +227,8 @@ class AUTest extends OBTest {
                 .addStep(getWaitForRedirectAutomationStep())
                 .execute()
         // Get Code From URL
-        String authCode = AUTestUtil.getHybridCodeFromUrl(automation.currentUrl.get())
+        String authCode = AUTestUtil.getCodeFromJwtResponse(automation.currentUrl.get())
         return authCode
-    }
-
-    /**
-     * Method for get user access token response
-     * @return
-     */
-    AccessTokenResponse getUserAccessTokenResponse(String clientId = null) {
-        try {
-            return AURequestBuilder.getUserToken(authorisationCode, auAuthorisationBuilder.getCodeVerifier(), clientId)
-        }
-        catch (Exception e) {
-            log.error(e)
-        }
     }
 
     /**
@@ -250,7 +271,7 @@ class AUTest extends OBTest {
             String token = AURequestBuilder.getApplicationAccessToken(scopes, clientId)
 
             if (token) {
-                def deletionResponse = AURegistrationRequestBuilder.buildBasicRequest(token)
+                deletionResponse = AURegistrationRequestBuilder.buildBasicRequest(token)
                         .when()
                         .delete(AUConstants.DCR_REGISTRATION_ENDPOINT + clientId)
             }
@@ -267,7 +288,7 @@ class AUTest extends OBTest {
             String token = AURequestBuilder.getApplicationAccessToken(getApplicationScope(), clientId)
 
             if (token) {
-                def deletionResponse = AURegistrationRequestBuilder.buildBasicRequest(token)
+                deletionResponse = AURegistrationRequestBuilder.buildBasicRequest(token)
                         .when()
                         .delete(AUConstants.DCR_REGISTRATION_ENDPOINT + clientId)
 
@@ -498,7 +519,7 @@ class AUTest extends OBTest {
                 .execute()
 
         // Get Code From URL
-        authorisationCode = AUTestUtil.getHybridCodeFromUrl(automation.currentUrl.get())
+        authorisationCode = AUTestUtil.getCodeFromJwtResponse(automation.currentUrl.get())
     }
 
     /**
@@ -519,25 +540,11 @@ class AUTest extends OBTest {
                     .toURI().toString()
         }
 
-        def automation = getBrowserAutomation(AUConstants.DEFAULT_DELAY)
-                .addStep(new AUBasicAuthAutomationStep(authoriseUrl))
-                .addStep { driver, context ->
-                    AutomationMethod authWebDriver = new AutomationMethod(driver)
-
-                    //Select Profile and Accounts
-                    selectProfileAndAccount(authWebDriver, profiles, false)
-
-                    //Click Submit/Next Button
-                    authWebDriver.clickButtonXpath(AUPageObjects.CONSENT_SUBMIT_XPATH)
-
-                    //Click Confirm Button
-                    authWebDriver.clickButtonXpath(AUPageObjects.CONSENT_CONFIRM_XPATH)
-                }
-                .addStep(getWaitForRedirectAutomationStep())
-                .execute()
+        //UI FLow Navigation
+        def automation = doAuthorisationFlowNavigation(authoriseUrl, profiles, false)
 
         // Get Code From URL
-        authorisationCode = AUTestUtil.getHybridCodeFromUrl(automation.currentUrl.get())
+        authorisationCode = AUTestUtil.getCodeFromJwtResponse(automation.currentUrl.get())
     }
 
     /**
@@ -583,7 +590,7 @@ class AUTest extends OBTest {
                 .execute()
 
         // Get Code From URL
-        authorisationCode = AUTestUtil.getHybridCodeFromUrl(automation.currentUrl.get())
+        authorisationCode = AUTestUtil.getCodeFromJwtResponse(automation.currentUrl.get())
     }
 
     /**
@@ -593,14 +600,15 @@ class AUTest extends OBTest {
      * @param clientId
      * @param profiles
      */
-    void doConsentAuthorisationViaRequestUriDenyFlow(List<AUAccountScope> scopes, URI requestUri,
-                                                     String clientId = null , AUAccountProfile profiles = null) {
+    String doConsentAuthorisationViaRequestUriDenyFlow(List<AUAccountScope> scopes, URI requestUri,
+                                                     String clientId = null , AUAccountProfile profiles = null,
+                                                       boolean isStateParamPresent = true) {
         if (clientId != null) {
-            authoriseUrl = auAuthorisationBuilder.getAuthorizationRequest(scopes, requestUri, clientId)
-                    .toURI().toString()
+        authoriseUrl = auAuthorisationBuilder.getAuthorizationRequest(scopes, requestUri,
+                auConfiguration.getAppInfoClientID(), isStateParamPresent).toURI().toString()
         } else {
-            authoriseUrl = auAuthorisationBuilder.getAuthorizationRequest(scopes, requestUri)
-                    .toURI().toString()
+            authoriseUrl = auAuthorisationBuilder.getAuthorizationRequest(scopes, requestUri, null,
+                    isStateParamPresent).toURI().toString()
         }
 
         def automation = getBrowserAutomation(AUConstants.DEFAULT_DELAY)
@@ -616,12 +624,10 @@ class AUTest extends OBTest {
 
                     //Click Deny Button
                     authWebDriver.clickButtonXpath(AUPageObjects.CONSENT_DENY_XPATH)
-                    authWebDriver.clickButtonXpath(AUPageObjects.CONFIRM_CONSENT_DENY_XPATH)
                 }
                 .execute()
 
-        // Get Error From URL
-        authFlowError = AUTestUtil.getErrorDescriptionFromUrl(automation.currentUrl.get())
+        return automation.currentUrl.get()
     }
 
     /**
@@ -671,7 +677,7 @@ class AUTest extends OBTest {
                 .execute()
 
         // Get Code From URL
-        authorisationCode = AUTestUtil.getHybridCodeFromUrl(automation.currentUrl.get())
+        authorisationCode = AUTestUtil.getCodeFromJwtResponse(automation.currentUrl.get())
     }
 
     /**
@@ -712,7 +718,7 @@ class AUTest extends OBTest {
                 .execute()
 
         // Get Code From URL
-        authorisationCode = AUTestUtil.getHybridCodeFromUrl(automation.currentUrl.get())
+        authorisationCode = AUTestUtil.getCodeFromJwtResponse(automation.currentUrl.get())
     }
 
     /**
@@ -738,7 +744,7 @@ class AUTest extends OBTest {
                 .addStep { driver, context ->
                     AutomationMethod authWebDriver = new AutomationMethod(driver)
 
-                    Assert.assertTrue(authWebDriver.getElementAttribute(AUPageObjects.ADR_NAME_HEADER_XPATH, AUPageObjects.TEXT_ATTRIBUTE)
+                    Assert.assertTrue(authWebDriver.getElementAttribute(AUPageObjects.ADR_NAME_HEADER_XPATH, AUPageObjects.TEXT)
                             .contains(auConfiguration.getAppDCRSoftwareId()))
 
                     //Select Secondary Account
@@ -760,7 +766,7 @@ class AUTest extends OBTest {
                 .execute()
 
         // Get Code From URL
-        authorisationCode = AUTestUtil.getHybridCodeFromUrl(automation.currentUrl.get())
+        authorisationCode = AUTestUtil.getCodeFromJwtResponse(automation.currentUrl.get())
     }
 
     /**
@@ -782,7 +788,7 @@ class AUTest extends OBTest {
                 .execute()
 
         // Get Code From URL
-        authorisationCode = AUTestUtil.getHybridCodeFromUrl(automation.currentUrl.get())
+        authorisationCode = AUTestUtil.getCodeFromJwtResponse(automation.currentUrl.get())
         return authorisationCode
     }
 
@@ -1043,6 +1049,20 @@ class AUTest extends OBTest {
     }
 
     /**
+     * Verify Scope of Token Response.
+     * @param scopesString - scope list
+     * @param eliminatedScope - scope to be eliminated
+     */
+    void verifyScopes(String scopesString, String eliminatedScope = null) {
+        if (eliminatedScope != null) {
+            Assert.assertFalse(scopesString.contains(eliminatedScope))
+        } else {
+            for (AUAccountScope scope : scopes) {
+                Assert.assertTrue(scopesString.contains(scope.getScopeString()))
+            }
+        }
+     }
+      
      * Do Consent Authorisation with Response_Mode and Response Type
      * @param responseMode
      * @param clientId
@@ -1057,7 +1077,14 @@ class AUTest extends OBTest {
             response = auAuthorisationBuilder.doPushAuthorisationRequest(scopes, AUConstants.DEFAULT_SHARING_DURATION,
                     true, "", "", auConfiguration.getAppInfoRedirectURL(), responseType.toString())
             requestUri = AUTestUtil.parseResponseBody(response, AUConstants.REQUEST_URI)
-            doConsentAuthorisationViaRequestUri(scopes, requestUri.toURI(), responseMode, responseType,
+            
+          
+          
+          
+          
+          
+          
+          ViaRequestUri(scopes, requestUri.toURI(), responseMode, responseType,
                     null, profiles, isStateParamPresent)
         } else {
             response = auAuthorisationBuilder.doPushAuthorisationRequest(scopes, AUConstants.DEFAULT_SHARING_DURATION,
@@ -1068,6 +1095,65 @@ class AUTest extends OBTest {
         }
     }
 
+    /**
+     * Method for get user access token response
+     * @return
+     */
+    AccessTokenResponse getUserAccessTokenFormRefreshToken(RefreshToken refreshToken) {
+            try {
+                return AURequestBuilder.getUserTokenFromRefreshToken(refreshToken)
+            }
+            catch (Exception e) {
+                log.error(e)
+            }
+        }
+
+    /**
+     * Method for get user access token response
+     * @return
+     */
+    AccessTokenResponse getUserAccessTokenResponse(String clientId = null) {
+        try {
+            return AURequestBuilder.getUserToken(authorisationCode, auAuthorisationBuilder.getCodeVerifier(), clientId)
+        }
+        catch (Exception e) {
+            log.error(e)
+        }
+    }
+
+    Response doRevokeCdrArrangement(String clientId, String cdrArrangementId){
+
+        generator = new AUJWTGenerator()
+        String assertionString = generator.getClientAssertionJwt(clientId)
+
+        def bodyContent = [(AUConstants.CLIENT_ID_KEY): (clientId),
+                           (AUConstants.CLIENT_ASSERTION_TYPE_KEY): (AUConstants.CLIENT_ASSERTION_TYPE),
+                           (AUConstants.CLIENT_ASSERTION_KEY)     : assertionString,
+                           (AUConstants.CDR_ARRANGEMENT_ID)       : cdrArrangementId]
+
+        revocationResponse = AURestAsRequestBuilder.buildRequest()
+                .contentType(AUConstants.ACCESS_TOKEN_CONTENT_TYPE)
+                .formParams(bodyContent)
+                .baseUri(AUTestUtil.getBaseUrl(AUConstants.BASE_PATH_TYPE_CDR_ARRANGEMENT))
+                .post("${AUConstants.CDR_ARRANGEMENT_ENDPOINT}")
+
+        return revocationResponse
+    }
+
+    /**
+     * Method to get consent status.
+     * @param headerString
+     * @param consentId
+     * @return
+     */
+    Response getConsentStatus(String clientHeader, String consentId) {
+
+        return AURestAsRequestBuilder.buildRequest()
+                .header(AUConstants.AUTHORIZATION_HEADER_KEY, "Basic " + clientHeader)
+                .baseUri(auConfiguration.getServerAuthorisationServerURL())
+                .get("${AUConstants.CONSENT_STATUS_ENDPOINT}${AUConstants.STATUS_PATH}?${consentId}")
+    }
+  
     /**
      * Consent authorization method with Request URI and Response Mode
      * @param scopes

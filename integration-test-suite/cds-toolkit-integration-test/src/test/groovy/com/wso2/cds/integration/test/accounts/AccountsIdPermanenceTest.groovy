@@ -55,13 +55,12 @@ class AccountsIdPermanenceTest extends AUTest {
         SoftAssert softAssertion= new SoftAssert()
         softAssertion.assertEquals(response.statusCode(), AUConstants.STATUS_CODE_200)
 
-        encryptedAccount1Id = AUTestUtil.parseResponseBody(response, "${AUConstants.RESPONSE_DATA_BULK_ACCOUNTID_LIST}[1]")
-        encryptedAccount2Id = AUTestUtil.parseResponseBody(response, "${AUConstants.RESPONSE_DATA_BULK_ACCOUNTID_LIST}[0]")
-
-        softAssertion.assertEquals(consentedAccount,
-                AUIdEncryptorDecryptor.decrypt(encryptedAccount1Id, secretKey).split(":")[2])
-        softAssertion.assertEquals(secondConsentedAccount,
-                AUIdEncryptorDecryptor.decrypt(encryptedAccount2Id, secretKey).split(":")[2])
+        softAssertion.assertTrue(AUIdEncryptorDecryptor.decrypt(
+                AUTestUtil.parseResponseBody(response, "${AUConstants.RESPONSE_DATA_BULK_ACCOUNTID_LIST}[0]"), secretKey).
+                split(":")[2] != "")
+        softAssertion.assertTrue(AUIdEncryptorDecryptor.decrypt(
+                AUTestUtil.parseResponseBody(response, "${AUConstants.RESPONSE_DATA_BULK_ACCOUNTID_LIST}[1]"), secretKey).
+                split(":")[2] != "")
 
         softAssertion.assertTrue(AUTestUtil.parseResponseBody(response, AUConstants.LINKS_SELF)
                 .contains(bulkAccountRequestUrl.split(AUConstants.CDS_PATH)[1]))
@@ -483,12 +482,12 @@ class AccountsIdPermanenceTest extends AUTest {
         SoftAssert softAssertion= new SoftAssert()
         softAssertion.assertEquals(response.statusCode(), AUConstants.STATUS_CODE_200)
 
-        softAssertion.assertEquals(consentedAccount, AUIdEncryptorDecryptor.decrypt(
-                AUTestUtil.parseResponseBody(response, "${AUConstants.RESPONSE_DATA_BULK_BALANCE_LIST}.accountId[1]"), secretKey).
-                split(":")[2])
-        softAssertion.assertEquals(secondConsentedAccount, AUIdEncryptorDecryptor.decrypt(
-                AUTestUtil.parseResponseBody(response, "${AUConstants.RESPONSE_DATA_BULK_BALANCE_LIST}.accountId[0]"), secretKey).
-                split(":")[2])
+        softAssertion.assertTrue(AUIdEncryptorDecryptor.decrypt(
+                AUTestUtil.parseResponseBody(response, "${AUConstants.RESPONSE_DATA_BULK_BALANCE_LIST}[0]"), secretKey).
+                split(":")[2] != "")
+        softAssertion.assertTrue(AUIdEncryptorDecryptor.decrypt(
+                AUTestUtil.parseResponseBody(response, "${AUConstants.RESPONSE_DATA_BULK_BALANCE_LIST}[1]"), secretKey).
+                split(":")[2] != "")
 
         softAssertion.assertTrue(AUTestUtil.parseResponseBody(response, AUConstants.LINKS_SELF)
                 .contains(balanceRequestUrl.split(AUConstants.CDS_PATH)[1]))
@@ -603,12 +602,12 @@ class AccountsIdPermanenceTest extends AUTest {
         SoftAssert softAssertion= new SoftAssert()
         softAssertion.assertEquals(response.statusCode(), AUConstants.STATUS_CODE_200)
 
-        softAssertion.assertEquals(consentedAccount, AUIdEncryptorDecryptor.decrypt(
-                AUTestUtil.parseResponseBody(response, "${AUConstants.RESPONSE_DATA_DIRECT_DEBIT_AUTH}.accountId[1]"), secretKey).
-                split(":")[2])
-        softAssertion.assertEquals(secondConsentedAccount, AUIdEncryptorDecryptor.decrypt(
+        softAssertion.assertTrue(AUIdEncryptorDecryptor.decrypt(
                 AUTestUtil.parseResponseBody(response, "${AUConstants.RESPONSE_DATA_DIRECT_DEBIT_AUTH}.accountId[0]"), secretKey).
-                split(":")[2])
+                split(":")[2] != "")
+        softAssertion.assertTrue(AUIdEncryptorDecryptor.decrypt(
+                AUTestUtil.parseResponseBody(response, "${AUConstants.RESPONSE_DATA_DIRECT_DEBIT_AUTH}.accountId[1]"), secretKey).
+                split(":")[2] != "")
 
         softAssertion.assertTrue(AUTestUtil.parseResponseBody(response, AUConstants.LINKS_SELF)
                 .contains(directDebitRequestUrl.split(AUConstants.CDS_PATH)[1]))

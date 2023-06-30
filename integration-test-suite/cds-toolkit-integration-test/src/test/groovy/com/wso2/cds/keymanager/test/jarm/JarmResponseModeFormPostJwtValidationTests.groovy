@@ -30,6 +30,7 @@ class JarmResponseModeFormPostJwtValidationTests extends AUTest {
 
     String authResponseUrl
     String responseJwt
+    HashMap<String, String> mapPayload
     JWTClaimsSet jwtPayload
 
     //TODO: Enable testcase after testing the automation in latest pack
@@ -64,8 +65,8 @@ class JarmResponseModeFormPostJwtValidationTests extends AUTest {
         def automation = doAuthorisationFlowNavigation(authoriseUrl)
 
         //Get Code From URL
-        authorisationCode = AUTestUtil.getHybridCodeFromUrl(automation.currentUrl.get())
-        Assert.assertEquals(jwtPayload.getStringClaim(AUConstants.CODE_KEY), authorisationCode)
+        authorisationCode = AUTestUtil.getCodeFromJwtResponse(automation.currentUrl.get())
+        Assert.assertEquals(mapPayload.get(AUConstants.CODE_KEY), authorisationCode)
     }
 
     //TODO: Enable testcase after testing the automation in latest pack

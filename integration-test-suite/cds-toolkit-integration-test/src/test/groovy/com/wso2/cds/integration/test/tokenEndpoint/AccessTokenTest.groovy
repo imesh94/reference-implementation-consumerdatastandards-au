@@ -34,7 +34,7 @@ class AccessTokenTest extends AUTest {
     ]
 
     private final String ACCOUNTS_BASIC_OPENID_SCOPE_LIST = "bank:accounts.basic:read bank:accounts.detail:" +
-            "read openid profile"
+            "read openid"
     private final String ACCOUNTS_BASIC_ACCOUNT_DETAIL_OPENID_SCOPE_LIST = "bank:accounts.basic:read bank:" +
             "accounts.detail:read openid"
     private AccessTokenResponse userAccessToken
@@ -108,18 +108,19 @@ class AccessTokenTest extends AUTest {
     void "OB-1267_Invoke token endpoint for user access token with a subset of authorized scopes"() {
 
         // scopes authorized for the consent
-        scopeArrayList = [
+        scopes = [
                 AUAccountScope.BANK_ACCOUNT_BASIC_READ,
-                AUAccountScope.BANK_REGULAR_PAYMENTS_READ,
+                AUAccountScope.BANK_ACCOUNT_DETAIL_READ,
         ]
-        doConsentAuthorisation( auConfiguration.getAppInfoClientID())
+        doConsentAuthorisation(auConfiguration.getAppInfoClientID())
         Assert.assertNotNull(authorisationCode)
 
         //scopes requested for the user access token
-        scopeArrayList = [
+        scopes = [
                 AUAccountScope.BANK_ACCOUNT_BASIC_READ,
         ]
-        userAccessToken = AURequestBuilder.getUserToken(authorisationCode, scopeArrayList)
+        userAccessToken = AURequestBuilder.getUserToken(authorisationCode, scopes,
+                auAuthorisationBuilder.getCodeVerifier())
         Assert.assertNotNull(userAccessToken.tokens.accessToken)
         Assert.assertNotNull(userAccessToken.tokens.refreshToken)
         Assert.assertEquals(userAccessToken.toJSONObject().get("scope"), ACCOUNTS_BASIC_OPENID_SCOPE_LIST)
@@ -148,17 +149,17 @@ class AccessTokenTest extends AUTest {
     void "OB-1270_Invoke token endpoint for user access token with a unauthorized scope"() {
 
         scopes = [
-                AUAccountScope.BANK_ACCOUNT_BASIC_READ,
+                AUAccountScope.BANK_ACCOUNT_BASIC_READ
         ]
 
         doConsentAuthorisation( auConfiguration.getAppInfoClientID())
         Assert.assertNotNull(authorisationCode)
 
         scopes = [
-                AUAccountScope.BANK_REGULAR_PAYMENTS_READ,
+                AUAccountScope.BANK_REGULAR_PAYMENTS_READ
         ]
 
-        userAccessToken = AURequestBuilder.getUserToken(authorisationCode, scopes)
+        userAccessToken = AURequestBuilder.getUserToken(authorisationCode, scopes, auAuthorisationBuilder.getCodeVerifier())
         Assert.assertNotNull(userAccessToken.tokens.accessToken)
         Assert.assertNotNull(userAccessToken.tokens.refreshToken)
         Assert.assertEquals(userAccessToken.toJSONObject().get("scope"), "bank:accounts.basic:read openid")
@@ -182,7 +183,7 @@ class AccessTokenTest extends AUTest {
                 AUAccountScope.BANK_ACCOUNT_DETAIL_READ
         ]
 
-        userAccessToken = AURequestBuilder.getUserToken(authorisationCode, scopes)
+        userAccessToken = AURequestBuilder.getUserToken(authorisationCode, scopes, auAuthorisationBuilder.getCodeVerifier())
         Assert.assertNotNull(userAccessToken.tokens.accessToken)
         Assert.assertNotNull(userAccessToken.tokens.refreshToken)
         Assert.assertNotNull(userAccessToken.getCustomParameters().get("cdr_arrangement_id"))

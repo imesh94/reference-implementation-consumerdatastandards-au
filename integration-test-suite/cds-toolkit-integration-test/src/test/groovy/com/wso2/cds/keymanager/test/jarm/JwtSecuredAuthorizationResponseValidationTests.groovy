@@ -36,7 +36,7 @@ class JwtSecuredAuthorizationResponseValidationTests extends AUTest {
     JWTClaimsSet jwtPayload
     String clientId
 
-    @org.testng.annotations.BeforeClass
+    @BeforeClass
     void "Send Authorisation Request"() {
 
         doConsentAuthorisation(ResponseMode.JWT, ResponseType.CODE, auConfiguration.getAppInfoClientID())
@@ -45,7 +45,6 @@ class JwtSecuredAuthorizationResponseValidationTests extends AUTest {
         Assert.assertNotNull(responseJwt)
         jwtPayload = AUJWTGenerator.extractJwt(responseJwt)
         clientId = auConfiguration.getAppInfoClientID()
-
     }
 
     @Test
