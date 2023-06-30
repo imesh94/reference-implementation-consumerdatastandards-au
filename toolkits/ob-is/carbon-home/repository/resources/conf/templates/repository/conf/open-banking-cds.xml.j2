@@ -201,6 +201,11 @@
         {% else %}
         <Enable>false</Enable>
         {% endif %}
+        {% if open_banking_cds.secondary_user_accounts.ceasing_secondary_user_sharing_enable is defined %}
+        <CeasingSecondaryUserSharingEnabled>{{open_banking_cds.secondary_user_accounts.ceasing_secondary_user_sharing_enable}}</CeasingSecondaryUserSharingEnabled>
+        % else %}
+        <CeasingSecondaryUserSharingEnabled>false</CeasingSecondaryUserSharingEnabled>
+        {% endif %}
     </SecondaryUserAccounts>
     <DisclosureOptionsManagement>
         {% if open_banking_cds.disclosure_options_management.enable is defined %}

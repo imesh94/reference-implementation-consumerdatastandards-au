@@ -13,12 +13,14 @@ import com.wso2.cds.test.framework.constant.AUConstants
 import com.wso2.cds.test.framework.AUTest
 import com.wso2.cds.test.framework.data_provider.AccountsDataProviders
 import com.wso2.cds.test.framework.request_builder.AURequestBuilder
+import io.restassured.http.ContentType
 import org.testng.Assert
 import org.testng.ITestContext
 import org.testng.annotations.BeforeClass
 import org.testng.annotations.Test
 import com.wso2.cds.test.framework.utility.AURestAsRequestBuilder
 import com.wso2.cds.test.framework.utility.AUTestUtil
+import org.testng.asserts.SoftAssert
 
 import java.nio.charset.Charset
 
@@ -242,9 +244,11 @@ class AccountsRetrievalRequestHeaderValidationTest extends AUTest {
 
         def holderID = "ABC-Bank"
 
-        def response = AURequestBuilder.buildBasicRequestWithCustomHeaders(userAccessToken,
-                AUConstants.X_V_HEADER_ACCOUNTS, clientHeader)
+        def response = AURestAsRequestBuilder.buildRequest()
                 .header("x-${holderID}-v", AUConstants.UNSUPPORTED_X_V_VERSION)
+                .header(AUConstants.AUTHORIZATION_HEADER_KEY, "${AUConstants.AUTHORIZATION_BEARER_TAG}${userAccessToken}")
+                .header(AUConstants.X_FAPI_AUTH_DATE, AUConstants.DATE)
+                .header(AUConstants.X_CDS_CLIENT_HEADERS , clientHeader)
                 .baseUri(AUTestUtil.getBaseUrl(AUConstants.BASE_PATH_TYPE_ACCOUNT))
                 .get("${AUConstants.CDS_PATH}${resourcePath}")
 
@@ -262,9 +266,11 @@ class AccountsRetrievalRequestHeaderValidationTest extends AUTest {
 
         def holderID = "ABC-Bank"
 
-        def response = AURequestBuilder.buildBasicRequestWithCustomHeaders(userAccessToken,
-                AUConstants.X_V_HEADER_ACCOUNTS, clientHeader)
+        def response = AURestAsRequestBuilder.buildRequest()
                 .header("x-${holderID}-v", AUConstants.X_V_HEADER_ACCOUNTS)
+                .header(AUConstants.AUTHORIZATION_HEADER_KEY, "${AUConstants.AUTHORIZATION_BEARER_TAG}${userAccessToken}")
+                .header(AUConstants.X_FAPI_AUTH_DATE, AUConstants.DATE)
+                .header(AUConstants.X_CDS_CLIENT_HEADERS , clientHeader)
                 .baseUri(AUTestUtil.getBaseUrl(AUConstants.BASE_PATH_TYPE_ACCOUNT))
                 .get("${AUConstants.CDS_PATH}${resourcePath}")
 
@@ -307,7 +313,7 @@ class AccountsRetrievalRequestHeaderValidationTest extends AUTest {
     void "TC0304011_Retrieve banking products with optional-headers"(){
 
         def response = AURequestBuilder.buildBasicRequestWithOptionalHeaders(userAccessToken,
-                AUConstants.X_V_HEADER_ACCOUNTS, clientHeader)
+                AUConstants.X_V_HEADER_PRODUCTS, clientHeader)
                 .accept(AUConstants.ACCEPT)
                 .baseUri(AUTestUtil.getBaseUrl(AUConstants.BASE_PATH_TYPE_ACCOUNT))
                 .get("${AUConstants.CDS_PATH}${AUConstants.BANKING_PRODUCT_PATH}")
@@ -326,7 +332,7 @@ class AccountsRetrievalRequestHeaderValidationTest extends AUTest {
     void "TC0301019_Retrieve account list with invalid product-category value"() {
 
         def response = AURequestBuilder.buildBasicRequestWithCustomHeaders(userAccessToken,
-                AUConstants.X_V_HEADER_ACCOUNTS, clientHeader)
+                AUConstants.X_V_HEADER_PRODUCTS, clientHeader)
                 .queryParam(AUConstants.PARAM_PRODUCT_CATEGORY, "TRANS")
                 .baseUri(AUTestUtil.getBaseUrl(AUConstants.BASE_PATH_TYPE_ACCOUNT))
                 .get("${AUConstants.CDS_PATH}${AUConstants.BULK_ACCOUNT_PATH}")
@@ -437,5 +443,143 @@ class AccountsRetrievalRequestHeaderValidationTest extends AUTest {
                 AUConstants.INVALID_CLIENT)
         Assert.assertEquals(AUTestUtil.parseResponseBody(response, AUConstants.ERROR_DESCRIPTION),
                 AUConstants.MISSING_CREDENTIALS)
+    }
+
+    @Test (enabled = true, dataProvider = "AccountsRetrievalFlow", dataProviderClass = AccountsDataProviders.class)
+    void "OB-1186_Retrieve account list with invalid X_FAPI_AUTH_DATE"(resource) {
+
+        def response = AURequestBuilder.buildBasicRequestWithCustomHeaders(userAccessToken,
+                AUConstants.X_V_HEADER_ACCOUNTS, clientHeader, AUConstants.CONSENT_EXPIRE_DATE)
+                .baseUri(AUTestUtil.getBaseUrl(AUConstants.BASE_PATH_TYPE_ACCOUNT))
+                .get("${AUConstants.CDS_PATH}$resource")
+
+        Assert.assertEquals(response.statusCode(), AUConstants.STATUS_CODE_400)
+        Assert.assertEquals(AUTestUtil.parseResponseBody(response, AUConstants.ERROR_CODE),
+                AUConstants.ERROR_CODE_INVALID_HEADER)
+        Assert.assertEquals(AUTestUtil.parseResponseBody(response, AUConstants.ERROR_DETAIL),
+                AUConstants.UNSUPPORTED_X_FAPI_AUTH_DATE)
+        Assert.assertEquals(AUTestUtil.parseResponseBody(response, AUConstants.ERROR_TITLE), AUConstants
+                .INVALID_HEADER)
+    }
+
+    @Test (dataProvider = "AccountsRetrievalFlow", dataProviderClass = AccountsDataProviders.class)
+    void "OB-1187_Retrieve account list with invalid X_FAPI_CUSTOMER_IP_ADDRESS"(resource) {
+
+        def response = AURequestBuilder.buildBasicRequestWithOptionalHeaders(userAccessToken,
+                AUConstants.X_V_HEADER_ACCOUNTS, clientHeader, AUConstants.DATE, "23.3.4")
+                .baseUri(AUTestUtil.getBaseUrl(AUConstants.BASE_PATH_TYPE_ACCOUNT))
+                .get("${AUConstants.CDS_PATH}$resource")
+
+        Assert.assertEquals(response.statusCode(), AUConstants.STATUS_CODE_400)
+        Assert.assertEquals(AUTestUtil.parseResponseBody(response, AUConstants.ERROR_CODE),
+                AUConstants.ERROR_CODE_INVALID_HEADER)
+        Assert.assertEquals(AUTestUtil.parseResponseBody(response, AUConstants.ERROR_DETAIL),
+                AUConstants.UNSUPPORTED_X_FAPI_IP_ADDRESS)
+        Assert.assertEquals(AUTestUtil.parseResponseBody(response, AUConstants.ERROR_TITLE), AUConstants
+                .INVALID_HEADER)
+    }
+
+    //TODO: Issue: https://github.com/wso2-enterprise/financial-open-banking/issues/7316 (Check with latest swagger)
+    @Test
+    void "OB-1190_Retrieve transaction list with invalid oldest-time"() {
+
+        def response = AURequestBuilder.buildBasicRequestWithCustomHeaders(userAccessToken,
+                AUConstants.X_V_HEADER_ACCOUNTS, clientHeader)
+                .header(AUConstants.OLDEST_TIME, "aaa")
+                .baseUri(AUTestUtil.getBaseUrl(AUConstants.BASE_PATH_TYPE_ACCOUNT))
+                .get("${AUConstants.CDS_PATH}${AUConstants.GET_TRANSACTIONS}")
+
+        Assert.assertEquals(response.statusCode(), AUConstants.STATUS_CODE_400)
+        Assert.assertEquals(AUTestUtil.parseResponseBody(response, AUConstants.ERROR_CODE),
+                AUConstants.ERROR_CODE_INVALID_FIELD)
+        Assert.assertEquals(AUTestUtil.parseResponseBody(response, AUConstants.ERROR_DETAIL),
+                AUConstants.OLDEST_TIME)
+        Assert.assertEquals(AUTestUtil.parseResponseBody(response, AUConstants.ERROR_TITLE), AUConstants
+                .INVALID_FIELD)
+    }
+
+    //TODO: Issue: https://github.com/wso2-enterprise/financial-open-banking/issues/7316 (Check with latest swagger)
+    @Test
+    void "OB-1191_Retrieve transaction list with invalid newest-time"() {
+
+        def response = AURequestBuilder.buildBasicRequestWithCustomHeaders(userAccessToken,
+                AUConstants.X_V_HEADER_ACCOUNTS, clientHeader)
+                .header(AUConstants.NEWEST_TIME, "2021-05-01")
+                .baseUri(AUTestUtil.getBaseUrl(AUConstants.BASE_PATH_TYPE_ACCOUNT))
+                .get("${AUConstants.CDS_PATH}${AUConstants.GET_TRANSACTIONS}")
+
+        Assert.assertEquals(response.statusCode(), AUConstants.STATUS_CODE_400)
+        Assert.assertEquals(AUTestUtil.parseResponseBody(response, AUConstants.ERROR_CODE),
+                AUConstants.ERROR_CODE_INVALID_FIELD)
+        Assert.assertEquals(AUTestUtil.parseResponseBody(response, AUConstants.ERROR_DETAIL),
+                AUConstants.NEWEST_TIME)
+        Assert.assertEquals(AUTestUtil.parseResponseBody(response, AUConstants.ERROR_TITLE), AUConstants
+                .INVALID_FIELD)
+    }
+
+    @Test
+    void "OB-1316_Retrieve Direct Debits For Specific Account with invalid content type"() {
+
+        String requestBody = """
+            {
+              "data": {
+                "accountIds": [
+                  "${AUConstants.accountID}", "${secondConsentedAccount}"
+                ]
+              },
+              "meta": {}
+            }
+        """.stripIndent()
+
+        def response = AURequestBuilder.buildBasicRequest(userAccessToken, AUConstants.X_V_HEADER_ACCOUNTS)
+                .contentType(ContentType.XML)
+                .body(requestBody)
+                .baseUri(AUTestUtil.getBaseUrl(AUConstants.BASE_PATH_TYPE_DIRECT_DEBIT))
+                .post("${AUConstants.CDS_PATH}${AUConstants.BULK_DIRECT_DEBITS_PATH}")
+
+        SoftAssert softAssertion= new SoftAssert()
+        softAssertion.assertEquals(response.statusCode(), AUConstants.STATUS_CODE_415)
+
+        softAssertion.assertEquals(AUTestUtil.parseResponseBody(response, AUConstants.ERROR_TITLE),
+                AUConstants.ERROR_CODE_GENERAL_EXPECTED_ERROR)
+        softAssertion.assertEquals(AUTestUtil.parseResponseBody(response, AUConstants.ERROR_DETAIL),
+                AUConstants.INVALID_CONTENT_TYPE)
+
+        softAssertion.assertAll()
+    }
+
+    @Test
+    void "OB-1317_Retrieve Direct Debits For Specific Account with invalid accept header"() {
+
+        String requestBody = """
+            {
+              "data": {
+                "accountIds": [
+                  "${AUConstants.accountID}"
+                ]
+              },
+              "meta": {}
+            }
+        """.stripIndent()
+
+        def response = AURequestBuilder.buildBasicRequestWithCustomHeaders(userAccessToken,
+                AUConstants.X_V_HEADER_ACCOUNTS, clientHeader)
+                .accept(ContentType.XML)
+                .contentType(ContentType.JSON)
+                .body(requestBody)
+                .baseUri(AUTestUtil.getBaseUrl(AUConstants.BASE_PATH_TYPE_DIRECT_DEBIT))
+                .post("${AUConstants.CDS_PATH}${AUConstants.BULK_DIRECT_DEBITS_PATH}")
+
+        SoftAssert softAssertion= new SoftAssert()
+        softAssertion.assertEquals(response.statusCode(), AUConstants.STATUS_CODE_406)
+
+        softAssertion.assertEquals(AUTestUtil.parseResponseBody(response, AUConstants.ERROR_CODE),
+                AUConstants.ERROR_CODE_GENERAL_EXPECTED_ERROR)
+        softAssertion.assertEquals(AUTestUtil.parseResponseBody(response, AUConstants.ERROR_DETAIL),
+                AUConstants.INVALID_ACCEPT_HEADER)
+        softAssertion.assertEquals(AUTestUtil.parseResponseBody(response, AUConstants.ERROR_TITLE),
+                AUConstants.ERROR_TITLE_GENERAL_EXPECTED_ERROR)
+
+        softAssertion.assertAll()
     }
 }

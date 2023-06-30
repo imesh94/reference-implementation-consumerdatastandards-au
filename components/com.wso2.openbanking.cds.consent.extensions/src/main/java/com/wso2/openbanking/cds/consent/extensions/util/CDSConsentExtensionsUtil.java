@@ -12,6 +12,7 @@ package com.wso2.openbanking.cds.consent.extensions.util;
 import com.wso2.openbanking.accelerator.account.metadata.service.service.AccountMetadataService;
 import com.wso2.openbanking.accelerator.account.metadata.service.service.AccountMetadataServiceImpl;
 import com.wso2.openbanking.accelerator.common.exception.OpenBankingException;
+import com.wso2.openbanking.accelerator.common.identity.retriever.sp.CommonServiceProviderRetriever;
 import com.wso2.openbanking.accelerator.consent.extensions.common.ConsentException;
 import com.wso2.openbanking.accelerator.consent.extensions.common.ResponseStatus;
 import com.wso2.openbanking.cds.consent.extensions.common.CDSConsentExtensionConstants;
@@ -64,6 +65,45 @@ public class CDSConsentExtensionsUtil {
             return status.equals(CDSConsentExtensionConstants.DOMS_STATUS_PRE_APPROVAL);
         } else {
             return true;
+        }
+    }
+  
+    /**
+     * Method to retrieve the sharing status of a legal entity for the given accountID, secondaryUserID and
+     * legalEntityID
+     *
+     * @param accountID
+     * @param userID
+     * @param clientID
+     * @return true/false based on the sharing status of a legal entity
+     */
+    public static boolean isLegalEntityBlockedForAccountAndUser(String accountID, String userID, String clientID)
+            throws ConsentException {
+
+        try {
+            CommonServiceProviderRetriever commonServiceProviderRetriever = new CommonServiceProviderRetriever();
+
+            String legalEntityID = commonServiceProviderRetriever.
+                    getAppPropertyFromSPMetaData(clientID,
+                            CDSConsentExtensionConstants.LEGAL_ENTITY_ID);
+            String blockedLegalEntities = accountMetadataService.getAccountMetadataByKey
+                    (accountID, userID, CDSConsentExtensionConstants.METADATA_KEY_BLOCKED_LEGAL_ENTITIES);
+
+            if (blockedLegalEntities != null) {
+                String[] blockedLegalEntityArray = blockedLegalEntities.split(",");
+                for (String blockedLegalEntity : blockedLegalEntityArray) {
+                    if (legalEntityID.equals(blockedLegalEntity)) {
+                        return true;
+                    }
+                }
+                return false;
+            } else {
+                return false;
+            }
+        } catch (OpenBankingException e) {
+            log.error("Error occurred while retrieving account metadata");
+            throw new ConsentException(ResponseStatus.INTERNAL_SERVER_ERROR,
+                    "Error occurred while retrieving account metadata");
         }
     }
 }

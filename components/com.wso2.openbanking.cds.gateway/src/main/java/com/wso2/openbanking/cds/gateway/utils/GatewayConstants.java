@@ -1,18 +1,16 @@
 /*
- * Copyright (c) 2021, WSO2 Inc. (http://www.wso2.com). All Rights Reserved.
+ * Copyright (c) 2021-2023, WSO2 LLC. (https://www.wso2.com). All Rights Reserved.
  *
- * This software is the property of WSO2 Inc. and its suppliers, if any.
+ * This software is the property of WSO2 LLC. and its suppliers, if any.
  * Dissemination of any information or reproduction of any material contained
- * herein is strictly forbidden, unless permitted by WSO2 in accordance with
- * the WSO2 Software License available at https://wso2.com/licenses/eula/3.1. For specific
- * language governing the permissions and limitations under this license,
- * please see the license as well as any agreement you’ve entered into with
- * WSO2 governing the purchase of this software and any associated services.
+ * herein in any form is strictly forbidden, unless permitted by WSO2 expressly.
+ * You may not alter or remove any copyright or other notice from copies of this content.
  */
 
 package com.wso2.openbanking.cds.gateway.utils;
 
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.List;
 import java.util.regex.Pattern;
 
@@ -37,8 +35,8 @@ public class GatewayConstants {
     public static final String NO_ENTITY_BODY = "NO_ENTITY_BODY";
     public static final String CONTENT_TYPE_TAG = "Content-Type";
     public static final String ACCEPT_HEADER = "Accept header";
-    public static final String NULL_STRING = "null";
-
+    public static final String EMPTY_SOAP_BODY =
+            "<soapenv:Body xmlns:soapenv=\"http://www.w3.org/2003/05/soap-envelope\"/>";
 
     public static final int API_AUTH_GENERAL_ERROR = 900900;
     public static final int API_AUTH_INVALID_CREDENTIALS = 900901;
@@ -85,10 +83,10 @@ public class GatewayConstants {
     public static final String DISCOVERY_OUTAGES_ENDPOINT = "/discovery/outages";
     public static final String DISCOVERY_STATUS_ENDPOINT = "/discovery/status";
 
-    public static final List<String> INFOSEC_ENDPOINTS = Arrays.asList(AUTHORIZE_ENDPOINT, TOKEN_ENDPOINT,
-            USERINFO_ENDPOINT, PAR_ENDPOINT, TOKEN_INTROSPECT_ENDPOINT, JWKS_ENDPOINT, REVOKE_ENDPOINT,
+    public static final List<String> INFOSEC_ENDPOINTS = Collections.unmodifiableList(Arrays.asList(AUTHORIZE_ENDPOINT,
+            TOKEN_ENDPOINT, USERINFO_ENDPOINT, PAR_ENDPOINT, TOKEN_INTROSPECT_ENDPOINT, JWKS_ENDPOINT, REVOKE_ENDPOINT,
             REGISTER_ENDPOINT, REGISTER_CLIENT_ID_ENDPOINT, WELL_KNOWN_ENDPOINT, CDR_ARRANGEMENT_ENDPOINT,
-            DISCOVERY_OUTAGES_ENDPOINT, DISCOVERY_STATUS_ENDPOINT);
+            DISCOVERY_OUTAGES_ENDPOINT, DISCOVERY_STATUS_ENDPOINT));
 
     public static final String UNKNOWN = "Unknown";
 

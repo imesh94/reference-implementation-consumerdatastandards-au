@@ -1,17 +1,15 @@
 /*
- * Copyright (c) 2021-2023, WSO2 Inc. (http://www.wso2.com). All Rights Reserved.
+ * Copyright (c) 2021-2023, WSO2 LLC. (https://www.wso2.com). All Rights Reserved.
  *
- * This software is the property of WSO2 Inc. and its suppliers, if any.
+ * This software is the property of WSO2 LLC. and its suppliers, if any.
  * Dissemination of any information or reproduction of any material contained
- * herein is strictly forbidden, unless permitted by WSO2 in accordance with
- * the WSO2 Software License available at https://wso2.com/licenses/eula/3.1. For specific
- * language governing the permissions and limitations under this license,
- * please see the license as well as any agreement you’ve entered into with
- * WSO2 governing the purchase of this software and any associated services.
+ * herein in any form is strictly forbidden, unless permitted by WSO2 expressly.
+ * You may not alter or remove any copyright or other notice from copies of this content.
  */
 
 package com.wso2.openbanking.cds.consent.extensions.validate;
 
+import com.wso2.openbanking.accelerator.account.metadata.service.service.AccountMetadataService;
 import com.wso2.openbanking.accelerator.account.metadata.service.service.AccountMetadataServiceImpl;
 import com.wso2.openbanking.accelerator.common.exception.OpenBankingException;
 import com.wso2.openbanking.accelerator.consent.extensions.common.ConsentException;
@@ -51,7 +49,8 @@ import static com.wso2.openbanking.accelerator.consent.mgt.service.constants.Con
 public class CDSConsentValidator implements ConsentValidator {
 
     private static final Log log = LogFactory.getLog(CDSConsentValidator.class);
-    AccountMetadataServiceImpl accountMetadataService = AccountMetadataServiceImpl.getInstance();
+
+    AccountMetadataService accountMetadataService = AccountMetadataServiceImpl.getInstance();
 
     @Override
     public void validate(ConsentValidateData consentValidateData, ConsentValidationResult consentValidationResult)
@@ -151,6 +150,11 @@ public class CDSConsentValidator implements ConsentValidator {
             removeInactiveSecondaryUserAccountConsentMappings(consentValidateData);
         }
 
+        // Filter accounts based on the sharing status of legal entity
+        if (openBankingCDSConfigParser.isCeasingSecondaryUserSharingEnabled()) {
+            removeBlockedLegalEntityConsentMappings(consentValidateData);
+        }
+
         // Remove accounts with revoked BNR permission if the configuration is enabled.
         if (openBankingCDSConfigParser.isBNRValidateAccountsOnRetrievalEnabled()) {
             removeAccountsWithRevokedBNRPermission(consentValidateData);
@@ -213,6 +217,40 @@ public class CDSConsentValidator implements ConsentValidator {
             }
         }
         consentValidateData.getComprehensiveConsent().setConsentMappingResources(distinctMappingResources);
+    }
+
+    /**
+     * Method to filter accounts based on the sharing status of legal entity
+     *
+     * @param consentValidateData consentValidateData
+     */
+    private void removeBlockedLegalEntityConsentMappings(ConsentValidateData consentValidateData) throws
+            ConsentException {
+        ArrayList<ConsentMappingResource> validMappingResources = new ArrayList<>();
+
+        try {
+
+            String secondaryUserID = consentValidateData.getUserId();
+
+            for (ConsentMappingResource consentMappingResource : consentValidateData.
+                    getComprehensiveConsent().getConsentMappingResources()) {
+
+                String accountID = consentMappingResource.getAccountID();
+                String clientID = consentValidateData.getClientId();
+
+                boolean isLegalEntitySharingStatusBlocked = CDSConsentExtensionsUtil.
+                        isLegalEntityBlockedForAccountAndUser(accountID, secondaryUserID, clientID);
+
+                if (!isLegalEntitySharingStatusBlocked) {
+                    validMappingResources.add(consentMappingResource);
+                }
+            }
+            consentValidateData.getComprehensiveConsent().setConsentMappingResources(validMappingResources);
+        } catch (ConsentException e) {
+            log.error("Error occurred while retrieving account metadata");
+            throw new ConsentException(ResponseStatus.INTERNAL_SERVER_ERROR,
+                    "Error occurred while retrieving account metadata");
+        }
     }
 
     /**

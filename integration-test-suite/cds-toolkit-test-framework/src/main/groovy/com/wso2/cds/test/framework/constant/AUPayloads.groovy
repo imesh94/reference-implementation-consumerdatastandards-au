@@ -135,7 +135,7 @@ class AUPayloads {
      * @return
      */
     static String getIncorrectNominationPayload(String accountId, String accountOwnerUserID, String nominatedRepUserID,
-                                                 String permissionType) {
+                                                String permissionType) {
 
         return """
                {
@@ -181,5 +181,117 @@ class AUPayloads {
                   ]
                }
             """.stripIndent()
+    }
+
+    /**
+     * Get the payload for Update Disclosure Options Management Service.
+     * @param accountId
+     * @param disclosureSharingStatus
+     * @return
+     */
+    static String getDOMSStatusUpdatePayload(List <String> accountId, List <String> disclosureSharingStatus) {
+
+        def requestBody
+        if (accountId.size() > 1 && disclosureSharingStatus.size() > 1) {
+            requestBody = """
+            {
+               "Data":[
+                     {"${accountId[0]}":"${disclosureSharingStatus[0]}"},
+                     {"${accountId[1]}":"${disclosureSharingStatus[1]}"}
+               ]
+            }
+            """.stripIndent()
+        } else {
+            requestBody = """
+            {
+               "Data":[
+                     {"${accountId[0]}":"${disclosureSharingStatus[0]}"}
+               ]
+            }
+            """.stripIndent()
+        }
+        return requestBody
+    }
+
+    /**
+     * Get the payload for Secondary User Instruction Permission Update.
+     * @param accountId - Secondary Account ID
+     * @param disclosureSharingStatus - Secondary Account Instruction Status
+     * @return - Payload
+     */
+    static String getSecondaryUserInstructionPermissionPayload(String secondaryAccountId, String secondaryUserId,
+                                                               String secondaryAccountInstructionStatus = "active",
+                                                               boolean otherAccountsAvailability = false) {
+        return """
+        {
+            "data": [
+                {
+                    "secondaryAccountId": "${secondaryAccountId}",
+                    "secondaryUserId": "${secondaryUserId}",
+                    "otherAccountsAvailability": ${otherAccountsAvailability},
+                    "secondaryAccountInstructionStatus": "${secondaryAccountInstructionStatus}"
+                }
+            ]
+        }
+        """.stripIndent()
+    }
+
+    /**
+     * Get Payload for Block Legal Entity
+     * @param secondaryUserId - Secondary User ID
+     * @param accountId - Secondary Account ID
+     * @param legalEntityId - Legal Entity ID
+     * @param sharingStatus - Sharing Status
+     * @param isMultipleLegalEntity - Multiple Legal Entity
+     * @param secondaryUserId2 - Secondary User ID (Pass only if isMultipleLegalEntity is true)
+     * @param accountId2 - Secondary Account ID (Pass only if isMultipleLegalEntity is true)
+     * @param legalEntityId2 - Legal Entity ID (Pass only if isMultipleLegalEntity is true)
+     * @param sharingStatus2 - Sharing Status (Pass only if isMultipleLegalEntity is true)
+     * @return - Payload
+     */
+    static String getBlockLegalEntityPayload(String secondaryUserId, String accountId, String legalEntityId,
+                                             String sharingStatus, boolean isMultipleLegalEntity = false,
+                                             String secondaryUserId2 = null, String accountId2 = null,
+                                             String legalEntityId2 = null, String sharingStatus2 = null) {
+
+        String payload
+
+        if(isMultipleLegalEntity) {
+
+            payload = """
+            {
+                "data": [
+                    {
+                        "secondaryUserId": "${secondaryUserId}",
+                        "accountId": "${accountId}",
+                        "legalEntityId": ${legalEntityId},
+                        "sharingStatus": "${sharingStatus}"
+                    },
+                    {
+                        "secondaryUserId": "${secondaryUserId2}",
+                        "accountId": "${accountId2}",
+                        "legalEntityId": ${legalEntityId2},
+                        "sharingStatus": "${sharingStatus2}"
+                    }
+                ]
+            }
+            """.stripIndent()
+
+        } else {
+            payload = """
+            {
+                "data": [
+                    {
+                        "secondaryUserId": "${secondaryUserId}",
+                        "accountId": "${accountId}",
+                        "legalEntityId": ${legalEntityId},
+                        "sharingStatus": "${sharingStatus}"
+                    }
+                ]
+            }
+            """.stripIndent()
+        }
+
+        return payload
     }
 }

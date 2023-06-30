@@ -99,5 +99,9 @@ public class CommonConstants {
     // Disclosure Options Management config constants
     public static final String DISCLOSURE_OPTIONS_MANAGEMENT_ENABLED = "DisclosureOptionsManagement.Enable";
 
+    // Ceasing Secondary User Sharing Config Constants
+    public static final String CEASING_SECONDARY_USER_SHARING_ENABLED =
+            "SecondaryUserAccounts.CeasingSecondaryUserSharingEnabled";
+
     private CommonConstants() {}
 }

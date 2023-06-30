@@ -35,6 +35,7 @@ public class CDSConsentExtensionConstants {
     public static final String DISPLAY_NAME = "displayName";
     public static final String PRE_ACCOUNTS_DATA = "pre_accounts_data";
     public static final String REDIRECT_URL = "redirectURL";
+    public static final String STATE = "state";
     public static final String EXPIRATION_DATE_TITLE = "Expiration Date Time";
     public static final String PERMISSION_TITLE = "Permissions";
     public static final String EXPIRATION_DATE_TIME = "expirationDateTime";
@@ -168,7 +169,7 @@ public class CDSConsentExtensionConstants {
     public static final String ENABLE_ACCOUNT_ID_VALIDATION_ON_RETRIEVAL = "ConsentManagement.Validate" +
             "AccountIdOnRetrieval";
 
-    // constants related to secondary accounts
+    // Constants related to secondary accounts
     public static final String INSTRUCTION_STATUS = "secondaryAccountInstructionStatus";
     public static final String SECONDARY_ACCOUNT_USER = "secondary_account_user";
     public static final String ACTIVE_STATUS = "active";
@@ -183,6 +184,8 @@ public class CDSConsentExtensionConstants {
     public static final String SECONDARY_ACCOUNTS = "secondaryAccounts";
     public static final String ACTIVE_ACCOUNTS = "activeAccounts";
     public static final String INACTIVE_ACCOUNTS = "inactiveAccounts";
+    public static final String METADATA_KEY_BLOCKED_LEGAL_ENTITIES = "BLOCKED_LEGAL_ENTITIES";
+    public static final String LEGAL_ENTITY_ID = "legal_entity_id";
 
     // DH revocation configs
     public static final String ENABLE_RECIPIENT_CONSENT_REVOCATION = "RecipientConsentRevocationEndpoint.Enable";

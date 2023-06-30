@@ -106,15 +106,6 @@ class AURequestBuilder {
                 .header(AUConstants.AUTHORIZATION_HEADER_KEY, "${AUConstants.AUTHORIZATION_BEARER_TAG}${userAccessToken}")
     }
 
-    static RequestSpecification buildBasicRequestWithCustomerIP(String userAccessToken, int xv_header) {
-
-        return AURestAsRequestBuilder.buildRequest()
-                .header(AUConstants.X_V_HEADER, xv_header)
-                .header(AUConstants.X_FAPI_CUSTOMER_IP_ADDRESS, AUConstants.IP)
-                .header(AUConstants.AUTHORIZATION_HEADER_KEY, "${AUConstants.AUTHORIZATION_BEARER_TAG}${userAccessToken}")
-                .baseUri(AUTestUtil.getBaseUrl(AUConstants.BASE_PATH_TYPE_ACCOUNT))
-    }
-
     static RequestSpecification buildBasicRequestWithoutAuthorisationHeader(int xv_header) {
 
         return AURestAsRequestBuilder.buildRequest()
@@ -131,8 +122,7 @@ class AURequestBuilder {
      * @return RequestSpecification
      */
     static RequestSpecification buildBasicRequestWithCustomHeaders(String userAccessToken, def xv_header, clientHeader,
-                                                                   String authDate = AUConstants.DATE,
-                                                                   String customerIpAddress = AUConstants.IP) {
+                                                                   String authDate = AUConstants.DATE) {
 
         return AURestAsRequestBuilder.buildRequest()
                 .header(AUConstants.X_V_HEADER, xv_header)
@@ -157,7 +147,7 @@ class AURequestBuilder {
 
         return AURestAsRequestBuilder.buildRequest()
                 .header(AUConstants.X_V_HEADER, xv_header)
-                .header(AUConstants.AUTHORIZATION_HEADER_KEY, "${AUConstants.AUTHORIZATION_BEARER_TAG}${userAccessToken}")
+                .header(AUConstants.AUTHORIZATION_HEADER_KEY, "${AUConstants.AUTHORIZATION_BEARER_TAG} ${userAccessToken}")
                 .header(AUConstants.X_FAPI_AUTH_DATE, authDate)
                 .header(AUConstants.X_FAPI_CUSTOMER_IP_ADDRESS , customerIpAddress)
                 .header(AUConstants.X_CDS_CLIENT_HEADERS , clientHeader)
@@ -208,16 +198,15 @@ class AURequestBuilder {
      * @param scopesList requsted scope list
      * @return token response
      */
-    static AccessTokenResponse getUserToken(String code, List<AUAccountScope> scopesList) {
+    static AccessTokenResponse getUserToken(String code, List<AUAccountScope> scopesList, CodeVerifier codeVerifier) {
 
         AuthorizationCode grant = new AuthorizationCode(code)
         URI callbackUri = new URI(auConfiguration.getAppInfoRedirectURL())
-        AuthorizationGrant codeGrant = new AuthorizationCodeGrant(grant, callbackUri)
+        AuthorizationGrant codeGrant = new AuthorizationCodeGrant(grant, callbackUri, codeVerifier)
 
-        Scope scope = new Scope("openid")
-        for (scopeValue in scopesList) {
-            scope.add(scopeValue.toString())
-        }
+        String scopeString = "openid ${String.join(" ", scopesList.collect({ it.scopeString }))}"
+
+        Scope scope = new Scope(scopeString)
 
         String assertionString = new SignedObject().getJwt()
 
@@ -313,7 +302,7 @@ class AURequestBuilder {
 
         ClientAuthentication clientAuth = new PrivateKeyJWT(SignedJWT.parse(assertionString))
 
-        URI tokenEndpoint = new URI("${auConfiguration.getServerBaseURL()}${AUConstants.TOKEN_ENDPOINT}")
+        URI tokenEndpoint = new URI("${auConfiguration.getServerAuthorisationServerURL()}${AUConstants.TOKEN_ENDPOINT}")
 
         TokenRequest request = new TokenRequest(tokenEndpoint, clientAuth, refreshTokenGrant)
 
@@ -346,7 +335,7 @@ class AURequestBuilder {
 
         ClientAuthentication clientAuth = new PrivateKeyJWT(SignedJWT.parse(assertionString))
 
-        URI tokenEndpoint = new URI("${auConfiguration.getServerBaseURL()}${AUConstants.TOKEN_ENDPOINT}")
+        URI tokenEndpoint = new URI("${auConfiguration.getServerAuthorisationServerURL()}${AUConstants.TOKEN_ENDPOINT}")
 
         TokenRequest request = new TokenRequest(tokenEndpoint, clientAuth, refreshTokenGrant)
 
@@ -370,11 +359,20 @@ class AURequestBuilder {
      * @param token access token
      * @return Introspection Request Specification
      */
-    static RequestSpecification buildIntrospectionRequest(String token, Integer tpp = null) {
+    static RequestSpecification buildIntrospectionRequest(String token, String clientId, Integer tpp = null) {
+
+        String assertionString = new SignedObject().getJwt(clientId)
+
+        def bodyContent = [(AUConstants.CLIENT_ID_KEY)            : (clientId),
+                           (AUConstants.CLIENT_ASSERTION_TYPE_KEY): (AUConstants.CLIENT_ASSERTION_TYPE),
+                           (AUConstants.CLIENT_ASSERTION_KEY)   : assertionString]
+
+
         return AURestAsRequestBuilder.buildRequest()
                 .contentType(ContentType.URLENC)
                 .header(AUConstants.AUTHORIZATION_HEADER_KEY, "Basic ${AUTestUtil.getBasicAuthorizationHeader(tpp)}")
-                .body("token=${token}")
+                .formParams(bodyContent)
+                .formParams("token", token)
                 .baseUri(auConfiguration.getServerAuthorisationServerURL())
     }
 
@@ -384,11 +382,20 @@ class AURequestBuilder {
      * @param token access token
      * @return Introspection Request Specification
      */
-    static RequestSpecification buildRevokeIntrospectionRequest(String token) {
+    static RequestSpecification buildRevokeIntrospectionRequest(String token, String clientId) {
+
+        String assertionString = new SignedObject().getJwt(clientId)
+
+        def bodyContent = [(AUConstants.CLIENT_ID_KEY)            : (clientId),
+                           (AUConstants.CLIENT_ASSERTION_TYPE_KEY): (AUConstants.CLIENT_ASSERTION_TYPE),
+                           (AUConstants.CLIENT_ASSERTION_KEY)   : assertionString]
+
+
         return AURestAsRequestBuilder.buildRequest()
                 .contentType(ContentType.URLENC)
-                .header(AUConstants.AUTHORIZATION_HEADER_KEY, "Basic ${AUTestUtil.getBasicAuthorizationHeader()}")
-                .body("token=${token}&token_type_hint=access_token")
+                .formParams(bodyContent)
+                .formParams("token", token)
+                .formParams("token_type_hint", "access_token")
                 .baseUri(auConfiguration.getServerAuthorisationServerURL())
     }
 
@@ -451,7 +458,7 @@ class AURequestBuilder {
         def bodyContent = [(AUConstants.CLIENT_ID_KEY)            : (clientId),
                            (AUConstants.CLIENT_ASSERTION_TYPE_KEY): (AUConstants.CLIENT_ASSERTION_TYPE),
                            (AUConstants.CLIENT_ASSERTION_KEY)     : assertionString,
-                           "cdr_arrangement_id"                   : cdrArrangementId]
+                           (AUConstants.CDR_ARRANGEMENT_ID)     : cdrArrangementId]
 
         def response = AURestAsRequestBuilder.buildRequest()
                 .contentType(AUConstants.ACCESS_TOKEN_CONTENT_TYPE)
@@ -462,4 +469,3 @@ class AURequestBuilder {
     }
 
 }
-

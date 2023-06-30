@@ -872,6 +872,7 @@ validate_accounts_on_retrieval=true
 
 [open_banking_cds.secondary_user_accounts]
 enable = true
+ceasing_secondary_user_sharing_enable = true
 
 [open_banking_cds.disclosure_options_management]
 enable = true

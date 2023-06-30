@@ -82,6 +82,7 @@
     </BNR>
     <SecondaryUserAccounts>
         <Enable>true</Enable>
+        <CeasingSecondaryUserSharingEnabled>true</CeasingSecondaryUserSharingEnabled>
     </SecondaryUserAccounts>
     <DisclosureOptionsManagement>
         <Enable>true</Enable>
