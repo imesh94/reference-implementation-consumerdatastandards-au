@@ -126,9 +126,7 @@ public class CDSConsentPersistStep implements ConsentPersistStep {
                             CDR_ARRANGEMENT_ID).toString();
                     String authResorceId = consentData.getMetaDataMap().get(CDSConsentExtensionConstants.
                             AUTH_RESOURCE_ID).toString();
-                    String authResourceStatus = consentData.getMetaDataMap().get(CDSConsentExtensionConstants.
-                            AUTH_RESOURCE_STATUS).toString();
-                    Map<String, ArrayList<String>> accountIdsMapWithPermissions = new HashMap<>();
+                    Map<String, ArrayList<String>> accountIdsMapWithPermissions;
 
                     if (!nonPrimaryAccountIDsMapWithPermissions.isEmpty()) {
                         // get account-permission list when specific non-primary permissions defined

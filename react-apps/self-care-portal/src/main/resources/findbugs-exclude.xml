@@ -8,9 +8,4 @@
   ~ You may not alter or remove any copyright or other notice from copies of this content.
 -->
 
-<FindBugsFilter>
-    <Match>
-        <Class name="com.wso2.openbanking.scp.webapp.util.Utils"/>
-        <Bug pattern="RCN_REDUNDANT_NULLCHECK_WOULD_HAVE_BEEN_A_NPE"/>
-    </Match>
-</FindBugsFilter>
+<FindBugsFilter></FindBugsFilter>

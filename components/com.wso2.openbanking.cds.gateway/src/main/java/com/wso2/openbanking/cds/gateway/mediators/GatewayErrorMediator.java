@@ -192,7 +192,7 @@ public class GatewayErrorMediator extends AbstractMediator {
         // Get api name from SYNAPSE_REST_API if not available in axis2 message context.
         if (apiName == null && messageContext.getProperty(GatewayConstants.SYNAPSE_REST_API) != null) {
             apiName = (messageContext.getProperty(GatewayConstants.SYNAPSE_REST_API).toString())
-                            .split(":")[0];
+                    .split(":")[0];
         }
 
         String apiSpecVersion = null;

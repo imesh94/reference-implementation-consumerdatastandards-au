@@ -43,9 +43,9 @@ public class OpenBankingCDSConfigParser {
     private static final Object lock = new Object();
     private static final Log log = LogFactory.getLog(OpenBankingCDSConfigParser.class);
 
-    private static OpenBankingCDSConfigParser parser;
+    private static volatile OpenBankingCDSConfigParser parser;
     private static String configFilePath;
-    private static SecretResolver secretResolver;
+    private SecretResolver secretResolver;
     private OMElement rootElement;
 
     private static final Map<String, Object> configuration = new HashMap<>();

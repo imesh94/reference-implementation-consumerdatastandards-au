@@ -85,16 +85,25 @@
     <build>
         <plugins>
             <plugin>
-                <groupId>org.codehaus.mojo</groupId>
-                <artifactId>findbugs-maven-plugin</artifactId>
+                <groupId>com.github.spotbugs</groupId>
+                <artifactId>spotbugs-maven-plugin</artifactId>
+                <version>${maven-spotbugs.version}</version>
                 <configuration>
                     <effort>Max</effort>
                     <threshold>Low</threshold>
+                    <failOnError>false</failOnError>
                     <xmlOutput>true</xmlOutput>
-                    <findbugsXmlOutputDirectory>${project.build.directory}/findbugs
-                    </findbugsXmlOutputDirectory>
+                    <spotbugsXmlOutputDirectory>${project.build.directory}/spotbugs</spotbugsXmlOutputDirectory>
+                    <includeFilterFile>${project.basedir}/src/main/resources/findbugs-include.xml</includeFilterFile>
+                    <excludeFilterFile>${project.basedir}/src/main/resources/findbugs-exclude.xml</excludeFilterFile>
+                    <plugins>
+                        <plugin>
+                            <groupId>com.h3xstream.findsecbugs</groupId>
+                            <artifactId>findsecbugs-plugin</artifactId>
+                            <version>${com.h3xstream.findsecbugs.version}</version>
+                        </plugin>
+                    </plugins>
                 </configuration>
-                <version>${maven.findbugsplugin.version}</version>
                 <executions>
                     <execution>
                         <id>analyze-compile</id>
