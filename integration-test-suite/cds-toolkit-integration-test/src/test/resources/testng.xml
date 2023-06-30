@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="ISO-8859-1" standalone="no"?>
 <!--
- ~ Copyright (c) 2023, WSO2 LLC. (https://www.wso2.com). All Rights Reserved.
+ ~ Copyright (c) 2022 - 2023, WSO2 LLC. (https://www.wso2.com). All Rights Reserved.
  ~
  ~ This software is the property of WSO2 LLC. and its suppliers, if any.
  ~ Dissemination of any information or reproduction of any material contained
@@ -99,6 +99,23 @@
             <class name="com.wso2.cds.keymanager.test.bnr.ConsentAmendmentFlowTests"/>
             <class name="com.wso2.cds.keymanager.test.bnr.ConsentAuthFlowValidationTests"/>
             <class name="com.wso2.cds.keymanager.test.bnr.UserNominationManagementTests"/>
+        </classes>
+    </test>
+    <test parallel="false" enabled="true" name="Disclosure Option Management Service">
+        <classes>
+            <class name="com.wso2.cds.keymanager.test.doms.DisclosureOptionManagementServiceTest"/>
+        </classes>
+    </test>
+    <test parallel="false" enabled="true" name="Secondary User Instructions">
+        <classes>
+            <class name="com.wso2.cds.keymanager.test.secondaryUser.SecondaryUserInstructionsAuthorisationTest"/>
+            <class name="com.wso2.cds.keymanager.test.secondaryUser.SecondaryUserAmendmentFlow"/>
+        </classes>
+    </test>
+    <test parallel="false" enabled="true" name="Ceasing Secondary User">
+        <classes>
+            <class name="com.wso2.cds.keymanager.test.secondaryUser.CeasingSecondaryUserManagementTest"/>
+            <class name="com.wso2.cds.keymanager.test.secondaryUser.CeasingSecondaryUserConsentFlowTest"/>
         </classes>
     </test>
 </suite>

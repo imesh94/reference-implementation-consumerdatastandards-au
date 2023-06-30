@@ -12,6 +12,7 @@
 
 package com.wso2.cds.test.framework.request_builder
 
+import com.nimbusds.oauth2.sdk.ResponseType
 import com.wso2.cds.test.framework.constant.AUConstants
 import com.wso2.openbanking.test.framework.request_builder.OBRegistrationRequestBuilder
 import com.wso2.cds.test.framework.configuration.AUConfigurationService
@@ -94,7 +95,7 @@ class AURegistrationRequestBuilder extends OBRegistrationRequestBuilder {
      * @return
      */
     String getAURegularClaims() {
-        return regularClaims.addIssuer(getSoftwareID()).addSoftwareStatement(getSSA())
+        return regularClaims.addIssuer(getSoftwareID()).addSoftwareStatement(getSSA()).addResponseType(ResponseType.CODE.toString())
                 .addIDTokenEncResponseAlg().addIDTokenEncResponseEnc().getClaimsJsonAsString()
     }
 
@@ -106,7 +107,7 @@ class AURegistrationRequestBuilder extends OBRegistrationRequestBuilder {
      * @return
      */
     String getAURegularClaims(String softID, String ssa) {
-        return regularClaims.addIssuer(softID).addSoftwareStatement(ssa)
+        return regularClaims.addIssuer(softID).addSoftwareStatement(ssa).addResponseType(ResponseType.CODE.toString())
                 .addIDTokenEncResponseAlg().addIDTokenEncResponseEnc().getClaimsJsonAsString()
     }
 
@@ -120,43 +121,48 @@ class AURegistrationRequestBuilder extends OBRegistrationRequestBuilder {
      */
     String getAURegularClaims(String softID, String ssa, String redirectURI) {
         return regularClaims.addIssuer(softID).addSoftwareStatement(ssa)
-                .addCustomRedirectURI(new JSONArray().put(redirectURI))
+                .addCustomRedirectURI(new JSONArray().put(redirectURI)).addResponseType(ResponseType.CODE.toString())
                 .addIDTokenEncResponseAlg().addIDTokenEncResponseEnc().getClaimsJsonAsString()
     }
 
     String getClaimsWithoutAud() {
         return regularClaims.addIssuer(getSoftwareID()).addSoftwareStatement(getSSA())
-                .addIDTokenEncResponseAlg().addIDTokenEncResponseEnc()
+                .addIDTokenEncResponseAlg().addIDTokenEncResponseEnc().addResponseType(ResponseType.CODE.toString())
                 .removeKeyValue(AUConstants.AUDIENCE_KEY).getClaimsJsonAsString()
     }
 
     String getRegularClaimsWithNonMatchingRedirectUri() {
         return regularClaims.addIssuer(getSoftwareID()).addSoftwareStatement(getSSA())
                 .addCustomRedirectURI(new JSONArray().put("https://www.google.com/redirects/non-matching-redirect"))
+                .addResponseType(ResponseType.CODE.toString())
                 .addIDTokenEncResponseAlg().addIDTokenEncResponseEnc().getClaimsJsonAsString()
     }
 
     String getRegularClaimsWithNewRedirectUri() {
         return regularClaims.addIssuer(getSoftwareID()).addSoftwareStatement(getSSA())
                 .addCustomRedirectURI(new JSONArray().put(AUConstants.DCR_ALTERNATE_REDIRECT_URI))
+                .addResponseType(ResponseType.CODE.toString())
                 .addIDTokenEncResponseAlg().addIDTokenEncResponseEnc().getClaimsJsonAsString()
     }
 
     String getClaimsWithoutTokenEndpointAuthSigningAlg() {
         return regularClaims.addIssuer(getSoftwareID()).addSoftwareStatement(getSSA())
                 .addIDTokenEncResponseAlg().addIDTokenEncResponseEnc()
+                .addResponseType(ResponseType.CODE.toString())
                 .removeKeyValue(AUConstants.TOKEN_ENDPOINT_AUTH_SIGNING_ALG_KEY).getClaimsJsonAsString()
     }
 
     String getClaimsWithoutTokenEndpointAuthMethod() {
         return regularClaims.addIssuer(getSoftwareID()).addSoftwareStatement(getSSA())
                 .addIDTokenEncResponseAlg().addIDTokenEncResponseEnc()
+                .addResponseType(ResponseType.CODE.toString())
                 .removeKeyValue(AUConstants.TOKEN_ENDPOINT_AUTH_METHOD_KEY).getClaimsJsonAsString()
     }
 
     String getClaimsWithoutGrantTypes() {
         return regularClaims.addIssuer(getSoftwareID()).addSoftwareStatement(getSSA())
                 .addIDTokenEncResponseAlg().addIDTokenEncResponseEnc()
+                .addResponseType(ResponseType.CODE.toString())
                 .removeKeyValue(AUConstants.GRANT_TYPES_KEY).getClaimsJsonAsString()
     }
 
@@ -169,51 +175,60 @@ class AURegistrationRequestBuilder extends OBRegistrationRequestBuilder {
     String getClaimsWithoutSSA() {
         return regularClaims.addIssuer(getSoftwareID())
                 .addIDTokenEncResponseAlg().addIDTokenEncResponseEnc()
+                .addResponseType(ResponseType.CODE.toString())
                 .removeKeyValue(AUConstants.SOFTWARE_STATEMENT_KEY).getClaimsJsonAsString()
     }
 
     String getClaimsWithoutIdTokenAlg() {
         return regularClaims.addIssuer(getSoftwareID()).addSoftwareStatement(getSSA())
+                .addResponseType(ResponseType.CODE.toString())
                 .addIDTokenEncResponseEnc().getClaimsJsonAsString()
     }
 
     String getClaimsWithoutIdTokenEnc() {
         return regularClaims.addIssuer(getSoftwareID()).addSoftwareStatement(getSSA())
+                .addResponseType(ResponseType.CODE.toString())
                 .addIDTokenEncResponseAlg().getClaimsJsonAsString()
     }
 
     String getClaimsWithInvalidIdTokenAlg() {
         return regularClaims.addIssuer(getSoftwareID()).addSoftwareStatement(getSSA())
+                .addResponseType(ResponseType.CODE.toString())
                 .addIDTokenEncResponseAlg("RSA-OAEP-X").addIDTokenEncResponseEnc()
                 .getClaimsJsonAsString()
     }
 
     String getClaimsWithInvalidIdTokenEnc() {
         return regularClaims.addIssuer(getSoftwareID()).addSoftwareStatement(getSSA())
+                .addResponseType(ResponseType.CODE.toString())
                 .addIDTokenEncResponseAlg().addIDTokenEncResponseEnc("A128GCM")
                 .getClaimsJsonAsString()
     }
 
     String getClaimsWithNonMatchingSoftwareIDandISS() {
         return regularClaims.addIssuer("Mock Company").addSoftwareStatement(getSSA())
+                .addResponseType(ResponseType.CODE.toString())
                 .addIDTokenEncResponseAlg().addIDTokenEncResponseEnc()
                 .getClaimsJsonAsString()
     }
 
     String getRegularClaimsWithGivenJti(String jti) {
         return regularClaims.addIssuer(getSoftwareID()).addSoftwareStatement(getSSA())
+                .addResponseType(ResponseType.CODE.toString())
                 .addIDTokenEncResponseAlg().addIDTokenEncResponseEnc()
                 .addJti(jti).getClaimsJsonAsString()
     }
 
     String getClaimsWithUnsupportedTokenEndpointAuthMethod() {
         return regularClaims.addIssuer(getSoftwareID()).addSoftwareStatement(getSSA())
+                .addResponseType(ResponseType.CODE.toString())
                 .addIDTokenEncResponseAlg().addIDTokenEncResponseEnc()
                 .addTokenEndpointAuthMethod("mutual_tls").getClaimsJsonAsString()
     }
 
     String getRegularClaimsWithInvalidGrantTypes() {
         return regularClaims.addIssuer(getSoftwareID()).addSoftwareStatement(getSSA())
+                .addResponseType(ResponseType.CODE.toString())
                 .addIDTokenEncResponseAlg().addIDTokenEncResponseEnc()
                 .addGrantType(new JSONArray().put("urn:ietf:params:oauth:grant-type:jwt-bearer")).getClaimsJsonAsString()
     }
@@ -221,37 +236,51 @@ class AURegistrationRequestBuilder extends OBRegistrationRequestBuilder {
     String getRegularClaimsWithInvalidResponseTypes() {
         return regularClaims.addIssuer(getSoftwareID()).addSoftwareStatement(getSSA())
                 .addIDTokenEncResponseAlg().addIDTokenEncResponseEnc()
-                .addCustomResponseTypes(new JSONArray().put("code")).getClaimsJsonAsString()
+                .addCustomResponseTypes(new JSONArray().put("id_token")).getClaimsJsonAsString()
     }
 
     String getRegularClaimsWithUnsupportedApplicationType() {
         return regularClaims.addIssuer(getSoftwareID()).addSoftwareStatement(getSSA())
+                .addResponseType(ResponseType.CODE.toString())
                 .addIDTokenEncResponseAlg().addIDTokenEncResponseEnc()
                 .addApplicationType("Mobile").getClaimsJsonAsString()
     }
 
     String getRegularClaimsWithoutRequestObjectSigningAlg() {
         return regularClaims.addIssuer(getSoftwareID()).addSoftwareStatement(getSSA())
+                .addResponseType(ResponseType.CODE.toString())
                 .addIDTokenEncResponseAlg().addIDTokenEncResponseEnc()
                 .removeKeyValue(AUConstants.REQUEST_OBJECT_SIGNING_ALG_KEY).getClaimsJsonAsString()
     }
 
     String getRegularClaimsWithMalformedSSA() {
         return regularClaims.addIssuer(getSoftwareID()).addSoftwareStatement("fejkfhweuifhuiweufwhfweiio")
+                .addResponseType(ResponseType.CODE.toString())
                 .addIDTokenEncResponseAlg().addIDTokenEncResponseEnc()
                 .getClaimsJsonAsString()
     }
 
     String getRegularClaimsWithoutRedirectUris() {
         return regularClaims.addIssuer(getSoftwareID()).addSoftwareStatement(getSSA())
+                .addResponseType(ResponseType.CODE.toString())
                 .addIDTokenEncResponseAlg().addIDTokenEncResponseEnc()
                 .removeKeyValue(AUConstants.REDIRECT_URIS_KEY).getClaimsJsonAsString()
     }
 
     String getRegularClaimsWithFieldsNotSupported() {
         return regularClaims.addIssuer(getSoftwareID()).addSoftwareStatement(getSSA())
+                .addResponseType(ResponseType.CODE.toString())
                 .addIDTokenEncResponseAlg().addIDTokenEncResponseEnc()
                 .addCustomValue("adr_name", "ADR").getClaimsJsonAsString()
+    }
+
+    /**
+     * Provide regular payload with Hybrid Response Type for DCR
+     * @return
+     */
+    String getAURegularClaimsWithHybridResponseType() {
+        return regularClaims.addIssuer(getSoftwareID()).addSoftwareStatement(getSSA())
+                .addIDTokenEncResponseAlg().addIDTokenEncResponseEnc().getClaimsJsonAsString()
     }
 
     /**
