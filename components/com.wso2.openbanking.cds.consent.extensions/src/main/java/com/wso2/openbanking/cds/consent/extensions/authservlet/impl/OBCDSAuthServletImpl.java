@@ -8,11 +8,17 @@
  */
 package com.wso2.openbanking.cds.consent.extensions.authservlet.impl;
 
+import com.wso2.openbanking.accelerator.account.metadata.service.service.AccountMetadataServiceImpl;
+import com.wso2.openbanking.accelerator.common.exception.OpenBankingException;
 import com.wso2.openbanking.accelerator.consent.extensions.authservlet.model.OBAuthServletInterface;
+import com.wso2.openbanking.accelerator.consent.extensions.common.ConsentException;
+import com.wso2.openbanking.accelerator.consent.extensions.common.ResponseStatus;
 import com.wso2.openbanking.cds.common.config.OpenBankingCDSConfigParser;
 import com.wso2.openbanking.cds.consent.extensions.common.CDSConsentExtensionConstants;
 import com.wso2.openbanking.cds.consent.extensions.util.CDSConsentExtensionsUtil;
 import org.apache.commons.lang3.StringUtils;
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 import org.json.JSONArray;
 import org.json.JSONObject;
 
@@ -29,8 +35,11 @@ import javax.servlet.http.HttpServletRequest;
  */
 public class OBCDSAuthServletImpl implements OBAuthServletInterface {
 
+    private static final Log log = LogFactory.getLog(OBCDSAuthServletImpl.class);
     String preSelectedProfileId;
+    AccountMetadataServiceImpl accountMetadataService = AccountMetadataServiceImpl.getInstance();
     private String userId;
+    private boolean isConsentAmendment;
 
     @Override
     public Map<String, Object> updateRequestAttribute(HttpServletRequest httpServletRequest, JSONObject dataSet,
@@ -39,6 +48,8 @@ public class OBCDSAuthServletImpl implements OBAuthServletInterface {
         Map<String, Object> returnMaps = new HashMap<>();
         preSelectedProfileId = "";
         userId = dataSet.getString(CDSConsentExtensionConstants.USER_ID);
+        isConsentAmendment = (dataSet.has(CDSConsentExtensionConstants.IS_CONSENT_AMENDMENT) &&
+                (boolean) dataSet.get(CDSConsentExtensionConstants.IS_CONSENT_AMENDMENT));
 
         // Set "data_requested" that contains the human-readable scope-requested information
         JSONArray dataRequestedJsonArray = dataSet.getJSONArray(CDSConsentExtensionConstants.DATA_REQUESTED);
@@ -69,8 +80,7 @@ public class OBCDSAuthServletImpl implements OBAuthServletInterface {
         }
 
         //Consent amendment flow
-        if (dataSet.has(CDSConsentExtensionConstants.IS_CONSENT_AMENDMENT) &&
-                (boolean) dataSet.get(CDSConsentExtensionConstants.IS_CONSENT_AMENDMENT)) {
+        if (isConsentAmendment) {
             // Add new data requested
             JSONArray newDataRequestedJsonArray = dataSet.getJSONArray(CDSConsentExtensionConstants.NEW_DATA_REQUESTED);
             Map<String, List<String>> newDataRequested = getRequestedDataMap(newDataRequestedJsonArray);
@@ -97,6 +107,8 @@ public class OBCDSAuthServletImpl implements OBAuthServletInterface {
                 dataSet.getString(CDSConsentExtensionConstants.SP_FULL_NAME));
         httpServletRequest.setAttribute(CDSConsentExtensionConstants.REDIRECT_URL,
                 dataSet.getString(CDSConsentExtensionConstants.REDIRECT_URL));
+        httpServletRequest.setAttribute(CDSConsentExtensionConstants.STATE,
+                dataSet.getString(CDSConsentExtensionConstants.STATE));
         // Check for zero sharing duration and display as once off consent
         if (CDSConsentExtensionConstants.ZERO.equals(dataSet.getString(CDSConsentExtensionConstants.CONSENT_EXPIRY))) {
             httpServletRequest.setAttribute(CDSConsentExtensionConstants.CONSENT_EXPIRY,
@@ -153,7 +165,7 @@ public class OBCDSAuthServletImpl implements OBAuthServletInterface {
      * Update Individual Personal Account Details.
      *
      * @param account: account object
-     * @param data: data map
+     * @param data:    data map
      */
     private void updateIndividualPersonalAccountAttributes(JSONObject account, Map<String, Object> data) {
         if ((account != null && account.getBoolean(CDSConsentExtensionConstants.IS_ELIGIBLE)) &&
@@ -161,6 +173,41 @@ public class OBCDSAuthServletImpl implements OBAuthServletInterface {
                         account.getString(CDSConsentExtensionConstants.CUSTOMER_ACCOUNT_TYPE))
                         && !account.getBoolean(CDSConsentExtensionConstants.IS_JOINT_ACCOUNT_RESPONSE))) {
             data.put(CDSConsentExtensionConstants.IS_SELECTABLE, true);
+        }
+    }
+
+    /**
+     * Update Business/Organization Account Details.
+     *
+     * @param account: account object
+     * @param data:    data map
+     */
+    private void updateBusinessAccountAttributes(JSONObject account, Map<String, Object> data) {
+        if ((account != null && account.getBoolean(CDSConsentExtensionConstants.IS_ELIGIBLE)) &&
+                (CDSConsentExtensionConstants.BUSINESS_PROFILE_TYPE.equalsIgnoreCase(
+                        account.getString(CDSConsentExtensionConstants.CUSTOMER_ACCOUNT_TYPE)))) {
+            boolean isSelectable = true;
+            if (isConsentAmendment) {
+                try {
+                    if (account != null && account.get(CDSConsentExtensionConstants.ACCOUNT_ID) != null) {
+                        String accountId = (String) account.get(CDSConsentExtensionConstants.ACCOUNT_ID);
+                        String permissionStatus = accountMetadataService.getAccountMetadataByKey(accountId, userId,
+                                CDSConsentExtensionConstants.BNR_PERMISSION);
+                        isSelectable = permissionStatus == null || CDSConsentExtensionConstants.
+                                BNR_AUTHORIZE_PERMISSION.equals(permissionStatus);
+                    }
+                } catch (OpenBankingException e) {
+                    log.error("Error occurred while checking nominated representative permissions in the " +
+                            "database", e);
+                    if (log.isDebugEnabled()) {
+                        log.debug("UserId: " + userId + " AccountId: " + account.get(
+                                CDSConsentExtensionConstants.ACCOUNT_ID));
+                    }
+                    throw new ConsentException(ResponseStatus.INTERNAL_SERVER_ERROR,
+                            "Error occurred while checking nominated representative permissions in the database");
+                }
+            }
+            data.put(CDSConsentExtensionConstants.IS_SELECTABLE, isSelectable);
         }
     }
 
@@ -186,7 +233,7 @@ public class OBCDSAuthServletImpl implements OBAuthServletInterface {
      * Update Secondary Account Details.
      *
      * @param account: account object
-     * @param data: data map
+     * @param data:    data map
      */
     private void updateSecondaryAccountAttributes(JSONObject account, Map<String, Object> data) {
         if (account != null && account.getBoolean(CDSConsentExtensionConstants.IS_SECONDARY_ACCOUNT_RESPONSE)) {
@@ -247,6 +294,7 @@ public class OBCDSAuthServletImpl implements OBAuthServletInterface {
             String displayName = account.getString(CDSConsentExtensionConstants.DISPLAY_NAME);
             String isPreSelectedAccount = "false";
             updateIndividualPersonalAccountAttributes(account, data);
+            updateBusinessAccountAttributes(account, data);
             updateJointAccountAttributes(account, data);
             updateSecondaryAccountAttributes(account, data);
 

@@ -34,10 +34,12 @@ import org.wso2.carbon.identity.application.common.model.ServiceProviderProperty
 import org.wso2.carbon.user.core.UserStoreException;
 
 import java.util.Arrays;
+import java.util.Comparator;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
+import java.util.TreeMap;
 
 import static com.wso2.openbanking.cds.common.metadata.periodical.updater.constants.MetadataConstants.DR_JSON_BRANDS;
 import static com.wso2.openbanking.cds.common.metadata.periodical.updater.constants.MetadataConstants.DR_JSON_LEGAL_ENTITY_ID;
@@ -166,7 +168,9 @@ public class PeriodicalMetaDataUpdateJob implements Job, MetaDataUpdate {
 
         JSONArray dataRecipientBrands = dataRecipient.getJSONArray(DR_JSON_BRANDS);
 
-        Map<String, String> softwareProductsMap = new HashMap<>();
+        Comparator<String> caseInsensitiveNullsFirstComparator = Comparator.nullsFirst(String.CASE_INSENSITIVE_ORDER);
+        Map<String, String> softwareProductsMap = new TreeMap<>(caseInsensitiveNullsFirstComparator);
+
         if (dataRecipientBrands != null) {
             for (int i = 0; i < dataRecipientBrands.length(); i++) {
                 JSONObject dataRecipientBrand = dataRecipientBrands.getJSONObject(i);
@@ -191,8 +195,10 @@ public class PeriodicalMetaDataUpdateJob implements Job, MetaDataUpdate {
 
         JSONArray dataRecipientsArray = responseJson.getJSONArray(MetadataConstants.DR_JSON_ROOT);
 
-        Map<String, String> dataRecipientsMap = new HashMap<>();
+        Comparator<String> caseInsensitiveNullsFirstComparator = Comparator.nullsFirst(String.CASE_INSENSITIVE_ORDER);
+        Map<String, String> dataRecipientsMap = new TreeMap<>(caseInsensitiveNullsFirstComparator);
         Map<String, String> softwareProductsMap = new HashMap<>();
+
         for (int jsonElementIndex = 0; jsonElementIndex < dataRecipientsArray.length(); jsonElementIndex++) {
             JSONObject dataRecipient = dataRecipientsArray.getJSONObject(jsonElementIndex);
 

@@ -42,7 +42,9 @@ import org.wso2.carbon.identity.oauth.cache.SessionDataCacheKey;
 
 import java.io.IOException;
 import java.io.InputStream;
+import java.io.UnsupportedEncodingException;
 import java.net.HttpURLConnection;
+import java.net.URLDecoder;
 import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.List;
@@ -231,7 +233,13 @@ public class CDSDataRetrievalUtil {
                 }
             }
             if (redirectURL != null) {
-                return redirectURL;
+                try {
+                    return URLDecoder.decode(redirectURL, "UTF-8");
+                } catch (UnsupportedEncodingException e) {
+                    log.error("Error occurred while decoding redirect URL", e);
+                    throw new ConsentException(ResponseStatus.INTERNAL_SERVER_ERROR,
+                            "Error occurred while decoding redirect URL");
+                }
             }
         }
         throw new ConsentException(ResponseStatus.INTERNAL_SERVER_ERROR, "Redirect URL cannot be extracted");

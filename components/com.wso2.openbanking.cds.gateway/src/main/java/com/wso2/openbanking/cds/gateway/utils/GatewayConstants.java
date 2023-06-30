@@ -35,8 +35,8 @@ public class GatewayConstants {
     public static final String NO_ENTITY_BODY = "NO_ENTITY_BODY";
     public static final String CONTENT_TYPE_TAG = "Content-Type";
     public static final String ACCEPT_HEADER = "Accept header";
-    public static final String NULL_STRING = "null";
-
+    public static final String EMPTY_SOAP_BODY =
+            "<soapenv:Body xmlns:soapenv=\"http://www.w3.org/2003/05/soap-envelope\"/>";
 
     public static final int API_AUTH_GENERAL_ERROR = 900900;
     public static final int API_AUTH_INVALID_CREDENTIALS = 900901;
