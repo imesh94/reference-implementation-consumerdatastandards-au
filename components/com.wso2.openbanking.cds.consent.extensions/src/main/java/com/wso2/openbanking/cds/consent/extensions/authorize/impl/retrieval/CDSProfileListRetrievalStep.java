@@ -73,23 +73,25 @@ public class CDSProfileListRetrievalStep implements ConsentRetrievalStep {
 
         for (Object account : accountsJSON) {
             JSONObject accountJSON = (JSONObject) account;
-            // Check if the current user has permission to authorize the account.
-            boolean isUserEligible = isUserEligibleForConsentAuthorization(userId, accountJSON);
 
             // Process business accounts.
-            if (isUserEligible && accountJSON.containsKey(CDSConsentExtensionConstants.
+            if (accountJSON.containsKey(CDSConsentExtensionConstants.
                     CUSTOMER_ACCOUNT_TYPE) && StringUtils.equals((String) accountJSON.get(
                     CDSConsentExtensionConstants.CUSTOMER_ACCOUNT_TYPE), CDSConsentExtensionConstants.
                     BUSINESS_PROFILE_TYPE)) {
-                if (customerType != null && customerType.equalsIgnoreCase(
-                        CDSConsentExtensionConstants.ORGANISATION)) {
-                    jsonObject.put(CDSConsentExtensionConstants.PRE_SELECTED_PROFILE_ID,
-                            CDSConsentExtensionConstants.ORGANISATION_PROFILE_ID);
-                    profileIdAccountsMap = getProfileIdAccountsMapForGeneralBusinessAccounts(
-                            profileIdAccountsMap, profileMap, accountJSON);
-                } else {
-                    profileIdAccountsMap = getProfileIdAccountsMapForProfiledAccounts(profileIdAccountsMap,
-                            profileMap, accountJSON);
+                // Check if the logged-in user is a valid nominated user that has permission
+                // to authorize a consent for the account.
+                if (isUserEligibleForConsentAuthorization(userId, accountJSON)) {
+                    if (customerType != null && customerType.equalsIgnoreCase(
+                            CDSConsentExtensionConstants.ORGANISATION)) {
+                        jsonObject.put(CDSConsentExtensionConstants.PRE_SELECTED_PROFILE_ID,
+                                CDSConsentExtensionConstants.ORGANISATION_PROFILE_ID);
+                        profileIdAccountsMap = getProfileIdAccountsMapForGeneralBusinessAccounts(
+                                profileIdAccountsMap, profileMap, accountJSON);
+                    } else {
+                        profileIdAccountsMap = getProfileIdAccountsMapForProfiledAccounts(profileIdAccountsMap,
+                                profileMap, accountJSON);
+                    }
                 }
                 //Process individual accounts (non-business accounts are processed as individual).
             } else {
@@ -193,8 +195,7 @@ public class CDSProfileListRetrievalStep implements ConsentRetrievalStep {
             try {
                 String permissionStatus = accountMetadataService.getAccountMetadataByKey(accountId, userId,
                         CDSConsentExtensionConstants.BNR_PERMISSION);
-                isEligible = permissionStatus == null || CDSConsentExtensionConstants.BNR_AUTHORIZE_PERMISSION.equals(
-                        permissionStatus);
+                isEligible = CDSConsentExtensionConstants.BNR_AUTHORIZE_PERMISSION.equals(permissionStatus);
             } catch (OpenBankingException e) {
                 log.error("Error occurred while checking nominated representative permissions in the database", e);
                 throw new ConsentException(ResponseStatus.INTERNAL_SERVER_ERROR,
