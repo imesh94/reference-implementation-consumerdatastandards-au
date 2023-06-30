@@ -360,8 +360,8 @@ public class GatewayErrorMediator extends AbstractMediator {
      * @return
      */
     private static JSONObject getResponseSchemaValidationFailureResponse(String errorDetail) {
-        return getErrorDataObject(ErrorConstants.AUErrorEnum.UNEXPECTED_ERROR,
-                HttpStatus.SC_INTERNAL_SERVER_ERROR, errorDetail);
+       return getErrorDataObject(ErrorConstants.AUErrorEnum.UNEXPECTED_ERROR,
+               HttpStatus.SC_INTERNAL_SERVER_ERROR, errorDetail);
     }
 
     /**
