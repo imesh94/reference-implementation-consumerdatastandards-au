@@ -25,8 +25,8 @@ class AUPageObjects {
     public static String SINGLE_ACCOUNT_XPATH = "//input[@id='account_1']"
     public static String ALT_SINGLE_ACCOUNT_XPATH = "//input[@id='account_2']"
     public static String LBL_WHERE_TO_MANAGE_INSTRUCTION_XPATH = "//div[contains(text(),'Where to manage this arrangement')]//h5"
-    public static String LBL_NEW_PAYEES_INDICATOR_XPATH = "//b[contains(text(),'Saved payees')]/following-sibling::span[contains(text(),'New')]"
-    public static String LBL_NEW_SHARING_DURATION_XPATH = "//span[@id='consent-expiry-date']/following-sibling::span[contains(text(),'New')]"
+    public static String LBL_NEW_PAYEES_INDICATOR_XPATH = "//button[contains(text(),'Saved payees')]/span[contains(text(),'New')]"
+    public static String LBL_NEW_SHARING_DURATION_XPATH = "//button[@id='consent-expiry-date']/span[contains(text(),'New')]"
     public static String LBL_ACCOUNT_1_ID_XPATH = "//input[@id='account_1']//following::small[1]"
     public static String LBL_ACCOUNT_2_ID_XPATH = "//input[@id='account_2']//following::small[1]"
     public static String LBL_SELECT_THE_ACCOUNTS_XPATH = "//h5[contains(text(),'Select the accounts you wish to authorise')]"
@@ -203,5 +203,9 @@ class AUPageObjects {
     public static String TEXT_ATTRIBUTE = "text"
     public static String JOINT_ACCOUNT_XPATH = "//input[@id='joint_account_1']"
     public static String ALT_JOINT_ACCOUNT_XPATH = "//input[@id='joint_account_2']"
+    public static String LBL_ERROR_TRY_AGAIN = "//div[@id='error-msg']"
+    public static String BTN_AUTHENTICATE = "//input[@id='authenticate']"
+    public static String TXT_OTP_CODE = "OTPcode"
+    public static BTN_CONSENT_EXPIRY_XPATH = "//button[@id='consent-expiry-date']"
 
 }

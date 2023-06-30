@@ -1,14 +1,13 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!--
- ~ Copyright (c) 2021, WSO2 Inc. (http://www.wso2.com). All Rights Reserved.
  ~
- ~ This software is the property of WSO2 Inc. and its suppliers, if any.
+ ~ Copyright (c) 2021-2023, WSO2 LLC. (https://www.wso2.com). All Rights Reserved.
+ ~
+ ~ This software is the property of WSO2 LLC. and its suppliers, if any.
  ~ Dissemination of any information or reproduction of any material contained
- ~ herein is strictly forbidden, unless permitted by WSO2 in accordance with
- ~ the WSO2 Software License available at https://wso2.com/licenses/eula/3.1.
- ~ For specific language governing the permissions and limitations under this
- ~ license, please see the license as well as any agreement you’ve entered into
- ~ with WSO2 governing the purchase of this software and any associated services.
+ ~ herein in any form is strictly forbidden, unless permitted by WSO2 expressly.
+ ~ You may not alter or remove any copyright or other notice from copies of this content.
+ ~
 -->
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
          xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
@@ -69,7 +68,7 @@
 
     <repositories>
         <!-- When building locally, uncomment the Updates 2 nexus repo and connect to VPN-->
-        <!--<repository>
+        <repository>
             <id>wso2-nexus-2</id>
             <name>WSO2 internal Repository</name>
             <url>https://support-maven.wso2.org/nexus/content/repositories/updates-2.0/</url>
@@ -81,7 +80,7 @@
             <snapshots>
                 <enabled>false</enabled>
             </snapshots>
-        </repository>-->
+        </repository>
         <repository>
             <id>wso2-nexus</id>
             <name>WSO2 internal Repository</name>
@@ -141,7 +140,8 @@
 
     <scm>
         <url>https://github.com/wso2-enterprise/ob-compliance-toolkit-cds.git</url>
-        <developerConnection>scm:git:https://github.com/wso2-enterprise/ob-compliance-toolkit-cds.git</developerConnection>
+        <developerConnection>scm:git:https://github.com/wso2-enterprise/ob-compliance-toolkit-cds.git
+        </developerConnection>
         <connection>scm:git:https://github.com/wso2-enterprise/ob-compliance-toolkit-cds.git</connection>
         <tag>HEAD</tag>
     </scm>
@@ -154,17 +154,15 @@
                     <artifactId>maven-assembly-plugin</artifactId>
                     <version>${maven.assembly.version}</version>
                 </plugin>
-                <plugin><!-- Overridden from parent pom to exclude generated sources -->
-                    <groupId>org.codehaus.mojo</groupId>
-                    <artifactId>findbugs-maven-plugin</artifactId>
-                    <version>${maven.findbugsplugin.version}</version>
+                <plugin>
+                    <groupId>com.github.spotbugs</groupId>
+                    <artifactId>spotbugs-maven-plugin</artifactId>
+                    <version>${maven.spotbugsplugin.version}</version>
                     <configuration>
                         <effort>Max</effort>
                         <threshold>Low</threshold>
                         <xmlOutput>true</xmlOutput>
-                        <findbugsXmlOutputDirectory>${project.build.directory}/findbugs</findbugsXmlOutputDirectory>
-                        <!--<excludeFilterFile>findbugs_exclude.xml</excludeFilterFile>-->
-                        <!--Exclude generated sources-->
+                        <spotbugsXmlOutputDirectory>${project.build.directory}/spotbugs</spotbugsXmlOutputDirectory>
                     </configuration>
                     <executions>
                         <execution>
@@ -448,13 +446,15 @@
         <commons-lang.version>3.4</commons-lang.version>
         <identity.inbound.auth.oauth.version>6.4.111</identity.inbound.auth.oauth.version>
         <accelerator.project.version>3.0.0</accelerator.project.version>
-        <accelerator.project.version.range>[3.0.0, 4.0.0)</accelerator.project.version.range>
+        <accelerator.project.version.range>3.0.0.212</accelerator.project.version.range>
         <wso2.maven.compiler.source>1.8</wso2.maven.compiler.source>
         <wso2.maven.compiler.target>1.8</wso2.maven.compiler.target>
         <maven.bundle.plugin.version>3.2.0</maven.bundle.plugin.version>
         <maven.surefire.plugin.version>2.22.2</maven.surefire.plugin.version>
         <maven.compiler.plugin.version>2.3.2</maven.compiler.plugin.version>
         <maven.findbugsplugin.version>3.0.5</maven.findbugsplugin.version>
+        <com.h3xstream.findsecbugs.version>1.12.0</com.h3xstream.findsecbugs.version>
+        <maven-spotbugs.version>4.2.3</maven-spotbugs.version>
         <json-smart>2.3</json-smart>
         <org.json.version>3.0.0.wso2v1</org.json.version>
         <jacoco.version>0.8.6</jacoco.version>

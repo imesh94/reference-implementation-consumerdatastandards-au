@@ -8,14 +8,17 @@
  */
 package com.wso2.openbanking.cds.consent.extensions.validate;
 
+import com.wso2.openbanking.accelerator.common.exception.OpenBankingException;
 import com.wso2.openbanking.accelerator.consent.extensions.validate.model.ConsentValidateData;
 import com.wso2.openbanking.accelerator.consent.extensions.validate.model.ConsentValidationResult;
+import com.wso2.openbanking.accelerator.consent.mgt.dao.models.ConsentMappingResource;
 import com.wso2.openbanking.accelerator.consent.mgt.dao.models.DetailedConsentResource;
 import com.wso2.openbanking.cds.common.config.OpenBankingCDSConfigParser;
 import com.wso2.openbanking.cds.common.error.handling.util.ErrorConstants;
 import com.wso2.openbanking.cds.common.metadata.domain.MetadataValidationResponse;
 import com.wso2.openbanking.cds.common.metadata.status.validator.service.MetadataService;
 import com.wso2.openbanking.cds.consent.extensions.common.CDSConsentExtensionConstants;
+import com.wso2.openbanking.cds.consent.extensions.util.CDSConsentExtensionsUtil;
 import com.wso2.openbanking.cds.consent.extensions.util.CDSConsentValidateTestConstants;
 import net.minidev.json.JSONObject;
 import net.minidev.json.parser.JSONParser;
@@ -30,6 +33,7 @@ import org.testng.Assert;
 import org.testng.annotations.BeforeClass;
 import org.testng.annotations.Test;
 
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -40,7 +44,7 @@ import static org.mockito.Mockito.when;
 /**
  * Test class for CDS consent Validator
  */
-@PrepareForTest({OpenBankingCDSConfigParser.class, MetadataService.class})
+@PrepareForTest({OpenBankingCDSConfigParser.class, MetadataService.class, CDSConsentExtensionsUtil.class})
 @PowerMockIgnore("jdk.internal.reflect.*")
 public class CDSConsentValidatorTest extends PowerMockTestCase {
 
@@ -49,6 +53,8 @@ public class CDSConsentValidatorTest extends PowerMockTestCase {
     ConsentValidateData consentValidateDataMock;
     @Mock
     DetailedConsentResource detailedConsentResourceMock;
+    @Mock
+    ConsentMappingResource consentMappingResourceMock;
     @Mock
     OpenBankingCDSConfigParser openBankingCDSConfigParserMock;
     Map<String, Object> configs = new HashMap<>();
@@ -59,6 +65,7 @@ public class CDSConsentValidatorTest extends PowerMockTestCase {
         cdsConsentValidator = new CDSConsentValidator();
         consentValidateDataMock = mock(ConsentValidateData.class);
         detailedConsentResourceMock = mock(DetailedConsentResource.class);
+        consentMappingResourceMock = mock(ConsentMappingResource.class);
         openBankingCDSConfigParserMock = mock(OpenBankingCDSConfigParser.class);
         configs.put("ConsentManagement.ValidateAccountIdOnRetrieval", "true");
         resourceParams.put("ResourcePath", CDSConsentValidateTestConstants.ACCOUNT_PATH + "/123456");
@@ -257,5 +264,67 @@ public class CDSConsentValidatorTest extends PowerMockTestCase {
                 .INVALID_ADR_STATUS.getCode());
         Assert.assertEquals(consentValidationResult.getHttpCode(), ErrorConstants.AUErrorEnum.INVALID_ADR_STATUS
                 .getHttpCode());
+    }
+
+    @Test
+    public void testRemoveInactiveSecondaryUserAccountConsentMappingsForBlockedLegalEntityExists()
+            throws OpenBankingException {
+
+        doReturn(detailedConsentResourceMock).when(consentValidateDataMock).getComprehensiveConsent();
+        doReturn(CDSConsentValidateTestConstants
+                .getDetailedConsentResource(CDSConsentValidateTestConstants.VALID_RECEIPT, "123456")
+                .getReceipt()).when(detailedConsentResourceMock).getReceipt();
+        doReturn(CDSConsentExtensionConstants.AUTHORIZED_STATUS).when(detailedConsentResourceMock).getCurrentStatus();
+        doReturn(CDSConsentValidateTestConstants.ACCOUNT_PATH).when(consentValidateDataMock).getRequestPath();
+        PowerMockito.mockStatic(OpenBankingCDSConfigParser.class);
+        when(OpenBankingCDSConfigParser.getInstance()).thenReturn(openBankingCDSConfigParserMock);
+        when(openBankingCDSConfigParserMock.getConfiguration()).thenReturn(configs);
+
+        when(openBankingCDSConfigParserMock.isCeasingSecondaryUserSharingEnabled()).thenReturn(true);
+
+        ArrayList<ConsentMappingResource> consentMappingResourceList = new ArrayList<>();
+        consentMappingResourceList.add(consentMappingResourceMock);
+        when(consentValidateDataMock.getComprehensiveConsent().getConsentMappingResources()).
+                thenReturn(consentMappingResourceList);
+
+        PowerMockito.mockStatic(CDSConsentExtensionsUtil.class);
+        when(CDSConsentExtensionsUtil.isLegalEntityBlockedForAccountAndUser
+                (Mockito.anyString(), Mockito.anyString(), Mockito.anyString())).thenReturn(true);
+
+        ConsentValidationResult consentValidationResult = new ConsentValidationResult();
+        cdsConsentValidator.validate(consentValidateDataMock, consentValidationResult);
+
+        Assert.assertTrue(consentValidationResult.isValid());
+    }
+
+    @Test
+    public void testRemoveInactiveSecondaryUserAccountConsentMappingsForBlockedLegalEntityNotExists()
+            throws OpenBankingException {
+
+        doReturn(detailedConsentResourceMock).when(consentValidateDataMock).getComprehensiveConsent();
+        doReturn(CDSConsentValidateTestConstants
+                .getDetailedConsentResource(CDSConsentValidateTestConstants.VALID_RECEIPT, "123456")
+                .getReceipt()).when(detailedConsentResourceMock).getReceipt();
+        doReturn(CDSConsentExtensionConstants.AUTHORIZED_STATUS).when(detailedConsentResourceMock).getCurrentStatus();
+        doReturn(CDSConsentValidateTestConstants.ACCOUNT_PATH).when(consentValidateDataMock).getRequestPath();
+        PowerMockito.mockStatic(OpenBankingCDSConfigParser.class);
+        when(OpenBankingCDSConfigParser.getInstance()).thenReturn(openBankingCDSConfigParserMock);
+        when(openBankingCDSConfigParserMock.getConfiguration()).thenReturn(configs);
+
+        when(openBankingCDSConfigParserMock.isCeasingSecondaryUserSharingEnabled()).thenReturn(true);
+
+        ArrayList<ConsentMappingResource> consentMappingResourceList = new ArrayList<>();
+        consentMappingResourceList.add(consentMappingResourceMock);
+        when(consentValidateDataMock.getComprehensiveConsent().getConsentMappingResources()).
+                thenReturn(consentMappingResourceList);
+
+        PowerMockito.mockStatic(CDSConsentExtensionsUtil.class);
+        when(CDSConsentExtensionsUtil.isLegalEntityBlockedForAccountAndUser
+                (Mockito.anyString(), Mockito.anyString(), Mockito.anyString())).thenReturn(false);
+
+        ConsentValidationResult consentValidationResult = new ConsentValidationResult();
+        cdsConsentValidator.validate(consentValidateDataMock, consentValidationResult);
+
+        Assert.assertTrue(consentValidationResult.isValid());
     }
 }

@@ -29,6 +29,7 @@
     session.setAttribute("newConfigParamsMap", request.getAttribute("new_data_requested"));
     session.setAttribute("business_data_cluster", request.getAttribute("business_data_cluster"));
     session.setAttribute("new_business_data_cluster", request.getAttribute("new_business_data_cluster"));
+    session.setAttribute("state", request.getAttribute("state"));
     String popoverTemplate = "<div class='popover dark-bg' role='tooltip'><div class='arrow'></div><h6 class='popover-title dark-bg'></h6><div class='popover-content'></div></div>";
 %>
 <div class="row data-container">

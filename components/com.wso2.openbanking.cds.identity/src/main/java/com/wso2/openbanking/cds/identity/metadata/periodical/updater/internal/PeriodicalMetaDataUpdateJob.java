@@ -1,13 +1,10 @@
 /*
- * Copyright (c) 2021, WSO2 Inc. (http://www.wso2.com). All Rights Reserved.
+ * Copyright (c) 2021-2023, WSO2 LLC. (https://www.wso2.com). All Rights Reserved.
  *
- * This software is the property of WSO2 Inc. and its suppliers, if any.
+ * This software is the property of WSO2 LLC. and its suppliers, if any.
  * Dissemination of any information or reproduction of any material contained
- * herein is strictly forbidden, unless permitted by WSO2 in accordance with
- * the WSO2 Software License available at https://wso2.com/licenses/eula/3.1.
- * For specific language governing the permissions and limitations under this
- * license, please see the license as well as any agreement you’ve entered into
- * with WSO2 governing the purchase of this software and any associated services.
+ * herein in any form is strictly forbidden, unless permitted by WSO2 expressly.
+ * You may not alter or remove any copyright or other notice from copies of this content.
  */
 
 package com.wso2.openbanking.cds.identity.metadata.periodical.updater.internal;
@@ -37,10 +34,12 @@ import org.wso2.carbon.identity.application.common.model.ServiceProviderProperty
 import org.wso2.carbon.user.core.UserStoreException;
 
 import java.util.Arrays;
+import java.util.Comparator;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
+import java.util.TreeMap;
 
 import static com.wso2.openbanking.cds.common.metadata.periodical.updater.constants.MetadataConstants.DR_JSON_BRANDS;
 import static com.wso2.openbanking.cds.common.metadata.periodical.updater.constants.MetadataConstants.DR_JSON_LEGAL_ENTITY_ID;
@@ -107,7 +106,7 @@ public class PeriodicalMetaDataUpdateJob implements Job, MetaDataUpdate {
      */
     @Override
     public void execute(JobExecutionContext context) {
-        updateMetaData();
+        updateMetaDataValues();
     }
 
     /**
@@ -115,7 +114,7 @@ public class PeriodicalMetaDataUpdateJob implements Job, MetaDataUpdate {
      */
     @Override
     @Generated(message = "Ignoring since all cases are covered from other unit tests")
-    public void updateMetaData() {
+    public void updateMetaDataValues() {
 
         LOG.debug("Metadata Scheduled Task is executing.");
 
@@ -169,7 +168,9 @@ public class PeriodicalMetaDataUpdateJob implements Job, MetaDataUpdate {
 
         JSONArray dataRecipientBrands = dataRecipient.getJSONArray(DR_JSON_BRANDS);
 
-        Map<String, String> softwareProductsMap = new HashMap<>();
+        Comparator<String> caseInsensitiveNullsFirstComparator = Comparator.nullsFirst(String.CASE_INSENSITIVE_ORDER);
+        Map<String, String> softwareProductsMap = new TreeMap<>(caseInsensitiveNullsFirstComparator);
+
         if (dataRecipientBrands != null) {
             for (int i = 0; i < dataRecipientBrands.length(); i++) {
                 JSONObject dataRecipientBrand = dataRecipientBrands.getJSONObject(i);
@@ -194,8 +195,10 @@ public class PeriodicalMetaDataUpdateJob implements Job, MetaDataUpdate {
 
         JSONArray dataRecipientsArray = responseJson.getJSONArray(MetadataConstants.DR_JSON_ROOT);
 
-        Map<String, String> dataRecipientsMap = new HashMap<>();
+        Comparator<String> caseInsensitiveNullsFirstComparator = Comparator.nullsFirst(String.CASE_INSENSITIVE_ORDER);
+        Map<String, String> dataRecipientsMap = new TreeMap<>(caseInsensitiveNullsFirstComparator);
         Map<String, String> softwareProductsMap = new HashMap<>();
+
         for (int jsonElementIndex = 0; jsonElementIndex < dataRecipientsArray.length(); jsonElementIndex++) {
             JSONObject dataRecipient = dataRecipientsArray.getJSONObject(jsonElementIndex);
 

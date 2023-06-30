@@ -82,5 +82,6 @@
     </BNR>
     <SecondaryUserAccounts>
         <Enable>true</Enable>
+        <CeasingSecondaryUserSharingEnabled>true</CeasingSecondaryUserSharingEnabled>
     </SecondaryUserAccounts>
 </Server>

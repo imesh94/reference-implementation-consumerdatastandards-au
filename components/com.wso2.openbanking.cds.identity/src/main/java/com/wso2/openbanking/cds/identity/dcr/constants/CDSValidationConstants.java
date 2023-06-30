@@ -8,7 +8,9 @@
  */
 package com.wso2.openbanking.cds.identity.dcr.constants;
 
-import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collections;
+import java.util.List;
 
 /**
  * Field names used for CDS specific validations.
@@ -25,20 +27,10 @@ public class CDSValidationConstants {
     public static final String SSA_TOS_URI = "tos_uri";
     public static final String SSA_CLIENT_URI = "client_uri";
     public static final String DATA_RECIPIENT_SOFTWARE_PRODUCT = "data-recipient-software-product";
-    public static final ArrayList<String> VALID_SSA_SCOPES = new ArrayList<String>() {
-        {
-            add("openid");
-            add("profile");
-            add("bank:accounts.basic:read");
-            add("bank:accounts.detail:read");
-            add("bank:transactions:read");
-            add("bank:payees:read");
-            add("bank:regular_payments:read");
-            add("common:customer.basic:read");
-            add("common:customer.detail:read");
-            add("cdr:registration");
-        }
-    };
+    public static final List<String> VALID_SSA_SCOPES = Collections.unmodifiableList(Arrays.asList(
+            "openid", "profile", "bank:accounts.basic:read", "bank:accounts.detail:read", "bank:transactions:read",
+            "bank:payees:read", "bank:regular_payments:read", "common:customer.basic:read",
+            "common:customer.detail:read", "cdr:registration"));
     public static final String CDR_REGISTRATION_SCOPE = "cdr:registration";
 
     // registration request params
