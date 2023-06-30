@@ -226,7 +226,6 @@ public class OpenBankingCDSConfigParserTest {
         OpenBankingCDSConfigParser openBankingCDSConfigParser = OpenBankingCDSConfigParser.getInstance(dummyConfigFile);
         Assert.assertTrue(openBankingCDSConfigParser.getSecondaryUserAccountsEnabled());
     }
-
     @Test(priority = 8)
     public void testIsCeasingSecondaryUserSharingEnabled() {
         String dummyConfigFile = absolutePathForTestResources + "/open-banking-cds.xml";
@@ -255,6 +254,12 @@ public class OpenBankingCDSConfigParserTest {
         Assert.assertEquals(openBankingCDSConfigParser.isBNRConsentRevocationEnabled(), true);
     }
 
+    @Test(priority = 8)
+    public void testIsDOMSEnabled() {
+        String dummyConfigFile = absolutePathForTestResources + "/open-banking-cds.xml";
+        OpenBankingCDSConfigParser openBankingCDSConfigParser = OpenBankingCDSConfigParser.getInstance(dummyConfigFile);
+        Assert.assertTrue(openBankingCDSConfigParser.getDOMSEnabled());
+    }
     @Test(priority = 8)
     public void testGetBNRCustomerTypeSelectionMethod() {
         String dummyConfigFile = absolutePathForTestResources + "/open-banking-cds.xml";

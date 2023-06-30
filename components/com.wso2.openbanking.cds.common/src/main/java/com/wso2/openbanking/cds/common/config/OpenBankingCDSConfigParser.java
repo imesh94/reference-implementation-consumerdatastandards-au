@@ -632,6 +632,20 @@ public class OpenBankingCDSConfigParser {
     }
 
     /**
+     * Get Disclosure Options Management enabled status.
+     *
+     * @return boolean
+     */
+    public boolean getDOMSEnabled() {
+        Object config = getConfigElementFromKey(CommonConstants.DISCLOSURE_OPTIONS_MANAGEMENT_ENABLED);
+        if (config != null) {
+            return Boolean.parseBoolean((String) config);
+        } else {
+            return false;
+        }
+    }
+
+    /**
      * Get legal entity sharing status.
      *
      * @return boolean

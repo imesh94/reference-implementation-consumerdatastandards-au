@@ -17,12 +17,14 @@ import com.wso2.openbanking.accelerator.consent.extensions.common.ResponseStatus
 import com.wso2.openbanking.accelerator.consent.extensions.validate.model.ConsentValidateData;
 import com.wso2.openbanking.accelerator.consent.extensions.validate.model.ConsentValidationResult;
 import com.wso2.openbanking.accelerator.consent.extensions.validate.model.ConsentValidator;
+import com.wso2.openbanking.accelerator.consent.mgt.dao.models.AuthorizationResource;
 import com.wso2.openbanking.accelerator.consent.mgt.dao.models.ConsentMappingResource;
 import com.wso2.openbanking.cds.common.config.OpenBankingCDSConfigParser;
 import com.wso2.openbanking.cds.common.error.handling.util.ErrorConstants;
 import com.wso2.openbanking.cds.common.metadata.domain.MetadataValidationResponse;
 import com.wso2.openbanking.cds.common.metadata.status.validator.service.MetadataService;
 import com.wso2.openbanking.cds.consent.extensions.common.CDSConsentExtensionConstants;
+import com.wso2.openbanking.cds.consent.extensions.common.SecondaryAccountOwnerTypeEnum;
 import com.wso2.openbanking.cds.consent.extensions.util.CDSConsentExtensionsUtil;
 import com.wso2.openbanking.cds.consent.extensions.validate.utils.CDSConsentValidatorUtil;
 import net.minidev.json.JSONObject;
@@ -35,9 +37,11 @@ import org.apache.http.HttpStatus;
 
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Iterator;
 import java.util.List;
 
-import static com.wso2.openbanking.accelerator.consent.mgt.service.constants.ConsentCoreServiceConstants.INACTIVE_MAPPING_STATUS;
+import static com.wso2.openbanking.accelerator.consent.mgt.service.constants.ConsentCoreServiceConstants.
+        INACTIVE_MAPPING_STATUS;
 
 /**
  * Consent validator CDS implementation.
@@ -136,6 +140,11 @@ public class CDSConsentValidator implements ConsentValidator {
         // Remove inactive and duplicate consent mappings
         removeInactiveAndDuplicateConsentMappings(consentValidateData);
 
+        // Filter joint accounts with no-sharing doms status
+        if (openBankingCDSConfigParser.getDOMSEnabled()) {
+            removeInactiveDOMSAccountConsentMappings(consentValidateData);
+        }
+
         // filter inactive secondary user accounts
         if (openBankingCDSConfigParser.getSecondaryUserAccountsEnabled()) {
             removeInactiveSecondaryUserAccountConsentMappings(consentValidateData);
@@ -169,7 +178,44 @@ public class CDSConsentValidator implements ConsentValidator {
                     duplicateAccountIds.add(distinctMapping.getAccountID());
                     distinctMappingResources.add(distinctMapping);
                 });
+        consentValidateData.getComprehensiveConsent().setConsentMappingResources(distinctMappingResources);
+    }
 
+    public void removeInactiveDOMSAccountConsentMappings(ConsentValidateData consentValidateData)
+            throws ConsentException {
+
+        ArrayList<ConsentMappingResource> distinctMappingResources = new ArrayList<>(consentValidateData
+                .getComprehensiveConsent().getConsentMappingResources());
+
+        ArrayList<AuthorizationResource> authorizationResources = new ArrayList<>(consentValidateData
+                .getComprehensiveConsent().getAuthorizationResources());
+
+        Iterator<ConsentMappingResource> iterator = distinctMappingResources.iterator();
+
+        while (iterator.hasNext()) {
+            ConsentMappingResource mappingResource = iterator.next();
+            try {
+                for (AuthorizationResource authorizationResource : authorizationResources) {
+                    String authorizationType = authorizationResource.getAuthorizationType();
+                    boolean isAuthEqualMap = authorizationResource.getAuthorizationID().
+                            equals(mappingResource.getAuthorizationID());
+
+                    if ((authorizationType.equals(CDSConsentExtensionConstants.LINKED_MEMBER_AUTH_TYPE) ||
+                            authorizationType.equals(SecondaryAccountOwnerTypeEnum.JOINT.getValue()))
+                            && isAuthEqualMap) {
+                        if (!CDSConsentExtensionsUtil.isDOMSStatusEligibleForDataSharing
+                                (mappingResource.getAccountID())) {
+                            iterator.remove();
+                            log.info("Removed mapping resource for accountID: " + mappingResource.getAccountID());
+                        }
+                    }
+                }
+            } catch (OpenBankingException e) {
+                log.error("Error occurred while retrieving account metadata", e);
+                throw new ConsentException(ResponseStatus.INTERNAL_SERVER_ERROR,
+                        "Error occurred while retrieving account metadata");
+            }
+        }
         consentValidateData.getComprehensiveConsent().setConsentMappingResources(distinctMappingResources);
     }
 

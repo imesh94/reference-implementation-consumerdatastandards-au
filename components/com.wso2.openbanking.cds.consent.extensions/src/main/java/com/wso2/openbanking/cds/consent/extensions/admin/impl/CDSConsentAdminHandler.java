@@ -9,8 +9,11 @@
 
 package com.wso2.openbanking.cds.consent.extensions.admin.impl;
 
+import com.wso2.openbanking.accelerator.account.metadata.service.service.AccountMetadataService;
+import com.wso2.openbanking.accelerator.account.metadata.service.service.AccountMetadataServiceImpl;
 import com.wso2.openbanking.accelerator.common.config.OpenBankingConfigParser;
 import com.wso2.openbanking.accelerator.common.exception.ConsentManagementException;
+import com.wso2.openbanking.accelerator.common.exception.OpenBankingException;
 import com.wso2.openbanking.accelerator.consent.extensions.admin.impl.DefaultConsentAdminHandler;
 import com.wso2.openbanking.accelerator.consent.extensions.admin.model.ConsentAdminData;
 import com.wso2.openbanking.accelerator.consent.extensions.admin.model.ConsentAdminHandler;
@@ -26,6 +29,7 @@ import com.wso2.openbanking.cds.consent.extensions.authorize.utils.PermissionsEn
 import com.wso2.openbanking.cds.consent.extensions.common.CDSConsentExtensionConstants;
 import com.wso2.openbanking.cds.consent.extensions.common.SecondaryAccountOwnerTypeEnum;
 import com.wso2.openbanking.cds.consent.extensions.util.CDSConsentExtensionsUtil;
+
 import net.minidev.json.JSONArray;
 import net.minidev.json.JSONObject;
 import net.minidev.json.parser.JSONParser;
@@ -34,11 +38,12 @@ import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.wso2.carbon.identity.oauth2.IdentityOAuth2Exception;
-
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
-
+import java.util.stream.Collectors;
 import static com.wso2.openbanking.cds.consent.extensions.common.CDSConsentExtensionConstants.AUTH_RESOURCE_TYPE_PRIMARY;
 import static com.wso2.openbanking.cds.consent.extensions.common.CDSConsentExtensionConstants.CONSENT_STATUS_REVOKED;
 
@@ -67,6 +72,7 @@ public class CDSConsentAdminHandler implements ConsentAdminHandler {
     @Override
     public void handleSearch(ConsentAdminData consentAdminData) throws ConsentException {
         this.defaultConsentAdminHandler.handleSearch(consentAdminData);
+        updateDOMSStatusForConsentData(consentAdminData);
 
         // Filter the consent data based on the profiles if profiles are available in the query params.
         if (consentAdminData.getQueryParams().containsKey(CDSConsentExtensionConstants.PROFILES)) {
@@ -296,7 +302,7 @@ public class CDSConsentAdminHandler implements ConsentAdminHandler {
         }
     }
 
-    private JSONObject detailedConsentToJSON(DetailedConsentResource detailedConsentResource) {
+    public JSONObject detailedConsentToJSON(DetailedConsentResource detailedConsentResource) {
         JSONObject consentResource = new JSONObject();
 
         consentResource.appendField("clientId", detailedConsentResource.getClientID());
@@ -405,12 +411,12 @@ public class CDSConsentAdminHandler implements ConsentAdminHandler {
                 // retrieve secondary account mappings for filtered auth resources
                 Map<String, Map<String, String>> accountOwnerAgainstAccountWithPrivilegeMap = new HashMap<>();
 
-                for (Object authResourceObj: secondaryAccountOwnerAuthResources) {
+                for (Object authResourceObj : secondaryAccountOwnerAuthResources) {
                     if (authResourceObj instanceof JSONObject) {
                         JSONObject authResource = (JSONObject) authResourceObj;
                         String authResourceId = (String) ((JSONObject) authResource)
                                 .get(CDSConsentExtensionConstants.AUTHORIZATION_ID);
-                        for (Object mappingResourceObj: consentMappingsResources) {
+                        for (Object mappingResourceObj : consentMappingsResources) {
                             if (mappingResourceObj instanceof JSONObject) {
                                 JSONObject mappingResource = (JSONObject) mappingResourceObj;
                                 if (mappingResource.get(CDSConsentExtensionConstants.AUTHORIZATION_ID)
@@ -446,8 +452,8 @@ public class CDSConsentAdminHandler implements ConsentAdminHandler {
         consentAdminData.getResponsePayload().put(CDSConsentExtensionConstants.DATA, filteredConsentData);
     }
 
-    private JSONObject getSecondaryAccountInfoArray(String primaryUserId,
-                                  Map<String, Map<String, String>> accountOwnerAgainstAccountWithPrivilegeMap) {
+    private JSONObject getSecondaryAccountInfoArray(String primaryUserId, Map<String, Map<String, String>>
+            accountOwnerAgainstAccountWithPrivilegeMap) {
         JSONObject secondaryAccountInfo = new JSONObject();
         JSONArray secondaryAccountList = new JSONArray();
         secondaryAccountInfo.put(CDSConsentExtensionConstants.ACCOUNT_USER, primaryUserId);
@@ -506,6 +512,51 @@ public class CDSConsentAdminHandler implements ConsentAdminHandler {
         return false;
     }
 
+    public void updateDOMSStatusForConsentData(ConsentAdminData consentAdminData) {
+        try {
+            AccountMetadataService accountMetadataService = AccountMetadataServiceImpl.getInstance();
+
+            for (Object item : (JSONArray) consentAdminData.getResponsePayload().
+                    get(CDSConsentExtensionConstants.DATA)) {
+
+                JSONObject itemJSONObject = (JSONObject) item;
+                JSONArray consentMappingResourcesArray = (JSONArray) itemJSONObject.
+                        get(CDSConsentExtensionConstants.CONSENT_MAPPING_RESOURCES);
+                JSONArray consentAuthResourcesArray = (JSONArray) itemJSONObject.
+                        get(CDSConsentExtensionConstants.AUTHORIZATION_RESOURCES);
+
+                List<String> authIDs = consentAuthResourcesArray.stream()
+                        .map(obj -> (JSONObject) obj)
+                        .filter(obj -> {
+                            String authType = obj.getAsString(CDSConsentExtensionConstants.AUTH_TYPE);
+                            return Arrays.asList(CDSConsentExtensionConstants.AUTH_RESOURCE_TYPE_LINKED,
+                                    SecondaryAccountOwnerTypeEnum.JOINT.getValue()).contains(authType);
+                        })
+                        .map(obj -> obj.getAsString(CDSConsentExtensionConstants.AUTH_RESOURCE_ID))
+                        .collect(Collectors.toList());
+
+                for (Object consentMappingResource : consentMappingResourcesArray) {
+                    JSONObject consentMappingResourceObject = (JSONObject) consentMappingResource;
+                    String accountId = consentMappingResourceObject.
+                            getAsString(CDSConsentExtensionConstants.ACCOUNT_ID);
+                    Map<String, String> disclosureOptionsMap = accountMetadataService.getAccountMetadataMap(accountId);
+                    String disclosureOptionStatus = disclosureOptionsMap.
+                            get(CDSConsentExtensionConstants.DOMS_STATUS);
+
+                    // If the disclosure option status is not available or has not been set,
+                    // default value is set to the pre-approval status
+                    if (disclosureOptionStatus == null) {
+                        disclosureOptionStatus = CDSConsentExtensionConstants.DOMS_STATUS_PRE_APPROVAL;
+                    }
+                    consentMappingResourceObject.put("domsStatus", disclosureOptionStatus);
+                }
+            }
+        } catch (OpenBankingException e) {
+            throw new ConsentException(ResponseStatus.INTERNAL_SERVER_ERROR,
+                    "An error occurred while updating the DOMS status for consent data");
+        }
+    }
+
     @Override
     public void handleConsentFileSearch(ConsentAdminData consentAdminData) throws ConsentException {
         this.defaultConsentAdminHandler.handleConsentFileSearch(consentAdminData);
@@ -525,5 +576,4 @@ public class CDSConsentAdminHandler implements ConsentAdminHandler {
     public void handleConsentExpiry(ConsentAdminData consentAdminData) throws ConsentException {
         this.defaultConsentAdminHandler.handleConsentExpiry(consentAdminData);
     }
-
 }

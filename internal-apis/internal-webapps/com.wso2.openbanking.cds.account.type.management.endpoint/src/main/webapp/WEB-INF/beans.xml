@@ -21,6 +21,7 @@
     <jaxrs:server id="services" address="/">
         <jaxrs:serviceBeans>
             <bean class="com.wso2.openbanking.cds.account.type.management.endpoint.nominated.representative.impl.NominatedRepresentativeAPIImpl"/>
+            <bean class="com.wso2.openbanking.cds.account.type.management.endpoint.disclosure.options.impl.DisclosureOptionsApiImpl"/>
             <bean class="com.wso2.openbanking.cds.account.type.management.endpoint.ceasing.secondary.user.sharing.impl.CeasingSecondaryUserSharingApiImpl"/>
             <bean class="com.wso2.openbanking.cds.account.type.management.endpoint.secondary.user.instruction.impl.SecondaryUserInstructionApiImpl"/>
         </jaxrs:serviceBeans>

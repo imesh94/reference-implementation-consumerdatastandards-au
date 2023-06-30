@@ -327,4 +327,105 @@ public class CDSConsentValidatorTest extends PowerMockTestCase {
 
         Assert.assertTrue(consentValidationResult.isValid());
     }
+  
+    @Test
+    public void testRemoveInactiveDOMSAccountConsentMappingsForNonSharableJointAccounts()
+            throws OpenBankingException {
+        doReturn(detailedConsentResourceMock).when(consentValidateDataMock).getComprehensiveConsent();
+        doReturn(CDSConsentValidateTestConstants
+                .getDetailedConsentResource(CDSConsentValidateTestConstants.VALID_RECEIPT, "123456")
+                .getReceipt()).when(detailedConsentResourceMock).getReceipt();
+        doReturn(CDSConsentExtensionConstants.AUTHORIZED_STATUS).when(detailedConsentResourceMock).getCurrentStatus();
+        doReturn(CDSConsentValidateTestConstants.ACCOUNT_PATH).when(consentValidateDataMock).getRequestPath();
+        mockStatic(OpenBankingCDSConfigParser.class);
+        when(OpenBankingCDSConfigParser.getInstance()).thenReturn(openBankingCDSConfigParserMock);
+        when(openBankingCDSConfigParserMock.getConfiguration()).thenReturn(configs);
+
+        mockStatic(OpenBankingCDSConfigParser.class);
+        when(OpenBankingCDSConfigParser.getInstance()).thenReturn(openBankingCDSConfigParserMock);
+        when(openBankingCDSConfigParserMock.getConfiguration()).thenReturn(configs);
+        when(openBankingCDSConfigParserMock.getDOMSEnabled()).thenReturn(true);
+
+        // Adding a ConsentMappingResource for the specified account ID and mocking its
+        // retrieval from ComprehensiveConsent.
+        ArrayList<ConsentMappingResource> consentMappingResourceList = new ArrayList<>();
+        consentMappingResourceList.add(CDSConsentValidateTestConstants.
+                getConsentMappingResourceForDOMS(CDSConsentExtensionConstants.ACCOUNT_ID));
+        when(detailedConsentResourceMock.getConsentMappingResources()).thenReturn(consentMappingResourceList);
+
+        // Creating and mocking retrieval of a list of AuthorizationResources.
+        ArrayList<AuthorizationResource> authorizationResourceList = new ArrayList<>();
+        authorizationResourceList.add(CDSConsentValidateTestConstants.getAuthorizationResourceForDOMS());
+        when(detailedConsentResourceMock.getAuthorizationResources()).
+                thenReturn(authorizationResourceList);
+
+        this.accountMetadataServiceMock = mock(AccountMetadataServiceImpl.class);
+        mockStatic(AccountMetadataServiceImpl.class);
+        when(AccountMetadataServiceImpl.getInstance()).thenReturn(accountMetadataServiceMock);
+
+        Map<String, String> accountMetadataMap = new HashMap<>();
+        accountMetadataMap.put("DISCLOSURE_OPTIONS_STATUS", "no-sharing");
+
+        when(accountMetadataServiceMock.getAccountMetadataMap(anyString())).thenReturn(accountMetadataMap);
+
+        // Checking if the DOMS status for the specified account ID is eligible for data sharing and storing the
+        // result in the boolean variable isJointAccountSharable.
+        boolean isJointAccountSharable = CDSConsentExtensionsUtil.
+                isDOMSStatusEligibleForDataSharing(CDSConsentExtensionConstants.ACCOUNT_ID);
+
+        Assert.assertFalse(isJointAccountSharable);
+
+        ConsentValidationResult consentValidationResult = new ConsentValidationResult();
+        cdsConsentValidator.validate(consentValidateDataMock, consentValidationResult);
+
+        Assert.assertTrue(consentValidationResult.isValid());
+    }
+
+    @Test
+    public void testRemoveInactiveDOMSAccountConsentMappingsForSharableJointAccounts() throws OpenBankingException {
+        doReturn(detailedConsentResourceMock).when(consentValidateDataMock).getComprehensiveConsent();
+        doReturn(CDSConsentValidateTestConstants
+                .getDetailedConsentResource(CDSConsentValidateTestConstants.VALID_RECEIPT, "123456")
+                .getReceipt()).when(detailedConsentResourceMock).getReceipt();
+        doReturn(CDSConsentExtensionConstants.AUTHORIZED_STATUS).when(detailedConsentResourceMock).getCurrentStatus();
+        doReturn(CDSConsentValidateTestConstants.ACCOUNT_PATH).when(consentValidateDataMock).getRequestPath();
+        mockStatic(OpenBankingCDSConfigParser.class);
+        when(OpenBankingCDSConfigParser.getInstance()).thenReturn(openBankingCDSConfigParserMock);
+        when(openBankingCDSConfigParserMock.getConfiguration()).thenReturn(configs);
+
+        mockStatic(OpenBankingCDSConfigParser.class);
+        when(OpenBankingCDSConfigParser.getInstance()).thenReturn(openBankingCDSConfigParserMock);
+        when(openBankingCDSConfigParserMock.getConfiguration()).thenReturn(configs);
+        when(openBankingCDSConfigParserMock.getDOMSEnabled()).thenReturn(true);
+
+        // Adding a ConsentMappingResource for the specified account ID and mocking its
+        // retrieval from ComprehensiveConsent.
+        ArrayList<ConsentMappingResource> consentMappingResourceList = new ArrayList<>();
+        consentMappingResourceList.add(CDSConsentValidateTestConstants.
+                getConsentMappingResourceForDOMS(CDSConsentExtensionConstants.ACCOUNT_ID));
+        when(detailedConsentResourceMock.getConsentMappingResources()).thenReturn(consentMappingResourceList);
+
+        // Creating and mocking retrieval of a list of AuthorizationResources.
+        ArrayList<AuthorizationResource> authorizationResourceList = new ArrayList<>();
+        authorizationResourceList.add(CDSConsentValidateTestConstants.getAuthorizationResourceForDOMS());
+        when(detailedConsentResourceMock.getAuthorizationResources()).thenReturn(authorizationResourceList);
+
+        this.accountMetadataServiceMock = mock(AccountMetadataServiceImpl.class);
+        mockStatic(AccountMetadataServiceImpl.class);
+        when(AccountMetadataServiceImpl.getInstance()).thenReturn(accountMetadataServiceMock);
+
+        Map<String, String> accountMetadataMap = new HashMap<>();
+
+        when(accountMetadataServiceMock.getAccountMetadataMap(anyString())).thenReturn(accountMetadataMap);
+
+
+        boolean isJointAccountSharable = CDSConsentExtensionsUtil.
+                isDOMSStatusEligibleForDataSharing(CDSConsentExtensionConstants.ACCOUNT_ID);
+        Assert.assertTrue(isJointAccountSharable);
+
+        ConsentValidationResult consentValidationResult = new ConsentValidationResult();
+        cdsConsentValidator.validate(consentValidateDataMock, consentValidationResult);
+
+        Assert.assertTrue(consentValidationResult.isValid());
+    }
 }

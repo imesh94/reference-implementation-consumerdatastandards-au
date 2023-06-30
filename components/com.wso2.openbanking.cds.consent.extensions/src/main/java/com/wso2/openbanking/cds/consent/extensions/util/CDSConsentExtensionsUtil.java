@@ -56,9 +56,22 @@ public class CDSConsentExtensionsUtil {
         }
     }
 
+    public static boolean isDOMSStatusEligibleForDataSharing(String accountID) throws OpenBankingException {
+
+        Map<String, String> accountMetadata = accountMetadataService.getAccountMetadataMap(accountID);
+
+        if (!accountMetadata.isEmpty()) {
+            String status = accountMetadata.get(CDSConsentExtensionConstants.DOMS_STATUS);
+            return status.equals(CDSConsentExtensionConstants.DOMS_STATUS_PRE_APPROVAL);
+        } else {
+            return true;
+        }
+    }
+  
     /**
      * Method to retrieve the sharing status of a legal entity for the given accountID, secondaryUserID and
      * legalEntityID
+     *
      * @param accountID
      * @param userID
      * @param clientID
