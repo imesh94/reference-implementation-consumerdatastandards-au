@@ -39,6 +39,7 @@ public class OBCDSAuthServletImpl implements OBAuthServletInterface {
     String preSelectedProfileId;
     AccountMetadataServiceImpl accountMetadataService = AccountMetadataServiceImpl.getInstance();
     private String userId;
+    private String clientID;
     private boolean isConsentAmendment;
 
     @Override
@@ -48,6 +49,7 @@ public class OBCDSAuthServletImpl implements OBAuthServletInterface {
         Map<String, Object> returnMaps = new HashMap<>();
         preSelectedProfileId = "";
         userId = dataSet.getString(CDSConsentExtensionConstants.USER_ID);
+        clientID = dataSet.getString(CDSConsentExtensionConstants.CLIENT_ID);
         isConsentAmendment = (dataSet.has(CDSConsentExtensionConstants.IS_CONSENT_AMENDMENT) &&
                 (boolean) dataSet.get(CDSConsentExtensionConstants.IS_CONSENT_AMENDMENT));
 
@@ -249,9 +251,15 @@ public class OBCDSAuthServletImpl implements OBAuthServletInterface {
                     CDSConsentExtensionsUtil.isUserEligibleForSecondaryAccountDataSharing(
                             account.getString(CDSConsentExtensionConstants.ACCOUNT_ID), userId);
 
-            // Both secondaryAccountPrivilegeStatus and secondaryAccountInstructionStatus should be in active state
-            // for secondary account to be selectable
-            Boolean isSelectable = secondaryAccountPrivilegeStatus && secondaryAccountInstructionStatus;
+            // Check whether the legal entity is blocked for secondary account of a user
+            boolean isLegalEntitySharingStatusBlocked =
+                    CDSConsentExtensionsUtil.isLegalEntityBlockedForAccountAndUser
+                            (account.getString(CDSConsentExtensionConstants.ACCOUNT_ID), userId, clientID);
+
+            // Both secondaryAccountPrivilegeStatus and secondaryAccountInstructionStatus should be in active state and
+            // legal entity is not in blocked state for secondary account to be selectable
+            Boolean isSelectable = secondaryAccountPrivilegeStatus && secondaryAccountInstructionStatus
+                    && !isLegalEntitySharingStatusBlocked;
 
             // handle secondary joint accounts
             if (account.getBoolean(CDSConsentExtensionConstants.IS_JOINT_ACCOUNT_RESPONSE)) {

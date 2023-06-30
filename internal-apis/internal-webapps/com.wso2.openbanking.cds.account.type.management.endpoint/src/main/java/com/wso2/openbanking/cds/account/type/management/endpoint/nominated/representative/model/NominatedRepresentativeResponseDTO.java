@@ -18,20 +18,20 @@ import java.util.Map;
  */
 public class NominatedRepresentativeResponseDTO {
 
-    @JsonProperty("userId")
-    private String userId;
+    @JsonProperty("userID")
+    private String userID;
 
     @JsonProperty("permissionStatus")
     private Map<String, String> permissionStatus;
 
-    public NominatedRepresentativeResponseDTO(String userId, String accountID, String status) {
-        this.userId = userId;
+    public NominatedRepresentativeResponseDTO(String userID, String accountID, String status) {
+        this.userID = userID;
         this.permissionStatus = new HashMap<>();
         this.permissionStatus.put(accountID, status);
     }
 
-    public String getUserId() {
-        return userId;
+    public String getUserID() {
+        return userID;
     }
 
     public Map<String, String> getPermissionStatus() {

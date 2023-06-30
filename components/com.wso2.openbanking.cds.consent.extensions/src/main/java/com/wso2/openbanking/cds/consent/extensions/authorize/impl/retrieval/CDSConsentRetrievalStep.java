@@ -207,7 +207,7 @@ public class CDSConsentRetrievalStep implements ConsentRetrievalStep {
             jsonElementPermissions.appendField(CDSConsentExtensionConstants.DATA, permissions);
 
             consentDataJSON.add(jsonElementPermissions);
-            String expiry =  requiredData.get(CDSConsentExtensionConstants.EXPIRATION_DATE_TIME).toString();
+            String expiry = requiredData.get(CDSConsentExtensionConstants.EXPIRATION_DATE_TIME).toString();
             JSONArray expiryArray = new JSONArray();
             expiryArray.add(expiry);
 
@@ -256,9 +256,10 @@ public class CDSConsentRetrievalStep implements ConsentRetrievalStep {
                 jsonObject.appendField(CDSConsentExtensionConstants.CUSTOMER_SCOPES_ONLY, true);
             }
 
-            // append service provider full name
+            // append client_id and service provider full name
             if (StringUtils.isNotBlank(consentData.getClientId())) {
                 try {
+                    jsonObject.appendField(CDSConsentExtensionConstants.CLIENT_ID, consentData.getClientId());
                     jsonObject.appendField(CDSConsentExtensionConstants.SP_FULL_NAME,
                             CDSDataRetrievalUtil.getServiceProviderFullName(consentData.getClientId()));
                 } catch (OpenBankingException e) {

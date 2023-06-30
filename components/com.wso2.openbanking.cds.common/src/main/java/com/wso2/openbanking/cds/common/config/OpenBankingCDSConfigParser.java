@@ -311,6 +311,7 @@ public class OpenBankingCDSConfigParser {
 
     /**
      * Read APIM DCR register url from config
+     *
      * @return configured url
      */
     public String getDcrInternalUrl() {
@@ -334,6 +335,7 @@ public class OpenBankingCDSConfigParser {
 
     /**
      * Read retry count from config
+     *
      * @return retry count, default value is 2
      */
     public int getRetryCount() {
@@ -348,6 +350,7 @@ public class OpenBankingCDSConfigParser {
 
     /**
      * Read metadata cache expiry time in minutes from config
+     *
      * @return expiry time, default value is 2 min
      */
     public int getCacheExpiryInMinutes() {
@@ -362,6 +365,7 @@ public class OpenBankingCDSConfigParser {
 
     /**
      * Check if data holder responsibilities can execute as bulk operations
+     *
      * @return configured boolean value, default value is true
      */
     public boolean isBulkOperation() {
@@ -375,6 +379,7 @@ public class OpenBankingCDSConfigParser {
 
     /**
      * Read bulk execution hour from config
+     *
      * @return execution hour, default value is 2 AM
      */
     public int getBulkExecutionHour() {
@@ -392,6 +397,7 @@ public class OpenBankingCDSConfigParser {
 
     /**
      * Check if access token encryption is enabled
+     *
      * @return configured boolean value, default value is true
      */
     public boolean isTokenEncryptionEnabled() {
@@ -405,6 +411,7 @@ public class OpenBankingCDSConfigParser {
 
     /**
      * Read token encryption secret from config
+     *
      * @return token encryption secret, default value is "wso2"
      */
     public String getTokenEncryptionSecretKey() {
@@ -414,9 +421,10 @@ public class OpenBankingCDSConfigParser {
 
     /**
      * Read the Admin API self link Url
+     *
      * @return configured url
      */
-    public String getAdminAPISelfLink () {
+    public String getAdminAPISelfLink() {
         String value = (String) getConfigElementFromKey(CommonConstants.ADMIN_API_SELF_LINK);
         return value == null ? "" : value;
     }
@@ -431,7 +439,8 @@ public class OpenBankingCDSConfigParser {
         return (config != null) ? (String) config : "";
     }
 
-    /** Get CDSIntrospectFilter validators.
+    /**
+     * Get CDSIntrospectFilter validators.
      *
      * @return - List of configured validators
      */
@@ -449,7 +458,8 @@ public class OpenBankingCDSConfigParser {
         }
     }
 
-    /** Get CDSIntrospectFilter validators.
+    /**
+     * Get CDSIntrospectFilter validators.
      *
      * @return - List of configured validators
      */
@@ -467,7 +477,8 @@ public class OpenBankingCDSConfigParser {
         }
     }
 
-    /** Get CDSIntrospectFilter validators.
+    /**
+     * Get CDSIntrospectFilter validators.
      *
      * @return - List of configured validators
      */
@@ -620,4 +631,17 @@ public class OpenBankingCDSConfigParser {
         }
     }
 
+    /**
+     * Get legal entity sharing status.
+     *
+     * @return boolean
+     */
+    public boolean isCeasingSecondaryUserSharingEnabled() {
+        Object config = getConfigElementFromKey(CommonConstants.CEASING_SECONDARY_USER_SHARING_ENABLED);
+        if (config != null) {
+            return Boolean.parseBoolean((String) config);
+        } else {
+            return false;
+        }
+    }
 }

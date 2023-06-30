@@ -76,6 +76,7 @@ public class OBCDSAuthServletImplTests extends PowerMockTestCase {
         dataSet.put(CDSConsentExtensionConstants.DATA_REQUESTED, dataRequested);
         dataSet.put(CDSConsentExtensionConstants.BUSINESS_DATA_CLUSTER, dataRequested);
         dataSet.put(CDSConsentExtensionConstants.ACCOUNTS, accounts);
+        dataSet.put(CDSConsentExtensionConstants.CLIENT_ID, "TestClientID");
         dataSet.put(CDSConsentExtensionConstants.SP_FULL_NAME, "TestServiceProvider");
         dataSet.put(CDSConsentExtensionConstants.REDIRECT_URL, "TestRedirectUrl");
         dataSet.put(CDSConsentExtensionConstants.CONSENT_EXPIRY, "ConsentExpiryDate");
@@ -128,6 +129,7 @@ public class OBCDSAuthServletImplTests extends PowerMockTestCase {
         dataSet.put(CDSConsentExtensionConstants.DATA_REQUESTED, dataRequested);
         dataSet.put(CDSConsentExtensionConstants.BUSINESS_DATA_CLUSTER, dataRequested);
         dataSet.put(CDSConsentExtensionConstants.ACCOUNTS, accounts);
+        dataSet.put(CDSConsentExtensionConstants.CLIENT_ID, "TestClientID");
         dataSet.put(CDSConsentExtensionConstants.SP_FULL_NAME, "TestServiceProvider");
         dataSet.put(CDSConsentExtensionConstants.REDIRECT_URL, "TestRedirectUrl");
         dataSet.put(CDSConsentExtensionConstants.CONSENT_EXPIRY, "ConsentExpiryDate");

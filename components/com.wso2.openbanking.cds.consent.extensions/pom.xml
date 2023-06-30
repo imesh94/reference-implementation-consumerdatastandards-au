@@ -90,6 +90,11 @@
             <classifier>runtime</classifier>
             <scope>test</scope>
         </dependency>
+        <dependency>
+            <groupId>com.wso2</groupId>
+            <artifactId>com.wso2.openbanking.accelerator.account.metadata.service</artifactId>
+            <scope>provided</scope>
+        </dependency>
     </dependencies>
 
     <build>
@@ -158,7 +163,7 @@
                                         <limit implementation="org.jacoco.report.check.Limit">
                                             <counter>INSTRUCTION</counter>
                                             <value>COVEREDRATIO</value>
-                                            // TODO: Write Unit Tests
+                                            <!--TODO: Write Unit Tests-->
                                             <minimum>0.6</minimum>
                                         </limit>
                                     </limits>

@@ -34,12 +34,12 @@ public class SecondaryUserAccountStatusData {
             "Must be inactive or active.")
     private String secondaryAccountInstructionStatus;
 
-    public String getSecondaryAccountId() {
+    public String getSecondaryAccountID() {
 
         return secondaryAccountId;
     }
 
-    public void setSecondaryAccountId(String accountId) {
+    public void setSecondaryAccountID(String accountId) {
         // set tenant domain if not available
         if (!secondaryUserId.toLowerCase(Locale.ENGLISH).endsWith(
                 SecondaryUserInstructionConstants.CARBON_TENANT_DOMAIN)) {
@@ -49,12 +49,12 @@ public class SecondaryUserAccountStatusData {
         this.secondaryAccountId = accountId;
     }
 
-    public String getSecondaryUserId() {
+    public String getSecondaryUserID() {
 
         return secondaryUserId;
     }
 
-    public void setSecondaryUserId(String secondaryUserId) {
+    public void setSecondaryUserID(String secondaryUserId) {
 
         this.secondaryUserId = secondaryUserId;
     }
