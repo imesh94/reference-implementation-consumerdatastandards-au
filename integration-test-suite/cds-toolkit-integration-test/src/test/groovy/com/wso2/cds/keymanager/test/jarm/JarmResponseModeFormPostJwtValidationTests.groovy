@@ -12,6 +12,7 @@
 
 package com.wso2.cds.keymanager.test.jarm
 
+import com.nimbusds.jwt.JWTClaimsSet
 import com.nimbusds.oauth2.sdk.ResponseMode
 import com.nimbusds.oauth2.sdk.ResponseType
 import com.wso2.cds.test.framework.AUTest
@@ -30,14 +31,17 @@ class JarmResponseModeFormPostJwtValidationTests extends AUTest {
     String authResponseUrl
     String responseJwt
     HashMap<String, String> mapPayload
+    JWTClaimsSet jwtPayload
 
     //TODO: Enable testcase after testing the automation in latest pack
-    //@Test
+    @Test
     void "CDS-582_Verify response_mode form_post jwt navigates to Authorization Flow"() {
+
+        def clientId = auConfiguration.getAppInfoClientID()
 
         //Send PAR request and get the request URI with response type code
         response = auAuthorisationBuilder.doPushAuthorisationRequest(scopes, AUConstants.DEFAULT_SHARING_DURATION,
-                true, "", auConfiguration.getAppInfoRedirectURL(), ResponseType.CODE.toString())
+                true, "", clientId, auConfiguration.getAppInfoRedirectURL(), ResponseType.CODE.toString())
         requestUri = AUTestUtil.parseResponseBody(response, AUConstants.REQUEST_URI)
 
         //Get Authorisation URL
@@ -46,7 +50,7 @@ class JarmResponseModeFormPostJwtValidationTests extends AUTest {
 
         //Send Get Request for Authorise Endpoint
         def authResponse = AURestAsRequestBuilder.buildRequest()
-                                    .get(authoriseUrl)
+                .get(authoriseUrl)
 
         //Read HTML response and Extract Response
         String htmlResponse = authResponse.getBody().toString()
@@ -54,8 +58,8 @@ class JarmResponseModeFormPostJwtValidationTests extends AUTest {
         Assert.assertNotNull(responseValue)
 
         //Extract JWT
-        mapPayload = AUJWTGenerator.extractJwt(responseJwt)
-        Assert.assertNotNull(mapPayload.get(AUConstants.CODE_KEY))
+        jwtPayload = AUJWTGenerator.extractJwt(responseValue)
+        authorisationCode = jwtPayload.getStringClaim(AUConstants.CODE_KEY)
 
         //Navigate through Authorisation web app
         def automation = doAuthorisationFlowNavigation(authoriseUrl)
@@ -82,7 +86,7 @@ class JarmResponseModeFormPostJwtValidationTests extends AUTest {
 
         //Send Get Request for Authorise Endpoint
         def authResponse = AURestAsRequestBuilder.buildRequest()
-                                    .get(authoriseUrl)
+                .get(authoriseUrl)
 
         //Read HTML response and Extract Response
         String htmlResponse = authResponse.getBody().toString()
@@ -90,8 +94,8 @@ class JarmResponseModeFormPostJwtValidationTests extends AUTest {
         Assert.assertNotNull(responseValue)
 
         //Extract JWT
-        mapPayload = AUJWTGenerator.extractJwt(responseJwt)
-        Assert.assertNotNull(mapPayload.get(AUConstants.CODE_KEY))
+        jwtPayload = AUJWTGenerator.extractJwt(responseValue)
+        authorisationCode = jwtPayload.getStringClaim(AUConstants.CODE_KEY)
     }
 
     //TODO: Enable testcase after testing the automation in latest pack
@@ -119,8 +123,8 @@ class JarmResponseModeFormPostJwtValidationTests extends AUTest {
         Assert.assertNotNull(responseValue)
 
         //Extract JWT
-        mapPayload = AUJWTGenerator.extractJwt(responseJwt)
-        Assert.assertNotNull(mapPayload.get(AUConstants.CODE_KEY))
+        jwtPayload = AUJWTGenerator.extractJwt(responseValue)
+        authorisationCode = jwtPayload.getStringClaim(AUConstants.CODE_KEY)
     }
 
     //TODO: Enable testcase after testing the automation in latest pack

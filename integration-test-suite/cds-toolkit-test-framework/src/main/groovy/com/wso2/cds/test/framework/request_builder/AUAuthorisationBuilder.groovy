@@ -396,6 +396,52 @@ class AUAuthorisationBuilder {
     }
 
     /**
+     * Get authorization request with response_mode.
+     * @param scopes
+     * @param sharingDuration
+     * @param sendSharingDuration
+     * @param cdrArrangementId
+     * @param clientID
+     * @param response_type
+     * @param response_mode
+     * @return
+     */
+    AuthorizationRequest getAuthorizationRequest(List<AUAccountScope> scopes, URI requestUri, ResponseMode response_mode,
+                                                 String clientID = getClientID().getValue(),
+                                                 ResponseType responseType = getResponseType(),
+                                                 boolean isStateParamPresent = true) {
+
+        String scopeString = "openid ${String.join(" ", scopes.collect({ it.scopeString }))}"
+
+        if(isStateParamPresent) {
+            request = new AuthorizationRequest.Builder(responseType, new ClientID(clientID))
+                    .responseType(responseType)
+                    .responseMode(response_mode)
+                    .scope(new Scope(scopeString))
+                    .requestURI(requestUri)
+                    .redirectionURI(getRedirectURI())
+                    .state(getState())
+                    .endpointURI(getEndpoint())
+                    .codeChallenge(getCodeVerifier(), CodeChallengeMethod.S256)
+                    .customParameter("prompt", "login")
+                    .build()
+        } else {
+            request = new AuthorizationRequest.Builder(responseType, new ClientID(clientID))
+                    .responseType(responseType)
+                    .responseMode(response_mode)
+                    .scope(new Scope(scopeString))
+                    .requestURI(requestUri)
+                    .redirectionURI(getRedirectURI())
+                    .endpointURI(getEndpoint())
+                    .codeChallenge(getCodeVerifier(), CodeChallengeMethod.S256)
+                    .customParameter("prompt", "login")
+                    .build()
+        }
+        return request
+    }
+}
+
+    /**
      * AU Authorisation Builder for Pushed Authorisation Flow with String value for Sharing Duration.
      * @param headerString
      * @param scopes

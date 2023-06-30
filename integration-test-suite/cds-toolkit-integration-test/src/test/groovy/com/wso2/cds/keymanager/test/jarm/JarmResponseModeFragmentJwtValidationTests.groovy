@@ -12,6 +12,7 @@
 
 package com.wso2.cds.keymanager.test.jarm
 
+import com.nimbusds.jwt.JWTClaimsSet
 import com.nimbusds.oauth2.sdk.ResponseMode
 import com.nimbusds.oauth2.sdk.ResponseType
 import com.wso2.cds.test.framework.AUTest
@@ -29,76 +30,91 @@ class JarmResponseModeFragmentJwtValidationTests extends AUTest {
     String authResponseUrl
     String responseJwt
     HashMap<String, String> mapPayload
+    JWTClaimsSet jwtPayload
 
-    @Test
+    @Test (priority = 1)
     void "CDS-569_Verify response_mode fragment jwt navigates to Authorization Flow"() {
 
-        doConsentAuthorisation(ResponseMode.FRAGMENT_JWT)
+        doConsentAuthorisation(ResponseMode.FRAGMENT_JWT, ResponseType.CODE_IDTOKEN, auConfiguration.getAppInfoClientID())
         authResponseUrl = automationResponse.currentUrl.get()
         responseJwt = authResponseUrl.split(AUConstants.HTML_RESPONSE_ATTR)[1]
         Assert.assertNotNull(responseJwt)
-        mapPayload = AUJWTGenerator.extractJwt(responseJwt)
+        jwtPayload = AUJWTGenerator.extractJwt(responseJwt)
     }
 
-    @Test (dependsOnMethods = "CDS-569_Verify response_mode fragment jwt navigates to Authorization Flow")
+    @Test (priority = 1, dependsOnMethods = "CDS-569_Verify response_mode fragment jwt navigates to Authorization Flow")
     void "CDS-571_Verify the '#' Sign' authorization server need to send the authorization response as HTTP redirect to the redirect URI"() {
 
         Assert.assertTrue(authResponseUrl.split(AUConstants.HTML_RESPONSE_ATTR)[0].contains("#"))
     }
 
-    @Test (dependsOnMethods = "CDS-569_Verify response_mode fragment jwt navigates to Authorization Flow")
+    @Test (priority = 1, dependsOnMethods = "CDS-569_Verify response_mode fragment jwt navigates to Authorization Flow")
     void "CDS-572_Verify in fragment jwt response mode if response_type = code id_token"() {
 
-        Assert.assertNotNull(mapPayload.get(AUConstants.CODE_KEY))
-        Assert.assertNotNull(mapPayload.get(AUConstants.ID_TOKEN_KEY))
-        Assert.assertNotNull(mapPayload.get(AUConstants.STATE_KEY))
-        Assert.assertTrue(mapPayload.get(AUConstants.AUDIENCE_KEY).equalsIgnoreCase(auConfiguration.getAppInfoClientID()))
-        Assert.assertTrue(mapPayload.get(AUConstants.ISSUER_KEY).equalsIgnoreCase(auConfiguration.getConsentAudienceValue()))
+        Assert.assertNotNull(jwtPayload.getClaim(AUConstants.CODE_KEY))
+        Assert.assertNotNull(jwtPayload.getStringClaim(AUConstants.ID_TOKEN_KEY))
+        Assert.assertNotNull(jwtPayload.getStringClaim(AUConstants.STATE_KEY))
+        Assert.assertTrue(jwtPayload.getClaim(AUConstants.AUDIENCE_KEY)[0].toString()
+                .equalsIgnoreCase(auConfiguration.getAppInfoClientID()))
+        Assert.assertTrue(jwtPayload.getStringClaim(AUConstants.ISSUER_KEY).equalsIgnoreCase(auConfiguration.getConsentAudienceValue()))
     }
 
     @Test
     void "CDS-573_Verify in fragment jwt response mode if response_type = code"() {
 
-        doConsentAuthorisation(ResponseMode.FRAGMENT_JWT, ResponseType.CODE)
+        doConsentAuthorisation(ResponseMode.FRAGMENT_JWT, ResponseType.CODE, auConfiguration.getAppInfoClientID())
         authResponseUrl = automationResponse.currentUrl.get()
         responseJwt = authResponseUrl.split(AUConstants.HTML_RESPONSE_ATTR)[1]
         Assert.assertNotNull(responseJwt)
-        mapPayload = AUJWTGenerator.extractJwt(responseJwt)
+        jwtPayload = AUJWTGenerator.extractJwt(responseJwt)
 
-        Assert.assertNotNull(mapPayload.get(AUConstants.CODE_KEY))
+        Assert.assertNotNull(jwtPayload.getStringClaim(AUConstants.CODE_KEY))
     }
 
     @Test
     void "CDS-574_Verify in fragment jwt response mode if response_type = token"() {
 
-        doConsentAuthorisation(ResponseMode.FRAGMENT_JWT, ResponseType.TOKEN)
+        doConsentAuthorisation(ResponseMode.FRAGMENT_JWT, ResponseType.TOKEN, auConfiguration.getAppInfoClientID())
         authResponseUrl = automationResponse.currentUrl.get()
         responseJwt = authResponseUrl.split(AUConstants.HTML_RESPONSE_ATTR)[1]
         Assert.assertNotNull(responseJwt)
-        mapPayload = AUJWTGenerator.extractJwt(responseJwt)
+        jwtPayload = AUJWTGenerator.extractJwt(responseJwt)
 
-        Assert.assertNotNull(mapPayload.get(AUConstants.CODE_KEY))
+        Assert.assertNotNull(jwtPayload.getClaim(AUConstants.ACCESS_TOKEN))
     }
 
     @Test
     void "CDS-575_Verify in fragment jwt response mode if response_type = none"() {
 
-        doConsentAuthorisation(ResponseMode.FRAGMENT_JWT, ResponseType.parse("NONE"))
+        def clientId = auConfiguration.getAppInfoClientID()
+
+        //Send PAR request
+        response = auAuthorisationBuilder.doPushAuthorisationRequest(scopes, AUConstants.DEFAULT_SHARING_DURATION,
+                true, "", clientId, auConfiguration.getAppInfoRedirectURL(),
+                ResponseType.parse("NONE").toString())
+
+        requestUri = AUTestUtil.parseResponseBody(response, AUConstants.REQUEST_URI)
+
+        //Send Authorisation Request
+        String authoriseUrl = auAuthorisationBuilder.getAuthorizationRequest(scopes, requestUri.toURI(),
+                ResponseMode.FRAGMENT_JWT, clientId, ResponseType.parse("NONE"), true).toURI().toString()
+        automationResponse = doAuthorisationErrorFlow(authoriseUrl)
+
         authResponseUrl = automationResponse.currentUrl.get()
-        Assert.assertTrue(AUTestUtil.getDecodedUrl(authResponseUrl).contains(AUConstants.UNSUPPORTED_RESPONSE_MODE))
+        Assert.assertTrue(AUTestUtil.getErrorDescriptionFromUrl(authResponseUrl).contains(AUConstants.INVALID_RESPONSE_TYPE))
     }
 
     @Test
     void "CDS-576_Verify a User access Token call with the Code received from fragment jwt"() {
 
         //Consent Authorisation
-        doConsentAuthorisation(ResponseMode.FRAGMENT_JWT, ResponseType.CODE_IDTOKEN)
+        doConsentAuthorisation(ResponseMode.FRAGMENT_JWT, ResponseType.CODE_IDTOKEN, auConfiguration.getAppInfoClientID())
         authResponseUrl = automationResponse.currentUrl.get()
         responseJwt = authResponseUrl.split(AUConstants.HTML_RESPONSE_ATTR)[1]
         Assert.assertNotNull(responseJwt)
-        mapPayload = AUJWTGenerator.extractJwt(responseJwt)
+        jwtPayload = AUJWTGenerator.extractJwt(responseJwt)
 
-        authorisationCode = mapPayload.get(AUConstants.CODE_KEY)
+        authorisationCode = jwtPayload.getStringClaim(AUConstants.CODE_KEY)
         Assert.assertNotNull(authorisationCode)
 
         //Generate User Access Token
