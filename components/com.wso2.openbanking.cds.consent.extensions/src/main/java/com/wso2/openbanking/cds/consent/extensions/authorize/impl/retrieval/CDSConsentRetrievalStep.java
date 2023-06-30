@@ -90,12 +90,34 @@ public class CDSConsentRetrievalStep implements ConsentRetrievalStep {
                         if (existingConsentExpiry.isAfter(currentDateTime)) {
                             // Add required data for the persistence step
                             String userId = CDSConsentCommonUtil.getUserIdWithTenantDomain(consentData.getUserId());
+                            ArrayList<AuthorizationResource> authResourceList = consentResource.
+                                    getAuthorizationResources();
+
+                            // Check if this is a business-profile consent
+                            if (consentResource.getConsentAttributes().containsKey(CDSConsentExtensionConstants.
+                                    CUSTOMER_PROFILE_TYPE) && CDSConsentExtensionConstants.
+                                    BUSINESS_PROFILE_TYPE_ATTRIBUTE.equals(consentResource.getConsentAttributes().get(
+                                            CDSConsentExtensionConstants.CUSTOMER_PROFILE_TYPE))) {
+                                // For business accounts, only primary_member is allowed to amend the consent.
+                                String primaryUserId = "";
+                                for (AuthorizationResource authResource : authResourceList) {
+                                    if (CDSConsentExtensionConstants.AUTH_RESOURCE_TYPE_PRIMARY.equals(
+                                            authResource.getAuthorizationType())) {
+                                        primaryUserId = authResource.getUserID();
+                                    }
+                                }
+                                if (!userId.equals(primaryUserId)) {
+                                    String errorMessage = String.format("User %s is not authorized to amend the " +
+                                            "consent.", userId);
+                                    log.error(errorMessage + " Consent id: " + consentId);
+                                    throw new ConsentException(ResponseStatus.FORBIDDEN, errorMessage);
+                                }
+                            }
+
                             // Set userid with tenant domain to consent data
                             consentData.setUserId(userId);
                             String authId = null;
                             String authStatus = null;
-                            ArrayList<AuthorizationResource> authResourceList = consentResource.
-                                    getAuthorizationResources();
                             for (AuthorizationResource authResource : authResourceList) {
                                 if (userId.equals(authResource.getUserID())) {
                                     authId = authResource.getAuthorizationID();
@@ -213,6 +235,9 @@ public class CDSConsentRetrievalStep implements ConsentRetrievalStep {
             // appending redirect URL
             jsonObject.appendField(CDSConsentExtensionConstants.REDIRECT_URL, CDSDataRetrievalUtil
                     .getRedirectURL(consentData.getSpQueryParams()));
+
+            // appending state to be retrieved in authentication webapp
+            jsonObject.appendField(CDSConsentExtensionConstants.STATE, consentData.getState());
 
             // appending openid_scopes to be retrieved in authentication webapp
             jsonObject.appendField(CDSConsentExtensionConstants.OPENID_SCOPES, permissions);

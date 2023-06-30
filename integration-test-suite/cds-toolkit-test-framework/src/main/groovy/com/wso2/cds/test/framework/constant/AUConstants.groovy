@@ -384,6 +384,8 @@ class AUConstants extends OBConstants {
     public static final String USER_DENIED_THE_CONSENT = "User denied the consent"
     public static final String CDR_ARRANGEMENT_ID = "cdr_arrangement_id"
     public static final String INVALID_REQUEST = "invalid request"
+    public static final String HTML_RESPONSE_ATTR = "response="
+    public static final String INVALID_RESPONSE_TYPE = "Invalid response_type parameter value"
 
 }
 
