@@ -52,7 +52,7 @@ public class DisclosureOptionsApiHandler {
                 disclosureOptionsMap.put(DisclosureOptionStatusConstants.DISCLOSURE_OPTION_STATUS, disclosureOption);
 
                 // Call the addOrUpdateGlobalAccountMetadata method from the AccountMetadataService class
-                accountMetadataService.addOrUpdateGlobalAccountMetadata(accountId, disclosureOptionsMap);
+                accountMetadataService.addOrUpdateAccountMetadata(accountId, disclosureOptionsMap);
             }
             return Response.ok().build();
         } catch (OpenBankingException e) {

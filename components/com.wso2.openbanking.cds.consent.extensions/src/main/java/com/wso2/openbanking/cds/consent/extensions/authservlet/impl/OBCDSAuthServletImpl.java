@@ -35,7 +35,6 @@ import javax.servlet.http.HttpServletRequest;
  */
 public class OBCDSAuthServletImpl implements OBAuthServletInterface {
 
-    private static final Log log = LogFactory.getLog(OBCDSAuthServletImpl.class);
     String preSelectedProfileId;
     AccountMetadataServiceImpl accountMetadataService = AccountMetadataServiceImpl.getInstance();
     private String userId;
@@ -192,7 +191,7 @@ public class OBCDSAuthServletImpl implements OBAuthServletInterface {
             boolean isSelectable = true;
             if (isConsentAmendment) {
                 try {
-                    if (account != null && account.get(CDSConsentExtensionConstants.ACCOUNT_ID) != null) {
+                    if (account.get(CDSConsentExtensionConstants.ACCOUNT_ID) != null) {
                         String accountId = (String) account.get(CDSConsentExtensionConstants.ACCOUNT_ID);
                         String permissionStatus = accountMetadataService.getAccountMetadataByKey(accountId, userId,
                                 CDSConsentExtensionConstants.BNR_PERMISSION);
