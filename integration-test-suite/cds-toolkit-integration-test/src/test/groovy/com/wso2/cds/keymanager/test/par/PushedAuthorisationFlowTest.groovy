@@ -13,7 +13,6 @@ import com.wso2.cds.test.framework.utility.AURestAsRequestBuilder
 import com.wso2.cds.test.framework.utility.AUTestUtil
 import com.wso2.openbanking.test.framework.automation.AutomationMethod
 import com.wso2.openbanking.test.framework.automation.NavigationAutomationStep
-import com.wso2.openbanking.test.framework.model.AccessTokenJwtDto
 import io.restassured.RestAssured
 import io.restassured.response.Response
 import org.testng.Assert
