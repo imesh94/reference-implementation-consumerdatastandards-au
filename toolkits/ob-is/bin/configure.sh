@@ -71,6 +71,10 @@ configure_datasources() {
             echo -e "=======================================================================\n"
             mysql -u${DB_USER} ${DB_MYSQL_PASS} -h${DB_HOST} -D${DB_OPEN_BANKING_STORE} -e "ALTER TABLE OB_CONSENT_ATTRIBUTE MODIFY ATT_VALUE VARCHAR(1023)";
 
+            echo -e "\nCreate OB_ACCOUNT_METADATA table"
+            echo -e "=======================================================================\n"
+            mysql -u${DB_USER} ${DB_MYSQL_PASS} -h${DB_HOST} -D${DB_OPEN_BANKING_STORE} -e "SOURCE ${WSO2_OB_IS_HOME}/dbscripts/open-banking/account-metadata/mysql.sql";
+
         else
             # IS
             sed -i -e 's|DB_APIMGT_URL|jdbc:sqlserver://'${DB_HOST}':1433;databaseName='${DB_APIMGT}';encrypt=false|g' ${DEPLOYMENT_TOML_FILE}
