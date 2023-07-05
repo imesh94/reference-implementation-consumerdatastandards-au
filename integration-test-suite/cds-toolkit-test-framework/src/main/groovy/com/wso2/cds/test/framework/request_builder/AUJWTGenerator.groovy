@@ -345,17 +345,4 @@ class AUJWTGenerator {
 
         return modifiedJsonPayload
     }
-
-    /**
-     * Extract JWT token and assign to a map.
-     * @param jwtToken jwt token
-     * @return jwt claim set
-     */
-    static JWTClaimsSet extractJwt(String jwtToken) {
-
-        SignedJWT signedJWT = SignedJWT.parse(jwtToken)
-        JWTClaimsSet claimsSet = signedJWT.getJWTClaimsSet()
-
-        return claimsSet
-    }
 }
