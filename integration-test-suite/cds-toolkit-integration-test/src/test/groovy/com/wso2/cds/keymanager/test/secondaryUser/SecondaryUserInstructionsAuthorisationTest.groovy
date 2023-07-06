@@ -130,7 +130,7 @@ class SecondaryUserInstructionsAuthorisationTest extends AUTest {
                 }
                 .execute()
 
-        authorisationCode = AUTestUtil.getHybridCodeFromUrl(automation.currentUrl.get())
+        authorisationCode = AUTestUtil.getCodeFromJwtResponse(automation.currentUrl.get())
     }
 
     @Test
@@ -318,7 +318,7 @@ class SecondaryUserInstructionsAuthorisationTest extends AUTest {
                 .execute()
 
         // Get Code From URL
-        authorisationCode = AUTestUtil.getHybridCodeFromUrl(automation.currentUrl.get())
+        authorisationCode = AUTestUtil.getCodeFromJwtResponse(automation.currentUrl.get())
 
         //Get User Access Token
         generateUserAccessToken()
