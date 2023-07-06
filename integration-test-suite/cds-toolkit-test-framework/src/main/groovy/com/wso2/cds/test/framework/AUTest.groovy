@@ -103,7 +103,6 @@ class AUTest extends OBTest {
     public String productId
     public Response deletionResponse
     public AUJWTGenerator generator
-    public String encryptedAccount1Id, encryptedAccount2Id, encryptedTransactionId, encryptedPayeeId
 
     /**
      * Set Scopes of application

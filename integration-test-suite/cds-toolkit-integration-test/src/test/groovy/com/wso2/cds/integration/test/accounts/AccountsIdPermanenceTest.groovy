@@ -29,10 +29,10 @@ import java.nio.charset.Charset
 class AccountsIdPermanenceTest extends AUTest {
 
     def clientHeader = "${Base64.encoder.encodeToString(getCDSClient().getBytes(Charset.defaultCharset()))}"
-//    String encryptedAccount1Id
-//    String encryptedAccount2Id
-//    String encryptedTransactionId
-//    String encryptedPayeeId
+    String encryptedAccount1Id
+    String encryptedAccount2Id
+    String encryptedTransactionId
+    String encryptedPayeeId
     private String secretKey = auConfiguration.getIDPermanence()
     private String userId = auConfiguration.getUserKeyManagerAdminName() + "@" + auConfiguration.getCommonTenantDomain()
 
