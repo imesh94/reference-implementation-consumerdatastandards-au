@@ -124,7 +124,7 @@ class CeasingSecondaryUserConsentFlowTest extends AUTest {
                 .execute()
 
         // Get Code From URL
-        authorisationCode = AUTestUtil.getHybridCodeFromUrl(automation.currentUrl.get())
+        authorisationCode = AUTestUtil.getCodeFromJwtResponse(automation.currentUrl.get())
     }
 
     @Test (dependsOnMethods = "CDS-644_Verify account is not listed under unavailable accounts once the legal entity is active by account owner")

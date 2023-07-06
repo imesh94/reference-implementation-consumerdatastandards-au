@@ -124,7 +124,7 @@ class SecondaryUserAmendmentFlow extends AUTest {
                 }
                 .execute()
 
-        authorisationCode = AUTestUtil.getHybridCodeFromUrl(automation1.currentUrl.get())
+        authorisationCode = AUTestUtil.getCodeFromJwtResponse(automation1.currentUrl.get())
 
         //Get Access Token
         AccessTokenResponse responseBody = getUserAccessTokenResponse(clientId)
@@ -170,7 +170,7 @@ class SecondaryUserAmendmentFlow extends AUTest {
                 .execute()
 
         // Get Code From URL
-        authorisationCode = AUTestUtil.getHybridCodeFromUrl(automation.currentUrl.get())
+        authorisationCode = AUTestUtil.getCodeFromJwtResponse(automation.currentUrl.get())
 
         //Generate Token
         generateUserAccessToken()

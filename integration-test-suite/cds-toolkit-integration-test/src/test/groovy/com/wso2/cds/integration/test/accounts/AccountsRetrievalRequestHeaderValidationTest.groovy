@@ -40,14 +40,16 @@ class AccountsRetrievalRequestHeaderValidationTest extends AUTest {
     @Test(dataProvider = "BankingApis", dataProviderClass = AccountsDataProviders.class)
     void "TC0301011_Retrieve accounts list with header x-min-v greater than the x-v"(resourcePath) {
 
+        int x_v_header = AUTestUtil.getBankingApiEndpointVersion(resourcePath.toString())
+
         def response = AURequestBuilder.buildBasicRequestWithCustomHeaders(userAccessToken,
-                AUConstants.X_V_HEADER_ACCOUNTS, clientHeader)
+                x_v_header, clientHeader)
                 .header(AUConstants.X_MIN_HEADER, 3)
                 .baseUri(AUTestUtil.getBaseUrl(AUConstants.BASE_PATH_TYPE_ACCOUNT))
                 .get("${AUConstants.CDS_PATH}${resourcePath}")
 
         Assert.assertEquals(response.statusCode(), AUConstants.STATUS_CODE_200)
-        Assert.assertEquals(response.getHeader(AUConstants.X_V_HEADER).toInteger(), AUConstants.X_V_HEADER_ACCOUNTS)
+        Assert.assertEquals(response.getHeader(AUConstants.X_V_HEADER).toInteger(), x_v_header)
         Assert.assertTrue(response.getHeader(AUConstants.CONTENT_TYPE).contains(AUConstants.ACCEPT))
 
         Assert.assertNotNull(response.getHeader(AUConstants.X_FAPI_INTERACTION_ID))
@@ -62,8 +64,10 @@ class AccountsRetrievalRequestHeaderValidationTest extends AUTest {
     @Test (dataProvider = "BankingApis", dataProviderClass = AccountsDataProviders.class)
     void "TC0301004_Retrieve accounts list without x-v Header"(resourcePath) {
 
+        int x_v_header = AUTestUtil.getBankingApiEndpointVersion(resourcePath.toString())
+
         def response = AURestAsRequestBuilder.buildRequest()
-                .header(AUConstants.X_MIN_HEADER , AUConstants.X_V_HEADER_ACCOUNTS)
+                .header(AUConstants.X_MIN_HEADER , x_v_header)
                 .header(AUConstants.X_FAPI_AUTH_DATE, AUConstants.DATE)
                 .header(AUConstants.X_FAPI_CUSTOMER_IP_ADDRESS , AUConstants.IP)
                 .header(AUConstants.X_CDS_CLIENT_HEADERS , clientHeader)
@@ -83,13 +87,15 @@ class AccountsRetrievalRequestHeaderValidationTest extends AUTest {
     @Test (dataProvider = "BankingApis", dataProviderClass = AccountsDataProviders.class)
     void "TC0301005_Retrieve accounts list without x-min-v Header"(resourcePath) {
 
+        int x_v_header = AUTestUtil.getBankingApiEndpointVersion(resourcePath.toString())
+
         def response = AURequestBuilder.buildBasicRequestWithCustomHeaders(userAccessToken,
-                AUConstants.X_V_HEADER_ACCOUNTS, clientHeader)
+                x_v_header, clientHeader)
                 .baseUri(AUTestUtil.getBaseUrl(AUConstants.BASE_PATH_TYPE_ACCOUNT))
                 .get("${AUConstants.CDS_PATH}${resourcePath}")
 
         Assert.assertEquals(response.statusCode(), AUConstants.STATUS_CODE_200)
-        Assert.assertEquals(response.getHeader(AUConstants.X_V_HEADER).toInteger(), AUConstants.X_V_HEADER_ACCOUNTS)
+        Assert.assertEquals(response.getHeader(AUConstants.X_V_HEADER).toInteger(), x_v_header)
         Assert.assertTrue(response.getHeader(AUConstants.CONTENT_TYPE).contains(AUConstants.ACCEPT))
 
         Assert.assertNotNull(response.getHeader(AUConstants.X_FAPI_INTERACTION_ID))
@@ -145,8 +151,10 @@ class AccountsRetrievalRequestHeaderValidationTest extends AUTest {
     @Test (dataProvider = "BankingApis", dataProviderClass = AccountsDataProviders.class)
     void "TC0301009_Retrieve accounts list with negative x-min-v Header"(resourcePath) {
 
+        int x_v_header = AUTestUtil.getBankingApiEndpointVersion(resourcePath.toString())
+
         def response = AURequestBuilder.buildBasicRequestWithCustomHeaders(userAccessToken,
-                AUConstants.X_V_HEADER_ACCOUNTS, clientHeader)
+                x_v_header, clientHeader)
                 .header(AUConstants.X_MIN_HEADER, -1)
                 .baseUri(AUTestUtil.getBaseUrl(AUConstants.BASE_PATH_TYPE_ACCOUNT))
                 .get("${AUConstants.CDS_PATH}${resourcePath}")
@@ -162,8 +170,10 @@ class AccountsRetrievalRequestHeaderValidationTest extends AUTest {
     @Test (dataProvider = "BankingApis", dataProviderClass = AccountsDataProviders.class)
     void "TC0301010_Retrieve accounts list with decimal x-min-v Header"(resourcePath) {
 
+        int x_v_header = AUTestUtil.getBankingApiEndpointVersion(resourcePath.toString())
+
         def response = AURequestBuilder.buildBasicRequestWithCustomHeaders(userAccessToken,
-                AUConstants.X_V_HEADER_ACCOUNTS, clientHeader)
+                x_v_header, clientHeader)
                 .header(AUConstants.X_MIN_HEADER, 1.0)
                 .baseUri(AUTestUtil.getBaseUrl(AUConstants.BASE_PATH_TYPE_ACCOUNT))
                 .get("${AUConstants.CDS_PATH}${resourcePath}")
@@ -178,14 +188,16 @@ class AccountsRetrievalRequestHeaderValidationTest extends AUTest {
     @Test (dataProvider = "BankingApis", dataProviderClass = AccountsDataProviders.class)
     void "TC0301012_Retrieve accounts list with header x-min-v equals to the x-v"(resourcePath) {
 
+        int x_v_header = AUTestUtil.getBankingApiEndpointVersion(resourcePath.toString())
+
         def response = AURequestBuilder.buildBasicRequestWithCustomHeaders(userAccessToken,
-                AUConstants.X_V_HEADER_ACCOUNTS, clientHeader)
-                .header(AUConstants.X_MIN_HEADER, AUConstants.X_V_HEADER_ACCOUNTS)
+                x_v_header, clientHeader)
+                .header(AUConstants.X_MIN_HEADER, x_v_header)
                 .baseUri(AUTestUtil.getBaseUrl(AUConstants.BASE_PATH_TYPE_ACCOUNT))
                 .get("${AUConstants.CDS_PATH}${resourcePath}")
 
         Assert.assertEquals(response.statusCode(), AUConstants.STATUS_CODE_200)
-        Assert.assertEquals(response.getHeader(AUConstants.X_V_HEADER).toInteger(), AUConstants.X_V_HEADER_ACCOUNTS)
+        Assert.assertEquals(response.getHeader(AUConstants.X_V_HEADER).toInteger(), x_v_header)
         Assert.assertTrue(response.getHeader(AUConstants.CONTENT_TYPE).contains(AUConstants.ACCEPT))
 
         Assert.assertNotNull(response.getHeader(AUConstants.X_FAPI_INTERACTION_ID))
@@ -200,14 +212,16 @@ class AccountsRetrievalRequestHeaderValidationTest extends AUTest {
     @Test (dataProvider = "BankingApis", dataProviderClass = AccountsDataProviders.class)
     void "TC0301013_Retrieve accounts list with header x-min-v less than the x-v"(resourcePath) {
 
+        int x_v_header = AUTestUtil.getBankingApiEndpointVersion(resourcePath.toString())
+
         def response = AURequestBuilder.buildBasicRequestWithCustomHeaders(userAccessToken,
-                AUConstants.X_V_HEADER_ACCOUNTS, clientHeader)
-                .header(AUConstants.X_MIN_HEADER, AUConstants.X_V_HEADER_ACCOUNTS)
+                x_v_header, clientHeader)
+                .header(AUConstants.X_MIN_HEADER, 0)
                 .baseUri(AUTestUtil.getBaseUrl(AUConstants.BASE_PATH_TYPE_ACCOUNT))
                 .get("${AUConstants.CDS_PATH}${resourcePath}")
 
         Assert.assertEquals(response.statusCode(), AUConstants.STATUS_CODE_200)
-        Assert.assertEquals(response.getHeader(AUConstants.X_V_HEADER).toInteger(), AUConstants.X_V_HEADER_ACCOUNTS)
+        Assert.assertEquals(response.getHeader(AUConstants.X_V_HEADER).toInteger(), x_v_header)
         Assert.assertTrue(response.getHeader(AUConstants.CONTENT_TYPE).contains(AUConstants.ACCEPT))
 
         Assert.assertNotNull(response.getHeader(AUConstants.X_FAPI_INTERACTION_ID))
@@ -222,9 +236,11 @@ class AccountsRetrievalRequestHeaderValidationTest extends AUTest {
     @Test (dataProvider = "BankingApis", dataProviderClass = AccountsDataProviders.class)
     void "TC0301014_Retrieve accounts with unsupported endpoint version"(resourcePath) {
 
+        int x_v_header = AUTestUtil.getBankingApiEndpointVersion(resourcePath.toString())
+
         def response = AURequestBuilder.buildBasicRequestWithCustomHeaders(userAccessToken,
                 AUConstants.UNSUPPORTED_X_V_VERSION, clientHeader)
-                .header(AUConstants.X_MIN_HEADER, AUConstants.X_V_HEADER_ACCOUNTS)
+                .header(AUConstants.X_MIN_HEADER, x_v_header)
                 .baseUri(AUTestUtil.getBaseUrl(AUConstants.BASE_PATH_TYPE_ACCOUNT))
                 .get("${AUConstants.CDS_PATH}${resourcePath}")
 
@@ -264,10 +280,11 @@ class AccountsRetrievalRequestHeaderValidationTest extends AUTest {
     @Test (dataProvider = "BankingApis", dataProviderClass = AccountsDataProviders.class)
     void "TC0301016_Retrieve accounts with supported endpoint version with holder identifier header"(resourcePath) {
 
+        int x_v_header = AUTestUtil.getBankingApiEndpointVersion(resourcePath.toString())
         def holderID = "ABC-Bank"
 
         def response = AURestAsRequestBuilder.buildRequest()
-                .header("x-${holderID}-v", AUConstants.X_V_HEADER_ACCOUNTS)
+                .header("x-${holderID}-v", x_v_header)
                 .header(AUConstants.AUTHORIZATION_HEADER_KEY, "${AUConstants.AUTHORIZATION_BEARER_TAG}${userAccessToken}")
                 .header(AUConstants.X_FAPI_AUTH_DATE, AUConstants.DATE)
                 .header(AUConstants.X_CDS_CLIENT_HEADERS , clientHeader)
@@ -275,7 +292,7 @@ class AccountsRetrievalRequestHeaderValidationTest extends AUTest {
                 .get("${AUConstants.CDS_PATH}${resourcePath}")
 
         Assert.assertEquals(response.statusCode(), AUConstants.STATUS_CODE_200)
-        Assert.assertEquals(response.getHeader(AUConstants.X_V_HEADER).toInteger(), AUConstants.X_V_HEADER_ACCOUNTS)
+        Assert.assertEquals(response.getHeader(AUConstants.X_V_HEADER).toInteger(), x_v_header)
         Assert.assertTrue(response.getHeader(AUConstants.CONTENT_TYPE).contains(AUConstants.ACCEPT))
 
         Assert.assertNotNull(response.getHeader(AUConstants.X_FAPI_INTERACTION_ID))
@@ -290,14 +307,16 @@ class AccountsRetrievalRequestHeaderValidationTest extends AUTest {
     @Test (dataProvider = "AccountsRetrievalFlow", dataProviderClass = AccountsDataProviders.class)
     void "TC0301017_Retrieve accounts list with optional headers"(resourcePath) {
 
+        int x_v_header = AUTestUtil.getBankingApiEndpointVersion(resourcePath.toString())
+
         def response = AURequestBuilder.buildBasicRequestWithOptionalHeaders(userAccessToken,
-                AUConstants.X_V_HEADER_ACCOUNTS, clientHeader)
-                .header(AUConstants.X_MIN_HEADER, AUConstants.X_V_HEADER_ACCOUNTS)
+                x_v_header, clientHeader)
+                .header(AUConstants.X_MIN_HEADER, x_v_header)
                 .baseUri(AUTestUtil.getBaseUrl(AUConstants.BASE_PATH_TYPE_ACCOUNT))
                 .get("${AUConstants.CDS_PATH}${resourcePath}")
 
         Assert.assertEquals(response.statusCode(), AUConstants.STATUS_CODE_200)
-        Assert.assertEquals(response.getHeader(AUConstants.X_V_HEADER).toInteger(), AUConstants.X_V_HEADER_ACCOUNTS)
+        Assert.assertEquals(response.getHeader(AUConstants.X_V_HEADER).toInteger(), x_v_header)
         Assert.assertTrue(response.getHeader(AUConstants.CONTENT_TYPE).contains(AUConstants.ACCEPT))
 
         Assert.assertNotNull(response.getHeader(AUConstants.X_FAPI_INTERACTION_ID))
@@ -332,7 +351,7 @@ class AccountsRetrievalRequestHeaderValidationTest extends AUTest {
     void "TC0301019_Retrieve account list with invalid product-category value"() {
 
         def response = AURequestBuilder.buildBasicRequestWithCustomHeaders(userAccessToken,
-                AUConstants.X_V_HEADER_PRODUCTS, clientHeader)
+                AUConstants.X_V_HEADER_ACCOUNTS, clientHeader)
                 .queryParam(AUConstants.PARAM_PRODUCT_CATEGORY, "TRANS")
                 .baseUri(AUTestUtil.getBaseUrl(AUConstants.BASE_PATH_TYPE_ACCOUNT))
                 .get("${AUConstants.CDS_PATH}${AUConstants.BULK_ACCOUNT_PATH}")
@@ -448,8 +467,10 @@ class AccountsRetrievalRequestHeaderValidationTest extends AUTest {
     @Test (enabled = true, dataProvider = "AccountsRetrievalFlow", dataProviderClass = AccountsDataProviders.class)
     void "OB-1186_Retrieve account list with invalid X_FAPI_AUTH_DATE"(resource) {
 
+        int x_v_header = AUTestUtil.getBankingApiEndpointVersion(resource.toString())
+
         def response = AURequestBuilder.buildBasicRequestWithCustomHeaders(userAccessToken,
-                AUConstants.X_V_HEADER_ACCOUNTS, clientHeader, AUConstants.CONSENT_EXPIRE_DATE)
+                x_v_header, clientHeader, AUConstants.CONSENT_EXPIRE_DATE)
                 .baseUri(AUTestUtil.getBaseUrl(AUConstants.BASE_PATH_TYPE_ACCOUNT))
                 .get("${AUConstants.CDS_PATH}$resource")
 
@@ -465,8 +486,10 @@ class AccountsRetrievalRequestHeaderValidationTest extends AUTest {
     @Test (dataProvider = "AccountsRetrievalFlow", dataProviderClass = AccountsDataProviders.class)
     void "OB-1187_Retrieve account list with invalid X_FAPI_CUSTOMER_IP_ADDRESS"(resource) {
 
+        int x_v_header = AUTestUtil.getBankingApiEndpointVersion(resource.toString())
+
         def response = AURequestBuilder.buildBasicRequestWithOptionalHeaders(userAccessToken,
-                AUConstants.X_V_HEADER_ACCOUNTS, clientHeader, AUConstants.DATE, "23.3.4")
+                x_v_header, clientHeader, AUConstants.DATE, "23.3.4")
                 .baseUri(AUTestUtil.getBaseUrl(AUConstants.BASE_PATH_TYPE_ACCOUNT))
                 .get("${AUConstants.CDS_PATH}$resource")
 
@@ -484,7 +507,7 @@ class AccountsRetrievalRequestHeaderValidationTest extends AUTest {
     void "OB-1190_Retrieve transaction list with invalid oldest-time"() {
 
         def response = AURequestBuilder.buildBasicRequestWithCustomHeaders(userAccessToken,
-                AUConstants.X_V_HEADER_ACCOUNTS, clientHeader)
+                AUConstants.X_V_HEADER_TRANSACTIONS, clientHeader)
                 .header(AUConstants.OLDEST_TIME, "aaa")
                 .baseUri(AUTestUtil.getBaseUrl(AUConstants.BASE_PATH_TYPE_ACCOUNT))
                 .get("${AUConstants.CDS_PATH}${AUConstants.GET_TRANSACTIONS}")
@@ -503,7 +526,7 @@ class AccountsRetrievalRequestHeaderValidationTest extends AUTest {
     void "OB-1191_Retrieve transaction list with invalid newest-time"() {
 
         def response = AURequestBuilder.buildBasicRequestWithCustomHeaders(userAccessToken,
-                AUConstants.X_V_HEADER_ACCOUNTS, clientHeader)
+                AUConstants.X_V_HEADER_TRANSACTIONS, clientHeader)
                 .header(AUConstants.NEWEST_TIME, "2021-05-01")
                 .baseUri(AUTestUtil.getBaseUrl(AUConstants.BASE_PATH_TYPE_ACCOUNT))
                 .get("${AUConstants.CDS_PATH}${AUConstants.GET_TRANSACTIONS}")
@@ -531,7 +554,7 @@ class AccountsRetrievalRequestHeaderValidationTest extends AUTest {
             }
         """.stripIndent()
 
-        def response = AURequestBuilder.buildBasicRequest(userAccessToken, AUConstants.X_V_HEADER_ACCOUNTS)
+        def response = AURequestBuilder.buildBasicRequest(userAccessToken, AUConstants.X_V_HEADER_DIRECT_DEBITS)
                 .contentType(ContentType.XML)
                 .body(requestBody)
                 .baseUri(AUTestUtil.getBaseUrl(AUConstants.BASE_PATH_TYPE_DIRECT_DEBIT))
@@ -563,7 +586,7 @@ class AccountsRetrievalRequestHeaderValidationTest extends AUTest {
         """.stripIndent()
 
         def response = AURequestBuilder.buildBasicRequestWithCustomHeaders(userAccessToken,
-                AUConstants.X_V_HEADER_ACCOUNTS, clientHeader)
+                AUConstants.X_V_HEADER_DIRECT_DEBITS, clientHeader)
                 .accept(ContentType.XML)
                 .contentType(ContentType.JSON)
                 .body(requestBody)

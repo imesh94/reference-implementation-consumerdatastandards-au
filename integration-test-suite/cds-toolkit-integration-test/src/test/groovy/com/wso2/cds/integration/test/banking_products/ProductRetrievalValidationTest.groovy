@@ -37,7 +37,7 @@ class ProductRetrievalValidationTest extends AUTest {
     void "TC1101001_Retrieve banking products"() {
 
         Response response = AURequestBuilder.buildBasicRequestWithOptionalHeaders(userAccessToken,
-                AUConstants.X_V_HEADER_ACCOUNTS, clientHeader)
+                AUConstants.X_V_HEADER_PRODUCTS, clientHeader)
                 .baseUri(AUTestUtil.getBaseUrl(AUConstants.BASE_PATH_TYPE_PRODUCTS))
                 .get("${AUConstants.CDS_PATH}${AUConstants.BANKING_PRODUCT_PATH}")
 
@@ -67,7 +67,7 @@ class ProductRetrievalValidationTest extends AUTest {
     void "TC1101002_Retrieve specific banking product details"() {
 
         Response response = AURequestBuilder.buildBasicRequestWithOptionalHeaders(userAccessToken,
-                AUConstants.X_V_HEADER_ACCOUNTS, clientHeader)
+                AUConstants.X_V_HEADER_PRODUCTS, clientHeader)
                 .baseUri(AUTestUtil.getBaseUrl(AUConstants.BASE_PATH_TYPE_PRODUCTS))
                 .get("${AUConstants.CDS_PATH}${AUConstants.BANKING_PRODUCT_PATH}")
 
@@ -98,12 +98,12 @@ class ProductRetrievalValidationTest extends AUTest {
     void "TC1101003_Retrieve specific banking product details for invalid product id"() {
 
         Response response = AURequestBuilder.buildBasicRequestWithOptionalHeaders(userAccessToken,
-                AUConstants.X_V_HEADER_ACCOUNTS, clientHeader)
+                AUConstants.X_V_HEADER_PRODUCT, clientHeader)
                 .baseUri(AUTestUtil.getBaseUrl(AUConstants.BASE_PATH_TYPE_PRODUCTS))
                 .get("${AUConstants.CDS_PATH}${AUConstants.BANKING_PRODUCT_PATH}/12345")
 
         Assert.assertEquals(response.statusCode(), AUConstants.STATUS_CODE_200)
-        Assert.assertEquals(response.getHeader(AUConstants.X_V_HEADER).toInteger(), AUConstants.X_V_HEADER_PRODUCTS)
+        Assert.assertEquals(response.getHeader(AUConstants.X_V_HEADER).toInteger(), AUConstants.X_V_HEADER_PRODUCT)
         Assert.assertNotNull(response.getHeader(AUConstants.X_FAPI_INTERACTION_ID))
         Assert.assertNotNull(AUTestUtil.parseResponseBody(response, "data.productId"))
     }
@@ -112,7 +112,7 @@ class ProductRetrievalValidationTest extends AUTest {
     void "TC1101019_Retrieve banking products with page size greater than the maximum standard pagination"() {
 
         Response response = AURequestBuilder.buildBasicRequestWithOptionalHeaders(userAccessToken,
-                AUConstants.X_V_HEADER_ACCOUNTS, clientHeader)
+                AUConstants.X_V_HEADER_PRODUCTS, clientHeader)
                 .queryParam(AUConstants.PAGE_SIZE, 200000)
                 .baseUri(AUTestUtil.getBaseUrl(AUConstants.BASE_PATH_TYPE_PRODUCTS))
                 .get("${AUConstants.CDS_PATH}${AUConstants.BANKING_PRODUCT_PATH}")
@@ -133,7 +133,7 @@ class ProductRetrievalValidationTest extends AUTest {
         String queryParams = "?effective=CURRENT&brand=TEST&product-category=TRANS_AND_SAVINGS_ACCOUNTS&page=2&" +
                 "page-size=25&updated-since=2019-12-25T15:43:00-08:00"
         Response response = AURequestBuilder.buildBasicRequestWithOptionalHeaders(userAccessToken,
-                AUConstants.X_V_HEADER_ACCOUNTS, clientHeader)
+                AUConstants.X_V_HEADER_PRODUCTS, clientHeader)
                 .baseUri(AUTestUtil.getBaseUrl(AUConstants.BASE_PATH_TYPE_PRODUCTS))
                 .get("${AUConstants.CDS_PATH}${AUConstants.BANKING_PRODUCT_PATH}${queryParams}")
 
@@ -157,7 +157,7 @@ class ProductRetrievalValidationTest extends AUTest {
     void "TC1101021_Retrieve banking products with invalid updated-since value"() {
 
         def response = AURequestBuilder.buildBasicRequestWithOptionalHeaders(userAccessToken,
-                AUConstants.X_V_HEADER_ACCOUNTS, clientHeader)
+                AUConstants.X_V_HEADER_PRODUCTS, clientHeader)
                 .queryParam(AUConstants.UPDATED_SINCE, AUConstants.DATE_FORMAT)
                 .baseUri(AUTestUtil.getBaseUrl(AUConstants.BASE_PATH_TYPE_PRODUCTS))
                 .get("${AUConstants.CDS_PATH}${AUConstants.BANKING_PRODUCT_PATH}")

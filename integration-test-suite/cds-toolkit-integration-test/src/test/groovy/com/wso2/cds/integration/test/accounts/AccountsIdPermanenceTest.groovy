@@ -92,7 +92,7 @@ class AccountsIdPermanenceTest extends AUTest {
         String bulkBalanceRequestUrl = "${AUConstants.CDS_PATH}${AUConstants.BULK_BALANCES_PATH}"
 
         def response = AURequestBuilder.buildBasicRequestWithCustomHeaders(userAccessToken,
-                AUConstants.X_V_HEADER_ACCOUNTS, clientHeader)
+                AUConstants.X_V_HEADER_BALANCES, clientHeader)
                 .contentType(ContentType.JSON)
                 .body(requestBody)
                 .baseUri(AUTestUtil.getBaseUrl(AUConstants.BASE_PATH_TYPE_BALANCES))
@@ -128,7 +128,7 @@ class AccountsIdPermanenceTest extends AUTest {
         String accBalanceRequestUrl = "${AUConstants.CDS_PATH}${AUConstants.BULK_ACCOUNT_PATH}/${encryptedAccount1Id}/balance"
 
         def response = AURequestBuilder.buildBasicRequestWithCustomHeaders(userAccessToken,
-                AUConstants.X_V_HEADER_ACCOUNTS, clientHeader)
+                AUConstants.X_V_HEADER_BALANCE, clientHeader)
                 .baseUri(AUTestUtil.getBaseUrl(AUConstants.BASE_PATH_TYPE_BALANCES))
                 .get(accBalanceRequestUrl)
 
@@ -148,7 +148,7 @@ class AccountsIdPermanenceTest extends AUTest {
         String accountRequestUrl = "${AUConstants.CDS_PATH}${AUConstants.BULK_ACCOUNT_PATH}/${encryptedAccount1Id}"
 
         def response = AURequestBuilder.buildBasicRequestWithCustomHeaders(userAccessToken,
-                AUConstants.X_V_HEADER_ACCOUNTS, clientHeader)
+                AUConstants.X_V_HEADER_ACCOUNT, clientHeader)
                 .baseUri(AUTestUtil.getBaseUrl(AUConstants.BASE_PATH_TYPE_ACCOUNT))
                 .get(accountRequestUrl)
 
@@ -180,7 +180,7 @@ class AccountsIdPermanenceTest extends AUTest {
         SoftAssert softAssertion= new SoftAssert()
 
         def response = AURequestBuilder.buildBasicRequestWithCustomHeaders(userAccessToken,
-                AUConstants.X_V_HEADER_ACCOUNTS, clientHeader)
+                AUConstants.X_V_HEADER_ACCOUNT, clientHeader)
                 .baseUri(AUTestUtil.getBaseUrl(AUConstants.BASE_PATH_TYPE_ACCOUNT))
                 .get("${AUConstants.CDS_PATH}${AUConstants.BULK_ACCOUNT_PATH}/${encryptedAccount2Id}")
 
@@ -197,7 +197,7 @@ class AccountsIdPermanenceTest extends AUTest {
     void "TC1207002_Get Invalid Transaction Detail"() {
 
         Response response = AURequestBuilder.buildBasicRequestWithCustomHeaders(userAccessToken,
-                AUConstants.X_V_HEADER_ACCOUNTS, clientHeader)
+                AUConstants.X_V_HEADER_TRANSACTION, clientHeader)
                 .baseUri(AUTestUtil.getBaseUrl(AUConstants.BASE_PATH_TYPE_TRANSACTIONS))
                 .get("${AUConstants.CDS_PATH}${AUConstants.BULK_ACCOUNT_PATH}/${encryptedAccount1Id}/" +
                         "transactions/204987583920")
@@ -218,7 +218,7 @@ class AccountsIdPermanenceTest extends AUTest {
         String directDebitRequestUrl = "${AUConstants.CDS_PATH}${AUConstants.BULK_ACCOUNT_PATH}/${encryptedAccount1Id}/direct-debits"
 
         Response response = AURequestBuilder.buildBasicRequestWithCustomHeaders(userAccessToken,
-                AUConstants.X_V_HEADER_ACCOUNTS, clientHeader)
+                AUConstants.X_V_HEADER_DIRECT_DEBITS, clientHeader)
                 .baseUri(AUTestUtil.getBaseUrl(AUConstants.BASE_PATH_TYPE_DIRECT_DEBIT))
                 .get(directDebitRequestUrl)
 
@@ -247,7 +247,7 @@ class AccountsIdPermanenceTest extends AUTest {
     void "TC1208002_Get Direct Debits For Invalid Account"() {
 
         Response response = AURequestBuilder.buildBasicRequestWithCustomHeaders(userAccessToken,
-                AUConstants.X_V_HEADER_ACCOUNTS, clientHeader)
+                AUConstants.X_V_HEADER_DIRECT_DEBITS, clientHeader)
                 .baseUri(AUTestUtil.getBaseUrl(AUConstants.BASE_PATH_TYPE_DIRECT_DEBIT))
                 .get("${AUConstants.CDS_PATH}${AUConstants.BULK_ACCOUNT_PATH}/2349679635270/direct-debits")
 
@@ -279,7 +279,7 @@ class AccountsIdPermanenceTest extends AUTest {
         String directDebitRequestUrl = "${AUConstants.CDS_PATH}${AUConstants.BULK_DIRECT_DEBITS_PATH}"
 
         def response = AURequestBuilder.buildBasicRequestWithCustomHeaders(userAccessToken,
-                AUConstants.X_V_HEADER_ACCOUNTS, clientHeader)
+                AUConstants.X_V_HEADER_DIRECT_DEBITS, clientHeader)
                 .contentType(ContentType.JSON)
                 .body(requestBody)
                 .baseUri(AUTestUtil.getBaseUrl(AUConstants.BASE_PATH_TYPE_DIRECT_DEBIT))
@@ -312,7 +312,7 @@ class AccountsIdPermanenceTest extends AUTest {
         String schedulePaymentRequestUrl = "${AUConstants.CDS_PATH}${AUConstants.BULK_ACCOUNT_PATH}/${encryptedAccount1Id}/payments/scheduled"
 
         Response response = AURequestBuilder.buildBasicRequestWithCustomHeaders(userAccessToken,
-                AUConstants.X_V_HEADER_ACCOUNTS, clientHeader)
+                AUConstants.X_V_HEADER_PAYMENT_SCHEDULED, clientHeader)
                 .baseUri(AUTestUtil.getBaseUrl(AUConstants.BASE_PATH_TYPE_SCHEDULED_PAYMENT))
                 .get(schedulePaymentRequestUrl)
 
@@ -367,7 +367,7 @@ class AccountsIdPermanenceTest extends AUTest {
         String schedulePaymentRequestUrl = "${AUConstants.CDS_PATH}${AUConstants.BULK_SCHEDULE_PAYMENTS_PATH}"
 
         def response = AURequestBuilder.buildBasicRequestWithCustomHeaders(userAccessToken,
-                AUConstants.X_V_HEADER_ACCOUNTS, clientHeader)
+                AUConstants.X_V_HEADER_PAYMENT_SCHEDULED, clientHeader)
                 .contentType(ContentType.JSON)
                 .body(requestBody)
                 .baseUri(AUTestUtil.getBaseUrl(AUConstants.BASE_PATH_TYPE_SCHEDULED_PAYMENT))
@@ -413,7 +413,7 @@ class AccountsIdPermanenceTest extends AUTest {
         String transactionRequestUrl = "${AUConstants.CDS_PATH}${AUConstants.BULK_ACCOUNT_PATH}/${encryptedAccount1Id}/transactions"
 
         Response response = AURequestBuilder.buildBasicRequestWithCustomHeaders(userAccessToken,
-                AUConstants.X_V_HEADER_ACCOUNTS, clientHeader)
+                AUConstants.X_V_HEADER_TRANSACTIONS, clientHeader)
                 .baseUri(AUTestUtil.getBaseUrl(AUConstants.BASE_PATH_TYPE_TRANSACTIONS))
                 .get(transactionRequestUrl)
 
@@ -449,7 +449,7 @@ class AccountsIdPermanenceTest extends AUTest {
                 "transactions/$encryptedTransactionId"
 
         Response response = AURequestBuilder.buildBasicRequestWithCustomHeaders(userAccessToken,
-                AUConstants.X_V_HEADER_ACCOUNTS, clientHeader)
+                AUConstants.X_V_HEADER_TRANSACTION, clientHeader)
                 .baseUri(AUTestUtil.getBaseUrl(AUConstants.BASE_PATH_TYPE_TRANSACTIONS))
                 .get(transactionRequestUrl)
 
@@ -475,7 +475,7 @@ class AccountsIdPermanenceTest extends AUTest {
         String balanceRequestUrl = "${AUConstants.CDS_PATH}${AUConstants.BULK_BALANCES_PATH}"
 
         def response = AURequestBuilder.buildBasicRequestWithCustomHeaders(userAccessToken,
-                AUConstants.X_V_HEADER_ACCOUNTS, clientHeader)
+                AUConstants.X_V_HEADER_BALANCES, clientHeader)
                 .baseUri(AUTestUtil.getBaseUrl(AUConstants.BASE_PATH_TYPE_BALANCES))
                 .get(balanceRequestUrl)
 
@@ -518,7 +518,7 @@ class AccountsIdPermanenceTest extends AUTest {
         """.stripIndent()
 
         def response = AURequestBuilder.buildBasicRequestWithCustomHeaders(userAccessToken,
-                AUConstants.X_V_HEADER_ACCOUNTS, clientHeader)
+                AUConstants.X_V_HEADER_BALANCES, clientHeader)
                 .contentType(ContentType.JSON)
                 .body(requestBody)
                 .baseUri(AUTestUtil.getBaseUrl(AUConstants.BASE_PATH_TYPE_BALANCES))
@@ -539,7 +539,7 @@ class AccountsIdPermanenceTest extends AUTest {
     void "TC1204002_Get Invalid Account Balance"() {
 
         def response = AURequestBuilder.buildBasicRequestWithCustomHeaders(userAccessToken,
-                AUConstants.X_V_HEADER_ACCOUNTS, clientHeader)
+                AUConstants.X_V_HEADER_BALANCE, clientHeader)
                 .baseUri(AUTestUtil.getBaseUrl(AUConstants.BASE_PATH_TYPE_BALANCES))
                 .get("${AUConstants.CDS_PATH}${AUConstants.BULK_ACCOUNT_PATH}/32125763242/balance")
 
@@ -557,7 +557,7 @@ class AccountsIdPermanenceTest extends AUTest {
     void "TC1205002_Get Invalid Account Detail"() {
 
         def response = AURequestBuilder.buildBasicRequestWithCustomHeaders(userAccessToken,
-                AUConstants.X_V_HEADER_ACCOUNTS, clientHeader)
+                AUConstants.X_V_HEADER_ACCOUNT, clientHeader)
                 .baseUri(AUTestUtil.getBaseUrl(AUConstants.BASE_PATH_TYPE_ACCOUNT))
                 .get("${AUConstants.CDS_PATH}${AUConstants.BULK_ACCOUNT_PATH}/342678987")
 
@@ -575,7 +575,7 @@ class AccountsIdPermanenceTest extends AUTest {
     void "TC1206002_Get Transactions For Invalid Account"() {
 
         Response response = AURequestBuilder.buildBasicRequestWithCustomHeaders(userAccessToken,
-                AUConstants.X_V_HEADER_ACCOUNTS, clientHeader)
+                AUConstants.X_V_HEADER_TRANSACTIONS, clientHeader)
                 .baseUri(AUTestUtil.getBaseUrl(AUConstants.BASE_PATH_TYPE_TRANSACTIONS))
                 .get("${AUConstants.CDS_PATH}${AUConstants.BULK_ACCOUNT_PATH}/34867635209/transactions")
 
@@ -595,7 +595,7 @@ class AccountsIdPermanenceTest extends AUTest {
         String directDebitRequestUrl = "${AUConstants.CDS_PATH}${AUConstants.BULK_DIRECT_DEBITS_PATH}"
 
         Response response = AURequestBuilder.buildBasicRequestWithCustomHeaders(userAccessToken,
-                AUConstants.X_V_HEADER_ACCOUNTS, clientHeader)
+                AUConstants.X_V_HEADER_DIRECT_DEBITS, clientHeader)
                 .baseUri(AUTestUtil.getBaseUrl(AUConstants.BASE_PATH_TYPE_DIRECT_DEBIT))
                 .get(directDebitRequestUrl)
 
@@ -638,7 +638,7 @@ class AccountsIdPermanenceTest extends AUTest {
         """.stripIndent()
 
         def response = AURequestBuilder.buildBasicRequestWithCustomHeaders(userAccessToken,
-                AUConstants.X_V_HEADER_ACCOUNTS, clientHeader)
+                AUConstants.X_V_HEADER_DIRECT_DEBITS, clientHeader)
                 .contentType(ContentType.JSON)
                 .body(requestBody)
                 .baseUri(AUTestUtil.getBaseUrl(AUConstants.BASE_PATH_TYPE_DIRECT_DEBIT))
@@ -660,7 +660,7 @@ class AccountsIdPermanenceTest extends AUTest {
         String schedulePaymentRequestUrl = "${AUConstants.CDS_PATH}${AUConstants.BULK_SCHEDULE_PAYMENTS_PATH}"
 
         Response response = AURequestBuilder.buildBasicRequestWithCustomHeaders(userAccessToken,
-                AUConstants.X_V_HEADER_ACCOUNTS, clientHeader)
+                AUConstants.X_V_HEADER_PAYMENT_SCHEDULED, clientHeader)
                 .baseUri(AUTestUtil.getBaseUrl(AUConstants.BASE_PATH_TYPE_SCHEDULED_PAYMENT))
                 .get(schedulePaymentRequestUrl)
 
@@ -723,7 +723,7 @@ class AccountsIdPermanenceTest extends AUTest {
         """.stripIndent()
 
         def response = AURequestBuilder.buildBasicRequestWithCustomHeaders(userAccessToken,
-                AUConstants.X_V_HEADER_ACCOUNTS, clientHeader)
+                AUConstants.X_V_HEADER_PAYMENT_SCHEDULED, clientHeader)
                 .contentType(ContentType.JSON)
                 .body(requestBody)
                 .baseUri(AUTestUtil.getBaseUrl(AUConstants.BASE_PATH_TYPE_SCHEDULED_PAYMENT))
@@ -744,7 +744,7 @@ class AccountsIdPermanenceTest extends AUTest {
     void "TC1215002_Get Invalid Payee Detail"() {
 
         Response response = AURequestBuilder.buildBasicRequestWithCustomHeaders(userAccessToken,
-                AUConstants.X_V_HEADER_ACCOUNTS, clientHeader)
+                AUConstants.X_V_HEADER_PAYEES, clientHeader)
                 .baseUri(AUTestUtil.getBaseUrl(AUConstants.BASE_PATH_TYPE_PAYEES))
                 .get("${AUConstants.CDS_PATH}${AUConstants.BULK_PAYEES}/1426558421")
 
@@ -765,7 +765,7 @@ class AccountsIdPermanenceTest extends AUTest {
         String payeeRequestUrl = "${AUConstants.CDS_PATH}${AUConstants.BULK_PAYEES}"
 
         Response response = AURequestBuilder.buildBasicRequestWithCustomHeaders(userAccessToken,
-                AUConstants.X_V_HEADER_ACCOUNTS, clientHeader)
+                AUConstants.X_V_HEADER_PAYEES, clientHeader)
                 .baseUri(AUTestUtil.getBaseUrl(AUConstants.BASE_PATH_TYPE_PAYEES))
                 .get(payeeRequestUrl)
 
@@ -797,7 +797,7 @@ class AccountsIdPermanenceTest extends AUTest {
         String payeeRequestUrl = "${AUConstants.CDS_PATH}${AUConstants.BULK_PAYEES}/${encryptedPayeeId}"
 
         Response response = AURequestBuilder.buildBasicRequestWithCustomHeaders(userAccessToken,
-                AUConstants.X_V_HEADER_ACCOUNTS, clientHeader)
+                AUConstants.X_V_HEADER_PAYEES, clientHeader)
                 .baseUri(AUTestUtil.getBaseUrl(AUConstants.BASE_PATH_TYPE_PAYEES))
                 .get(payeeRequestUrl)
 

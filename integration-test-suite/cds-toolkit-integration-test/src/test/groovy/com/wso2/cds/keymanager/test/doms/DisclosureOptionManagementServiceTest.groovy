@@ -44,7 +44,7 @@ class DisclosureOptionManagementServiceTest extends AUTest {
 
         //Consent Authorisation
         automationResponse = doJointAccountConsentAuthorisation(auConfiguration.getAppInfoClientID(), false)
-        authorisationCode = AUTestUtil.getHybridCodeFromUrl(automationResponse.currentUrl.get())
+        authorisationCode = AUTestUtil.getCodeFromJwtResponse(automationResponse.currentUrl.get())
 
         //Get User Access Token
         generateUserAccessToken()
@@ -55,7 +55,7 @@ class DisclosureOptionManagementServiceTest extends AUTest {
 
         //Consent Authorisation
         automationResponse = doJointAccountConsentAuthorisation(clientId, true)
-        authorisationCode = AUTestUtil.getHybridCodeFromUrl(automationResponse.currentUrl.get())
+        authorisationCode = AUTestUtil.getCodeFromJwtResponse(automationResponse.currentUrl.get())
 
         //Get User Access Token
         generateUserAccessToken()
@@ -215,7 +215,7 @@ class DisclosureOptionManagementServiceTest extends AUTest {
 
         //Consent Authorisation
         automationResponse = doJointAccountConsentAuthorisation(clientId, false)
-        authorisationCode = AUTestUtil.getHybridCodeFromUrl(automationResponse.currentUrl.get())
+        authorisationCode = AUTestUtil.getCodeFromJwtResponse(automationResponse.currentUrl.get())
 
         //Get User Access Token
         generateUserAccessToken()
@@ -240,7 +240,7 @@ class DisclosureOptionManagementServiceTest extends AUTest {
 
         //Consent Authorisation
         automationResponse = doJointAccountConsentAuthorisation(clientId, false)
-        authorisationCode = AUTestUtil.getHybridCodeFromUrl(automationResponse.currentUrl.get())
+        authorisationCode = AUTestUtil.getCodeFromJwtResponse(automationResponse.currentUrl.get())
 
         //Get User Access Token
         generateUserAccessToken()
@@ -260,7 +260,7 @@ class DisclosureOptionManagementServiceTest extends AUTest {
 
         //Consent Authorisation
         automationResponse = doJointAccountConsentAuthorisation(clientId, false)
-        authorisationCode = AUTestUtil.getHybridCodeFromUrl(automationResponse.currentUrl.get())
+        authorisationCode = AUTestUtil.getCodeFromJwtResponse(automationResponse.currentUrl.get())
 
         //Get User Access Token
         generateUserAccessToken()
@@ -302,7 +302,7 @@ class DisclosureOptionManagementServiceTest extends AUTest {
 
         //Consent Authorisation
         automationResponse = doJointAccountConsentAuthorisation(clientId, false)
-        authorisationCode = AUTestUtil.getHybridCodeFromUrl(automationResponse.currentUrl.get())
+        authorisationCode = AUTestUtil.getCodeFromJwtResponse(automationResponse.currentUrl.get())
 
         //Get Access Token
         AccessTokenResponse responseBody = getUserAccessTokenResponse(clientId)

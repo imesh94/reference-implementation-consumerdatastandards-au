@@ -28,7 +28,6 @@ class AUConstants extends OBConstants {
 
     public static final String X_V_HEADER = "x-v"
     public static final String X_MIN_HEADER = "x-min-v"
-    public static final int CDR_ENDPOINT_VERSION = 1
     public static final String CDS_100_PATH = "/cds-au/v1"
     public static final String CDS_PATH = "/cds-au/v1"
     public static final String CDS_ADMIN_PATH = "/cds-au/v2"
@@ -49,23 +48,12 @@ class AUConstants extends OBConstants {
     public static final String OPEN_STATUS_PARAM = "open-status"
     public static final String STATUS_OPEN = "OPEN"
     public static final String STATUS_CLOSED = "CLOSED"
-    public static final String GET_ACCOUNTS = "/banking/accounts"
-    public static final String GET_BALANCES = "/banking/accounts/balances"
-    public static final String GET_TRANSACTIONS = "/banking/accounts/" + accountID + "/transactions"
-    public static final String GET_PRODUCTS = "/banking/products"
     public static final String TOKEN = "d94c5b2e-b615-366e-862b-374b429e4d5e"
     public static final String accountID = "qu4WMZ-59LsndgjMN-kikL1DRXbNMP3Ya6IrjF99tmQYNau1p4RI-qZ6IuAVvKOo4oZIe5cwy9EwVa94ggeRp2idyLDUN-43WATQRbw0VSI"
     public static final String accountID2 = "qu4WMZ-59LsndgjMN-kikL1DRXbNMP3Ya6IrjF99tmQYNau1p4RI-qZ6IuAVvKOowDi7mV1k5tXHBoljbiNJi1qQy9Sykg5kJOSYgFEnjFU"
     public static final String GET_META = "/admin/register/metadata"
     public static final String GET_STAT = "/admin/metrics"
     public static final String X_FAPI_FINANCIAL_ID = "x-fapi-financial-id"
-    public static final Integer X_V_HEADER_ACCOUNTS = 1
-    public static final int X_V_HEADER_METRICS= 3
-    public static final int X_V_MIN_HEADER_METRICS = 1
-    public static final int X_V_HEADER_METADATA= 1
-    public static final Integer X_V_HEADER_CUSTOMER = 1
-    public static final Integer X_V_HEADER_PRODUCTS = getProductEndpointVersion()
-    public static final Integer UNSUPPORTED_X_V_VERSION = 10
     public static final String USERNAME = "admin@wso2.com"
     public static final String PASSWORD = "wso2123"
     public static final String ACCESS_TOKEN = "token"
@@ -85,6 +73,7 @@ class AUConstants extends OBConstants {
     public static final String SINGLE_ACCOUNT_PATH = "/banking/accounts/" + accountID
     public static final String BANKING_PRODUCT_PATH = "/banking/products"
     public static final String BULK_BALANCES_PATH = "/banking/accounts/balances"
+    public static final String ACCOUNT_BALANCE_PATH = SINGLE_ACCOUNT_PATH + "/balance"
     public static final String BULK_DIRECT_DEBITS_PATH = "/banking/accounts/direct-debits"
     public static final String BULK_SCHEDULE_PAYMENTS_PATH = "/banking/payments/scheduled"
     public static final String BULK_PAYEES = "/banking/payees"
@@ -111,6 +100,8 @@ class AUConstants extends OBConstants {
     public static final String SECONDARY_ACCOUNT_ENDPOINT = "/account-type-management/secondary-accounts"
     public static final String LEGAL_ENTITY_LIST_ENDPOINT = "/account-type-management/legal-entity-list"
     public static final String UPDATE_LEGAL_ENTITY_SHARING_STATUS = "/account-type-management/legal-entity"
+    public static final String GET_TRANSACTIONS = SINGLE_ACCOUNT_PATH + "/transactions"
+    public static final String GET_PRODUCTS = "/banking/products"
 
     public static final String BANK_CUSTOMER_BASIC_READ = "Organisation profile and contact details"
     public static final String BANK_CUSTOMER_DETAIL_READ = "Organisation profile and contact details*‡"
@@ -349,20 +340,6 @@ class AUConstants extends OBConstants {
     static final int STATUS_CODE_500 = 500
     static final int STATUS_CODE_415 = 415
 
-    /**
-     * Get the Product Endpoint Version
-     * @return product endpoint version
-     */
-    static Integer getProductEndpointVersion() {
-        def productEndpoint = null
-        if (API_VERSION.equalsIgnoreCase("1.2.0")) {
-            productEndpoint = 2
-        } else {
-            productEndpoint = 1
-        }
-        return productEndpoint
-    }
-
     //Payload Links
     public static final String LINKS_SELF = "links.self"
     public static final String LINKS_FIRST = "links.first"
@@ -462,5 +439,24 @@ class AUConstants extends OBConstants {
             "'New')]"
     public static final String ERROR_INVALID_CLIENT_ID = "Cannot find an application associated with the given consumer key"
     public static final String UNABLE_TO_DECODE_JWT = "Unable to decode JWT."
+
+    //Endpoint Versions
+    public static final int X_V_HEADER_ACCOUNTS = 2
+    public static final int X_V_HEADER_ACCOUNT = 3
+    public static final int X_V_HEADER_BALANCES = 1
+    public static final int X_V_HEADER_BALANCE = 1
+    public static final int X_V_HEADER_TRANSACTIONS = 1
+    public static final int X_V_HEADER_TRANSACTION = 1
+    public static final int X_V_HEADER_DIRECT_DEBITS = 1
+    public static final int X_V_HEADER_PAYMENT_SCHEDULED = 1
+    public static final int X_V_HEADER_PAYEES = 2
+    public static final int X_V_HEADER_PRODUCTS = 3
+    public static final int X_V_HEADER_PRODUCT = 4
+    public static final int X_V_HEADER_METRICS = 3
+    public static final int X_V_HEADER_METADATA = 1
+    public static final int X_V_HEADER_CUSTOMER = 1
+    public static final int X_V_MIN_HEADER_METRICS = 1
+    public static final int UNSUPPORTED_X_V_VERSION = 10
+    public static final int CDR_ENDPOINT_VERSION = 1
 }
 
