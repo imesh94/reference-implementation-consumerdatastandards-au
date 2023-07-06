@@ -393,5 +393,40 @@ class AUTestUtil extends OBTestUtil {
         Assert.assertNotNull(responseJwt)
         return AUJWTGenerator.extractJwt(responseJwt).getClaim(AUConstants.CODE_KEY)
     }
+
+    /**
+     * Get Endpoint version of Banking API Endpoints.
+     * @param endpoint - Banking API Endpoint
+     * @return Banking API Endpoint version
+     */
+    static int getBankingApiEndpointVersion(String endpoint) {
+
+        if(endpoint.contains(AUConstants.CDS_PATH)){
+            endpoint = endpoint.replace(AUConstants.CDS_PATH, "")
+        }
+
+        switch (endpoint) {
+            case AUConstants.BULK_ACCOUNT_PATH:
+                return AUConstants.X_V_HEADER_ACCOUNTS
+            case AUConstants.SINGLE_ACCOUNT_PATH:
+                return AUConstants.X_V_HEADER_ACCOUNT
+            case AUConstants.BULK_BALANCES_PATH:
+                return AUConstants.X_V_HEADER_BALANCES
+            case AUConstants.ACCOUNT_BALANCE_PATH:
+                return AUConstants.X_V_HEADER_BALANCE
+            case AUConstants.GET_TRANSACTIONS:
+                return AUConstants.X_V_HEADER_TRANSACTIONS
+            case AUConstants.BULK_DIRECT_DEBITS_PATH:
+                return AUConstants.X_V_HEADER_DIRECT_DEBITS
+            case AUConstants.BULK_SCHEDULE_PAYMENTS_PATH:
+                return AUConstants.X_V_HEADER_PAYMENT_SCHEDULED
+            case AUConstants.BULK_PAYEES:
+                return AUConstants.X_V_HEADER_PAYEES
+            case AUConstants.GET_PRODUCTS:
+                return AUConstants.X_V_HEADER_PRODUCTS
+            default:
+                return 1
+        }
+    }
 }
 

@@ -56,7 +56,7 @@ class ProductRetrievalHeaderValidationTest extends AUTest {
         generateUserAccessToken()
 
         Response response = AURequestBuilder.buildBasicRequestWithOptionalHeaders(userAccessToken,
-                AUConstants.X_V_HEADER_ACCOUNTS, clientHeader)
+                AUConstants.X_V_HEADER_PRODUCTS, clientHeader)
                 .baseUri(AUTestUtil.getBaseUrl(AUConstants.BASE_PATH_TYPE_PRODUCTS))
                 .get("${AUConstants.CDS_PATH}${AUConstants.BANKING_PRODUCT_PATH}")
 
@@ -79,7 +79,7 @@ class ProductRetrievalHeaderValidationTest extends AUTest {
         def holderID = "ABCBank"
 
         def response = AURestAsRequestBuilder.buildRequest()
-                .header("x-${holderID}-v", 1)
+                .header("x-${holderID}-v", AUConstants.X_V_HEADER_PRODUCTS)
                 .baseUri(AUTestUtil.getBaseUrl(AUConstants.BASE_PATH_TYPE_PRODUCTS))
                 .get("${AUConstants.CDS_PATH}${AUConstants.BANKING_PRODUCT_PATH}")
 
@@ -101,7 +101,7 @@ class ProductRetrievalHeaderValidationTest extends AUTest {
     void "TC0701026_Retrieve banking products with optional-headers"(){
 
         def response = AURequestBuilder.buildBasicRequestWithOptionalHeaders(userAccessToken,
-                AUConstants.X_V_HEADER_ACCOUNTS, clientHeader)
+                AUConstants.X_V_HEADER_PRODUCTS, clientHeader)
                 .baseUri(AUTestUtil.getBaseUrl(AUConstants.BASE_PATH_TYPE_PRODUCTS))
                 .get("${AUConstants.CDS_PATH}${AUConstants.BANKING_PRODUCT_PATH}")
 
@@ -222,7 +222,7 @@ class ProductRetrievalHeaderValidationTest extends AUTest {
     void "TC1101013_Retrieve Product list with header x-min-v greater than the x-v"() {
 
         def response = AURequestBuilder.buildBasicRequestWithoutAuthorisationHeader(AUConstants.X_V_HEADER_PRODUCTS)
-                .header(AUConstants.X_MIN_HEADER, 4)
+                .header(AUConstants.X_MIN_HEADER, 5)
                 .baseUri(AUTestUtil.getBaseUrl(AUConstants.BASE_PATH_TYPE_PRODUCTS))
                 .get("${AUConstants.CDS_PATH}${AUConstants.BANKING_PRODUCT_PATH}")
 
@@ -285,7 +285,7 @@ class ProductRetrievalHeaderValidationTest extends AUTest {
     void "TC1101016_Retrieve Product with unsupported endpoint version"() {
 
         def response = AURequestBuilder.buildBasicRequestWithoutAuthorisationHeader(AUConstants.UNSUPPORTED_X_V_VERSION)
-                .header(AUConstants.X_MIN_HEADER , 4)
+                .header(AUConstants.X_MIN_HEADER , AUConstants.X_V_HEADER_PRODUCTS)
                 .baseUri(AUTestUtil.getBaseUrl(AUConstants.BASE_PATH_TYPE_PRODUCTS))
                 .get("${AUConstants.CDS_PATH}${AUConstants.BANKING_PRODUCT_PATH}")
 
@@ -303,8 +303,8 @@ class ProductRetrievalHeaderValidationTest extends AUTest {
 
         def holderID = "ABC-Bank"
 
-        def response = AURequestBuilder.buildBasicRequestWithoutAuthorisationHeader(AUConstants.X_V_HEADER_PRODUCTS)
-                .header("x-${holderID}-v", 4)
+        def response = AURestAsRequestBuilder.buildRequest()
+                .header("x-${holderID}-v", AUConstants.UNSUPPORTED_X_V_VERSION)
                 .baseUri(AUTestUtil.getBaseUrl(AUConstants.BASE_PATH_TYPE_PRODUCTS))
                 .get("${AUConstants.CDS_PATH}${AUConstants.BANKING_PRODUCT_PATH}")
 

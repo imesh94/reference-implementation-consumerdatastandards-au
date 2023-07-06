@@ -52,6 +52,9 @@
 
         <!--Sample Values: https://<IS_HOST>:9446 -->
         <AuthorisationServerURL>Server.AuthorisationServerURL</AuthorisationServerURL>
+
+        <!--Sample Value: http://<SHARABLE_ACCOUNT_ENDPOINT>:9763 -->
+        <SharableAccountsURL>Server.SharableAccountsURL</SharableAccountsURL>
     </Server>
 
     <!-- Application List -->
@@ -188,9 +191,6 @@
 
                 <!--Sample Values: https://www.google.com/redirects/redirect2 -->
                 <AlternateRedirectUri>AppConfig1.DCR.AlternateRedirectUri</AlternateRedirectUri>
-
-                <!--Sample Value: http://<SHARAEBALE_ACCOUNT_ENDPOINT>:9763 -->
-                <SharableAccountsURL>Server.SharableAccountsURL</SharableAccountsURL>
             </DCR>
 
             <!-- Application Info -->
@@ -230,28 +230,38 @@
     <PSUList>
         <!-- Common PSU Info -->
         <PSUInfo>
-            <User>admin@wso2.com</User>
-            <Password>wso2123</Password>
+            <Credentials>
+                <User>admin@wso2.com</User>
+                <Password>wso2123</Password>
+            </Credentials>
         </PSUInfo>
         <!-- Individual PSU Info -->
         <PSUInfo>
-            <Psu>psu1@wso2.com</Psu>
-            <PsuPassword>wso2123</PsuPassword>
+            <Credentials>
+                <User>psu1@wso2.com</User>
+                <Password>wso2123</Password>
+            </Credentials>
         </PSUInfo>
         <!-- Business User 1-->
         <PSUInfo>
-            <Psu>nominatedUser1@wso2.com</Psu>
-            <PsuPassword>wso2123</PsuPassword>
+            <Credentials>
+                <User>nominatedUser1@wso2.com</User>
+                <Password>wso2123</Password>
+            </Credentials>
         </PSUInfo>
         <!-- Business User 2 (Multiple NR)-->
         <PSUInfo>
-            <Psu>nominatedUser2@wso2.com</Psu>
-            <PsuPassword>wso2123</PsuPassword>
+            <Credentials>
+                <User>nominatedUser2@wso2.com</User>
+                <Password>wso2123</Password>
+            </Credentials>
         </PSUInfo>
         <!-- Account Owner-->
         <PSUInfo>
-            <Psu>user2@wso2.com</Psu>
-            <PsuPassword>wso2123</PsuPassword>
+            <Credentials>
+                <User>user2@wso2.com</User>
+                <Password>wso2123</Password>
+            </Credentials>
         </PSUInfo>
     </PSUList>
 
@@ -407,6 +417,11 @@
         <!--Sample Values: wso2 -->
         <SecretKey>IdPermanence.SecretKey</SecretKey>
     </IdPermanence>
+
+    <!--Enable Profile Selection-->
+    <ProfileSelection>
+        <Enabled>ProfileSelection.Enabled</Enabled>
+    </ProfileSelection>
 
 </Configurations>
 

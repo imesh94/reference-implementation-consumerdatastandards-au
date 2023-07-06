@@ -24,8 +24,8 @@ class AccountsDataProviders {
     Object[] getAccountsRetrievalFlow() {
 
         def accounts = new ArrayList<>()
-        accounts.add(AUConstants.GET_ACCOUNTS as Object)
-        accounts.add(AUConstants.GET_BALANCES as Object)
+        accounts.add(AUConstants.BULK_ACCOUNT_PATH as Object)
+        accounts.add(AUConstants.BULK_BALANCES_PATH as Object)
         accounts.add(AUConstants.GET_TRANSACTIONS as Object)
         return accounts
     }
