@@ -36,7 +36,7 @@ public class MetricsApiImpl implements MetricsApi {
     private static final Log log = LogFactory.getLog(MetricsApiImpl.class);
     CDSMetricsService cdsMetricsServiceImpl = new CDSMetricsServiceImpl();
     private static final String XV_HEADER = "x-v";
-    private static final String X_VERSION = "2";
+    private static final String X_VERSION = "3";
 
     /**
      * Get Metrics
