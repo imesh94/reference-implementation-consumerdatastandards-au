@@ -54,7 +54,8 @@ class AuthorisationFlowTest extends AUTest {
                 auConfiguration.getAppInfoClientID(), 0)
                 .post(AUConstants.INTROSPECTION_ENDPOINT)
 
-        Assert.assertTrue(response.jsonPath().get("active").equals(true))
+        //Introspection validation can only be done for refresh token
+        Assert.assertTrue(response.jsonPath().get("active").equals(false))
     }
 
     @Test (priority = 1)
@@ -223,7 +224,6 @@ class AuthorisationFlowTest extends AUTest {
         Assert.assertNotNull(authorisationCode)
     }
 
-    //TODO: Issue: https://github.com/wso2-enterprise/financial-open-banking/issues/8293
     @Test (priority = 2)
     void "OB-1143_Initiate authorisation consent flow only with scopes that do not require account selection"() {
 
@@ -337,15 +337,15 @@ class AuthorisationFlowTest extends AUTest {
                 true, "")
         requestUri = AUTestUtil.parseResponseBody(response, AUConstants.REQUEST_URI)
 
-        String authResponse = doConsentAuthorisationViaRequestUriDenyFlow(scopes, requestUri.toURI(),
+        String authUrl = doConsentAuthorisationViaRequestUriDenyFlow(scopes, requestUri.toURI(),
                 auConfiguration.getAppInfoClientID(), AUAccountProfile.INDIVIDUAL, false)
 
-        Assert.assertEquals(authResponse, AUConstants.USER_DENIED_THE_CONSENT)
-        Assert.assertFalse(authResponse.contains("state"))
+        Assert.assertTrue(AUTestUtil.getDecodedUrl(authUrl).contains(AUConstants.USER_DENIED_THE_CONSENT))
+        Assert.assertFalse(authUrl.contains("state"))
     }
 
     @Test
-    void "Cancel consent without state param in Profile selection page"() {
+    void "CDS-696_Cancel consent without state param in Profile selection page"() {
 
         response = auAuthorisationBuilder.doPushAuthorisationRequest(scopes, AUConstants.DEFAULT_SHARING_DURATION,
                 true, "")
@@ -482,7 +482,7 @@ class AuthorisationFlowTest extends AUTest {
         Assert.assertNotNull(AUTestUtil.parseResponseBody(response, AUConstants.EXPIRES_IN))
 
         //Send Authorisation request
-        doConsentAuthorisationViaRequestUri(scopes, requestUri.toURI(), auConfiguration.getAppInfoClientID(),
+        doConsentAuthorisationViaRequestUriNoAccountSelection(scopes, requestUri.toURI(), auConfiguration.getAppInfoClientID(),
                 AUAccountProfile.INDIVIDUAL)
         Assert.assertNotNull(authorisationCode)
 
@@ -515,7 +515,7 @@ class AuthorisationFlowTest extends AUTest {
         Assert.assertNotNull(AUTestUtil.parseResponseBody(response, AUConstants.EXPIRES_IN))
 
         //Send Authorisation request
-        doConsentAuthorisationViaRequestUri(scopes, requestUri.toURI(), auConfiguration.getAppInfoClientID(),
+        doConsentAuthorisationViaRequestUriNoAccountSelection(scopes, requestUri.toURI(), auConfiguration.getAppInfoClientID(),
                 AUAccountProfile.INDIVIDUAL)
         Assert.assertNotNull(authorisationCode)
 

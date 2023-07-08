@@ -16,6 +16,7 @@ import com.wso2.cds.test.framework.constant.ContextConstants
 import com.wso2.cds.test.framework.request_builder.AURegistrationRequestBuilder
 import com.wso2.cds.test.framework.utility.AUTestUtil
 import org.testng.Assert
+import org.testng.annotations.AfterClass
 import org.testng.annotations.Test
 import org.testng.ITestContext
 
@@ -26,7 +27,7 @@ class DynamicClientRegistrationDeleteTest extends AUTest {
 
     private String invalidClientId = "invalidclientid"
 
-    @Test(groups = "SmokeTest", priority = 1)
+    @Test(groups = "SmokeTest")
     void "TC0101009_Verify Get Application Access Token"(ITestContext context){
 
         // retrieve from context using key
@@ -44,7 +45,7 @@ class DynamicClientRegistrationDeleteTest extends AUTest {
         Assert.assertEquals(registrationResponse.statusCode(), AUConstants.STATUS_CODE_201)
         AUTestUtil.writeXMLContent(auConfiguration.getOBXMLFile().toString(), "Application",
                 "ClientID", clientId, auConfiguration.getTppNumber())
-        accessToken = getApplicationAccessToken(context.getAttribute(ContextConstants.CLIENT_ID).toString())
+        accessToken = getApplicationAccessToken(clientId)
         Assert.assertNotNull(accessToken)
     }
 
@@ -66,5 +67,10 @@ class DynamicClientRegistrationDeleteTest extends AUTest {
                 .delete(AUConstants.DCR_REGISTRATION_ENDPOINT + clientId)
 
         Assert.assertEquals(registrationResponse.statusCode(), AUConstants.STATUS_CODE_204)
+    }
+
+    @AfterClass(alwaysRun = true)
+    void tearDown() {
+        deleteApplicationIfExists(clientId)
     }
 }

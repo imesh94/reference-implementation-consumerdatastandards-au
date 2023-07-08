@@ -636,9 +636,6 @@ class AUTest extends OBTest {
 
                     //Click Confirm Button
                     authWebDriver.clickButtonXpath(AUPageObjects.CONSENT_SUBMIT_XPATH)
-
-                    //Click Confirm Button
-                    authWebDriver.clickButtonXpath(AUPageObjects.CONSENT_SUBMIT_XPATH)
                 }
                 .execute()
 
@@ -761,7 +758,7 @@ class AUTest extends OBTest {
      * @param accountEndpointVersion
      * @return account retrieval request
      */
-    Response doAccountRetrieval(String userAccessToken, int accountEndpointVersion = AUConstants.CDR_ENDPOINT_VERSION) {
+    Response doAccountRetrieval(String userAccessToken, int accountEndpointVersion = AUConstants.X_V_HEADER_ACCOUNTS) {
 
         response = AURequestBuilder.buildBasicRequest(userAccessToken, accountEndpointVersion)
                 .header(AUConstants.PARAM_FAPI_AUTH_DATE,AUConstants.VALUE_FAPI_AUTH_DATE)

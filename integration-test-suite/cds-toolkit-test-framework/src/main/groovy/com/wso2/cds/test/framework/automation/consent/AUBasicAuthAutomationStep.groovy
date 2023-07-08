@@ -39,7 +39,7 @@ class AUBasicAuthAutomationStep implements BrowserAutomationStep {
      *
      * @param authorizeUrl authorise URL.
      */
-    AUBasicAuthAutomationStep(String authorizeUrl) {
+     AUBasicAuthAutomationStep(String authorizeUrl) {
         this.authorizeUrl = authorizeUrl
         this.auConfiguration = new AUConfigurationService()
     }
