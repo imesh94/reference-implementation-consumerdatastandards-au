@@ -110,6 +110,7 @@ paths:
           style: simple
           x-conditional: true
           x-cds-type: Base64
+        - $ref: '#/components/parameters/RequestHeader_x-cds-client-headers'
       responses:
         "200":
           content:
@@ -264,6 +265,7 @@ paths:
           style: simple
           x-conditional: true
           x-cds-type: Base64
+        - $ref: '#/components/parameters/RequestHeader_x-cds-client-headers'
       responses:
         "200":
           content:
