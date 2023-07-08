@@ -110,7 +110,6 @@ paths:
           style: simple
           x-conditional: true
           x-cds-type: Base64
-        - $ref: '#/components/parameters/RequestHeader_x-cds-client-headers'
       responses:
         "200":
           content:
@@ -265,7 +264,6 @@ paths:
           style: simple
           x-conditional: true
           x-cds-type: Base64
-        - $ref: '#/components/parameters/RequestHeader_x-cds-client-headers'
       responses:
         "200":
           content:
@@ -551,7 +549,6 @@ components:
         type: string
         x-conditional: true
         x-cds-type: Base64
-      pattern: "^([A-Za-z0-9+/]{4})*([A-Za-z0-9+/]{3}=|[A-Za-z0-9+/]{2}==)?$"
       style: simple
       x-conditional: true
       x-cds-type: Base64
