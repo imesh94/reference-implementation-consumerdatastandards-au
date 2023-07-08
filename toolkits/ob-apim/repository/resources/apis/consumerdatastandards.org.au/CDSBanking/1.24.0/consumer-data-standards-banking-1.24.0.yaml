@@ -7712,3 +7712,38 @@ components:
         - detail
         - title
       type: object
+x-wso2-auth-header: "Authorization"
+x-wso2-cors:
+  corsConfigurationEnabled: false
+  accessControlAllowOrigins:
+    - "*"
+  accessControlAllowCredentials: false
+  accessControlAllowHeaders:
+    - "authorization"
+    - "Access-Control-Allow-Origin"
+    - "Content-Type"
+    - "SOAPAction"
+    - "apikey"
+  accessControlAllowMethods:
+    - "GET"
+    - "PUT"
+    - "POST"
+    - "DELETE"
+    - "PATCH"
+    - "OPTIONS"
+x-wso2-production-endpoints: "#/x-wso2-endpoints/productionEndpoint"
+x-wso2-sandbox-endpoints: "#/x-wso2-endpoints/sandboxEndpoint"
+x-wso2-endpoints:
+  - productionEndpoint:
+      urls:
+        - "https://localhost:9443/api/openbanking/backend-cds/services"
+  - sandboxEndpoint:
+      urls:
+        - "https://localhost:9443/api/openbanking/backend-cds/services"
+x-wso2-basePath: "/cds-au/v1"
+x-wso2-transports:
+  - "http"
+  - "https"
+x-wso2-response-cache:
+  enabled: false
+  cacheTimeoutInSeconds: 300
