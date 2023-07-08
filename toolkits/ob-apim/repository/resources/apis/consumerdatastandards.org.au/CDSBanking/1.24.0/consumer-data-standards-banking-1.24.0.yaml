@@ -3666,6 +3666,7 @@ components:
         x-conditional: true
         x-cds-type: Base64
       style: simple
+      pattern: "^([A-Za-z0-9+/]{4})*([A-Za-z0-9+/]{3}=|[A-Za-z0-9+/]{2}==)?$"
       x-conditional: true
       x-cds-type: Base64
     ParamAccountOpenStatus:
