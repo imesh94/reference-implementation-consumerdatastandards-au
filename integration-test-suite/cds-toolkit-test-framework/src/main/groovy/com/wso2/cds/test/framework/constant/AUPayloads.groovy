@@ -226,8 +226,8 @@ class AUPayloads {
         {
             "data": [
                 {
-                    "secondaryAccountId": "${secondaryAccountId}",
-                    "secondaryUserId": "${secondaryUserId}",
+                    "secondaryAccountID": "${secondaryAccountId}",
+                    "secondaryUserID": "${secondaryUserId}",
                     "otherAccountsAvailability": ${otherAccountsAvailability},
                     "secondaryAccountInstructionStatus": "${secondaryAccountInstructionStatus}"
                 }

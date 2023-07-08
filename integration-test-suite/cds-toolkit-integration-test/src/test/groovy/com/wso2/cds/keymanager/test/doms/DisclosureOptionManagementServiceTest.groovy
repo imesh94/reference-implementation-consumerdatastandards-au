@@ -21,6 +21,7 @@ import com.wso2.cds.test.framework.utility.AUTestUtil
 import com.wso2.openbanking.test.framework.automation.AutomationMethod
 import io.restassured.response.Response
 import org.testng.Assert
+import org.testng.annotations.BeforeClass
 import org.testng.annotations.Test
 
 import java.nio.charset.Charset
@@ -34,7 +35,7 @@ class DisclosureOptionManagementServiceTest extends AUTest {
     private List<String> jointAccountIdList = new ArrayList<>()
     private List<String> singleAccountIdList = new ArrayList<>()
 
-    @Test (alwaysRun = true)
+    @BeforeClass (alwaysRun = true)
     void "Initial Consent Authorisation"() {
 
         clientId = auConfiguration.getAppInfoClientID()

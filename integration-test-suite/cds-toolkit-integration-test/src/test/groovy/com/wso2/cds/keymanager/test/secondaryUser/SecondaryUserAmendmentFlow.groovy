@@ -44,8 +44,16 @@ class SecondaryUserAmendmentFlow extends AUTest {
         accountID =  shareableElements[AUConstants.PARAM_ACCOUNT_ID]
         userId = auConfiguration.getUserPSUName()
 
-        def updateResponse = updateSecondaryUserInstructionPermission(accountID, userId, AUConstants.ACTIVE)
+        def updateResponse = updateSecondaryUserInstructionPermission(accountID, userId, AUConstants.ACTIVE,
+                true)
         Assert.assertEquals(updateResponse.statusCode(), AUConstants.OK)
+
+        //Get Secondary Joint Account
+        shareableElements = AUTestUtil.getSecondaryUserDetails(getSharableBankAccounts(), false)
+        accountID =  shareableElements[AUConstants.PARAM_ACCOUNT_ID]
+
+        def updateResponseJointAccount = updateSecondaryUserInstructionPermission(accountID, userId, AUConstants.ACTIVE)
+        Assert.assertEquals(updateResponseJointAccount.statusCode(), AUConstants.OK)
     }
 
     @Test
@@ -81,9 +89,9 @@ class SecondaryUserAmendmentFlow extends AUTest {
                     AutomationMethod authWebDriver = new AutomationMethod(driver)
 
                     //Select Secondary Account
-                    consentedAccount = authWebDriver.getElementAttribute(AUTestUtil.getSecondaryAccount2XPath(),
+                    consentedAccount = authWebDriver.getElementAttribute(AUTestUtil.getSecondaryJointAccount1XPath(),
                             AUPageObjects.VALUE)
-                    authWebDriver.clickButtonXpath(AUTestUtil.getSecondaryAccount2XPath())
+                    authWebDriver.clickButtonXpath(AUTestUtil.getSecondaryJointAccount1XPath())
 
                     //Click Submit/Next Button
                     authWebDriver.clickButtonXpath(AUPageObjects.CONSENT_SUBMIT_XPATH)
@@ -186,7 +194,7 @@ class SecondaryUserAmendmentFlow extends AUTest {
                 "${AUConstants.RESPONSE_DATA_BULK_ACCOUNTID_LIST}[1]"))
     }
 
-    @Test
+    @Test (priority = 1)
     void "CDS-431_Verify if account owner of secondary account has restricted a particular secondary user from sharing accounts"() {
 
         //Send Push Authorisation Request
@@ -205,8 +213,10 @@ class SecondaryUserAmendmentFlow extends AUTest {
         Assert.assertNotNull(cdrArrangementId)
 
         //Restrict Secondary User Instruction
-        String accountID =  shareableElements[AUConstants.PARAM_ACCOUNT_ID][1]
-        def updateResponse = updateSecondaryUserInstructionPermission(accountID, userId, AUConstants.INACTIVE)
+        shareableElements = AUTestUtil.getSecondaryUserDetails(getSharableBankAccounts())
+        accountID =  shareableElements[AUConstants.PARAM_ACCOUNT_ID]
+        def updateResponse = updateSecondaryUserInstructionPermission(accountID, userId, AUConstants.INACTIVE,
+                true)
         Assert.assertEquals(updateResponse.statusCode(), AUConstants.OK)
 
         //Consent Amendment
@@ -223,8 +233,8 @@ class SecondaryUserAmendmentFlow extends AUTest {
                 .addStep { driver, context ->
                     AutomationMethod authWebDriver = new AutomationMethod(driver)
 
-                    //Verify Secondary Account in Unavailable List
-                    Assert.assertTrue(authWebDriver.isElementEnabled(AUTestUtil.getSecondaryAccount2XPath()))
+                    //Select Secondary Accounts - Individual and Joint Accounts
+                    Assert.assertFalse(authWebDriver.isElementPresent(AUPageObjects.SECONDARY_ACCOUNT_1))
                 }
                 .execute()
     }

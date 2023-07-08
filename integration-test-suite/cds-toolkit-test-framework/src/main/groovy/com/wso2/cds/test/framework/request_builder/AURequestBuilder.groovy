@@ -464,7 +464,7 @@ class AURequestBuilder {
                 .contentType(AUConstants.ACCESS_TOKEN_CONTENT_TYPE)
                 .formParams(bodyContent)
                 .baseUri(auConfiguration.getServerAuthorisationServerURL())
-                .post("${AUConstants.CDR_ARRANGEMENT_ENDPOINT}${AUConstants.REVOKE_PATH}")
+                .post("${AUConstants.CDR_ARRANGEMENT_ENDPOINT}")
         return response
     }
 

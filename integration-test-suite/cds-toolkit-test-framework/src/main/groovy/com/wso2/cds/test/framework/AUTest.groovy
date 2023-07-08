@@ -400,7 +400,7 @@ class AUTest extends OBTest {
 
                 if (isSelectMultipleAccounts) {
                     //Select Business Account 2
-                    consentedAccount = authWebDriver.getElementAttribute(AUTestUtil.getBusinessAccount3CheckBox(),
+                    secondConsentedAccount = authWebDriver.getElementAttribute(AUTestUtil.getBusinessAccount3CheckBox(),
                             AUPageObjects.VALUE)
                     authWebDriver.clickButtonXpath(AUTestUtil.getBusinessAccount3CheckBox())
                 }
@@ -416,7 +416,7 @@ class AUTest extends OBTest {
 
                 if(isSelectMultipleAccounts) {
                     //Select Individual Account 2
-                    consentedAccount = authWebDriver.getElementAttribute(AUTestUtil.getAltSingleAccountXPath(),
+                    secondConsentedAccount = authWebDriver.getElementAttribute(AUTestUtil.getAltSingleAccountXPath(),
                             AUPageObjects.VALUE)
                     authWebDriver.clickButtonXpath(AUTestUtil.getAltSingleAccountXPath())
                 }
@@ -431,7 +431,7 @@ class AUTest extends OBTest {
 
             if (isSelectMultipleAccounts) {
                 //Select Account 2
-                consentedAccount = authWebDriver.getElementAttribute(AUTestUtil.getAltSingleAccountXPath(),
+                secondConsentedAccount = authWebDriver.getElementAttribute(AUTestUtil.getAltSingleAccountXPath(),
                         AUPageObjects.VALUE)
                 authWebDriver.clickButtonXpath(AUTestUtil.getAltSingleAccountXPath())
             }
@@ -1173,10 +1173,11 @@ class AUTest extends OBTest {
      * @return response.
      */
     static Response updateSecondaryUserInstructionPermission(String secondaryAccId, String userId,
-                                                             String secondaryAccountInstructionStatus) {
+                                                             String secondaryAccountInstructionStatus,
+                                                             boolean otherAccountsAvailability = false) {
 
         def requestBody = AUPayloads.getSecondaryUserInstructionPermissionPayload(secondaryAccId, userId,
-                secondaryAccountInstructionStatus)
+                secondaryAccountInstructionStatus, otherAccountsAvailability)
 
         Response secondUserUpdateResponse = AURestAsRequestBuilder.buildRequest()
                 .header(AUConstants.AUTHORIZATION_HEADER_KEY, AUConstants.BASIC_HEADER_KEY + " " +
@@ -1361,5 +1362,35 @@ class AUTest extends OBTest {
 
         // Get Code From URL
         return automation
+    }
+
+    /**
+     * Secondary User Auth Flow Without Account Selection.
+     * @param scopes - scope list
+     * @param requestUri - request URI
+     * @param clientId - client ID
+     */
+    void doSecondaryUserAuthFlowWithoutAccountSelection(List<AUAccountScope> scopes, URI requestUri, String clientId = null) {
+
+        if (clientId != null) {
+            authoriseUrl = auAuthorisationBuilder.getAuthorizationRequest(scopes, requestUri, clientId)
+                    .toURI().toString()
+        } else {
+            authoriseUrl = auAuthorisationBuilder.getAuthorizationRequest(scopes, requestUri)
+                    .toURI().toString()
+        }
+
+        def automation = getBrowserAutomation(AUConstants.DEFAULT_DELAY)
+                .addStep(new AUBasicAuthAutomationStep(authoriseUrl))
+                .addStep { driver, context ->
+                    AutomationMethod authWebDriver = new AutomationMethod(driver)
+
+                    //Click Confirm Button
+                    authWebDriver.clickButtonXpath(AUPageObjects.CONSENT_CONFIRM_XPATH)
+                }
+                .execute()
+
+        // Get Code From URL
+        authorisationCode = AUTestUtil.getCodeFromJwtResponse(automation.currentUrl.get())
     }
 }

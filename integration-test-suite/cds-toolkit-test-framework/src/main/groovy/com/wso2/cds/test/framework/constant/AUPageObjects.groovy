@@ -193,6 +193,7 @@ class AUPageObjects {
     public static String SECONDARY_JOINT_ACCOUNT= "//input[@id='secondary_joint_account_1']"
     public static String LBL_SECONDARY_ACCOUNT_1 = "//input[@id='secondary_account_1']/.."
     public static String LBL_SECONDARY_ACCOUNT_2 = "//input[@id='secondary_account_2']/.."
+    public static String LBL_SECONDARY_ACCOUNT_3 = "//input[@id='secondary_account_3']/.."
     public static String LBL_SECONDARY_JOINT_ACCOUNT_1 = "//input[@id='secondary_joint_account_1']/.."
 
     public static String LBL_BUSINESS_ACCOUNT_1 = "//strong[contains(text(),'business_account_1')]"

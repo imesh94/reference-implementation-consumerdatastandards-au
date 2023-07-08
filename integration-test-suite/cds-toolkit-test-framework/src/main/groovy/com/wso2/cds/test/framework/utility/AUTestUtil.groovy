@@ -27,6 +27,9 @@ import com.wso2.cds.test.framework.configuration.AUConfigurationService
 import org.apache.http.conn.ssl.SSLSocketFactory
 import org.jsoup.nodes.Document
 import org.jsoup.nodes.Element
+import org.openqa.selenium.By
+import org.openqa.selenium.WebDriver
+import org.openqa.selenium.remote.RemoteWebDriver
 import org.testng.Assert
 import io.restassured.response.Response
 
@@ -193,6 +196,14 @@ class AUTestUtil extends OBTestUtil {
     }
 
     /**
+     * Get Secondary Joint Account 1 XPath
+     * @return SecondaryJointAccount1XPath
+     */
+    static String getSecondaryJointAccount1XPath() {
+        return AUPageObjects.SECONDARY_JOINT_ACCOUNT
+    }
+
+    /**
      * Get Business Account 1 Label XPath
      * @return BusinessAccount1LabelXPath
      */
@@ -304,7 +315,6 @@ class AUTestUtil extends OBTestUtil {
                     ShareableAccountMap[AUConstants.PARAM_ACCOUNT_ID] = sharableAccount[AUConstants.ACCOUNT_ID]
                     break
                 }
-                break
             }
         }
         return ShareableAccountMap
