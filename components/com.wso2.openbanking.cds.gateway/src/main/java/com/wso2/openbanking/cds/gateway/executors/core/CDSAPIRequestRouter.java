@@ -54,6 +54,10 @@ public class CDSAPIRequestRouter extends AbstractRequestRouter {
             requestContext.addContextProperty(RequestRouterConstants.API_TYPE_CUSTOM_PROP,
                     RequestRouterConstants.API_TYPE_CDS);
             return this.getExecutorMap().get(RequestRouterConstants.CDS);
+        } else if (RequestRouterConstants.COMMON_API_NAME.equals(requestContext.getOpenAPI().getInfo().getTitle())) {
+            requestContext.addContextProperty(RequestRouterConstants.API_TYPE_CUSTOM_PROP,
+                    RequestRouterConstants.API_TYPE_COMMON);
+            return this.getExecutorMap().get(RequestRouterConstants.CDS_COMMON);
         } else if (RequestRouterConstants.ADMIN_API_NAME.equals(requestContext.getOpenAPI().getInfo().getTitle())) {
             requestContext.addContextProperty(RequestRouterConstants.API_TYPE_CUSTOM_PROP,
                     RequestRouterConstants.API_TYPE_ADMIN);
@@ -92,6 +96,9 @@ public class CDSAPIRequestRouter extends AbstractRequestRouter {
                     break;
                 case RequestRouterConstants.API_TYPE_CDS:
                     executorList = this.getExecutorMap().get(RequestRouterConstants.CDS);
+                    break;
+                case RequestRouterConstants.API_TYPE_COMMON:
+                    executorList = this.getExecutorMap().get(RequestRouterConstants.CDS_COMMON);
                     break;
                 case RequestRouterConstants.API_TYPE_ADMIN:
                     executorList = this.getExecutorMap().get(RequestRouterConstants.ADMIN);
