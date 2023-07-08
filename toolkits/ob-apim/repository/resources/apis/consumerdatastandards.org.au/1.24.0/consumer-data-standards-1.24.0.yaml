@@ -10,7 +10,7 @@ info:
   license:
     name: MIT License
     url: https://opensource.org/licenses/MIT
-  title: ConsumerDataStandardsAdminAPI
+  title: ConsumerDataStandards
   version: v1
 servers:
   - url: https://data.holder.com.au/cds-au/{version}
