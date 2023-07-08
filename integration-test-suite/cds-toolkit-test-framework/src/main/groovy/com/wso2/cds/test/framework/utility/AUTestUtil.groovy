@@ -438,7 +438,5 @@ class AUTestUtil extends OBTestUtil {
                 return 1
         }
     }
-
-
 }
 
