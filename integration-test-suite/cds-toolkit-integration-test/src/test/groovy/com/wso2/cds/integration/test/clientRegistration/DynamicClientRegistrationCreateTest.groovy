@@ -434,10 +434,9 @@ class DynamicClientRegistrationCreateTest extends AUTest{
                 "Invalid responseTypes provided")
     }
 
-//    @AfterClass(alwaysRun = true)
-//    void tearDown() {
-//        deleteApplicationIfExists(clientId)
-//    }
-
+    @AfterClass(alwaysRun = true)
+    void tearDown() {
+        deleteApplicationIfExists(clientId)
+    }
 }
 
