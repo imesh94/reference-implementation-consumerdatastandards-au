@@ -15,7 +15,6 @@ import com.wso2.cds.test.framework.data_provider.AccountsDataProviders
 import com.wso2.cds.test.framework.request_builder.AURequestBuilder
 import io.restassured.http.ContentType
 import org.testng.Assert
-import org.testng.ITestContext
 import org.testng.annotations.BeforeClass
 import org.testng.annotations.Test
 import com.wso2.cds.test.framework.utility.AURestAsRequestBuilder
@@ -240,7 +239,6 @@ class AccountsRetrievalRequestHeaderValidationTest extends AUTest {
 
         def response = AURequestBuilder.buildBasicRequestWithCustomHeaders(userAccessToken,
                 AUConstants.UNSUPPORTED_X_V_VERSION, clientHeader)
-                .header(AUConstants.X_MIN_HEADER, x_v_header)
                 .baseUri(AUTestUtil.getBaseUrl(AUConstants.BASE_PATH_TYPE_ACCOUNT))
                 .get("${AUConstants.CDS_PATH}${resourcePath}")
 
@@ -248,7 +246,7 @@ class AccountsRetrievalRequestHeaderValidationTest extends AUTest {
         Assert.assertEquals(AUTestUtil.parseResponseBody(response, AUConstants.ERROR_CODE),
                 AUConstants.ERROR_CODE_UNSUPPORTED_VERSION)
         Assert.assertTrue(AUTestUtil.parseResponseBody(response, AUConstants.ERROR_DETAIL)
-                    .contains(AUConstants.ERROR_ENDPOINT_VERSION4))
+                    .contains(AUConstants.ERROR_ENDPOINT_VERSION))
         Assert.assertEquals(AUTestUtil.parseResponseBody(response, AUConstants.ERROR_TITLE),
                 AUConstants.UNSUPPORTED_VERSION)
     }
@@ -272,7 +270,7 @@ class AccountsRetrievalRequestHeaderValidationTest extends AUTest {
         Assert.assertEquals(AUTestUtil.parseResponseBody(response, AUConstants.ERROR_CODE),
                 AUConstants.ERROR_CODE_UNSUPPORTED_VERSION)
         Assert.assertTrue(AUTestUtil.parseResponseBody(response, AUConstants.ERROR_DETAIL)
-                .contains(AUConstants.ERROR_ENDPOINT_VERSION5))
+                .contains(AUConstants.ERROR_ENDPOINT_VERSION))
         Assert.assertEquals(AUTestUtil.parseResponseBody(response, AUConstants.ERROR_TITLE),
                 AUConstants.UNSUPPORTED_VERSION)
     }

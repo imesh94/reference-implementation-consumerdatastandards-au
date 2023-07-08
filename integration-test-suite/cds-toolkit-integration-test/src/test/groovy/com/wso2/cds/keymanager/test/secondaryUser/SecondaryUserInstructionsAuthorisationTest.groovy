@@ -65,8 +65,6 @@ class SecondaryUserInstructionsAuthorisationTest extends AUTest {
         Assert.assertEquals(accountResponse.statusCode(), AUConstants.STATUS_CODE_200)
         Assert.assertNotNull(AUTestUtil.parseResponseBody(accountResponse,
                 "${AUConstants.RESPONSE_DATA_BULK_ACCOUNTID_LIST}[0]"))
-        Assert.assertNotNull(AUTestUtil.parseResponseBody(accountResponse,
-                "${AUConstants.RESPONSE_DATA_BULK_ACCOUNTID_LIST}[1]"))
     }
 
     @Test

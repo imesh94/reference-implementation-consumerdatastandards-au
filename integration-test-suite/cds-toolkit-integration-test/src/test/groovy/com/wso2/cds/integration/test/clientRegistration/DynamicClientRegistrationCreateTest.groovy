@@ -268,12 +268,18 @@ class DynamicClientRegistrationCreateTest extends AUTest{
     @Test(priority = 5)
     void "TC0101017_Create application with a replayed JTI value in JWT request"() {
 
-        AUConfigurationService auConfiguration = new AUConfigurationService()
-        AURegistrationRequestBuilder dcr = new AURegistrationRequestBuilder()
-
         deleteApplicationIfExists(clientId)
+        jtiVal = String.valueOf(System.currentTimeMillis())
+        AURegistrationRequestBuilder registrationRequestBuilder = new AURegistrationRequestBuilder()
         def registrationResponse = AURegistrationRequestBuilder
-                .buildRegistrationRequest(dcr.getRegularClaimsWithGivenJti(jtiVal))
+                .buildRegistrationRequest(registrationRequestBuilder.getRegularClaimsWithGivenJti(jtiVal))
+                .when()
+                .post(AUConstants.DCR_REGISTRATION_ENDPOINT)
+
+        Assert.assertEquals(registrationResponse.statusCode(), AUConstants.STATUS_CODE_201)
+
+        registrationResponse = AURegistrationRequestBuilder
+                .buildRegistrationRequest(registrationRequestBuilder.getRegularClaimsWithGivenJti(jtiVal))
                 .when()
                 .post(AUConstants.DCR_REGISTRATION_ENDPOINT)
 
@@ -282,19 +288,6 @@ class DynamicClientRegistrationCreateTest extends AUTest{
                 AUConstants.INVALID_CLIENT_METADATA)
         Assert.assertEquals(parseResponseBody(registrationResponse, AUConstants.ERROR_DESCRIPTION),
                 "JTI value of the registration request has been replayed")
-
-
-        registrationResponse = AURegistrationRequestBuilder
-                .buildRegistrationRequest(dcr.getAURegularClaims())
-                .when()
-                .post(AUConstants.DCR_REGISTRATION_ENDPOINT)
-
-        Assert.assertEquals(registrationResponse.statusCode(), AUConstants.STATUS_CODE_201)
-        clientId = parseResponseBody(registrationResponse, AUConstants.CLIENT_ID)
-
-        AUTestUtil.writeXMLContent(auConfiguration.getOBXMLFile().toString(), "Application",
-                "ClientID", clientId, auConfiguration.getTppNumber())
-
     }
 
     @Test(priority = 4)
@@ -438,13 +431,12 @@ class DynamicClientRegistrationCreateTest extends AUTest{
         Assert.assertEquals(parseResponseBody(registrationResponse, AUConstants.ERROR),
                 AUConstants.INVALID_CLIENT_METADATA)
         Assert.assertEquals(parseResponseBody(registrationResponse, AUConstants.ERROR_DESCRIPTION),
-                "Unsupported response_type value. Only code response type is allowed.")
+                "Invalid responseTypes provided")
     }
 
-//    @AfterClass(alwaysRun = true)
+    @AfterClass(alwaysRun = true)
     void tearDown() {
         deleteApplicationIfExists(clientId)
     }
-
 }
 

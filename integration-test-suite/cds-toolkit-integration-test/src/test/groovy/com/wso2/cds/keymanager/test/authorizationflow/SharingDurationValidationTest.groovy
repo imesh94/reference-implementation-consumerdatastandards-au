@@ -69,7 +69,7 @@ class SharingDurationValidationTest extends AUTest {
         Assert.assertNotNull(accessTokenResponse.getCustomParameters().get(AUConstants.CDR_ARRANGEMENT_ID))
     }
 
-    @Test (enabled = true)
+    @Test (enabled = true, priority = 2)
     void "TC0202003_Initiate authorisation consent flow with sharing duration zero" () {
 
         //Send Authorisation Request
