@@ -9,7 +9,6 @@
 
 package com.wso2.cds.keymanager.test.par
 
-import com.nimbusds.oauth2.sdk.AccessTokenResponse
 import com.wso2.cds.test.framework.AUTest
 import com.wso2.cds.test.framework.constant.AUConstants
 import com.wso2.cds.test.framework.request_builder.AUJWTGenerator

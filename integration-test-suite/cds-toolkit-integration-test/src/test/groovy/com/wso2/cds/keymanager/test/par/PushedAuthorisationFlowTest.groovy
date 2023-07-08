@@ -1,10 +1,12 @@
 package com.wso2.cds.keymanager.test.par
 
 import com.nimbusds.oauth2.sdk.AccessTokenResponse
+import com.nimbusds.oauth2.sdk.ResponseMode
 import com.nimbusds.oauth2.sdk.ResponseType
 import com.wso2.cds.test.framework.AUTest
 import com.wso2.cds.test.framework.automation.consent.AUBasicAuthAutomationStep
 import com.wso2.cds.test.framework.configuration.AUConfigurationService
+import com.wso2.cds.test.framework.constant.AUAccountProfile
 import com.wso2.cds.test.framework.constant.AUConstants
 import com.wso2.cds.test.framework.constant.AUPageObjects
 import com.wso2.cds.test.framework.request_builder.AUJWTGenerator
@@ -245,7 +247,7 @@ class PushedAuthorisationFlowTest extends AUTest {
     }
 
     @Test()
-    void "TC0205007_Reject consent authorisation flow when the cdr_arrangement_id define is not related to the authenticated user "() {
+    void "TC0205007_Reject consent authorisation flow when the cdr_arrangement_id define is not related to the authenticated user"() {
 
         def invalidCdrArrangementId = "db638818-be86-42fc-bdb8-1e2a1011866d"
 
@@ -253,19 +255,9 @@ class PushedAuthorisationFlowTest extends AUTest {
                 true, invalidCdrArrangementId)
         requestUri = AUTestUtil.parseResponseBody(response, AUConstants.REQUEST_URI)
 
-        Assert.assertEquals(response.statusCode(), AUConstants.STATUS_CODE_201)
-        Assert.assertNotNull(requestUri)
-        Assert.assertNotNull(AUTestUtil.parseResponseBody(response, AUConstants.RESPONSE_EXPIRES_IN))
-
-        def authoriseUrl = auAuthorisationBuilder.getAuthorizationRequest(scopes, requestUri.toURI()).toURI().toString()
-
-        def automationResponse = getBrowserAutomation(AUConstants.DEFAULT_DELAY)
-                .addStep(new NavigationAutomationStep(authoriseUrl, 10))
-                .execute()
-
-        def errorMessage = URLDecoder.decode(automationResponse.currentUrl.get().split("&")[1]
-                .split("=")[1].toString(), "UTF8")
-        Assert.assertEquals(errorMessage, clientId)
+        Assert.assertEquals(response.statusCode(), AUConstants.STATUS_CODE_400)
+        Assert.assertEquals(AUTestUtil.parseResponseBody(response, AUConstants.ERROR_DESCRIPTION), "Invalid cdr_arrangement_id")
+        Assert.assertEquals(AUTestUtil.parseResponseBody(response, AUConstants.ERROR), AUConstants.INVALID_REQUEST_OBJECT)
     }
 
     @Test
@@ -277,19 +269,9 @@ class PushedAuthorisationFlowTest extends AUTest {
                 true, cdrArrangementId)
         requestUri = AUTestUtil.parseResponseBody(response, AUConstants.REQUEST_URI)
 
-        Assert.assertEquals(response.statusCode(), AUConstants.STATUS_CODE_201)
-        Assert.assertNotNull(requestUri)
-        Assert.assertNotNull(AUTestUtil.parseResponseBody(response, AUConstants.RESPONSE_EXPIRES_IN))
-
-        def authoriseUrl = auAuthorisationBuilder.getAuthorizationRequest(scopes, requestUri.toURI()).toURI().toString()
-
-        def automationResponse = getBrowserAutomation(AUConstants.DEFAULT_DELAY)
-                .addStep(new AUBasicAuthAutomationStep(authoriseUrl))
-                .execute()
-
-        def errorMessage = URLDecoder.decode(automationResponse.currentUrl.get().split("&")[1]
-                .split("=")[1].toString(), "UTF8")
-        Assert.assertTrue(errorMessage.contains("Retrieving consent data failed"))
+        Assert.assertEquals(response.statusCode(), AUConstants.STATUS_CODE_400)
+        Assert.assertEquals(AUTestUtil.parseResponseBody(response, AUConstants.ERROR_DESCRIPTION), "Invalid cdr_arrangement_id")
+        Assert.assertEquals(AUTestUtil.parseResponseBody(response, AUConstants.ERROR), AUConstants.INVALID_REQUEST_OBJECT)
     }
 
     @Test
@@ -463,7 +445,7 @@ class PushedAuthorisationFlowTest extends AUTest {
         def error = AUTestUtil.parseResponseBody(response, AUConstants.ERROR)
 
         Assert.assertEquals(errorDesc, "Mandatory parameter scope, not found in the request")
-        Assert.assertEquals(error, AUConstants.INVALID_REQUEST_OBJECT)
+        Assert.assertEquals(error, AUConstants.INVALID_REQUEST)
         Assert.assertEquals(response.statusCode(), AUConstants.STATUS_CODE_400)
     }
 
@@ -476,7 +458,11 @@ class PushedAuthorisationFlowTest extends AUTest {
         def requestUri = AUTestUtil.parseResponseBody(response, AUConstants.REQUEST_URI)
 
         //Authorise Consent
-        doConsentAuthorisationViaRequestUri(scopes, requestUri.toURI(), null)
+        authoriseUrl = auAuthorisationBuilder.getAuthorizationRequest(scopes, requestUri.toURI(), ResponseMode.JWT, clientId,
+                ResponseType.CODE, false).toURI().toString()
+
+        automationResponse = doAuthorisationFlowNavigation(authoriseUrl, AUAccountProfile.INDIVIDUAL, false)
+        authorisationCode = AUTestUtil.getCodeFromJwtResponse(automationResponse.currentUrl.get())
         Assert.assertNotNull(authorisationCode)
 
         //Generate User Access Token
@@ -487,12 +473,12 @@ class PushedAuthorisationFlowTest extends AUTest {
         Assert.assertNotNull(userAccessToken.getCustomParameters().get(AUConstants.CDR_ARRANGEMENT_ID))
 
         //Authorise Consent Using same request_uri
-        def automationResponse = getBrowserAutomation(AUConstants.DEFAULT_DELAY)
+        automationResponse = getBrowserAutomation(AUConstants.DEFAULT_DELAY)
                 .addStep(new NavigationAutomationStep(authoriseUrl, 10))
                 .execute()
 
         String url = automationResponse.currentUrl.get()
-        Assert.assertTrue(AUTestUtil.getErrorDescriptionFromUrl(automationResponse.currentUrl.get())
+        Assert.assertTrue(AUTestUtil.getErrorDescriptionFromUrl(url)
                 .contains("Provided request URI is not valid"))
     }
 
@@ -506,8 +492,8 @@ class PushedAuthorisationFlowTest extends AUTest {
         def errorDesc = AUTestUtil.parseResponseBody(response, AUConstants.ERROR_DESCRIPTION)
         def error = AUTestUtil.parseResponseBody(response, AUConstants.ERROR)
 
-        Assert.assertEquals(errorDesc, "Invalid response type")
-        Assert.assertEquals(error, AUConstants.INVALID_REQUEST_OBJECT)
+        Assert.assertEquals(errorDesc, "Unsupported response_type value. Only code response type is allowed.")
+        Assert.assertEquals(error, AUConstants.INVALID_REQUEST)
         Assert.assertEquals(response.statusCode(), AUConstants.STATUS_CODE_400)
     }
 

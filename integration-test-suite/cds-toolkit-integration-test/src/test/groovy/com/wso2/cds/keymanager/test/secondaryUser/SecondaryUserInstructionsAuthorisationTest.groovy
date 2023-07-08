@@ -43,6 +43,13 @@ class SecondaryUserInstructionsAuthorisationTest extends AUTest {
 
         def updateResponse = updateSecondaryUserInstructionPermission(accountID, userId, AUConstants.ACTIVE)
         Assert.assertEquals(updateResponse.statusCode(), AUConstants.OK)
+
+        //Get Secondary Joint Account
+        shareableElements = AUTestUtil.getSecondaryUserDetails(getSharableBankAccounts(), false)
+        accountID =  shareableElements[AUConstants.PARAM_ACCOUNT_ID]
+
+        def updateResponseJointAccount = updateSecondaryUserInstructionPermission(accountID, userId, AUConstants.ACTIVE)
+        Assert.assertEquals(updateResponseJointAccount.statusCode(), AUConstants.OK)
     }
 
     @Test(groups = "SmokeTest")
@@ -79,7 +86,7 @@ class SecondaryUserInstructionsAuthorisationTest extends AUTest {
                 true, cdrArrangementId)
         requestUri = AUTestUtil.parseResponseBody(response, AUConstants.REQUEST_URI)
 
-        doSecondaryAccountSelection(no_account_scopes, requestUri.toURI(), clientId)
+        doSecondaryUserAuthFlowWithoutAccountSelection(no_account_scopes, requestUri.toURI(), clientId)
         Assert.assertNotNull(authorisationCode)
     }
 
@@ -115,7 +122,7 @@ class SecondaryUserInstructionsAuthorisationTest extends AUTest {
                     Assert.assertTrue(authWebDriver.isElementDisplayed(AUTestUtil.getSingleAccountXPath()))
                     Assert.assertTrue(authWebDriver.isElementDisplayed(AUTestUtil.getAltSingleAccountXPath()))
                     Assert.assertTrue(authWebDriver.isElementDisplayed(AUTestUtil.getSecondaryAccount1XPath()))
-                    Assert.assertTrue(authWebDriver.isElementDisplayed(AUTestUtil.getSecondaryAccount2XPath()))
+                    Assert.assertTrue(authWebDriver.isElementDisplayed(AUTestUtil.getSecondaryJointAccount1XPath()))
 
                     //Select Secondary Account
                     selectSecondaryAccount(authWebDriver, false)
@@ -150,7 +157,7 @@ class SecondaryUserInstructionsAuthorisationTest extends AUTest {
                     //Verify Account List display tag along with the account number of the secondary user account
                     Assert.assertTrue(authWebDriver.getAttributeText(AUPageObjects.LBL_SECONDARY_ACCOUNT_1)
                             .contains("secondary"))
-                    Assert.assertTrue(authWebDriver.getAttributeText(AUPageObjects.LBL_SECONDARY_ACCOUNT_2)
+                    Assert.assertTrue(authWebDriver.getAttributeText(AUPageObjects.LBL_SECONDARY_JOINT_ACCOUNT_1)
                             .contains("secondary"))
                 }
                 .execute()
@@ -180,7 +187,8 @@ class SecondaryUserInstructionsAuthorisationTest extends AUTest {
     }
 
     //TODO: Issue: https://github.com/wso2-enterprise/financial-open-banking/issues/8291
-    @Test
+    //TODO: Update the test case to enable all the unavailable accounts
+    //@Test
     void "CDS-547_Verify the account selection page when there are no unavailable accounts"() {
 
         //Send Authorisation Request via PAR
@@ -213,7 +221,27 @@ class SecondaryUserInstructionsAuthorisationTest extends AUTest {
         requestUri = AUTestUtil.parseResponseBody(response, AUConstants.REQUEST_URI)
 
         //Select Secondary Account during authorisation
-        doSecondaryAccountSelection(scopes, requestUri.toURI(), auConfiguration.getAppInfoClientID(), true)
+        authoriseUrl = auAuthorisationBuilder.getAuthorizationRequest(scopes, requestUri.toURI(), auConfiguration.getAppInfoClientID())
+                .toURI().toString()
+
+        def automation = getBrowserAutomation(AUConstants.DEFAULT_DELAY)
+                .addStep(new AUBasicAuthAutomationStep(authoriseUrl))
+                .addStep { driver, context ->
+                    AutomationMethod authWebDriver = new AutomationMethod(driver)
+
+                    //Select Secondary Account
+                    authWebDriver.clickButtonXpath(AUPageObjects.BTN_SELECT_ALL)
+
+                    //Click Submit/Next Button
+                    authWebDriver.clickButtonXpath(AUPageObjects.CONSENT_SUBMIT_XPATH)
+
+                    //Click Confirm Button
+                    authWebDriver.clickButtonXpath(AUPageObjects.CONSENT_CONFIRM_XPATH)
+                }
+                .execute()
+
+        // Get Code From URL
+        authorisationCode = AUTestUtil.getCodeFromJwtResponse(automation.currentUrl.get())
         Assert.assertNotNull(authorisationCode)
     }
 
@@ -241,7 +269,7 @@ class SecondaryUserInstructionsAuthorisationTest extends AUTest {
         def authUrl = automation.currentUrl.get()
         Assert.assertTrue(AUTestUtil.getDecodedUrl(authUrl).contains("User skip the consent flow"))
         def stateParam = authUrl.split("state=")[1]
-        Assert.assertEquals(auAuthorisationBuilder.state, stateParam)
+        Assert.assertEquals(auAuthorisationBuilder.state.toString(), stateParam)
     }
 
     @Test
@@ -271,7 +299,7 @@ class SecondaryUserInstructionsAuthorisationTest extends AUTest {
         def authUrl = automation.currentUrl.get()
         Assert.assertTrue(AUTestUtil.getDecodedUrl(authUrl).contains("User skip the consent flow"))
         def stateParam = authUrl.split("state=")[1]
-        Assert.assertEquals(auAuthorisationBuilder.state, stateParam)
+        Assert.assertEquals(auAuthorisationBuilder.state.toString(), stateParam)
     }
 
     @Test
@@ -356,7 +384,7 @@ class SecondaryUserInstructionsAuthorisationTest extends AUTest {
                     AutomationMethod authWebDriver = new AutomationMethod(driver)
 
                     //Select Secondary Accounts - Individual and Joint Accounts
-                    Assert.assertFalse(authWebDriver.isElementEnabled(AUTestUtil.getSecondaryAccount1XPath()))
+                    Assert.assertFalse(authWebDriver.isElementPresent(AUPageObjects.SECONDARY_ACCOUNT_1))
                 }
                 .execute()
     }
@@ -387,7 +415,7 @@ class SecondaryUserInstructionsAuthorisationTest extends AUTest {
                     AutomationMethod authWebDriver = new AutomationMethod(driver)
 
                     //Select Secondary Accounts - Individual and Joint Accounts
-                    Assert.assertFalse(authWebDriver.isElementEnabled(AUPageObjects.SECONDARY_JOINT_ACCOUNT))
+                    Assert.assertFalse(authWebDriver.isElementPresent(AUPageObjects.SECONDARY_JOINT_ACCOUNT))
                 }
                 .execute()
     }

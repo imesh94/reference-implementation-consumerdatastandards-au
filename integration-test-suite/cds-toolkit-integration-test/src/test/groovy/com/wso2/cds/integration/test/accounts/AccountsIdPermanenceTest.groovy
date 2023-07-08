@@ -55,6 +55,9 @@ class AccountsIdPermanenceTest extends AUTest {
         SoftAssert softAssertion= new SoftAssert()
         softAssertion.assertEquals(response.statusCode(), AUConstants.STATUS_CODE_200)
 
+        encryptedAccount1Id = AUTestUtil.parseResponseBody(response, "data.accounts.accountId[1]")
+        encryptedAccount2Id = AUTestUtil.parseResponseBody(response, "data.accounts.accountId[0]")
+
         softAssertion.assertTrue(AUIdEncryptorDecryptor.decrypt(
                 AUTestUtil.parseResponseBody(response, "${AUConstants.RESPONSE_DATA_BULK_ACCOUNTID_LIST}[0]"), secretKey).
                 split(":")[2] != "")
