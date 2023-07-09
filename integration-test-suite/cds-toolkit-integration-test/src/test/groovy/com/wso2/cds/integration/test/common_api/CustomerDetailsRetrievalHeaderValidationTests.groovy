@@ -280,7 +280,7 @@ class CustomerDetailsRetrievalHeaderValidationTests extends AUTest {
     void "TC0601017_Retrieve Customer info with invalid x-fapi-interaction-id"() {
 
         def response = AURequestBuilder.buildBasicRequestWithOptionalHeaders(userAccessToken,
-                AUConstants.UNSUPPORTED_X_V_VERSION, clientHeader)
+                AUConstants.X_V_HEADER_CUSTOMER, clientHeader)
                 .header(AUConstants.X_FAPI_INTERACTION_ID, "obc")
                 .baseUri(AUTestUtil.getBaseUrl(AUConstants.BASE_PATH_TYPE_CUSTOMER))
                 .get("${AUConstants.CDS_PATH}${AUConstants.BULK_CUSTOMER}")

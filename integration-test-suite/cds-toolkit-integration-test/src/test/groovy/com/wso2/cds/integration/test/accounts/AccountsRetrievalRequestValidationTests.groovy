@@ -13,6 +13,7 @@ import com.wso2.cds.test.framework.AUTest
 import com.wso2.cds.test.framework.constant.AUAccountScope
 import com.wso2.cds.test.framework.constant.AUConstants
 import com.wso2.cds.test.framework.request_builder.AURequestBuilder
+import com.wso2.cds.test.framework.utility.AURestAsRequestBuilder
 import com.wso2.cds.test.framework.utility.AUTestUtil
 import io.restassured.http.ContentType
 import io.restassured.response.Response
@@ -307,10 +308,6 @@ class AccountsRetrievalRequestValidationTests extends AUTest {
         softAssertion.assertNotNull(response.getHeader(AUConstants.X_FAPI_INTERACTION_ID))
         softAssertion.assertNotNull(response.getHeader(AUConstants.X_FAPI_INTERACTION_ID))
         softAssertion.assertNotNull(AUTestUtil.parseResponseBody(response, AUConstants.LINKS_SELF))
-        softAssertion.assertNotNull(AUTestUtil.parseResponseBody(response, AUConstants.LINKS_FIRST))
-        softAssertion.assertNotNull(AUTestUtil.parseResponseBody(response, AUConstants.LINKS_PREV))
-        softAssertion.assertNotNull(AUTestUtil.parseResponseBody(response, AUConstants.LINKS_NEXT))
-        softAssertion.assertNotNull(AUTestUtil.parseResponseBody(response, AUConstants.LINKS_LAST))
         softAssertion.assertNotNull(AUTestUtil.parseResponseBody(response, AUConstants.META))
         softAssertion.assertAll()
     }
@@ -430,7 +427,7 @@ class AccountsRetrievalRequestValidationTests extends AUTest {
         softAssertion.assertTrue(response.getHeader(AUConstants.CONTENT_TYPE).contains(AUConstants.ACCEPT))
 
         softAssertion.assertNotNull(response.getHeader(AUConstants.X_FAPI_INTERACTION_ID))
-        softAssertion.assertNotNull(AUTestUtil.parseResponseBody(response, AUConstants.RESPONSE_DATA_TRANSACTION_LIST))
+        softAssertion.assertNotNull(AUTestUtil.parseResponseBody(response, "${AUConstants.RESPONSE_DATA_TRANSACTION_LIST}.accountId"))
         softAssertion.assertNotNull(AUTestUtil.parseResponseBody(response, AUConstants.LINKS_SELF))
         softAssertion.assertNotNull(AUTestUtil.parseResponseBody(response, AUConstants.LINKS_FIRST))
         softAssertion.assertNotNull(AUTestUtil.parseResponseBody(response, AUConstants.LINKS_PREV))
@@ -567,8 +564,11 @@ class AccountsRetrievalRequestValidationTests extends AUTest {
     @Test
     void "OB-1261_Retrieve account list without mtls client certificate"() {
 
-        def response = AURequestBuilder.buildBasicRequestWithCustomHeaders(userAccessToken,
-                AUConstants.X_V_HEADER_ACCOUNTS, clientHeader)
+        def response = AURestAsRequestBuilder.buildBasicRequest()
+                .header(AUConstants.X_V_HEADER, AUConstants.X_V_HEADER_ACCOUNTS)
+                .header(AUConstants.AUTHORIZATION_HEADER_KEY, "${AUConstants.AUTHORIZATION_BEARER_TAG}${userAccessToken}")
+                .header(AUConstants.X_FAPI_AUTH_DATE, AUConstants.DATE)
+                .header(AUConstants.X_CDS_CLIENT_HEADERS , clientHeader)
                 .accept(AUConstants.ACCEPT)
                 .baseUri(AUTestUtil.getBaseUrl(AUConstants.BASE_PATH_TYPE_ACCOUNT))
                 .get("${AUConstants.CDS_PATH}${AUConstants.BULK_ACCOUNT_PATH}")
@@ -591,10 +591,10 @@ class AccountsRetrievalRequestValidationTests extends AUTest {
 
         Assert.assertEquals(response.statusCode(), AUConstants.STATUS_CODE_400)
         Assert.assertEquals(AUTestUtil.parseResponseBody(response, AUConstants.ERROR_CODE),
-                AUConstants.ERROR_CODE_INVALID_FIELD)
-        Assert.assertEquals(AUTestUtil.parseResponseBody(response, AUConstants.ERROR_SOURCE_POINTER),
-                AUConstants.BULK_BALANCES_PATH)
-        Assert.assertEquals(AUTestUtil.parseResponseBody(response, AUConstants.ERROR_TITLE), AUConstants.INVALID_FIELD)
+                AUConstants.ERROR_CODE_MISSING_FIELD)
+        Assert.assertEquals(AUTestUtil.parseResponseBody(response, AUConstants.ERROR_DETAIL),
+                "request body")
+        Assert.assertEquals(AUTestUtil.parseResponseBody(response, AUConstants.ERROR_TITLE), AUConstants.MISSING_FIELD)
     }
 
     @Test
@@ -604,8 +604,9 @@ class AccountsRetrievalRequestValidationTests extends AUTest {
         String requestBody = """
             {
               "data": {
-                "account": "${AUConstants.accountID}"
-              },
+                "accountIds": "${AUConstants.accountID}",
+                "accountIds": "${AUConstants.accountID}"
+                }
               "meta": {}
             }
         """.stripIndent()

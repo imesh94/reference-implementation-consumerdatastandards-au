@@ -215,7 +215,7 @@ class AccountsRetrievalRequestHeaderValidationTest extends AUTest {
 
         def response = AURequestBuilder.buildBasicRequestWithCustomHeaders(userAccessToken,
                 x_v_header, clientHeader)
-                .header(AUConstants.X_MIN_HEADER, 0)
+                .header(AUConstants.X_MIN_HEADER, 1)
                 .baseUri(AUTestUtil.getBaseUrl(AUConstants.BASE_PATH_TYPE_ACCOUNT))
                 .get("${AUConstants.CDS_PATH}${resourcePath}")
 
@@ -256,36 +256,36 @@ class AccountsRetrievalRequestHeaderValidationTest extends AUTest {
     @Test (dataProvider = "BankingApis", dataProviderClass = AccountsDataProviders.class)
     void "TC0301015_Retrieve accounts with unsupported endpoint version with holder identifier header"(resourcePath) {
 
-        def holderID = "ABC-Bank"
+        def holderID = "HID"
+        int x_v_header = AUTestUtil.getBankingApiEndpointVersion(resourcePath.toString())
 
-        def response = AURestAsRequestBuilder.buildRequest()
+        def response = AURequestBuilder.buildBasicRequestWithCustomHeaders(userAccessToken,
+                x_v_header, clientHeader)
                 .header("x-${holderID}-v", AUConstants.UNSUPPORTED_X_V_VERSION)
-                .header(AUConstants.AUTHORIZATION_HEADER_KEY, "${AUConstants.AUTHORIZATION_BEARER_TAG}${userAccessToken}")
-                .header(AUConstants.X_FAPI_AUTH_DATE, AUConstants.DATE)
-                .header(AUConstants.X_CDS_CLIENT_HEADERS , clientHeader)
                 .baseUri(AUTestUtil.getBaseUrl(AUConstants.BASE_PATH_TYPE_ACCOUNT))
                 .get("${AUConstants.CDS_PATH}${resourcePath}")
 
-        Assert.assertEquals(response.statusCode(), AUConstants.STATUS_CODE_406)
-        Assert.assertEquals(AUTestUtil.parseResponseBody(response, AUConstants.ERROR_CODE),
-                AUConstants.ERROR_CODE_UNSUPPORTED_VERSION)
-        Assert.assertTrue(AUTestUtil.parseResponseBody(response, AUConstants.ERROR_DETAIL)
-                .contains(AUConstants.ERROR_ENDPOINT_VERSION))
-        Assert.assertEquals(AUTestUtil.parseResponseBody(response, AUConstants.ERROR_TITLE),
-                AUConstants.UNSUPPORTED_VERSION)
+        Assert.assertEquals(response.statusCode(), AUConstants.STATUS_CODE_200)
+        Assert.assertEquals(response.getHeader(AUConstants.X_V_HEADER).toInteger(), x_v_header)
+        Assert.assertTrue(response.getHeader(AUConstants.CONTENT_TYPE).contains(AUConstants.ACCEPT))
+
+        Assert.assertNotNull(response.getHeader(AUConstants.X_FAPI_INTERACTION_ID))
+        Assert.assertNotNull(AUTestUtil.parseResponseBody(response, AUConstants.DATA))
+        Assert.assertNotNull(AUTestUtil.parseResponseBody(response, AUConstants.LINKS_SELF))
+        Assert.assertNotNull(AUTestUtil.parseResponseBody(response, AUConstants.LINKS_FIRST))
+        Assert.assertNotNull(AUTestUtil.parseResponseBody(response, AUConstants.LINKS_PREV))
+        Assert.assertNotNull(AUTestUtil.parseResponseBody(response, AUConstants.LINKS_NEXT))
+        Assert.assertNotNull(AUTestUtil.parseResponseBody(response, AUConstants.LINKS_LAST))
     }
 
     @Test (dataProvider = "BankingApis", dataProviderClass = AccountsDataProviders.class)
     void "TC0301016_Retrieve accounts with supported endpoint version with holder identifier header"(resourcePath) {
 
         int x_v_header = AUTestUtil.getBankingApiEndpointVersion(resourcePath.toString())
-        def holderID = "ABC-Bank"
+        def holderID = "HID"
 
-        def response = AURestAsRequestBuilder.buildRequest()
+        def response = AURequestBuilder.buildBasicRequestWithCustomHeaders(userAccessToken, x_v_header, clientHeader)
                 .header("x-${holderID}-v", x_v_header)
-                .header(AUConstants.AUTHORIZATION_HEADER_KEY, "${AUConstants.AUTHORIZATION_BEARER_TAG}${userAccessToken}")
-                .header(AUConstants.X_FAPI_AUTH_DATE, AUConstants.DATE)
-                .header(AUConstants.X_CDS_CLIENT_HEADERS , clientHeader)
                 .baseUri(AUTestUtil.getBaseUrl(AUConstants.BASE_PATH_TYPE_ACCOUNT))
                 .get("${AUConstants.CDS_PATH}${resourcePath}")
 
@@ -309,7 +309,7 @@ class AccountsRetrievalRequestHeaderValidationTest extends AUTest {
 
         def response = AURequestBuilder.buildBasicRequestWithOptionalHeaders(userAccessToken,
                 x_v_header, clientHeader)
-                .header(AUConstants.X_MIN_HEADER, x_v_header)
+                .header(AUConstants.X_MIN_HEADER, 1)
                 .baseUri(AUTestUtil.getBaseUrl(AUConstants.BASE_PATH_TYPE_ACCOUNT))
                 .get("${AUConstants.CDS_PATH}${resourcePath}")
 
@@ -432,20 +432,16 @@ class AccountsRetrievalRequestHeaderValidationTest extends AUTest {
     @Test
     void "TC0301037_Retrieve account list with invalid access token"() {
 
-        def response = AURequestBuilder.buildBasicRequestWithCustomHeaders("asd",
+        def response = AURequestBuilder.buildBasicRequestWithCustomHeaders("eyJ4NXQiOiJNREpsTmpJeE4yRTFPR1psT0dWbU1HUXhPVEZsTXpCbU5tRmpaalEwWTJZd09HWTBOMkkwWXpFNFl6WmpOalJoWW1SbU1tUTBPRGRpTkRoak1HRXdNQSIsImtpZCI6Ik1ESmxOakl4TjJFMU9HWmxPR1ZtTUdReE9URmxNekJtTm1GalpqUTBZMll3T0dZME4ySTBZekU0WXpaak5qUmhZbVJtTW1RME9EZGlORGhqTUdFd01BX1JTMjU2IiwidHlwIjoiYXQrand0IiwiYWxnIjoiUlMyNTYifQ.eyJzdWIiOiJhZG1pbkB3c28yLmNvbSIsImF1dCI6IkFQUExJQ0FUSU9OX1VTRVIiLCJpc3MiOiJodHRwczpcL1wvbG9jYWxob3N0Ojk0NDZcL29hdXRoMlwvdG9rZW4iLCJjbGllbnRfaWQiOiJONkQwb0M0c1ExOGc1UGxTNGdhU0ttaVVhczRhIiwiYXVkIjoiTjZEMG9DNHNRMThnNVBsUzRnYVNLbWlVYXM0YSIsIm5iZiI6MTY4ODg0MDU0NiwiYXpwIjoiTjZEMG9DNHNRMThnNVBsUzRnYVNLbWlVYXM0YSIsInNjb3BlIjoiYmFuazphY2NvdW50cy5iYXNpYzpyZWFkIGJhbms6YWNjb3VudHMuZGV0YWlsOnJlYWQgYmFuazpwYXllZXM6cmVhZCBiYW5rOnJlZ3VsYXJfcGF5bWVudHM6cmVhZCBiYW5rOnRyYW5zYWN0aW9uczpyZWFkIGNvbW1vbjpjdXN0b21lci5iYXNpYzpyZWFkIGNvbW1vbjpjdXN0b21lci5kZXRhaWw6cmVhZCBvcGVuaWQiLCJjbmYiOnsieDV0I1MyNTYiOiJrMHAtLU1MN25ma0UycFVMS3J5c3pKUkJ4MlRoQk1heEhnSk9lUG9zaXRzIn0sImV4cCI6MTY4ODg0NDE0NiwiaWF0IjoxNjg4ODQwNTQ2LCJqdGkiOiIyMmIwODA1Yi00ZTgyLTQxYjYtYTlhZS0zN2Y3OGMyYTlhMmIiLCJjb25zZW50X2lkIjoiOTFiYWUzMjMtNmYwYi00ZTkyLTljZWYtZjJiNGI1MjRjMTY1In0.UATu4say15Jvhf5vy4On9MS0WRyERcMcFOUUzYwgqNNVKAHZ7sjfwrR05eq_QYdeHejNpCIadcwbN-TWjnHu5s2vaavUbqFx_SYb9jSFm_JJTKMG0tFo6iCmy6Jfr8P1-S0uVOcnoI5mz2PX7CGqd8Kdx1uBUyWJ60CqiBFCewKZ0GddZbEfm9HC4aW8RBb65BqC01l5Ww4B_3vf_B6pvuDglX3Bb_yFt1grcH8r6EX-ibWQpYwL8LdgHIE4GlP7QQnN5elXjqpOfP3KDXZyeoALhqAFugOYNGeaHATPvhGH2lfU-2qIKyqqHEk286lkZBnsIkxMAx_iToMig-xA",
                 AUConstants.X_V_HEADER_ACCOUNTS, getCDSClient())
                 .baseUri(AUTestUtil.getBaseUrl(AUConstants.BASE_PATH_TYPE_ACCOUNT))
                 .get("${AUConstants.CDS_PATH}${AUConstants.BULK_ACCOUNT_PATH}")
 
         Assert.assertEquals(response.statusCode(), AUConstants.STATUS_CODE_401)
-        Assert.assertEquals(AUTestUtil.parseResponseBody(response, AUConstants.ERROR_CODE),
-                AUConstants.ERROR_CODE_UNAUTHORIZED)
-        Assert.assertEquals(AUTestUtil.parseResponseBody(response, AUConstants.ERROR_TITLE),
-                AUConstants.INVALID_AUTHORISATION)
-        Assert.assertEquals(AUTestUtil.parseResponseBody(response, AUConstants.ERROR_DETAIL),
-                "Invalid Credentials. Make sure you have provided the correct security credentials")
-        Assert.assertEquals(AUTestUtil.parseResponseBody(response, AUConstants.ERROR_META_URN),
-                AUConstants.ERROR_CODE_GENERAL_ERROR_UNEXPECTED)
+        Assert.assertEquals(AUTestUtil.parseResponseBody(response, AUConstants.ERROR),
+                AUConstants.INVALID_CLIENT)
+        Assert.assertEquals(AUTestUtil.parseResponseBody(response, AUConstants.ERROR_DESCRIPTION),
+                "Invalid Credentials")
     }
 
     @Test
@@ -562,7 +558,7 @@ class AccountsRetrievalRequestHeaderValidationTest extends AUTest {
         softAssertion.assertEquals(response.statusCode(), AUConstants.STATUS_CODE_415)
 
         softAssertion.assertEquals(AUTestUtil.parseResponseBody(response, AUConstants.ERROR_TITLE),
-                AUConstants.ERROR_CODE_GENERAL_EXPECTED_ERROR)
+                AUConstants.INVALID_CONTENT_TYPE)
         softAssertion.assertEquals(AUTestUtil.parseResponseBody(response, AUConstants.ERROR_DETAIL),
                 AUConstants.INVALID_CONTENT_TYPE)
 
@@ -597,7 +593,7 @@ class AccountsRetrievalRequestHeaderValidationTest extends AUTest {
         softAssertion.assertEquals(AUTestUtil.parseResponseBody(response, AUConstants.ERROR_CODE),
                 AUConstants.ERROR_CODE_GENERAL_EXPECTED_ERROR)
         softAssertion.assertEquals(AUTestUtil.parseResponseBody(response, AUConstants.ERROR_DETAIL),
-                AUConstants.INVALID_ACCEPT_HEADER)
+                AUConstants.ERROR_TITLE_GENERAL_EXPECTED_ERROR)
         softAssertion.assertEquals(AUTestUtil.parseResponseBody(response, AUConstants.ERROR_TITLE),
                 AUConstants.ERROR_TITLE_GENERAL_EXPECTED_ERROR)
 

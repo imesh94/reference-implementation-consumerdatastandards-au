@@ -195,17 +195,26 @@ class AUPayloads {
         if (accountId.size() > 1 && disclosureSharingStatus.size() > 1) {
             requestBody = """
             {
-               "Data":[
-                     {"${accountId[0]}":"${disclosureSharingStatus[0]}"},
-                     {"${accountId[1]}":"${disclosureSharingStatus[1]}"}
+               "data":[
+                   {
+                        "accountID": "${accountId[0]}",
+                        "disclosureOption": "${disclosureSharingStatus[0]}"
+                    },              
+                    {
+                        "accountID": "${accountId[2]}",
+                        "disclosureOption": "${disclosureSharingStatus[1]}"
+                    }
                ]
             }
             """.stripIndent()
         } else {
             requestBody = """
             {
-               "Data":[
-                     {"${accountId[0]}":"${disclosureSharingStatus[0]}"}
+               "data":[
+                     {
+                        "accountID": "${accountId[0]}",
+                        "disclosureOption": "${disclosureSharingStatus[0]}"
+                    }
                ]
             }
             """.stripIndent()

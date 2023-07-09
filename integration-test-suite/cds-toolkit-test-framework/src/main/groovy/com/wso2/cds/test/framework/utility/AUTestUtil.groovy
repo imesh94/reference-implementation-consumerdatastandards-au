@@ -270,7 +270,7 @@ class AUTestUtil extends OBTestUtil {
 
         for (sharableAccount in sharableAccountList) {
             if (sharableAccount["isJointAccount"]) {
-                accountIdList.add(sharableAccount[AUConstants.PARAM_ACCOUNT_ID].toString())
+                accountIdList.add(sharableAccount[AUConstants.ACCOUNT_ID].toString())
             }
         }
         return accountIdList

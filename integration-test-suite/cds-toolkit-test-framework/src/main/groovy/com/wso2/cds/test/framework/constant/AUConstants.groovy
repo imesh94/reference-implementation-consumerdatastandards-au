@@ -49,8 +49,10 @@ class AUConstants extends OBConstants {
     public static final String STATUS_OPEN = "OPEN"
     public static final String STATUS_CLOSED = "CLOSED"
     public static final String TOKEN = "d94c5b2e-b615-366e-862b-374b429e4d5e"
-    public static final String accountID = "qu4WMZ-59LsndgjMN-kikL1DRXbNMP3Ya6IrjF99tmQYNau1p4RI-qZ6IuAVvKOo4oZIe5cwy9EwVa94ggeRp2idyLDUN-43WATQRbw0VSI"
-    public static final String accountID2 = "qu4WMZ-59LsndgjMN-kikL1DRXbNMP3Ya6IrjF99tmQYNau1p4RI-qZ6IuAVvKOowDi7mV1k5tXHBoljbiNJi1qQy9Sykg5kJOSYgFEnjFU"
+    public static final String accountID = "qu4WMZ-59LsndgjMN-kikHgbJzws-clthVMQELUH9BMhTt6fOc80bgAI1HN82kKCsFWl9OMhDKA3Wck1IMX2Q1qQy9Sykg5kJOSYgFEnjFU"
+    public static final String accountID2 = "qu4WMZ-59LsndgjMN-kikHgbJzws-clthVMQELUH9BMhTt6fOc80bgAI1HN82kKCZKqCobYWnFNnWih_ukgKZmidyLDUN-43WATQRbw0VSI"
+    public static final String jointAccountID = "qu4WMZ-59LsndgjMN-kikHgbJzws-clthVMQELUH9BMhTt6fOc80bgAI1HN82kKCeOjYlRtzT9yJ2o0dhgs6fJpW5_PdscIMToQHtalBGYU"
+    public static final String businessAccountID = "7ZFnnKruJ7WX52D-vhD4ygZJm07cm-EkVGA87OvIQfRFavHHqE5C84PAwghkvhRukbuMg547ftxFDQQ18tQmKOoRaKcEC-FJb2g605s6EeQ"
     public static final String GET_META = "/admin/register/metadata"
     public static final String GET_STAT = "/admin/metrics"
     public static final String X_FAPI_FINANCIAL_ID = "x-fapi-financial-id"
@@ -65,7 +67,7 @@ class AUConstants extends OBConstants {
     public static final long SINGLE_ACCESS_CONSENT = 0
     public static final long ONE_YEAR_DURATION = 31536200
     public static final long NEGATIVE_DURATION = -3000
-    public static final long AMENDED_SHARING_DURATION = 90000
+    public static final long AMENDED_SHARING_DURATION = 3000
     public static final long SHORT_SHARING_DURATION = 20
     static final long NEGATIVE_SHARING_DURATION = -3000
 
@@ -102,6 +104,8 @@ class AUConstants extends OBConstants {
     public static final String UPDATE_LEGAL_ENTITY_SHARING_STATUS = "/account-type-management/legal-entity"
     public static final String GET_TRANSACTIONS = SINGLE_ACCOUNT_PATH + "/transactions"
     public static final String GET_PRODUCTS = "/banking/products"
+    public static final String SINGLE_BUSINESS_ACCOUNT_PATH = "/banking/accounts/" + businessAccountID
+    public static final String GET_BUSINESS_ACCOUNT_TRANSACTIONS = SINGLE_BUSINESS_ACCOUNT_PATH + "/transactions"
 
     public static final String BANK_CUSTOMER_BASIC_READ = "Organisation profile and contact details"
     public static final String BANK_CUSTOMER_DETAIL_READ = "Organisation profile and contact details*‡"
@@ -210,7 +214,7 @@ class AUConstants extends OBConstants {
 
     public static final String ERROR_CODE_MISSING_HEADER = "urn:au-cds:error:cds-all:Header/Missing"
     public static final String ERROR_CODE_INVALID_HEADER = "urn:au-cds:error:cds-all:Header/Invalid"
-    public static final String ERROR_CODE_INVALID_FIELD = "AU.CDR.Invalid.Field"
+    public static final String ERROR_CODE_INVALID_FIELD = "urn:au-cds:error:cds-all:Field/Invalid"
     public static final String ERROR_CODE_UNSUPPORTED_VERSION = "urn:au-cds:error:cds-all:Header/UnsupportedVersion"
     public static final String ERROR_CODE_INVALID_VERSION = "urn:au-cds:error:cds-all:Header/InvalidVersion"
     public static final String ERROR_CODE_INVALID_BANK_ACC = "urn:au-cds:error:cds-banking:Authorisation/InvalidBankingAccount"
@@ -353,7 +357,7 @@ class AUConstants extends OBConstants {
     public static final String RESPONSE_DATA_BULK_ACCOUNTID_LIST = "data.accounts.accountId"
     public static final String RESPONSE_DATA_SINGLE_ACCOUNTID = "data.accountId"
     public static final String RESPONSE_DATA_BULK_BALANCE_LIST = "data.balances.accountId"
-    public static final String RESPONSE_DATA_TRANSACTION_LIST = "data.transactions.accountId"
+    public static final String RESPONSE_DATA_TRANSACTION_LIST = "data.transactions"
     public static final String RESPONSE_DATA_DIRECT_DEBIT_AUTH = "data.directDebitAuthorisations"
     public static final String RESPONSE_DATA_SCHEDULE_PAY = "data.scheduledPayments"
     public static final String RESPONSE_DATA_PAYEE = "data.payees"

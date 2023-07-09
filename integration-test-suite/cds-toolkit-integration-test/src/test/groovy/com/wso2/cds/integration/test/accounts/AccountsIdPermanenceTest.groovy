@@ -426,7 +426,7 @@ class AccountsIdPermanenceTest extends AUTest {
         softAssertion.assertEquals(response.statusCode(), AUConstants.STATUS_CODE_200)
 
         softAssertion.assertEquals(consentedAccount, AUIdEncryptorDecryptor.decrypt(
-                AUTestUtil.parseResponseBody(response, "${AUConstants.RESPONSE_DATA_TRANSACTION_LIST}[0]"), secretKey).
+                AUTestUtil.parseResponseBody(response, "${AUConstants.RESPONSE_DATA_TRANSACTION_LIST}.accountId[0]"), secretKey).
                 split(":")[2])
         softAssertion.assertEquals(userId, AUIdEncryptorDecryptor.decrypt(encryptedTransactionId, secretKey).
                 split(":")[0])

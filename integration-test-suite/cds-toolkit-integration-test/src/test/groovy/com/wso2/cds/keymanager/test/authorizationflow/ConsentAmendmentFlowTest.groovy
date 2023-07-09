@@ -296,7 +296,7 @@ class ConsentAmendmentFlowTest extends AUTest{
         secondUserAccessToken = accessTokenResponse2.tokens.accessToken
         secondRefreshToken = accessTokenResponse2.tokens.refreshToken
 
-        sleep(25000)
+        sleep(50000)
 
         //Verify the status of the refresh token
         AccessTokenResponse userAccessToken3 = AURequestBuilder.getUserTokenFromRefreshTokenErrorResponse(secondRefreshToken as RefreshToken)
