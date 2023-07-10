@@ -286,16 +286,16 @@ class AUPayloads {
             {
                 "data": [
                     {
-                        "secondaryUserId": "${secondaryUserId}",
-                        "accountId": "${accountId}",
-                        "legalEntityId": ${legalEntityId},
-                        "sharingStatus": "${sharingStatus}"
+                        "secondaryUserID": "${secondaryUserId}",
+                        "accountID": "${accountId}",
+                        "legalEntityID": "${legalEntityId}",
+                        "legalEntitySharingStatus": "${sharingStatus}"
                     },
                     {
-                        "secondaryUserId": "${secondaryUserId2}",
-                        "accountId": "${accountId2}",
-                        "legalEntityId": ${legalEntityId2},
-                        "sharingStatus": "${sharingStatus2}"
+                        "secondaryUserID": "${secondaryUserId2}",
+                        "accountID": "${accountId2}",
+                        "legalEntityID": "${legalEntityId2}",
+                        "legalEntitySharingStatus": "${sharingStatus2}"
                     }
                 ]
             }
@@ -306,10 +306,10 @@ class AUPayloads {
             {
                 "data": [
                     {
-                        "secondaryUserId": "${secondaryUserId}",
-                        "accountId": "${accountId}",
-                        "legalEntityId": ${legalEntityId},
-                        "sharingStatus": "${sharingStatus}"
+                        "secondaryUserID": "${secondaryUserId}",
+                        "accountID": "${accountId}",
+                        "legalEntityID": "${legalEntityId}",
+                        "legalEntitySharingStatus": "${sharingStatus}"
                     }
                 ]
             }

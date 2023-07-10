@@ -1152,8 +1152,10 @@ class AUTest extends OBTest {
                 legalEntityStatus, isMultipleLegalEntity, secondaryUserId2, accountId2, legalEntityId2, legalEntityStatus2)
 
         Response secondUserUpdateResponse = AURestAsRequestBuilder.buildRequest()
-                .header(AUConstants.AUTHORIZATION_HEADER_KEY, AUConstants.BASIC_HEADER_KEY + Base64.encoder.encodeToString(
-                        headerString.getBytes(Charset.forName("UTF-8"))))
+                .header(AUConstants.AUTHORIZATION_HEADER_KEY, AUConstants.BASIC_HEADER_KEY + " " +
+                        Base64.encoder.encodeToString(
+                                "${auConfiguration.getUserBasicAuthName()}:${auConfiguration.getUserBasicAuthPWD()}"
+                                        .getBytes(Charset.forName("UTF-8"))))
                 .contentType(AUConstants.CONTENT_TYPE_APPLICATION_JSON)
                 .body(requestBody)
                 .baseUri(auConfiguration.getServerAuthorisationServerURL())
@@ -1221,10 +1223,10 @@ class AUTest extends OBTest {
         Gson gson = new Gson()
 
         // Parse the payload into a JsonObject
-        JsonObject jsonObject = gson.fromJson(legalEntityList, JsonObject.class)
+        JsonObject legalEntityListObject = gson.fromJson(legalEntityList, JsonObject.class)
 
         // Retrieve the SecondaryUsers array
-        JsonArray secondaryUsersArray = jsonObject.getAsJsonArray(AUConstants.PAYLOAD_SECONDARY_USERS)
+        JsonArray secondaryUsersArray = legalEntityListObject.getAsJsonArray(AUConstants.PAYLOAD_SECONDARY_USERS)
 
         // Iterate through the secondary users
         for (JsonElement secondaryUserElement : secondaryUsersArray) {
