@@ -203,7 +203,7 @@ class AUPageObjects {
     public static String BTN_CANCEL = "//input[@id='cancel']"
     public static String TEXT_ATTRIBUTE = "text"
     public static String JOINT_ACCOUNT_XPATH = "//input[@id='joint_account_1']"
-    public static String ALT_JOINT_ACCOUNT_XPATH = "//input[@id='joint_account_2']"
+    public static String ALT_JOINT_ACCOUNT_XPATH = "//input[@id='joint_account_3']"
     public static String LBL_ERROR_TRY_AGAIN = "//div[@id='error-msg']"
     public static String BTN_AUTHENTICATE = "//input[@id='authenticate']"
     public static String TXT_OTP_CODE = "OTPcode"

@@ -41,7 +41,7 @@ class CustomerDetailsRetrievalTest extends AUTest {
         Response response = AURequestBuilder.buildBasicRequestWithOptionalHeaders(userAccessToken,
                 AUConstants.X_V_HEADER_CUSTOMER, clientHeader)
                 .baseUri(AUTestUtil.getBaseUrl(AUConstants.BASE_PATH_TYPE_CUSTOMER))
-                .get("${AUConstants.CDS_PATH}${AUConstants.BULK_CUSTOMER}")
+                .get("${AUConstants.BULK_CUSTOMER}")
 
         Assert.assertEquals(response.statusCode(), AUConstants.STATUS_CODE_200)
         Assert.assertEquals(response.getHeader(AUConstants.X_V_HEADER).toInteger(), AUConstants.X_V_HEADER_CUSTOMER)
@@ -58,7 +58,7 @@ class CustomerDetailsRetrievalTest extends AUTest {
         Response response = AURequestBuilder.buildBasicRequestWithOptionalHeaders(userAccessToken,
                 AUConstants.X_V_HEADER_CUSTOMER, clientHeader)
                 .baseUri(AUTestUtil.getBaseUrl(AUConstants.BASE_PATH_TYPE_CUSTOMER))
-                .get("${AUConstants.CDS_PATH}${AUConstants.CUSTOMER_DETAILS}")
+                .get("${AUConstants.CUSTOMER_DETAILS}")
 
         Assert.assertEquals(response.statusCode(), AUConstants.STATUS_CODE_200)
         Assert.assertEquals(response.getHeader(AUConstants.X_V_HEADER).toInteger(), AUConstants.X_V_HEADER_CUSTOMER)
@@ -81,7 +81,7 @@ class CustomerDetailsRetrievalTest extends AUTest {
 
         def response = AURequestBuilder.buildBasicRequest(userAccessToken, AUConstants.X_V_HEADER_CUSTOMER)
                 .baseUri(AUTestUtil.getBaseUrl(AUConstants.BASE_PATH_TYPE_CUSTOMER))
-                .get("${AUConstants.CDS_PATH}${AUConstants.BULK_CUSTOMER}")
+                .get("${AUConstants.BULK_CUSTOMER}")
 
         SoftAssert softAssertion= new SoftAssert()
         softAssertion.assertEquals(response.statusCode(), AUConstants.STATUS_CODE_403)
@@ -101,7 +101,7 @@ class CustomerDetailsRetrievalTest extends AUTest {
 
         def response = AURequestBuilder.buildBasicRequest(userAccessToken, AUConstants.X_V_HEADER_CUSTOMER)
                 .baseUri(AUTestUtil.getBaseUrl(AUConstants.BASE_PATH_TYPE_CUSTOMER))
-                .get("${AUConstants.CDS_PATH}${AUConstants.CUSTOMER_DETAILS}")
+                .get("${AUConstants.CUSTOMER_DETAILS}")
 
         SoftAssert softAssertion= new SoftAssert()
         softAssertion.assertEquals(response.statusCode(), AUConstants.STATUS_CODE_403)
@@ -121,7 +121,7 @@ class CustomerDetailsRetrievalTest extends AUTest {
 
         def response = AURequestBuilder.buildBasicRequest(userAccessToken, AUConstants.X_V_HEADER_CUSTOMER)
                 .baseUri(AUTestUtil.getBaseUrl(AUConstants.BASE_PATH_TYPE_CUSTOMER))
-                .get("${AUConstants.CDS_PATH}${AUConstants.BULK_CUSTOMER}")
+                .get("${AUConstants.BULK_CUSTOMER}")
 
         SoftAssert softAssertion= new SoftAssert()
         softAssertion.assertEquals(response.statusCode(), AUConstants.STATUS_CODE_403)
@@ -141,7 +141,7 @@ class CustomerDetailsRetrievalTest extends AUTest {
 
         def response = AURequestBuilder.buildBasicRequest(userAccessToken, AUConstants.X_V_HEADER_CUSTOMER)
                 .baseUri(AUTestUtil.getBaseUrl(AUConstants.BASE_PATH_TYPE_CUSTOMER))
-                .get("${AUConstants.CDS_PATH}${AUConstants.CUSTOMER_DETAILS}")
+                .get("${AUConstants.CUSTOMER_DETAILS}")
 
         SoftAssert softAssertion= new SoftAssert()
         softAssertion.assertEquals(response.statusCode(), AUConstants.STATUS_CODE_403)
@@ -154,7 +154,7 @@ class CustomerDetailsRetrievalTest extends AUTest {
 
         Response response = AURequestBuilder.buildBasicRequestWithoutAuthorisationHeader(AUConstants.X_V_HEADER_CUSTOMER)
                 .baseUri(AUTestUtil.getBaseUrl(AUConstants.BASE_PATH_TYPE_DISCOVERY))
-                .get("${AUConstants.CDS_PATH}${AUConstants.DISCOVERY_STATUS}")
+                .get("${AUConstants.DISCOVERY_STATUS}")
 
         Assert.assertEquals(response.statusCode(), AUConstants.STATUS_CODE_200)
         Assert.assertEquals(response.getHeader(AUConstants.X_V_HEADER).toInteger(), AUConstants.X_V_HEADER_CUSTOMER)
@@ -170,7 +170,7 @@ class CustomerDetailsRetrievalTest extends AUTest {
 
         Response response = AURequestBuilder.buildBasicRequestWithoutAuthorisationHeader(AUConstants.X_V_HEADER_CUSTOMER)
                 .baseUri(AUTestUtil.getBaseUrl(AUConstants.BASE_PATH_TYPE_DISCOVERY))
-                .get("${AUConstants.CDS_PATH}${AUConstants.DISCOVERY_OUTAGES}")
+                .get("${AUConstants.DISCOVERY_OUTAGES}")
 
         Assert.assertEquals(response.statusCode(), AUConstants.STATUS_CODE_200)
         Assert.assertEquals(response.getHeader(AUConstants.X_V_HEADER).toInteger(), AUConstants.X_V_HEADER_CUSTOMER)

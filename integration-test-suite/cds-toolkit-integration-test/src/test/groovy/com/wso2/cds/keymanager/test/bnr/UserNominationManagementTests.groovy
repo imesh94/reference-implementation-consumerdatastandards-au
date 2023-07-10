@@ -301,11 +301,6 @@ class UserNominationManagementTests extends AUTest {
         String accountOwnerUserID = shareableElements[AUConstants.ACCOUNT_OWNER_USER_ID]
         String nominatedRepUserID = shareableElements[AUConstants.NOMINATED_REP_USER_ID]
 
-        //Change Permission from Authorise to REVOKE
-        def updateResponse = updateSingleBusinessUserPermission(clientHeader, accountID, accountOwnerUserID,
-                nominatedRepUserID, AUBusinessUserPermission.REVOKE.getPermissionString())
-        Assert.assertEquals(updateResponse.statusCode(), AUConstants.OK)
-
         //Delete the Business User endpoint with the relevant Permission Status
         def deleteResponse = deleteSingleBusinessUser(clientHeader, accountID, accountOwnerUserID,
                 nominatedRepUserID)

@@ -189,28 +189,52 @@ class AUPayloads {
      * @param disclosureSharingStatus
      * @return
      */
-    static String getDOMSStatusUpdatePayload(List <String> accountId, List <String> disclosureSharingStatus) {
+    static String getDOMSStatusUpdatePayload(Map<String, String> domsStatusMap) {
 
         def requestBody
-        if (accountId.size() > 1 && disclosureSharingStatus.size() > 1) {
-            requestBody = """
+        String accountId1, accountId2, sharingStatus1, sharingStatus2
+
+        List<Map.Entry<String, String>> entryList = new ArrayList<>(domsStatusMap.entrySet())
+        if (entryList.size() > 1) {
+            Map.Entry<String, String> entry1 = entryList.get(0)
+            accountId1 = entry1.getKey()
+            sharingStatus1 = entry1.getValue()
+
+            Map.Entry<String, String> entry2 = entryList.get(1)
+            accountId2 = entry2.getKey()
+            sharingStatus2 = entry2.getValue()
+
+            return """
             {
-               "Data":[
-                     {"${accountId[0]}":"${disclosureSharingStatus[0]}"},
-                     {"${accountId[1]}":"${disclosureSharingStatus[1]}"}
+               "data":[
+                   {
+                        "accountID": "${accountId1}",
+                        "disclosureOption": "${sharingStatus1}"
+                    },              
+                    {
+                        "accountID": "${accountId2}",
+                        "disclosureOption": "${sharingStatus2}"
+                    }
                ]
             }
             """.stripIndent()
+
         } else {
-            requestBody = """
+            Map.Entry<String, String> entry1 = entryList.get(0)
+            accountId1 = entry1.getKey()
+            sharingStatus1 = entry1.getValue()
+
+            return """
             {
-               "Data":[
-                     {"${accountId[0]}":"${disclosureSharingStatus[0]}"}
+               "data":[
+                     {
+                        "accountID": "${accountId1}",
+                        "disclosureOption": "${sharingStatus1}"
+                    }
                ]
             }
             """.stripIndent()
         }
-        return requestBody
     }
 
     /**

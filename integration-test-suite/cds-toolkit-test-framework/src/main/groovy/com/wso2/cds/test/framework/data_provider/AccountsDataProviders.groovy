@@ -43,5 +43,18 @@ class AccountsDataProviders {
         return accounts
     }
 
+    @DataProvider(name = "BankingApisBusinessProfile")
+    Object[] getBankingApisBusinessProfile() {
+
+        def accounts = new ArrayList<>()
+        accounts.add(AUConstants.BULK_ACCOUNT_PATH as Object)
+        accounts.add(AUConstants.BULK_BALANCES_PATH as Object)
+        accounts.add(AUConstants.GET_BUSINESS_ACCOUNT_TRANSACTIONS as Object)
+        accounts.add(AUConstants.BULK_DIRECT_DEBITS_PATH as Object)
+        accounts.add(AUConstants.BULK_SCHEDULE_PAYMENTS_PATH as Object)
+        accounts.add(AUConstants.BULK_PAYEES as Object)
+        return accounts
+    }
+
 }
 

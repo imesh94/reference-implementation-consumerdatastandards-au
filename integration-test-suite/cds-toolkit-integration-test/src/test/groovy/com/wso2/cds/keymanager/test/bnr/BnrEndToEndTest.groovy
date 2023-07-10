@@ -48,21 +48,23 @@ class BnrEndToEndTest extends AUTest{
         Assert.assertEquals(updateResponse.statusCode(), AUConstants.OK)
     }
 
-    @Test (groups = "SmokeTest", dataProvider = "BankingApis", dataProviderClass = AccountsDataProviders.class)
+    @Test (groups = "SmokeTest", dataProvider = "BankingApisBusinessProfile", dataProviderClass = AccountsDataProviders.class)
     void "CDS-486_Verify an accounts retrieval call after business profile selection and business accounts consented"(resourcePath) {
 
         //Consent Authorisation
         doConsentAuthorisation(null, AUAccountProfile.ORGANIZATION_B)
         generateUserAccessToken()
 
+        int x_v_header = AUTestUtil.getBankingApiEndpointVersion(resourcePath.toString())
+
         //Get Accounts
         def response = AURequestBuilder.buildBasicRequestWithCustomHeaders(userAccessToken,
-                AUConstants.X_V_HEADER_ACCOUNTS, clientHeader)
+                x_v_header, clientHeader)
                 .baseUri(AUTestUtil.getBaseUrl(AUConstants.BASE_PATH_TYPE_ACCOUNT))
-                .get("${AUConstants.CDS_PATH}${resourcePath}")
+                .get("${resourcePath}")
 
         Assert.assertEquals(response.statusCode(), AUConstants.STATUS_CODE_200)
-        Assert.assertEquals(response.getHeader(AUConstants.X_V_HEADER).toInteger(), AUConstants.X_V_HEADER_ACCOUNTS)
+        Assert.assertEquals(response.getHeader(AUConstants.X_V_HEADER).toInteger(), x_v_header)
         Assert.assertTrue(response.getHeader(AUConstants.CONTENT_TYPE).contains(AUConstants.ACCEPT))
 
         Assert.assertNotNull(response.getHeader(AUConstants.X_FAPI_INTERACTION_ID))

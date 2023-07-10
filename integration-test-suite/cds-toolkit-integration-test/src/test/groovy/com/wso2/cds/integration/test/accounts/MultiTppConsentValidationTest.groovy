@@ -66,7 +66,7 @@ class MultiTppConsentValidationTest extends AUTest {
                 .buildBasicRequest(userAccessTokenRes.tokens.accessToken.toString(), AUConstants.CDR_ENDPOINT_VERSION)
                 .header(AUConstants.PARAM_FAPI_AUTH_DATE,AUConstants.VALUE_FAPI_AUTH_DATE)
                 .baseUri(AUTestUtil.getBaseUrl(AUConstants.BASE_PATH_TYPE_ACCOUNT))
-                .get("${AUConstants.CDS_PATH}${AUConstants.BULK_ACCOUNT_PATH}")
+                .get("${AUConstants.BULK_ACCOUNT_PATH}")
 
         Assert.assertEquals(response.statusCode(), AUConstants.STATUS_CODE_200)
 

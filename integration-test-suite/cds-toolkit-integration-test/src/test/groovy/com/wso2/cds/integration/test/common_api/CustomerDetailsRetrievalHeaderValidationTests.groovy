@@ -45,7 +45,7 @@ class CustomerDetailsRetrievalHeaderValidationTests extends AUTest {
                 .header(AUConstants.X_CDS_CLIENT_HEADERS , clientHeader)
                 .header(AUConstants.AUTHORIZATION_HEADER_KEY, "${AUConstants.AUTHORIZATION_BEARER_TAG} ${userAccessToken}")
                 .baseUri(AUTestUtil.getBaseUrl(AUConstants.BASE_PATH_TYPE_CUSTOMER))
-                .get("${AUConstants.CDS_PATH}${AUConstants.BULK_CUSTOMER}")
+                .get("${AUConstants.BULK_CUSTOMER}")
 
         Assert.assertEquals(response.statusCode(), AUConstants.STATUS_CODE_400)
         Assert.assertEquals(AUTestUtil.parseResponseBody(response, AUConstants.ERROR_DETAIL),
@@ -61,7 +61,7 @@ class CustomerDetailsRetrievalHeaderValidationTests extends AUTest {
         def response = AURequestBuilder.buildBasicRequestWithOptionalHeaders(userAccessToken,
                 AUConstants.X_V_HEADER_CUSTOMER, clientHeader)
                 .baseUri(AUTestUtil.getBaseUrl(AUConstants.BASE_PATH_TYPE_CUSTOMER))
-                .get("${AUConstants.CDS_PATH}${AUConstants.BULK_CUSTOMER}")
+                .get("${AUConstants.BULK_CUSTOMER}")
 
         Assert.assertEquals(response.statusCode(), AUConstants.STATUS_CODE_200)
         Assert.assertEquals(response.getHeader(AUConstants.X_V_HEADER).toInteger(), AUConstants.X_V_HEADER_CUSTOMER)
@@ -78,7 +78,7 @@ class CustomerDetailsRetrievalHeaderValidationTests extends AUTest {
         def response = AURequestBuilder.buildBasicRequestWithOptionalHeaders(userAccessToken,
                 -1, clientHeader)
                 .baseUri(AUTestUtil.getBaseUrl(AUConstants.BASE_PATH_TYPE_CUSTOMER))
-                .get("${AUConstants.CDS_PATH}${AUConstants.BULK_CUSTOMER}")
+                .get("${AUConstants.BULK_CUSTOMER}")
 
         Assert.assertEquals(response.statusCode(), AUConstants.STATUS_CODE_400)
         Assert.assertEquals(AUTestUtil.parseResponseBody(response, AUConstants.ERROR_CODE),
@@ -92,7 +92,7 @@ class CustomerDetailsRetrievalHeaderValidationTests extends AUTest {
         def response = AURequestBuilder.buildBasicRequestWithOptionalHeaders(userAccessToken,
                 1.2, clientHeader)
                 .baseUri(AUTestUtil.getBaseUrl(AUConstants.BASE_PATH_TYPE_CUSTOMER))
-                .get("${AUConstants.CDS_PATH}${AUConstants.BULK_CUSTOMER}")
+                .get("${AUConstants.BULK_CUSTOMER}")
 
         Assert.assertEquals(response.statusCode(), AUConstants.STATUS_CODE_400)
         Assert.assertEquals(AUTestUtil.parseResponseBody(response, AUConstants.ERROR_CODE),
@@ -106,7 +106,7 @@ class CustomerDetailsRetrievalHeaderValidationTests extends AUTest {
         def response = AURequestBuilder.buildBasicRequestWithOptionalHeaders(userAccessToken,
                 0, clientHeader)
                 .baseUri(AUTestUtil.getBaseUrl(AUConstants.BASE_PATH_TYPE_CUSTOMER))
-                .get("${AUConstants.CDS_PATH}${AUConstants.BULK_CUSTOMER}")
+                .get("${AUConstants.BULK_CUSTOMER}")
 
         Assert.assertEquals(response.statusCode(), AUConstants.STATUS_CODE_400)
         Assert.assertEquals(AUTestUtil.parseResponseBody(response, AUConstants.ERROR_CODE),
@@ -121,7 +121,7 @@ class CustomerDetailsRetrievalHeaderValidationTests extends AUTest {
                 AUConstants.X_V_HEADER_CUSTOMER, clientHeader)
                 .header(AUConstants.X_MIN_HEADER, -1)
                 .baseUri(AUTestUtil.getBaseUrl(AUConstants.BASE_PATH_TYPE_CUSTOMER))
-                .get("${AUConstants.CDS_PATH}${AUConstants.BULK_CUSTOMER}")
+                .get("${AUConstants.BULK_CUSTOMER}")
 
         Assert.assertEquals(response.statusCode(), AUConstants.STATUS_CODE_400)
         Assert.assertEquals(AUTestUtil.parseResponseBody(response, AUConstants.ERROR_CODE),
@@ -136,7 +136,7 @@ class CustomerDetailsRetrievalHeaderValidationTests extends AUTest {
                 AUConstants.X_V_HEADER_CUSTOMER, clientHeader)
                 .header(AUConstants.X_MIN_HEADER, 1.2)
                 .baseUri(AUTestUtil.getBaseUrl(AUConstants.BASE_PATH_TYPE_CUSTOMER))
-                .get("${AUConstants.CDS_PATH}${AUConstants.BULK_CUSTOMER}")
+                .get("${AUConstants.BULK_CUSTOMER}")
 
         Assert.assertEquals(response.statusCode(), AUConstants.STATUS_CODE_400)
         Assert.assertEquals(AUTestUtil.parseResponseBody(response, AUConstants.ERROR_CODE),
@@ -151,7 +151,7 @@ class CustomerDetailsRetrievalHeaderValidationTests extends AUTest {
                 AUConstants.X_V_HEADER_CUSTOMER, clientHeader)
                 .header(AUConstants.X_MIN_HEADER, 3)
                 .baseUri(AUTestUtil.getBaseUrl(AUConstants.BASE_PATH_TYPE_CUSTOMER))
-                .get("${AUConstants.CDS_PATH}${AUConstants.BULK_CUSTOMER}")
+                .get("${AUConstants.BULK_CUSTOMER}")
 
         Assert.assertEquals(response.statusCode(), AUConstants.STATUS_CODE_200)
         Assert.assertEquals(response.getHeader(AUConstants.X_V_HEADER).toInteger(), AUConstants.X_V_HEADER_CUSTOMER)
@@ -169,7 +169,7 @@ class CustomerDetailsRetrievalHeaderValidationTests extends AUTest {
                 AUConstants.X_V_HEADER_CUSTOMER, clientHeader)
                 .header(AUConstants.X_MIN_HEADER, AUConstants.X_V_HEADER_CUSTOMER)
                 .baseUri(AUTestUtil.getBaseUrl(AUConstants.BASE_PATH_TYPE_CUSTOMER))
-                .get("${AUConstants.CDS_PATH}${AUConstants.BULK_CUSTOMER}")
+                .get("${AUConstants.BULK_CUSTOMER}")
 
         Assert.assertEquals(response.statusCode(), AUConstants.STATUS_CODE_200)
         Assert.assertEquals(response.getHeader(AUConstants.X_V_HEADER).toInteger(), AUConstants.X_V_HEADER_CUSTOMER)
@@ -187,7 +187,7 @@ class CustomerDetailsRetrievalHeaderValidationTests extends AUTest {
                 AUConstants.X_V_HEADER_CUSTOMER, clientHeader)
                 .header(AUConstants.X_MIN_HEADER, 0)
                 .baseUri(AUTestUtil.getBaseUrl(AUConstants.BASE_PATH_TYPE_CUSTOMER))
-                .get("${AUConstants.CDS_PATH}${AUConstants.BULK_CUSTOMER}")
+                .get("${AUConstants.BULK_CUSTOMER}")
 
         Assert.assertEquals(response.statusCode(), AUConstants.STATUS_CODE_200)
         Assert.assertEquals(response.getHeader(AUConstants.X_V_HEADER).toInteger(), AUConstants.X_V_HEADER_CUSTOMER)
@@ -204,7 +204,7 @@ class CustomerDetailsRetrievalHeaderValidationTests extends AUTest {
         def response = AURequestBuilder.buildBasicRequestWithOptionalHeaders(userAccessToken,
                 AUConstants.UNSUPPORTED_X_V_VERSION, clientHeader)
                 .baseUri(AUTestUtil.getBaseUrl(AUConstants.BASE_PATH_TYPE_CUSTOMER))
-                .get("${AUConstants.CDS_PATH}${AUConstants.BULK_CUSTOMER}")
+                .get("${AUConstants.BULK_CUSTOMER}")
 
         Assert.assertEquals(response.statusCode(), AUConstants.STATUS_CODE_406)
         Assert.assertEquals(AUTestUtil.parseResponseBody(response, AUConstants.ERROR_CODE),
@@ -224,7 +224,7 @@ class CustomerDetailsRetrievalHeaderValidationTests extends AUTest {
                 .header("x-${holderID}-v", 4)
                 .header(AUConstants.AUTHORIZATION_HEADER_KEY, "${AUConstants.AUTHORIZATION_BEARER_TAG} ${userAccessToken}")
                 .baseUri(AUTestUtil.getBaseUrl(AUConstants.BASE_PATH_TYPE_CUSTOMER))
-                .get("${AUConstants.CDS_PATH}${AUConstants.BULK_CUSTOMER}")
+                .get("${AUConstants.BULK_CUSTOMER}")
 
         Assert.assertEquals(response.statusCode(), AUConstants.STATUS_CODE_406)
         Assert.assertEquals(AUTestUtil.parseResponseBody(response, AUConstants.ERROR_CODE),
@@ -246,7 +246,7 @@ class CustomerDetailsRetrievalHeaderValidationTests extends AUTest {
                 .header(AUConstants.AUTHORIZATION_HEADER_KEY,
                         "${AUConstants.AUTHORIZATION_BEARER_TAG} ${userAccessToken}")
                 .baseUri(AUTestUtil.getBaseUrl(AUConstants.BASE_PATH_TYPE_CUSTOMER))
-                .get("${AUConstants.CDS_PATH}${AUConstants.BULK_CUSTOMER}")
+                .get("${AUConstants.BULK_CUSTOMER}")
 
         Assert.assertEquals(response.statusCode(), AUConstants.STATUS_CODE_200)
         Assert.assertEquals(response.getHeader(AUConstants.X_V_HEADER).toInteger(), AUConstants.X_V_HEADER_CUSTOMER)
@@ -264,7 +264,7 @@ class CustomerDetailsRetrievalHeaderValidationTests extends AUTest {
                 AUConstants.UNSUPPORTED_X_V_VERSION, clientHeader)
                 .header(AUConstants.X_MIN_HEADER, AUConstants.X_V_HEADER_CUSTOMER)
                 .baseUri(AUTestUtil.getBaseUrl(AUConstants.BASE_PATH_TYPE_CUSTOMER))
-                .get("${AUConstants.CDS_PATH}${AUConstants.BULK_CUSTOMER}")
+                .get("${AUConstants.BULK_CUSTOMER}")
 
 
         Assert.assertEquals(response.statusCode(), AUConstants.STATUS_CODE_200)
@@ -280,10 +280,10 @@ class CustomerDetailsRetrievalHeaderValidationTests extends AUTest {
     void "TC0601017_Retrieve Customer info with invalid x-fapi-interaction-id"() {
 
         def response = AURequestBuilder.buildBasicRequestWithOptionalHeaders(userAccessToken,
-                AUConstants.UNSUPPORTED_X_V_VERSION, clientHeader)
+                AUConstants.X_V_HEADER_CUSTOMER, clientHeader)
                 .header(AUConstants.X_FAPI_INTERACTION_ID, "obc")
                 .baseUri(AUTestUtil.getBaseUrl(AUConstants.BASE_PATH_TYPE_CUSTOMER))
-                .get("${AUConstants.CDS_PATH}${AUConstants.BULK_CUSTOMER}")
+                .get("${AUConstants.BULK_CUSTOMER}")
 
         Assert.assertEquals(response.statusCode(), AUConstants.STATUS_CODE_400)
         Assert.assertEquals(AUTestUtil.parseResponseBody(response, AUConstants.ERROR_CODE),
@@ -300,7 +300,7 @@ class CustomerDetailsRetrievalHeaderValidationTests extends AUTest {
                 .accept(AUConstants.ACCEPT)
                 .header(AUConstants.X_FAPI_AUTH_DATE, "Sep 14")
                 .baseUri(AUTestUtil.getBaseUrl(AUConstants.BASE_PATH_TYPE_CUSTOMER))
-                .get("${AUConstants.CDS_PATH}${AUConstants.BULK_CUSTOMER}")
+                .get("${AUConstants.BULK_CUSTOMER}")
 
         Assert.assertEquals(response.statusCode(), AUConstants.STATUS_CODE_400)
         Assert.assertEquals(AUTestUtil.parseResponseBody(response, AUConstants.ERROR_CODE),
@@ -315,7 +315,7 @@ class CustomerDetailsRetrievalHeaderValidationTests extends AUTest {
                 .accept(AUConstants.ACCEPT)
                 .header(AUConstants.X_FAPI_CUSTOMER_IP_ADDRESS, "123")
                 .baseUri(AUTestUtil.getBaseUrl(AUConstants.BASE_PATH_TYPE_CUSTOMER))
-                .get("${AUConstants.CDS_PATH}${AUConstants.BULK_CUSTOMER}")
+                .get("${AUConstants.BULK_CUSTOMER}")
 
         Assert.assertEquals(response.statusCode(), AUConstants.STATUS_CODE_400)
         Assert.assertEquals(AUTestUtil.parseResponseBody(response, AUConstants.ERROR_CODE),
@@ -333,7 +333,7 @@ class CustomerDetailsRetrievalHeaderValidationTests extends AUTest {
                 .header(AUConstants.X_CDS_CLIENT_HEADERS , cdsClient)
                 .header(AUConstants.X_FAPI_AUTH_DATE, AUConstants.DATE)
                 .baseUri(AUTestUtil.getBaseUrl(AUConstants.BASE_PATH_TYPE_CUSTOMER))
-                .get("${AUConstants.CDS_PATH}${AUConstants.BULK_CUSTOMER}")
+                .get("${AUConstants.BULK_CUSTOMER}")
 
         Assert.assertEquals(response.statusCode(), AUConstants.STATUS_CODE_400)
         Assert.assertEquals(AUTestUtil.parseResponseBody(response, AUConstants.ERROR_CODE),
@@ -350,7 +350,7 @@ class CustomerDetailsRetrievalHeaderValidationTests extends AUTest {
         Response response = AURequestBuilder.buildBasicRequestWithOptionalHeaders(userAccessToken,
                 AUConstants.X_V_HEADER_CUSTOMER, clientHeader)
                 .baseUri(AUTestUtil.getBaseUrl(AUConstants.BASE_PATH_TYPE_DISCOVERY))
-                .get("${AUConstants.CDS_PATH}${AUConstants.DISCOVERY_STATUS}")
+                .get("${AUConstants.DISCOVERY_STATUS}")
 
         Assert.assertEquals(response.statusCode(), AUConstants.STATUS_CODE_200)
         Assert.assertEquals(response.getHeader(AUConstants.X_V_HEADER).toInteger(), AUConstants.X_V_HEADER_CUSTOMER)
@@ -367,7 +367,7 @@ class CustomerDetailsRetrievalHeaderValidationTests extends AUTest {
         Response response = AURequestBuilder.buildBasicRequestWithOptionalHeaders(userAccessToken,
                 AUConstants.X_V_HEADER_CUSTOMER, clientHeader)
                 .baseUri(AUTestUtil.getBaseUrl(AUConstants.BASE_PATH_TYPE_DISCOVERY))
-                .get("${AUConstants.CDS_PATH}${AUConstants.DISCOVERY_OUTAGES}")
+                .get("${AUConstants.DISCOVERY_OUTAGES}")
 
         Assert.assertEquals(response.statusCode(), AUConstants.STATUS_CODE_200)
         Assert.assertEquals(response.getHeader(AUConstants.X_V_HEADER).toInteger(), AUConstants.X_V_HEADER_CUSTOMER)
