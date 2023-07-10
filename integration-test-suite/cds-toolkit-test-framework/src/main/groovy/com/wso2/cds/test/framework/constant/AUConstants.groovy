@@ -457,6 +457,6 @@ class AUConstants extends OBConstants {
     public static final int X_V_HEADER_CUSTOMER = 1
     public static final int X_V_MIN_HEADER_METRICS = 1
     public static final int UNSUPPORTED_X_V_VERSION = 10
-    public static final int CDR_ENDPOINT_VERSION = 1
+    public static final int CDR_ENDPOINT_VERSION = 2
 }
 
