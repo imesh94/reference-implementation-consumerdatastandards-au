@@ -30,6 +30,7 @@ class AUConstants extends OBConstants {
     public static final String X_MIN_HEADER = "x-min-v"
     public static final String CDS_100_PATH = "/cds-au/v1"
     public static final String CDS_PATH = "/cds-au/v1"
+    public static final String CDS_COMMON_PATH = "/cds-au-common/v1"
     public static final String CDS_ADMIN_PATH = "/cds-au/v2"
     public static final String ACCEPT = "application/json"
     public static final String X_FAPI_INTERACTION_ID = "x-fapi-interaction-id"
@@ -405,7 +406,7 @@ class AUConstants extends OBConstants {
     public static final String LEGAL_ENTITY_ID2 = "LegalEntityId2"
     public static final String SHARING_STATUS = "SharingStatus"
     public static final String PAYLOAD_PARAM_ACCOUNT_ID = "AccountId"
-    public static final String BLOCK_ENTITY = "BLOCKED"
+    public static final String BLOCK_ENTITY = "blocked"
     public static final String CLIENT_ID = "client_id"
 
     public static final String INVALID_REQUEST = "invalid_request"
@@ -454,7 +455,7 @@ class AUConstants extends OBConstants {
     public static final int X_V_HEADER_PRODUCT = 4
     public static final int X_V_HEADER_METRICS = 3
     public static final int X_V_HEADER_METADATA = 1
-    public static final int X_V_HEADER_CUSTOMER = 1
+    public static final int X_V_HEADER_CUSTOMER = 2
     public static final int X_V_MIN_HEADER_METRICS = 1
     public static final int UNSUPPORTED_X_V_VERSION = 10
     public static final int CDR_ENDPOINT_VERSION = 1
