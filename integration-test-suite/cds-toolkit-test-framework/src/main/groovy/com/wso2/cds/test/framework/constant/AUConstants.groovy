@@ -71,18 +71,18 @@ class AUConstants extends OBConstants {
     public static final long SHORT_SHARING_DURATION = 20
     static final long NEGATIVE_SHARING_DURATION = -3000
 
-    public static final String BULK_ACCOUNT_PATH = "/banking/accounts"
-    public static final String SINGLE_ACCOUNT_PATH = "/banking/accounts/" + accountID
-    public static final String BANKING_PRODUCT_PATH = "/banking/products"
-    public static final String BULK_BALANCES_PATH = "/banking/accounts/balances"
+    public static final String BULK_ACCOUNT_PATH = CDS_PATH + "/banking/accounts"
+    public static final String SINGLE_ACCOUNT_PATH = CDS_PATH + "/banking/accounts/" + accountID
+    public static final String BANKING_PRODUCT_PATH = CDS_PATH + "/banking/products"
+    public static final String BULK_BALANCES_PATH = CDS_PATH + "/banking/accounts/balances"
     public static final String ACCOUNT_BALANCE_PATH = SINGLE_ACCOUNT_PATH + "/balance"
-    public static final String BULK_DIRECT_DEBITS_PATH = "/banking/accounts/direct-debits"
-    public static final String BULK_SCHEDULE_PAYMENTS_PATH = "/banking/payments/scheduled"
-    public static final String BULK_PAYEES = "/banking/payees"
-    public static final String BULK_CUSTOMER = "/common/customer"
-    public static final String CUSTOMER_DETAILS = "/common/customer/detail"
-    public static final String DISCOVERY_STATUS = "/discovery/status"
-    public static final String DISCOVERY_OUTAGES = "/discovery/outages"
+    public static final String BULK_DIRECT_DEBITS_PATH = CDS_PATH + "/banking/accounts/direct-debits"
+    public static final String BULK_SCHEDULE_PAYMENTS_PATH = CDS_PATH + "/banking/payments/scheduled"
+    public static final String BULK_PAYEES = CDS_PATH + "/banking/payees"
+    public static final String BULK_CUSTOMER = CDS_PATH + "/common/customer"
+    public static final String CUSTOMER_DETAILS = CDS_PATH + "/common/customer/detail"
+    public static final String DISCOVERY_STATUS = CDS_PATH + "/discovery/status"
+    public static final String DISCOVERY_OUTAGES = CDS_PATH + "/discovery/outages"
     public static final String ACCOUNTS_CONSENT_PATH = "/au100/accounts-validation"
     public static final String CDR_ARRANGEMENT_ENDPOINT = "/arrangements/1.0.0/revoke"
     public static final String INTROSPECTION_ENDPOINT = "/oauth2/introspect"
@@ -462,5 +462,6 @@ class AUConstants extends OBConstants {
     public static final int X_V_MIN_HEADER_METRICS = 1
     public static final int UNSUPPORTED_X_V_VERSION = 10
     public static final int CDR_ENDPOINT_VERSION = 1
+    public static final String INVALID_ACCESSTOKEN = "eyJ4NXQiOiJNREpsTmpJeE4yRTFPR1psT0dWbU1HUXhPVEZsTXpCbU5tRmpaalEwWTJZd09HWTBOMkkwWXpFNFl6WmpOalJoWW1SbU1tUTBPRGRpTkRoak1HRXdNQSIsImtpZCI6Ik1ESmxOakl4TjJFMU9HWmxPR1ZtTUdReE9URmxNekJtTm1GalpqUTBZMll3T0dZME4ySTBZekU0WXpaak5qUmhZbVJtTW1RME9EZGlORGhqTUdFd01BX1JTMjU2IiwidHlwIjoiYXQrand0IiwiYWxnIjoiUlMyNTYifQ.eyJzdWIiOiJhZG1pbkB3c28yLmNvbSIsImF1dCI6IkFQUExJQ0FUSU9OX1VTRVIiLCJpc3MiOiJodHRwczpcL1wvbG9jYWxob3N0Ojk0NDZcL29hdXRoMlwvdG9rZW4iLCJjbGllbnRfaWQiOiJONkQwb0M0c1ExOGc1UGxTNGdhU0ttaVVhczRhIiwiYXVkIjoiTjZEMG9DNHNRMThnNVBsUzRnYVNLbWlVYXM0YSIsIm5iZiI6MTY4ODg0MDU0NiwiYXpwIjoiTjZEMG9DNHNRMThnNVBsUzRnYVNLbWlVYXM0YSIsInNjb3BlIjoiYmFuazphY2NvdW50cy5iYXNpYzpyZWFkIGJhbms6YWNjb3VudHMuZGV0YWlsOnJlYWQgYmFuazpwYXllZXM6cmVhZCBiYW5rOnJlZ3VsYXJfcGF5bWVudHM6cmVhZCBiYW5rOnRyYW5zYWN0aW9uczpyZWFkIGNvbW1vbjpjdXN0b21lci5iYXNpYzpyZWFkIGNvbW1vbjpjdXN0b21lci5kZXRhaWw6cmVhZCBvcGVuaWQiLCJjbmYiOnsieDV0I1MyNTYiOiJrMHAtLU1MN25ma0UycFVMS3J5c3pKUkJ4MlRoQk1heEhnSk9lUG9zaXRzIn0sImV4cCI6MTY4ODg0NDE0NiwiaWF0IjoxNjg4ODQwNTQ2LCJqdGkiOiIyMmIwODA1Yi00ZTgyLTQxYjYtYTlhZS0zN2Y3OGMyYTlhMmIiLCJjb25zZW50X2lkIjoiOTFiYWUzMjMtNmYwYi00ZTkyLTljZWYtZjJiNGI1MjRjMTY1In0.UATu4say15Jvhf5vy4On9MS0WRyERcMcFOUUzYwgqNNVKAHZ7sjfwrR05eq_QYdeHejNpCIadcwbN-TWjnHu5s2vaavUbqFx_SYb9jSFm_JJTKMG0tFo6iCmy6Jfr8P1-S0uVOcnoI5mz2PX7CGqd8Kdx1uBUyWJ60CqiBFCewKZ0GddZbEfm9HC4aW8RBb65BqC01l5Ww4B_3vf_B6pvuDglX3Bb_yFt1grcH8r6EX-ibWQpYwL8LdgHIE4GlP7QQnN5elXjqpOfP3KDXZyeoALhqAFugOYNGeaHATPvhGH2lfU-2qIKyqqHEk286lkZBnsIkxMAx_iToMig-xA"
 }
 

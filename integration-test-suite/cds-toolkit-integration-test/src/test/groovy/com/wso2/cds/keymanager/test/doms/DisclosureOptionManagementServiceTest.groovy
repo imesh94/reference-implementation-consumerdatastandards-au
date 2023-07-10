@@ -164,7 +164,7 @@ class DisclosureOptionManagementServiceTest extends AUTest {
         Response accountResponse = AURequestBuilder.buildBasicRequestWithCustomHeaders(userAccessToken,
                 AUConstants.X_V_HEADER_ACCOUNTS, clientHeader)
                 .baseUri(auConfiguration.getServerBaseURL())
-                .get("${AUConstants.CDS_PATH}${AUConstants.BULK_ACCOUNT_PATH}")
+                .get("${AUConstants.BULK_ACCOUNT_PATH}")
 
         Assert.assertEquals(accountResponse.statusCode(), AUConstants.STATUS_CODE_200)
         Assert.assertNotNull(AUTestUtil.parseResponseBody(accountResponse,
@@ -179,7 +179,7 @@ class DisclosureOptionManagementServiceTest extends AUTest {
         accountResponse = AURequestBuilder.buildBasicRequestWithCustomHeaders(userAccessToken,
                 AUConstants.X_V_HEADER_ACCOUNT, clientHeader)
                 .baseUri(auConfiguration.getServerBaseURL())
-                .get("${AUConstants.CDS_PATH}${AUConstants.BULK_ACCOUNT_PATH}")
+                .get("${AUConstants.BULK_ACCOUNT_PATH}")
 
         Assert.assertEquals(accountResponse.statusCode(), AUConstants.STATUS_CODE_200)
         Assert.assertNull(AUTestUtil.parseResponseBody(accountResponse,
@@ -198,7 +198,7 @@ class DisclosureOptionManagementServiceTest extends AUTest {
         Response accountResponse = AURequestBuilder.buildBasicRequestWithCustomHeaders(userAccessToken,
                 AUConstants.X_V_HEADER_ACCOUNTS, clientHeader)
                 .baseUri(auConfiguration.getServerBaseURL())
-                .get("${AUConstants.CDS_PATH}${AUConstants.BULK_ACCOUNT_PATH}")
+                .get("${AUConstants.BULK_ACCOUNT_PATH}")
 
         Assert.assertEquals(accountResponse.statusCode(), AUConstants.STATUS_CODE_200)
         Assert.assertNull(AUTestUtil.parseResponseBody(accountResponse,
@@ -213,7 +213,7 @@ class DisclosureOptionManagementServiceTest extends AUTest {
         accountResponse = AURequestBuilder.buildBasicRequestWithCustomHeaders(userAccessToken,
                 AUConstants.X_V_HEADER_ACCOUNTS, clientHeader)
                 .baseUri(auConfiguration.getServerBaseURL())
-                .get("${AUConstants.CDS_PATH}${AUConstants.BULK_ACCOUNT_PATH}")
+                .get("${AUConstants.BULK_ACCOUNT_PATH}")
 
         Assert.assertEquals(accountResponse.statusCode(), AUConstants.STATUS_CODE_200)
         Assert.assertNotNull(AUTestUtil.parseResponseBody(accountResponse,
@@ -239,7 +239,7 @@ class DisclosureOptionManagementServiceTest extends AUTest {
         Response accountResponse = AURequestBuilder.buildBasicRequestWithCustomHeaders(userAccessToken,
                 AUConstants.X_V_HEADER_ACCOUNTS, clientHeader)
                 .baseUri(auConfiguration.getServerBaseURL())
-                .get("${AUConstants.CDS_PATH}${AUConstants.BULK_ACCOUNT_PATH}")
+                .get("${AUConstants.BULK_ACCOUNT_PATH}")
 
         Assert.assertEquals(accountResponse.statusCode(), AUConstants.STATUS_CODE_200)
         Assert.assertNotNull(AUTestUtil.parseResponseBody(response, "${AUConstants.RESPONSE_DATA_BULK_ACCOUNTID_LIST}"))

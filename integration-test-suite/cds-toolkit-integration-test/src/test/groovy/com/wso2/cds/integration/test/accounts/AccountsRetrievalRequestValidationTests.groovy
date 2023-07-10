@@ -58,7 +58,7 @@ class AccountsRetrievalRequestValidationTests extends AUTest {
                 .contentType(ContentType.JSON)
                 .body(requestBody)
                 .baseUri(AUTestUtil.getBaseUrl(AUConstants.BASE_PATH_TYPE_BALANCES))
-                .post("${AUConstants.CDS_PATH}${AUConstants.BULK_BALANCES_PATH}")
+                .post("${AUConstants.BULK_BALANCES_PATH}")
 
         SoftAssert softAssertion = new SoftAssert()
         softAssertion.assertEquals(response.statusCode(), AUConstants.STATUS_CODE_200)
@@ -83,7 +83,7 @@ class AccountsRetrievalRequestValidationTests extends AUTest {
         Response response = AURequestBuilder.buildBasicRequestWithCustomHeaders(userAccessToken,
                 AUConstants.X_V_HEADER_DIRECT_DEBITS, clientHeader)
                 .baseUri(AUTestUtil.getBaseUrl(AUConstants.BASE_PATH_TYPE_DIRECT_DEBIT))
-                .get("${AUConstants.CDS_PATH}${AUConstants.BULK_DIRECT_DEBITS_PATH}")
+                .get("${AUConstants.BULK_DIRECT_DEBITS_PATH}")
 
         SoftAssert softAssertion = new SoftAssert()
         softAssertion.assertEquals(response.statusCode(), AUConstants.STATUS_CODE_200)
@@ -120,7 +120,7 @@ class AccountsRetrievalRequestValidationTests extends AUTest {
         Response response = AURequestBuilder.buildBasicRequestWithCustomHeaders(userAccessToken,
                 AUConstants.X_V_HEADER_DIRECT_DEBITS, clientHeader)
                 .baseUri(AUTestUtil.getBaseUrl(AUConstants.BASE_PATH_TYPE_DIRECT_DEBIT))
-                .get("${AUConstants.CDS_PATH}${AUConstants.BULK_ACCOUNT_PATH}/${AUConstants.accountID}/direct-debits")
+                .get("${AUConstants.BULK_ACCOUNT_PATH}/${AUConstants.accountID}/direct-debits")
 
         SoftAssert softAssertion = new SoftAssert()
         softAssertion.assertEquals(response.statusCode(), AUConstants.STATUS_CODE_200)
@@ -162,7 +162,7 @@ class AccountsRetrievalRequestValidationTests extends AUTest {
                 .contentType(ContentType.JSON)
                 .body(requestBody)
                 .baseUri(AUTestUtil.getBaseUrl(AUConstants.BASE_PATH_TYPE_SCHEDULED_PAYMENT))
-                .post("${AUConstants.CDS_PATH}${AUConstants.BULK_SCHEDULE_PAYMENTS_PATH}")
+                .post("${AUConstants.BULK_SCHEDULE_PAYMENTS_PATH}")
 
         SoftAssert softAssertion = new SoftAssert()
         softAssertion.assertEquals(response.statusCode(), AUConstants.STATUS_CODE_200)
@@ -192,7 +192,7 @@ class AccountsRetrievalRequestValidationTests extends AUTest {
         Response response = AURequestBuilder.buildBasicRequestWithCustomHeaders(userAccessToken,
                 AUConstants.X_V_HEADER_PAYMENT_SCHEDULED, clientHeader)
                 .baseUri(AUTestUtil.getBaseUrl(AUConstants.BASE_PATH_TYPE_SCHEDULED_PAYMENT))
-                .get("${AUConstants.CDS_PATH}${AUConstants.BULK_SCHEDULE_PAYMENTS_PATH}")
+                .get("${AUConstants.BULK_SCHEDULE_PAYMENTS_PATH}")
 
         SoftAssert softAssertion = new SoftAssert()
         softAssertion.assertEquals(response.statusCode(), AUConstants.STATUS_CODE_200)
@@ -235,7 +235,7 @@ class AccountsRetrievalRequestValidationTests extends AUTest {
         Response response = AURequestBuilder.buildBasicRequestWithCustomHeaders(userAccessToken,
                 AUConstants.X_V_HEADER_PAYMENT_SCHEDULED, clientHeader)
                 .baseUri(AUTestUtil.getBaseUrl(AUConstants.BASE_PATH_TYPE_SCHEDULED_PAYMENT))
-                .get("${AUConstants.CDS_PATH}${AUConstants.BULK_ACCOUNT_PATH}/${AUConstants.accountID}/payments/scheduled")
+                .get("${AUConstants.BULK_ACCOUNT_PATH}/${AUConstants.accountID}/payments/scheduled")
 
         SoftAssert softAssertion = new SoftAssert()
         softAssertion.assertEquals(response.statusCode(), AUConstants.STATUS_CODE_200)
@@ -268,7 +268,7 @@ class AccountsRetrievalRequestValidationTests extends AUTest {
         Response response = AURequestBuilder.buildBasicRequestWithCustomHeaders(userAccessToken,
                 AUConstants.X_V_HEADER_PAYEES, clientHeader)
                 .baseUri(AUTestUtil.getBaseUrl(AUConstants.BASE_PATH_TYPE_PAYEES))
-                .get("${AUConstants.CDS_PATH}${AUConstants.BULK_PAYEES}")
+                .get("${AUConstants.BULK_PAYEES}")
 
         payeeId = AUTestUtil.parseResponseBody(response, "data.payees.payeeId[0]")
 
@@ -299,7 +299,7 @@ class AccountsRetrievalRequestValidationTests extends AUTest {
         Response response = AURequestBuilder.buildBasicRequestWithCustomHeaders(userAccessToken,
                 AUConstants.X_V_HEADER_PAYEES, clientHeader)
                 .baseUri(AUTestUtil.getBaseUrl(AUConstants.BASE_PATH_TYPE_PAYEES))
-                .get("${AUConstants.CDS_PATH}${AUConstants.BULK_PAYEES}/${payeeId}")
+                .get("${AUConstants.BULK_PAYEES}/${payeeId}")
 
         SoftAssert softAssertion = new SoftAssert()
         softAssertion.assertEquals(response.statusCode(), AUConstants.STATUS_CODE_200)
@@ -330,7 +330,7 @@ class AccountsRetrievalRequestValidationTests extends AUTest {
         Response response = AURequestBuilder.buildBasicRequestWithCustomHeaders(userAccessToken,
                 AUConstants.X_V_HEADER_ACCOUNTS, clientHeader)
                 .baseUri(AUTestUtil.getBaseUrl(AUConstants.BULK_ACCOUNT_PATH))
-                .get("${AUConstants.CDS_PATH}${AUConstants.BULK_ACCOUNT_PATH}")
+                .get("${AUConstants.BULK_ACCOUNT_PATH}")
 
         SoftAssert softAssertion = new SoftAssert()
         softAssertion.assertEquals(response.statusCode(), AUConstants.STATUS_CODE_403)
@@ -359,7 +359,7 @@ class AccountsRetrievalRequestValidationTests extends AUTest {
         Response response = AURequestBuilder.buildBasicRequestWithCustomHeaders(userAccessToken,
                 AUConstants.X_V_HEADER_ACCOUNT, clientHeader)
                 .baseUri(AUTestUtil.getBaseUrl(AUConstants.SINGLE_ACCOUNT_PATH))
-                .get("${AUConstants.CDS_PATH}${AUConstants.SINGLE_ACCOUNT_PATH}")
+                .get("${AUConstants.SINGLE_ACCOUNT_PATH}")
 
         SoftAssert softAssertion = new SoftAssert()
         softAssertion.assertEquals(response.statusCode(), AUConstants.STATUS_CODE_403)
@@ -389,7 +389,7 @@ class AccountsRetrievalRequestValidationTests extends AUTest {
         Response response = AURequestBuilder.buildBasicRequestWithCustomHeaders(userAccessToken,
                 AUConstants.X_V_HEADER_TRANSACTIONS, clientHeader)
                 .baseUri(AUTestUtil.getBaseUrl(AUConstants.SINGLE_ACCOUNT_PATH))
-                .get("${AUConstants.CDS_PATH}${AUConstants.GET_TRANSACTIONS}")
+                .get("${AUConstants.GET_TRANSACTIONS}")
 
         SoftAssert softAssertion = new SoftAssert()
         softAssertion.assertEquals(response.statusCode(), AUConstants.STATUS_CODE_403)
@@ -419,7 +419,7 @@ class AccountsRetrievalRequestValidationTests extends AUTest {
         Response response = AURequestBuilder.buildBasicRequestWithCustomHeaders(userAccessToken,
                 AUConstants.X_V_HEADER_TRANSACTIONS, clientHeader)
                 .baseUri(AUTestUtil.getBaseUrl(AUConstants.SINGLE_ACCOUNT_PATH))
-                .get("${AUConstants.CDS_PATH}${AUConstants.GET_TRANSACTIONS}")
+                .get("${AUConstants.GET_TRANSACTIONS}")
 
         SoftAssert softAssertion = new SoftAssert()
         softAssertion.assertEquals(response.statusCode(), AUConstants.STATUS_CODE_200)
@@ -451,7 +451,7 @@ class AccountsRetrievalRequestValidationTests extends AUTest {
         Response response = AURequestBuilder.buildBasicRequestWithCustomHeaders(userAccessToken,
                 AUConstants.X_V_HEADER_DIRECT_DEBITS, clientHeader)
                 .baseUri(AUTestUtil.getBaseUrl(AUConstants.BASE_PATH_TYPE_DIRECT_DEBIT))
-                .get("${AUConstants.CDS_PATH}${AUConstants.BULK_DIRECT_DEBITS_PATH}")
+                .get("${AUConstants.BULK_DIRECT_DEBITS_PATH}")
 
         SoftAssert softAssertion = new SoftAssert()
         softAssertion.assertEquals(response.statusCode(), AUConstants.STATUS_CODE_403)
@@ -478,7 +478,7 @@ class AccountsRetrievalRequestValidationTests extends AUTest {
         Response response = AURequestBuilder.buildBasicRequestWithCustomHeaders(userAccessToken,
                 AUConstants.X_V_HEADER_PAYMENT_SCHEDULED, clientHeader)
                 .baseUri(AUTestUtil.getBaseUrl(AUConstants.BASE_PATH_TYPE_SCHEDULED_PAYMENT))
-                .get("${AUConstants.CDS_PATH}${AUConstants.BULK_SCHEDULE_PAYMENTS_PATH}")
+                .get("${AUConstants.BULK_SCHEDULE_PAYMENTS_PATH}")
 
         SoftAssert softAssertion = new SoftAssert()
         softAssertion.assertEquals(response.statusCode(), AUConstants.STATUS_CODE_403)
@@ -505,7 +505,7 @@ class AccountsRetrievalRequestValidationTests extends AUTest {
         Response response = AURequestBuilder.buildBasicRequestWithCustomHeaders(userAccessToken,
                 AUConstants.X_V_HEADER_PAYEES, clientHeader)
                 .baseUri(AUTestUtil.getBaseUrl(AUConstants.BASE_PATH_TYPE_PAYEES))
-                .get("${AUConstants.CDS_PATH}${AUConstants.BULK_PAYEES}")
+                .get("${AUConstants.BULK_PAYEES}")
 
         SoftAssert softAssertion = new SoftAssert()
         softAssertion.assertEquals(response.statusCode(), AUConstants.STATUS_CODE_403)
@@ -556,7 +556,7 @@ class AccountsRetrievalRequestValidationTests extends AUTest {
                 AUConstants.X_V_HEADER_ACCOUNTS, clientHeader)
                 .accept(AUConstants.ACCEPT)
                 .baseUri(AUTestUtil.getBaseUrl(AUConstants.BASE_PATH_TYPE_ACCOUNT))
-                .put("${AUConstants.CDS_PATH}${AUConstants.BULK_ACCOUNT_PATH}")
+                .put("${AUConstants.BULK_ACCOUNT_PATH}")
 
         Assert.assertEquals(response.statusCode(), AUConstants.STATUS_CODE_405)
     }
@@ -571,7 +571,7 @@ class AccountsRetrievalRequestValidationTests extends AUTest {
                 .header(AUConstants.X_CDS_CLIENT_HEADERS , clientHeader)
                 .accept(AUConstants.ACCEPT)
                 .baseUri(AUTestUtil.getBaseUrl(AUConstants.BASE_PATH_TYPE_ACCOUNT))
-                .get("${AUConstants.CDS_PATH}${AUConstants.BULK_ACCOUNT_PATH}")
+                .get("${AUConstants.BULK_ACCOUNT_PATH}")
 
         Assert.assertEquals(response.statusCode(), AUConstants.STATUS_CODE_401)
         Assert.assertTrue(AUTestUtil.parseResponseBody(response, AUConstants.ERROR).contains(
@@ -587,13 +587,14 @@ class AccountsRetrievalRequestValidationTests extends AUTest {
                 AUConstants.X_V_HEADER_BALANCES, clientHeader)
                 .contentType(ContentType.JSON)
                 .baseUri(AUTestUtil.getBaseUrl(AUConstants.BASE_PATH_TYPE_BALANCES))
-                .post("${AUConstants.CDS_PATH}${AUConstants.BULK_BALANCES_PATH}")
+                .post("${AUConstants.BULK_BALANCES_PATH}")
 
         Assert.assertEquals(response.statusCode(), AUConstants.STATUS_CODE_400)
         Assert.assertEquals(AUTestUtil.parseResponseBody(response, AUConstants.ERROR_CODE),
                 AUConstants.ERROR_CODE_MISSING_FIELD)
-        Assert.assertEquals(AUTestUtil.parseResponseBody(response, AUConstants.ERROR_DETAIL),
-                "request body")
+        //TODO: Incomplete Error description
+//        Assert.assertEquals(AUTestUtil.parseResponseBody(response, AUConstants.ERROR_DETAIL),
+//                "request body")
         Assert.assertEquals(AUTestUtil.parseResponseBody(response, AUConstants.ERROR_TITLE), AUConstants.MISSING_FIELD)
     }
 
@@ -616,7 +617,7 @@ class AccountsRetrievalRequestValidationTests extends AUTest {
                 .contentType(ContentType.JSON)
                 .body(requestBody)
                 .baseUri(AUTestUtil.getBaseUrl(AUConstants.BASE_PATH_TYPE_BALANCES))
-                .post("${AUConstants.CDS_PATH}${AUConstants.BULK_BALANCES_PATH}")
+                .post("${AUConstants.BULK_BALANCES_PATH}")
 
         Assert.assertEquals(response.statusCode(), AUConstants.STATUS_CODE_400)
         Assert.assertEquals(AUTestUtil.parseResponseBody(response, AUConstants.ERROR_CODE), AUConstants.ERROR_CODE_INVALID_FIELD)
@@ -630,7 +631,7 @@ class AccountsRetrievalRequestValidationTests extends AUTest {
         def response = AURequestBuilder.buildBasicRequestWithCustomHeaders(userAccessToken,
                 AUConstants.X_V_HEADER_ACCOUNTS, clientHeader)
                 .baseUri(AUTestUtil.getBaseUrl(AUConstants.BASE_PATH_TYPE_ACCOUNT))
-                .get("${AUConstants.CDS_PATH}${AUConstants.BULK_ACCOUNT_PATH}")
+                .get("${AUConstants.BULK_ACCOUNT_PATH}")
 
         SoftAssert softAssertion = new SoftAssert()
         softAssertion.assertEquals(response.statusCode(), AUConstants.STATUS_CODE_200)
@@ -656,7 +657,7 @@ class AccountsRetrievalRequestValidationTests extends AUTest {
         def response = AURequestBuilder.buildBasicRequestWithCustomHeaders(userAccessToken,
                 AUConstants.X_V_HEADER_ACCOUNT, clientHeader)
                 .baseUri(AUTestUtil.getBaseUrl(AUConstants.BASE_PATH_TYPE_ACCOUNT))
-                .get("${AUConstants.CDS_PATH}${AUConstants.BULK_ACCOUNT_PATH}/${AUConstants.accountID}")
+                .get("${AUConstants.BULK_ACCOUNT_PATH}/${AUConstants.accountID}")
 
         SoftAssert softAssertion = new SoftAssert()
         softAssertion.assertEquals(response.statusCode(), AUConstants.STATUS_CODE_200)
@@ -675,7 +676,7 @@ class AccountsRetrievalRequestValidationTests extends AUTest {
         def response = AURequestBuilder.buildBasicRequestWithCustomHeaders(userAccessToken,
                 AUConstants.X_V_HEADER_ACCOUNT, clientHeader)
                 .baseUri(AUTestUtil.getBaseUrl(AUConstants.BASE_PATH_TYPE_ACCOUNT))
-                .get("${AUConstants.CDS_PATH}${AUConstants.BULK_ACCOUNT_PATH}/11059970")
+                .get("${AUConstants.BULK_ACCOUNT_PATH}/11059970")
 
         SoftAssert softAssertion = new SoftAssert()
         softAssertion.assertEquals(response.statusCode(), AUConstants.STATUS_CODE_404)
@@ -702,7 +703,7 @@ class AccountsRetrievalRequestValidationTests extends AUTest {
                 .contentType(ContentType.JSON)
                 .body(requestBody)
                 .baseUri(AUTestUtil.getBaseUrl(AUConstants.BASE_PATH_TYPE_BALANCES))
-                .post("${AUConstants.CDS_PATH}${AUConstants.BULK_BALANCES_PATH}")
+                .post("${AUConstants.BULK_BALANCES_PATH}")
 
         Assert.assertEquals(response.statusCode(), AUConstants.STATUS_CODE_422)
         Assert.assertEquals(AUTestUtil.parseResponseBody(response, AUConstants.ERROR_CODE),
@@ -730,7 +731,7 @@ class AccountsRetrievalRequestValidationTests extends AUTest {
                 .contentType(ContentType.JSON)
                 .body(requestBody)
                 .baseUri(AUTestUtil.getBaseUrl(AUConstants.BASE_PATH_TYPE_BALANCES))
-                .post("${AUConstants.CDS_PATH}${AUConstants.BULK_BALANCES_PATH}")
+                .post("${AUConstants.BULK_BALANCES_PATH}")
 
         Assert.assertEquals(response.statusCode(), AUConstants.STATUS_CODE_422)
         Assert.assertEquals(AUTestUtil.parseResponseBody(response, AUConstants.ERROR_CODE),

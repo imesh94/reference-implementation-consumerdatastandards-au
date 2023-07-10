@@ -426,7 +426,7 @@ class AURequestBuilder {
                 .header(AUConstants.X_V_HEADER, 1)
                 .header(AUConstants.AUTHORIZATION_HEADER_KEY, "${AUConstants.AUTHORIZATION_BEARER_TAG}" + userAccessToken)
                 .baseUri(auConfiguration.getServerBaseURL())
-                .get("${AUConstants.CDS_PATH}${AUConstants.BULK_ACCOUNT_PATH}/")
+                .get("${AUConstants.BULK_ACCOUNT_PATH}/")
         return response
     }
 

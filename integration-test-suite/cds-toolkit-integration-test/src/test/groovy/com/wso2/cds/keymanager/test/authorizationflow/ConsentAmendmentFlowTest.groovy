@@ -113,7 +113,7 @@ class ConsentAmendmentFlowTest extends AUTest{
         def responseAfterAmendment = AURequestBuilder.buildBasicRequestWithCustomHeaders(secondUserAccessToken,
                 AUConstants.X_V_HEADER_ACCOUNTS, clientHeader)
                 .baseUri(AUTestUtil.getBaseUrl(AUConstants.BASE_PATH_TYPE_ACCOUNT))
-                .get("${AUConstants.CDS_PATH}${AUConstants.BULK_ACCOUNT_PATH}")
+                .get("${AUConstants.BULK_ACCOUNT_PATH}")
 
         Assert.assertEquals(responseAfterAmendment.statusCode(), AUConstants.STATUS_CODE_200)
         Assert.assertEquals(responseAfterAmendment.getHeader(AUConstants.X_V_HEADER).toInteger(), AUConstants.X_V_HEADER_ACCOUNTS)
@@ -129,7 +129,7 @@ class ConsentAmendmentFlowTest extends AUTest{
         def responseAfterAmendment = AURequestBuilder.buildBasicRequestWithCustomHeaders(userAccessToken,
                 AUConstants.X_V_HEADER_ACCOUNTS, clientHeader)
                 .baseUri(AUTestUtil.getBaseUrl(AUConstants.BASE_PATH_TYPE_ACCOUNT))
-                .get("${AUConstants.CDS_PATH}${AUConstants.BULK_ACCOUNT_PATH}")
+                .get("${AUConstants.BULK_ACCOUNT_PATH}")
 
         // Assert if details of selected accounts cannot be retrieved via accounts get call
         Assert.assertEquals(responseAfterAmendment.statusCode(), AUConstants.STATUS_CODE_401)

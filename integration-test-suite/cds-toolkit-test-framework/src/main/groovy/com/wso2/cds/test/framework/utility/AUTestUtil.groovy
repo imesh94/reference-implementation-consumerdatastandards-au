@@ -411,10 +411,6 @@ class AUTestUtil extends OBTestUtil {
      */
     static int getBankingApiEndpointVersion(String endpoint) {
 
-        if(endpoint.contains(AUConstants.CDS_PATH)){
-            endpoint = endpoint.replace(AUConstants.CDS_PATH, "")
-        }
-
         switch (endpoint) {
             case AUConstants.BULK_ACCOUNT_PATH:
                 return AUConstants.X_V_HEADER_ACCOUNTS

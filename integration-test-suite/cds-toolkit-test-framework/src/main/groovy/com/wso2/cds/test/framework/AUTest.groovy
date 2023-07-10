@@ -34,11 +34,9 @@ import com.wso2.cds.test.framework.configuration.AUConfigurationService
 import com.wso2.openbanking.test.framework.automation.AutomationMethod
 import com.wso2.openbanking.test.framework.automation.NavigationAutomationStep
 import com.wso2.openbanking.test.framework.configuration.OBConfigParser
-import com.wso2.openbanking.test.framework.request_builder.JSONRequestGenerator
 import io.restassured.response.Response
 import org.apache.logging.log4j.LogManager
 import org.apache.logging.log4j.Logger
-import org.json.JSONObject
 import org.openqa.selenium.By
 import org.testng.Assert
 import org.testng.ITestContext
@@ -89,7 +87,7 @@ class AUTest extends OBTest {
     public String userAccessToken
     public String authorisationCode
     public String consentedAccount
-    public String secondConsentedAccount
+    public String consentedAccount2
     public String cdrArrangementId = ""
     public String jtiVal
     public String clientId
@@ -400,7 +398,7 @@ class AUTest extends OBTest {
 
                 if (isSelectMultipleAccounts) {
                     //Select Business Account 2
-                    secondConsentedAccount = authWebDriver.getElementAttribute(AUTestUtil.getBusinessAccount3CheckBox(),
+                    consentedAccount2 = authWebDriver.getElementAttribute(AUTestUtil.getBusinessAccount3CheckBox(),
                             AUPageObjects.VALUE)
                     authWebDriver.clickButtonXpath(AUTestUtil.getBusinessAccount3CheckBox())
                 }
@@ -416,7 +414,7 @@ class AUTest extends OBTest {
 
                 if(isSelectMultipleAccounts) {
                     //Select Individual Account 2
-                    secondConsentedAccount = authWebDriver.getElementAttribute(AUTestUtil.getAltSingleAccountXPath(),
+                    consentedAccount2 = authWebDriver.getElementAttribute(AUTestUtil.getAltSingleAccountXPath(),
                             AUPageObjects.VALUE)
                     authWebDriver.clickButtonXpath(AUTestUtil.getAltSingleAccountXPath())
                 }
@@ -431,7 +429,7 @@ class AUTest extends OBTest {
 
             if (isSelectMultipleAccounts) {
                 //Select Account 2
-                secondConsentedAccount = authWebDriver.getElementAttribute(AUTestUtil.getAltSingleAccountXPath(),
+                consentedAccount2 = authWebDriver.getElementAttribute(AUTestUtil.getAltSingleAccountXPath(),
                         AUPageObjects.VALUE)
                 authWebDriver.clickButtonXpath(AUTestUtil.getAltSingleAccountXPath())
             }
@@ -763,7 +761,7 @@ class AUTest extends OBTest {
         response = AURequestBuilder.buildBasicRequest(userAccessToken, accountEndpointVersion)
                 .header(AUConstants.PARAM_FAPI_AUTH_DATE,AUConstants.VALUE_FAPI_AUTH_DATE)
                 .baseUri(AUTestUtil.getBaseUrl(AUConstants.BASE_PATH_TYPE_ACCOUNT))
-                .get("${AUConstants.CDS_PATH}${AUConstants.BULK_ACCOUNT_PATH}")
+                .get("${AUConstants.BULK_ACCOUNT_PATH}")
 
         return response
     }
@@ -1053,7 +1051,7 @@ class AUTest extends OBTest {
 
                         if(isSelectMultipleAccounts) {
                             //Select Joint Account 2
-                            secondConsentedAccount = authWebDriver.getElementAttribute(AUPageObjects.ALT_JOINT_ACCOUNT_XPATH,
+                            consentedAccount2 = authWebDriver.getElementAttribute(AUPageObjects.ALT_JOINT_ACCOUNT_XPATH,
                                     AUPageObjects.VALUE)
                             authWebDriver.clickButtonXpath(AUPageObjects.ALT_JOINT_ACCOUNT_XPATH)
                         }
@@ -1067,7 +1065,7 @@ class AUTest extends OBTest {
 
                         if (isSelectMultipleAccounts) {
                             //Select Account 2
-                            secondConsentedAccount = authWebDriver.getElementAttribute(AUPageObjects.ALT_JOINT_ACCOUNT_XPATH,
+                            consentedAccount2 = authWebDriver.getElementAttribute(AUPageObjects.ALT_JOINT_ACCOUNT_XPATH,
                                     AUPageObjects.VALUE)
                             authWebDriver.clickButtonXpath(AUPageObjects.ALT_JOINT_ACCOUNT_XPATH)
                         }

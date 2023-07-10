@@ -59,7 +59,7 @@ class ConcurrentConsentTest extends AUTest {
                         AUConstants.CDR_ENDPOINT_VERSION)
                 .header(AUConstants.X_FAPI_AUTH_DATE, AUConstants.DATE)
                 .baseUri(AUTestUtil.getBaseUrl(AUConstants.BASE_PATH_TYPE_ACCOUNT))
-                .get("${AUConstants.CDS_PATH}${AUConstants.BULK_ACCOUNT_PATH}")
+                .get("${AUConstants.BULK_ACCOUNT_PATH}")
 
         Assert.assertEquals(response1.statusCode(), AUConstants.STATUS_CODE_200)
 
@@ -68,7 +68,7 @@ class ConcurrentConsentTest extends AUTest {
                         AUConstants.CDR_ENDPOINT_VERSION)
                 .header(AUConstants.X_FAPI_AUTH_DATE, AUConstants.DATE)
                 .baseUri(AUTestUtil.getBaseUrl(AUConstants.BASE_PATH_TYPE_PAYEES))
-                .get("${AUConstants.CDS_PATH}${AUConstants.BULK_PAYEES}")
+                .get("${AUConstants.BULK_PAYEES}")
 
         Assert.assertEquals(response2.statusCode(), AUConstants.STATUS_CODE_200)
     }
@@ -102,7 +102,7 @@ class ConcurrentConsentTest extends AUTest {
                         AUConstants.CDR_ENDPOINT_VERSION)
                 .header(AUConstants.X_FAPI_AUTH_DATE, AUConstants.DATE)
                 .baseUri(AUTestUtil.getBaseUrl(AUConstants.BASE_PATH_TYPE_ACCOUNT))
-                .get("${AUConstants.CDS_PATH}${AUConstants.BULK_ACCOUNT_PATH}")
+                .get("${AUConstants.BULK_ACCOUNT_PATH}")
 
         Assert.assertEquals(response1.statusCode(), AUConstants.STATUS_CODE_403)
 
@@ -111,7 +111,7 @@ class ConcurrentConsentTest extends AUTest {
                         AUConstants.CDR_ENDPOINT_VERSION)
                 .header(AUConstants.X_FAPI_AUTH_DATE, AUConstants.DATE)
                 .baseUri(AUTestUtil.getBaseUrl(AUConstants.BASE_PATH_TYPE_PAYEES))
-                .get("${AUConstants.CDS_PATH}${AUConstants.BULK_PAYEES}")
+                .get("${AUConstants.BULK_PAYEES}")
 
         Assert.assertEquals(response2.statusCode(), AUConstants.STATUS_CODE_403)
     }
@@ -140,7 +140,7 @@ class ConcurrentConsentTest extends AUTest {
                 .buildBasicRequest(userAccessToken, AUConstants.CDR_ENDPOINT_VERSION)
                 .header(AUConstants.X_FAPI_AUTH_DATE, AUConstants.DATE)
                 .baseUri(AUTestUtil.getBaseUrl(AUConstants.BASE_PATH_TYPE_ACCOUNT))
-                .get("${AUConstants.CDS_PATH}${AUConstants.BULK_ACCOUNT_PATH}")
+                .get("${AUConstants.BULK_ACCOUNT_PATH}")
 
         Assert.assertEquals(response.statusCode(), AUConstants.STATUS_CODE_200)
 
@@ -156,7 +156,7 @@ class ConcurrentConsentTest extends AUTest {
                 .buildBasicRequest(userAccessToken, AUConstants.CDR_ENDPOINT_VERSION)
                 .header(AUConstants.X_FAPI_AUTH_DATE, AUConstants.DATE)
                 .baseUri(AUTestUtil.getBaseUrl(AUConstants.BASE_PATH_TYPE_ACCOUNT))
-                .get("${AUConstants.CDS_PATH}${AUConstants.BULK_ACCOUNT_PATH}")
+                .get("${AUConstants.BULK_ACCOUNT_PATH}")
 
         Assert.assertEquals(response.statusCode(), AUConstants.STATUS_CODE_403)
 
@@ -193,7 +193,7 @@ class ConcurrentConsentTest extends AUTest {
                 .buildBasicRequest(userAccessToken, AUConstants.CDR_ENDPOINT_VERSION)
                 .header(AUConstants.X_FAPI_AUTH_DATE, AUConstants.DATE)
                 .baseUri(AUTestUtil.getBaseUrl(AUConstants.BASE_PATH_TYPE_ACCOUNT))
-                .get("${AUConstants.CDS_PATH}${AUConstants.BULK_ACCOUNT_PATH}")
+                .get("${AUConstants.BULK_ACCOUNT_PATH}")
 
         Assert.assertEquals(response.statusCode(), AUConstants.STATUS_CODE_200)
 

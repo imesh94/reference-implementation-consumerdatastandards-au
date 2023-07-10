@@ -61,7 +61,7 @@ class BnrEndToEndTest extends AUTest{
         def response = AURequestBuilder.buildBasicRequestWithCustomHeaders(userAccessToken,
                 x_v_header, clientHeader)
                 .baseUri(AUTestUtil.getBaseUrl(AUConstants.BASE_PATH_TYPE_ACCOUNT))
-                .get("${AUConstants.CDS_PATH}${resourcePath}")
+                .get("${resourcePath}")
 
         Assert.assertEquals(response.statusCode(), AUConstants.STATUS_CODE_200)
         Assert.assertEquals(response.getHeader(AUConstants.X_V_HEADER).toInteger(), x_v_header)
