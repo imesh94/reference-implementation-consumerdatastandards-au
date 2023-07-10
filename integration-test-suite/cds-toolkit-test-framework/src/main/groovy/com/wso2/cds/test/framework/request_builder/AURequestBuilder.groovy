@@ -147,7 +147,7 @@ class AURequestBuilder {
 
         return AURestAsRequestBuilder.buildRequest()
                 .header(AUConstants.X_V_HEADER, xv_header)
-                .header(AUConstants.AUTHORIZATION_HEADER_KEY, "${AUConstants.AUTHORIZATION_BEARER_TAG} ${userAccessToken}")
+                .header(AUConstants.AUTHORIZATION_HEADER_KEY, "${AUConstants.AUTHORIZATION_BEARER_TAG}${userAccessToken}")
                 .header(AUConstants.X_FAPI_AUTH_DATE, authDate)
                 .header(AUConstants.X_FAPI_CUSTOMER_IP_ADDRESS , customerIpAddress)
                 .header(AUConstants.X_CDS_CLIENT_HEADERS , clientHeader)
@@ -426,7 +426,7 @@ class AURequestBuilder {
                 .header(AUConstants.X_V_HEADER, 1)
                 .header(AUConstants.AUTHORIZATION_HEADER_KEY, "${AUConstants.AUTHORIZATION_BEARER_TAG}" + userAccessToken)
                 .baseUri(auConfiguration.getServerBaseURL())
-                .get("${AUConstants.CDS_PATH}${AUConstants.BULK_ACCOUNT_PATH}/")
+                .get("${AUConstants.BULK_ACCOUNT_PATH}/")
         return response
     }
 

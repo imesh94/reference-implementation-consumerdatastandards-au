@@ -34,11 +34,9 @@ import com.wso2.cds.test.framework.configuration.AUConfigurationService
 import com.wso2.openbanking.test.framework.automation.AutomationMethod
 import com.wso2.openbanking.test.framework.automation.NavigationAutomationStep
 import com.wso2.openbanking.test.framework.configuration.OBConfigParser
-import com.wso2.openbanking.test.framework.request_builder.JSONRequestGenerator
 import io.restassured.response.Response
 import org.apache.logging.log4j.LogManager
 import org.apache.logging.log4j.Logger
-import org.json.JSONObject
 import org.openqa.selenium.By
 import org.testng.Assert
 import org.testng.ITestContext
@@ -89,7 +87,7 @@ class AUTest extends OBTest {
     public String userAccessToken
     public String authorisationCode
     public String consentedAccount
-    public String secondConsentedAccount
+    public String consentedAccount2
     public String cdrArrangementId = ""
     public String jtiVal
     public String clientId
@@ -400,7 +398,7 @@ class AUTest extends OBTest {
 
                 if (isSelectMultipleAccounts) {
                     //Select Business Account 2
-                    secondConsentedAccount = authWebDriver.getElementAttribute(AUTestUtil.getBusinessAccount3CheckBox(),
+                    consentedAccount2 = authWebDriver.getElementAttribute(AUTestUtil.getBusinessAccount3CheckBox(),
                             AUPageObjects.VALUE)
                     authWebDriver.clickButtonXpath(AUTestUtil.getBusinessAccount3CheckBox())
                 }
@@ -416,7 +414,7 @@ class AUTest extends OBTest {
 
                 if(isSelectMultipleAccounts) {
                     //Select Individual Account 2
-                    secondConsentedAccount = authWebDriver.getElementAttribute(AUTestUtil.getAltSingleAccountXPath(),
+                    consentedAccount2 = authWebDriver.getElementAttribute(AUTestUtil.getAltSingleAccountXPath(),
                             AUPageObjects.VALUE)
                     authWebDriver.clickButtonXpath(AUTestUtil.getAltSingleAccountXPath())
                 }
@@ -431,7 +429,7 @@ class AUTest extends OBTest {
 
             if (isSelectMultipleAccounts) {
                 //Select Account 2
-                secondConsentedAccount = authWebDriver.getElementAttribute(AUTestUtil.getAltSingleAccountXPath(),
+                consentedAccount2 = authWebDriver.getElementAttribute(AUTestUtil.getAltSingleAccountXPath(),
                         AUPageObjects.VALUE)
                 authWebDriver.clickButtonXpath(AUTestUtil.getAltSingleAccountXPath())
             }
@@ -763,7 +761,7 @@ class AUTest extends OBTest {
         response = AURequestBuilder.buildBasicRequest(userAccessToken, accountEndpointVersion)
                 .header(AUConstants.PARAM_FAPI_AUTH_DATE,AUConstants.VALUE_FAPI_AUTH_DATE)
                 .baseUri(AUTestUtil.getBaseUrl(AUConstants.BASE_PATH_TYPE_ACCOUNT))
-                .get("${AUConstants.CDS_PATH}${AUConstants.BULK_ACCOUNT_PATH}")
+                .get("${AUConstants.BULK_ACCOUNT_PATH}")
 
         return response
     }
@@ -1023,7 +1021,7 @@ class AUTest extends OBTest {
      * @return Automation Response
      */
     def doAuthorisationFlowForJointAccounts(List<AUAccountScope> scopes, URI requestUri,
-                                            String clientId = null, boolean isSelectMultipleAccounts = true) {
+                                            String clientId = null, boolean isSelectMultipleAccounts = false) {
 
         if (clientId != null) {
             authoriseUrl = auAuthorisationBuilder.getAuthorizationRequest(scopes, requestUri, clientId)
@@ -1053,7 +1051,7 @@ class AUTest extends OBTest {
 
                         if(isSelectMultipleAccounts) {
                             //Select Joint Account 2
-                            consentedAccount = authWebDriver.getElementAttribute(AUPageObjects.ALT_JOINT_ACCOUNT_XPATH,
+                            consentedAccount2 = authWebDriver.getElementAttribute(AUPageObjects.ALT_JOINT_ACCOUNT_XPATH,
                                     AUPageObjects.VALUE)
                             authWebDriver.clickButtonXpath(AUPageObjects.ALT_JOINT_ACCOUNT_XPATH)
                         }
@@ -1067,7 +1065,7 @@ class AUTest extends OBTest {
 
                         if (isSelectMultipleAccounts) {
                             //Select Account 2
-                            consentedAccount = authWebDriver.getElementAttribute(AUPageObjects.ALT_JOINT_ACCOUNT_XPATH,
+                            consentedAccount2 = authWebDriver.getElementAttribute(AUPageObjects.ALT_JOINT_ACCOUNT_XPATH,
                                     AUPageObjects.VALUE)
                             authWebDriver.clickButtonXpath(AUPageObjects.ALT_JOINT_ACCOUNT_XPATH)
                         }
@@ -1116,17 +1114,17 @@ class AUTest extends OBTest {
      * @param statusList - Status List
      * @return response.
      */
-    Response updateDisclosureOptionsMgtService(String headerString, List <String> jointAccountIdList,
-                                               List <String> statusList) {
+    Response updateDisclosureOptionsMgtService(String headerString, Map<String, String> domsStatusMap) {
 
-        def requestBody = AUPayloads.getDOMSStatusUpdatePayload(jointAccountIdList, statusList)
+        def requestBody = AUPayloads.getDOMSStatusUpdatePayload(domsStatusMap)
 
         return AURestAsRequestBuilder.buildRequest()
-                .header(AUConstants.AUTHORIZATION_HEADER_KEY, AUConstants.BASIC_HEADER_KEY + Base64.encoder.encodeToString(
-                        headerString.getBytes(Charset.forName("UTF-8"))))
+                .header(AUConstants.AUTHORIZATION_HEADER_KEY, AUConstants.BASIC_HEADER_KEY + " " +
+                        Base64.encoder.encodeToString("${auConfiguration.getUserBasicAuthName()}:${auConfiguration.getUserBasicAuthPWD()}"
+                                        .getBytes(Charset.forName("UTF-8"))))
                 .contentType(AUConstants.CONTENT_TYPE_APPLICATION_JSON)
                 .body(requestBody)
-                .baseUri(getAuConfiguration().getISServerUrl())
+                .baseUri(auConfiguration.getServerAuthorisationServerURL())
                 .put("${AUConstants.CONSENT_STATUS_AU_ENDPOINT}${AUConstants.DISCLOSURE_OPTIONS_ENDPOINT}")
     }
 
@@ -1154,8 +1152,10 @@ class AUTest extends OBTest {
                 legalEntityStatus, isMultipleLegalEntity, secondaryUserId2, accountId2, legalEntityId2, legalEntityStatus2)
 
         Response secondUserUpdateResponse = AURestAsRequestBuilder.buildRequest()
-                .header(AUConstants.AUTHORIZATION_HEADER_KEY, AUConstants.BASIC_HEADER_KEY + Base64.encoder.encodeToString(
-                        headerString.getBytes(Charset.forName("UTF-8"))))
+                .header(AUConstants.AUTHORIZATION_HEADER_KEY, AUConstants.BASIC_HEADER_KEY + " " +
+                        Base64.encoder.encodeToString(
+                                "${auConfiguration.getUserBasicAuthName()}:${auConfiguration.getUserBasicAuthPWD()}"
+                                        .getBytes(Charset.forName("UTF-8"))))
                 .contentType(AUConstants.CONTENT_TYPE_APPLICATION_JSON)
                 .body(requestBody)
                 .baseUri(auConfiguration.getServerAuthorisationServerURL())
@@ -1201,13 +1201,12 @@ class AUTest extends OBTest {
 
         return AURestAsRequestBuilder.buildRequest()
                 .header(AUConstants.AUTHORIZATION_HEADER_KEY, AUConstants.BASIC_HEADER_KEY + " " +
-                        Base64.encoder.encodeToString(
-                                "${auConfiguration.getUserBasicAuthName()}:${auConfiguration.getUserBasicAuthPWD()}"
+                        Base64.encoder.encodeToString("${auConfiguration.getUserBasicAuthName()}:${auConfiguration.getUserBasicAuthPWD()}"
                                         .getBytes(Charset.forName("UTF-8"))))
                 .contentType(AUConstants.CONTENT_TYPE_APPLICATION_JSON)
                 .queryParam(AUConstants.QUERY_PARAM_USERID, userID)
-                .baseUri(getAuConfiguration().getISServerUrl())
-                .get("${AUConstants.CONSENT_STATUS_ENDPOINT}${AUConstants.LEGAL_ENTITY_LIST_ENDPOINT}")
+                .baseUri(auConfiguration.getServerAuthorisationServerURL())
+                .get("${AUConstants.CONSENT_STATUS_AU_ENDPOINT}${AUConstants.LEGAL_ENTITY_LIST_ENDPOINT}")
     }
 
     /**
@@ -1224,10 +1223,10 @@ class AUTest extends OBTest {
         Gson gson = new Gson()
 
         // Parse the payload into a JsonObject
-        JsonObject jsonObject = gson.fromJson(legalEntityList, JsonObject.class)
+        JsonObject legalEntityListObject = gson.fromJson(legalEntityList, JsonObject.class)
 
         // Retrieve the SecondaryUsers array
-        JsonArray secondaryUsersArray = jsonObject.getAsJsonArray(AUConstants.PAYLOAD_SECONDARY_USERS)
+        JsonArray secondaryUsersArray = legalEntityListObject.getAsJsonArray(AUConstants.PAYLOAD_SECONDARY_USERS)
 
         // Iterate through the secondary users
         for (JsonElement secondaryUserElement : secondaryUsersArray) {

@@ -113,13 +113,6 @@ class ConsentAuthFlowValidationTests extends AUTest{
                         authWebDriver.selectOption(AUPageObjects.INDIVIDUAL_PROFILE_SELECTION)
                         authWebDriver.clickButtonXpath(AUPageObjects.PROFILE_SELECTION_NEXT_BUTTON)
 
-                        //Verify Account Selection Page
-                        assert authWebDriver.isElementDisplayed(AUTestUtil.getSingleAccountXPath())
-                        authWebDriver.clickButtonXpath(AUTestUtil.getSingleAccountXPath())
-
-                        //Click Confirm Button
-                        authWebDriver.clickButtonXpath(AUPageObjects.CONSENT_CONFIRM_XPATH)
-
                         Assert.assertTrue(authWebDriver.getAttributeText(AUPageObjects.LBL_PERMISSION_HEADER)
                                 .contains(AUConstants.BANK_CUSTOMER_BASIC_READ_INDIVIDUAL))
                         authWebDriver.clickButtonXpath(AUPageObjects.LBL_PERMISSION_HEADER)
@@ -161,15 +154,6 @@ class ConsentAuthFlowValidationTests extends AUTest{
                         authWebDriver.selectOption(AUPageObjects.ORGANIZATION_A_PROFILE_SELECTION)
                         authWebDriver.clickButtonXpath(AUPageObjects.PROFILE_SELECTION_NEXT_BUTTON)
 
-                        //Verify Account Selection Page
-                        assert authWebDriver.isElementDisplayed(AUTestUtil.getBusinessAccount1CheckBox())
-                        authWebDriver.clickButtonXpath(AUTestUtil.getBusinessAccount1CheckBox())
-
-                        //Click Confirm Button
-                        authWebDriver.clickButtonXpath(AUPageObjects.CONSENT_CONFIRM_XPATH)
-
-                        //Verify Consent Page
-                        assert authWebDriver.isElementDisplayed(AUTestUtil.getBusinessAccount1Label())
                         Assert.assertTrue(authWebDriver.getAttributeText(AUPageObjects.LBL_PERMISSION_HEADER)
                                 .contains(AUConstants.BANK_CUSTOMER_BASIC_READ))
 
@@ -235,7 +219,7 @@ class ConsentAuthFlowValidationTests extends AUTest{
         def authUrl = automation.currentUrl.get()
         Assert.assertTrue(AUTestUtil.getDecodedUrl(authUrl).contains("User skip the consent flow"))
         def stateParam = authUrl.split("state=")[1]
-        Assert.assertEquals(auAuthorisationBuilder.state, stateParam)
+        Assert.assertEquals(auAuthorisationBuilder.state.toString(), stateParam)
     }
 
     @Test
@@ -279,7 +263,7 @@ class ConsentAuthFlowValidationTests extends AUTest{
         def authUrl = automation.currentUrl.get()
         Assert.assertTrue(AUTestUtil.getDecodedUrl(authUrl).contains("User skip the consent flow"))
         def stateParam = authUrl.split("state=")[1]
-        Assert.assertEquals(auAuthorisationBuilder.state, stateParam)
+        Assert.assertEquals(auAuthorisationBuilder.state.toString(), stateParam)
     }
 
     @Test (priority = 1)
@@ -409,7 +393,7 @@ class ConsentAuthFlowValidationTests extends AUTest{
     }
 
     //TODO: To run the test case set prioritize_sharable_accounts_response=false in IS deployment.toml file
-    @Test (priority = 1)
+    @Test (priority = 1, enabled = false)
     void "CDS-510_Verify Users with View Permission are not able to Authorize Consents"() {
 
         auConfiguration.setPsuNumber(3)

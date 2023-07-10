@@ -39,7 +39,7 @@ class ProductRetrievalValidationTest extends AUTest {
         Response response = AURequestBuilder.buildBasicRequestWithOptionalHeaders(userAccessToken,
                 AUConstants.X_V_HEADER_PRODUCTS, clientHeader)
                 .baseUri(AUTestUtil.getBaseUrl(AUConstants.BASE_PATH_TYPE_PRODUCTS))
-                .get("${AUConstants.CDS_PATH}${AUConstants.BANKING_PRODUCT_PATH}")
+                .get("${AUConstants.BANKING_PRODUCT_PATH}")
 
         productId = AUTestUtil.parseResponseBody(response, "${AUConstants.RESPONSE_DATA_PRODUCTS}.productId[0]").toString()
 
@@ -69,7 +69,7 @@ class ProductRetrievalValidationTest extends AUTest {
         Response response = AURequestBuilder.buildBasicRequestWithOptionalHeaders(userAccessToken,
                 AUConstants.X_V_HEADER_PRODUCTS, clientHeader)
                 .baseUri(AUTestUtil.getBaseUrl(AUConstants.BASE_PATH_TYPE_PRODUCTS))
-                .get("${AUConstants.CDS_PATH}${AUConstants.BANKING_PRODUCT_PATH}")
+                .get("${AUConstants.BANKING_PRODUCT_PATH}")
 
         Assert.assertEquals(response.statusCode(), AUConstants.STATUS_CODE_200)
         Assert.assertEquals(response.getHeader(AUConstants.X_V_HEADER).toInteger(), AUConstants.X_V_HEADER_PRODUCTS)
@@ -100,7 +100,7 @@ class ProductRetrievalValidationTest extends AUTest {
         Response response = AURequestBuilder.buildBasicRequestWithOptionalHeaders(userAccessToken,
                 AUConstants.X_V_HEADER_PRODUCT, clientHeader)
                 .baseUri(AUTestUtil.getBaseUrl(AUConstants.BASE_PATH_TYPE_PRODUCTS))
-                .get("${AUConstants.CDS_PATH}${AUConstants.BANKING_PRODUCT_PATH}/12345")
+                .get("${AUConstants.BANKING_PRODUCT_PATH}/12345")
 
         Assert.assertEquals(response.statusCode(), AUConstants.STATUS_CODE_200)
         Assert.assertEquals(response.getHeader(AUConstants.X_V_HEADER).toInteger(), AUConstants.X_V_HEADER_PRODUCT)
@@ -115,7 +115,7 @@ class ProductRetrievalValidationTest extends AUTest {
                 AUConstants.X_V_HEADER_PRODUCTS, clientHeader)
                 .queryParam(AUConstants.PAGE_SIZE, 200000)
                 .baseUri(AUTestUtil.getBaseUrl(AUConstants.BASE_PATH_TYPE_PRODUCTS))
-                .get("${AUConstants.CDS_PATH}${AUConstants.BANKING_PRODUCT_PATH}")
+                .get("${AUConstants.BANKING_PRODUCT_PATH}")
 
         Assert.assertEquals(response.statusCode(), AUConstants.STATUS_CODE_400)
         Assert.assertEquals(response.getHeader(AUConstants.X_V_HEADER).toInteger(), AUConstants.X_V_HEADER_PRODUCTS)
@@ -135,7 +135,7 @@ class ProductRetrievalValidationTest extends AUTest {
         Response response = AURequestBuilder.buildBasicRequestWithOptionalHeaders(userAccessToken,
                 AUConstants.X_V_HEADER_PRODUCTS, clientHeader)
                 .baseUri(AUTestUtil.getBaseUrl(AUConstants.BASE_PATH_TYPE_PRODUCTS))
-                .get("${AUConstants.CDS_PATH}${AUConstants.BANKING_PRODUCT_PATH}${queryParams}")
+                .get("${AUConstants.BANKING_PRODUCT_PATH}${queryParams}")
 
         productId = AUTestUtil.parseResponseBody(response, "${AUConstants.RESPONSE_DATA_PRODUCTS}.productId[0]").toString()
 
@@ -160,7 +160,7 @@ class ProductRetrievalValidationTest extends AUTest {
                 AUConstants.X_V_HEADER_PRODUCTS, clientHeader)
                 .queryParam(AUConstants.UPDATED_SINCE, AUConstants.DATE_FORMAT)
                 .baseUri(AUTestUtil.getBaseUrl(AUConstants.BASE_PATH_TYPE_PRODUCTS))
-                .get("${AUConstants.CDS_PATH}${AUConstants.BANKING_PRODUCT_PATH}")
+                .get("${AUConstants.BANKING_PRODUCT_PATH}")
 
         Assert.assertEquals(response.statusCode(), AUConstants.STATUS_CODE_400)
         Assert.assertEquals(response.getHeader(AUConstants.X_V_HEADER).toInteger(), AUConstants.X_V_HEADER_PRODUCTS)
@@ -180,7 +180,7 @@ class ProductRetrievalValidationTest extends AUTest {
         Response response = AURequestBuilder.buildBasicRequestWithoutAuthorisationHeader(AUConstants.X_V_HEADER_PRODUCTS)
                 .queryParam(AUConstants.BRAND, 123)
                 .baseUri(AUTestUtil.getBaseUrl(AUConstants.BASE_PATH_TYPE_ACCOUNT))
-                .get("${AUConstants.CDS_PATH}${AUConstants.BANKING_PRODUCT_PATH}")
+                .get("${AUConstants.BANKING_PRODUCT_PATH}")
 
         Assert.assertEquals(response.statusCode(), AUConstants.STATUS_CODE_400)
         Assert.assertEquals(response.getHeader(AUConstants.X_V_HEADER).toInteger(), AUConstants.X_V_HEADER_PRODUCTS)
@@ -197,7 +197,7 @@ class ProductRetrievalValidationTest extends AUTest {
         def response = AURequestBuilder.buildBasicRequestWithoutAuthorisationHeader(AUConstants.X_V_HEADER_PRODUCTS)
                 .queryParam(AUConstants.OPEN_STATUS_PARAM, AUConstants.STATUS_OPEN)
                 .baseUri(AUTestUtil.getBaseUrl(AUConstants.BASE_PATH_TYPE_PRODUCTS))
-                .get("${AUConstants.CDS_PATH}${AUConstants.BANKING_PRODUCT_PATH}")
+                .get("${AUConstants.BANKING_PRODUCT_PATH}")
 
         Assert.assertEquals(response.statusCode(), AUConstants.STATUS_CODE_400)
         Assert.assertEquals(response.getHeader(AUConstants.X_V_HEADER).toInteger(), AUConstants.X_V_HEADER_PRODUCTS)
@@ -218,7 +218,7 @@ class ProductRetrievalValidationTest extends AUTest {
         Response response = AURequestBuilder.buildBasicRequestWithoutAuthorisationHeader(AUConstants.X_V_HEADER_PRODUCTS)
                 .queryParam(AUConstants.EFFECTIVE, AUConstants.ALL)
                 .baseUri(AUTestUtil.getBaseUrl(AUConstants.BASE_PATH_TYPE_PRODUCTS))
-                .get("${AUConstants.CDS_PATH}${AUConstants.BANKING_PRODUCT_PATH}${queryParams}")
+                .get("${AUConstants.BANKING_PRODUCT_PATH}${queryParams}")
 
         productId = AUTestUtil.parseResponseBody(response, "${AUConstants.RESPONSE_DATA_PRODUCTS}.productId[0]").toString()
 
@@ -242,7 +242,7 @@ class ProductRetrievalValidationTest extends AUTest {
         def response = AURequestBuilder.buildBasicRequestWithoutAuthorisationHeader(AUConstants.X_V_HEADER_PRODUCTS)
                 .queryParam(AUConstants.PRODUCT_CATEGORY, "TRANS")
                 .baseUri(AUTestUtil.getBaseUrl(AUConstants.BASE_PATH_TYPE_PRODUCTS))
-                .get("${AUConstants.CDS_PATH}${AUConstants.BANKING_PRODUCT_PATH}")
+                .get("${AUConstants.BANKING_PRODUCT_PATH}")
 
         Assert.assertEquals(response.statusCode(), AUConstants.STATUS_CODE_400)
         Assert.assertEquals(response.getHeader(AUConstants.X_V_HEADER).toInteger(), AUConstants.X_V_HEADER_PRODUCTS)

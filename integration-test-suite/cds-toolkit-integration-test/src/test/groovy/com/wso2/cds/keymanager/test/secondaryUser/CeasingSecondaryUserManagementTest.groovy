@@ -39,17 +39,15 @@ class CeasingSecondaryUserManagementTest extends AUTest {
         //Get Sharable Account List and Secondary User with Authorize Permission
         shareableElements = AUTestUtil.getSecondaryUserDetails(getSharableBankAccounts())
 
-        String accountID =  shareableElements[AUConstants.PARAM_ACCOUNT_ID]
-        String userId = auConfiguration.getUserPSUName()
+        accountID =  shareableElements[AUConstants.PARAM_ACCOUNT_ID]
+        userId = auConfiguration.getUserPSUName()
 
         //Give Secondary User Instruction Permission
         def updateResponse = updateSecondaryUserInstructionPermission(accountID, userId, AUConstants.ACTIVE)
         Assert.assertEquals(updateResponse.statusCode(), AUConstants.OK)
 
-        //Get Legal Entity ID
-        legalEntityList = AUTestUtil.getLegalEntityIdList(getLegalEntityIds(userId), userId, accountID)
-        legalEntityId1 = legalEntityList[0]
-        legalEntityId2 = legalEntityList[1]
+        legalEntityId1 = "LegalEntity1"
+        legalEntityId2 = "LegalEntity2"
     }
 
     @Test
@@ -92,7 +90,7 @@ class CeasingSecondaryUserManagementTest extends AUTest {
     void "CDS-634_Block multiple legal entities for same user and same account id"() {
 
         response = updateLegalEntityStatus(clientHeader, accountID, userId, legalEntityId1, AUConstants.BLOCK_ENTITY,
-                true, accountID, userId, legalEntityId2, AUConstants.BLOCK_ENTITY)
+                true, userId, accountID, legalEntityId2, AUConstants.BLOCK_ENTITY)
         Assert.assertEquals(response.statusCode(), AUConstants.STATUS_CODE_200)
 
         //Check Sharing Status - Legal Entity 1
