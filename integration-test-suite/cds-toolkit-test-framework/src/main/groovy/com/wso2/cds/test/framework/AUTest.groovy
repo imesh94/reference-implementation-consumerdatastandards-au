@@ -1114,10 +1114,9 @@ class AUTest extends OBTest {
      * @param statusList - Status List
      * @return response.
      */
-    Response updateDisclosureOptionsMgtService(String headerString, List <String> jointAccountIdList,
-                                               List <String> statusList) {
+    Response updateDisclosureOptionsMgtService(String headerString, Map<String, String> domsStatusMap) {
 
-        def requestBody = AUPayloads.getDOMSStatusUpdatePayload(jointAccountIdList, statusList)
+        def requestBody = AUPayloads.getDOMSStatusUpdatePayload(domsStatusMap)
 
         return AURestAsRequestBuilder.buildRequest()
                 .header(AUConstants.AUTHORIZATION_HEADER_KEY, AUConstants.BASIC_HEADER_KEY + " " +

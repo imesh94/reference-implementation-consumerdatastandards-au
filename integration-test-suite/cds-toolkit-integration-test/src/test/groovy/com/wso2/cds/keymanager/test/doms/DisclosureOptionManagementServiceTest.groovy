@@ -37,6 +37,7 @@ class DisclosureOptionManagementServiceTest extends AUTest {
     private List<String> jointAccountIdList = new ArrayList<>()
     private List<String> singleAccountIdList = new ArrayList<>()
     private String secretKey = auConfiguration.getIDPermanence()
+    Map<String, String> map
 
     @BeforeClass (alwaysRun = true)
     void "Initial Consent Authorisation"() {
@@ -47,10 +48,11 @@ class DisclosureOptionManagementServiceTest extends AUTest {
         singleAccountIdList = AUTestUtil.getSingleAccountIds(getSharableBankAccounts())
 
         //Update the DOMS Status of both accounts to pre-approval
-        List<String> statusList = [AUDOMSStatus.PRE_APPROVAL.getDomsStatusString(),
-                                   AUDOMSStatus.PRE_APPROVAL.getDomsStatusString()]
+        map = new HashMap<>()
+        map.put(jointAccountIdList[0], AUDOMSStatus.PRE_APPROVAL.getDomsStatusString())
+        map.put(jointAccountIdList[2], AUDOMSStatus.PRE_APPROVAL.getDomsStatusString())
 
-        Response updateResponse = updateDisclosureOptionsMgtService(clientHeader, jointAccountIdList, statusList)
+        Response updateResponse = updateDisclosureOptionsMgtService(clientHeader, map)
         Assert.assertEquals(updateResponse.statusCode(), AUConstants.OK)
 
         //Consent Authorisation
@@ -69,10 +71,10 @@ class DisclosureOptionManagementServiceTest extends AUTest {
         generateUserAccessToken()
 
         //Update the DOMS Status to pre-approval and no-sharing
-        List<String> statusList = [AUDOMSStatus.PRE_APPROVAL.getDomsStatusString(),
-                                   AUDOMSStatus.NO_SHARING.getDomsStatusString()]
+        map.put(jointAccountIdList[0], AUDOMSStatus.PRE_APPROVAL.getDomsStatusString())
+        map.put(jointAccountIdList[2], AUDOMSStatus.NO_SHARING.getDomsStatusString())
 
-        Response updateResponse = updateDisclosureOptionsMgtService(clientHeader, jointAccountIdList, statusList)
+        Response updateResponse = updateDisclosureOptionsMgtService(clientHeader, map)
         Assert.assertEquals(updateResponse.statusCode(), AUConstants.OK)
 
         //Account Retrieval - Return Account Details only for 1st account
@@ -91,8 +93,8 @@ class DisclosureOptionManagementServiceTest extends AUTest {
     void "CDS-404_Verify Account retrieval when DOMS status change to no-sharing"() {
 
         //Update the DOMS Status to no-sharing
-        List<String> statusList = [AUDOMSStatus.NO_SHARING.getDomsStatusString()]
-        Response updateResponse = updateDisclosureOptionsMgtService(clientHeader, jointAccountIdList, statusList)
+        map.put(jointAccountIdList[0], AUDOMSStatus.NO_SHARING.getDomsStatusString())
+        Response updateResponse = updateDisclosureOptionsMgtService(clientHeader, map)
         Assert.assertEquals(updateResponse.statusCode(), AUConstants.OK)
 
         //Account Retrieval - Not Return Account Details
@@ -106,8 +108,9 @@ class DisclosureOptionManagementServiceTest extends AUTest {
     void "CDS-625_Verify Account retrieval when DOMS status change to pre-approval"() {
 
         //Update the DOMS Status to pre-approval
-        List<String> statusList = [AUDOMSStatus.PRE_APPROVAL.getDomsStatusString()]
-        Response updateResponse = updateDisclosureOptionsMgtService(clientHeader, jointAccountIdList, statusList)
+        map.put(jointAccountIdList[0], AUDOMSStatus.PRE_APPROVAL.getDomsStatusString())
+
+        Response updateResponse = updateDisclosureOptionsMgtService(clientHeader, map)
         Assert.assertEquals(updateResponse.statusCode(), AUConstants.OK)
 
         //Account Retrieval - Return Account Details
@@ -120,8 +123,9 @@ class DisclosureOptionManagementServiceTest extends AUTest {
     void "CDS-406_Verify single account retrieval when DOMS status change to pre-approval"() {
 
         //Update the DOMS Status to pre-approval
-        List<String> statusList = [AUDOMSStatus.PRE_APPROVAL.getDomsStatusString()]
-        Response updateResponse = updateDisclosureOptionsMgtService(clientHeader, jointAccountIdList, statusList)
+        map.put(jointAccountIdList[0], AUDOMSStatus.PRE_APPROVAL.getDomsStatusString())
+
+        Response updateResponse = updateDisclosureOptionsMgtService(clientHeader, map)
         Assert.assertEquals(updateResponse.statusCode(), AUConstants.OK)
 
         //Account Retrieval - Return Account Details
@@ -138,8 +142,10 @@ class DisclosureOptionManagementServiceTest extends AUTest {
     void "CDS-407_Verify single account retrieval when DOMS status change to no-sharing"() {
 
         //Update the DOMS Status to no-sharing
-        List<String> statusList = [AUDOMSStatus.NO_SHARING.getDomsStatusString(), AUDOMSStatus.NO_SHARING.getDomsStatusString()]
-        Response updateResponse = updateDisclosureOptionsMgtService(clientHeader, jointAccountIdList, statusList)
+        map.put(jointAccountIdList[0], AUDOMSStatus.NO_SHARING.getDomsStatusString())
+        map.put(jointAccountIdList[2], AUDOMSStatus.NO_SHARING.getDomsStatusString())
+
+        Response updateResponse = updateDisclosureOptionsMgtService(clientHeader, map)
         Assert.assertEquals(updateResponse.statusCode(), AUConstants.OK)
 
         //Account Retrieval - Not Return Account Details
@@ -156,8 +162,9 @@ class DisclosureOptionManagementServiceTest extends AUTest {
     void "CDS-408_Verify the DOMS put-call changing the status of a particular account from Pre approval to No Sharing"() {
 
         //Update the DOMS Status to pre-approval
-        List<String> statusList = [AUDOMSStatus.PRE_APPROVAL.getDomsStatusString()]
-        Response updateResponse = updateDisclosureOptionsMgtService(clientHeader, jointAccountIdList, statusList)
+        map.put(jointAccountIdList[0], AUDOMSStatus.PRE_APPROVAL.getDomsStatusString())
+
+        Response updateResponse = updateDisclosureOptionsMgtService(clientHeader, map)
         Assert.assertEquals(updateResponse.statusCode(), AUConstants.OK)
 
         //Account Retrieval - Return Account Details
@@ -171,8 +178,9 @@ class DisclosureOptionManagementServiceTest extends AUTest {
                 "${AUConstants.RESPONSE_DATA_BULK_ACCOUNTID_LIST}[0]"))
 
         //Update the DOMS Status to no-sharing
-        statusList = [AUDOMSStatus.NO_SHARING.getDomsStatusString()]
-        updateResponse = updateDisclosureOptionsMgtService(clientHeader, jointAccountIdList, statusList)
+        map.put(jointAccountIdList[0], AUDOMSStatus.NO_SHARING.getDomsStatusString())
+
+        updateResponse = updateDisclosureOptionsMgtService(clientHeader, map)
         Assert.assertEquals(updateResponse.statusCode(), AUConstants.OK)
 
         //Account Retrieval - Not Return Account Details
@@ -190,8 +198,9 @@ class DisclosureOptionManagementServiceTest extends AUTest {
     void "CDS-410_Verify the DOMS put-call changing the status of a particular account from No Sharing to Pre approval"() {
 
         //Update the DOMS Status to no-sharing
-        List<String> statusList = [AUDOMSStatus.NO_SHARING.getDomsStatusString()]
-        Response updateResponse = updateDisclosureOptionsMgtService(clientHeader, jointAccountIdList, statusList)
+        map.put(jointAccountIdList[0], AUDOMSStatus.NO_SHARING.getDomsStatusString())
+
+        Response updateResponse = updateDisclosureOptionsMgtService(clientHeader, map)
         Assert.assertEquals(updateResponse.statusCode(), AUConstants.OK)
 
         //Account Retrieval - Not Return Account Details
@@ -205,8 +214,9 @@ class DisclosureOptionManagementServiceTest extends AUTest {
                 "${AUConstants.RESPONSE_DATA_BULK_ACCOUNTID_LIST}[0]"))
 
         //Update the DOMS Status to pre-approval
-        statusList = [AUDOMSStatus.PRE_APPROVAL.getDomsStatusString()]
-        updateResponse = updateDisclosureOptionsMgtService(clientHeader, jointAccountIdList, statusList)
+        map.put(jointAccountIdList[0], AUDOMSStatus.PRE_APPROVAL.getDomsStatusString())
+
+        updateResponse = updateDisclosureOptionsMgtService(clientHeader, map)
         Assert.assertEquals(updateResponse.statusCode(), AUConstants.OK)
 
         //Account Retrieval - Return Account Details
@@ -224,8 +234,9 @@ class DisclosureOptionManagementServiceTest extends AUTest {
     void "CDS-619_Verify creating new consent when DOMS is in pre-approval status"() {
 
         //Update the DOMS Status to pre-approval
-        List<String> statusList = [AUDOMSStatus.PRE_APPROVAL.getDomsStatusString()]
-        Response updateResponse = updateDisclosureOptionsMgtService(clientHeader, jointAccountIdList, statusList)
+        map.put(jointAccountIdList[0], AUDOMSStatus.PRE_APPROVAL.getDomsStatusString())
+
+        Response updateResponse = updateDisclosureOptionsMgtService(clientHeader, map)
         Assert.assertEquals(updateResponse.statusCode(), AUConstants.OK)
 
         //Consent Authorisation
@@ -249,8 +260,9 @@ class DisclosureOptionManagementServiceTest extends AUTest {
     void "CDS-620_Verify creating new consent when DOMS status to no-sharing status"() {
 
         //Update the DOMS Status to no-sharing
-        List<String> statusList = [AUDOMSStatus.NO_SHARING.getDomsStatusString()]
-        Response updateResponse = updateDisclosureOptionsMgtService(clientHeader, jointAccountIdList, statusList)
+        map.put(jointAccountIdList[0], AUDOMSStatus.NO_SHARING.getDomsStatusString())
+
+        Response updateResponse = updateDisclosureOptionsMgtService(clientHeader, map)
         Assert.assertEquals(updateResponse.statusCode(), AUConstants.OK)
 
         //Consent Authorisation
@@ -306,8 +318,9 @@ class DisclosureOptionManagementServiceTest extends AUTest {
     void "CDS-624_Consent search API for DOMS status to no-sharing status"() {
 
         //Update the DOMS Status to no-sharing
-        List<String> statusList = [AUDOMSStatus.NO_SHARING.getDomsStatusString()]
-        Response updateResponse = updateDisclosureOptionsMgtService(clientHeader, jointAccountIdList, statusList)
+        map.put(jointAccountIdList[0], AUDOMSStatus.NO_SHARING.getDomsStatusString())
+
+        Response updateResponse = updateDisclosureOptionsMgtService(clientHeader, map)
         Assert.assertEquals(updateResponse.statusCode(), AUConstants.OK)
 
         def response = doConsentSearch()
@@ -319,8 +332,9 @@ class DisclosureOptionManagementServiceTest extends AUTest {
     void "CDS-623_Consent search API for DOMS status to pre-approval status"() {
 
         //Update the DOMS Status to pre-approval
-        List<String> statusList = [AUDOMSStatus.PRE_APPROVAL.getDomsStatusString()]
-        Response updateResponse = updateDisclosureOptionsMgtService(clientHeader, jointAccountIdList, statusList)
+        map.put(jointAccountIdList[0], AUDOMSStatus.PRE_APPROVAL.getDomsStatusString())
+
+        Response updateResponse = updateDisclosureOptionsMgtService(clientHeader, map)
         Assert.assertEquals(updateResponse.statusCode(), AUConstants.OK)
 
         def response = doConsentSearch()
@@ -342,8 +356,9 @@ class DisclosureOptionManagementServiceTest extends AUTest {
         Assert.assertNotNull(cdrArrangementId)
 
         //Update the DOMS Status to no-sharing
-        List<String> statusList = [AUDOMSStatus.NO_SHARING.getDomsStatusString()]
-        Response updateResponse = updateDisclosureOptionsMgtService(clientHeader, jointAccountIdList, statusList)
+        map.put(jointAccountIdList[0], AUDOMSStatus.NO_SHARING.getDomsStatusString())
+
+        Response updateResponse = updateDisclosureOptionsMgtService(clientHeader, map)
         Assert.assertEquals(updateResponse.statusCode(), AUConstants.OK)
 
         //Consent Amendment
