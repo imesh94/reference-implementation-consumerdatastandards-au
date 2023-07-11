@@ -71,22 +71,25 @@ class JarmResponseModeQueryJwtValidationTests extends AUTest {
     @Test
     void "CDS-561_Verify in query jwt response mode if response_type = token"() {
 
-        doConsentAuthorisation(ResponseMode.QUERY_JWT, ResponseType.TOKEN, auConfiguration.getAppInfoClientID())
-        authResponseUrl = automationResponse.currentUrl.get()
+        response = auAuthorisationBuilder.doPushAuthorisationRequest(scopes, AUConstants.DEFAULT_SHARING_DURATION,
+                true, "", auConfiguration.getAppInfoClientID(),
+                auConfiguration.getAppInfoRedirectURL(), ResponseType.TOKEN.toString())
 
-        //Since the default config enables response_type=token, the response will be a string in json format.
-        Assert.assertTrue(authResponseUrl.contains(AUConstants.ACCESS_TOKEN))
+        Assert.assertEquals(AUTestUtil.parseResponseBody(response, AUConstants.ERROR), AUConstants.INVALID_REQUEST)
+        Assert.assertEquals(AUTestUtil.parseResponseBody(response, AUConstants.ERROR_DESCRIPTION),
+                AUConstants.ERROR_UNSUPPORTED_RESPONSE)
     }
 
     @Test
     void "CDS-562_Verify in query jwt response mode if response_type = code id_token"() {
 
-        doConsentAuthorisation(ResponseMode.QUERY_JWT, ResponseType.CODE_IDTOKEN, auConfiguration.getAppInfoClientID())
-        authResponseUrl = automationResponse.currentUrl.get()
+        response = auAuthorisationBuilder.doPushAuthorisationRequest(scopes, AUConstants.DEFAULT_SHARING_DURATION,
+                true, "", auConfiguration.getAppInfoClientID(),
+                auConfiguration.getAppInfoRedirectURL(), ResponseType.CODE_IDTOKEN.toString())
 
-        //Since the AU spec supports code id_token, the response will be a string without jwt format.
-        Assert.assertTrue(authResponseUrl.contains(AUConstants.CODE_KEY))
-        Assert.assertTrue(authResponseUrl.contains(AUConstants.ID_TOKEN_KEY))
+        Assert.assertEquals(AUTestUtil.parseResponseBody(response, AUConstants.ERROR), AUConstants.INVALID_REQUEST)
+        Assert.assertEquals(AUTestUtil.parseResponseBody(response, AUConstants.ERROR_DESCRIPTION),
+                AUConstants.ERROR_UNSUPPORTED_RESPONSE)
     }
 
     @Test

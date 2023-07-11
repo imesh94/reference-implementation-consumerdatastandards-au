@@ -49,7 +49,7 @@ class ConcurrentConsentTest extends AUTest {
         response = auAuthorisationBuilder.doPushAuthorisationRequest(scopes2, AUConstants.DEFAULT_SHARING_DURATION,
                 true, "")
         requestUri = AUTestUtil.parseResponseBody(response, AUConstants.REQUEST_URI)
-        doConsentAuthorisationViaRequestUri(scopes2, requestUri.toURI(), clientId, AUAccountProfile.INDIVIDUAL)
+        doConsentAuthorisationViaRequestUriNoAccountSelection(scopes2, requestUri.toURI(), clientId, AUAccountProfile.INDIVIDUAL)
         Assert.assertNotNull(authorisationCode)
         def userAccessToken2 = AURequestBuilder.getUserToken(authorisationCode,
                 scopes1, auAuthorisationBuilder.getCodeVerifier())

@@ -201,6 +201,19 @@ class AUJWTGenerator {
     }
 
     /**
+     * Extract JWT token headers and assign to a map.
+     * @param jwtToken jwt token
+     * @return jwt header set
+     */
+    static JWSHeader extractJwtHeaders(String jwtToken) {
+
+        SignedJWT signedJWT = SignedJWT.parse(jwtToken)
+        JWSHeader headerSet = signedJWT.getHeader()
+
+        return headerSet
+    }
+
+    /**
      * Return signed JWT for Authorization request with string sharing duration.
      * The method is used for testing the auth request with string sharing duration.
      * @param scopeString

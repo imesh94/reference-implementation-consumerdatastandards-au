@@ -16,6 +16,7 @@ import com.nimbusds.jwt.JWTClaimsSet
 import com.nimbusds.oauth2.sdk.ResponseMode
 import com.nimbusds.oauth2.sdk.ResponseType
 import com.wso2.cds.test.framework.AUTest
+import com.wso2.cds.test.framework.constant.AUAccountProfile
 import com.wso2.cds.test.framework.constant.AUConstants
 import com.wso2.cds.test.framework.request_builder.AUJWTGenerator
 import com.wso2.cds.test.framework.utility.AUTestUtil
@@ -48,34 +49,33 @@ class JarmResponseModeJwtValidationTests extends AUTest{
     @Test
     void "CDS-578_Verify authorisation flow with response method jwt and response type token"() {
 
-        doConsentAuthorisation(ResponseMode.JWT, ResponseType.TOKEN, auConfiguration.getAppInfoClientID())
-        authResponseUrl = automationResponse.currentUrl.get()
-        responseJwt = authResponseUrl.split(AUConstants.HTML_RESPONSE_ATTR)[1]
-        Assert.assertNotNull(responseJwt)
-        jwtPayload = AUJWTGenerator.extractJwt(responseJwt)
+        response = auAuthorisationBuilder.doPushAuthorisationRequest(scopes, AUConstants.DEFAULT_SHARING_DURATION,
+                true, "", auConfiguration.getAppInfoClientID(),
+                auConfiguration.getAppInfoRedirectURL(), ResponseType.TOKEN.toString())
+        requestUri = AUTestUtil.parseResponseBody(response, AUConstants.REQUEST_URI)
 
-        Assert.assertNotNull(jwtPayload.getClaim(AUConstants.ACCESS_TOKEN))
+        Assert.assertEquals(AUTestUtil.parseResponseBody(response, AUConstants.ERROR), AUConstants.INVALID_REQUEST)
+        Assert.assertEquals(AUTestUtil.parseResponseBody(response, AUConstants.ERROR_DESCRIPTION),
+                AUConstants.ERROR_UNSUPPORTED_RESPONSE)
     }
 
     @Test
     void "CDS-579_Verify authorisation flow with response method jwt and response type code id_token"() {
 
-        doConsentAuthorisation(ResponseMode.JWT, ResponseType.CODE_IDTOKEN, auConfiguration.getAppInfoClientID())
-        authResponseUrl = automationResponse.currentUrl.get()
-        responseJwt = authResponseUrl.split(AUConstants.HTML_RESPONSE_ATTR)[1]
-        Assert.assertNotNull(responseJwt)
-        jwtPayload = AUJWTGenerator.extractJwt(responseJwt)
+        response = auAuthorisationBuilder.doPushAuthorisationRequest(scopes, AUConstants.DEFAULT_SHARING_DURATION,
+                true, "", auConfiguration.getAppInfoClientID(),
+                auConfiguration.getAppInfoRedirectURL(), ResponseType.CODE_IDTOKEN.toString())
 
-        Assert.assertNotNull(jwtPayload.getStringClaim(AUConstants.CODE_KEY))
-        Assert.assertNotNull(jwtPayload.getStringClaim(AUConstants.ID_TOKEN_KEY))
-        Assert.assertTrue(authResponseUrl.split(AUConstants.HTML_RESPONSE_ATTR)[0].contains("#"))
+        Assert.assertEquals(AUTestUtil.parseResponseBody(response, AUConstants.ERROR), AUConstants.INVALID_REQUEST)
+        Assert.assertEquals(AUTestUtil.parseResponseBody(response, AUConstants.ERROR_DESCRIPTION),
+                AUConstants.ERROR_UNSUPPORTED_RESPONSE)
     }
 
     @Test
     void "CDS-580_Verify a User access Token call with the Code received from jwt"() {
 
         //Consent Authorisation
-        doConsentAuthorisation(ResponseMode.JWT, ResponseType.CODE_IDTOKEN, auConfiguration.getAppInfoClientID())
+        doConsentAuthorisation(ResponseMode.JWT, ResponseType.CODE, auConfiguration.getAppInfoClientID())
         authResponseUrl = automationResponse.currentUrl.get()
         responseJwt = authResponseUrl.split(AUConstants.HTML_RESPONSE_ATTR)[1]
         Assert.assertNotNull(responseJwt)
@@ -83,8 +83,7 @@ class JarmResponseModeJwtValidationTests extends AUTest{
 
         authorisationCode = jwtPayload.getStringClaim(AUConstants.CODE_KEY)
         Assert.assertNotNull(authorisationCode)
-        Assert.assertNotNull(jwtPayload.getStringClaim(AUConstants.ID_TOKEN_KEY))
-        Assert.assertTrue(authResponseUrl.split(AUConstants.HTML_RESPONSE_ATTR)[0].contains("#"))
+        Assert.assertTrue(authResponseUrl.split(AUConstants.HTML_RESPONSE_ATTR)[0].contains("?"))
 
         //Generate User Access Token
         generateUserAccessToken(auConfiguration.getAppInfoClientID())
@@ -101,14 +100,8 @@ class JarmResponseModeJwtValidationTests extends AUTest{
                 true, "", clientId, auConfiguration.getAppInfoRedirectURL(),
                 ResponseType.parse("NONE").toString())
 
-        requestUri = AUTestUtil.parseResponseBody(response, AUConstants.REQUEST_URI)
-
-        //Send Authorisation Request
-        String authoriseUrl = auAuthorisationBuilder.getAuthorizationRequest(scopes, requestUri.toURI(), ResponseMode.JWT,
-                clientId, ResponseType.parse("NONE"), true).toURI().toString()
-        automationResponse = doAuthorisationErrorFlow(authoriseUrl)
-
-        authResponseUrl = automationResponse.currentUrl.get()
-        Assert.assertTrue(AUTestUtil.getErrorDescriptionFromUrl(authResponseUrl).contains(AUConstants.INVALID_RESPONSE_TYPE))
+        Assert.assertEquals(AUTestUtil.parseResponseBody(response, AUConstants.ERROR), AUConstants.INVALID_REQUEST)
+        Assert.assertEquals(AUTestUtil.parseResponseBody(response, AUConstants.ERROR_DESCRIPTION),
+                AUConstants.ERROR_UNSUPPORTED_RESPONSE)
     }
 }

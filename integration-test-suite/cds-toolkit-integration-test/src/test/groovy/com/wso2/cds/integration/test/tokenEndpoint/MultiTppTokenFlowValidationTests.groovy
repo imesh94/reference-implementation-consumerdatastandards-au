@@ -30,8 +30,6 @@ class MultiTppTokenFlowValidationTests extends AUTest {
 
         auConfiguration.setTppNumber(1)
 
-        AUMockCDRIntegrationUtil.loadMetaDataToCDRRegister()
-
         //Register Second TPP.
         def registrationResponse = tppRegistration()
         clientId = AUTestUtil.parseResponseBody(registrationResponse, "client_id")
