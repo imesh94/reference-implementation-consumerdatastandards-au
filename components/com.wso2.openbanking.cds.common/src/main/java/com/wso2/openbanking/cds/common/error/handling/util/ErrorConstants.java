@@ -112,6 +112,9 @@ public class ErrorConstants {
         INVALID_INDUSTRY(400, "AU.CDR.Register.InvalidIndustry", "Invalid Industry Requested", "Requested Industry " +
                 "in the request does not exist or invalid"),
         BAD_REQUEST(400, "AU.CDR.BadRequest", "Invalid Request", "Invalid Request passed"),
+        //AccountIDs field is missing in the request body
+        MISSING_FIELD_ACCOUNTIDS(400, "urn:au-cds:error:cds-all:Field/Missing",
+                "Missing Required Field", "accountIds field is missing in the request"),
         //Invalid authorization header
         UNAUTHORIZED(401, "AU.CDR.Unauthorized", "Invalid Authorisation Header",
                 "Authorization header not found in the request"),
@@ -167,6 +170,8 @@ public class ErrorConstants {
         //Requested version is less than the minimum version or greater than the maximum version
         UNSUPPORTED_VERSION(406, "urn:au-cds:error:cds-all:Header/UnsupportedVersion", "Unsupported Version",
                 "Requested endpoint version %s is not supported"),
+        INVALID_ACCEPT_HEADER(406, "urn:au-cds:error:cds-all:GeneralError/Expected", "Expected Error Encountered",
+                "Invalid Accept Header"),
         //Page out of range
         PAGE_OUT_OF_RANGE(422, "AU.CDR.Invalid.PageOutOfRange", "Page Requested Is Out Of Range",
                 "Page Requested Is Out Of Range"),

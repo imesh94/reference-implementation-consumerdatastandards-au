@@ -43,6 +43,9 @@ public class CDSErrorHandler implements OpenBankingGatewayExecutor {
     private static final String STATUS_CODE = "statusCode";
     private static final String RESPONSE_PAYLOAD_SIZE = "responsePayloadSize";
 
+    //Accelerator error codes
+    public static final String ACCELERATOR_EXPECTED_ERROR = "200012";
+
     /**
      * Method to handle pre request
      *
@@ -232,7 +235,11 @@ public class CDSErrorHandler implements OpenBankingGatewayExecutor {
                     }
                 } else {
                     // TODO: need to capture non JSON errors from accelerator side, error codes starting from 20000
-                    errorObj.addProperty(ErrorConstants.TITLE, error.getTitle());
+                    String errorTitle = error.getTitle();
+                    if (ACCELERATOR_EXPECTED_ERROR.equals(error.getCode())) {
+                        errorTitle = ErrorConstants.AUErrorEnum.EXPECTED_GENERAL_ERROR.getCode();
+                    }
+                    errorObj.addProperty(ErrorConstants.TITLE, errorTitle);
                     errorObj.addProperty(ErrorConstants.DETAIL, errorPayload.toString());
                 }
             } catch (ParseException e) {

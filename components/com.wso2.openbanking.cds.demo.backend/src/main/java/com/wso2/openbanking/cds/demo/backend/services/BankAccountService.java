@@ -277,7 +277,7 @@ public class BankAccountService {
             "            \"isJointAccount\": false,\n" +
             "            \"jointAccountConsentElectionStatus\": false,\n" +
             "            \"isSecondaryAccount\" : true,\n" +
-            "            \"secondaryAccountPrivilegeStatus\" : false,\n" +
+            "            \"secondaryAccountPrivilegeStatus\" : true,\n" +
             "            \"secondaryAccountInfo\": {\n" +
             "              \"accountOwner\": [\n" +
             "                {\n" +

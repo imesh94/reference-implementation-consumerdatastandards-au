@@ -444,6 +444,7 @@ public class BankingService {
                 "        \"isOwned\": true,\n" +
                 "        \"maskedNumber\": \"1234\",\n" +
                 "        \"productCategory\": \"TRANS_AND_SAVINGS_ACCOUNTS\",\n" +
+                "        \"accountOwnership\": \"UNKNOWN\",\n" +
                 "        \"productName\": \"Product name\"\n" +
                 "      }";
         return jsonParser.parse(accountJson).getAsJsonObject();
@@ -460,6 +461,7 @@ public class BankingService {
                 "    \"isOwned\": true,\n" +
                 "    \"maskedNumber\": \"1234\",\n" +
                 "    \"productCategory\": \"TRANS_AND_SAVINGS_ACCOUNTS\",\n" +
+                "    \"accountOwnership\": \"UNKNOWN\",\n" +
                 "    \"productName\": \"Product name\",\n" +
                 "    \"bsb\": \"bsb\",\n" +
                 "    \"accountNumber\": \"12345\",\n" +
