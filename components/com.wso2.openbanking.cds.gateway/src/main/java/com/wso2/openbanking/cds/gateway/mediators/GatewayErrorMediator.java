@@ -105,7 +105,9 @@ public class GatewayErrorMediator extends AbstractMediator {
             }
             int statusCode = Integer.parseInt(statusCodeString);
             ErrorConstants.AUErrorEnum errorEnum;
-            if (statusCodeString.startsWith("4")) {
+            if ("406".equals(statusCodeString)) {
+                errorEnum = ErrorConstants.AUErrorEnum.INVALID_ACCEPT_HEADER;
+            } else if (statusCodeString.startsWith("4")) {
                 errorEnum = ErrorConstants.AUErrorEnum.EXPECTED_GENERAL_ERROR;
             } else if (statusCodeString.startsWith("5")) {
                 errorEnum = ErrorConstants.AUErrorEnum.UNEXPECTED_ERROR;
