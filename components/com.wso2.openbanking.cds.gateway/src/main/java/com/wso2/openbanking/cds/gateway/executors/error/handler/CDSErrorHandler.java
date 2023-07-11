@@ -43,7 +43,7 @@ public class CDSErrorHandler implements OpenBankingGatewayExecutor {
     private static final String STATUS_CODE = "statusCode";
     private static final String RESPONSE_PAYLOAD_SIZE = "responsePayloadSize";
 
-    //Accelerator error codes
+    //Accelerator error codes.
     public static final String ACCELERATOR_EXPECTED_ERROR = "200012";
 
     /**
