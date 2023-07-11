@@ -112,7 +112,7 @@ public class ErrorConstants {
         INVALID_INDUSTRY(400, "AU.CDR.Register.InvalidIndustry", "Invalid Industry Requested", "Requested Industry " +
                 "in the request does not exist or invalid"),
         BAD_REQUEST(400, "AU.CDR.BadRequest", "Invalid Request", "Invalid Request passed"),
-        ////AccountIDs field is missing in the request body
+        //AccountIDs field is missing in the request body
         MISSING_FIELD_ACCOUNTIDS(400, "urn:au-cds:error:cds-all:Field/Missing",
                 "Missing Required Field", "accountIds field is missing in the request"),
         //Invalid authorization header
