@@ -55,6 +55,7 @@ public class CDSConsentPersistUtil {
             log.debug("Non-primary accountId against users map not available in consentPersistData. " +
                     "Creating new map");
         }
+
         if (consentPersistData.getMetadata().get(CDSConsentExtensionConstants.
                 USER_ID_AGAINST_NON_PRIMARY_ACCOUNTS_MAP) != null) {
             currentUserIdNonPrimaryAccountsMap = (Map<String, List<String>>) consentPersistData.getMetadata().
@@ -70,11 +71,23 @@ public class CDSConsentPersistUtil {
                     nonPrimaryAccountIDWithPermissionsMap);
         }
 
-        //Add new non-primary account data to consent persist data
+        // update Non-primary account against users map
+        currentNonPrimaryAccountIdUsersMap.putAll(nonPrimaryAccountIdUsersMap);
+
+        // update user against account map
         Map<String, List<String>> userIdNonPrimaryAccountsMap = getUserIdAgainstAccountsMap(
                 nonPrimaryAccountIdUsersMap);
-        currentNonPrimaryAccountIdUsersMap.putAll(nonPrimaryAccountIdUsersMap);
-        currentUserIdNonPrimaryAccountsMap.putAll(userIdNonPrimaryAccountsMap);
+        for (Map.Entry<String, List<String>> entry : userIdNonPrimaryAccountsMap.entrySet()) {
+            final String userId = entry.getKey();
+            final List<String> nonPrimaryAccounts = entry.getValue();
+            if (currentUserIdNonPrimaryAccountsMap.containsKey(userId)) {
+                currentUserIdNonPrimaryAccountsMap.get(userId).addAll(nonPrimaryAccounts);
+            } else {
+                currentUserIdNonPrimaryAccountsMap.put(userId, nonPrimaryAccounts);
+            }
+        }
+
+        //Add new non-primary account data to consent persist data
         consentPersistData.addMetadata(CDSConsentExtensionConstants.NON_PRIMARY_ACCOUNT_ID_AGAINST_USERS_MAP,
                 currentNonPrimaryAccountIdUsersMap);
         consentPersistData.addMetadata(CDSConsentExtensionConstants.USER_ID_AGAINST_NON_PRIMARY_ACCOUNTS_MAP,
