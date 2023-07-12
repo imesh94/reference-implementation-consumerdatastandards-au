@@ -296,6 +296,7 @@
                             com.wso2.openbanking.cds.identity.auth.extensions.request.validator;version="${project.version}",
                             com.wso2.openbanking.cds.identity.auth.extensions.request.validator.*;version="${project.version}",
                             com.wso2.openbanking.cds.identity.auth.extensions.response.handler;version="${project.version}",
+                            com.wso2.openbanking.cds.identity.auth.extensions.response.validator;version="${project.version}",
                             com.wso2.openbanking.cds.identity.claims;version="${project.version}",
                             com.wso2.openbanking.cds.identity.claims.*;version="${project.version}",
                             com.wso2.openbanking.cds.identity.grant.type.handlers;version="${project.version}",
