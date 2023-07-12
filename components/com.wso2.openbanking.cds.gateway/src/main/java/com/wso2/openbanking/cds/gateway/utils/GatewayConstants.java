@@ -55,6 +55,7 @@ public class GatewayConstants {
     public static final String PAYLOAD_FORMING_ERROR = "Error while forming fault payload";
     public static final String PAYLOAD_SETTING_ERROR = "Error while setting the json payload";
     public static final String SCHEMA_FAIL_MSG = "Schema validation failed";
+    public static final String THROTTLED_OUT_ERROR = "Message throttled out. You have exceeded your quota";
 
     public static final String X_FAPI_CUSTOMER_IP_ADDRESS = "x-fapi-customer-ip-address";
     public static final String CUSTOMER_STATUS = "customerStatus";

@@ -283,7 +283,7 @@ public class GatewayErrorMediator extends AbstractMediator {
         String errorResponse;
 
         errorList.add(ErrorUtil.getErrorObject(ErrorConstants.AUErrorEnum.EXPECTED_GENERAL_ERROR,
-                "Message throttled out. You have exceeded your quota",
+                GatewayConstants.THROTTLED_OUT_ERROR,
                 new CDSErrorMeta()));
 
         errorResponse = ErrorUtil.getErrorJson(errorList);

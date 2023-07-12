@@ -17,6 +17,7 @@ import org.apache.synapse.commons.json.JsonUtil;
 import org.apache.synapse.config.SynapseConfiguration;
 import org.apache.synapse.core.SynapseEnvironment;
 import org.apache.synapse.core.axis2.Axis2MessageContext;
+import org.apache.synapse.transport.nhttp.NhttpConstants;
 import org.mockito.Mockito;
 import org.powermock.core.classloader.annotations.PowerMockIgnore;
 import org.powermock.core.classloader.annotations.PrepareForTest;
@@ -44,6 +45,8 @@ public class GatewayErrorMediatorTest extends PowerMockTestCase {
         MessageContext messageContext = getData();
         messageContext.setProperty(GatewayConstants.ERROR_CODE, 900806);
         Assert.assertTrue(gatewayErrorMediator.mediate(messageContext));
+        Assert.assertEquals(((Axis2MessageContext) messageContext)
+                .getAxis2MessageContext().getProperty(NhttpConstants.HTTP_SC), 429);
     }
 
     @Test
