@@ -9,7 +9,6 @@
 
 package com.wso2.openbanking.cds.consent.extensions.validate;
 
-import com.wso2.openbanking.accelerator.account.metadata.service.service.AccountMetadataService;
 import com.wso2.openbanking.accelerator.account.metadata.service.service.AccountMetadataServiceImpl;
 import com.wso2.openbanking.accelerator.common.exception.OpenBankingException;
 import com.wso2.openbanking.accelerator.consent.extensions.common.ConsentException;
@@ -17,14 +16,12 @@ import com.wso2.openbanking.accelerator.consent.extensions.common.ResponseStatus
 import com.wso2.openbanking.accelerator.consent.extensions.validate.model.ConsentValidateData;
 import com.wso2.openbanking.accelerator.consent.extensions.validate.model.ConsentValidationResult;
 import com.wso2.openbanking.accelerator.consent.extensions.validate.model.ConsentValidator;
-import com.wso2.openbanking.accelerator.consent.mgt.dao.models.AuthorizationResource;
 import com.wso2.openbanking.accelerator.consent.mgt.dao.models.ConsentMappingResource;
 import com.wso2.openbanking.cds.common.config.OpenBankingCDSConfigParser;
 import com.wso2.openbanking.cds.common.error.handling.util.ErrorConstants;
 import com.wso2.openbanking.cds.common.metadata.domain.MetadataValidationResponse;
 import com.wso2.openbanking.cds.common.metadata.status.validator.service.MetadataService;
 import com.wso2.openbanking.cds.consent.extensions.common.CDSConsentExtensionConstants;
-import com.wso2.openbanking.cds.consent.extensions.common.SecondaryAccountOwnerTypeEnum;
 import com.wso2.openbanking.cds.consent.extensions.util.CDSConsentExtensionsUtil;
 import com.wso2.openbanking.cds.consent.extensions.validate.utils.CDSConsentValidatorUtil;
 import net.minidev.json.JSONObject;
@@ -39,7 +36,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Iterator;
 import java.util.List;
-
+import java.util.function.Predicate;
 import static com.wso2.openbanking.accelerator.consent.mgt.service.constants.ConsentCoreServiceConstants.
         INACTIVE_MAPPING_STATUS;
 
@@ -57,6 +54,8 @@ public class CDSConsentValidator implements ConsentValidator {
             throws ConsentException {
 
         JSONObject receiptJSON;
+        OpenBankingCDSConfigParser openBankingCDSConfigParser = OpenBankingCDSConfigParser.getInstance();
+
         try {
             receiptJSON = (JSONObject) (new JSONParser(JSONParser.MODE_PERMISSIVE)).
                     parse(consentValidateData.getComprehensiveConsent().getReceipt());
@@ -88,7 +87,8 @@ public class CDSConsentValidator implements ConsentValidator {
             return;
         }
 
-        OpenBankingCDSConfigParser openBankingCDSConfigParser = OpenBankingCDSConfigParser.getInstance();
+        // perform consent bounded account filtration
+        filterConsentAccountMappings(consentValidateData);
 
         // account ID Validation
         String isAccountIdValidationEnabled = openBankingCDSConfigParser.getConfiguration()
@@ -137,46 +137,39 @@ public class CDSConsentValidator implements ConsentValidator {
             }
         }
 
-        // Remove inactive and duplicate consent mappings
-        removeInactiveAndDuplicateConsentMappings(consentValidateData);
-
-        // Filter joint accounts with no-sharing doms status
-        if (openBankingCDSConfigParser.getDOMSEnabled()) {
-            removeInactiveDOMSAccountConsentMappings(consentValidateData);
-        }
-
-        // filter inactive secondary user accounts
-        if (openBankingCDSConfigParser.getSecondaryUserAccountsEnabled()) {
-            removeInactiveSecondaryUserAccountConsentMappings(consentValidateData);
-        }
-
-        // Filter accounts based on the sharing status of legal entity
-        if (openBankingCDSConfigParser.isCeasingSecondaryUserSharingEnabled()) {
-            removeBlockedLegalEntityConsentMappings(consentValidateData);
-        }
-
-        // Remove accounts with revoked BNR permission if the configuration is enabled.
-        if (openBankingCDSConfigParser.isBNRValidateAccountsOnRetrievalEnabled()) {
-            removeAccountsWithRevokedBNRPermission(consentValidateData);
-        }
         consentValidationResult.setValid(true);
     }
 
     /**
-     * Method to remove inactive and duplicate consent mappings from consentValidateData.
+     * Method to remove inactive mappings from consentValidateData.
      *
      * @param consentValidateData consentValidateData
      */
-    private void removeInactiveAndDuplicateConsentMappings(ConsentValidateData consentValidateData) {
+    private void removeInactiveConsentMappings(ConsentValidateData consentValidateData) {
+        ArrayList<ConsentMappingResource> activeMappingResources = new ArrayList<>();
+
+        consentValidateData.getComprehensiveConsent().getConsentMappingResources().stream()
+                .filter(mapping -> !INACTIVE_MAPPING_STATUS.equals(mapping.getMappingStatus()))
+                .forEach(distinctMapping -> {
+                    activeMappingResources.add(distinctMapping);
+                });
+        consentValidateData.getComprehensiveConsent().setConsentMappingResources(activeMappingResources);
+    }
+
+    /**
+     * Method to remove duplicate mappings from consentValidateData.
+     *
+     * @param consentValidateData consentValidateData
+     */
+    private void removeDuplicateConsentMappings(ConsentValidateData consentValidateData) {
         ArrayList<ConsentMappingResource> distinctMappingResources = new ArrayList<>();
         List<String> duplicateAccountIds = new ArrayList<>();
 
         consentValidateData.getComprehensiveConsent().getConsentMappingResources().stream()
-                .filter(mapping -> !INACTIVE_MAPPING_STATUS.equals(mapping.getMappingStatus()))
                 .filter(mapping -> !duplicateAccountIds.contains(mapping.getAccountID()))
                 .forEach(distinctMapping -> {
-                    duplicateAccountIds.add(distinctMapping.getAccountID());
                     distinctMappingResources.add(distinctMapping);
+                    duplicateAccountIds.add(distinctMapping.getAccountID());
                 });
         consentValidateData.getComprehensiveConsent().setConsentMappingResources(distinctMappingResources);
     }
@@ -264,15 +257,22 @@ public class CDSConsentValidator implements ConsentValidator {
     private void removeInactiveSecondaryUserAccountConsentMappings(ConsentValidateData consentValidateData) {
         ArrayList<ConsentMappingResource> consentMappingResources =
                 consentValidateData.getComprehensiveConsent().getConsentMappingResources();
+        List<String> blockedSecondaryAccounts = new ArrayList<>();
 
+        // get blocked secondary user accounts
         for (ConsentMappingResource mappingResource : consentMappingResources) {
             if (CDSConsentExtensionConstants.SECONDARY_ACCOUNT_USER.equals(mappingResource.getPermission()) &&
                     !CDSConsentExtensionsUtil
                             .isUserEligibleForSecondaryAccountDataSharing(mappingResource.getAccountID(),
                                     consentValidateData.getUserId())) {
-                consentMappingResources.remove(mappingResource);
+                blockedSecondaryAccounts.add(mappingResource.getAccountID());
             }
         }
+
+        // remove inactive secondary user account mappings
+        Predicate<ConsentMappingResource> blockedSecondaryAccountDuplicateFilter = mapping ->
+                blockedSecondaryAccounts.contains(mapping.getAccountID());
+        consentMappingResources.removeIf(blockedSecondaryAccountDuplicateFilter);
 
         consentValidateData.getComprehensiveConsent().setConsentMappingResources(consentMappingResources);
     }
@@ -306,6 +306,46 @@ public class CDSConsentValidator implements ConsentValidator {
             throw new ConsentException(ResponseStatus.INTERNAL_SERVER_ERROR,
                     "Error occurred while retrieving account metadata");
         }
+    }
+
+    /**
+     * Method to filter accounts based on following criteria.
+     * 1. Remove inactive consent mappings
+     * 2. Remove joint accounts with no-sharing DOMs status
+     * 3. Remove inactive secondary user accounts
+     * 4. Remove accounts based on the sharing status of legal entity
+     * 5. Remove accounts which the user has "REVOKED" nominated representative permissions.
+     *
+     * @param consentValidateData consentValidateData
+     */
+    private void filterConsentAccountMappings(ConsentValidateData consentValidateData) throws
+            ConsentException {
+        OpenBankingCDSConfigParser openBankingCDSConfigParser = OpenBankingCDSConfigParser.getInstance();
+        // Remove inactive consent mappings
+        removeInactiveConsentMappings(consentValidateData);
+
+        // Filter joint accounts with no-sharing DOMs status
+        if (openBankingCDSConfigParser.getDOMSEnabled()) {
+            removeInactiveDOMSAccountConsentMappings(consentValidateData);
+        }
+
+        // filter inactive secondary user accounts
+        if (openBankingCDSConfigParser.getSecondaryUserAccountsEnabled()) {
+            removeInactiveSecondaryUserAccountConsentMappings(consentValidateData);
+        }
+
+        // Filter accounts based on the sharing status of legal entity
+        if (openBankingCDSConfigParser.isCeasingSecondaryUserSharingEnabled()) {
+            removeBlockedLegalEntityConsentMappings(consentValidateData);
+        }
+
+        // Remove accounts with revoked BNR permission if the configuration is enabled.
+        if (openBankingCDSConfigParser.isBNRValidateAccountsOnRetrievalEnabled()) {
+            removeAccountsWithRevokedBNRPermission(consentValidateData);
+        }
+
+        // Remove duplicate consent mappings
+        removeDuplicateConsentMappings(consentValidateData);
     }
 
     private String generateErrorPayload(String title, String detail, String metaURN, String accountId) {
