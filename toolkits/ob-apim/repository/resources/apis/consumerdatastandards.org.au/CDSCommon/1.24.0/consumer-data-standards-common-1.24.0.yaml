@@ -106,6 +106,7 @@ paths:
           schema:
             type: string
             x-conditional: true
+            pattern: '^([A-Za-z0-9+/]{4})*([A-Za-z0-9+/]{3}=|[A-Za-z0-9+/]{2}==)?$'
             x-cds-type: Base64
           style: simple
           x-conditional: true
@@ -263,6 +264,7 @@ paths:
           schema:
             type: string
             x-conditional: true
+            pattern: '^([A-Za-z0-9+/]{4})*([A-Za-z0-9+/]{3}=|[A-Za-z0-9+/]{2}==)?$'
             x-cds-type: Base64
           style: simple
           x-conditional: true
@@ -600,6 +602,7 @@ components:
       schema:
         type: string
         x-conditional: true
+        pattern: '^([A-Za-z0-9+/]{4})*([A-Za-z0-9+/]{3}=|[A-Za-z0-9+/]{2}==)?$'
         x-cds-type: Base64
       style: simple
       x-conditional: true

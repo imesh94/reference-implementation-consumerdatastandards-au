@@ -109,8 +109,11 @@ public class OBCDSAuthServletImpl implements OBAuthServletInterface {
                 dataSet.getString(CDSConsentExtensionConstants.SP_FULL_NAME));
         httpServletRequest.setAttribute(CDSConsentExtensionConstants.REDIRECT_URL,
                 dataSet.getString(CDSConsentExtensionConstants.REDIRECT_URL));
-        httpServletRequest.setAttribute(CDSConsentExtensionConstants.STATE,
-                dataSet.getString(CDSConsentExtensionConstants.STATE));
+        // Set state parameter if present
+        if (dataSet.has(CDSConsentExtensionConstants.STATE) && !dataSet.isNull(CDSConsentExtensionConstants.STATE)) {
+            httpServletRequest.setAttribute(CDSConsentExtensionConstants.STATE,
+                    dataSet.getString(CDSConsentExtensionConstants.STATE));
+        }
         // Check for zero sharing duration and display as once off consent
         if (CDSConsentExtensionConstants.ZERO.equals(dataSet.getString(CDSConsentExtensionConstants.CONSENT_EXPIRY))) {
             httpServletRequest.setAttribute(CDSConsentExtensionConstants.CONSENT_EXPIRY,
