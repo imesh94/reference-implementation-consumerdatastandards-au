@@ -56,12 +56,12 @@ class CustomerDetailsRetrievalTest extends AUTest {
     void "TC0601002_Get Customer Detail"() {
 
         Response response = AURequestBuilder.buildBasicRequestWithOptionalHeaders(userAccessToken,
-                AUConstants.X_V_HEADER_CUSTOMER, clientHeader)
+                AUConstants.X_V_HEADER_CUSTOMER_DETAIL, clientHeader)
                 .baseUri(AUTestUtil.getBaseUrl(AUConstants.BASE_PATH_TYPE_CUSTOMER))
                 .get("${AUConstants.CUSTOMER_DETAILS}")
 
         Assert.assertEquals(response.statusCode(), AUConstants.STATUS_CODE_200)
-        Assert.assertEquals(response.getHeader(AUConstants.X_V_HEADER).toInteger(), AUConstants.X_V_HEADER_CUSTOMER)
+        Assert.assertEquals(response.getHeader(AUConstants.X_V_HEADER).toInteger(), AUConstants.X_V_HEADER_CUSTOMER_DETAIL)
 
         Assert.assertNotNull(AUTestUtil.parseResponseBody(response, AUConstants.RESPONSE_DATA_CUSTOMERUTYPE))
         Assert.assertNotNull(AUTestUtil.parseResponseBody(response, AUConstants.RESPONSE_DATA_PERSON))
@@ -116,7 +116,7 @@ class CustomerDetailsRetrievalTest extends AUTest {
                 AUAccountScope.BANK_CUSTOMER_DETAIL_READ
         ]
 
-        doConsentAuthorisation()
+        doConsentAuthorisationWithoutAccountSelection()
         generateUserAccessToken()
 
         def response = AURequestBuilder.buildBasicRequest(userAccessToken, AUConstants.X_V_HEADER_CUSTOMER)
@@ -136,30 +136,30 @@ class CustomerDetailsRetrievalTest extends AUTest {
                 AUAccountScope.BANK_CUSTOMER_BASIC_READ
         ]
 
-        doConsentAuthorisation()
+        doConsentAuthorisationWithoutAccountSelection()
         generateUserAccessToken()
 
-        def response = AURequestBuilder.buildBasicRequest(userAccessToken, AUConstants.X_V_HEADER_CUSTOMER)
+        def response = AURequestBuilder.buildBasicRequest(userAccessToken, AUConstants.X_V_HEADER_CUSTOMER_DETAIL)
                 .baseUri(AUTestUtil.getBaseUrl(AUConstants.BASE_PATH_TYPE_CUSTOMER))
                 .get("${AUConstants.CUSTOMER_DETAILS}")
 
         SoftAssert softAssertion= new SoftAssert()
         softAssertion.assertEquals(response.statusCode(), AUConstants.STATUS_CODE_403)
-        softAssertion.assertEquals(response.getHeader(AUConstants.X_V_HEADER).toInteger(), AUConstants.X_V_HEADER_CUSTOMER)
+        softAssertion.assertEquals(response.getHeader(AUConstants.X_V_HEADER).toInteger(), AUConstants.X_V_HEADER_CUSTOMER_DETAIL)
         softAssertion.assertAll()
     }
 
     @Test (groups = "SmokeTest")
     void "TC0602001_Obtain a health check status"() {
 
-        Response response = AURequestBuilder.buildBasicRequestWithoutAuthorisationHeader(AUConstants.X_V_HEADER_CUSTOMER)
+        def response = AURequestBuilder.buildBasicRequestWithoutAuthorisationHeader(AUConstants.X_V_HEADER_STATUS)
                 .baseUri(AUTestUtil.getBaseUrl(AUConstants.BASE_PATH_TYPE_DISCOVERY))
                 .get("${AUConstants.DISCOVERY_STATUS}")
 
         Assert.assertEquals(response.statusCode(), AUConstants.STATUS_CODE_200)
-        Assert.assertEquals(response.getHeader(AUConstants.X_V_HEADER).toInteger(), AUConstants.X_V_HEADER_CUSTOMER)
+        Assert.assertEquals(response.getHeader(AUConstants.X_V_HEADER).toInteger(), AUConstants.X_V_HEADER_STATUS)
 
-        Assert.assertEquals(AUTestUtil.parseResponseBody(response, "data.status"), AUConstants.OK)
+        Assert.assertEquals(AUTestUtil.parseResponseBody(response, "data.status"), "OK")
         Assert.assertNotNull(AUTestUtil.parseResponseBody(response, "data.explanation"))
         Assert.assertNotNull(AUTestUtil.parseResponseBody(response, "data.expectedResolutionTime"))
         Assert.assertNotNull(AUTestUtil.parseResponseBody(response, AUConstants.LINKS_SELF))
@@ -168,7 +168,7 @@ class CustomerDetailsRetrievalTest extends AUTest {
     @Test (groups = "SmokeTest")
     void "TC0603001_Obtain a list of scheduled outages"() {
 
-        Response response = AURequestBuilder.buildBasicRequestWithoutAuthorisationHeader(AUConstants.X_V_HEADER_CUSTOMER)
+        Response response = AURequestBuilder.buildBasicRequestWithoutAuthorisationHeader(AUConstants.X_V_HEADER_OUTAGES)
                 .baseUri(AUTestUtil.getBaseUrl(AUConstants.BASE_PATH_TYPE_DISCOVERY))
                 .get("${AUConstants.DISCOVERY_OUTAGES}")
 

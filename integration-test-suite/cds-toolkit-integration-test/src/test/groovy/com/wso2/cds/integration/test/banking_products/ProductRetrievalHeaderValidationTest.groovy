@@ -309,11 +309,9 @@ class ProductRetrievalHeaderValidationTest extends AUTest {
                 .baseUri(AUTestUtil.getBaseUrl(AUConstants.BASE_PATH_TYPE_PRODUCTS))
                 .get("${AUConstants.BANKING_PRODUCT_PATH}")
 
-        Assert.assertEquals(response.statusCode(), AUConstants.STATUS_CODE_406)
+        Assert.assertEquals(response.statusCode(), AUConstants.STATUS_CODE_200)
 
-        Assert.assertEquals(AUTestUtil.parseResponseBody(response, AUConstants.ERROR_CODE),
-                AUConstants.ERROR_CODE_UNSUPPORTED_VERSION)
-        Assert.assertEquals(AUTestUtil.parseResponseBody(response, AUConstants.ERROR_TITLE), AUConstants
-                .UNSUPPORTED_VERSION)
+        Assert.assertEquals(response.getHeader(AUConstants.X_V_HEADER).toInteger(), AUConstants.X_V_HEADER_PRODUCTS)
+        Assert.assertTrue(response.getHeader(AUConstants.CONTENT_TYPE).contains(AUConstants.ACCEPT))
     }
 }

@@ -97,7 +97,10 @@ class AURegistrationRequestBuilder extends OBRegistrationRequestBuilder {
     String getAURegularClaims() {
         return regularClaims.addIssuer(getSoftwareID()).addSoftwareStatement(getSSA())
                 .removeKeyValue(AUConstants.RESPONSE_TYPES_KEY).addResponseType(ResponseType.CODE.toString())
-                .addIDTokenEncResponseAlg().addIDTokenEncResponseEnc().getClaimsJsonAsString()
+                .addIDTokenEncResponseAlg().addIDTokenEncResponseEnc()
+                .addCustomValue(AUConstants.DCR_CLAIM_LEGAL_ENTITY_ID, AUConstants.SAMPLE_LEGAL_ENTITY_ID)
+                .addCustomValue(AUConstants.DCR_CLAIM_LEGAL_ENTITY_NAME, AUConstants.SAMPLE_LEGAL_ENTITY_NAME)
+                .getClaimsJsonAsString()
     }
 
     /**

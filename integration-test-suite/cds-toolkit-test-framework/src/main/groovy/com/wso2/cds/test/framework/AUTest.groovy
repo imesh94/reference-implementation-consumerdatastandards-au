@@ -460,28 +460,47 @@ class AUTest extends OBTest {
     /**
      * Consent Authorisation without Account Selection.
      */
-    void doConsentAuthorisationWithoutAccountSelection() {
+    void doConsentAuthorisationWithoutAccountSelection(String profiles = AUAccountProfile.INDIVIDUAL) {
 
         def response = auAuthorisationBuilder.doPushAuthorisationRequest(scopes, AUConstants.DEFAULT_SHARING_DURATION,
                 true, "")
         String requestUri = AUTestUtil.parseResponseBody(response, AUConstants.REQUEST_URI)
 
         AUAuthorisationBuilder auAuthorisationBuilder = new AUAuthorisationBuilder()
-        authoriseUrl = auAuthorisationBuilder.getAuthorizationRequest(scopes, requestUri)
+        authoriseUrl = auAuthorisationBuilder.getAuthorizationRequest(scopes, requestUri.toURI(), auConfiguration.getAppInfoClientID())
                 .toURI().toString()
 
-        def automation = getBrowserAutomation(AUConstants.DEFAULT_DELAY)
+        automationResponse = getBrowserAutomation(AUConstants.DEFAULT_DELAY)
                 .addStep(new AUBasicAuthAutomationStep(authoriseUrl))
                 .addStep { driver, context ->
-                    // Submit consent
-                    driver.findElement(By.xpath(AUPageObjects.CONSENT_SUBMIT_XPATH)).click()
+                    AutomationMethod authWebDriver = new AutomationMethod(driver)
 
+                    //If Profile Selection Enabled
+                    if (auConfiguration.getProfileSelectionEnabled()) {
+                        if (profiles == AUAccountProfile.ORGANIZATION_A) {
+
+                            //Select Business Profile
+                            authWebDriver.selectOption(AUPageObjects.ORGANIZATION_A_PROFILE_SELECTION)
+                            authWebDriver.clickButtonXpath(AUPageObjects.PROFILE_SELECTION_NEXT_BUTTON)
+                        } else if (profiles == AUAccountProfile.ORGANIZATION_B) {
+
+                            //Select Business Profile
+                            authWebDriver.selectOption(AUPageObjects.ORGANIZATION_B_PROFILE_SELECTION)
+                            authWebDriver.clickButtonXpath(AUPageObjects.PROFILE_SELECTION_NEXT_BUTTON)
+                        } else {
+                            //Select Individual Profile
+                            authWebDriver.selectOption(AUPageObjects.INDIVIDUAL_PROFILE_SELECTION)
+                            authWebDriver.clickButtonXpath(AUPageObjects.PROFILE_SELECTION_NEXT_BUTTON)
+                        }
+                    }
+
+                    //Click Confirm Button
+                    authWebDriver.clickButtonXpath(AUPageObjects.CONSENT_CONFIRM_XPATH)
                 }
-                .addStep(getWaitForRedirectAutomationStep())
                 .execute()
 
         // Get Code From URL
-        authorisationCode = AUTestUtil.getCodeFromJwtResponse(automation.currentUrl.get())
+        authorisationCode = AUTestUtil.getCodeFromJwtResponse(automationResponse.currentUrl.get())
     }
 
     /**

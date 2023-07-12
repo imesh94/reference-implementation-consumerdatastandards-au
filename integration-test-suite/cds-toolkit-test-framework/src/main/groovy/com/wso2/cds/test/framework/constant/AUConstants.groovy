@@ -44,7 +44,7 @@ class AUConstants extends OBConstants {
     public static final String DATE_FORMAT = AUTestUtil.getDate()
     public static final String CONSENT_EXPIRE_DATE = AUTestUtil.getTommorowDateAndTime()
     public static final String IP = "2001:0db8:85a3:0000:0000:8a2e:0370:7334"
-    public static final String PRODUCT_CATEGORY = "TRANS_AND_SAVINGS_ACCOUNTS"
+    public static final String PRODUCT_CATEGORY = "product-category"
     public static final String PRODUCT = "product-category"
     public static final String OPEN_STATUS_PARAM = "open-status"
     public static final String STATUS_OPEN = "OPEN"
@@ -384,8 +384,8 @@ class AUConstants extends OBConstants {
     public static final String HTML_RESPONSE_ATTR = "response="
     public static final String CURRENT = "CURRENT"
     public static final String ALL = "ALL"
-    public static final String PAGE_SIZE = "PAGE_SIZE"
-    public static final String UPDATED_SINCE = "UPDATED_SINCE"
+    public static final String PAGE_SIZE = "page-size"
+    public static final String UPDATED_SINCE = "updated-since"
     public static final String BRAND = "BRAND"
     public static final String EFFECTIVE = "EFFECTIVE"
     public static final String PERIOD = "period"
