@@ -592,7 +592,7 @@ required=true
 [[open_banking.data_publishing.thrift.stream.attributes]]
 name="responsePayloadSize"
 priority=8
-required=false
+required=true
 type="long"
 [[open_banking.data_publishing.thrift.stream.attributes]]
 name="electedResource"
