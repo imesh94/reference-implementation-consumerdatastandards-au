@@ -274,7 +274,7 @@ public class GatewayErrorMediator extends AbstractMediator {
     /**
      * Method to get the error response for throttled out requests
      *
-     * @return
+     * @return  Throttle Data JSONObject
      */
     private static JSONObject getThrottledOutResponse() {
 
