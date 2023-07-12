@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2021-2022, WSO2 LLC. (https://www.wso2.com). All Rights Reserved.
+ * Copyright (c) 2021-2023, WSO2 LLC. (https://www.wso2.com). All Rights Reserved.
  *
  * This software is the property of WSO2 LLC. and its suppliers, if any.
  * Dissemination of any information or reproduction of any material contained
@@ -155,6 +155,10 @@ public class CDSConsentValidatorTest extends PowerMockTestCase {
         doReturn("Revoked").when(detailedConsentResourceMock).getCurrentStatus();
         doReturn(CDSConsentValidateTestConstants.ACCOUNT_PATH).when(consentValidateDataMock).getRequestPath();
 
+        mockStatic(OpenBankingCDSConfigParser.class);
+        when(OpenBankingCDSConfigParser.getInstance()).thenReturn(openBankingCDSConfigParserMock);
+        when(openBankingCDSConfigParserMock.getConfiguration()).thenReturn(configs);
+
         ConsentValidationResult consentValidationResult = new ConsentValidationResult();
         cdsConsentValidator.validate(consentValidateDataMock, consentValidationResult);
 
@@ -174,6 +178,10 @@ public class CDSConsentValidatorTest extends PowerMockTestCase {
                 .getReceipt()).when(detailedConsentResourceMock).getReceipt();
         doReturn(CDSConsentExtensionConstants.AUTHORIZED_STATUS).when(detailedConsentResourceMock).getCurrentStatus();
         doReturn(CDSConsentValidateTestConstants.ACCOUNT_PATH).when(consentValidateDataMock).getRequestPath();
+
+        mockStatic(OpenBankingCDSConfigParser.class);
+        when(OpenBankingCDSConfigParser.getInstance()).thenReturn(openBankingCDSConfigParserMock);
+        when(openBankingCDSConfigParserMock.getConfiguration()).thenReturn(configs);
 
         ConsentValidationResult consentValidationResult = new ConsentValidationResult();
         cdsConsentValidator.validate(consentValidateDataMock, consentValidationResult);
@@ -352,8 +360,8 @@ public class CDSConsentValidatorTest extends PowerMockTestCase {
         // Adding a ConsentMappingResource for the specified account ID and mocking its
         // retrieval from ComprehensiveConsent.
         ArrayList<ConsentMappingResource> consentMappingResourceList = new ArrayList<>();
-        consentMappingResourceList.add(CDSConsentValidateTestConstants.
-                getConsentMappingResourceForDOMS(CDSConsentExtensionConstants.ACCOUNT_ID));
+        consentMappingResourceList.add(CDSConsentValidateTestConstants.getConsentMappingResourceForDOMS(
+                CDSConsentExtensionConstants.ACCOUNT_ID));
         when(detailedConsentResourceMock.getConsentMappingResources()).thenReturn(consentMappingResourceList);
 
         // Creating and mocking retrieval of a list of AuthorizationResources.
