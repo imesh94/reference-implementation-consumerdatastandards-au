@@ -8,7 +8,7 @@
  ~
 -->
 
-<sequence xmlns="http://ws.apache.org/ns/synapse" name="cds-admin-endpoint-insequence-1.24.0">
+<sequence xmlns="http://ws.apache.org/ns/synapse" name="cds-admin-api-insequence-1.24.0.xml">
 
     <!--Appending Basic Auth Header-->
     <header name="Authorization" scope="transport" action="remove" />

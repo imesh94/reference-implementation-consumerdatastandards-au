@@ -485,6 +485,9 @@ connection_verification_timeout=1
 [open_banking.identity.authentication_webapp]
 servlet_extension = "com.wso2.openbanking.cds.consent.extensions.authservlet.impl.OBCDSAuthServletImpl"
 
+[open_banking.identity.token]
+remove_tenant_domain_from_subject = true
+
 [[open_banking.service_activator.subscribers]]
 subscriber="com.wso2.openbanking.cds.identity.metadata.periodical.updater.internal.MetadataScheduledTaskObserver"
 

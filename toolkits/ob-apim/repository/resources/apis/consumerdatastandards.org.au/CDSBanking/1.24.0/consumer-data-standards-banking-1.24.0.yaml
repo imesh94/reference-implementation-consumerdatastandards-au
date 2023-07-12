@@ -256,8 +256,11 @@ paths:
       tags:
         - Banking
         - Accounts
-      x-scopes:
-        - bank:accounts.basic:read
+      security:
+        - PSUOAuth2Security:
+            - "bank:accounts.basic:read"
+        - default:
+            - "bank:accounts.basic:read"
       x-version: "2"
       x-auth-type: Application User
       x-throttling-tier: Unlimited
@@ -497,8 +500,11 @@ paths:
       tags:
         - Banking
         - Accounts
-      x-scopes:
-        - bank:accounts.basic:read
+      security:
+        - PSUOAuth2Security:
+            - "bank:accounts.basic:read"
+        - default:
+            - "bank:accounts.basic:read"
       x-version: "1"
       x-auth-type: Application User
       x-throttling-tier: Unlimited
@@ -697,8 +703,11 @@ paths:
       tags:
         - Banking
         - Accounts
-      x-scopes:
-        - bank:accounts.basic:read
+      security:
+        - PSUOAuth2Security:
+            - "bank:accounts.basic:read"
+        - default:
+            - "bank:accounts.basic:read"
       x-version: "1"
       x-auth-type: Application User
       x-throttling-tier: Unlimited
@@ -878,8 +887,11 @@ paths:
       tags:
         - Banking
         - Accounts
-      x-scopes:
-        - bank:accounts.basic:read
+      security:
+        - PSUOAuth2Security:
+            - "bank:accounts.detail:read"
+        - default:
+            - "bank:accounts.detail:read"
       x-version: "1"
       x-auth-type: Application User
       x-throttling-tier: Unlimited
@@ -1062,8 +1074,11 @@ paths:
       tags:
         - Banking
         - Accounts
-      x-scopes:
-        - bank:accounts.detail:read
+      security:
+        - PSUOAuth2Security:
+            - "bank:accounts.detail:read"
+        - default:
+            - "bank:accounts.detail:read"
       x-version: "3"
       x-auth-type: Application User
       x-throttling-tier: Unlimited
@@ -1356,8 +1371,11 @@ paths:
       tags:
         - Banking
         - Accounts
-      x-scopes:
-        - bank:transactions:read
+      security:
+        - PSUOAuth2Security:
+            - "bank:transactions:read"
+        - default:
+            - "bank:transactions:read"
       x-version: "1"
       x-auth-type: Application User
       x-throttling-tier: Unlimited
@@ -1551,8 +1569,11 @@ paths:
       tags:
         - Banking
         - Accounts
-      x-scopes:
-        - bank:transactions:read
+      security:
+        - PSUOAuth2Security:
+            - "bank:transactions:read"
+        - default:
+            - "bank:transactions:read"
       x-version: "1"
       x-auth-type: Application User
       x-throttling-tier: Unlimited
@@ -1773,8 +1794,11 @@ paths:
       tags:
         - Banking
         - Direct Debits
-      x-scopes:
-        - bank:regular_payments:read
+      security:
+        - PSUOAuth2Security:
+            - "bank:regular_payments:read"
+        - default:
+            - "bank:regular_payments:read"
       x-version: "1"
       x-auth-type: Application User
       x-throttling-tier: Unlimited
@@ -2014,8 +2038,11 @@ paths:
       tags:
         - Banking
         - Direct Debits
-      x-scopes:
-        - bank:regular_payments:read
+      security:
+        - PSUOAuth2Security:
+            - "bank:regular_payments:read"
+        - default:
+            - "bank:regular_payments:read"
       x-version: "1"
       x-auth-type: Application User
       x-throttling-tier: Unlimited
@@ -2214,8 +2241,11 @@ paths:
       tags:
         - Banking
         - Direct Debits
-      x-scopes:
-        - bank:regular_payments:read
+      security:
+        - PSUOAuth2Security:
+            - "bank:regular_payments:read"
+        - default:
+            - "bank:regular_payments:read"
       x-version: "1"
       x-auth-type: Application User
       x-throttling-tier: Unlimited
@@ -2438,8 +2468,11 @@ paths:
       tags:
         - Banking
         - Scheduled Payments
-      x-scopes:
-        - bank:regular_payments:read
+      security:
+        - PSUOAuth2Security:
+            - "bank:regular_payments:read"
+        - default:
+            - "bank:regular_payments:read"
       x-version: "1"
       x-auth-type: Application User
       x-throttling-tier: Unlimited
@@ -2680,8 +2713,11 @@ paths:
       tags:
         - Banking
         - Scheduled Payments
-      x-scopes:
-        - bank:regular_payments:read
+      security:
+        - PSUOAuth2Security:
+            - "bank:regular_payments:read"
+        - default:
+            - "bank:regular_payments:read"
       x-version: "1"
       x-auth-type: Application User
       x-throttling-tier: Unlimited
@@ -2881,8 +2917,11 @@ paths:
       tags:
         - Banking
         - Scheduled Payments
-      x-scopes:
-        - bank:regular_payments:read
+      security:
+        - PSUOAuth2Security:
+            - "bank:regular_payments:read"
+        - default:
+            - "bank:regular_payments:read"
       x-version: "1"
       x-auth-type: Application User
       x-throttling-tier: Unlimited
@@ -3094,8 +3133,11 @@ paths:
       tags:
         - Banking
         - Payees
-      x-scopes:
-        - bank:payees:read
+      security:
+        - PSUOAuth2Security:
+            - "bank:payees:read"
+        - default:
+            - "bank:payees:read"
       x-version: "2"
       x-auth-type: Application User
       x-throttling-tier: Unlimited
@@ -3298,8 +3340,11 @@ paths:
       tags:
         - Banking
         - Payees
-      x-scopes:
-        - bank:payees:read
+      security:
+        - PSUOAuth2Security:
+            - "bank:payees:read"
+        - default:
+            - "bank:payees:read"
       x-version: "2"
       x-auth-type: Application User
       x-throttling-tier: Unlimited
@@ -3493,6 +3538,8 @@ paths:
       tags:
         - Banking
         - Products
+      security:
+        - default: [ ]
       x-version: "3"
       x-auth-type: None
       x-throttling-tier: Unlimited
@@ -3581,10 +3628,81 @@ paths:
       tags:
         - Banking
         - Products
+      security:
+        - default: [ ]
       x-version: "4"
       x-auth-type: None
       x-throttling-tier: Unlimited
 components:
+  securitySchemes:
+    PSUOAuth2Security:
+      type: "oauth2"
+      description: "OAuth flow, it is required when the PSU needs to perform SCA with the Data Holder when an ADR wants to access an Data Holder resource owned by the PSU"
+      flows:
+        authorizationCode:
+          authorizationUrl: "https://authserver.example/authorization"
+          tokenUrl: "https://authserver.example/token"
+          scopes:
+            bank:accounts.basic:read: "Basic Bank Account Data : This scope would allow for the third party to access basic
+            information of the customer’s accounts. Includes simple account information including balance. Does not include account identifiers, product information or transaction data."
+            bank:transactions:read: "Bank Transaction Data : This scope would allow the third party to access transaction
+            data for accounts. This scope is effectively additional authorisation to the Basic Bank Account Data scope. Granting this authorisation only makes sense if the Basic Bank Account Data scope is also authorised.\nIncludes all account transaction data."
+            bank:payees:read: "Bank Payee Data : This scope allows access to payee information stored by the customer
+            .\nIncludes payee information such as billers, international beneficiaries and domestic payees."
+            bank:accounts.detail:read: "Detailed Bank Account Data : This scope would allow for the third party to access
+            detailed information of the customer’s accounts. This scope is effectively additional authorisation to the Basic Bank Account Data scope. Granting this authorisation only makes sense if the Bank Account Data scope is also authorised.\nIncludes basic account information plus account identifiers and product information. Does not include transaction data."
+            bank:regular_payments:read: "Bank Regular Payments : The scope would allow the third party to access regular
+            payments. Includes Direct Debits and Scheduled Payments."
+          x-scopes-bindings:
+            bank:regular_payments:read: "Internal/subscriber"
+            bank:accounts.detail:read: "Internal/subscriber"
+            bank:payees:read: "Internal/subscriber"
+            bank:transactions:read: "Internal/subscriber"
+            bank:accounts.basic:read: "Internal/subscriber"
+  x-wso2-security:
+    apim:
+      description: "This scope will group the AccountAPI related operations."
+      x-wso2-scopes:
+        - name: "bank:regular_payments:read"
+          key: "bank:regular_payments:read"
+          roles: "Internal/subscriber"
+        - name: "bank:accounts.detail:read"
+          key: "bank:accounts.detail:read"
+          roles: "Internal/subscriber"
+        - name: "bank:payees:read"
+          key: "bank:payees:read"
+          roles: "Internal/subscriber"
+        - name: "bank:transactions:read"
+          key: "bank:transactions:read"
+          roles: "Internal/subscriber"
+        - name: "bank:accounts.basic:read"
+          key: "bank:accounts.basic:read"
+          roles: "Internal/subscriber"
+    default:
+      type: "oauth2"
+      flows:
+        authorizationCode:
+          authorizationUrl: 'https://authserver.example/authorization'
+          tokenUrl: 'https://authserver.example/token'
+          scopes:
+            bank:accounts.basic:read: "Basic Bank Account Data : This scope would allow for the third party to access basic
+            information of the customer’s accounts. Includes simple account information including balance. Does not include account identifiers, product information or transaction data."
+            bank:transactions:read: "Bank Transaction Data : This scope would allow the third party to access transaction
+            data for accounts. This scope is effectively additional authorisation to the Basic Bank Account Data scope. Granting this authorisation only makes sense if the Basic Bank Account Data scope is also authorised.\nIncludes all account transaction data."
+            bank:payees:read: "Bank Payee Data : This scope allows access to payee information stored by the customer
+            .\nIncludes payee information such as billers, international beneficiaries and domestic payees."
+            bank:accounts.detail:read: "Detailed Bank Account Data : This scope would allow for the third party to access
+            detailed information of the customer’s accounts. This scope is effectively additional authorisation to the Basic Bank Account Data scope. Granting this authorisation only makes sense if the Bank Account Data scope is also authorised.\nIncludes basic account information plus account identifiers and product information. Does not include transaction data."
+            bank:regular_payments:read: "Bank Regular Payments : The scope would allow the third party to access regular
+            payments. Includes Direct Debits and Scheduled Payments."
+          x-scopes-bindings:
+            bank:regular_payments:read: "Internal/subscriber"
+            bank:accounts.detail:read: "Internal/subscriber"
+            bank:payees:read: "Internal/subscriber"
+            bank:transactions:read: "Internal/subscriber"
+            bank:accounts.basic:read: "Internal/subscriber"
+      description: >-
+        Default OAuth flow
   parameters:
     RequestHeader_x-v:
       description: Version of the API end point requested by the client. Must be set

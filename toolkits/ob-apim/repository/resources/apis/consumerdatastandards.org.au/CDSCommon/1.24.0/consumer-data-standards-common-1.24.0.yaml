@@ -11,7 +11,7 @@ info:
     name: MIT License
     url: https://opensource.org/licenses/MIT
   title: ConsumerDataStandardsCommon
-  version: 1.24.0
+  version: v1
 servers:
   - url: https://data.holder.com.au/cds-au/v1
 paths:
@@ -175,8 +175,11 @@ paths:
       tags:
         - Common
         - Customer
-      x-scopes:
-        - common:customer.basic:read
+      security:
+        - PSUOAuth2Security:
+            - "common:customer.basic:read"
+        - default:
+            - "common:customer.basic:read"
       x-version: "1"
       x-auth-type: Application User
       x-throttling-tier: Unlimited
@@ -329,8 +332,11 @@ paths:
       tags:
         - Common
         - Customer
-      x-scopes:
-        - common:customer.detail:read
+      security:
+        - PSUOAuth2Security:
+            - "common:customer.detail:read"
+        - default:
+            - "common:customer.detail:read"
       x-version: "2"
       x-auth-type: Application User
       x-throttling-tier: Unlimited
@@ -398,6 +404,8 @@ paths:
       tags:
         - Common
         - Discovery
+      security:
+        - default: [ ]
       x-version: "1"
       x-auth-type: None
       x-throttling-tier: Unlimited
@@ -465,10 +473,54 @@ paths:
       tags:
         - Common
         - Discovery
+      security:
+        - default: [ ]
       x-version: "1"
       x-auth-type: None
       x-throttling-tier: Unlimited
 components:
+  securitySchemes:
+    PSUOAuth2Security:
+      type: "oauth2"
+      description: "OAuth flow, it is required when the PSU needs to perform SCA with the Data Holder when an ADR wants to access an Data Holder resource owned by the PSU"
+      flows:
+        authorizationCode:
+          authorizationUrl: "https://authserver.example/authorization"
+          tokenUrl: "https://authserver.example/token"
+          scopes:
+            common:customer.basic:read: "Basic Customer Data : The scope would allow the third party to access personally
+            identifiable information about the customer. For retail customers this would be information about the customer themselves. For business customers it would imply the name of specific user but also information about the business.\nIncludes name and occupation for individuals or name, business numbers and industry code for organisations"
+            common:customer.detail:read: "Detailed Customer Data : The scope would allow the third party to access more
+            detailed information about the customer. Includes the data available with the Basic Customer Data scope plus contact details.\nIncludes basic data plus phone, email and address information."
+          x-scopes-bindings:
+            common:customer.detail:read: "Internal/subscriber"
+            common:customer.basic:read: "Internal/subscriber"
+  x-wso2-security:
+    apim:
+      description: "This scope will group the AccountAPI related operations."
+      x-wso2-scopes:
+        - name: "common:customer.detail:read"
+          key: "common:customer.detail:read"
+          roles: "Internal/subscriber"
+        - name: "common:customer.basic:read"
+          key: "common:customer.basic:read"
+          roles: "Internal/subscriber"
+    default:
+      type: "oauth2"
+      flows:
+        authorizationCode:
+          authorizationUrl: 'https://authserver.example/authorization'
+          tokenUrl: 'https://authserver.example/token'
+          scopes:
+            common:customer.basic:read: "Basic Customer Data : The scope would allow the third party to access personally
+            identifiable information about the customer. For retail customers this would be information about the customer themselves. For business customers it would imply the name of specific user but also information about the business.\nIncludes name and occupation for individuals or name, business numbers and industry code for organisations"
+            common:customer.detail:read: "Detailed Customer Data : The scope would allow the third party to access more
+            detailed information about the customer. Includes the data available with the Basic Customer Data scope plus contact details.\nIncludes basic data plus phone, email and address information."
+          x-scopes-bindings:
+            common:customer.detail:read: "Internal/subscriber"
+            common:customer.basic:read: "Internal/subscriber"
+      description: >-
+        Default OAuth flow
   parameters:
     RequestHeader_x-v:
       description: Version of the API end point requested by the client. Must be set

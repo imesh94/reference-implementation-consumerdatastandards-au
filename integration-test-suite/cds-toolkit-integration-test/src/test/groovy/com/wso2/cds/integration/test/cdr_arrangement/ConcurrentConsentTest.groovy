@@ -92,7 +92,7 @@ class ConcurrentConsentTest extends AUTest {
         response = auAuthorisationBuilder.doPushAuthorisationRequest(scopes2, AUConstants.DEFAULT_SHARING_DURATION,
                 true, "")
         requestUri = AUTestUtil.parseResponseBody(response, AUConstants.REQUEST_URI)
-        doConsentAuthorisationViaRequestUri(scopes2, requestUri.toURI(), clientId, AUAccountProfile.INDIVIDUAL)
+        doConsentAuthorisationViaRequestUriNoAccountSelection(scopes2, requestUri.toURI(), clientId, AUAccountProfile.INDIVIDUAL)
         Assert.assertNotNull(authorisationCode)
         def userAccessToken2 = AURequestBuilder.getUserToken(authorisationCode,
                 scopes1, auAuthorisationBuilder.getCodeVerifier())
@@ -158,6 +158,7 @@ class ConcurrentConsentTest extends AUTest {
                 .baseUri(AUTestUtil.getBaseUrl(AUConstants.BASE_PATH_TYPE_ACCOUNT))
                 .get("${AUConstants.BULK_ACCOUNT_PATH}")
 
+        // ISSUE: https://github.com/wso2-enterprise/financial-open-banking/issues/7882
         Assert.assertEquals(response.statusCode(), AUConstants.STATUS_CODE_403)
 
         //validate token
