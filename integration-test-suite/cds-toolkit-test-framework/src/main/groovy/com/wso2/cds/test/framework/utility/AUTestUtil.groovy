@@ -27,13 +27,8 @@ import com.wso2.cds.test.framework.configuration.AUConfigurationService
 import org.apache.http.conn.ssl.SSLSocketFactory
 import org.jsoup.nodes.Document
 import org.jsoup.nodes.Element
-import org.openqa.selenium.By
-import org.openqa.selenium.WebDriver
-import org.openqa.selenium.remote.RemoteWebDriver
 import org.testng.Assert
 import io.restassured.response.Response
-
-import java.nio.charset.Charset;
 import org.jsoup.Jsoup
 
 /**
@@ -330,7 +325,7 @@ class AUTestUtil extends OBTestUtil {
     static List<String> getLegalEntityIdList(Response legalEntityListResponse, String userId, String accountId) {
 
         // Parse the payload using Gson
-        Gson gson = new Gson();
+        Gson gson = new Gson()
         JsonObject payloadObj = gson.fromJson(legalEntityListResponse.getBody(), JsonObject.class)
 
         // Get the secondary users array
@@ -364,7 +359,7 @@ class AUTestUtil extends OBTestUtil {
                             JsonObject legalEntityObj = legalEntityElement.getAsJsonObject()
 
                             // Get the legal entity ID
-                            String legalEntityId = legalEntityObj.get(AUConstants.LEGAL_ENTITY_ID).getAsString()
+                            String legalEntityId = legalEntityObj.get(AUConstants.LEGAL_ENTITY_ID_MAP).getAsString()
 
                             // Add legal entity ID to the list
                             legalEntityIds.add(legalEntityId)
@@ -434,5 +429,15 @@ class AUTestUtil extends OBTestUtil {
                 return 1
         }
     }
+
+    /**
+     * Get Unavailable Accounts XPath.
+     * @param accountNumber - Account Number
+     * @return AccountXPath
+     */
+    static String getUnavailableAccountsXPath(String accountNumber) {
+        return AUPageObjects.LBL_UNAVAILABLE_ACCOUNT + "div[@id='${accountNumber}']"
+    }
+
 }
 

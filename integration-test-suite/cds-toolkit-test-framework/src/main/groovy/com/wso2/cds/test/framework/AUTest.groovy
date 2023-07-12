@@ -1253,7 +1253,7 @@ class AUTest extends OBTest {
                             JsonObject legalEntityObj = legalEntityElement.getAsJsonObject()
 
                             // Check if the legal entity ID matches
-                            if (legalEntityObj.get(AUConstants.LEGAL_ENTITY_ID).getAsString().equals(legalEntityId)) {
+                            if (legalEntityObj.get(AUConstants.LEGAL_ENTITY_ID_MAP).getAsString().equals(legalEntityId)) {
                                 return legalEntityObj.get(AUConstants.SHARING_STATUS).getAsString()
                             }
                         }

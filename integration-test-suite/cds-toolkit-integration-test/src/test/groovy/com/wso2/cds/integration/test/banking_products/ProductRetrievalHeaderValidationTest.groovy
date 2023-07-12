@@ -76,9 +76,10 @@ class ProductRetrievalHeaderValidationTest extends AUTest {
     @Test
     void "TC1101018_Retrieve banking products with supported endpoint version with holder identifier header"() {
 
-        def holderID = "ABCBank"
+        def holderID = "HID"
 
-        def response = AURestAsRequestBuilder.buildRequest()
+        def response = AURequestBuilder.buildBasicRequestWithCustomHeaders(userAccessToken,
+                AUConstants.X_V_HEADER_PRODUCTS, clientHeader)
                 .header("x-${holderID}-v", AUConstants.X_V_HEADER_PRODUCTS)
                 .baseUri(AUTestUtil.getBaseUrl(AUConstants.BASE_PATH_TYPE_PRODUCTS))
                 .get("${AUConstants.BANKING_PRODUCT_PATH}")
@@ -285,7 +286,6 @@ class ProductRetrievalHeaderValidationTest extends AUTest {
     void "TC1101016_Retrieve Product with unsupported endpoint version"() {
 
         def response = AURequestBuilder.buildBasicRequestWithoutAuthorisationHeader(AUConstants.UNSUPPORTED_X_V_VERSION)
-                .header(AUConstants.X_MIN_HEADER , AUConstants.X_V_HEADER_PRODUCTS)
                 .baseUri(AUTestUtil.getBaseUrl(AUConstants.BASE_PATH_TYPE_PRODUCTS))
                 .get("${AUConstants.BANKING_PRODUCT_PATH}")
 
@@ -296,14 +296,15 @@ class ProductRetrievalHeaderValidationTest extends AUTest {
                 .UNSUPPORTED_VERSION)
     }
 
-    //before executing need to configure  <HolderIdentifier>ABC-Bank</HolderIdentifier> in open-banking xml file
+    //before executing need to configure  <HolderIdentifier>HID</HolderIdentifier> in open-banking xml file
     //of OB_KM to the value set in {holderID} below
     @Test
     void "TC1101017_Retrieve Product with unsupported endpoint version with holder identifier header"() {
 
-        def holderID = "ABC-Bank"
+        def holderID = "HID"
 
-        def response = AURestAsRequestBuilder.buildRequest()
+        def response = AURequestBuilder.buildBasicRequestWithCustomHeaders(userAccessToken,
+                AUConstants.X_V_HEADER_PRODUCTS, clientHeader)
                 .header("x-${holderID}-v", AUConstants.UNSUPPORTED_X_V_VERSION)
                 .baseUri(AUTestUtil.getBaseUrl(AUConstants.BASE_PATH_TYPE_PRODUCTS))
                 .get("${AUConstants.BANKING_PRODUCT_PATH}")

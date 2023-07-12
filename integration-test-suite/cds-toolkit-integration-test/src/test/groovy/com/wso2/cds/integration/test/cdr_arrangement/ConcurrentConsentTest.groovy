@@ -225,6 +225,7 @@ class ConcurrentConsentTest extends AUTest {
         def userAccessTokenResponse = AURequestBuilder.getUserToken(authorisationCode,
                 scopes1, auAuthorisationBuilder.getCodeVerifier())
         String userAccessToken1 = userAccessTokenResponse.tokens.accessToken.toString()
+        String refreshAccessToken1 = userAccessTokenResponse.tokens.refreshToken.toString()
 
         //obtain cdr_arrangement_id from token response
         String cdrArrangementId1 = userAccessTokenResponse.getCustomParameters().get(AUConstants.CDR_ARRANGEMENT_ID)
@@ -260,6 +261,7 @@ class ConcurrentConsentTest extends AUTest {
         def userAccessTokenResponse2 = AURequestBuilder.getUserToken(authorisationCode,
                 scopes2, auAuthorisationBuilder.getCodeVerifier())
         String userAccessToken2 = userAccessTokenResponse2.tokens.accessToken.toString()
+        String refreshAccessToken2 = userAccessTokenResponse2.tokens.refreshToken.toString()
 
         String cdrArrangementId2 = userAccessTokenResponse2.getCustomParameters().get(AUConstants.CDR_ARRANGEMENT_ID)
         Assert.assertNotNull(cdrArrangementId2)
@@ -267,14 +269,14 @@ class ConcurrentConsentTest extends AUTest {
         Thread.sleep(2000)
 
         //validate first token
-        def introspectResponse1 = AURequestBuilder.buildIntrospectionRequest(userAccessToken1,
+        def introspectResponse1 = AURequestBuilder.buildIntrospectionRequest(refreshAccessToken1,
                 auConfiguration.getAppInfoClientID(), 0)
                 .post(AUConstants.INTROSPECTION_ENDPOINT)
 
         Assert.assertTrue(introspectResponse1.jsonPath().get("active").toString().contains("false"))
 
         //validate second token
-        def introspectResponse2 = AURequestBuilder.buildIntrospectionRequest(userAccessToken2,
+        def introspectResponse2 = AURequestBuilder.buildIntrospectionRequest(refreshAccessToken2,
                 auConfiguration.getAppInfoClientID(), 0)
                 .post(AUConstants.INTROSPECTION_ENDPOINT)
 

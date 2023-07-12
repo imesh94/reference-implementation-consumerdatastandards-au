@@ -208,5 +208,6 @@ class AUPageObjects {
     public static String BTN_AUTHENTICATE = "//input[@id='authenticate']"
     public static String TXT_OTP_CODE = "OTPcode"
     public static BTN_CONSENT_EXPIRY_XPATH = "//button[@id='consent-expiry-date']"
+    public static LBL_UNAVAILABLE_ACCOUNT = "//h4[contains(text(),'Accounts Unavailable To Share')]/following-sibling::div/"
 
 }

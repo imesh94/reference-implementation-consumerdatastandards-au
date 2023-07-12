@@ -107,25 +107,31 @@ class MultiTppConsentValidationTest extends AUTest {
         def parResponse = auAuthorisationBuilder.doPushAuthorisationRequest(scopes, AUConstants.DEFAULT_SHARING_DURATION,
                 true, cdrArrangementId)
 
-        def requestUri = AUTestUtil.parseResponseBody(response, AUConstants.REQUEST_URI)
+        def requestUri = AUTestUtil.parseResponseBody(parResponse, AUConstants.REQUEST_URI)
         Assert.assertEquals(parResponse.statusCode(), AUConstants.STATUS_CODE_201)
 
         //Send consent authorisation using request_uri bound to TPP1 with client id of TPP2
         auConfiguration.setTppNumber(1)
-        def authoriseUrl = auAuthorisationBuilder.getAuthorizationRequest(scopes, requestUri, clientId)
-                .toURI().toString()
+        def authoriseUrl = auAuthorisationBuilder.getAuthorizationRequest(scopes, requestUri.toURI(),
+                auConfiguration.getAppInfoClientID()).toURI().toString()
 
         def automationResponse = getBrowserAutomation(AUConstants.DEFAULT_DELAY)
                 .addStep(new NavigationAutomationStep(authoriseUrl, 10))
                 .execute()
 
-        Assert.assertTrue(AUTestUtil.getErrorDescriptionFromUrl(automationResponse.currentUrl.get())
-                .contains("Request Object and Authorization request contains unmatched client_id"))
+        String url = automationResponse.currentUrl.get()
+        String errorUrl
+
+        errorUrl = url.split("oauthErrorCode=")[1].split("&")[0].replaceAll("\\+"," ")
+        Assert.assertEquals(errorUrl, AUConstants.INVALID_CLIENT)
+
+        errorUrl = url.split("oauthErrorMsg=")[1].split("&")[0].replaceAll("\\+"," ")
+        Assert.assertEquals(errorUrl, "application.not.found")
 
     }
 
     @Test
-    void "OB-1312_Validate PAR request with cdr_arrangemet_id belongs to different TPP"() {
+    void "OB-1312_Validate PAR request with cdr_arrangement_id belongs to different TPP"() {
         auConfiguration.setTppNumber(0)
 
         //authorise sharing arrangement
@@ -140,22 +146,14 @@ class MultiTppConsentValidationTest extends AUTest {
         auConfiguration.setTppNumber(1)
         //Send PAR request.
         def parResponse = auAuthorisationBuilder.doPushAuthorisationRequest(scopes, AUConstants.DEFAULT_SHARING_DURATION,
-                true, cdrArrangementId, clientId)
+                true, cdrArrangementId, auConfiguration.getAppInfoClientID())
 
         Assert.assertEquals(parResponse.statusCode(), AUConstants.STATUS_CODE_400)
     }
 
-    @AfterClass (alwaysRun = true)
+    @AfterClass(alwaysRun = true)
     void tearDown() {
-
-        List<String> scopes = [
-                AUAccountScope.CDR_REGISTRATION
-        ]
-
-        //Delete TPP2.
-        auConfiguration.setTppNumber(1)
-        deleteApplicationIfExists(scopes)
-        Assert.assertEquals(deletionResponse.statusCode(), AUConstants.STATUS_CODE_204)
+        deleteApplicationIfExists(clientId)
     }
 }
 

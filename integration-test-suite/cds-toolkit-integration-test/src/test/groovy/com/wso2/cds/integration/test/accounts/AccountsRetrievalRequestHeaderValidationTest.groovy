@@ -593,7 +593,7 @@ class AccountsRetrievalRequestHeaderValidationTest extends AUTest {
         softAssertion.assertEquals(AUTestUtil.parseResponseBody(response, AUConstants.ERROR_CODE),
                 AUConstants.ERROR_CODE_GENERAL_EXPECTED_ERROR)
         softAssertion.assertEquals(AUTestUtil.parseResponseBody(response, AUConstants.ERROR_DETAIL),
-                AUConstants.ERROR_TITLE_GENERAL_EXPECTED_ERROR)
+                AUConstants.INVALID_ACCEPT_HEADER)
         softAssertion.assertEquals(AUTestUtil.parseResponseBody(response, AUConstants.ERROR_TITLE),
                 AUConstants.ERROR_TITLE_GENERAL_EXPECTED_ERROR)
 

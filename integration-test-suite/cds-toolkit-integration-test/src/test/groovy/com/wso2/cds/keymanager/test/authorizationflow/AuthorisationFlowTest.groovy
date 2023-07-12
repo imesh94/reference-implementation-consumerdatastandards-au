@@ -281,7 +281,7 @@ class AuthorisationFlowTest extends AUTest {
                 .execute()
 
         def authUrl = automation.currentUrl.get()
-        Assert.assertTrue(AUTestUtil.getDecodedUrl(authUrl).contains("User skip the consent flow"))
+        Assert.assertTrue(AUTestUtil.getDecodedUrl(authUrl).contains("User skipped the consent flow"))
         String stateParam = authUrl.split("state=")[1]
         Assert.assertEquals(auAuthorisationBuilder.state.toString(), stateParam)
     }
@@ -325,7 +325,7 @@ class AuthorisationFlowTest extends AUTest {
                 .execute()
 
         def authUrl = automation.currentUrl.get()
-        Assert.assertTrue(AUTestUtil.getDecodedUrl(authUrl).contains("User skip the consent flow"))
+        Assert.assertTrue(AUTestUtil.getDecodedUrl(authUrl).contains("User skipped the consent flow"))
         String stateParam = authUrl.split("state=")[1]
         Assert.assertEquals(auAuthorisationBuilder.state.toString(), stateParam)
     }
