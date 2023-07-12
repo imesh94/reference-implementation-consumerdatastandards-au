@@ -42,6 +42,8 @@ public class CDSDataRetrievalUtilTest extends PowerMockTestCase {
     private static final String SP_QUERY_PARAMS_WITH_REQUEST_URI = "redirect_uri=https://www.google.com/" +
             "redirects/redirect1&" + "request_uri=" + "urn:ietf:params:oauth:request_uri:" +
             "XKnDFSbXJWjuf0AY6gOT1EIuvdP8BQLo";
+    private static final String SP_QUERY_PARAMS_WITH_STATE = "redirect_uri=https://www.google.com/redirects/" +
+            "redirect1&request=requst-object&client_id=client-id&state=samplestate";
     private static final String SCOPES = "common:customer.basic:read common:customer.detail:read openid profile";
     private static final String VALID_RECEIPT =  "{\"accountData\":{\"permissions\":[\"CDRREADACCOUNTSBASIC\"]," +
             "\"expirationDateTime\": \"" + LocalDateTime.now(ZoneOffset.UTC).plusDays(1L) + "Z\"}}";
@@ -61,6 +63,12 @@ public class CDSDataRetrievalUtilTest extends PowerMockTestCase {
     public void testgetRedirectURL() {
         String redirectUrl = CDSDataRetrievalUtil.getRedirectURL(SP_QUERY_PARAMS);
         Assert.assertNotNull(redirectUrl);
+    }
+
+    @Test
+    public void testgetStateParameter() {
+        String state = CDSDataRetrievalUtil.getStateParameter(SP_QUERY_PARAMS_WITH_STATE);
+        Assert.assertNotNull(state);
     }
 
     @Test

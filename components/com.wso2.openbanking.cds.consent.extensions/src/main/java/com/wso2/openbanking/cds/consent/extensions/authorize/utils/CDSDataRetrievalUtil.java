@@ -246,6 +246,26 @@ public class CDSDataRetrievalUtil {
     }
 
     /**
+     * Method to extract state from query params
+     *
+     * @param spQueryParams query params
+     * @return state
+     */
+    public static String getStateParameter(String spQueryParams) {
+        String state = null;
+        if (spQueryParams != null && !spQueryParams.trim().isEmpty()) {
+            String[] spQueryParamList = spQueryParams.split("&");
+            for (String param : spQueryParamList) {
+                if (param.startsWith("state=")) {
+                    state = param.substring("state=".length());
+                    break;
+                }
+            }
+        }
+        return state;
+    }
+
+    /**
      * Maps data to AccountConsentRequest model.
      *
      * @param consentData     consent data
