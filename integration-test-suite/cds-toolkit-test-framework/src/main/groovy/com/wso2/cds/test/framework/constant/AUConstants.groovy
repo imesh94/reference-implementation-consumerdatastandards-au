@@ -422,7 +422,7 @@ class AUConstants extends OBConstants {
     public static final MALFORMED_PAR_REQUEST= "The request is malformed."
     public static final INVALID_ALGORITHM = "Invalid request object signing algorithm"
     public static final INVALID_RESPONSE_TYPE = "Invalid response type"
-    public static final MISSING_AUD_VALUE= "Bad audience value found in the request object"
+    public static final MISSING_AUD_VALUE= "aud parameter is missing in the request object"
     public static final MISSING_ISS_VALUE= "Invalid issuer in the request"
     public static final MISSING_EXP_VALUE= "exp parameter is missing in the request object"
     public static final MISSING_NBF_VALUE= "nbf parameter is missing in the request object"

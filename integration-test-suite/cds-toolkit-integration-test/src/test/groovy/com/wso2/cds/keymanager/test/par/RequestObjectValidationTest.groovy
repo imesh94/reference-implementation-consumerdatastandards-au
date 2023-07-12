@@ -79,7 +79,7 @@ class RequestObjectValidationTest extends AUTest {
         Assert.assertEquals(response.statusCode(), AUConstants.STATUS_CODE_400)
         Assert.assertEquals(AUTestUtil.parseResponseBody(response, AUConstants.ERROR_DESCRIPTION),
                 AUConstants.INVALID_ALGORITHM)
-        Assert.assertEquals(AUTestUtil.parseResponseBody(response, AUConstants.ERROR), AUConstants.INVALID_REQUEST)
+        Assert.assertEquals(AUTestUtil.parseResponseBody(response, AUConstants.ERROR), AUConstants.INVALID_REQUEST_OBJECT)
 
     }
 
@@ -95,9 +95,9 @@ class RequestObjectValidationTest extends AUTest {
 
         def response = auAuthorisationBuilder.doPushAuthorisationRequest(modifiedClaimSet)
 
-        Assert.assertEquals(response.statusCode(), AUConstants.STATUS_CODE_401)
+        Assert.assertEquals(response.statusCode(), AUConstants.STATUS_CODE_400)
         Assert.assertEquals(AUTestUtil.parseResponseBody(response, AUConstants.ERROR_DESCRIPTION), AUConstants.MISSING_AUD_VALUE)
-        Assert.assertEquals(AUTestUtil.parseResponseBody(response, AUConstants.ERROR), AUConstants.INVALID_REQUEST)
+        Assert.assertEquals(AUTestUtil.parseResponseBody(response, AUConstants.ERROR), AUConstants.INVALID_REQUEST_OBJECT)
     }
 
     @Test

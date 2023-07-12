@@ -79,7 +79,9 @@ public class GatewayErrorMediator extends AbstractMediator {
             String errorMessage = (String) messageContext.getProperty(GatewayConstants.ERROR_MSG);
             String errorDetail = (String) messageContext.getProperty(GatewayConstants.ERROR_DETAIL);
 
-            if (Integer.toString(errorCode).startsWith("9")) {
+            if (Integer.toString(errorCode).startsWith("9008")) {
+                errorData = getThrottledOutResponse();
+            } else if (Integer.toString(errorCode).startsWith("9")) {
                 errorData = getAuthFailureResponse(errorCode, errorMessage);
             } else if (Integer.toString(errorCode).startsWith("4") && StringUtils.isEmpty(errorDetail)) {
                 errorData = getResourceFailureResponse(errorCode, errorMessage);
@@ -269,6 +271,27 @@ public class GatewayErrorMediator extends AbstractMediator {
         } catch (AxisFault axisFault) {
             log.error(GatewayConstants.PAYLOAD_SETTING_ERROR, axisFault);
         }
+    }
+
+    /**
+     * Method to get the error response for throttled out requests
+     *
+     * @return  Throttle Data JSONObject
+     */
+    private static JSONObject getThrottledOutResponse() {
+
+        JSONObject errorData = new JSONObject();
+        JSONArray errorList = new JSONArray();
+        String errorResponse;
+
+        errorList.add(ErrorUtil.getErrorObject(ErrorConstants.AUErrorEnum.EXPECTED_GENERAL_ERROR,
+                GatewayConstants.THROTTLED_OUT_ERROR,
+                new CDSErrorMeta()));
+
+        errorResponse = ErrorUtil.getErrorJson(errorList);
+        errorData.put(GatewayConstants.STATUS_CODE, 429);
+        errorData.put(GatewayConstants.ERROR_RESPONSE, errorResponse);
+        return errorData;
     }
 
     /**
