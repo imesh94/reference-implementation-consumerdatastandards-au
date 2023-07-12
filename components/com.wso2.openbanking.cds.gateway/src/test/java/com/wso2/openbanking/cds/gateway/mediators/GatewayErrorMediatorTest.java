@@ -39,6 +39,14 @@ public class GatewayErrorMediatorTest extends PowerMockTestCase {
     GatewayErrorMediator gatewayErrorMediator = new GatewayErrorMediator();
 
     @Test
+    public void testMediatorForThrottledOutError() throws Exception {
+
+        MessageContext messageContext = getData();
+        messageContext.setProperty(GatewayConstants.ERROR_CODE, 900806);
+        Assert.assertTrue(gatewayErrorMediator.mediate(messageContext));
+    }
+
+    @Test
     public void testMediatorForGeneralAuthError() throws Exception {
 
         MessageContext messageContext = getData();
