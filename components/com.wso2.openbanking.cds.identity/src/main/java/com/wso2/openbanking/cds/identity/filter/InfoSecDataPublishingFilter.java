@@ -111,7 +111,7 @@ public class InfoSecDataPublishingFilter implements Filter {
         requestData.put("userAgent", null);
         requestData.put("statusCode", response.getStatus());
         requestData.put("httpMethod", request.getMethod());
-        requestData.put("responsePayloadSize", contentLength != null ? Long.parseLong(contentLength) : null);
+        requestData.put("responsePayloadSize", contentLength != null ? Long.parseLong(contentLength) : 0);
         String[] apiData = getApiData(request.getRequestURI());
         requestData.put("electedResource", apiData[0]);
         requestData.put("apiName", apiData[1]);
