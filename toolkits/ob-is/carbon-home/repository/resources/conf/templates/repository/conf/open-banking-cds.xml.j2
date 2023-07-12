@@ -203,7 +203,7 @@
         {% endif %}
         {% if open_banking_cds.secondary_user_accounts.ceasing_secondary_user_sharing_enable is defined %}
         <CeasingSecondaryUserSharingEnabled>{{open_banking_cds.secondary_user_accounts.ceasing_secondary_user_sharing_enable}}</CeasingSecondaryUserSharingEnabled>
-        % else %}
+        {% else %}
         <CeasingSecondaryUserSharingEnabled>false</CeasingSecondaryUserSharingEnabled>
         {% endif %}
     </SecondaryUserAccounts>

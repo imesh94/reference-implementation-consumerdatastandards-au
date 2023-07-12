@@ -447,6 +447,10 @@ roles = "data-recipient-software-product"
 api_name = "ConsumerDataStandards"
 roles = "data-recipient-software-product"
 
+[[open_banking.dcr.regulatory_api]]
+api_name = "ConsumerDataStandardsCommon"
+roles = "data-recipient-software-product"
+
 [open_banking.gateway]
 request_router="com.wso2.openbanking.cds.gateway.executors.core.CDSAPIRequestRouter"
 consent.validation.endpoint="https://IS_HOSTNAME:9446/api/openbanking/consent/validate"
