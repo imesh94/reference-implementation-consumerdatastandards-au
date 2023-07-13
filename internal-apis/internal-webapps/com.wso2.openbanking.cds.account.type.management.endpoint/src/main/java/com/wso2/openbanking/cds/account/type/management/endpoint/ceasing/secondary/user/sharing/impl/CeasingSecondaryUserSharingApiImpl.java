@@ -26,6 +26,7 @@ import com.wso2.openbanking.cds.account.type.management.endpoint.ceasing.seconda
 import com.wso2.openbanking.cds.account.type.management.endpoint.constants.AccountTypeManagementConstants;
 import com.wso2.openbanking.cds.account.type.management.endpoint.model.ErrorDTO;
 import com.wso2.openbanking.cds.account.type.management.endpoint.model.ErrorStatusEnum;
+import com.wso2.openbanking.cds.account.type.management.endpoint.model.SecondaryAccountOwnerTypeEnum;
 import com.wso2.openbanking.cds.account.type.management.endpoint.util.ValidationUtil;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -120,8 +121,8 @@ public class CeasingSecondaryUserSharingApiImpl implements CeasingSecondaryUserS
 
                 for (AuthorizationResource authorizationResource : detailedConsent.getAuthorizationResources()) {
                     if (authorizationResource.getUserID().equals(userID) &&
-                            authorizationResource.getAuthorizationType().
-                                    equals(AccountTypeManagementConstants.SECONDARY_ACCOUNT_OWNER)) {
+                            SecondaryAccountOwnerTypeEnum.isValidOwnerType(
+                                    authorizationResource.getAuthorizationType())) {
                         isSecondaryAccountOwner = true;
                         break;
                     }
