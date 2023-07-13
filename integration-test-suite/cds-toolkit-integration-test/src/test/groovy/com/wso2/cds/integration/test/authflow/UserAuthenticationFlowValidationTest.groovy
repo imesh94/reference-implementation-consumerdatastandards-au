@@ -55,18 +55,21 @@ class UserAuthenticationFlowValidationTest extends AUTest {
 
                     driver.manage().timeouts().implicitlyWait(30, TimeUnit.SECONDS)
 
+                    //Click on SignIn Button
+                    authWebDriver.clickButtonXpath(AUPageObjects.AU_AUTH_SIGNIN_XPATH)
+
                     //Identifier First Authentication
                     Assert.assertTrue(authWebDriver.isElementDisplayed(AUConstants.LBL_OTP_TIMEOUT))
                     authWebDriver.executeSMSOTP(AUPageObjects.AU_LBL_SMSOTP_AUTHENTICATOR, AUPageObjects.AU_TXT_OTP_CODE_ID,
                             AUConstants.AU_OTP_CODE)
                     Assert.assertTrue(driver.findElement(By.xpath(AUConstants.LBL_FOOTER_DESCRIPTION)).getText().trim()
-                            .contains("Your Customer ID will not be shared with \"Mock Company Inc.," +
-                                    "Mock Software 1\"One time passwords are used to share banking data. " +
-                                    "You will never be asked to provide your real password to share banking data."))
+                            .contains("Your Customer ID will not be shared with \"Mock Company Inc.,Mock Software 1\". " +
+                                    "One time passwords are used to share banking data. You will never be asked to provide " +
+                                    "your real password to share banking data."))
 
                     authWebDriver.clickButtonXpath(AUPageObjects.AU_BTN_AUTHENTICATE)
                     driver.manage().timeouts().implicitlyWait(30, TimeUnit.SECONDS)
-                    Assert.assertTrue(authWebDriver.isElementDisplayed(AUConstants.ELE_CONSENT_PAGE))
+                    Assert.assertTrue(authWebDriver.isElementDisplayed(AUPageObjects.ORGANIZATION_A_PROFILE_SELECTION))
                 }
         automation.execute()
     }

@@ -235,12 +235,10 @@ class CustomerDetailsRetrievalHeaderValidationTests extends AUTest {
 
         def response = AURestAsRequestBuilder.buildRequest()
                 .header(AUConstants.X_V_HEADER, AUConstants.X_V_HEADER_CUSTOMER)
+                .header(AUConstants.AUTHORIZATION_HEADER_KEY, "${AUConstants.AUTHORIZATION_BEARER_TAG}${userAccessToken}")
                 .header(AUConstants.X_FAPI_AUTH_DATE, AUConstants.DATE)
-                .header(AUConstants.X_FAPI_CUSTOMER_IP_ADDRESS , AUConstants.IP)
                 .header(AUConstants.X_CDS_CLIENT_HEADERS , clientHeader)
                 .header("x-${holderID}-v", AUConstants.X_V_HEADER_CUSTOMER)
-                .header(AUConstants.AUTHORIZATION_HEADER_KEY,
-                        "${AUConstants.AUTHORIZATION_BEARER_TAG} ${userAccessToken}")
                 .baseUri(AUTestUtil.getBaseUrl(AUConstants.BASE_PATH_TYPE_CUSTOMER))
                 .get("${AUConstants.BULK_CUSTOMER}")
 
@@ -318,26 +316,24 @@ class CustomerDetailsRetrievalHeaderValidationTests extends AUTest {
         Assert.assertEquals(AUTestUtil.parseResponseBody(response, AUConstants.ERROR_TITLE), AUConstants.INVALID_HEADER)
     }
 
-    //TODO: Issue: https://github.com/wso2-enterprise/financial-open-banking/issues/8390
     @Test
     void "TC0601020_Retrieve Customer info with invalid x-cds-client-headers"() {
 
         def cdsClient = "${auConfiguration.getAppInfoClientID()}:${auConfiguration.getAppInfoClientSecret()}"
 
-        def response = AURequestBuilder.buildBasicRequest(userAccessToken, AUConstants.X_V_HEADER_CUSTOMER)
-                .accept(AUConstants.ACCEPT)
-                .header(AUConstants.X_CDS_CLIENT_HEADERS , cdsClient)
-                .header(AUConstants.X_FAPI_AUTH_DATE, AUConstants.DATE)
+        def response = AURequestBuilder.buildBasicRequestWithOptionalHeaders(userAccessToken,
+                AUConstants.X_V_HEADER_CUSTOMER, cdsClient)
                 .baseUri(AUTestUtil.getBaseUrl(AUConstants.BASE_PATH_TYPE_CUSTOMER))
                 .get("${AUConstants.BULK_CUSTOMER}")
 
         Assert.assertEquals(response.statusCode(), AUConstants.STATUS_CODE_400)
         Assert.assertEquals(AUTestUtil.parseResponseBody(response, AUConstants.ERROR_CODE),
-                AUConstants.ERROR_CODE_INVALID_HEADER)
-        Assert.assertEquals(AUTestUtil.parseResponseBody(response, AUConstants.ERROR_TITLE), AUConstants.INVALID_HEADER)
-        Assert.assertTrue(AUTestUtil.parseResponseBody(response, AUConstants.ERROR_DETAIL).contains("Schema validation " +
-                "failed in the Request: ECMA 262 regex \"^([A-Za-z0-9+/]{4})*([A-Za-z0-9+/]{3}=|[A-Za-z0-9+/]{2}==)?\$\" " +
-                "does not match input string"))
+                AUConstants.ERROR_CODE_INVALID_FIELD)
+        Assert.assertEquals(AUTestUtil.parseResponseBody(response, AUConstants.ERROR_TITLE), AUConstants.INVALID_FIELD)
+        Assert.assertTrue(AUTestUtil.parseResponseBody(response, AUConstants.ERROR_DETAIL)
+                .contains("Schema validation failed in the Request: ECMA 262 regex " +
+                        "\"^([A-Za-z0-9+/]{4})*([A-Za-z0-9+/]{3}=|[A-Za-z0-9+/]{2}==)?\$\" does not match input " +
+                        "string \"pEpMozLXDwCiGi_dVKwcabSSyHoa:AppConfig1.Application.ClientSecret\""))
     }
 
     @Test

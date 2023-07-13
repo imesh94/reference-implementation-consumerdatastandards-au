@@ -119,11 +119,11 @@ class AUConstants extends OBConstants {
     public static final String BANK_CUSTOMER_BASIC_READ_INDIVIDUAL = "Name and occupation"
     public static final String BANK_CUSTOMER_BASIC_DETAIL_INDIVIDUAL = "Name, occupation, contact details ‡"
 
-    public static final String LBL_OTP_TIMEOUT = "//div[@id='otpTimeout']";
-    public static final String LBL_FOOTER_DESCRIPTION = "//div[@class='ui segment']/div/form/div/div";
-    public static final String ELE_CONSENT_PAGE = "//form[@id='oauth2_authz_consent']";
-    public static final String LBL_INCORRECT_USERNAME = "//div[@id='error-msg']";
-    public static final String LBL_AUTHENTICATION_FAILURE = "//div[@id='failed-msg']";
+    public static final String LBL_OTP_TIMEOUT = "//div[@id='otpTimeout']"
+    public static final String LBL_FOOTER_DESCRIPTION = "//div[@class='ui segment']/div/form/div/div"
+    public static final String ELE_CONSENT_PAGE = "//form[@id='oauth2_authz_consent']"
+    public static final String LBL_INCORRECT_USERNAME = "//div[@id='error-msg']"
+    public static final String LBL_AUTHENTICATION_FAILURE = "//div[@id='failed-msg']"
     public static final String LBL_AGENT_NAME_AND_ROLE = "Agent name and role"
     public static final String LBL_ORGANISATION_NAME = "Organisation name"
     public static final String LBL_ORGANISATION_NUMBER = "Organisation numbers (ABN or ACN)"
