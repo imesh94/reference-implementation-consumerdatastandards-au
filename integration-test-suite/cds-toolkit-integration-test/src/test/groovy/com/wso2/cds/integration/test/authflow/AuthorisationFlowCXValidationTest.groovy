@@ -50,11 +50,13 @@ class AuthorisationFlowCXValidationTest extends AUTest {
                 .addStep { driver, context ->
                     AutomationMethod authWebDriver = new AutomationMethod(driver)
 
-                    //Select Profile and Accounts
-                    selectProfileAndAccount(authWebDriver, AUAccountProfile.ORGANIZATION_A, true)
+                    //If Profile Selection Enabled
+                    if (auConfiguration.getProfileSelectionEnabled()) {
 
-                    //Click Confirm Button
-                    authWebDriver.clickButtonXpath(AUPageObjects.CONSENT_CONFIRM_XPATH)
+                        //Select Individual Profile
+                        authWebDriver.selectOption(AUPageObjects.ORGANIZATION_A_PROFILE_SELECTION)
+                        authWebDriver.clickButtonXpath(AUPageObjects.PROFILE_SELECTION_NEXT_BUTTON)
+                    }
 
                     def lbl_permission_header = driver.findElement(By.xpath(
                             AUPageObjects.LBL_PERMISSION_HEADER_ORG_PROFILE))
@@ -100,11 +102,13 @@ class AuthorisationFlowCXValidationTest extends AUTest {
                 .addStep { driver, context ->
                     AutomationMethod authWebDriver = new AutomationMethod(driver)
 
-                    //Select Profile and Accounts
-                    selectProfileAndAccount(authWebDriver, AUAccountProfile.ORGANIZATION_A, true)
+                    //If Profile Selection Enabled
+                    if (auConfiguration.getProfileSelectionEnabled()) {
 
-                    //Click Confirm Button
-                    authWebDriver.clickButtonXpath(AUPageObjects.CONSENT_CONFIRM_XPATH)
+                        //Select Individual Profile
+                        authWebDriver.selectOption(AUPageObjects.ORGANIZATION_A_PROFILE_SELECTION)
+                        authWebDriver.clickButtonXpath(AUPageObjects.PROFILE_SELECTION_NEXT_BUTTON)
+                    }
 
                     def lbl_permission_header = driver.findElement(By.xpath(
                             AUPageObjects.LBL_PERMISSION_HEADER_ORG_PROFILE))
@@ -324,11 +328,13 @@ class AuthorisationFlowCXValidationTest extends AUTest {
                 .addStep { driver, context ->
                     AutomationMethod authWebDriver = new AutomationMethod(driver)
 
-                    //Select Profile and Accounts
-                    selectProfileAndAccount(authWebDriver, AUAccountProfile.INDIVIDUAL, true)
+                    //If Profile Selection Enabled
+                    if (auConfiguration.getProfileSelectionEnabled()) {
 
-                    //Click Confirm Button
-                    authWebDriver.clickButtonXpath(AUPageObjects.CONSENT_CONFIRM_XPATH)
+                        //Select Individual Profile
+                        authWebDriver.selectOption(AUPageObjects.INDIVIDUAL_PROFILE_SELECTION)
+                        authWebDriver.clickButtonXpath(AUPageObjects.PROFILE_SELECTION_NEXT_BUTTON)
+                    }
 
                     def lbl_permission_header = driver.findElement(By.xpath(
                             AUPageObjects.LBL_PERMISSION_HEADER_PAYEES))

@@ -149,9 +149,10 @@ class ProductRetrievalValidationTest extends AUTest {
     @Test
     void "TC1101021_Retrieve banking products with invalid updated-since value"() {
 
+        def updatedSince = AUConstants.DATE_FORMAT
         def response = AURequestBuilder.buildBasicRequestWithOptionalHeaders(userAccessToken,
                 AUConstants.X_V_HEADER_PRODUCTS, clientHeader)
-                .queryParam(AUConstants.UPDATED_SINCE, AUConstants.DATE_FORMAT)
+                .queryParam(AUConstants.UPDATED_SINCE, updatedSince)
                 .baseUri(AUTestUtil.getBaseUrl(AUConstants.BASE_PATH_TYPE_PRODUCTS))
                 .get("${AUConstants.BANKING_PRODUCT_PATH}")
 
@@ -161,8 +162,8 @@ class ProductRetrievalValidationTest extends AUTest {
         Assert.assertEquals(AUTestUtil.parseResponseBody(response, AUConstants.ERROR_CODE),
                 AUConstants.ERROR_CODE_INVALID_FIELD)
         Assert.assertEquals(AUTestUtil.parseResponseBody(response, AUConstants.ERROR_DETAIL),
-                "Schema validation failed in the Request: String \"03/03/2023\" is invalid against requested " +
-                        "date format(s) [yyyy-MM-dd'T'HH:mm:ssZ, yyyy-MM-dd'T'HH:mm:ss.[0-9]{1,12}Z],")
+                "Schema validation failed in the Request: String \"${updatedSince}\" is invalid " +
+                        "against requested date format(s) [yyyy-MM-dd'T'HH:mm:ssZ, yyyy-MM-dd'T'HH:mm:ss.[0-9]{1,12}Z],")
         Assert.assertEquals(AUTestUtil.parseResponseBody(response, AUConstants.ERROR_TITLE), AUConstants.INVALID_FIELD)
     }
 

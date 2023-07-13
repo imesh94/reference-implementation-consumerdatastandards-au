@@ -182,10 +182,10 @@ class AccountsIdPermanenceTest extends AUTest {
 
         SoftAssert softAssertion= new SoftAssert()
 
-        def response = AURequestBuilder.buildBasicRequestWithCustomHeaders(userAccessToken,
+        def response = AURequestBuilder.buildBasicRequestWithCustomHeaders(userAccessToken2.toString(),
                 AUConstants.X_V_HEADER_ACCOUNT, clientHeader)
                 .baseUri(AUTestUtil.getBaseUrl(AUConstants.BASE_PATH_TYPE_ACCOUNT))
-                .get("${AUConstants.BULK_ACCOUNT_PATH}/${secondEncryptedAccountId}")
+                .get("${AUConstants.BULK_ACCOUNT_PATH}/${AUConstants.accountID2}")
 
         softAssertion.assertEquals(response.statusCode(), AUConstants.STATUS_CODE_404)
 

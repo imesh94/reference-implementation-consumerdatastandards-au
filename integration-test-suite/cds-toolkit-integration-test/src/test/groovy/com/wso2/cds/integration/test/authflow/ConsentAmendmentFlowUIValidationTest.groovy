@@ -299,7 +299,6 @@ class ConsentAmendmentFlowUIValidationTest extends AUTest {
                 .addStep(new NavigationAutomationStep(authoriseUrl, 10))
                 .execute()
 
-        Assert.assertTrue(automation.currentUrl.get().split("error_description=")[1].split("&")[0]
-                .replaceAll("\\+", " ").contains("Expired request URI"))
+        Assert.assertTrue(AUTestUtil.getErrorFromUrl(automation.currentUrl.get()).contains("Expired request URI"))
     }
 }

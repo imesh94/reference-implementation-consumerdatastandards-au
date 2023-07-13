@@ -102,7 +102,7 @@ class AUConstants extends OBConstants {
     public static final String CONSENT_SEARCH_ENDPOINT = "/api/openbanking/consent/admin/search"
     public static final String DISCLOSURE_OPTIONS_ENDPOINT = "/account-type-management/disclosure-options"
     public static final String SECONDARY_ACCOUNT_ENDPOINT = "/account-type-management/secondary-accounts"
-    public static final String LEGAL_ENTITY_LIST_ENDPOINT = "/account-type-management/legal-entity-list"
+    public static final String LEGAL_ENTITY_LIST_ENDPOINT = "/account-type-management/legal-entity-list/${QUERY_PARAM_USERID}"
     public static final String UPDATE_LEGAL_ENTITY_SHARING_STATUS = "/account-type-management/legal-entity"
     public static final String GET_TRANSACTIONS = SINGLE_ACCOUNT_PATH + "/transactions"
     public static final String GET_PRODUCTS = CDS_PATH + "/banking/products"
@@ -371,7 +371,7 @@ class AUConstants extends OBConstants {
 
     public static final String PARAM_CUSTOMER_ACCOUNT_TYPE = "customerAccountType"
     public static final String INCORRECT_ACC_ID = "1234567"
-    public static final String QUERY_PARAM_USERID = "userId"
+    public static final String QUERY_PARAM_USERID = "userID"
     public static final String QUERY_PARAM_ACCID = "accountId"
     public static final String PARAM_PERMISSION_STATUS = "permissionStatus"
 
@@ -475,7 +475,7 @@ class AUConstants extends OBConstants {
     public static final String DCR_CLAIM_LEGAL_ENTITY_NAME = "legal_entity_name"
     public static final String SAMPLE_LEGAL_ENTITY_ID = "344F0E809-BDBE-4F8E-BD30-5E6C3CB78D7B"
     public static final String SAMPLE_LEGAL_ENTITY_NAME = "Mock Company Pty Ltd."
-    public static final String AlternateAccountId = "30080098763500"
+    public static final String AlternateAccountId = "30080098763501"
     public static final CodeVerifier CODE_VERIFIER = new CodeVerifier()
 }
 

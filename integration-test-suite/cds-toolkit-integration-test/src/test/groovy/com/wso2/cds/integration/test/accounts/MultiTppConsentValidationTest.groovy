@@ -149,9 +149,9 @@ class MultiTppConsentValidationTest extends AUTest {
                 true, cdrArrangementId, auConfiguration.getAppInfoClientID())
 
         Assert.assertEquals(parResponse.statusCode(), AUConstants.STATUS_CODE_400)
-        Assert.assertEquals(AUTestUtil.parseResponseBody(parseResponseBody(), AUConstants.ERROR_DESCRIPTION),
-                "Error while retrieving OAuth application with provided JWT information with subject '${auConfiguration.getAppInfoClientID()}' ")
-        Assert.assertEquals(AUTestUtil.parseResponseBody(parseResponseBody(), AUConstants.ERROR), AUConstants.INVALID_REQUEST)
+        Assert.assertEquals(AUTestUtil.parseResponseBody(parResponse, AUConstants.ERROR_DESCRIPTION),
+                "Service provider metadata retrieval failed. Error retrieving service provider tenant domain for client_id: '${auConfiguration.getAppInfoClientID()}' ")
+        Assert.assertEquals(AUTestUtil.parseResponseBody(parResponse, AUConstants.ERROR), AUConstants.INVALID_REQUEST)
     }
 
     @AfterClass(alwaysRun = true)
