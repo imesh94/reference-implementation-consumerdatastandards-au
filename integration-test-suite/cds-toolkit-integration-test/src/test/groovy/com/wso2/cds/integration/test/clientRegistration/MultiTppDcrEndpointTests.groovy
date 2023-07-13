@@ -27,15 +27,9 @@ import org.testng.annotations.Test
  */
 class MultiTppDcrEndpointTests extends AUTest {
 
-    public List<AUAccountScope> scopes = [
-            AUAccountScope.CDR_REGISTRATION
-    ]
-
     @BeforeClass(alwaysRun = true)
     void setup() {
         auConfiguration.setTppNumber(1)
-
-        AUMockCDRIntegrationUtil.loadMetaDataToCDRRegister()
 
         //Register Second TPP.
         def registrationResponse = tppRegistration()
@@ -49,7 +43,7 @@ class MultiTppDcrEndpointTests extends AUTest {
         doConsentAuthorisation(clientId)
 
         auConfiguration.setTppNumber(0)
-        accessToken = AURequestBuilder.getApplicationAccessToken(scopes, auConfiguration.getAppInfoClientID())
+        accessToken = AURequestBuilder.getApplicationAccessToken(getApplicationScope(), auConfiguration.getAppInfoClientID())
         Assert.assertNotNull(accessToken)
     }
 
@@ -62,7 +56,7 @@ class MultiTppDcrEndpointTests extends AUTest {
 
         Assert.assertEquals(registrationResponse.statusCode(), AUConstants.UNAUTHORIZED)
         Assert.assertEquals(AUTestUtil.parseResponseBody(registrationResponse,AUConstants.ERROR),
-                com.wso2.openbanking.toolkit.cds.test.common.utils.AUConstants.INVALID_CLIENT_METADATA)
+                AUConstants.INVALID_CLIENT)
         Assert.assertEquals(AUTestUtil.parseResponseBody(registrationResponse,AUConstants.ERROR_DESCRIPTION),
                 "Request failed due to unknown or invalid Client")
     }
@@ -70,17 +64,16 @@ class MultiTppDcrEndpointTests extends AUTest {
     @Test
     void "OB-1309_Update Application with access token bound to a different client"() {
 
-        AUJWTGenerator aujwtGenerator = new AUJWTGenerator()
         AURegistrationRequestBuilder auRegistrationRequestBuilder = new AURegistrationRequestBuilder()
-        def registrationResponse = AURegistrationRequestBuilder.buildBasicRequest(accessToken)
-                .body(aujwtGenerator.getSignedRequestObject(auRegistrationRequestBuilder
-                        .getRegularClaimsWithNewRedirectUri()))
+        def registrationResponse = AURegistrationRequestBuilder
+                .buildRegistrationRequest(auRegistrationRequestBuilder.getAURegularClaims())
+                .header(AUConstants.AUTHORIZATION_HEADER_KEY, "${AUConstants.AUTHORIZATION_BEARER_TAG}${accessToken}")
                 .when()
                 .put(AUConstants.DCR_REGISTRATION_ENDPOINT + clientId)
 
         Assert.assertEquals(registrationResponse.statusCode(), AUConstants.UNAUTHORIZED)
         Assert.assertEquals(AUTestUtil.parseResponseBody(registrationResponse,AUConstants.ERROR),
-                com.wso2.openbanking.toolkit.cds.test.common.utils.AUConstants.INVALID_CLIENT_METADATA)
+                AUConstants.INVALID_CLIENT)
         Assert.assertEquals(AUTestUtil.parseResponseBody(registrationResponse,AUConstants.ERROR_DESCRIPTION),
                 "Request failed due to unknown or invalid Client")
     }
@@ -94,21 +87,13 @@ class MultiTppDcrEndpointTests extends AUTest {
 
         Assert.assertEquals(registrationResponse.statusCode(), AUConstants.UNAUTHORIZED)
         Assert.assertEquals(AUTestUtil.parseResponseBody(registrationResponse,AUConstants.ERROR),
-                com.wso2.openbanking.toolkit.cds.test.common.utils.AUConstants.INVALID_CLIENT_METADATA)
+                AUConstants.INVALID_CLIENT)
         Assert.assertEquals(AUTestUtil.parseResponseBody(registrationResponse,AUConstants.ERROR_DESCRIPTION),
                 "Request failed due to unknown or invalid Client")
     }
 
-    @AfterClass (alwaysRun = true)
+    @AfterClass(alwaysRun = true)
     void tearDown() {
-
-        List<String> scopes = [
-                AUAccountScope.CDR_REGISTRATION
-        ]
-
-        //Delete TPP2.
-        auConfiguration.setTppNumber(1)
-        deleteApplicationIfExists(scopes)
-        Assert.assertEquals(deletionResponse.statusCode(), AUConstants.STATUS_CODE_204)
+        deleteApplicationIfExists(clientId)
     }
 }

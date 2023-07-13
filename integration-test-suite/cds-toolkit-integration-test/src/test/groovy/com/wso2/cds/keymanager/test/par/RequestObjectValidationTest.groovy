@@ -9,6 +9,7 @@
 
 package com.wso2.cds.keymanager.test.par
 
+import com.nimbusds.oauth2.sdk.ResponseMode
 import com.wso2.cds.test.framework.AUTest
 import com.wso2.cds.test.framework.constant.AUConstants
 import com.wso2.cds.test.framework.request_builder.AUJWTGenerator
@@ -156,7 +157,8 @@ class RequestObjectValidationTest extends AUTest {
         String claims = generator.getRequestObjectClaim(scopes, AUConstants.DEFAULT_SHARING_DURATION,
                 true, "", auConfiguration.getAppInfoRedirectURL(),
                 auConfiguration.getAppInfoClientID(), auAuthorisationBuilder.getResponseType().toString(), true,
-                auAuthorisationBuilder.getState().toString(), Instant.now().minus(1, ChronoUnit.HOURS))
+                auAuthorisationBuilder.getState().toString(), ResponseMode.JWT.toString(),
+                Instant.now().minus(1, ChronoUnit.HOURS))
 
         def response = auAuthorisationBuilder.doPushAuthorisationRequest(claims)
 
@@ -174,7 +176,7 @@ class RequestObjectValidationTest extends AUTest {
         String claims = generator.getRequestObjectClaim(scopes, AUConstants.DEFAULT_SHARING_DURATION,
                 true, "", auConfiguration.getAppInfoRedirectURL(),
                 auConfiguration.getAppInfoClientID(), auAuthorisationBuilder.getResponseType().toString(), true,
-                auAuthorisationBuilder.getState().toString(), time, time)
+                auAuthorisationBuilder.getState().toString(), ResponseMode.JWT.toString(), time, time)
 
         def response = auAuthorisationBuilder.doPushAuthorisationRequest(claims)
 
@@ -192,7 +194,7 @@ class RequestObjectValidationTest extends AUTest {
         String claims = generator.getRequestObjectClaim(scopes, AUConstants.DEFAULT_SHARING_DURATION,
                 true, "", auConfiguration.getAppInfoRedirectURL(),
                 auConfiguration.getAppInfoClientID(), auAuthorisationBuilder.getResponseType().toString(), true,
-                auAuthorisationBuilder.getState().toString(), time)
+                auAuthorisationBuilder.getState().toString(), ResponseMode.JWT.toString(), time)
 
         def response = auAuthorisationBuilder.doPushAuthorisationRequest(claims)
 

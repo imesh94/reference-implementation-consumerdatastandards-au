@@ -70,7 +70,7 @@ class MetaDataConsentAmendment extends AUTest{
         response = auAuthorisationBuilder.doPushAuthorisationRequest(scopes, AUConstants.AMENDED_SHARING_DURATION,
                 true, cdrArrangementId)
         requestUri = AUTestUtil.parseResponseBody(response, AUConstants.REQUEST_URI)
-        authoriseUrl = auAuthorisationBuilder.getAuthorizationRequest(scopes, requestUri.toURI()).toURI().toString()
+        authoriseUrl = auAuthorisationBuilder.getAuthorizationRequest(requestUri.toURI()).toURI().toString()
 
         //Consent Authorisation UI Flow -  Profile selection is not present
         def automation = getBrowserAutomation(AUConstants.DEFAULT_DELAY)

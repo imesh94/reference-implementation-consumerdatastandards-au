@@ -39,11 +39,8 @@ class CustomerDetailsRetrievalHeaderValidationTests extends AUTest {
     void "TC0601003_Retrieve Customer info without x-v Header"() {
 
         def response = AURestAsRequestBuilder.buildRequest()
-                .header(AUConstants.X_MIN_HEADER , AUConstants.X_V_HEADER_CUSTOMER)
+                .header(AUConstants.AUTHORIZATION_HEADER_KEY, "${AUConstants.AUTHORIZATION_BEARER_TAG}${userAccessToken}")
                 .header(AUConstants.X_FAPI_AUTH_DATE, AUConstants.DATE)
-                .header(AUConstants.X_FAPI_CUSTOMER_IP_ADDRESS , AUConstants.IP)
-                .header(AUConstants.X_CDS_CLIENT_HEADERS , clientHeader)
-                .header(AUConstants.AUTHORIZATION_HEADER_KEY, "${AUConstants.AUTHORIZATION_BEARER_TAG} ${userAccessToken}")
                 .baseUri(AUTestUtil.getBaseUrl(AUConstants.BASE_PATH_TYPE_CUSTOMER))
                 .get("${AUConstants.BULK_CUSTOMER}")
 
@@ -185,7 +182,7 @@ class CustomerDetailsRetrievalHeaderValidationTests extends AUTest {
 
         def response = AURequestBuilder.buildBasicRequestWithOptionalHeaders(userAccessToken,
                 AUConstants.X_V_HEADER_CUSTOMER, clientHeader)
-                .header(AUConstants.X_MIN_HEADER, 0)
+                .header(AUConstants.X_MIN_HEADER, 1)
                 .baseUri(AUTestUtil.getBaseUrl(AUConstants.BASE_PATH_TYPE_CUSTOMER))
                 .get("${AUConstants.BULK_CUSTOMER}")
 
@@ -215,30 +212,29 @@ class CustomerDetailsRetrievalHeaderValidationTests extends AUTest {
     @Test
     void "TC0601014_Retrieve Customer info with unsupported endpoint version with holder identifier header"() {
 
-        def holderID = "ABC-Bank"
+        def holderID = "HID"
 
         def response = AURestAsRequestBuilder.buildRequest()
+                .header(AUConstants.X_V_HEADER, AUConstants.X_V_HEADER_CUSTOMER)
+                .header(AUConstants.AUTHORIZATION_HEADER_KEY, "${AUConstants.AUTHORIZATION_BEARER_TAG}${userAccessToken}")
                 .header(AUConstants.X_FAPI_AUTH_DATE, AUConstants.DATE)
-                .header(AUConstants.X_FAPI_CUSTOMER_IP_ADDRESS , AUConstants.IP)
                 .header(AUConstants.X_CDS_CLIENT_HEADERS , clientHeader)
-                .header("x-${holderID}-v", 4)
-                .header(AUConstants.AUTHORIZATION_HEADER_KEY, "${AUConstants.AUTHORIZATION_BEARER_TAG} ${userAccessToken}")
+                .header("x-${holderID}-v", AUConstants.UNSUPPORTED_X_V_VERSION)
                 .baseUri(AUTestUtil.getBaseUrl(AUConstants.BASE_PATH_TYPE_CUSTOMER))
                 .get("${AUConstants.BULK_CUSTOMER}")
 
-        Assert.assertEquals(response.statusCode(), AUConstants.STATUS_CODE_406)
-        Assert.assertEquals(AUTestUtil.parseResponseBody(response, AUConstants.ERROR_CODE),
-                AUConstants.ERROR_CODE_UNSUPPORTED_VERSION)
-        Assert.assertEquals(AUTestUtil.parseResponseBody(response, AUConstants.ERROR_TITLE), AUConstants.UNSUPPORTED_VERSION)
+        Assert.assertEquals(response.statusCode(), AUConstants.STATUS_CODE_200)
+        Assert.assertEquals(response.getHeader(AUConstants.X_V_HEADER).toInteger(), AUConstants.X_V_HEADER_CUSTOMER)
     }
 
     // need to configure the holder_identifier in AM deployment.toml file.
     @Test
     void "TC0601015_Retrieve Customer info with supported endpoint version with holder identifier header"() {
 
-        def holderID = "ABC-Bank"
+        def holderID = "HID"
 
         def response = AURestAsRequestBuilder.buildRequest()
+                .header(AUConstants.X_V_HEADER, AUConstants.X_V_HEADER_CUSTOMER)
                 .header(AUConstants.X_FAPI_AUTH_DATE, AUConstants.DATE)
                 .header(AUConstants.X_FAPI_CUSTOMER_IP_ADDRESS , AUConstants.IP)
                 .header(AUConstants.X_CDS_CLIENT_HEADERS , clientHeader)
@@ -280,8 +276,7 @@ class CustomerDetailsRetrievalHeaderValidationTests extends AUTest {
     void "TC0601017_Retrieve Customer info with invalid x-fapi-interaction-id"() {
 
         def response = AURequestBuilder.buildBasicRequestWithOptionalHeaders(userAccessToken,
-                AUConstants.X_V_HEADER_CUSTOMER, clientHeader)
-                .header(AUConstants.X_FAPI_INTERACTION_ID, "obc")
+                AUConstants.X_V_HEADER_CUSTOMER, clientHeader, AUConstants.DATE, AUConstants.IP, "obc")
                 .baseUri(AUTestUtil.getBaseUrl(AUConstants.BASE_PATH_TYPE_CUSTOMER))
                 .get("${AUConstants.BULK_CUSTOMER}")
 
@@ -323,6 +318,7 @@ class CustomerDetailsRetrievalHeaderValidationTests extends AUTest {
         Assert.assertEquals(AUTestUtil.parseResponseBody(response, AUConstants.ERROR_TITLE), AUConstants.INVALID_HEADER)
     }
 
+    //TODO: Issue: https://github.com/wso2-enterprise/financial-open-banking/issues/8390
     @Test
     void "TC0601020_Retrieve Customer info with invalid x-cds-client-headers"() {
 
@@ -355,7 +351,7 @@ class CustomerDetailsRetrievalHeaderValidationTests extends AUTest {
         Assert.assertEquals(response.statusCode(), AUConstants.STATUS_CODE_200)
         Assert.assertEquals(response.getHeader(AUConstants.X_V_HEADER).toInteger(), AUConstants.X_V_HEADER_CUSTOMER)
 
-        Assert.assertEquals(AUTestUtil.parseResponseBody(response, "data.status"), AUConstants.OK)
+        Assert.assertEquals(AUTestUtil.parseResponseBody(response, "data.status"), "OK")
         Assert.assertNotNull(AUTestUtil.parseResponseBody(response, "data.explanation"))
         Assert.assertNotNull(AUTestUtil.parseResponseBody(response, "data.expectedResolutionTime"))
         Assert.assertNotNull(AUTestUtil.parseResponseBody(response, AUConstants.LINKS_SELF))

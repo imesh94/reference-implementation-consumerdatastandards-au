@@ -66,7 +66,7 @@ class AuthorisationFlowTest extends AUTest {
         requestUri = AUTestUtil.parseResponseBody(response, AUConstants.REQUEST_URI)
 
         sleep(60000)
-        authoriseUrl = auAuthorisationBuilder.getAuthorizationRequest(scopes, requestUri.toURI(),
+        authoriseUrl = auAuthorisationBuilder.getAuthorizationRequest(requestUri.toURI(),
                 auConfiguration.getAppInfoClientID()).toURI().toString()
 
         String errorMessage = "Expired request URI"
@@ -78,7 +78,7 @@ class AuthorisationFlowTest extends AUTest {
         String url = automationResponse.currentUrl.get()
         String errorUrl
 
-        errorUrl = url.split("error_description=")[1].split("&")[0].replaceAll("\\+"," ")
+        errorUrl = AUTestUtil.getErrorFromUrl(url)
         Assert.assertEquals(errorUrl, errorMessage)
     }
 
@@ -123,7 +123,7 @@ class AuthorisationFlowTest extends AUTest {
         response = auAuthorisationBuilder.doPushAuthorisationRequest(scopes, AUConstants.DEFAULT_SHARING_DURATION,
                 true, cdrArrangementId)
         requestUri = AUTestUtil.parseResponseBody(response, AUConstants.REQUEST_URI)
-        authoriseUrl = auAuthorisationBuilder.getAuthorizationRequest(scopes, requestUri.toURI()).toURI().toString()
+        authoriseUrl = auAuthorisationBuilder.getAuthorizationRequest(requestUri.toURI()).toURI().toString()
 
         def automation = getBrowserAutomation(AUConstants.DEFAULT_DELAY)
                 .addStep(new AUBasicAuthAutomationStep(authoriseUrl))
@@ -266,7 +266,7 @@ class AuthorisationFlowTest extends AUTest {
                 true, "")
         requestUri = AUTestUtil.parseResponseBody(response, AUConstants.REQUEST_URI)
 
-        authoriseUrl = auAuthorisationBuilder.getAuthorizationRequest(scopes, requestUri.toURI(),
+        authoriseUrl = auAuthorisationBuilder.getAuthorizationRequest(requestUri.toURI(),
                 auConfiguration.getAppInfoClientID(), true).toURI().toString()
 
         //Consent Authorisation UI Flow
@@ -281,7 +281,7 @@ class AuthorisationFlowTest extends AUTest {
                 .execute()
 
         def authUrl = automation.currentUrl.get()
-        Assert.assertTrue(AUTestUtil.getDecodedUrl(authUrl).contains("User skip the consent flow"))
+        Assert.assertTrue(AUTestUtil.getDecodedUrl(authUrl).contains("User skipped the consent flow"))
         String stateParam = authUrl.split("state=")[1]
         Assert.assertEquals(auAuthorisationBuilder.state.toString(), stateParam)
     }
@@ -293,7 +293,7 @@ class AuthorisationFlowTest extends AUTest {
                 true, "")
         requestUri = AUTestUtil.parseResponseBody(response, AUConstants.REQUEST_URI)
 
-        authoriseUrl = auAuthorisationBuilder.getAuthorizationRequest(scopes, requestUri.toURI(),
+        authoriseUrl = auAuthorisationBuilder.getAuthorizationRequest(requestUri.toURI(),
                 auConfiguration.getAppInfoClientID(), true).toURI().toString()
 
         //Consent Authorisation UI Flow
@@ -325,7 +325,7 @@ class AuthorisationFlowTest extends AUTest {
                 .execute()
 
         def authUrl = automation.currentUrl.get()
-        Assert.assertTrue(AUTestUtil.getDecodedUrl(authUrl).contains("User skip the consent flow"))
+        Assert.assertTrue(AUTestUtil.getDecodedUrl(authUrl).contains("User skipped the consent flow"))
         String stateParam = authUrl.split("state=")[1]
         Assert.assertEquals(auAuthorisationBuilder.state.toString(), stateParam)
     }
@@ -351,7 +351,7 @@ class AuthorisationFlowTest extends AUTest {
                 true, "")
         requestUri = AUTestUtil.parseResponseBody(response, AUConstants.REQUEST_URI)
 
-        authoriseUrl = auAuthorisationBuilder.getAuthorizationRequest(scopes, requestUri.toURI(),
+        authoriseUrl = auAuthorisationBuilder.getAuthorizationRequest(requestUri.toURI(),
                 auConfiguration.getAppInfoClientID(), false).toURI().toString()
 
         //Consent Authorisation UI Flow
@@ -377,7 +377,7 @@ class AuthorisationFlowTest extends AUTest {
                 .execute()
 
         def authUrl = automation.currentUrl.get()
-        Assert.assertTrue(AUTestUtil.getDecodedUrl(authUrl).contains("User skip the consent flow"))
+        Assert.assertTrue(AUTestUtil.getErrorFromUrl(authUrl).contains("User skip the consent flow"))
         Assert.assertFalse(authUrl.contains("state"))
     }
 
@@ -388,7 +388,7 @@ class AuthorisationFlowTest extends AUTest {
                 true, "")
         requestUri = AUTestUtil.parseResponseBody(response, AUConstants.REQUEST_URI)
 
-        authoriseUrl = auAuthorisationBuilder.getAuthorizationRequest(scopes, requestUri.toURI(),
+        authoriseUrl = auAuthorisationBuilder.getAuthorizationRequest(requestUri.toURI(),
                 auConfiguration.getAppInfoClientID(), false).toURI().toString()
 
         //Consent Authorisation UI Flow
@@ -432,7 +432,7 @@ class AuthorisationFlowTest extends AUTest {
                 true, "")
         requestUri = AUTestUtil.parseResponseBody(response, AUConstants.REQUEST_URI)
 
-        authoriseUrl = auAuthorisationBuilder.getAuthorizationRequest(scopes, requestUri.toURI(),
+        authoriseUrl = auAuthorisationBuilder.getAuthorizationRequest(requestUri.toURI(),
                 auConfiguration.getAppInfoClientID(), false).toURI().toString()
 
         String errorMessage = "No valid scopes found in the request"
@@ -442,7 +442,7 @@ class AuthorisationFlowTest extends AUTest {
                 .execute()
 
         String url = automationResponse.currentUrl.get()
-        String errorUrl = url.split("error_description=")[1].split("&")[0].replaceAll("\\+"," ")
+        String errorUrl = AUTestUtil.getErrorFromUrl(url)
         Assert.assertEquals(errorUrl, errorMessage)
     }
 
@@ -476,7 +476,7 @@ class AuthorisationFlowTest extends AUTest {
         Assert.assertEquals(response.statusCode(), AUConstants.STATUS_CODE_201)
         Assert.assertNotNull(requestUri)
 
-        authoriseUrl = auAuthorisationBuilder.getAuthorizationRequest(scopes, requestUri.toURI(),
+        authoriseUrl = auAuthorisationBuilder.getAuthorizationRequest(requestUri.toURI(),
                 auConfiguration.getAppInfoClientID(), false).toURI().toString()
 
         Assert.assertNotNull(AUTestUtil.parseResponseBody(response, AUConstants.EXPIRES_IN))
@@ -509,7 +509,7 @@ class AuthorisationFlowTest extends AUTest {
         Assert.assertEquals(response.statusCode(), AUConstants.STATUS_CODE_201)
         Assert.assertNotNull(requestUri)
 
-        authoriseUrl = auAuthorisationBuilder.getAuthorizationRequest(scopes, requestUri.toURI(),
+        authoriseUrl = auAuthorisationBuilder.getAuthorizationRequest(requestUri.toURI(),
                 auConfiguration.getAppInfoClientID(), false).toURI().toString()
 
         Assert.assertNotNull(AUTestUtil.parseResponseBody(response, AUConstants.EXPIRES_IN))
@@ -546,7 +546,7 @@ class AuthorisationFlowTest extends AUTest {
         Assert.assertEquals(response.statusCode(), AUConstants.STATUS_CODE_201)
         Assert.assertNotNull(requestUri)
 
-        authoriseUrl = auAuthorisationBuilder.getAuthorizationRequest(scopes, requestUri.toURI(),
+        authoriseUrl = auAuthorisationBuilder.getAuthorizationRequest(requestUri.toURI(),
                 auConfiguration.getAppInfoClientID(), false).toURI().toString()
 
         Assert.assertNotNull(AUTestUtil.parseResponseBody(response, AUConstants.EXPIRES_IN))

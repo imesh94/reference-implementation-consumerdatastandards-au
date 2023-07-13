@@ -59,7 +59,7 @@ class MetaDataConsentAuthorization extends AUTest{
         //TODO: Update status
         sleep(81000)
 
-        authoriseUrl = auAuthorisationBuilder.getAuthorizationRequest(scopes, requestUri.toURI(), clientId)
+        authoriseUrl = auAuthorisationBuilder.getAuthorizationRequest(requestUri.toURI(), clientId)
                 .toURI().toString()
 
         def automationResponse = getBrowserAutomation(AUConstants.DEFAULT_DELAY)
@@ -83,7 +83,7 @@ class MetaDataConsentAuthorization extends AUTest{
         //TODO: Update status
         sleep(81000)
 
-        authoriseUrl = auAuthorisationBuilder.getAuthorizationRequest(scopes, requestUri.toURI(), clientId)
+        authoriseUrl = auAuthorisationBuilder.getAuthorizationRequest(requestUri.toURI(), clientId)
                 .toURI().toString()
 
         def automationResponse = getBrowserAutomation(AUConstants.DEFAULT_DELAY)
@@ -107,7 +107,7 @@ class MetaDataConsentAuthorization extends AUTest{
         //TODO: Update status
         sleep(81000)
 
-        authoriseUrl = auAuthorisationBuilder.getAuthorizationRequest(scopes, requestUri.toURI(), clientId)
+        authoriseUrl = auAuthorisationBuilder.getAuthorizationRequest(requestUri.toURI(), clientId)
                 .toURI().toString()
 
         def automationResponse = getBrowserAutomation(AUConstants.DEFAULT_DELAY)
@@ -133,7 +133,7 @@ class MetaDataConsentAuthorization extends AUTest{
         //TODO: Update status
         sleep(81000)
 
-        authoriseUrl = auAuthorisationBuilder.getAuthorizationRequest(scopes, requestUri.toURI(), clientId)
+        authoriseUrl = auAuthorisationBuilder.getAuthorizationRequest(requestUri.toURI(), clientId)
                 .toURI().toString()
 
         def automationResponse = getBrowserAutomation(AUConstants.DEFAULT_DELAY)
@@ -159,7 +159,7 @@ class MetaDataConsentAuthorization extends AUTest{
         //TODO: Update status
         sleep(81000)
 
-        authoriseUrl = auAuthorisationBuilder.getAuthorizationRequest(scopes, requestUri.toURI(), clientId)
+        authoriseUrl = auAuthorisationBuilder.getAuthorizationRequest(requestUri.toURI(), clientId)
                 .toURI().toString()
 
         def automationResponse = getBrowserAutomation(AUConstants.DEFAULT_DELAY)
@@ -185,7 +185,7 @@ class MetaDataConsentAuthorization extends AUTest{
         //TODO: Update status
         sleep(81000)
 
-        authoriseUrl = auAuthorisationBuilder.getAuthorizationRequest(scopes, requestUri.toURI(), clientId)
+        authoriseUrl = auAuthorisationBuilder.getAuthorizationRequest(requestUri.toURI(), clientId)
                 .toURI().toString()
 
         def automationResponse = getBrowserAutomation(AUConstants.DEFAULT_DELAY)

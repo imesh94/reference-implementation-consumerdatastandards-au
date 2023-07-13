@@ -733,12 +733,12 @@ class AccountsRetrievalRequestValidationTests extends AUTest {
                 .baseUri(AUTestUtil.getBaseUrl(AUConstants.BASE_PATH_TYPE_BALANCES))
                 .post("${AUConstants.BULK_BALANCES_PATH}")
 
-        Assert.assertEquals(response.statusCode(), AUConstants.STATUS_CODE_422)
+        Assert.assertEquals(response.statusCode(), AUConstants.STATUS_CODE_400)
         Assert.assertEquals(AUTestUtil.parseResponseBody(response, AUConstants.ERROR_CODE),
-                AUConstants.ERROR_CODE_INVALID_BANK_ACC)
+                AUConstants.ERROR_CODE_MISSING_FIELD)
         Assert.assertEquals(AUTestUtil.parseResponseBody(response, AUConstants.ERROR_DETAIL),
-                AUConstants.ACCOUNT_ID_NOT_FOUND)
+                "accountIds field is missing in the request")
         Assert.assertEquals(AUTestUtil.parseResponseBody(response, AUConstants.ERROR_TITLE),
-                AUConstants.INVALID_BANK_ACC)
+                AUConstants.MISSING_FIELD)
     }
 }

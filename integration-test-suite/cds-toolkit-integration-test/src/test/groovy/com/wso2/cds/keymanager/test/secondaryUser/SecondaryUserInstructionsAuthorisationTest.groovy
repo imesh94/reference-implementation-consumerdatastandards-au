@@ -108,7 +108,7 @@ class SecondaryUserInstructionsAuthorisationTest extends AUTest {
                 true, "")
         requestUri = AUTestUtil.parseResponseBody(response, AUConstants.REQUEST_URI)
 
-        authoriseUrl = auAuthorisationBuilder.getAuthorizationRequest(scopes, requestUri.toURI(), clientId)
+        authoriseUrl = auAuthorisationBuilder.getAuthorizationRequest(requestUri.toURI(), clientId)
                 .toURI().toString()
 
         def automation = getBrowserAutomation(AUConstants.DEFAULT_DELAY)
@@ -146,7 +146,7 @@ class SecondaryUserInstructionsAuthorisationTest extends AUTest {
                 true, "")
         requestUri = AUTestUtil.parseResponseBody(response, AUConstants.REQUEST_URI)
 
-        authoriseUrl = auAuthorisationBuilder.getAuthorizationRequest(scopes, requestUri.toURI(), clientId)
+        authoriseUrl = auAuthorisationBuilder.getAuthorizationRequest(requestUri.toURI(), clientId)
                 .toURI().toString()
 
         def automation = getBrowserAutomation(AUConstants.DEFAULT_DELAY)
@@ -171,7 +171,7 @@ class SecondaryUserInstructionsAuthorisationTest extends AUTest {
                 true, "")
         requestUri = AUTestUtil.parseResponseBody(response, AUConstants.REQUEST_URI)
 
-        authoriseUrl = auAuthorisationBuilder.getAuthorizationRequest(scopes, requestUri.toURI(), clientId)
+        authoriseUrl = auAuthorisationBuilder.getAuthorizationRequest(requestUri.toURI(), clientId)
                 .toURI().toString()
 
         def automation = getBrowserAutomation(AUConstants.DEFAULT_DELAY)
@@ -197,7 +197,7 @@ class SecondaryUserInstructionsAuthorisationTest extends AUTest {
                 true, cdrArrangementId)
         requestUri = AUTestUtil.parseResponseBody(response, AUConstants.REQUEST_URI)
 
-        authoriseUrl = auAuthorisationBuilder.getAuthorizationRequest(scopes, requestUri.toURI(), clientId)
+        authoriseUrl = auAuthorisationBuilder.getAuthorizationRequest(requestUri.toURI(), clientId)
                 .toURI().toString()
 
         def automation = getBrowserAutomation(AUConstants.DEFAULT_DELAY)
@@ -221,7 +221,7 @@ class SecondaryUserInstructionsAuthorisationTest extends AUTest {
         requestUri = AUTestUtil.parseResponseBody(response, AUConstants.REQUEST_URI)
 
         //Select Secondary Account during authorisation
-        authoriseUrl = auAuthorisationBuilder.getAuthorizationRequest(scopes, requestUri.toURI(), auConfiguration.getAppInfoClientID())
+        authoriseUrl = auAuthorisationBuilder.getAuthorizationRequest(requestUri.toURI(), auConfiguration.getAppInfoClientID())
                 .toURI().toString()
 
         def automation = getBrowserAutomation(AUConstants.DEFAULT_DELAY)
@@ -252,7 +252,7 @@ class SecondaryUserInstructionsAuthorisationTest extends AUTest {
                 true, "")
         requestUri = AUTestUtil.parseResponseBody(response, AUConstants.REQUEST_URI)
 
-        authoriseUrl = auAuthorisationBuilder.getAuthorizationRequest(scopes, requestUri.toURI(), clientId)
+        authoriseUrl = auAuthorisationBuilder.getAuthorizationRequest(requestUri.toURI(), clientId)
                 .toURI().toString()
 
         def automation = getBrowserAutomation(AUConstants.DEFAULT_DELAY)
@@ -279,7 +279,7 @@ class SecondaryUserInstructionsAuthorisationTest extends AUTest {
                 true, "")
         requestUri = AUTestUtil.parseResponseBody(response, AUConstants.REQUEST_URI)
 
-        authoriseUrl = auAuthorisationBuilder.getAuthorizationRequest(scopes, requestUri.toURI(), clientId)
+        authoriseUrl = auAuthorisationBuilder.getAuthorizationRequest(requestUri.toURI(), clientId)
                 .toURI().toString()
 
         def automation = getBrowserAutomation(AUConstants.DEFAULT_DELAY)
@@ -318,7 +318,7 @@ class SecondaryUserInstructionsAuthorisationTest extends AUTest {
                 true, "")
         requestUri = AUTestUtil.parseResponseBody(response, AUConstants.REQUEST_URI)
 
-        authoriseUrl = auAuthorisationBuilder.getAuthorizationRequest(scopes, requestUri.toURI(), clientId)
+        authoriseUrl = auAuthorisationBuilder.getAuthorizationRequest(requestUri.toURI(), clientId)
                 .toURI().toString()
 
         def automation = getBrowserAutomation(AUConstants.DEFAULT_DELAY)
@@ -374,7 +374,7 @@ class SecondaryUserInstructionsAuthorisationTest extends AUTest {
                 true, "")
         requestUri = AUTestUtil.parseResponseBody(response, AUConstants.REQUEST_URI)
 
-        authoriseUrl = auAuthorisationBuilder.getAuthorizationRequest(scopes, requestUri.toURI(), clientId)
+        authoriseUrl = auAuthorisationBuilder.getAuthorizationRequest(requestUri.toURI(), clientId)
                 .toURI().toString()
 
         //User unable to select the secondary Account
@@ -405,7 +405,7 @@ class SecondaryUserInstructionsAuthorisationTest extends AUTest {
                 true, "")
         requestUri = AUTestUtil.parseResponseBody(response, AUConstants.REQUEST_URI)
 
-        authoriseUrl = auAuthorisationBuilder.getAuthorizationRequest(scopes, requestUri.toURI(), clientId)
+        authoriseUrl = auAuthorisationBuilder.getAuthorizationRequest(requestUri.toURI(), clientId)
                 .toURI().toString()
 
         //User unable to select the secondary Account
@@ -428,7 +428,7 @@ class SecondaryUserInstructionsAuthorisationTest extends AUTest {
                 true, "")
         requestUri = AUTestUtil.parseResponseBody(response, AUConstants.REQUEST_URI)
 
-        authoriseUrl = auAuthorisationBuilder.getAuthorizationRequest(scopes, requestUri.toURI(), clientId)
+        authoriseUrl = auAuthorisationBuilder.getAuthorizationRequest(requestUri.toURI(), clientId)
                 .toURI().toString()
 
         def automation = getBrowserAutomation(AUConstants.DEFAULT_DELAY)

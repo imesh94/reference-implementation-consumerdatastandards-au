@@ -30,8 +30,6 @@ class MultiTppTokenFlowValidationTests extends AUTest {
 
         auConfiguration.setTppNumber(1)
 
-        AUMockCDRIntegrationUtil.loadMetaDataToCDRRegister()
-
         //Register Second TPP.
         def registrationResponse = tppRegistration()
         clientId = AUTestUtil.parseResponseBody(registrationResponse, "client_id")
@@ -52,7 +50,7 @@ class MultiTppTokenFlowValidationTests extends AUTest {
                 auConfiguration.getAppInfoRedirectURL(), auConfiguration.getAppInfoClientID())
 
         Assert.assertEquals(userToken.error.httpStatusCode, AUConstants.BAD_REQUEST)
-        Assert.assertEquals(userToken.error.code, AUConstants.INVALID_CLIENT)
+        Assert.assertEquals(userToken.error.code, AUConstants.INVALID_GRANT)
         Assert.assertEquals(userToken.error.description, "Invalid authorization code received from token request")
     }
 
@@ -65,20 +63,12 @@ class MultiTppTokenFlowValidationTests extends AUTest {
                 auConfiguration.getAppInfoRedirectURL(), clientId)
 
         Assert.assertEquals(userToken.error.httpStatusCode, AUConstants.BAD_REQUEST)
-        Assert.assertEquals(userToken.error.code, AUConstants.INVALID_CLIENT)
+        Assert.assertEquals(userToken.error.code, AUConstants.INVALID_GRANT)
         Assert.assertEquals(userToken.error.description, "Invalid authorization code received from token request")
     }
 
-    @AfterClass (alwaysRun = true)
+    @AfterClass(alwaysRun = true)
     void tearDown() {
-
-        List<String> scopes = [
-                AUAccountScope.CDR_REGISTRATION
-        ]
-
-        //Delete TPP2.
-        auConfiguration.setTppNumber(1)
-        deleteApplicationIfExists(scopes)
-        Assert.assertEquals(deletionResponse.statusCode(), AUConstants.STATUS_CODE_204)
+        deleteApplicationIfExists(clientId)
     }
 }

@@ -13,6 +13,12 @@ import com.fasterxml.jackson.databind.JsonNode
 import com.fasterxml.jackson.databind.ObjectMapper
 import com.fasterxml.jackson.databind.node.ObjectNode
 import com.nimbusds.jwt.JWTClaimsSet
+import com.nimbusds.oauth2.sdk.AuthorizationRequest
+import com.nimbusds.oauth2.sdk.ResponseMode
+import com.nimbusds.oauth2.sdk.id.ClientID
+import com.nimbusds.oauth2.sdk.pkce.CodeChallenge
+import com.nimbusds.oauth2.sdk.pkce.CodeChallengeMethod
+import com.nimbusds.oauth2.sdk.pkce.CodeVerifier
 import com.wso2.bfsi.test.framework.exception.TestFrameworkException
 import com.nimbusds.jose.JOSEObjectType
 import com.nimbusds.jose.JWSAlgorithm
@@ -24,17 +30,22 @@ import com.nimbusds.jose.crypto.RSASSASigner
 import com.nimbusds.jwt.JWT
 import com.nimbusds.jwt.SignedJWT
 import com.wso2.cds.test.framework.constant.AUAccountScope
+import com.wso2.cds.test.framework.constant.AUConstants
+import com.wso2.cds.test.framework.utility.AUTestUtil
 import com.wso2.openbanking.test.framework.request_builder.JSONRequestGenerator
 import com.wso2.openbanking.test.framework.request_builder.PayloadGenerator
 import com.wso2.cds.test.framework.configuration.AUConfigurationService
 import com.wso2.cds.test.framework.keystore.AUKeyStore
 import com.wso2.openbanking.test.framework.keystore.OBKeyStore
+import io.restassured.response.Response
 import org.apache.commons.lang3.StringUtils
 import org.bouncycastle.jce.provider.BouncyCastleProvider
 import org.json.JSONObject
 import org.testng.Reporter
 
+import java.nio.charset.StandardCharsets
 import java.security.Key
+import java.security.MessageDigest
 import java.security.PrivateKey
 import java.security.Security
 import java.security.cert.Certificate
@@ -49,6 +60,9 @@ class AUJWTGenerator {
     private AUConfigurationService auConfiguration
     private List<String> scopesList = null // Scopes can be set before generate payload
     private String signingAlgorithm
+    private AUAuthorisationBuilder auAuthorisationBuilder
+    private static CodeVerifier codeVerifier = new CodeVerifier()
+    AuthorizationRequest authRequest
 
     AUJWTGenerator() {
         auConfiguration = new AUConfigurationService()
@@ -201,6 +215,19 @@ class AUJWTGenerator {
     }
 
     /**
+     * Extract JWT token headers and assign to a map.
+     * @param jwtToken jwt token
+     * @return jwt header set
+     */
+    static JWSHeader extractJwtHeaders(String jwtToken) {
+
+        SignedJWT signedJWT = SignedJWT.parse(jwtToken)
+        JWSHeader headerSet = signedJWT.getHeader()
+
+        return headerSet
+    }
+
+    /**
      * Return signed JWT for Authorization request with string sharing duration.
      * The method is used for testing the auth request with string sharing duration.
      * @param scopeString
@@ -212,7 +239,12 @@ class AUJWTGenerator {
      * @return
      */
     JWT getSignedAuthRequestObjectForStringSharingDuration(String scopeString, String sharingDuration,
-                                   String cdrArrangementId, String redirect_uri, String clientId, String responseType) {
+                                   String cdrArrangementId, String redirect_uri, String clientId, String responseType,
+                                                           String responseMode, CodeChallengeMethod codeChallengeMethod) {
+
+        //Generate Code Challenge
+        CodeChallenge codeChallenge = CodeChallenge.compute(codeChallengeMethod, AUConstants.CODE_VERIFIER)
+        String codeChallengeValue = codeChallenge.getValue()
 
         def expiryDate = Instant.now().plus(1, ChronoUnit.HOURS)
         Instant notBefore = Instant.now()
@@ -240,6 +272,9 @@ class AUJWTGenerator {
                 .addNonce()
                 .addCustomValue("nbf", notBefore.getEpochSecond().toLong())
                 .addCustomJson("claims", claimsString)
+                .addCustomValue("response_mode", responseMode)
+                .addCustomValue("code_challenge_method", codeChallengeMethod)
+                .addCustomValue("code_challenge", codeChallengeValue)
                 .getJsonObject().toString()
 
         String payload = getSignedRequestObject(claims)
@@ -267,12 +302,17 @@ class AUJWTGenerator {
      */
     String getRequestObjectClaim(List<AUAccountScope> scopes, long sharingDuration, Boolean sendSharingDuration,
                                  String cdrArrangementId, String redirect_uri, String clientId, String responseType,
-                                 boolean isStateRequired = true, String state,
+                                 boolean isStateRequired = true, String state, String responseMode = ResponseMode.JWT,
                                  Instant expiryDate = Instant.now().plus(1, ChronoUnit.HOURS),
-                                 Instant notBefore = Instant.now()) {
+                                 Instant notBefore = Instant.now(),
+                                 CodeChallengeMethod codeChallengeMethod = CodeChallengeMethod.S256) {
         String claims
 
         String scopeString = "openid ${String.join(" ", scopes.collect({ it.scopeString }))}"
+
+        //Generate Code Challenge
+        CodeChallenge codeChallenge = CodeChallenge.compute(codeChallengeMethod, AUConstants.CODE_VERIFIER)
+        String codeChallengeValue = codeChallenge.getValue()
 
         //Define additional claims
         JSONObject acr = new JSONObject().put("essential", true).put("values", new ArrayList<String>() {
@@ -304,6 +344,9 @@ class AUJWTGenerator {
                     .addCustomValue("max_age", 86400)
                     .addCustomValue("nbf", notBefore.getEpochSecond().toLong())
                     .addCustomJson("claims", claimsString)
+                    .addCustomValue("response_mode", responseMode)
+                    .addCustomValue("code_challenge_method", codeChallengeMethod)
+                    .addCustomValue("code_challenge", codeChallengeValue)
                     .getJsonObject().toString()
         } else {
             claims = new JSONRequestGenerator()
@@ -315,7 +358,12 @@ class AUJWTGenerator {
                     .addRedirectURI(redirect_uri)
                     .addScope(scopeString)
                     .addNonce()
+                    .addCustomValue("max_age", 86400)
+                    .addCustomValue("nbf", notBefore.getEpochSecond().toLong())
                     .addCustomJson("claims", claimsString)
+                    .addCustomValue("response_mode", responseMode)
+                    .addCustomValue("code_challenge_method", codeChallengeMethod)
+                    .addCustomValue("code_challenge", codeChallengeValue)
                     .getJsonObject().toString()
         }
         return claims

@@ -16,25 +16,26 @@ import com.google.gson.Gson
 import com.google.gson.JsonArray
 import com.google.gson.JsonElement
 import com.google.gson.JsonObject
+import com.nimbusds.oauth2.sdk.pkce.CodeVerifier
 import com.wso2.cds.test.framework.constant.AUAccountProfile
 import com.wso2.cds.test.framework.constant.AUAccountScope
 import com.wso2.cds.test.framework.constant.AUConstants
 import com.wso2.bfsi.test.framework.exception.TestFrameworkException
 import com.wso2.cds.test.framework.constant.AUPageObjects
+import com.wso2.cds.test.framework.request_builder.AUAuthorisationBuilder
 import com.wso2.cds.test.framework.request_builder.AUJWTGenerator
 import com.wso2.openbanking.test.framework.utility.OBTestUtil
 import com.wso2.cds.test.framework.configuration.AUConfigurationService
 import org.apache.http.conn.ssl.SSLSocketFactory
 import org.jsoup.nodes.Document
 import org.jsoup.nodes.Element
-import org.openqa.selenium.By
-import org.openqa.selenium.WebDriver
-import org.openqa.selenium.remote.RemoteWebDriver
 import org.testng.Assert
 import io.restassured.response.Response
-
-import java.nio.charset.Charset;
 import org.jsoup.Jsoup
+
+import java.nio.charset.StandardCharsets
+import java.security.MessageDigest
+
 
 /**
  * Domain specific AU layer Class to contain utility classes used for Test Framework.
@@ -44,6 +45,7 @@ class AUTestUtil extends OBTestUtil {
     static SSLSocketFactory sslSocketFactoryForMockCDRRegister
 
     static AUConfigurationService auConfiguration = new AUConfigurationService()
+    static AUAuthorisationBuilder auAuthBuilder = new AUAuthorisationBuilder()
 
     // Static initialize the SSL socket factory for MockCDRRegister
     static {
@@ -330,7 +332,7 @@ class AUTestUtil extends OBTestUtil {
     static List<String> getLegalEntityIdList(Response legalEntityListResponse, String userId, String accountId) {
 
         // Parse the payload using Gson
-        Gson gson = new Gson();
+        Gson gson = new Gson()
         JsonObject payloadObj = gson.fromJson(legalEntityListResponse.getBody(), JsonObject.class)
 
         // Get the secondary users array
@@ -364,7 +366,7 @@ class AUTestUtil extends OBTestUtil {
                             JsonObject legalEntityObj = legalEntityElement.getAsJsonObject()
 
                             // Get the legal entity ID
-                            String legalEntityId = legalEntityObj.get(AUConstants.LEGAL_ENTITY_ID).getAsString()
+                            String legalEntityId = legalEntityObj.get(AUConstants.LEGAL_ENTITY_ID_MAP).getAsString()
 
                             // Add legal entity ID to the list
                             legalEntityIds.add(legalEntityId)
@@ -434,5 +436,24 @@ class AUTestUtil extends OBTestUtil {
                 return 1
         }
     }
+
+    /**
+     * Get Unavailable Accounts XPath.
+     * @param accountNumber - Account Number
+     * @return AccountXPath
+     */
+    static String getUnavailableAccountsXPath(String accountNumber) {
+        return AUPageObjects.LBL_UNAVAILABLE_ACCOUNT + "div[@id='${accountNumber}']"
+    }
+
+    static String getErrorFromUrl(String url){
+        try {
+            return url.split("oauthErrorMsg=")[1].split("&")[0].replace("+", " ");
+        } catch (Exception e) {
+            log.error("Unable to find error description in URL", e);
+        }
+        return null
+    }
+
 }
 

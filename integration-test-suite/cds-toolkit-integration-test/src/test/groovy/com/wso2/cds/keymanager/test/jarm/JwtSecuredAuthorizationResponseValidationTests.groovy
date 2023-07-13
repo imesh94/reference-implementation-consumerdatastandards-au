@@ -12,6 +12,7 @@
 
 package com.wso2.cds.keymanager.test.jarm
 
+import com.nimbusds.jose.JWSHeader
 import com.nimbusds.jwt.JWTClaimsSet
 import com.nimbusds.oauth2.sdk.ResponseMode
 import com.nimbusds.oauth2.sdk.ResponseType
@@ -19,10 +20,9 @@ import com.wso2.cds.test.framework.AUTest
 import com.wso2.cds.test.framework.constant.AUAccountProfile
 import com.wso2.cds.test.framework.constant.AUConstants
 import com.wso2.cds.test.framework.request_builder.AUJWTGenerator
-import org.junit.BeforeClass
 import org.testng.Assert
 import org.testng.annotations.Test
-
+import org.testng.annotations.BeforeClass
 import java.time.LocalDateTime
 import java.time.ZoneOffset
 
@@ -35,8 +35,10 @@ class JwtSecuredAuthorizationResponseValidationTests extends AUTest {
     String responseJwt
     JWTClaimsSet jwtPayload
     String clientId
+    JWSHeader jwtHeaders
 
-    @BeforeClass
+
+    @BeforeClass (alwaysRun = true)
     void "Send Authorisation Request"() {
 
         doConsentAuthorisation(ResponseMode.JWT, ResponseType.CODE, auConfiguration.getAppInfoClientID())
@@ -44,7 +46,7 @@ class JwtSecuredAuthorizationResponseValidationTests extends AUTest {
         responseJwt = authResponseUrl.split(AUConstants.HTML_RESPONSE_ATTR)[1]
         Assert.assertNotNull(responseJwt)
         jwtPayload = AUJWTGenerator.extractJwt(responseJwt)
-        clientId = auConfiguration.getAppInfoClientID()
+        jwtHeaders = AUJWTGenerator.extractJwtHeaders(responseJwt)
     }
 
     @Test
@@ -64,23 +66,23 @@ class JwtSecuredAuthorizationResponseValidationTests extends AUTest {
     @Test
     void "CDS-566_Verify the JWT response contains a future expiration date"() {
 
-        Long exp = jwtPayload.getExpirationTime()
-        LocalDateTime localDateTime = LocalDateTime.ofEpochSecond(exp 0, ZoneOffset.UTC)
+        Long exp = jwtPayload.getExpirationTime().getTime() / 1000
+        LocalDateTime localDateTime = LocalDateTime.ofEpochSecond(exp, 0, ZoneOffset.UTC)
         Assert.assertTrue(localDateTime >= LocalDateTime.now())
     }
 
     @Test
     void "CDS-567_Verify the alg of the JWT response not be none"() {
 
-        def alg = jwtPayload.get(AUConstants.ALGORITHM_KEY)
-        Assert.assertFalse(alg.equalsIgnoreCase("none"))
-        Assert.assertTrue(alg.equalsIgnoreCase(auConfiguration.getCommonSigningAlgorithm()))
+        def alg = jwtHeaders.algorithm.toString()
+        Assert.assertFalse(alg.equals("none"))
+        Assert.assertTrue(alg.equals(auConfiguration.getCommonSigningAlgorithm()))
     }
 
     @Test
     void "CDS-568_Verify the JWT response does not contains state param if it is not included in request"() {
 
-        doConsentAuthorisation(ResponseMode.QUERY_JWT, ResponseType.CODE,auConfiguration.getAppInfoClientID(),
+        doConsentAuthorisation(ResponseMode.JWT, ResponseType.CODE, auConfiguration.getAppInfoClientID(),
                 AUAccountProfile.INDIVIDUAL, false)
         authResponseUrl = automationResponse.currentUrl.get()
         responseJwt = authResponseUrl.split(AUConstants.HTML_RESPONSE_ATTR)[1]

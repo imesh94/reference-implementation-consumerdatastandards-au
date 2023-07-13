@@ -17,6 +17,8 @@ import com.wso2.cds.test.framework.utility.AUTestUtil
 import org.testng.Assert
 import org.testng.annotations.BeforeClass
 import org.testng.annotations.Test
+
+import java.nio.charset.Charset
 import java.util.concurrent.atomic.AtomicInteger
 
 /**
@@ -25,6 +27,7 @@ import java.util.concurrent.atomic.AtomicInteger
 class ThrottlingPolicyTest extends AUTest{
 
     AtomicInteger sequence = new AtomicInteger(0)
+    def clientHeader = "${Base64.encoder.encodeToString(getCDSClient().getBytes(Charset.defaultCharset()))}"
 
     @BeforeClass(alwaysRun = true)
     void "Get User Access Token"() {
@@ -39,7 +42,8 @@ class ThrottlingPolicyTest extends AUTest{
     @Test(invocationCount = 600, threadPoolSize = 100, enabled = true)
     void "TC0306001_Throttle requests by AllConsumers policy - Unattended"() {
 
-        def response = AURequestBuilder.buildBasicRequest(userAccessToken, AUConstants.X_V_HEADER_ACCOUNTS)
+        def response = AURequestBuilder.buildBasicRequestWithCustomHeaders(userAccessToken,
+                AUConstants.X_V_HEADER_ACCOUNTS, clientHeader)
                 .baseUri(AUTestUtil.getBaseUrl(AUConstants.BASE_PATH_TYPE_ACCOUNT))
                 .get("${AUConstants.BULK_ACCOUNT_PATH}")
 
@@ -63,7 +67,8 @@ class ThrottlingPolicyTest extends AUTest{
     @Test(invocationCount = 600, threadPoolSize = 100, enabled = false)
     void "TC0306002_Throttle requests by AllConsumers policy - CustomerPresent"() {
 
-        def response = AURequestBuilder.buildBasicRequest(userAccessToken, AUConstants.X_V_HEADER_ACCOUNTS)
+        def response = AURequestBuilder.buildBasicRequestWithCustomHeaders(userAccessToken,
+                AUConstants.X_V_HEADER_ACCOUNTS, clientHeader)
                 .baseUri(AUTestUtil.getBaseUrl(AUConstants.BASE_PATH_TYPE_ACCOUNT))
                 .get("${AUConstants.BULK_ACCOUNT_PATH}")
 
@@ -83,7 +88,8 @@ class ThrottlingPolicyTest extends AUTest{
     @Test(invocationCount = 50, threadPoolSize = 5,enabled = false)
     void "TC0306003_Throttle requests by CustomerPresent-Customer"() {
 
-        def response = AURequestBuilder.buildBasicRequest(userAccessToken, AUConstants.X_V_HEADER_ACCOUNTS)
+        def response = AURequestBuilder.buildBasicRequestWithCustomHeaders(userAccessToken,
+                AUConstants.X_V_HEADER_ACCOUNTS, clientHeader)
                 .baseUri(AUTestUtil.getBaseUrl(AUConstants.BASE_PATH_TYPE_ACCOUNT))
                 .get("${AUConstants.BULK_ACCOUNT_PATH}")
 
@@ -103,7 +109,8 @@ class ThrottlingPolicyTest extends AUTest{
     @Test(invocationCount = 200, threadPoolSize = 20, enabled = false)
     void "TC0306004_Throttle requests by DataRecipients policy - Unattended"() {
 
-        def response = AURequestBuilder.buildBasicRequest(userAccessToken, AUConstants.X_V_HEADER_ACCOUNTS)
+        def response = AURequestBuilder.buildBasicRequestWithCustomHeaders(userAccessToken,
+                AUConstants.X_V_HEADER_ACCOUNTS, clientHeader)
                 .baseUri(AUTestUtil.getBaseUrl(AUConstants.BASE_PATH_TYPE_ACCOUNT))
                 .get("${AUConstants.BULK_ACCOUNT_PATH}")
 
@@ -123,7 +130,8 @@ class ThrottlingPolicyTest extends AUTest{
     @Test(invocationCount = 200, threadPoolSize = 20, enabled = false)
     void "TC0306005_Throttle requests by DataRecipients policy - CustomerPresent"() {
 
-        def response = AURequestBuilder.buildBasicRequest(userAccessToken, AUConstants.X_V_HEADER_ACCOUNTS)
+        def response = AURequestBuilder.buildBasicRequestWithCustomHeaders(userAccessToken,
+                AUConstants.X_V_HEADER_ACCOUNTS, clientHeader)
                 .baseUri(AUTestUtil.getBaseUrl(AUConstants.BASE_PATH_TYPE_ACCOUNT))
                 .get("${AUConstants.BULK_ACCOUNT_PATH}")
 
@@ -143,7 +151,8 @@ class ThrottlingPolicyTest extends AUTest{
     @Test(invocationCount = 200, threadPoolSize = 5, enabled = false)
     void "TC0306006_Throttle requests by Unattended-CallsPerSession policy"() {
 
-        def response = AURequestBuilder.buildBasicRequest(userAccessToken, AUConstants.X_V_HEADER_ACCOUNTS)
+        def response = AURequestBuilder.buildBasicRequestWithCustomHeaders(userAccessToken,
+                AUConstants.X_V_HEADER_ACCOUNTS, clientHeader)
                 .baseUri(AUTestUtil.getBaseUrl(AUConstants.BASE_PATH_TYPE_ACCOUNT))
                 .get("${AUConstants.BULK_ACCOUNT_PATH}")
 
@@ -160,7 +169,7 @@ class ThrottlingPolicyTest extends AUTest{
         }
     }
 
-    @Test(invocationCount = 40, threadPoolSize = 2, enabled = false)
+    @Test(invocationCount = 40, threadPoolSize = 2, enabled = true)
     void "TC0306008_Throttle requests by Unattended-SessionCount policy"() {
 
         String scopeString = "openid ${String.join(" ", scopes.collect({ it.scopeString }))}"
@@ -183,7 +192,8 @@ class ThrottlingPolicyTest extends AUTest{
     @Test(invocationCount = 100, threadPoolSize = 10, enabled = false)
     void "TC0306007_Throttle requests by Unattended-SessionTPS policy"() {
 
-        def response = AURequestBuilder.buildBasicRequest(userAccessToken, AUConstants.X_V_HEADER_ACCOUNTS)
+        def response = AURequestBuilder.buildBasicRequestWithCustomHeaders(userAccessToken,
+                AUConstants.X_V_HEADER_ACCOUNTS, clientHeader)
                 .baseUri(AUTestUtil.getBaseUrl(AUConstants.BASE_PATH_TYPE_ACCOUNT))
                 .get("${AUConstants.BULK_ACCOUNT_PATH}")
 

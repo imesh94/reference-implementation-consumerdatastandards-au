@@ -90,33 +90,16 @@ class AUAuthorisationBuilder {
      * @param isStateParamPresent state parameter is present or not
      * @return AuthorizationRequest
      */
-    AuthorizationRequest getAuthorizationRequest(List<AUAccountScope> scopes, URI requestUri,
-                                                 String clientID = getClientID().getValue(),
+    AuthorizationRequest getAuthorizationRequest(URI requestUri, String clientID = getClientID().getValue(),
                                                  boolean isStateParamPresent = true) {
-        String scopeString = "openid ${String.join(" ", scopes.collect({ it.scopeString }))}"
-
         if(isStateParamPresent) {
-            request = new AuthorizationRequest.Builder(getResponseType(), new ClientID(clientID))
-                    .responseType(ResponseType.parse("code"))
-                    .responseMode(ResponseMode.JWT)
-                    .scope(new Scope(scopeString))
-                    .requestURI(requestUri)
-                    .redirectionURI(getRedirectURI())
+            request = new AuthorizationRequest.Builder(requestUri, new ClientID(clientID))
                     .state(getState())
-                    .codeChallenge(getCodeVerifier(), CodeChallengeMethod.S256)
                     .endpointURI(getEndpoint())
-                    .customParameter("prompt", "login")
                     .build()
         } else {
-            request = new AuthorizationRequest.Builder(getResponseType(), new ClientID(clientID))
-                    .responseType(ResponseType.parse("code"))
-                    .responseMode(ResponseMode.JWT)
-                    .scope(new Scope(scopeString))
-                    .requestURI(requestUri)
-                    .redirectionURI(getRedirectURI())
-                    .codeChallenge(getCodeVerifier(), CodeChallengeMethod.S256)
+            request = new AuthorizationRequest.Builder(requestUri, new ClientID(clientID))
                     .endpointURI(getEndpoint())
-                    .customParameter("prompt", "login")
                     .build()
         }
 
@@ -160,8 +143,9 @@ class AUAuthorisationBuilder {
                                         String clientId = getClientID().getValue(),
                                         String redirectUrl = getRedirectURI().toString(),
                                         String responseType = getResponseType().toString(),
-                                        String state = getState().toString(),
-                                        boolean isStateParamRequired = true) {
+                                        boolean isStateParamRequired = true,
+                                        String responseMode = ResponseMode.JWT,
+                                        String state = getState().toString()) {
 
         Response parResponse
 
@@ -177,7 +161,7 @@ class AUAuthorisationBuilder {
 
         if(isStateParamRequired) {
             requestObjectClaims = generator.getRequestObjectClaim(scopes, sharingDuration, sendSharingDuration,
-                    cdrArrangementId, redirectUrl, clientId, responseType, true, state)
+                    cdrArrangementId, redirectUrl, clientId, responseType, true, state, responseMode)
 
             parResponse = AURestAsRequestBuilder.buildRequest()
                     .contentType(AUConstants.ACCESS_TOKEN_CONTENT_TYPE)
@@ -188,7 +172,7 @@ class AUAuthorisationBuilder {
         } else {
 
             requestObjectClaims = generator.getRequestObjectClaim(scopes, sharingDuration, sendSharingDuration,
-                    cdrArrangementId, redirectUrl, clientId, responseType, false, state)
+                    cdrArrangementId, redirectUrl, clientId, responseType, false, state, responseMode)
 
             parResponse = AURestAsRequestBuilder.buildRequest()
                     .contentType(AUConstants.ACCESS_TOKEN_CONTENT_TYPE)
@@ -368,30 +352,14 @@ class AUAuthorisationBuilder {
                                                  ResponseType responseType = getResponseType(),
                                                  boolean isStateParamPresent = true) {
 
-        String scopeString = "openid ${String.join(" ", scopes.collect({ it.scopeString }))}"
-
         if(isStateParamPresent) {
-            request = new AuthorizationRequest.Builder(responseType, new ClientID(clientID))
-                    .responseType(responseType)
-                    .responseMode(response_mode)
-                    .scope(new Scope(scopeString))
-                    .requestURI(requestUri)
-                    .redirectionURI(getRedirectURI())
+            request = new AuthorizationRequest.Builder(requestUri, new ClientID(clientID))
                     .state(getState())
                     .endpointURI(getEndpoint())
-                    .codeChallenge(getCodeVerifier(), CodeChallengeMethod.S256)
-                    .customParameter("prompt", "login")
                     .build()
         } else {
-            request = new AuthorizationRequest.Builder(responseType, new ClientID(clientID))
-                    .responseType(responseType)
-                    .responseMode(response_mode)
-                    .scope(new Scope(scopeString))
-                    .requestURI(requestUri)
-                    .redirectionURI(getRedirectURI())
+            request = new AuthorizationRequest.Builder(requestUri, new ClientID(clientID))
                     .endpointURI(getEndpoint())
-                    .codeChallenge(getCodeVerifier(), CodeChallengeMethod.S256)
-                    .customParameter("prompt", "login")
                     .build()
         }
         return request
@@ -411,7 +379,9 @@ class AUAuthorisationBuilder {
                                                        String cdrArrangementId,
                                                        String clientId = getClientID().getValue(),
                                                        String redirectUrl = getRedirectURI().toString(),
-                                                       String responseType = getResponseType().toString()) {
+                                                       String responseType = getResponseType().toString(),
+                                                       String responseMode = ResponseMode.JWT,
+                                                       CodeChallengeMethod codeChallengeMethod = CodeChallengeMethod.S256) {
 
 
         AUJWTGenerator generator = new AUJWTGenerator()
@@ -430,7 +400,7 @@ class AUAuthorisationBuilder {
                     .contentType(AUConstants.ACCESS_TOKEN_CONTENT_TYPE)
                     .formParams(bodyContent)
                     .formParams(AUConstants.REQUEST_KEY, generator.getSignedAuthRequestObjectForStringSharingDuration(scopeString,
-                            sharingDuration, cdrArrangementId, redirectUrl, clientId, responseType).serialize())
+                            sharingDuration, cdrArrangementId, redirectUrl, clientId, responseType, responseMode, codeChallengeMethod).serialize())
                     .baseUri(AUConstants.PUSHED_AUTHORISATION_BASE_PATH)
                     .post(AUConstants.PAR_ENDPOINT)
 

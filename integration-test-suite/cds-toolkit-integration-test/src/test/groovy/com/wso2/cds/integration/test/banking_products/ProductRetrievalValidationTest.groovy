@@ -75,23 +75,15 @@ class ProductRetrievalValidationTest extends AUTest {
         Assert.assertEquals(response.getHeader(AUConstants.X_V_HEADER).toInteger(), AUConstants.X_V_HEADER_PRODUCTS)
 
         Assert.assertNotNull(response.getHeader(AUConstants.X_FAPI_INTERACTION_ID))
-        Assert.assertEquals(AUTestUtil.parseResponseBody(response, "data.productId"), productId)
-        Assert.assertNotNull(AUTestUtil.parseResponseBody(response, "data.bundles.name"))
-        Assert.assertNotNull(AUTestUtil.parseResponseBody(response, "data.bundles.description"))
-        Assert.assertNotNull(AUTestUtil.parseResponseBody(response, "data.features.features"))
-        Assert.assertNotNull(AUTestUtil.parseResponseBody(response, "data.constraints.constraintType"))
-        Assert.assertNotNull(AUTestUtil.parseResponseBody(response, "data.eligibility.eligibilityType"))
-        Assert.assertNotNull(AUTestUtil.parseResponseBody(response, "data.fees.name"))
-        Assert.assertNotNull(AUTestUtil.parseResponseBody(response, "data.fees.feeType"))
-        Assert.assertNotNull(AUTestUtil.parseResponseBody(response, "data.fees.discounts.description"))
-        Assert.assertNotNull(AUTestUtil.parseResponseBody(response, "data.fees.discounts.discountType"))
-        Assert.assertNotNull(AUTestUtil.parseResponseBody(response, "data.fees.discounts.eligibility.discountEligibilityType"))
-        Assert.assertNotNull(AUTestUtil.parseResponseBody(response, "data.depositRates.depositRateType"))
-        Assert.assertNotNull(AUTestUtil.parseResponseBody(response, "data.depositRates.rate"))
-        Assert.assertNotNull(AUTestUtil.parseResponseBody(response, "data.depositRates.tiers.name"))
-        Assert.assertNotNull(AUTestUtil.parseResponseBody(response, "data.depositRates.tiers.unitOfMeasure"))
-        Assert.assertNotNull(AUTestUtil.parseResponseBody(response, "data.depositRates.tiers.minimumValue"))
+        Assert.assertNotNull(AUTestUtil.parseResponseBody(response, AUConstants.RESPONSE_DATA_PRODUCTS+".productId"))
+        Assert.assertNotNull(AUTestUtil.parseResponseBody(response, AUConstants.RESPONSE_DATA_PRODUCTS+".effectiveFrom"))
+        Assert.assertNotNull(AUTestUtil.parseResponseBody(response, AUConstants.RESPONSE_DATA_PRODUCTS+".productCategory"))
+        Assert.assertNotNull(AUTestUtil.parseResponseBody(response, AUConstants.RESPONSE_DATA_PRODUCTS+".additionalInformation"))
         Assert.assertNotNull(AUTestUtil.parseResponseBody(response, AUConstants.LINKS_SELF))
+        Assert.assertNotNull(AUTestUtil.parseResponseBody(response, AUConstants.LINKS_FIRST))
+        Assert.assertNotNull(AUTestUtil.parseResponseBody(response, AUConstants.LINKS_PREV))
+        Assert.assertNotNull(AUTestUtil.parseResponseBody(response, AUConstants.LINKS_NEXT))
+        Assert.assertNotNull(AUTestUtil.parseResponseBody(response, AUConstants.LINKS_LAST))
     }
 
     @Test
@@ -108,6 +100,7 @@ class ProductRetrievalValidationTest extends AUTest {
         Assert.assertNotNull(AUTestUtil.parseResponseBody(response, "data.productId"))
     }
 
+    //TODO: Issue: https://github.com/wso2-enterprise/financial-open-banking/issues/5558
     @Test
     void "TC1101019_Retrieve banking products with page size greater than the maximum standard pagination"() {
 

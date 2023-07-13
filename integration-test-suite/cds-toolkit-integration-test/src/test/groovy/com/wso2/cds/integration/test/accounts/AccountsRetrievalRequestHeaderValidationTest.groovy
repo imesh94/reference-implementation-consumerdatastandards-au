@@ -411,6 +411,7 @@ class AccountsRetrievalRequestHeaderValidationTest extends AUTest {
                 AUConstants.INVALID_HEADER)
     }
 
+    //TODO: Issue: https://github.com/wso2-enterprise/financial-open-banking/issues/8390
     @Test
     void "TC0301032_Retrieve account list with invalid x-cds-client-headers"() {
 
@@ -541,7 +542,7 @@ class AccountsRetrievalRequestHeaderValidationTest extends AUTest {
             {
               "data": {
                 "accountIds": [
-                  "${AUConstants.accountID}", "${consentedAccount2}"
+                  "${AUConstants.accountID}", "${secondConsentedAccount}"
                 ]
               },
               "meta": {}
@@ -557,8 +558,10 @@ class AccountsRetrievalRequestHeaderValidationTest extends AUTest {
         SoftAssert softAssertion= new SoftAssert()
         softAssertion.assertEquals(response.statusCode(), AUConstants.STATUS_CODE_415)
 
+        softAssertion.assertEquals(AUTestUtil.parseResponseBody(response, AUConstants.ERROR_CODE),
+                AUConstants.ERROR_CODE_GENERAL_EXPECTED_ERROR)
         softAssertion.assertEquals(AUTestUtil.parseResponseBody(response, AUConstants.ERROR_TITLE),
-                AUConstants.INVALID_CONTENT_TYPE)
+                AUConstants.CONTENT_TYPE)
         softAssertion.assertEquals(AUTestUtil.parseResponseBody(response, AUConstants.ERROR_DETAIL),
                 AUConstants.INVALID_CONTENT_TYPE)
 
@@ -593,7 +596,7 @@ class AccountsRetrievalRequestHeaderValidationTest extends AUTest {
         softAssertion.assertEquals(AUTestUtil.parseResponseBody(response, AUConstants.ERROR_CODE),
                 AUConstants.ERROR_CODE_GENERAL_EXPECTED_ERROR)
         softAssertion.assertEquals(AUTestUtil.parseResponseBody(response, AUConstants.ERROR_DETAIL),
-                AUConstants.ERROR_TITLE_GENERAL_EXPECTED_ERROR)
+                AUConstants.INVALID_ACCEPT_HEADER)
         softAssertion.assertEquals(AUTestUtil.parseResponseBody(response, AUConstants.ERROR_TITLE),
                 AUConstants.ERROR_TITLE_GENERAL_EXPECTED_ERROR)
 
