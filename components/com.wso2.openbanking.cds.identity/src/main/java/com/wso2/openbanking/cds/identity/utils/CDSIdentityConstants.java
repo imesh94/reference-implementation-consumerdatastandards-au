@@ -25,4 +25,12 @@ public class CDSIdentityConstants {
     // Consent status constants.
     public static final String AUTHORIZED = "authorized";
 
+    // Request object parameters and values.
+    public static final String STATE = "state";
+    public static final String RESPONSE_TYPE = "response_type";
+    public static final String RESPONSE_MODE = "response_mode";
+    public static final String CODE_RESPONSE_TYPE = "code";
+    public static final String JWT_RESPONSE_MODE = "jwt";
+    public static final String UNSUPPORTED_RESPONSE_TYPE_ERROR = "unsupported_response_type";
+
 }

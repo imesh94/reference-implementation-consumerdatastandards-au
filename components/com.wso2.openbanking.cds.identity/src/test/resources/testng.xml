@@ -23,6 +23,7 @@
         <classes>
             <class name="com.wso2.openbanking.cds.identity.auth.extensions.request.validator.RequestObjectValidatorTest"/>
             <class name="com.wso2.openbanking.cds.identity.auth.extensions.response.handler.CDSResponseTypeHandlerImplTest"/>
+            <class name="com.wso2.openbanking.cds.identity.auth.extensions.response.validator.CDSCodeResponseTypeValidatorTest"/>
         </classes>
     </test>
     <test name="application-listener">
