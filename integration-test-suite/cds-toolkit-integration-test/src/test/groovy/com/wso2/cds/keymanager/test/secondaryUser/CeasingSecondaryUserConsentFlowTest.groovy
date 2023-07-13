@@ -41,15 +41,12 @@ class CeasingSecondaryUserConsentFlowTest extends AUTest {
 
         auConfiguration.setPsuNumber(1)
         clientId = auConfiguration.getAppInfoClientID()
-        clientHeader = "${Base64.encoder.encodeToString(getCDSClient().getBytes(Charset.defaultCharset()))}"
-
         //Get Sharable Account List and Secondary User with Authorize Permission
         shareableElements = AUTestUtil.getSecondaryUserDetails(getSharableBankAccounts())
 
         accountID =  shareableElements[AUConstants.PARAM_ACCOUNT_ID]
         userId = auConfiguration.getUserPSUName()
 
-        //Give Secondary User Instruction Permission
         def updateResponse = updateSecondaryUserInstructionPermission(accountID, userId, AUConstants.ACTIVE)
         Assert.assertEquals(updateResponse.statusCode(), AUConstants.OK)
 
@@ -176,7 +173,7 @@ class CeasingSecondaryUserConsentFlowTest extends AUTest {
         def updateResponse = updateSecondaryUserInstructionPermission(altAccountID, userId, AUConstants.ACTIVE)
         Assert.assertEquals(updateResponse.statusCode(), AUConstants.OK)
 
-        response = updateLegalEntityStatus(clientHeader, accountID, userId, legalEntityId, AUConstants.ACTIVE)
+        response = updateLegalEntityStatus(clientHeader, altAccountID, userId, legalEntityId, AUConstants.ACTIVE)
         Assert.assertEquals(response.statusCode(), AUConstants.STATUS_CODE_200)
 
         //Send Push Authorisation Request
@@ -216,7 +213,7 @@ class CeasingSecondaryUserConsentFlowTest extends AUTest {
         Response accountResponse = AURequestBuilder.buildBasicRequestWithCustomHeaders(userAccessToken,
                 AUConstants.X_V_HEADER_ACCOUNT, clientHeader)
                 .baseUri(auConfiguration.getServerBaseURL())
-                .get("${AUConstants.CDS_PATH}/banking/accounts/${consentedAccId}")
+                .get("${AUConstants.BULK_ACCOUNT_PATH}/${consentedAccId}")
 
         Assert.assertEquals(accountResponse.statusCode(), AUConstants.STATUS_CODE_200)
         Assert.assertNull(AUTestUtil.parseResponseBody(accountResponse,

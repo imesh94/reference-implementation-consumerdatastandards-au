@@ -29,6 +29,7 @@ import org.testng.annotations.Test
 class SecondaryUserInstructionsAuthorisationTest extends AUTest {
 
     def shareableElements
+    String accountID, userId
 
     @BeforeClass(alwaysRun = true)
     void "Provide User Permissions"() {
@@ -38,8 +39,8 @@ class SecondaryUserInstructionsAuthorisationTest extends AUTest {
         //Get Sharable Account List and Secondary User with Authorize Permission
         shareableElements = AUTestUtil.getSecondaryUserDetails(getSharableBankAccounts())
 
-        String accountID =  shareableElements[AUConstants.PARAM_ACCOUNT_ID]
-        String userId = auConfiguration.getUserPSUName()
+        accountID =  shareableElements[AUConstants.PARAM_ACCOUNT_ID]
+        userId = auConfiguration.getUserPSUName()
 
         def updateResponse = updateSecondaryUserInstructionPermission(accountID, userId, AUConstants.ACTIVE)
         Assert.assertEquals(updateResponse.statusCode(), AUConstants.OK)

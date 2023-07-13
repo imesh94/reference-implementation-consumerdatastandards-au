@@ -1225,9 +1225,8 @@ class AUTest extends OBTest {
                         Base64.encoder.encodeToString("${auConfiguration.getUserBasicAuthName()}:${auConfiguration.getUserBasicAuthPWD()}"
                                         .getBytes(Charset.forName("UTF-8"))))
                 .contentType(AUConstants.CONTENT_TYPE_APPLICATION_JSON)
-                .queryParam(AUConstants.QUERY_PARAM_USERID, userID)
                 .baseUri(auConfiguration.getServerAuthorisationServerURL())
-                .get("${AUConstants.CONSENT_STATUS_AU_ENDPOINT}${AUConstants.LEGAL_ENTITY_LIST_ENDPOINT}")
+                .get("${AUConstants.CONSENT_STATUS_AU_ENDPOINT}${AUConstants.LEGAL_ENTITY_LIST_ENDPOINT}=${userID}")
     }
 
     /**

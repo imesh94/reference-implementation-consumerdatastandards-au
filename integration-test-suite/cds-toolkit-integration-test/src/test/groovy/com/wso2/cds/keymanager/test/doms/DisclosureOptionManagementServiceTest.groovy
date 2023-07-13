@@ -24,7 +24,6 @@ import io.restassured.response.Response
 import org.testng.Assert
 import org.testng.annotations.BeforeClass
 import org.testng.annotations.Test
-import org.testng.asserts.SoftAssert
 
 import java.nio.charset.Charset
 
@@ -56,19 +55,15 @@ class DisclosureOptionManagementServiceTest extends AUTest {
         Assert.assertEquals(updateResponse.statusCode(), AUConstants.OK)
 
         //Consent Authorisation
-        automationResponse = doJointAccountConsentAuthorisation(auConfiguration.getAppInfoClientID(), false)
-        authorisationCode = AUTestUtil.getCodeFromJwtResponse(automationResponse.currentUrl.get())
-    }
-
-    @Test(groups = "SmokeTest")
-    void "CDS-403_Verify status with No sharing for one account and pre-approval for other account"() {
-
-        //Consent Authorisation
-        automationResponse = doJointAccountConsentAuthorisation(clientId, true)
+        automationResponse = doJointAccountConsentAuthorisation(auConfiguration.getAppInfoClientID(), true)
         authorisationCode = AUTestUtil.getCodeFromJwtResponse(automationResponse.currentUrl.get())
 
         //Get User Access Token
         generateUserAccessToken()
+    }
+
+    @Test(groups = "SmokeTest")
+    void "CDS-403_Verify status with No sharing for one account and pre-approval for other account"() {
 
         //Update the DOMS Status to pre-approval and no-sharing
         map.put(jointAccountIdList[0], AUDOMSStatus.PRE_APPROVAL.getDomsStatusString())
@@ -81,11 +76,11 @@ class DisclosureOptionManagementServiceTest extends AUTest {
         Response accountResponse = doAccountRetrieval(userAccessToken)
         Assert.assertEquals(accountResponse.statusCode(), AUConstants.STATUS_CODE_200)
 
-        def account1 = AUIdEncryptorDecryptor.decrypt(
+        def account = AUIdEncryptorDecryptor.decrypt(
                 AUTestUtil.parseResponseBody(response, "${AUConstants.RESPONSE_DATA_BULK_ACCOUNTID_LIST}[0]"), secretKey).
                 split(":")[2]
 
-        Assert.assertEquals(jointAccountIdList[0], account1)
+        Assert.assertEquals(jointAccountIdList[0], account)
         Assert.assertNull(AUTestUtil.parseResponseBody(accountResponse, "${AUConstants.RESPONSE_DATA_BULK_ACCOUNTID_LIST}[1]"))
     }
 
@@ -106,6 +101,8 @@ class DisclosureOptionManagementServiceTest extends AUTest {
 
     @Test(groups = "SmokeTest")
     void "CDS-625_Verify Account retrieval when DOMS status change to pre-approval"() {
+
+
 
         //Update the DOMS Status to pre-approval
         map.put(jointAccountIdList[0], AUDOMSStatus.PRE_APPROVAL.getDomsStatusString())
@@ -152,7 +149,7 @@ class DisclosureOptionManagementServiceTest extends AUTest {
         Response accountResponse = AURequestBuilder.buildBasicRequestWithCustomHeaders(userAccessToken,
                 AUConstants.X_V_HEADER_ACCOUNT, clientHeader)
                 .baseUri(auConfiguration.getServerBaseURL())
-                .get("${AUConstants.CDS_PATH}/banking/accounts/${AUConstants.jointAccountID}")
+                .get("${AUConstants.BULK_ACCOUNT_PATH}/${AUConstants.jointAccountID}")
 
         Assert.assertEquals(accountResponse.statusCode(), AUConstants.STATUS_CODE_200)
         Assert.assertNull(AUTestUtil.parseResponseBody(accountResponse, "${AUConstants.RESPONSE_DATA_SINGLE_ACCOUNTID}"))
@@ -167,7 +164,7 @@ class DisclosureOptionManagementServiceTest extends AUTest {
         Response updateResponse = updateDisclosureOptionsMgtService(clientHeader, map)
         Assert.assertEquals(updateResponse.statusCode(), AUConstants.OK)
 
-        //Account Retrieval - Return Account Details
+        //Bulk Account Retrieval - Return Account Details
         Response accountResponse = AURequestBuilder.buildBasicRequestWithCustomHeaders(userAccessToken,
                 AUConstants.X_V_HEADER_ACCOUNTS, clientHeader)
                 .baseUri(auConfiguration.getServerBaseURL())
@@ -183,9 +180,9 @@ class DisclosureOptionManagementServiceTest extends AUTest {
         updateResponse = updateDisclosureOptionsMgtService(clientHeader, map)
         Assert.assertEquals(updateResponse.statusCode(), AUConstants.OK)
 
-        //Account Retrieval - Not Return Account Details
+        //Single Account Retrieval - Not Return Account Details
         accountResponse = AURequestBuilder.buildBasicRequestWithCustomHeaders(userAccessToken,
-                AUConstants.X_V_HEADER_ACCOUNT, clientHeader)
+                AUConstants.X_V_HEADER_ACCOUNTS, clientHeader)
                 .baseUri(auConfiguration.getServerBaseURL())
                 .get("${AUConstants.BULK_ACCOUNT_PATH}")
 
