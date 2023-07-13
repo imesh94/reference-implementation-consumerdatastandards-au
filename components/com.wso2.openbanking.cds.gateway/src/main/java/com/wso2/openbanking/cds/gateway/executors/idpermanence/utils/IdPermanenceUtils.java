@@ -242,8 +242,20 @@ public class IdPermanenceUtils {
         JsonArray accountIdList;
         if (requestJsonPayload != null && !(requestJsonPayload.get(IdPermanenceConstants.DATA)).isJsonNull()) {
             data = (JsonObject) requestJsonPayload.get(IdPermanenceConstants.DATA);
-            if (data != null && data.get(IdPermanenceConstants.ACCOUNT_IDS) instanceof JsonArray) {
-                accountIdList = (JsonArray) data.get(IdPermanenceConstants.ACCOUNT_IDS);
+            if (data != null && data.has(IdPermanenceConstants.ACCOUNT_IDS)) {
+                if (data.get(IdPermanenceConstants.ACCOUNT_IDS) instanceof JsonArray) {
+                    accountIdList = (JsonArray) data.get(IdPermanenceConstants.ACCOUNT_IDS);
+                } else {
+                    idPermanenceValidationResponse.setValid(false);
+                    idPermanenceValidationResponse.setError(new OpenBankingExecutorError(
+                            ErrorConstants.AUErrorEnum.INVALID_FIELD.getCode(),
+                            ErrorConstants.AUErrorEnum.INVALID_FIELD.getTitle(),
+                            String.format(ErrorConstants.AUErrorEnum.INVALID_FIELD.getDetail(),
+                                    IdPermanenceConstants.ACCOUNT_IDS),
+                            String.valueOf(ErrorConstants.AUErrorEnum.INVALID_FIELD.getHttpCode()))
+                    );
+                    return idPermanenceValidationResponse;
+                }
             } else {
                 idPermanenceValidationResponse.setValid(false);
                 idPermanenceValidationResponse.setError(new OpenBankingExecutorError(

@@ -236,9 +236,12 @@ public class CDSErrorHandler implements OpenBankingGatewayExecutor {
                 } else {
                     // TODO: need to capture non JSON errors from accelerator side, error codes starting from 20000
                     String errorTitle = error.getTitle();
+                    String errorCode = error.getCode();
                     if (ACCELERATOR_EXPECTED_ERROR.equals(error.getCode())) {
-                        errorTitle = ErrorConstants.AUErrorEnum.EXPECTED_GENERAL_ERROR.getCode();
+                        errorCode = ErrorConstants.AUErrorEnum.EXPECTED_GENERAL_ERROR.getCode();
+                        errorTitle = ErrorConstants.AUErrorEnum.EXPECTED_GENERAL_ERROR.getTitle();
                     }
+                    errorObj.addProperty(ErrorConstants.CODE, errorCode);
                     errorObj.addProperty(ErrorConstants.TITLE, errorTitle);
                     errorObj.addProperty(ErrorConstants.DETAIL, errorPayload.toString());
                 }
