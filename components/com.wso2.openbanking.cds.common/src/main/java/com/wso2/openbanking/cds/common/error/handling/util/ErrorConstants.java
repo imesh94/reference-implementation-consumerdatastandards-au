@@ -97,6 +97,8 @@ public class ErrorConstants {
         //Query, PAth or Request Body Parameter is invalid
         INVALID_FIELD(400, "urn:au-cds:error:cds-all:Field/Invalid", "Invalid Field",
                 "Invalid Field %s found in the request"),
+        INVALID_PAGE(400, "urn:au-cds:error:cds-all:Field/InvalidPage", "Invalid Page",
+                "Invalid Page %s found in the request"),
         //Header is invalid type or violates the constraints
         INVALID_HEADER(400, "urn:au-cds:error:cds-all:Header/Invalid", "Invalid Header",
                 "Requested %s header is not supported"),
