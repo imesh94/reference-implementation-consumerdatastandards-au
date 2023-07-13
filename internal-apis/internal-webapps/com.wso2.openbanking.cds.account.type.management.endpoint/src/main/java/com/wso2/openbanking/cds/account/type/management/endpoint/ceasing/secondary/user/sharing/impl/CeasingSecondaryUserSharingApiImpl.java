@@ -121,8 +121,8 @@ public class CeasingSecondaryUserSharingApiImpl implements CeasingSecondaryUserS
 
                 for (AuthorizationResource authorizationResource : detailedConsent.getAuthorizationResources()) {
                     if (authorizationResource.getUserID().equals(userID) &&
-                            authorizationResource.getAuthorizationType().
-                                    equals(AccountTypeManagementConstants.SECONDARY_ACCOUNT_OWNER)) {
+                            SecondaryAccountOwnerTypeEnum.isValidOwnerType(
+                                    authorizationResource.getAuthorizationType())) {
                         isSecondaryAccountOwner = true;
                         break;
                     }
