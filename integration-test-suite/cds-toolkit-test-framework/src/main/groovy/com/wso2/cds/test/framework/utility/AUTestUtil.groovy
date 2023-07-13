@@ -446,11 +446,16 @@ class AUTestUtil extends OBTestUtil {
         return AUPageObjects.LBL_UNAVAILABLE_ACCOUNT + "div[@id='${accountNumber}']"
     }
 
+    /**
+     * Get Error Msg From URL.
+     * @param url - URL
+     * @return Error Msg
+     */
     static String getErrorFromUrl(String url){
         try {
-            return url.split("oauthErrorMsg=")[1].split("&")[0].replace("+", " ");
+            return url.split("oauthErrorMsg=")[1].split("&")[0].replace("+", " ")
         } catch (Exception e) {
-            log.error("Unable to find error description in URL", e);
+            log.error("Unable to find error description in URL", e)
         }
         return null
     }

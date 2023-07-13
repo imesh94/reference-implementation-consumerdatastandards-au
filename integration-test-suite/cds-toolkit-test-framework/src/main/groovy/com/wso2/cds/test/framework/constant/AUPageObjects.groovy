@@ -29,7 +29,7 @@ class AUPageObjects {
     public static String LBL_NEW_SHARING_DURATION_XPATH = "//span[@id='consentExpiryTime']/following-sibling::span[contains(text(),'New')]"
     public static String LBL_ACCOUNT_1_ID_XPATH = "//input[@id='account_1']//following::small[1]"
     public static String LBL_ACCOUNT_2_ID_XPATH = "//input[@id='account_2']//following::small[1]"
-    public static String LBL_SELECT_THE_ACCOUNTS_XPATH = "//h5[contains(text(),'Select the accounts you wish to authorise')]"
+    public static String LBL_SELECT_THE_ACCOUNTS_XPATH = "//h4[contains(text(),'Select the accounts you wish to authorise')]"
     public static String CONSENT_EXPIRY_XPATH = "//button[@id='consent-expiry-date']"
     public static String NEGATIVE_SHARING_DURATION_ERROR_PATH = "//td[contains(text(),'Negative sharing_duration')]"
     public static String CONSENT_CONFIRM_XPATH = "//input[@id='approve']"

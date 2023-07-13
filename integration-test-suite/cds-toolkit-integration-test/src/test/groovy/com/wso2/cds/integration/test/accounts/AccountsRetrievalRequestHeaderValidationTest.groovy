@@ -423,11 +423,13 @@ class AccountsRetrievalRequestHeaderValidationTest extends AUTest {
 
         Assert.assertEquals(response.statusCode(), AUConstants.STATUS_CODE_400)
         Assert.assertEquals(AUTestUtil.parseResponseBody(response, AUConstants.ERROR_CODE),
-                AUConstants.ERROR_CODE_INVALID_HEADER)
-        Assert.assertEquals(AUTestUtil.parseResponseBody(response, AUConstants.ERROR_SOURCE_PARAMETER),
-                AUConstants.PARAM_CDS_CLIENT_HEADER)
+                AUConstants.ERROR_CODE_INVALID_FIELD)
+        Assert.assertTrue(AUTestUtil.parseResponseBody(response, AUConstants.ERROR_DETAIL).contains(
+                "Schema validation failed in the Request: ECMA 262 regex " +
+                        "\"^([A-Za-z0-9+/]{4})*([A-Za-z0-9+/]{3}=|[A-Za-z0-9+/]{2}==)?\$\" " +
+                        "does not match input string"))
         Assert.assertEquals(AUTestUtil.parseResponseBody(response, AUConstants.ERROR_TITLE),
-                AUConstants.INVALID_HEADER)
+                AUConstants.INVALID_FIELD)
     }
 
     @Test
@@ -561,7 +563,7 @@ class AccountsRetrievalRequestHeaderValidationTest extends AUTest {
         softAssertion.assertEquals(AUTestUtil.parseResponseBody(response, AUConstants.ERROR_CODE),
                 AUConstants.ERROR_CODE_GENERAL_EXPECTED_ERROR)
         softAssertion.assertEquals(AUTestUtil.parseResponseBody(response, AUConstants.ERROR_TITLE),
-                AUConstants.CONTENT_TYPE)
+                AUConstants.ERROR_TITLE_GENERAL_EXPECTED_ERROR)
         softAssertion.assertEquals(AUTestUtil.parseResponseBody(response, AUConstants.ERROR_DETAIL),
                 AUConstants.INVALID_CONTENT_TYPE)
 

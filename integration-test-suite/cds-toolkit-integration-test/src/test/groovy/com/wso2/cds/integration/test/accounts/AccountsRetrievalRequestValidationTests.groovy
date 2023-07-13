@@ -607,7 +607,7 @@ class AccountsRetrievalRequestValidationTests extends AUTest {
               "data": {
                 "accountIds": "${AUConstants.accountID}",
                 "accountIds": "${AUConstants.accountID}"
-                }
+                },
               "meta": {}
             }
         """.stripIndent()
@@ -620,9 +620,11 @@ class AccountsRetrievalRequestValidationTests extends AUTest {
                 .post("${AUConstants.BULK_BALANCES_PATH}")
 
         Assert.assertEquals(response.statusCode(), AUConstants.STATUS_CODE_400)
-        Assert.assertEquals(AUTestUtil.parseResponseBody(response, AUConstants.ERROR_CODE), AUConstants.ERROR_CODE_INVALID_FIELD)
-        Assert.assertEquals(AUTestUtil.parseResponseBody(response, AUConstants.ERROR_SOURCE_POINTER), AUConstants.BULK_BALANCES_PATH)
+        Assert.assertEquals(AUTestUtil.parseResponseBody(response, AUConstants.ERROR_CODE),
+                AUConstants.ERROR_CODE_INVALID_FIELD)
         Assert.assertEquals(AUTestUtil.parseResponseBody(response, AUConstants.ERROR_TITLE), AUConstants.INVALID_FIELD)
+        Assert.assertEquals(AUTestUtil.parseResponseBody(response, AUConstants.ERROR_DETAIL),
+                "Invalid Field accountIds found in the request")
     }
 
     @Test(groups = "SmokeTest")
