@@ -45,7 +45,7 @@ class AdminApiValidationTests extends AUTest {
                 .post("${AUConstants.CDS_ADMIN_PATH}${AUConstants.GET_META}")
 
         Assert.assertEquals(response.statusCode(), AUConstants.STATUS_CODE_200)
-        Assert.assertEquals(response.getHeader(AUConstants.X_V_HEADER).toInteger(), AUConstants.X_V_HEADER_METRICS)
+        Assert.assertEquals(response.getHeader(AUConstants.X_V_HEADER), AUConstants.X_V_HEADER_METRICS)
     }
 
     @Test

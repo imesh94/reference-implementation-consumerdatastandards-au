@@ -32,7 +32,7 @@ class AUConstants extends OBConstants {
     public static final String CDS_100_PATH = "/cds-au/v1"
     public static final String CDS_PATH = "/cds-au/v1"
     public static final String CDS_COMMON_PATH = "/cds-au-common/v1"
-    public static final String CDS_ADMIN_PATH = "/cds-au/v2"
+    public static final String CDS_ADMIN_PATH = "/cds-au/v1"
     public static final String ACCEPT = "application/json"
     public static final String X_FAPI_INTERACTION_ID = "x-fapi-interaction-id"
     public static final String CONTENT_TYPE = "Content-Type"
