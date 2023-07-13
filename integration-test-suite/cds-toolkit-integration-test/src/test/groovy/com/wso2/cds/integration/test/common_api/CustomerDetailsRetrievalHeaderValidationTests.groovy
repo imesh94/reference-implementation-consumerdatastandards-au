@@ -330,9 +330,10 @@ class CustomerDetailsRetrievalHeaderValidationTests extends AUTest {
         Assert.assertEquals(AUTestUtil.parseResponseBody(response, AUConstants.ERROR_CODE),
                 AUConstants.ERROR_CODE_INVALID_FIELD)
         Assert.assertEquals(AUTestUtil.parseResponseBody(response, AUConstants.ERROR_TITLE), AUConstants.INVALID_FIELD)
-        Assert.assertTrue(AUTestUtil.parseResponseBody(response, AUConstants.ERROR_DETAIL).contains("Schema validation " +
-                "failed in the Request: ECMA 262 regex \"^([A-Za-z0-9+/]{4})*([A-Za-z0-9+/]{3}=|[A-Za-z0-9+/]{2}==)?\$\" " +
-                "does not match input string"))
+        Assert.assertTrue(AUTestUtil.parseResponseBody(response, AUConstants.ERROR_DETAIL)
+                .contains("Schema validation failed in the Request: ECMA 262 regex " +
+                        "\"^([A-Za-z0-9+/]{4})*([A-Za-z0-9+/]{3}=|[A-Za-z0-9+/]{2}==)?\$\" does not match input " +
+                        "string \"pEpMozLXDwCiGi_dVKwcabSSyHoa:AppConfig1.Application.ClientSecret\""))
     }
 
     @Test
