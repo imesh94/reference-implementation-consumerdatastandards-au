@@ -1,4 +1,4 @@
-#Details for Tsteing Purposes
+#Details for Testing Purposes
 
 SSA SoftwareId - oQ4KoaavpOuoE7rvQsZEOV
 SSA2 SoftwareId - SP122
