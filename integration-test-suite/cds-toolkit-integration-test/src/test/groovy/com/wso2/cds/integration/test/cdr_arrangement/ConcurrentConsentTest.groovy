@@ -43,7 +43,7 @@ class ConcurrentConsentTest extends AUTest {
         doConsentAuthorisationViaRequestUri(scopeOfFirstConsent, requestUri.toURI(), clientId, AUAccountProfile.INDIVIDUAL)
         Assert.assertNotNull(authorisationCode)
         def userAccessTokenFirstConsent = AURequestBuilder.getUserToken(authorisationCode,
-                scopeOfFirstConsent, auAuthorisationBuilder.getCodeVerifier())
+                scopeOfFirstConsent, AUConstants.CODE_VERIFIER)
 
         //Consent Authorisation - 2
         response = auAuthorisationBuilder.doPushAuthorisationRequest(scopeOfSecondConsent, AUConstants.DEFAULT_SHARING_DURATION,
@@ -52,7 +52,7 @@ class ConcurrentConsentTest extends AUTest {
         doConsentAuthorisationViaRequestUriNoAccountSelection(scopeOfSecondConsent, requestUri.toURI(), clientId, AUAccountProfile.INDIVIDUAL)
         Assert.assertNotNull(authorisationCode)
         def userAccessTokenSecondConsent = AURequestBuilder.getUserToken(authorisationCode,
-                scopeOfFirstConsent, auAuthorisationBuilder.getCodeVerifier())
+                scopeOfFirstConsent, AUConstants.CODE_VERIFIER)
 
         Response firstAccountsResponse = AURequestBuilder
                 .buildBasicRequest(userAccessTokenFirstConsent.tokens.accessToken.toString(),
@@ -86,7 +86,7 @@ class ConcurrentConsentTest extends AUTest {
         doConsentAuthorisationViaRequestUri(scopeOfFirstConsent, requestUri.toURI(), clientId, AUAccountProfile.INDIVIDUAL)
         Assert.assertNotNull(authorisationCode)
         def userAccessTokenFirstConsent = AURequestBuilder.getUserToken(authorisationCode,
-                scopeOfFirstConsent, auAuthorisationBuilder.getCodeVerifier())
+                scopeOfFirstConsent, AUConstants.CODE_VERIFIER)
 
         //Consent Authorisation - 2
         response = auAuthorisationBuilder.doPushAuthorisationRequest(scopeOfSecondConsent, AUConstants.DEFAULT_SHARING_DURATION,
@@ -95,7 +95,7 @@ class ConcurrentConsentTest extends AUTest {
         doConsentAuthorisationViaRequestUri(scopeOfSecondConsent, requestUri.toURI(), clientId, AUAccountProfile.INDIVIDUAL)
         Assert.assertNotNull(authorisationCode)
         def userAccessTokenSecondConsent = AURequestBuilder.getUserToken(authorisationCode,
-                scopeOfFirstConsent, auAuthorisationBuilder.getCodeVerifier())
+                scopeOfFirstConsent, AUConstants.CODE_VERIFIER)
 
         Response firstAccountsResponse = AURequestBuilder
                 .buildBasicRequest(userAccessTokenSecondConsent.tokens.accessToken.toString(),
@@ -128,7 +128,7 @@ class ConcurrentConsentTest extends AUTest {
         doConsentAuthorisationViaRequestUri(sharingScope, requestUri.toURI(), clientId, AUAccountProfile.INDIVIDUAL)
         Assert.assertNotNull(authorisationCode)
         def userAccessTokenResponse = AURequestBuilder.getUserToken(authorisationCode,
-                sharingScope, auAuthorisationBuilder.getCodeVerifier())
+                sharingScope, AUConstants.CODE_VERIFIER)
         String userAccessToken = userAccessTokenResponse.tokens.accessToken.toString()
 
         //obtain cdr_arrangement_id from token response
@@ -181,7 +181,7 @@ class ConcurrentConsentTest extends AUTest {
         doConsentAuthorisationViaRequestUri(sharingScopes, requestUri.toURI(), clientId, AUAccountProfile.INDIVIDUAL)
         Assert.assertNotNull(authorisationCode)
         def userAccessTokenResponse = AURequestBuilder.getUserToken(authorisationCode,
-                sharingScopes, auAuthorisationBuilder.getCodeVerifier())
+                sharingScopes, AUConstants.CODE_VERIFIER)
         String userAccessToken = userAccessTokenResponse.tokens.accessToken.toString()
 
         //obtain cdr_arrangement_id from token response
@@ -224,7 +224,7 @@ class ConcurrentConsentTest extends AUTest {
         doConsentAuthorisationViaRequestUri(scopeOfFirstConsent, requestUri.toURI(), clientId, AUAccountProfile.INDIVIDUAL)
         Assert.assertNotNull(authorisationCode)
         def userAccessTokenResponse = AURequestBuilder.getUserToken(authorisationCode,
-                scopeOfFirstConsent, auAuthorisationBuilder.getCodeVerifier())
+                scopeOfFirstConsent, AUConstants.CODE_VERIFIER)
         String userAccessTokenFirstConsent = userAccessTokenResponse.tokens.accessToken.toString()
         String refreshTokenFirstConsent = userAccessTokenResponse.tokens.refreshToken.toString()
 
@@ -260,7 +260,7 @@ class ConcurrentConsentTest extends AUTest {
 
         //Get User Access Token
         def userAccessTokenResponseForSecondConsent = AURequestBuilder.getUserToken(authorisationCode,
-                scopeOfSecondConsent, auAuthorisationBuilder.getCodeVerifier())
+                scopeOfSecondConsent, AUConstants.CODE_VERIFIER)
         String userAccessTokenSecondConsent = userAccessTokenResponseForSecondConsent.tokens.accessToken.toString()
         String refreshTokenSecondConsent = userAccessTokenResponseForSecondConsent.tokens.refreshToken.toString()
 

@@ -120,7 +120,7 @@ class AccessTokenTest extends AUTest {
                 AUAccountScope.BANK_ACCOUNT_BASIC_READ,
         ]
         userAccessToken = AURequestBuilder.getUserToken(authorisationCode, scopes,
-                auAuthorisationBuilder.getCodeVerifier())
+                AUConstants.CODE_VERIFIER)
         Assert.assertNotNull(userAccessToken.tokens.accessToken)
         Assert.assertNotNull(userAccessToken.tokens.refreshToken)
         Assert.assertEquals(userAccessToken.toJSONObject().get("scope"), ACCOUNTS_BASIC_OPENID_SCOPE_LIST)
@@ -159,7 +159,7 @@ class AccessTokenTest extends AUTest {
                 AUAccountScope.BANK_REGULAR_PAYMENTS_READ
         ]
 
-        userAccessToken = AURequestBuilder.getUserToken(authorisationCode, scopes, auAuthorisationBuilder.getCodeVerifier())
+        userAccessToken = AURequestBuilder.getUserToken(authorisationCode, scopes, AUConstants.CODE_VERIFIER)
         Assert.assertNotNull(userAccessToken.tokens.accessToken)
         Assert.assertNotNull(userAccessToken.tokens.refreshToken)
         Assert.assertEquals(userAccessToken.toJSONObject().get("scope"), "bank:accounts.basic:read openid")
@@ -183,7 +183,7 @@ class AccessTokenTest extends AUTest {
                 AUAccountScope.BANK_ACCOUNT_DETAIL_READ
         ]
 
-        userAccessToken = AURequestBuilder.getUserToken(authorisationCode, scopes, auAuthorisationBuilder.getCodeVerifier())
+        userAccessToken = AURequestBuilder.getUserToken(authorisationCode, scopes, AUConstants.CODE_VERIFIER)
         Assert.assertNotNull(userAccessToken.tokens.accessToken)
         Assert.assertNotNull(userAccessToken.tokens.refreshToken)
         Assert.assertNotNull(userAccessToken.getCustomParameters().get("cdr_arrangement_id"))
