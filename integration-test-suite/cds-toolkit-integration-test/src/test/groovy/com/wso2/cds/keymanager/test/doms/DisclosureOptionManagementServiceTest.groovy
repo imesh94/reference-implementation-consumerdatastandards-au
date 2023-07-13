@@ -270,7 +270,7 @@ class DisclosureOptionManagementServiceTest extends AUTest {
                 true, "")
         requestUri = AUTestUtil.parseResponseBody(response, AUConstants.REQUEST_URI)
 
-        authoriseUrl = auAuthorisationBuilder.getAuthorizationRequest(scopes, requestUri.toURI(), auConfiguration.getAppInfoClientID())
+        authoriseUrl = auAuthorisationBuilder.getAuthorizationRequest(requestUri.toURI(), auConfiguration.getAppInfoClientID())
                 .toURI().toString()
 
         automationResponse = getBrowserAutomation(AUConstants.DEFAULT_DELAY)
@@ -367,7 +367,7 @@ class DisclosureOptionManagementServiceTest extends AUTest {
         response = auAuthorisationBuilder.doPushAuthorisationRequest(scopes, AUConstants.DEFAULT_SHARING_DURATION,
                 true, "")
         requestUri = AUTestUtil.parseResponseBody(response, AUConstants.REQUEST_URI)
-        authoriseUrl = auAuthorisationBuilder.getAuthorizationRequest(scopes, requestUri.toURI(), clientId)
+        authoriseUrl = auAuthorisationBuilder.getAuthorizationRequest(requestUri.toURI(), clientId)
                 .toURI().toString()
 
         //Consent Authorisation UI Flow

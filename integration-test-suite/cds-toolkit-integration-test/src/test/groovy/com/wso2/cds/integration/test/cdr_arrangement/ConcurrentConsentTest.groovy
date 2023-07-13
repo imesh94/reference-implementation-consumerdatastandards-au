@@ -32,88 +32,88 @@ class ConcurrentConsentTest extends AUTest {
     @Test
     void "TC0204001_Retrieve Consumer data using tokens obtained for multiple consents"() {
 
-        List<AUAccountScope> scopes1 = [AUAccountScope.BANK_ACCOUNT_BASIC_READ ]
-        List<AUAccountScope> scopes2 = [AUAccountScope.BANK_PAYEES_READ ]
+        List<AUAccountScope> scopeOfFirstConsent = [AUAccountScope.BANK_ACCOUNT_BASIC_READ ]
+        List<AUAccountScope> scopeOfSecondConsent = [AUAccountScope.BANK_PAYEES_READ ]
         def clientId = auConfiguration.getAppInfoClientID()
 
         //Consent Authorisation - 1
-        response = auAuthorisationBuilder.doPushAuthorisationRequest(scopes1, AUConstants.DEFAULT_SHARING_DURATION,
+        response = auAuthorisationBuilder.doPushAuthorisationRequest(scopeOfFirstConsent, AUConstants.DEFAULT_SHARING_DURATION,
                 true, "")
         requestUri = AUTestUtil.parseResponseBody(response, AUConstants.REQUEST_URI)
-        doConsentAuthorisationViaRequestUri(scopes1, requestUri.toURI(), clientId, AUAccountProfile.INDIVIDUAL)
+        doConsentAuthorisationViaRequestUri(scopeOfFirstConsent, requestUri.toURI(), clientId, AUAccountProfile.INDIVIDUAL)
         Assert.assertNotNull(authorisationCode)
-        def userAccessToken1 = AURequestBuilder.getUserToken(authorisationCode,
-                scopes1, auAuthorisationBuilder.getCodeVerifier())
+        def userAccessTokenFirstConsent = AURequestBuilder.getUserToken(authorisationCode,
+                scopeOfFirstConsent, auAuthorisationBuilder.getCodeVerifier())
 
         //Consent Authorisation - 2
-        response = auAuthorisationBuilder.doPushAuthorisationRequest(scopes2, AUConstants.DEFAULT_SHARING_DURATION,
+        response = auAuthorisationBuilder.doPushAuthorisationRequest(scopeOfSecondConsent, AUConstants.DEFAULT_SHARING_DURATION,
                 true, "")
         requestUri = AUTestUtil.parseResponseBody(response, AUConstants.REQUEST_URI)
-        doConsentAuthorisationViaRequestUriNoAccountSelection(scopes2, requestUri.toURI(), clientId, AUAccountProfile.INDIVIDUAL)
+        doConsentAuthorisationViaRequestUriNoAccountSelection(scopeOfSecondConsent, requestUri.toURI(), clientId, AUAccountProfile.INDIVIDUAL)
         Assert.assertNotNull(authorisationCode)
-        def userAccessToken2 = AURequestBuilder.getUserToken(authorisationCode,
-                scopes1, auAuthorisationBuilder.getCodeVerifier())
+        def userAccessTokenSecondConsent = AURequestBuilder.getUserToken(authorisationCode,
+                scopeOfFirstConsent, auAuthorisationBuilder.getCodeVerifier())
 
-        Response response1 = AURequestBuilder
-                .buildBasicRequest(userAccessToken1.tokens.accessToken.toString(),
+        Response firstAccountsResponse = AURequestBuilder
+                .buildBasicRequest(userAccessTokenFirstConsent.tokens.accessToken.toString(),
                         AUConstants.CDR_ENDPOINT_VERSION)
                 .header(AUConstants.X_FAPI_AUTH_DATE, AUConstants.DATE)
                 .baseUri(AUTestUtil.getBaseUrl(AUConstants.BASE_PATH_TYPE_ACCOUNT))
                 .get("${AUConstants.BULK_ACCOUNT_PATH}")
 
-        Assert.assertEquals(response1.statusCode(), AUConstants.STATUS_CODE_200)
+        Assert.assertEquals(firstAccountsResponse.statusCode(), AUConstants.STATUS_CODE_200)
 
-        Response response2 = AURequestBuilder
-                .buildBasicRequest(userAccessToken2.tokens.accessToken.toString(),
+        Response secondAccountsResponse = AURequestBuilder
+                .buildBasicRequest(userAccessTokenSecondConsent.tokens.accessToken.toString(),
                         AUConstants.CDR_ENDPOINT_VERSION)
                 .header(AUConstants.X_FAPI_AUTH_DATE, AUConstants.DATE)
                 .baseUri(AUTestUtil.getBaseUrl(AUConstants.BASE_PATH_TYPE_PAYEES))
                 .get("${AUConstants.BULK_PAYEES}")
 
-        Assert.assertEquals(response2.statusCode(), AUConstants.STATUS_CODE_200)
+        Assert.assertEquals(secondAccountsResponse.statusCode(), AUConstants.STATUS_CODE_200)
     }
 
     @Test
     void "TC0204002_Retrieve Consumer data using invalid tokens obtained for multiple consents"() {
 
-        List<AUAccountScope> scopes1 = [ AUAccountScope.BANK_ACCOUNT_BASIC_READ ]
-        List<AUAccountScope> scopes2 = [ AUAccountScope.BANK_PAYEES_READ ]
+        List<AUAccountScope> scopeOfFirstConsent = [AUAccountScope.BANK_ACCOUNT_BASIC_READ ]
+        List<AUAccountScope> scopeOfSecondConsent = [AUAccountScope.BANK_PAYEES_READ ]
 
         //Consent Authorisation - 1
-        response = auAuthorisationBuilder.doPushAuthorisationRequest(scopes1, AUConstants.DEFAULT_SHARING_DURATION,
+        response = auAuthorisationBuilder.doPushAuthorisationRequest(scopeOfFirstConsent, AUConstants.DEFAULT_SHARING_DURATION,
                 true, "")
         requestUri = AUTestUtil.parseResponseBody(response, AUConstants.REQUEST_URI)
-        doConsentAuthorisationViaRequestUri(scopes1, requestUri.toURI(), clientId, AUAccountProfile.INDIVIDUAL)
+        doConsentAuthorisationViaRequestUri(scopeOfFirstConsent, requestUri.toURI(), clientId, AUAccountProfile.INDIVIDUAL)
         Assert.assertNotNull(authorisationCode)
-        def userAccessToken1 = AURequestBuilder.getUserToken(authorisationCode,
-                scopes1, auAuthorisationBuilder.getCodeVerifier())
+        def userAccessTokenFirstConsent = AURequestBuilder.getUserToken(authorisationCode,
+                scopeOfFirstConsent, auAuthorisationBuilder.getCodeVerifier())
 
         //Consent Authorisation - 2
-        response = auAuthorisationBuilder.doPushAuthorisationRequest(scopes2, AUConstants.DEFAULT_SHARING_DURATION,
+        response = auAuthorisationBuilder.doPushAuthorisationRequest(scopeOfSecondConsent, AUConstants.DEFAULT_SHARING_DURATION,
                 true, "")
         requestUri = AUTestUtil.parseResponseBody(response, AUConstants.REQUEST_URI)
-        doConsentAuthorisationViaRequestUriNoAccountSelection(scopes2, requestUri.toURI(), clientId, AUAccountProfile.INDIVIDUAL)
+        doConsentAuthorisationViaRequestUri(scopeOfSecondConsent, requestUri.toURI(), clientId, AUAccountProfile.INDIVIDUAL)
         Assert.assertNotNull(authorisationCode)
-        def userAccessToken2 = AURequestBuilder.getUserToken(authorisationCode,
-                scopes1, auAuthorisationBuilder.getCodeVerifier())
+        def userAccessTokenSecondConsent = AURequestBuilder.getUserToken(authorisationCode,
+                scopeOfFirstConsent, auAuthorisationBuilder.getCodeVerifier())
 
-        Response response1 = AURequestBuilder
-                .buildBasicRequest(userAccessToken2.tokens.accessToken.toString(),
+        Response firstAccountsResponse = AURequestBuilder
+                .buildBasicRequest(userAccessTokenSecondConsent.tokens.accessToken.toString(),
                         AUConstants.CDR_ENDPOINT_VERSION)
                 .header(AUConstants.X_FAPI_AUTH_DATE, AUConstants.DATE)
                 .baseUri(AUTestUtil.getBaseUrl(AUConstants.BASE_PATH_TYPE_ACCOUNT))
                 .get("${AUConstants.BULK_ACCOUNT_PATH}")
 
-        Assert.assertEquals(response1.statusCode(), AUConstants.STATUS_CODE_403)
+        Assert.assertEquals(firstAccountsResponse.statusCode(), AUConstants.STATUS_CODE_403)
 
-        Response response2 = AURequestBuilder
-                .buildBasicRequest(userAccessToken1.tokens.accessToken.toString(),
+        Response secondAccountsResponse = AURequestBuilder
+                .buildBasicRequest(userAccessTokenFirstConsent.tokens.accessToken.toString(),
                         AUConstants.CDR_ENDPOINT_VERSION)
                 .header(AUConstants.X_FAPI_AUTH_DATE, AUConstants.DATE)
                 .baseUri(AUTestUtil.getBaseUrl(AUConstants.BASE_PATH_TYPE_PAYEES))
                 .get("${AUConstants.BULK_PAYEES}")
 
-        Assert.assertEquals(response2.statusCode(), AUConstants.STATUS_CODE_403)
+        Assert.assertEquals(secondAccountsResponse.statusCode(), AUConstants.STATUS_CODE_403)
     }
 
     @Test
@@ -149,7 +149,7 @@ class ConcurrentConsentTest extends AUTest {
 
         Assert.assertEquals(revokeResponse.statusCode(), AUConstants.STATUS_CODE_204)
 
-        Thread.sleep(120000)
+        Thread.sleep(100000)
 
         //try to retrieve consumer data after revocation
         response = AURequestBuilder
@@ -158,7 +158,7 @@ class ConcurrentConsentTest extends AUTest {
                 .baseUri(AUTestUtil.getBaseUrl(AUConstants.BASE_PATH_TYPE_ACCOUNT))
                 .get("${AUConstants.BULK_ACCOUNT_PATH}")
 
-        // ISSUE: https://github.com/wso2-enterprise/financial-open-banking/issues/7882
+        //TODO: Issue: https://github.com/wso2-enterprise/financial-open-banking/issues/7882
         Assert.assertEquals(response.statusCode(), AUConstants.STATUS_CODE_403)
 
         //validate token
@@ -214,29 +214,29 @@ class ConcurrentConsentTest extends AUTest {
     //upon staging new consent
     @Test
     void "TC0204003_Revoke consent using upon staging of a new consent"() {
-        List<AUAccountScope> scopes1 = [ AUAccountScope.BANK_ACCOUNT_BASIC_READ ]
-        List<AUAccountScope> scopes2 = [ AUAccountScope.BANK_PAYEES_READ ]
+        List<AUAccountScope> scopeOfFirstConsent = [AUAccountScope.BANK_ACCOUNT_BASIC_READ ]
+        List<AUAccountScope> scopeOfSecondConsent = [AUAccountScope.BANK_PAYEES_READ ]
 
         //authorise the first sharing arrangement
-        response = auAuthorisationBuilder.doPushAuthorisationRequest(scopes1, AUConstants.DEFAULT_SHARING_DURATION,
+        response = auAuthorisationBuilder.doPushAuthorisationRequest(scopeOfFirstConsent, AUConstants.DEFAULT_SHARING_DURATION,
                 true, "")
         requestUri = AUTestUtil.parseResponseBody(response, AUConstants.REQUEST_URI)
-        doConsentAuthorisationViaRequestUri(scopes1, requestUri.toURI(), clientId, AUAccountProfile.INDIVIDUAL)
+        doConsentAuthorisationViaRequestUri(scopeOfFirstConsent, requestUri.toURI(), clientId, AUAccountProfile.INDIVIDUAL)
         Assert.assertNotNull(authorisationCode)
         def userAccessTokenResponse = AURequestBuilder.getUserToken(authorisationCode,
-                scopes1, auAuthorisationBuilder.getCodeVerifier())
-        String userAccessToken1 = userAccessTokenResponse.tokens.accessToken.toString()
-        String refreshAccessToken1 = userAccessTokenResponse.tokens.refreshToken.toString()
+                scopeOfFirstConsent, auAuthorisationBuilder.getCodeVerifier())
+        String userAccessTokenFirstConsent = userAccessTokenResponse.tokens.accessToken.toString()
+        String refreshTokenFirstConsent = userAccessTokenResponse.tokens.refreshToken.toString()
 
         //obtain cdr_arrangement_id from token response
-        String cdrArrangementId1 = userAccessTokenResponse.getCustomParameters().get(AUConstants.CDR_ARRANGEMENT_ID)
-        Assert.assertNotNull(cdrArrangementId1)
+        String cdrArrangementIdFirstConsent = userAccessTokenResponse.getCustomParameters().get(AUConstants.CDR_ARRANGEMENT_ID)
+        Assert.assertNotNull(cdrArrangementIdFirstConsent)
 
         //authorize the second sharing arrangement
-        response = auAuthorisationBuilder.doPushAuthorisationRequest(scopes1, AUConstants.DEFAULT_SHARING_DURATION,
-                true, cdrArrangementId1)
+        response = auAuthorisationBuilder.doPushAuthorisationRequest(scopeOfFirstConsent, AUConstants.DEFAULT_SHARING_DURATION,
+                true, cdrArrangementIdFirstConsent)
         requestUri = AUTestUtil.parseResponseBody(response, AUConstants.REQUEST_URI)
-        authoriseUrl = auAuthorisationBuilder.getAuthorizationRequest(scopes1, requestUri.toURI()).toURI().toString()
+        authoriseUrl = auAuthorisationBuilder.getAuthorizationRequest(requestUri.toURI()).toURI().toString()
 
         def automation = getBrowserAutomation(AUConstants.DEFAULT_DELAY)
                 .addStep(new AUBasicAuthAutomationStep(authoriseUrl))
@@ -259,29 +259,29 @@ class ConcurrentConsentTest extends AUTest {
         authorisationCode = AUTestUtil.getCodeFromJwtResponse(automation.currentUrl.get())
 
         //Get User Access Token
-        def userAccessTokenResponse2 = AURequestBuilder.getUserToken(authorisationCode,
-                scopes2, auAuthorisationBuilder.getCodeVerifier())
-        String userAccessToken2 = userAccessTokenResponse2.tokens.accessToken.toString()
-        String refreshAccessToken2 = userAccessTokenResponse2.tokens.refreshToken.toString()
+        def userAccessTokenResponseForSecondConsent = AURequestBuilder.getUserToken(authorisationCode,
+                scopeOfSecondConsent, auAuthorisationBuilder.getCodeVerifier())
+        String userAccessTokenSecondConsent = userAccessTokenResponseForSecondConsent.tokens.accessToken.toString()
+        String refreshTokenSecondConsent = userAccessTokenResponseForSecondConsent.tokens.refreshToken.toString()
 
-        String cdrArrangementId2 = userAccessTokenResponse2.getCustomParameters().get(AUConstants.CDR_ARRANGEMENT_ID)
-        Assert.assertNotNull(cdrArrangementId2)
+        String cdrArrangementIdSecondConsent = userAccessTokenResponseForSecondConsent.getCustomParameters().get(AUConstants.CDR_ARRANGEMENT_ID)
+        Assert.assertNotNull(cdrArrangementIdSecondConsent)
 
         Thread.sleep(2000)
 
         //validate first token
-        def introspectResponse1 = AURequestBuilder.buildIntrospectionRequest(refreshAccessToken1,
+        def introspectResponseFirstToken = AURequestBuilder.buildIntrospectionRequest(refreshTokenFirstConsent,
                 auConfiguration.getAppInfoClientID(), 0)
                 .post(AUConstants.INTROSPECTION_ENDPOINT)
 
-        Assert.assertTrue(introspectResponse1.jsonPath().get("active").toString().contains("false"))
+        Assert.assertTrue(introspectResponseFirstToken.jsonPath().get("active").toString().contains("false"))
 
         //validate second token
-        def introspectResponse2 = AURequestBuilder.buildIntrospectionRequest(refreshAccessToken2,
+        def introspectResponseSecondToken = AURequestBuilder.buildIntrospectionRequest(refreshTokenSecondConsent,
                 auConfiguration.getAppInfoClientID(), 0)
                 .post(AUConstants.INTROSPECTION_ENDPOINT)
 
-        Assert.assertTrue(introspectResponse2.jsonPath().get("active").toString().contains("true"))
+        Assert.assertTrue(introspectResponseSecondToken.jsonPath().get("active").toString().contains("true"))
 
     }
 

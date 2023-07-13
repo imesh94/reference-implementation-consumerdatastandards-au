@@ -37,7 +37,6 @@ import com.wso2.openbanking.test.framework.configuration.OBConfigParser
 import io.restassured.response.Response
 import org.apache.logging.log4j.LogManager
 import org.apache.logging.log4j.Logger
-import org.openqa.selenium.By
 import org.testng.Assert
 import org.testng.ITestContext
 import org.testng.annotations.BeforeClass
@@ -63,6 +62,7 @@ class AUTest extends OBTest {
     protected static Logger log = LogManager.getLogger(AUTest.class.getName())
     AUAuthorisationBuilder auAuthorisationBuilder
     private boolean adrNameCheck
+    AUJWTGenerator generator
 
     @BeforeClass(alwaysRun = true)
     void "Initialize Test Suite"() {
@@ -87,7 +87,7 @@ class AUTest extends OBTest {
     public String userAccessToken
     public String authorisationCode
     public String consentedAccount
-    public String consentedAccount2
+    public String secondConsentedAccount
     public String cdrArrangementId = ""
     public String jtiVal
     public String clientId
@@ -100,7 +100,7 @@ class AUTest extends OBTest {
     public String secondaryAccountId, secondaryUserId
     public String productId
     public Response deletionResponse
-    public AUJWTGenerator generator
+    public AUJWTGenerator generator = new AUJWTGenerator()
 
     /**
      * Set Scopes of application
@@ -178,13 +178,15 @@ class AUTest extends OBTest {
 
         if (clientId == null) {
             response = auAuthorisationBuilder.doPushAuthorisationRequest(scopes, AUConstants.DEFAULT_SHARING_DURATION,
-                    true, "", "", auConfiguration.getAppInfoRedirectURL(), responseType.toString())
+                    true, "", "", auConfiguration.getAppInfoRedirectURL(),
+                    responseType.toString(), isStateParamPresent, responseMode.toString())
             requestUri = AUTestUtil.parseResponseBody(response, AUConstants.REQUEST_URI)
             doConsentAuthorisationViaRequestUri(scopes, requestUri.toURI(), responseMode, responseType,
                     null, profiles, isStateParamPresent)
         } else {
             response = auAuthorisationBuilder.doPushAuthorisationRequest(scopes, AUConstants.DEFAULT_SHARING_DURATION,
-                    true, "", clientId, auConfiguration.getAppInfoRedirectURL(), responseType.toString())
+                    true, "", clientId, auConfiguration.getAppInfoRedirectURL(),
+                    responseType.toString(), isStateParamPresent, responseMode.toString())
             requestUri = AUTestUtil.parseResponseBody(response, AUConstants.REQUEST_URI)
             doConsentAuthorisationViaRequestUri(scopes, requestUri.toURI(), responseMode, responseType,
                     clientId, profiles, isStateParamPresent)
@@ -202,10 +204,10 @@ class AUTest extends OBTest {
                                              String clientId = null, AUAccountProfile profiles = null) {
 
         if (clientId != null) {
-            authoriseUrl = auAuthorisationBuilder.getAuthorizationRequest(scopes, requestUri, clientId)
+            authoriseUrl = auAuthorisationBuilder.getAuthorizationRequest(requestUri, clientId)
                     .toURI().toString()
         } else {
-            authoriseUrl = auAuthorisationBuilder.getAuthorizationRequest(scopes, requestUri)
+            authoriseUrl = auAuthorisationBuilder.getAuthorizationRequest(requestUri)
                     .toURI().toString()
         }
 
@@ -241,7 +243,7 @@ class AUTest extends OBTest {
      */
     AccessTokenResponse getUserAccessTokenResponse(String clientId = null) {
         try {
-            return AURequestBuilder.getUserToken(authorisationCode, auAuthorisationBuilder.getCodeVerifier(), clientId)
+            return AURequestBuilder.getUserToken(authorisationCode, AUConstants.CODE_VERIFIER, clientId)
         }
         catch (Exception e) {
             log.error(e)
@@ -398,7 +400,7 @@ class AUTest extends OBTest {
 
                 if (isSelectMultipleAccounts) {
                     //Select Business Account 2
-                    consentedAccount2 = authWebDriver.getElementAttribute(AUTestUtil.getBusinessAccount3CheckBox(),
+                    secondConsentedAccount = authWebDriver.getElementAttribute(AUTestUtil.getBusinessAccount3CheckBox(),
                             AUPageObjects.VALUE)
                     authWebDriver.clickButtonXpath(AUTestUtil.getBusinessAccount3CheckBox())
                 }
@@ -414,7 +416,7 @@ class AUTest extends OBTest {
 
                 if(isSelectMultipleAccounts) {
                     //Select Individual Account 2
-                    consentedAccount2 = authWebDriver.getElementAttribute(AUTestUtil.getAltSingleAccountXPath(),
+                    secondConsentedAccount = authWebDriver.getElementAttribute(AUTestUtil.getAltSingleAccountXPath(),
                             AUPageObjects.VALUE)
                     authWebDriver.clickButtonXpath(AUTestUtil.getAltSingleAccountXPath())
                 }
@@ -429,7 +431,7 @@ class AUTest extends OBTest {
 
             if (isSelectMultipleAccounts) {
                 //Select Account 2
-                consentedAccount2 = authWebDriver.getElementAttribute(AUTestUtil.getAltSingleAccountXPath(),
+                secondConsentedAccount = authWebDriver.getElementAttribute(AUTestUtil.getAltSingleAccountXPath(),
                         AUPageObjects.VALUE)
                 authWebDriver.clickButtonXpath(AUTestUtil.getAltSingleAccountXPath())
             }
@@ -467,7 +469,7 @@ class AUTest extends OBTest {
         String requestUri = AUTestUtil.parseResponseBody(response, AUConstants.REQUEST_URI)
 
         AUAuthorisationBuilder auAuthorisationBuilder = new AUAuthorisationBuilder()
-        authoriseUrl = auAuthorisationBuilder.getAuthorizationRequest(scopes, requestUri.toURI(), auConfiguration.getAppInfoClientID())
+        authoriseUrl = auAuthorisationBuilder.getAuthorizationRequest(requestUri.toURI(), auConfiguration.getAppInfoClientID())
                 .toURI().toString()
 
         automationResponse = getBrowserAutomation(AUConstants.DEFAULT_DELAY)
@@ -514,10 +516,10 @@ class AUTest extends OBTest {
     void doConsentAuthorisationViaRequestUriSingleAccount(List<AUAccountScope> scopes, URI requestUri,
                                                           String clientId = null , AUAccountProfile profiles = null) {
         if (clientId != null) {
-            authoriseUrl = auAuthorisationBuilder.getAuthorizationRequest(scopes, requestUri, clientId)
+            authoriseUrl = auAuthorisationBuilder.getAuthorizationRequest(requestUri, clientId)
                     .toURI().toString()
         } else {
-            authoriseUrl = auAuthorisationBuilder.getAuthorizationRequest(scopes, requestUri)
+            authoriseUrl = auAuthorisationBuilder.getAuthorizationRequest(requestUri)
                     .toURI().toString()
         }
 
@@ -538,10 +540,10 @@ class AUTest extends OBTest {
     void doConsentAuthorisationViaRequestUriLargeSharingDue(List<AUAccountScope> scopes, URI requestUri,
                                                             String clientId = null , AUAccountProfile profiles = null) {
         if (clientId != null) {
-            authoriseUrl = auAuthorisationBuilder.getAuthorizationRequest(scopes, requestUri, clientId)
+            authoriseUrl = auAuthorisationBuilder.getAuthorizationRequest(requestUri, clientId)
                     .toURI().toString()
         } else {
-            authoriseUrl = auAuthorisationBuilder.getAuthorizationRequest(scopes, requestUri)
+            authoriseUrl = auAuthorisationBuilder.getAuthorizationRequest(requestUri)
                     .toURI().toString()
         }
 
@@ -585,10 +587,10 @@ class AUTest extends OBTest {
                                                      String clientId = null , AUAccountProfile profiles = null,
                                                        boolean isStateParamPresent = true) {
         if (clientId != null) {
-        authoriseUrl = auAuthorisationBuilder.getAuthorizationRequest(scopes, requestUri,
+        authoriseUrl = auAuthorisationBuilder.getAuthorizationRequest(requestUri,
                 auConfiguration.getAppInfoClientID(), isStateParamPresent).toURI().toString()
         } else {
-            authoriseUrl = auAuthorisationBuilder.getAuthorizationRequest(scopes, requestUri, null,
+            authoriseUrl = auAuthorisationBuilder.getAuthorizationRequest(requestUri, null,
                     isStateParamPresent).toURI().toString()
         }
 
@@ -621,10 +623,10 @@ class AUTest extends OBTest {
     void doConsentAuthorisationViaRequestUriNoAccountSelection(List<AUAccountScope> scopes, URI requestUri,
                                                                String clientId = null , AUAccountProfile profiles = null) {
         if (clientId != null) {
-            authoriseUrl = auAuthorisationBuilder.getAuthorizationRequest(scopes, requestUri, clientId)
+            authoriseUrl = auAuthorisationBuilder.getAuthorizationRequest(requestUri, clientId)
                     .toURI().toString()
         } else {
-            authoriseUrl = auAuthorisationBuilder.getAuthorizationRequest(scopes, requestUri)
+            authoriseUrl = auAuthorisationBuilder.getAuthorizationRequest(requestUri)
                     .toURI().toString()
         }
 
@@ -671,10 +673,10 @@ class AUTest extends OBTest {
                                      boolean isMultipleAccountsSelect = false) {
 
         if (clientId != null) {
-            authoriseUrl = auAuthorisationBuilder.getAuthorizationRequest(scopes, requestUri, clientId)
+            authoriseUrl = auAuthorisationBuilder.getAuthorizationRequest(requestUri, clientId)
                     .toURI().toString()
         } else {
-            authoriseUrl = auAuthorisationBuilder.getAuthorizationRequest(scopes, requestUri)
+            authoriseUrl = auAuthorisationBuilder.getAuthorizationRequest(requestUri)
                     .toURI().toString()
         }
 
@@ -709,10 +711,10 @@ class AUTest extends OBTest {
                                                              String clientId = null , AUAccountProfile profiles = null) {
 
         if (clientId != null) {
-            authoriseUrl = auAuthorisationBuilder.getAuthorizationRequest(scopes, requestUri, clientId)
+            authoriseUrl = auAuthorisationBuilder.getAuthorizationRequest(requestUri, clientId)
                     .toURI().toString()
         } else {
-            authoriseUrl = auAuthorisationBuilder.getAuthorizationRequest(scopes, requestUri)
+            authoriseUrl = auAuthorisationBuilder.getAuthorizationRequest(requestUri)
                     .toURI().toString()
         }
 
@@ -1043,10 +1045,10 @@ class AUTest extends OBTest {
                                             String clientId = null, boolean isSelectMultipleAccounts = false) {
 
         if (clientId != null) {
-            authoriseUrl = auAuthorisationBuilder.getAuthorizationRequest(scopes, requestUri, clientId)
+            authoriseUrl = auAuthorisationBuilder.getAuthorizationRequest(requestUri, clientId)
                     .toURI().toString()
         } else {
-            authoriseUrl = auAuthorisationBuilder.getAuthorizationRequest(scopes, requestUri)
+            authoriseUrl = auAuthorisationBuilder.getAuthorizationRequest(requestUri)
                     .toURI().toString()
         }
 
@@ -1070,7 +1072,7 @@ class AUTest extends OBTest {
 
                         if(isSelectMultipleAccounts) {
                             //Select Joint Account 2
-                            consentedAccount2 = authWebDriver.getElementAttribute(AUPageObjects.ALT_JOINT_ACCOUNT_XPATH,
+                            secondConsentedAccount = authWebDriver.getElementAttribute(AUPageObjects.ALT_JOINT_ACCOUNT_XPATH,
                                     AUPageObjects.VALUE)
                             authWebDriver.clickButtonXpath(AUPageObjects.ALT_JOINT_ACCOUNT_XPATH)
                         }
@@ -1084,7 +1086,7 @@ class AUTest extends OBTest {
 
                         if (isSelectMultipleAccounts) {
                             //Select Account 2
-                            consentedAccount2 = authWebDriver.getElementAttribute(AUPageObjects.ALT_JOINT_ACCOUNT_XPATH,
+                            secondConsentedAccount = authWebDriver.getElementAttribute(AUPageObjects.ALT_JOINT_ACCOUNT_XPATH,
                                     AUPageObjects.VALUE)
                             authWebDriver.clickButtonXpath(AUPageObjects.ALT_JOINT_ACCOUNT_XPATH)
                         }
@@ -1356,11 +1358,11 @@ class AUTest extends OBTest {
                                              boolean isStateParamPresent = true) {
 
         if (clientId != null) {
-            authoriseUrl = auAuthorisationBuilder.getAuthorizationRequest(scopes, requestUri, responseMode, clientId,
-                    responseType, isStateParamPresent).toURI().toString()
+            authoriseUrl = auAuthorisationBuilder.getAuthorizationRequest(requestUri, clientId,
+                    isStateParamPresent).toURI().toString()
         } else {
-            authoriseUrl = auAuthorisationBuilder.getAuthorizationRequest(scopes, requestUri, responseMode, "",
-                    responseType, isStateParamPresent).toURI().toString()
+            authoriseUrl = auAuthorisationBuilder.getAuthorizationRequest(requestUri, "",
+                    isStateParamPresent).toURI().toString()
         }
 
         //UI Flow Navigation
@@ -1391,10 +1393,10 @@ class AUTest extends OBTest {
     void doSecondaryUserAuthFlowWithoutAccountSelection(List<AUAccountScope> scopes, URI requestUri, String clientId = null) {
 
         if (clientId != null) {
-            authoriseUrl = auAuthorisationBuilder.getAuthorizationRequest(scopes, requestUri, clientId)
+            authoriseUrl = auAuthorisationBuilder.getAuthorizationRequest(requestUri, clientId)
                     .toURI().toString()
         } else {
-            authoriseUrl = auAuthorisationBuilder.getAuthorizationRequest(scopes, requestUri)
+            authoriseUrl = auAuthorisationBuilder.getAuthorizationRequest(requestUri)
                     .toURI().toString()
         }
 

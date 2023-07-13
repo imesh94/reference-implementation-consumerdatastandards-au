@@ -51,7 +51,8 @@ class JarmResponseModeJwtValidationTests extends AUTest{
 
         response = auAuthorisationBuilder.doPushAuthorisationRequest(scopes, AUConstants.DEFAULT_SHARING_DURATION,
                 true, "", auConfiguration.getAppInfoClientID(),
-                auConfiguration.getAppInfoRedirectURL(), ResponseType.TOKEN.toString())
+                auConfiguration.getAppInfoRedirectURL(), ResponseType.TOKEN.toString(), true,
+                ResponseMode.JWT.toString())
         requestUri = AUTestUtil.parseResponseBody(response, AUConstants.REQUEST_URI)
 
         Assert.assertEquals(AUTestUtil.parseResponseBody(response, AUConstants.ERROR), AUConstants.INVALID_REQUEST)
@@ -64,7 +65,8 @@ class JarmResponseModeJwtValidationTests extends AUTest{
 
         response = auAuthorisationBuilder.doPushAuthorisationRequest(scopes, AUConstants.DEFAULT_SHARING_DURATION,
                 true, "", auConfiguration.getAppInfoClientID(),
-                auConfiguration.getAppInfoRedirectURL(), ResponseType.CODE_IDTOKEN.toString())
+                auConfiguration.getAppInfoRedirectURL(), ResponseType.CODE_IDTOKEN.toString(), true,
+                ResponseMode.JWT.toString())
 
         Assert.assertEquals(AUTestUtil.parseResponseBody(response, AUConstants.ERROR), AUConstants.INVALID_REQUEST)
         Assert.assertEquals(AUTestUtil.parseResponseBody(response, AUConstants.ERROR_DESCRIPTION),
@@ -98,7 +100,7 @@ class JarmResponseModeJwtValidationTests extends AUTest{
         //Send PAR request
         response = auAuthorisationBuilder.doPushAuthorisationRequest(scopes, AUConstants.DEFAULT_SHARING_DURATION,
                 true, "", clientId, auConfiguration.getAppInfoRedirectURL(),
-                ResponseType.parse("NONE").toString())
+                ResponseType.parse("NONE").toString(), true, ResponseMode.JWT.toString())
 
         Assert.assertEquals(AUTestUtil.parseResponseBody(response, AUConstants.ERROR), AUConstants.INVALID_REQUEST)
         Assert.assertEquals(AUTestUtil.parseResponseBody(response, AUConstants.ERROR_DESCRIPTION),

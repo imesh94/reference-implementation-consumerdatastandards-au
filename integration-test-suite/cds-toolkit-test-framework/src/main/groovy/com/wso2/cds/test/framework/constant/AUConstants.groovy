@@ -12,6 +12,7 @@
 
 package com.wso2.cds.test.framework.constant
 
+import com.nimbusds.oauth2.sdk.pkce.CodeVerifier
 import com.wso2.openbanking.test.framework.constant.OBConstants
 import com.wso2.cds.test.framework.configuration.AUConfigurationService
 import com.wso2.cds.test.framework.utility.AUTestUtil
@@ -53,7 +54,7 @@ class AUConstants extends OBConstants {
     public static final String accountID = "qu4WMZ-59LsndgjMN-kikHgbJzws-clthVMQELUH9BMhTt6fOc80bgAI1HN82kKCsFWl9OMhDKA3Wck1IMX2Q1qQy9Sykg5kJOSYgFEnjFU"
     public static final String accountID2 = "qu4WMZ-59LsndgjMN-kikHgbJzws-clthVMQELUH9BMhTt6fOc80bgAI1HN82kKCZKqCobYWnFNnWih_ukgKZmidyLDUN-43WATQRbw0VSI"
     public static final String jointAccountID = "qu4WMZ-59LsndgjMN-kikHgbJzws-clthVMQELUH9BMhTt6fOc80bgAI1HN82kKCeOjYlRtzT9yJ2o0dhgs6fJpW5_PdscIMToQHtalBGYU"
-    public static final String businessAccountID = "7ZFnnKruJ7WX52D-vhD4ygZJm07cm-EkVGA87OvIQfRFavHHqE5C84PAwghkvhRukbuMg547ftxFDQQ18tQmKOoRaKcEC-FJb2g605s6EeQ"
+    public static final String businessAccountID = "7ZFnnKruJ7WX52D-vhD4ygZJm07cm-EkVGA87OvIQfRM5q6I63xR780QJeLqtskCHsiGUbkcN8QwkTbZXt0rH-oRaKcEC-FJb2g605s6EeQ"
     public static final String GET_META = "/admin/register/metadata"
     public static final String GET_STAT = "/admin/metrics"
     public static final String X_FAPI_FINANCIAL_ID = "x-fapi-financial-id"
@@ -69,7 +70,7 @@ class AUConstants extends OBConstants {
     public static final long ONE_YEAR_DURATION = 31536200
     public static final long NEGATIVE_DURATION = -3000
     public static final long AMENDED_SHARING_DURATION = 3000
-    public static final long SHORT_SHARING_DURATION = 20
+    public static final long SHORT_SHARING_DURATION = 4
     static final long NEGATIVE_SHARING_DURATION = -3000
 
     public static final String BULK_ACCOUNT_PATH = CDS_PATH + "/banking/accounts"
@@ -104,8 +105,8 @@ class AUConstants extends OBConstants {
     public static final String LEGAL_ENTITY_LIST_ENDPOINT = "/account-type-management/legal-entity-list"
     public static final String UPDATE_LEGAL_ENTITY_SHARING_STATUS = "/account-type-management/legal-entity"
     public static final String GET_TRANSACTIONS = SINGLE_ACCOUNT_PATH + "/transactions"
-    public static final String GET_PRODUCTS = "/banking/products"
-    public static final String SINGLE_BUSINESS_ACCOUNT_PATH = "/banking/accounts/" + businessAccountID
+    public static final String GET_PRODUCTS = CDS_PATH + "/banking/products"
+    public static final String SINGLE_BUSINESS_ACCOUNT_PATH = CDS_PATH+ "/banking/accounts/" + businessAccountID
     public static final String GET_BUSINESS_ACCOUNT_TRANSACTIONS = SINGLE_BUSINESS_ACCOUNT_PATH + "/transactions"
 
     public static final String BANK_CUSTOMER_BASIC_READ = "Organisation profile and contact details"
@@ -307,7 +308,7 @@ class AUConstants extends OBConstants {
     public static final String DCR_INVALID_ID_TOKEN_ENCRYPTION_METHOD = "Invalid idTokenEncryptionResponseEnc provided"
     public static final String DCR_INVALID_REDIRECT_DESCRIPTION = "Invalid callback uris"
     public static final String INSUFFICIENT_SCOPE = "insufficient_scope"
-    public static final String UNSUPPORTED_RESPONSE_MODE = "Unsupported Response Mode"
+    public static final String UNSUPPORTED_RESPONSE_MODE = "Unsupported response_mode value. Only jwt response mode is allowed."
     public static final String ERROR_CODE_INVALID_PAGE = "urn:au-cds:error:cds-all:Field/InvalidPage"
     public static final String INVALID_PAGE = "Invalid Page"
 
@@ -474,5 +475,7 @@ class AUConstants extends OBConstants {
     public static final String DCR_CLAIM_LEGAL_ENTITY_NAME = "legal_entity_name"
     public static final String SAMPLE_LEGAL_ENTITY_ID = "344F0E809-BDBE-4F8E-BD30-5E6C3CB78D7B"
     public static final String SAMPLE_LEGAL_ENTITY_NAME = "Mock Company Pty Ltd."
+    public static final String AlternateAccountId = "30080098763500"
+    public static final CodeVerifier CODE_VERIFIER = new CodeVerifier()
 }
 

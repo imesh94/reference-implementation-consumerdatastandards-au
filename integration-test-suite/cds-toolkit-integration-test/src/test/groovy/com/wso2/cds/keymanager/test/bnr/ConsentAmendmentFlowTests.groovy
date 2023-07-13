@@ -77,7 +77,7 @@ class ConsentAmendmentFlowTests extends AUTest {
         response = auAuthorisationBuilder.doPushAuthorisationRequest(scopes, AUConstants.DEFAULT_SHARING_DURATION,
                 true, cdrArrangementId)
         requestUri = AUTestUtil.parseResponseBody(response, AUConstants.REQUEST_URI)
-        authoriseUrl = auAuthorisationBuilder.getAuthorizationRequest(scopes, requestUri.toURI()).toURI().toString()
+        authoriseUrl = auAuthorisationBuilder.getAuthorizationRequest(requestUri.toURI()).toURI().toString()
 
         //Consent Authorisation UI Flow -  Profile selection is not present
         def automation = getBrowserAutomation(AUConstants.DEFAULT_DELAY)
@@ -121,7 +121,7 @@ class ConsentAmendmentFlowTests extends AUTest {
         response = auAuthorisationBuilder.doPushAuthorisationRequest(scopes, AUConstants.DEFAULT_SHARING_DURATION,
                 true, cdrArrangementId)
         requestUri = AUTestUtil.parseResponseBody(response, AUConstants.REQUEST_URI)
-        authoriseUrl = auAuthorisationBuilder.getAuthorizationRequest(scopes, requestUri.toURI()).toURI().toString()
+        authoriseUrl = auAuthorisationBuilder.getAuthorizationRequest(requestUri.toURI()).toURI().toString()
 
         //Consent Authorisation UI Flow -  Profile selection is not present
         def automation = getBrowserAutomation(AUConstants.DEFAULT_DELAY)
@@ -183,7 +183,7 @@ class ConsentAmendmentFlowTests extends AUTest {
         response = auAuthorisationBuilder.doPushAuthorisationRequest(scopes, AUConstants.DEFAULT_SHARING_DURATION,
                 true, cdrArrangementId)
         requestUri = AUTestUtil.parseResponseBody(response, AUConstants.REQUEST_URI)
-        authoriseUrl = auAuthorisationBuilder.getAuthorizationRequest(scopes, requestUri.toURI()).toURI().toString()
+        authoriseUrl = auAuthorisationBuilder.getAuthorizationRequest(requestUri.toURI()).toURI().toString()
 
         //Consent Authorisation UI Flow -  Profile selection is not present
         def automation = getBrowserAutomation(AUConstants.DEFAULT_DELAY)
@@ -264,46 +264,16 @@ class ConsentAmendmentFlowTests extends AUTest {
         response = auAuthorisationBuilder.doPushAuthorisationRequest(scopes, AUConstants.DEFAULT_SHARING_DURATION,
                 true, cdrArrangementId)
         requestUri = AUTestUtil.parseResponseBody(response, AUConstants.REQUEST_URI)
-        authoriseUrl = auAuthorisationBuilder.getAuthorizationRequest(scopes, requestUri.toURI()).toURI().toString()
+        authoriseUrl = auAuthorisationBuilder.getAuthorizationRequest(requestUri.toURI()).toURI().toString()
 
         auConfiguration.setPsuNumber(3)
         //Consent Authorisation UI Flow -  Profile selection is not present
         def automation = getBrowserAutomation(AUConstants.DEFAULT_DELAY)
                 .addStep(new AUBasicAuthAutomationStep(authoriseUrl))
-                .addStep { driver, context ->
-                    AutomationMethod authWebDriver = new AutomationMethod(driver)
-
-                    //Verify if Profile Selection Enabled
-                    if (auConfiguration.getProfileSelectionEnabled()) {
-
-                        //Click Confirm Button
-                        authWebDriver.clickButtonXpath(AUPageObjects.CONSENT_CONFIRM_XPATH)
-
-                        //Click Authorise Button
-                        authWebDriver.clickButtonXpath(AUPageObjects.CONSENT_CONFIRM_XPATH)
-
-                    } else {
-                        assert authWebDriver.isElementDisplayed(AUTestUtil.getSingleAccountXPath())
-                        log.info("Profile Selection is Disabled")
-                    }
-                }
                 .execute()
 
-        // Get Code From URL
-        authorisationCode = AUTestUtil.getCodeFromJwtResponse(automation.currentUrl.get())
+        def errorUrl = automation.currentUrl.get().split("statusMsg=")[1].replace("%20", " ")
+        Assert.assertTrue(errorUrl.contains("Retrieving consent data failed"))
 
-        //Generate Token
-        generateUserAccessToken()
-
-        //Get Account Transaction Details
-        def responseAfterAmendment = AURequestBuilder.buildBasicRequestWithCustomHeaders(userAccessToken,
-                AUConstants.X_V_HEADER_ACCOUNTS, clientHeader)
-                .baseUri(AUTestUtil.getBaseUrl(AUConstants.BASE_PATH_TYPE_ACCOUNT))
-                .get("${AUConstants.BULK_ACCOUNT_PATH}")
-
-        Assert.assertEquals(responseAfterAmendment.statusCode(), AUConstants.STATUS_CODE_200)
-        Assert.assertEquals(responseAfterAmendment.getHeader(AUConstants.X_V_HEADER).toInteger(), AUConstants.X_V_HEADER_ACCOUNTS)
-        Assert.assertNotNull(AUTestUtil.parseResponseBody(responseAfterAmendment,
-                "${AUConstants.RESPONSE_DATA_BULK_ACCOUNTID_LIST}[0]"))
     }
 }

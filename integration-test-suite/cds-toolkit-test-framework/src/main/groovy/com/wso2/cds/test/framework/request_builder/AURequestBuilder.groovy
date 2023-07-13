@@ -463,9 +463,8 @@ class AURequestBuilder {
         def response = AURestAsRequestBuilder.buildRequest()
                 .contentType(AUConstants.ACCESS_TOKEN_CONTENT_TYPE)
                 .formParams(bodyContent)
-                .baseUri(auConfiguration.getServerAuthorisationServerURL())
+                .baseUri(auConfiguration.getServerBaseURL())
                 .post("${AUConstants.CDR_ARRANGEMENT_ENDPOINT}")
         return response
     }
-
 }

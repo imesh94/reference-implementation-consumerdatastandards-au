@@ -53,7 +53,7 @@ class PushedAuthorisationFlowTest extends AUTest {
     void "TC0203013_Generate User access token by code generated from PAR model"() {
 
         AccessTokenResponse userAccessToken = AURequestBuilder.getUserToken(authorisationCode,
-                auAuthorisationBuilder.getCodeVerifier(), clientId)
+                AUConstants.CODE_VERIFIER, clientId)
         Assert.assertNotNull(userAccessToken.tokens.accessToken)
         Assert.assertNotNull(userAccessToken.tokens.refreshToken)
         Assert.assertNotNull(userAccessToken.getCustomParameters().get(AUConstants.CDR_ARRANGEMENT_ID))
@@ -107,14 +107,14 @@ class PushedAuthorisationFlowTest extends AUTest {
         println "\nWaiting for request uri to expire..."
         sleep(65000)
 
-        def authoriseUrl = auAuthorisationBuilder.getAuthorizationRequest(scopes, requestUri.toURI(), clientId)
+        def authoriseUrl = auAuthorisationBuilder.getAuthorizationRequest(requestUri.toURI(), clientId)
                 .toURI().toString()
 
         def automationResponse = getBrowserAutomation(AUConstants.DEFAULT_DELAY)
                 .addStep(new NavigationAutomationStep(authoriseUrl, 10))
                 .execute()
 
-        Assert.assertTrue(AUTestUtil.getErrorDescriptionFromUrl(automationResponse.currentUrl.get()).contains("Expired request URI"))
+        Assert.assertTrue(AUTestUtil.getErrorFromUrl(automationResponse.currentUrl.get()).contains("Expired request URI"))
     }
 
     @Test(priority = 2)
@@ -133,7 +133,7 @@ class PushedAuthorisationFlowTest extends AUTest {
 
         //Generate User Access Token
         AccessTokenResponse userAccessToken = AURequestBuilder.getUserToken(authorisationCode,
-                auAuthorisationBuilder.getCodeVerifier(), clientId)
+                AUConstants.CODE_VERIFIER, clientId)
 
         accessToken = userAccessToken.tokens.toString()
         def refreshToken = userAccessToken.tokens.refreshToken.toString()
@@ -148,7 +148,7 @@ class PushedAuthorisationFlowTest extends AUTest {
         Assert.assertNotNull(requestUri)
 
         //Authorise New Consent - Profile Selection Is disabled
-        authoriseUrl = auAuthorisationBuilder.getAuthorizationRequest(scopes, requestUri.toURI(), clientId).toURI().toString()
+        authoriseUrl = auAuthorisationBuilder.getAuthorizationRequest(requestUri.toURI(), clientId).toURI().toString()
 
         automationResponse = getBrowserAutomation(AUConstants.DEFAULT_DELAY)
                 .addStep(new AUBasicAuthAutomationStep(authoriseUrl))
@@ -202,7 +202,7 @@ class PushedAuthorisationFlowTest extends AUTest {
 
         //Generate User Access Token
         AccessTokenResponse userAccessToken = AURequestBuilder.getUserToken(authorisationCode,
-                auAuthorisationBuilder.getCodeVerifier(), clientId)
+                AUConstants.CODE_VERIFIER, clientId)
 
         accessToken = userAccessToken.tokens.toString()
         refreshToken = userAccessToken.tokens.refreshToken.toString()
@@ -285,7 +285,7 @@ class PushedAuthorisationFlowTest extends AUTest {
 
         //Generate User Access Token
         AccessTokenResponse userAccessToken = AURequestBuilder.getUserToken(authorisationCode,
-                auAuthorisationBuilder.getCodeVerifier(), clientId)
+                AUConstants.CODE_VERIFIER, clientId)
         Assert.assertNull(userAccessToken.tokens.refreshToken)
         Assert.assertNotNull(userAccessToken.tokens.accessToken)
     }
@@ -301,7 +301,7 @@ class PushedAuthorisationFlowTest extends AUTest {
 
         //Generate User Access Token
         AccessTokenResponse userAccessToken = AURequestBuilder.getUserToken(authorisationCode,
-                auAuthorisationBuilder.getCodeVerifier(), clientId)
+                AUConstants.CODE_VERIFIER, clientId)
         Assert.assertNull(userAccessToken.tokens.refreshToken)
         Assert.assertNotNull(userAccessToken.tokens.accessToken)
     }
@@ -317,7 +317,7 @@ class PushedAuthorisationFlowTest extends AUTest {
 
         //Generate User Access Token
         AccessTokenResponse userAccessToken = AURequestBuilder.getUserToken(authorisationCode,
-                auAuthorisationBuilder.getCodeVerifier(), clientId)
+                AUConstants.CODE_VERIFIER, clientId)
         Assert.assertNotNull(userAccessToken.tokens.refreshToken)
         Assert.assertNotNull(userAccessToken.tokens.accessToken)
     }
@@ -368,7 +368,7 @@ class PushedAuthorisationFlowTest extends AUTest {
         Assert.assertNotNull(authorisationCode)
 
         AccessTokenResponse userAccessToken = AURequestBuilder.getUserToken(authorisationCode,
-                auAuthorisationBuilder.getCodeVerifier(), clientId)
+                AUConstants.CODE_VERIFIER, clientId)
         cdrArrangementId = userAccessToken.getCustomParameters().get(AUConstants.CDR_ARRANGEMENT_ID)
 
         def authoriseUrl = auAuthorisationBuilder.getAuthorizationRequest(scopes, AUConstants.DEFAULT_SHARING_DURATION,
@@ -458,8 +458,7 @@ class PushedAuthorisationFlowTest extends AUTest {
         def requestUri = AUTestUtil.parseResponseBody(response, AUConstants.REQUEST_URI)
 
         //Authorise Consent
-        authoriseUrl = auAuthorisationBuilder.getAuthorizationRequest(scopes, requestUri.toURI(), ResponseMode.JWT, clientId,
-                ResponseType.CODE, false).toURI().toString()
+        authoriseUrl = auAuthorisationBuilder.getAuthorizationRequest(requestUri.toURI(), clientId, false).toURI().toString()
 
         automationResponse = doAuthorisationFlowNavigation(authoriseUrl, AUAccountProfile.INDIVIDUAL, false)
         authorisationCode = AUTestUtil.getCodeFromJwtResponse(automationResponse.currentUrl.get())
@@ -467,7 +466,7 @@ class PushedAuthorisationFlowTest extends AUTest {
 
         //Generate User Access Token
         AccessTokenResponse userAccessToken = AURequestBuilder.getUserToken(authorisationCode,
-                auAuthorisationBuilder.getCodeVerifier(), clientId)
+                AUConstants.CODE_VERIFIER, clientId)
         Assert.assertNotNull(userAccessToken.tokens.accessToken)
         Assert.assertNotNull(userAccessToken.tokens.refreshToken)
         Assert.assertNotNull(userAccessToken.getCustomParameters().get(AUConstants.CDR_ARRANGEMENT_ID))
@@ -478,8 +477,7 @@ class PushedAuthorisationFlowTest extends AUTest {
                 .execute()
 
         String url = automationResponse.currentUrl.get()
-        Assert.assertTrue(AUTestUtil.getErrorDescriptionFromUrl(url)
-                .contains("Provided request URI is not valid"))
+        Assert.assertTrue(AUTestUtil.getErrorFromUrl(url).contains("Provided request URI is not valid"))
     }
 
     @Test

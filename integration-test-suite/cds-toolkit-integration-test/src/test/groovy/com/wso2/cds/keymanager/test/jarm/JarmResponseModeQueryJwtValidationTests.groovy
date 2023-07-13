@@ -31,41 +31,17 @@ class JarmResponseModeQueryJwtValidationTests extends AUTest {
     String responseJwt
     JWTClaimsSet jwtPayload
 
-    @Test (priority = 1)
-    void "CDS-458_Verify response_mode query jwt navigates to Authorization Flow"() {
-
-        doConsentAuthorisation(ResponseMode.QUERY_JWT, ResponseType.CODE, auConfiguration.getAppInfoClientID())
-        authResponseUrl = automationResponse.currentUrl.get()
-        responseJwt = authResponseUrl.split(AUConstants.HTML_RESPONSE_ATTR)[1]
-        Assert.assertNotNull(responseJwt)
-        jwtPayload = AUJWTGenerator.extractJwt(responseJwt)
-    }
-
-    @Test (priority = 1, dependsOnMethods = "CDS-458_Verify response_mode query jwt navigates to Authorization Flow")
-    void "CDS-460_Verify the '?' Sign' authorization server need to send the authorization response as HTTP redirect to the redirect URI"() {
-
-        Assert.assertTrue(authResponseUrl.split(AUConstants.HTML_RESPONSE_ATTR)[0].contains("?"))
-    }
-
-    @Test (priority = 1, dependsOnMethods = "CDS-458_Verify response_mode query jwt navigates to Authorization Flow")
-    void "CDS-461_Verify the decryption of the Response received from query jwt"() {
-
-        Assert.assertNotNull(jwtPayload.getStringClaim(AUConstants.CODE_KEY))
-        Assert.assertNotNull(jwtPayload.getStringClaim(AUConstants.STATE_KEY))
-        Assert.assertTrue(jwtPayload.getAudience()[0].toString().equalsIgnoreCase(auConfiguration.getAppInfoClientID()))
-        Assert.assertTrue(jwtPayload.getIssuer().equalsIgnoreCase(auConfiguration.getConsentAudienceValue()))
-    }
-
     @Test
     void "CDS-587_Verify in query jwt response mode if response_type = code"() {
 
-        doConsentAuthorisation(ResponseMode.QUERY_JWT, ResponseType.CODE, auConfiguration.getAppInfoClientID())
-        authResponseUrl = automationResponse.currentUrl.get()
-        responseJwt = authResponseUrl.split(AUConstants.HTML_RESPONSE_ATTR)[1]
-        Assert.assertNotNull(responseJwt)
-        jwtPayload = AUJWTGenerator.extractJwt(responseJwt)
+        response = auAuthorisationBuilder.doPushAuthorisationRequest(scopes, AUConstants.DEFAULT_SHARING_DURATION,
+                true, "", auConfiguration.getAppInfoClientID(),
+                auConfiguration.getAppInfoRedirectURL(), ResponseType.CODE.toString(), true,
+                ResponseMode.QUERY_JWT.toString())
 
-        Assert.assertNotNull(jwtPayload.getStringClaim(AUConstants.CODE_KEY))
+        Assert.assertEquals(response.getStatusCode(), AUConstants.STATUS_CODE_400)
+        Assert.assertEquals(AUTestUtil.parseResponseBody(response, AUConstants.ERROR_DESCRIPTION), AUConstants.UNSUPPORTED_RESPONSE_MODE)
+        Assert.assertEquals(AUTestUtil.parseResponseBody(response, AUConstants.ERROR), AUConstants.INVALID_REQUEST)
     }
 
     @Test
@@ -73,7 +49,8 @@ class JarmResponseModeQueryJwtValidationTests extends AUTest {
 
         response = auAuthorisationBuilder.doPushAuthorisationRequest(scopes, AUConstants.DEFAULT_SHARING_DURATION,
                 true, "", auConfiguration.getAppInfoClientID(),
-                auConfiguration.getAppInfoRedirectURL(), ResponseType.TOKEN.toString())
+                auConfiguration.getAppInfoRedirectURL(), ResponseType.TOKEN.toString(), true,
+                ResponseMode.QUERY_JWT.toString())
 
         Assert.assertEquals(AUTestUtil.parseResponseBody(response, AUConstants.ERROR), AUConstants.INVALID_REQUEST)
         Assert.assertEquals(AUTestUtil.parseResponseBody(response, AUConstants.ERROR_DESCRIPTION),
@@ -85,28 +62,12 @@ class JarmResponseModeQueryJwtValidationTests extends AUTest {
 
         response = auAuthorisationBuilder.doPushAuthorisationRequest(scopes, AUConstants.DEFAULT_SHARING_DURATION,
                 true, "", auConfiguration.getAppInfoClientID(),
-                auConfiguration.getAppInfoRedirectURL(), ResponseType.CODE_IDTOKEN.toString())
+                auConfiguration.getAppInfoRedirectURL(), ResponseType.CODE_IDTOKEN.toString(), true,
+                ResponseMode.QUERY_JWT.toString())
 
-        Assert.assertEquals(AUTestUtil.parseResponseBody(response, AUConstants.ERROR), AUConstants.INVALID_REQUEST)
+        Assert.assertEquals(response.getStatusCode(), AUConstants.STATUS_CODE_400)
         Assert.assertEquals(AUTestUtil.parseResponseBody(response, AUConstants.ERROR_DESCRIPTION),
                 AUConstants.ERROR_UNSUPPORTED_RESPONSE)
-    }
-
-    @Test
-    void "CDS-563_Verify a User access Token call with the Code received from query jwt"() {
-
-        //Consent Authorisation
-        doConsentAuthorisation(ResponseMode.QUERY_JWT, ResponseType.CODE, auConfiguration.getAppInfoClientID())
-        authResponseUrl = automationResponse.currentUrl.get()
-        responseJwt = authResponseUrl.split(AUConstants.HTML_RESPONSE_ATTR)[1]
-        Assert.assertNotNull(responseJwt)
-        jwtPayload = AUJWTGenerator.extractJwt(responseJwt)
-
-        authorisationCode = jwtPayload.getStringClaim(AUConstants.CODE_KEY)
-        Assert.assertNotNull(authorisationCode)
-
-        //Generate User Access Token
-        generateUserAccessToken()
-        Assert.assertNotNull(userAccessToken)
+        Assert.assertEquals(AUTestUtil.parseResponseBody(response, AUConstants.ERROR), AUConstants.INVALID_REQUEST)
     }
 }

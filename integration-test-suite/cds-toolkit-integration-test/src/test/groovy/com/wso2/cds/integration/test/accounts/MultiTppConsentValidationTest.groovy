@@ -112,7 +112,7 @@ class MultiTppConsentValidationTest extends AUTest {
 
         //Send consent authorisation using request_uri bound to TPP1 with client id of TPP2
         auConfiguration.setTppNumber(1)
-        def authoriseUrl = auAuthorisationBuilder.getAuthorizationRequest(scopes, requestUri.toURI(),
+        def authoriseUrl = auAuthorisationBuilder.getAuthorizationRequest(requestUri.toURI(),
                 auConfiguration.getAppInfoClientID()).toURI().toString()
 
         def automationResponse = getBrowserAutomation(AUConstants.DEFAULT_DELAY)

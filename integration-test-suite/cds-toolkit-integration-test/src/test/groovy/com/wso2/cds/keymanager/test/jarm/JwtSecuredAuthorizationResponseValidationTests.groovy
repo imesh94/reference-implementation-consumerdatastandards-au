@@ -82,7 +82,7 @@ class JwtSecuredAuthorizationResponseValidationTests extends AUTest {
     @Test
     void "CDS-568_Verify the JWT response does not contains state param if it is not included in request"() {
 
-        doConsentAuthorisation(ResponseMode.QUERY_JWT, ResponseType.CODE,auConfiguration.getAppInfoClientID(),
+        doConsentAuthorisation(ResponseMode.JWT, ResponseType.CODE, auConfiguration.getAppInfoClientID(),
                 AUAccountProfile.INDIVIDUAL, false)
         authResponseUrl = automationResponse.currentUrl.get()
         responseJwt = authResponseUrl.split(AUConstants.HTML_RESPONSE_ATTR)[1]

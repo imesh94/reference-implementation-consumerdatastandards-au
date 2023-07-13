@@ -37,7 +37,7 @@ class DuplicateCommonAuthIdTest extends AUTest {
                 true, "")
         requestUri = AUTestUtil.parseResponseBody(response, AUConstants.REQUEST_URI)
 
-        authoriseUrl = auAuthorisationBuilder.getAuthorizationRequest(scopes, requestUri.toURI(),
+        authoriseUrl = auAuthorisationBuilder.getAuthorizationRequest(requestUri.toURI(),
                 auConfiguration.getAppInfoClientID()).toURI().toString()
 
         automationResponse = getBrowserAutomation(AUConstants.DEFAULT_DELAY, false)
@@ -60,7 +60,7 @@ class DuplicateCommonAuthIdTest extends AUTest {
                 true, "")
         requestUri = AUTestUtil.parseResponseBody(response, AUConstants.REQUEST_URI)
 
-        authoriseUrl = auAuthorisationBuilder.getAuthorizationRequest(scopes, requestUri.toURI(),
+        authoriseUrl = auAuthorisationBuilder.getAuthorizationRequest(requestUri.toURI(),
                 auConfiguration.getAppInfoClientID()).toURI().toString()
 
         automationResponse = getBrowserAutomation(AUConstants.DEFAULT_DELAY, true)

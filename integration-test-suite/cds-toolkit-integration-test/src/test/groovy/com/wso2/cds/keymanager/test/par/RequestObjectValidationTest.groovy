@@ -9,6 +9,7 @@
 
 package com.wso2.cds.keymanager.test.par
 
+import com.nimbusds.oauth2.sdk.ResponseMode
 import com.wso2.cds.test.framework.AUTest
 import com.wso2.cds.test.framework.constant.AUConstants
 import com.wso2.cds.test.framework.request_builder.AUJWTGenerator
@@ -95,7 +96,7 @@ class RequestObjectValidationTest extends AUTest {
 
         def response = auAuthorisationBuilder.doPushAuthorisationRequest(modifiedClaimSet)
 
-        Assert.assertEquals(response.statusCode(), AUConstants.STATUS_CODE_401)
+        Assert.assertEquals(response.statusCode(), AUConstants.STATUS_CODE_400)
         Assert.assertEquals(AUTestUtil.parseResponseBody(response, AUConstants.ERROR_DESCRIPTION), AUConstants.MISSING_AUD_VALUE)
         Assert.assertEquals(AUTestUtil.parseResponseBody(response, AUConstants.ERROR), AUConstants.INVALID_REQUEST)
     }
@@ -156,7 +157,8 @@ class RequestObjectValidationTest extends AUTest {
         String claims = generator.getRequestObjectClaim(scopes, AUConstants.DEFAULT_SHARING_DURATION,
                 true, "", auConfiguration.getAppInfoRedirectURL(),
                 auConfiguration.getAppInfoClientID(), auAuthorisationBuilder.getResponseType().toString(), true,
-                auAuthorisationBuilder.getState().toString(), Instant.now().minus(1, ChronoUnit.HOURS))
+                auAuthorisationBuilder.getState().toString(), ResponseMode.JWT.toString(),
+                Instant.now().minus(1, ChronoUnit.HOURS))
 
         def response = auAuthorisationBuilder.doPushAuthorisationRequest(claims)
 
@@ -174,7 +176,7 @@ class RequestObjectValidationTest extends AUTest {
         String claims = generator.getRequestObjectClaim(scopes, AUConstants.DEFAULT_SHARING_DURATION,
                 true, "", auConfiguration.getAppInfoRedirectURL(),
                 auConfiguration.getAppInfoClientID(), auAuthorisationBuilder.getResponseType().toString(), true,
-                auAuthorisationBuilder.getState().toString(), time, time)
+                auAuthorisationBuilder.getState().toString(), ResponseMode.JWT.toString(), time, time)
 
         def response = auAuthorisationBuilder.doPushAuthorisationRequest(claims)
 
@@ -192,7 +194,7 @@ class RequestObjectValidationTest extends AUTest {
         String claims = generator.getRequestObjectClaim(scopes, AUConstants.DEFAULT_SHARING_DURATION,
                 true, "", auConfiguration.getAppInfoRedirectURL(),
                 auConfiguration.getAppInfoClientID(), auAuthorisationBuilder.getResponseType().toString(), true,
-                auAuthorisationBuilder.getState().toString(), time)
+                auAuthorisationBuilder.getState().toString(), ResponseMode.JWT.toString(), time)
 
         def response = auAuthorisationBuilder.doPushAuthorisationRequest(claims)
 

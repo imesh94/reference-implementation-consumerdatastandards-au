@@ -1,19 +1,20 @@
-#Using Sample Resources
+#Details for Tsteing Purposes
 
-Following configs can be used in TestConfiguration.xml to use sample SSA and keystores for DCR tests.
+SSA SoftwareId - oQ4KoaavpOuoE7rvQsZEOV
+SSA2 SoftwareId - SP122
+SSA Redirect Uri - https://www.google.com/redirects/redirect1
 
-    <DCR>
-        <SSAPath>Path.To.Directory/ssa.txt</SSAPath>
-        <!-- SSA SoftwareId -->
-        <SoftwareId>oQ4KoaavpOuoE7rvQsZEOV</SoftwareId>
-        <!-- SSA Redirect Uri -->
-        <RedirectUri>https://www.google.com/redirects/redirect1</RedirectUri>
-    </DCR>
-Use signing.jks in 'signing-keystore' directory as the Application Keystore.
 
 Sample Keystore information:
-Signing key alias = tpp6-signing
-Signing keystore password = wso2carbon
-Signing Kid = h3ZCF0VrzgXgnHCqbHbKXzzfjTg
-Transport keystore password = wso2carbon
-Transport keystore alias = tpp6-transport
+- Signing Kid = h3ZCF0VrzgXgnHCqbHbKXzzfjTg
+
+- Signing keystore alias = tpp6-transport
+
+- Signing keystore password = wso2carbon
+
+- Transport Kid - TKHsPIIGBAJoSqEEgAfLWK3iCMs
+
+- Transport keystore alias = tpp6-transport
+
+- Transport keystore password = wso2carbon
+

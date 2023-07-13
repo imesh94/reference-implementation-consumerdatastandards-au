@@ -71,7 +71,7 @@ class ConsentAmendmentFlowTest extends AUTest{
         response = auAuthorisationBuilder.doPushAuthorisationRequest(scopes, AUConstants.DEFAULT_SHARING_DURATION,
                 true, cdrArrangementId)
         requestUri = AUTestUtil.parseResponseBody(response, AUConstants.REQUEST_URI)
-        authoriseUrl = auAuthorisationBuilder.getAuthorizationRequest(scopes, requestUri.toURI()).toURI().toString()
+        authoriseUrl = auAuthorisationBuilder.getAuthorizationRequest(requestUri.toURI()).toURI().toString()
 
         //Consent Amendment Authorisation Flow
         def automation = getBrowserAutomation(AUConstants.DEFAULT_DELAY)
@@ -186,7 +186,7 @@ class ConsentAmendmentFlowTest extends AUTest{
         response = auAuthorisationBuilder.doPushAuthorisationRequest(scopes, AUConstants.DEFAULT_SHARING_DURATION,
                 true, cdrArrangementId)
         requestUri = AUTestUtil.parseResponseBody(response, AUConstants.REQUEST_URI)
-        authoriseUrl = auAuthorisationBuilder.getAuthorizationRequest(scopes, requestUri.toURI()).toURI().toString()
+        authoriseUrl = auAuthorisationBuilder.getAuthorizationRequest(requestUri.toURI()).toURI().toString()
 
         //Consent Amendment Authorisation Flow
         def automation = getBrowserAutomation(AUConstants.DEFAULT_DELAY)
@@ -229,18 +229,12 @@ class ConsentAmendmentFlowTest extends AUTest{
         //Send Consent Amendment Request
         response = auAuthorisationBuilder.doPushAuthorisationRequest(scopes, AUConstants.DEFAULT_SHARING_DURATION,
                 true, cdrArrangementId)
-        requestUri = AUTestUtil.parseResponseBody(response, AUConstants.REQUEST_URI)
-        authoriseUrl = auAuthorisationBuilder.getAuthorizationRequest(scopes, requestUri.toURI()).toURI().toString()
 
-        //Consent Amendment Authorisation Flow
-        def automation = getBrowserAutomation(AUConstants.DEFAULT_DELAY)
-                .addStep(new NavigationAutomationStep(authoriseUrl, 10))
-                .execute()
-
-        // Get Code From URL
-        String url = automationResponse.currentUrl.get()
-        String errorUrl = url.split("error_description=")[1].split("&")[0].replaceAll("\\+"," ")
-        Assert.assertEquals(errorUrl, "There's no sharing arrangement under the provided consent id")
+        Assert.assertEquals(response.getStatusCode(), AUConstants.STATUS_CODE_400)
+        Assert.assertEquals(AUTestUtil.parseResponseBody(response, AUConstants.ERROR_DESCRIPTION),
+                "Invalid cdr-arrangement-id or consent is not in Authorised state")
+        Assert.assertEquals(AUTestUtil.parseResponseBody(response, AUConstants.ERROR),
+                AUConstants.INVALID_REQUEST_OBJECT)
     }
 
     @Test(priority = 1)
@@ -267,7 +261,7 @@ class ConsentAmendmentFlowTest extends AUTest{
         response = auAuthorisationBuilder.doPushAuthorisationRequest(scopes, AUConstants.SHORT_SHARING_DURATION,
                 true, cdrArrangementId)
         requestUri = AUTestUtil.parseResponseBody(response, AUConstants.REQUEST_URI)
-        authoriseUrl = auAuthorisationBuilder.getAuthorizationRequest(scopes, requestUri.toURI()).toURI().toString()
+        authoriseUrl = auAuthorisationBuilder.getAuthorizationRequest(requestUri.toURI()).toURI().toString()
 
         //Consent Amendment Authorisation Flow
         def automation = getBrowserAutomation(AUConstants.DEFAULT_DELAY)
@@ -296,7 +290,7 @@ class ConsentAmendmentFlowTest extends AUTest{
         secondUserAccessToken = accessTokenResponse2.tokens.accessToken
         secondRefreshToken = accessTokenResponse2.tokens.refreshToken
 
-        sleep(50000)
+        sleep(7000)
 
         //Verify the status of the refresh token
         AccessTokenResponse userAccessToken3 = AURequestBuilder.getUserTokenFromRefreshTokenErrorResponse(secondRefreshToken as RefreshToken)
@@ -325,12 +319,12 @@ class ConsentAmendmentFlowTest extends AUTest{
         scopes.add(AUAccountScope.BANK_PAYEES_READ)
 
         //Retrieve and assert the request URI from Push Authorization request
-        response = auAuthorisationBuilder.doPushAuthorisationRequest(scopes, AUConstants.AMENDED_SHARING_DURATION,
+        response = auAuthorisationBuilder.doPushAuthorisationRequest(scopes, AUConstants.SHORT_SHARING_DURATION,
                 true, cdrArrangementId)
         requestUri = AUTestUtil.parseResponseBody(response, AUConstants.REQUEST_URI)
-        authoriseUrl = auAuthorisationBuilder.getAuthorizationRequest(scopes, requestUri.toURI()).toURI().toString()
+        authoriseUrl = auAuthorisationBuilder.getAuthorizationRequest(requestUri.toURI()).toURI().toString()
 
-        sleep(50000)
+        sleep(7000)
 
         //Consent Amendment Authorisation Flow
         def automation = getBrowserAutomation(AUConstants.DEFAULT_DELAY)

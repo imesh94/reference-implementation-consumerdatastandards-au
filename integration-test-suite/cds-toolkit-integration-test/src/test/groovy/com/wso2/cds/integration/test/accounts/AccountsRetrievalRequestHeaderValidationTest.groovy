@@ -542,7 +542,7 @@ class AccountsRetrievalRequestHeaderValidationTest extends AUTest {
             {
               "data": {
                 "accountIds": [
-                  "${AUConstants.accountID}", "${consentedAccount2}"
+                  "${AUConstants.accountID}", "${secondConsentedAccount}"
                 ]
               },
               "meta": {}

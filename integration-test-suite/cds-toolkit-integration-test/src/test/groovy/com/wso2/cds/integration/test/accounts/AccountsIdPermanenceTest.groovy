@@ -29,8 +29,8 @@ import java.nio.charset.Charset
 class AccountsIdPermanenceTest extends AUTest {
 
     def clientHeader = "${Base64.encoder.encodeToString(getCDSClient().getBytes(Charset.defaultCharset()))}"
-    String encryptedAccount1Id
-    String encryptedAccount2Id
+    String firstEncryptedAccountId
+    String secondEncryptedAccountId
     String encryptedTransactionId
     String encryptedPayeeId
     private String secretKey = auConfiguration.getIDPermanence()
@@ -55,8 +55,8 @@ class AccountsIdPermanenceTest extends AUTest {
         SoftAssert softAssertion= new SoftAssert()
         softAssertion.assertEquals(response.statusCode(), AUConstants.STATUS_CODE_200)
 
-        encryptedAccount1Id = AUTestUtil.parseResponseBody(response, "data.accounts.accountId[1]")
-        encryptedAccount2Id = AUTestUtil.parseResponseBody(response, "data.accounts.accountId[0]")
+        firstEncryptedAccountId = AUTestUtil.parseResponseBody(response, "data.accounts.accountId[1]")
+        secondEncryptedAccountId = AUTestUtil.parseResponseBody(response, "data.accounts.accountId[0]")
 
         softAssertion.assertTrue(AUIdEncryptorDecryptor.decrypt(
                 AUTestUtil.parseResponseBody(response, "${AUConstants.RESPONSE_DATA_BULK_ACCOUNTID_LIST}[0]"), secretKey).
@@ -85,7 +85,7 @@ class AccountsIdPermanenceTest extends AUTest {
             {
               "data": {
                 "accountIds": [
-                  "${encryptedAccount1Id}", "${encryptedAccount2Id}"
+                  "${firstEncryptedAccountId}", "${secondEncryptedAccountId}"
                 ]
               },
               "meta": {}
@@ -107,7 +107,7 @@ class AccountsIdPermanenceTest extends AUTest {
         softAssertion.assertEquals(consentedAccount, AUIdEncryptorDecryptor.decrypt(
                 AUTestUtil.parseResponseBody(response, "${AUConstants.RESPONSE_DATA_BULK_BALANCE_LIST}[0]"), secretKey).
                 split(":")[2])
-        softAssertion.assertEquals(consentedAccount2, AUIdEncryptorDecryptor.decrypt(
+        softAssertion.assertEquals(secondConsentedAccount, AUIdEncryptorDecryptor.decrypt(
                 AUTestUtil.parseResponseBody(response, "${AUConstants.RESPONSE_DATA_BULK_BALANCE_LIST}[1]"), secretKey).
                 split(":")[2])
 
@@ -128,7 +128,7 @@ class AccountsIdPermanenceTest extends AUTest {
     @Test (dependsOnMethods = "TC1201001_Get Accounts", priority = 1)
     void "TC1204001_Get Account Balance"() {
 
-        String accBalanceRequestUrl = "${AUConstants.BULK_ACCOUNT_PATH}/${encryptedAccount1Id}/balance"
+        String accBalanceRequestUrl = "${AUConstants.BULK_ACCOUNT_PATH}/${firstEncryptedAccountId}/balance"
 
         def response = AURequestBuilder.buildBasicRequestWithCustomHeaders(userAccessToken,
                 AUConstants.X_V_HEADER_BALANCE, clientHeader)
@@ -148,7 +148,7 @@ class AccountsIdPermanenceTest extends AUTest {
     @Test (dependsOnMethods = "TC1201001_Get Accounts", priority = 1)
     void "TC1205001_Get Account Detail"() {
 
-        String accountRequestUrl = "${AUConstants.BULK_ACCOUNT_PATH}/${encryptedAccount1Id}"
+        String accountRequestUrl = "${AUConstants.BULK_ACCOUNT_PATH}/${firstEncryptedAccountId}"
 
         def response = AURequestBuilder.buildBasicRequestWithCustomHeaders(userAccessToken,
                 AUConstants.X_V_HEADER_ACCOUNT, clientHeader)
@@ -185,7 +185,7 @@ class AccountsIdPermanenceTest extends AUTest {
         def response = AURequestBuilder.buildBasicRequestWithCustomHeaders(userAccessToken,
                 AUConstants.X_V_HEADER_ACCOUNT, clientHeader)
                 .baseUri(AUTestUtil.getBaseUrl(AUConstants.BASE_PATH_TYPE_ACCOUNT))
-                .get("${AUConstants.BULK_ACCOUNT_PATH}/${encryptedAccount2Id}")
+                .get("${AUConstants.BULK_ACCOUNT_PATH}/${secondEncryptedAccountId}")
 
         softAssertion.assertEquals(response.statusCode(), AUConstants.STATUS_CODE_404)
 
@@ -202,7 +202,7 @@ class AccountsIdPermanenceTest extends AUTest {
         Response response = AURequestBuilder.buildBasicRequestWithCustomHeaders(userAccessToken,
                 AUConstants.X_V_HEADER_TRANSACTION, clientHeader)
                 .baseUri(AUTestUtil.getBaseUrl(AUConstants.BASE_PATH_TYPE_TRANSACTIONS))
-                .get("${AUConstants.BULK_ACCOUNT_PATH}/${encryptedAccount1Id}/" +
+                .get("${AUConstants.BULK_ACCOUNT_PATH}/${firstEncryptedAccountId}/" +
                         "transactions/204987583920")
 
         SoftAssert softAssertion= new SoftAssert()
@@ -218,7 +218,7 @@ class AccountsIdPermanenceTest extends AUTest {
     @Test (dependsOnMethods = "TC1201001_Get Accounts", priority = 1)
     void "TC1208001_Get Direct Debits For Account"() {
 
-        String directDebitRequestUrl = "${AUConstants.BULK_ACCOUNT_PATH}/${encryptedAccount1Id}/direct-debits"
+        String directDebitRequestUrl = "${AUConstants.BULK_ACCOUNT_PATH}/${firstEncryptedAccountId}/direct-debits"
 
         Response response = AURequestBuilder.buildBasicRequestWithCustomHeaders(userAccessToken,
                 AUConstants.X_V_HEADER_DIRECT_DEBITS, clientHeader)
@@ -272,7 +272,7 @@ class AccountsIdPermanenceTest extends AUTest {
             {
               "data": {
                 "accountIds": [
-                  "${encryptedAccount1Id}", "${encryptedAccount2Id}"
+                  "${firstEncryptedAccountId}", "${secondEncryptedAccountId}"
                 ]
               },
               "meta": {}
@@ -312,7 +312,7 @@ class AccountsIdPermanenceTest extends AUTest {
     @Test (dependsOnMethods = "TC1201001_Get Accounts", priority = 1)
     void "TC1211001_Get Scheduled Payments for Account"() {
 
-        String schedulePaymentRequestUrl = "${AUConstants.BULK_ACCOUNT_PATH}/${encryptedAccount1Id}/payments/scheduled"
+        String schedulePaymentRequestUrl = "${AUConstants.BULK_ACCOUNT_PATH}/${firstEncryptedAccountId}/payments/scheduled"
 
         Response response = AURequestBuilder.buildBasicRequestWithCustomHeaders(userAccessToken,
                 AUConstants.X_V_HEADER_PAYMENT_SCHEDULED, clientHeader)
@@ -360,7 +360,7 @@ class AccountsIdPermanenceTest extends AUTest {
             {
               "data": {
                 "accountIds": [
-                  "${encryptedAccount1Id}", "${encryptedAccount2Id}"
+                  "${firstEncryptedAccountId}", "${secondEncryptedAccountId}"
                 ]
               },
               "meta": {}
@@ -413,7 +413,7 @@ class AccountsIdPermanenceTest extends AUTest {
     @Test (dependsOnMethods = "TC1201001_Get Accounts", priority = 1)
     void "TC1206001_Get Transactions For Account"() {
 
-        String transactionRequestUrl = "${AUConstants.BULK_ACCOUNT_PATH}/${encryptedAccount1Id}/transactions"
+        String transactionRequestUrl = "${AUConstants.BULK_ACCOUNT_PATH}/${firstEncryptedAccountId}/transactions"
 
         Response response = AURequestBuilder.buildBasicRequestWithCustomHeaders(userAccessToken,
                 AUConstants.X_V_HEADER_TRANSACTIONS, clientHeader)
@@ -448,7 +448,7 @@ class AccountsIdPermanenceTest extends AUTest {
     @Test (dependsOnMethods = "TC1206001_Get Transactions For Account", priority = 1)
     void "TC1207001_Get Transaction Detail"() {
 
-        String transactionRequestUrl = "${AUConstants.BULK_ACCOUNT_PATH}/${encryptedAccount1Id}/" +
+        String transactionRequestUrl = "${AUConstants.BULK_ACCOUNT_PATH}/${firstEncryptedAccountId}/" +
                 "transactions/$encryptedTransactionId"
 
         Response response = AURequestBuilder.buildBasicRequestWithCustomHeaders(userAccessToken,
