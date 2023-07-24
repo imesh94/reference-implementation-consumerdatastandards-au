@@ -26,10 +26,12 @@ import com.wso2.openbanking.accelerator.consent.mgt.dao.models.DetailedConsentRe
 import com.wso2.openbanking.accelerator.consent.mgt.service.constants.ConsentCoreServiceConstants;
 import com.wso2.openbanking.accelerator.consent.mgt.service.impl.ConsentCoreServiceImpl;
 import com.wso2.openbanking.cds.common.config.OpenBankingCDSConfigParser;
-import com.wso2.openbanking.cds.consent.extensions.authorize.utils.PermissionsEnum;
 import com.wso2.openbanking.cds.consent.extensions.common.CDSConsentExtensionConstants;
 import com.wso2.openbanking.cds.consent.extensions.common.SecondaryAccountOwnerTypeEnum;
+import com.wso2.openbanking.cds.consent.extensions.model.DataClusterSharingDateModel;
+import com.wso2.openbanking.cds.consent.extensions.model.PermissionWithSharingDate;
 import com.wso2.openbanking.cds.consent.extensions.util.CDSConsentExtensionsUtil;
+import com.wso2.openbanking.cds.consent.extensions.util.PermissionsEnum;
 import net.minidev.json.JSONArray;
 import net.minidev.json.JSONObject;
 import net.minidev.json.parser.JSONParser;
@@ -48,6 +50,7 @@ import java.util.stream.Collectors;
 
 import static com.wso2.openbanking.cds.consent.extensions.common.CDSConsentExtensionConstants.AUTH_RESOURCE_TYPE_PRIMARY;
 import static com.wso2.openbanking.cds.consent.extensions.common.CDSConsentExtensionConstants.CONSENT_STATUS_REVOKED;
+import static com.wso2.openbanking.cds.consent.extensions.util.DataClusterSharingDateUtil.getSharingDateMap;
 
 /**
  * Consent admin handler CDS implementation.
@@ -87,6 +90,14 @@ public class CDSConsentAdminHandler implements ConsentAdminHandler {
         // filter secondary user consents if 'secondaryAccountInfo' is available in the query params.
         if (consentAdminData.getQueryParams().containsKey(CDSConsentExtensionConstants.SECONDARY_ACCOUNT_INFO)) {
             filterSecondaryUserConsents(consentAdminData);
+        }
+
+        if (consentAdminData.getQueryParams().containsKey(CDSConsentExtensionConstants.INCLUDE_SHARING_DATES)) {
+            try {
+                addSharingDatesToPermissions(consentAdminData);
+            } catch (OpenBankingException e) {
+                throw new RuntimeException(e);
+            }
         }
     }
 
@@ -593,5 +604,85 @@ public class CDSConsentAdminHandler implements ConsentAdminHandler {
     @Override
     public void handleConsentExpiry(ConsentAdminData consentAdminData) throws ConsentException {
         this.defaultConsentAdminHandler.handleConsentExpiry(consentAdminData);
+    }
+
+    public void addSharingDatesToPermissions(ConsentAdminData consentAdminData) throws OpenBankingException {
+
+        final String bankAccountData = "bank_account_data";
+        final String bankTransactionData = "bank_transaction_data";
+        final String bankPayeeData = "bank_payee_data";
+        final String bankRegularPaymentData = "bank_regular_payment_data";
+        final String commonCustomerData = "common_customer_data";
+        final String profileData = "profile";
+
+        for (Object item : (JSONArray) consentAdminData.getResponsePayload().
+                get(CDSConsentExtensionConstants.DATA)) {
+
+            JSONObject itemJSONObject = (JSONObject) item;
+            String consentId = itemJSONObject.get(CDSConsentExtensionConstants.CONSENT_ID).toString();
+            JSONObject receipt = (JSONObject) itemJSONObject.get(CDSConsentExtensionConstants.RECEIPT);
+            JSONObject accountData = (JSONObject) receipt.get(CDSConsentExtensionConstants.ACCOUNT_DATA);
+            JSONArray permissions = (JSONArray) accountData.get(CDSConsentExtensionConstants.PERMISSIONS);
+
+            // Get the sharing date data map using the consent ID
+            Map<String, DataClusterSharingDateModel> sharingDateDataMap = getSharingDateMap(consentId);
+
+            JSONArray permissionsWithSharingDate = new JSONArray();
+            for (Object permission: permissions) {
+                PermissionWithSharingDate permissionObj = new PermissionWithSharingDate();
+                permissionObj.setPermission((String) permission);
+                if (permission.equals(PermissionsEnum.CDRREADACCOUNTSBASIC.toString()) ||
+                        permission.equals(PermissionsEnum.CDRREADACCOUNTSDETAILS.toString())) {
+                    if (sharingDateDataMap.get(bankAccountData) != null) {
+                        permissionObj.setSharingStartDate(sharingDateDataMap.get(bankAccountData)
+                                .getSharingStartDate());
+                        permissionObj.setSharedLastDate(sharingDateDataMap.get(bankAccountData).getSharedLastDate());
+                    }
+                } else if (permission.equals(PermissionsEnum.CDRREADTRANSACTION.toString())) {
+                    if (sharingDateDataMap.get(bankTransactionData) != null) {
+                        permissionObj.setSharingStartDate(sharingDateDataMap.get(bankTransactionData)
+                                .getSharingStartDate());
+                        permissionObj.setSharedLastDate(sharingDateDataMap.get(bankTransactionData)
+                                .getSharedLastDate());
+                    }
+                } else if (permission.equals(PermissionsEnum.CDRREADPAYEES.toString())) {
+                    if (sharingDateDataMap.get(bankPayeeData) != null) {
+                        permissionObj.setSharingStartDate(sharingDateDataMap.get(bankPayeeData).getSharingStartDate());
+                        permissionObj.setSharedLastDate(sharingDateDataMap.get(bankPayeeData).getSharedLastDate());
+                    }
+                } else if (permission.equals(PermissionsEnum.CDRREADPAYMENTS.toString())) {
+                    if (sharingDateDataMap.get(bankRegularPaymentData) != null) {
+                        permissionObj.setSharingStartDate(sharingDateDataMap.get(bankRegularPaymentData)
+                                .getSharingStartDate());
+                        permissionObj.setSharedLastDate(sharingDateDataMap.get(bankRegularPaymentData)
+                                .getSharedLastDate());
+                    }
+                } else if (permission.equals(PermissionsEnum.READCUSTOMERDETAILSBASIC.toString()) ||
+                        permission.equals(PermissionsEnum.READCUSTOMERDETAILS.toString())) {
+                    if (sharingDateDataMap.get(commonCustomerData) != null) {
+                        permissionObj.setSharingStartDate(sharingDateDataMap.get(commonCustomerData)
+                                .getSharingStartDate());
+                        permissionObj.setSharedLastDate(sharingDateDataMap.get(commonCustomerData)
+                                .getSharedLastDate());
+                    }
+                } else if (permission.equals(PermissionsEnum.PROFILE.toString()) ||
+                        permission.equals(PermissionsEnum.NAME.toString()) ||
+                        permission.equals(PermissionsEnum.GIVENNAME.toString()) ||
+                        permission.equals(PermissionsEnum.FAMILYNAME.toString()) ||
+                        permission.equals(PermissionsEnum.UPDATEDAT.toString()) ||
+                        permission.equals(PermissionsEnum.EMAIL.toString()) ||
+                        permission.equals(PermissionsEnum.EMAILVERIFIED.toString()) ||
+                        permission.equals(PermissionsEnum.PHONENUMBER.toString()) ||
+                        permission.equals(PermissionsEnum.PHONENUMBERVERIFIED.toString()) ||
+                        permission.equals(PermissionsEnum.ADDRESS.toString())) {
+                    if (sharingDateDataMap.get(profileData) != null) {
+                        permissionObj.setSharingStartDate(sharingDateDataMap.get(profileData).getSharingStartDate());
+                        permissionObj.setSharedLastDate(sharingDateDataMap.get(profileData).getSharedLastDate());
+                    }
+                }
+                permissionsWithSharingDate.add(permissionObj);
+            }
+            accountData.put(CDSConsentExtensionConstants.PERMISSIONS_WITH_SHARING_DATE, permissionsWithSharingDate);
+        }
     }
 }
