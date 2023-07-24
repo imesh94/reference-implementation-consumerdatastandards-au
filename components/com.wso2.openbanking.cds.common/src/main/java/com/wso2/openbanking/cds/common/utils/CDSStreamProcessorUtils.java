@@ -10,6 +10,7 @@ package com.wso2.openbanking.cds.common.utils;
 
 import com.wso2.openbanking.accelerator.common.exception.OpenBankingException;
 import com.wso2.openbanking.accelerator.common.util.HTTPClientUtils;
+import com.wso2.openbanking.cds.common.config.OpenBankingCDSConfigParser;
 import net.minidev.json.JSONObject;
 import net.minidev.json.parser.JSONParser;
 import net.minidev.json.parser.ParseException;
@@ -52,10 +53,10 @@ public class CDSStreamProcessorUtils {
     public static JSONObject executeQueryOnStreamProcessor(String appName, String query)
             throws IOException, ParseException, OpenBankingException {
 
-        // Todo: Get these values from config
-        String spApiHost = "https://localhost:7444";
-        String spUserName = "admin@wso2.com@carbon.super";
-        String spPassword = "";
+        OpenBankingCDSConfigParser configParser = OpenBankingCDSConfigParser.getInstance();
+        String spApiHost = configParser.getConfiguration().get(CommonConstants.SP_SERVER_URL).toString();
+        String spUserName = configParser.getConfiguration().get(CommonConstants.SP_USERNAME).toString();
+        String spPassword = configParser.getConfiguration().get(CommonConstants.SP_PASSWORD).toString();
 
         byte[] encodedAuth = Base64.getEncoder()
                 .encode((spUserName + ":" + spPassword).getBytes(StandardCharsets.ISO_8859_1));

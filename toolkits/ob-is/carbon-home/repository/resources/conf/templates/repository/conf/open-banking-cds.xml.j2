@@ -142,6 +142,17 @@
         <ClientId>dataholderbrand</ClientId>
         {% endif %}
      </DataHolder>
+     <StreamProcessor>
+         {% if open_banking_cds.stream_processor.server_url is defined %}
+         <ServerUrl>{{open_banking_cds.stream_processor.server_url}}</ServerUrl>
+         {% endif %}
+         {% if open_banking_cds.stream_processor.username is defined %}
+         <Username>{{open_banking_cds.stream_processor.username}}</Username>
+         {% endif %}
+         {% if open_banking_cds.stream_processor.password is defined %}
+         <Password>{{open_banking_cds.stream_processor.password}}</Password>
+         {% endif %}
+      </StreamProcessor>
      <RecipientConsentRevocationEndpoint>
         {% if open_banking_cds.recipient_consent_revocation_endpoint.enable is defined %}
         <Enable>{{open_banking_cds.recipient_consent_revocation_endpoint.enable}}</Enable>
