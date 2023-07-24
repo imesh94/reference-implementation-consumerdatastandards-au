@@ -9,7 +9,6 @@
 
 package com.wso2.openbanking.cds.consent.extensions.validate;
 
-import com.wso2.openbanking.accelerator.account.metadata.service.service.AccountMetadataService;
 import com.wso2.openbanking.accelerator.account.metadata.service.service.AccountMetadataServiceImpl;
 import com.wso2.openbanking.accelerator.common.exception.OpenBankingException;
 import com.wso2.openbanking.accelerator.consent.extensions.common.ConsentException;
