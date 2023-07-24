@@ -98,5 +98,10 @@ public class CommonConstants {
     public static final String CEASING_SECONDARY_USER_SHARING_ENABLED =
             "SecondaryUserAccounts.CeasingSecondaryUserSharingEnabled";
 
+    // Stream Processor related constants
+    public static final String SP_API_PATH = "/stores/query";
+    public static final String APP_NAME = "appName";
+    public static final String QUERY = "query";
+
     private CommonConstants() {}
 }
