@@ -40,7 +40,7 @@ import java.util.List;
 import javax.servlet.http.Cookie;
 
 /**
- * Util class to provide services identity module
+ * Util class to provide services identity module.
  */
 public class CDSIdentityUtil {
 
@@ -131,7 +131,7 @@ public class CDSIdentityUtil {
     }
 
     /**
-     * Method to obtain signing key
+     * Method to obtain signing key.
      *
      * @return Key as an Object
      */

@@ -18,7 +18,7 @@ import org.apache.http.HttpStatus;
 import org.testng.annotations.DataProvider;
 
 /**
- * Data Provider for CDS Common Tests
+ * Data Provider for CDS Common Tests.
  */
 public class CommonTestDataProvider {
 

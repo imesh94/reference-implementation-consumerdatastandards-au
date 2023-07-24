@@ -27,7 +27,7 @@ import org.wso2.carbon.identity.application.common.model.ServiceProvider;
 import org.wso2.carbon.identity.application.common.model.User;
 
 /**
- * Test class for InvalidateConsentsResponsibility
+ * Test class for InvalidateConsentsResponsibility.
  */
 @PrepareForTest({ServiceHolder.class})
 @PowerMockIgnore("jdk.internal.reflect.*")

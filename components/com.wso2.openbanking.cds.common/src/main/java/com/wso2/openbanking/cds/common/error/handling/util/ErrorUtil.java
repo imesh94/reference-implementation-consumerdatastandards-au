@@ -30,14 +30,14 @@ import java.util.HashSet;
 import java.util.List;
 
 /**
- * Util class for Error Handling
+ * Util class for Error Handling.
  */
 public class ErrorUtil {
 
     private static final Log log = LogFactory.getLog(ErrorUtil.class);
 
     /**
-     * Method to check whether error status code list have any client errors
+     * Method to check whether error status code list have any client errors.
      *
      * @param statusCodes
      * @return
@@ -53,7 +53,7 @@ public class ErrorUtil {
     }
 
     /**
-     * Method to get the HTTP Status code
+     * Method to get the HTTP Status code.
      *
      * @param statusCodes
      * @return
@@ -81,7 +81,7 @@ public class ErrorUtil {
     }
 
     /**
-     * Method to get the error json with multiple error objects for AU
+     * Method to get the error json with multiple error objects for AU.
      *
      * @param errors Array with multiple error details
      * @return

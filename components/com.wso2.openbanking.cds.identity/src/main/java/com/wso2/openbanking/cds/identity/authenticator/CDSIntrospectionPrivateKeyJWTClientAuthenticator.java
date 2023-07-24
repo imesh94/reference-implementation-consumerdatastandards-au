@@ -21,7 +21,7 @@ import java.util.Map;
 import javax.servlet.http.HttpServletRequest;
 
 /**
- * CDSIntrospectionPrivateKeyJWTClientAuthenticator for authenticating CDS token introspection requests
+ * CDSIntrospectionPrivateKeyJWTClientAuthenticator for authenticating CDS token introspection requests.
  */
 public class CDSIntrospectionPrivateKeyJWTClientAuthenticator extends CDSBasePrivateKeyJWTClientAuthenticator {
 

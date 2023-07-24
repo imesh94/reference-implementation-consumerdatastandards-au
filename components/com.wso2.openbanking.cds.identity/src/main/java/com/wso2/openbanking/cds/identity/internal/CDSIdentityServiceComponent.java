@@ -31,7 +31,7 @@ import org.wso2.carbon.user.core.service.RealmService;
 
 
 /**
- * Identity open banking common data holder
+ * Identity open banking common data holder.
  */
 @Component(
         name = "com.wso2.openbanking.cds.identity.internal.CDSIdentityServiceComponent",

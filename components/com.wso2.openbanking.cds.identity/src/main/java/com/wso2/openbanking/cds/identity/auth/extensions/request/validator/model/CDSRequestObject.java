@@ -15,7 +15,7 @@ import com.wso2.openbanking.accelerator.identity.auth.extensions.request.validat
 import com.wso2.openbanking.cds.identity.auth.extensions.request.validator.annotation.ValidateSharingDuration;
 
 /**
- * Model class for CDS request object
+ * Model class for CDS request object.
  */
 @ValidateSharingDuration(message = "Negative sharing_duration")
 public class CDSRequestObject extends OBRequestObject {

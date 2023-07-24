@@ -27,7 +27,7 @@ import javax.validation.ConstraintValidator;
 import javax.validation.ConstraintValidatorContext;
 
 /**
- * Validator class for validating the callback URIs of the registration request
+ * Validator class for validating the callback URIs of the registration request.
  */
 public class CallbackUrisValidator implements ConstraintValidator<ValidateCallbackUris, Object> {
 
@@ -71,7 +71,7 @@ public class CallbackUrisValidator implements ConstraintValidator<ValidateCallba
     }
 
     /**
-     * check whether the redirect uris in the request are a subset of the redirect uris in the software statement
+     * check whether the redirect uris in the request are a subset of the redirect uris in the software statement.
      * assertion
      */
     private boolean matchRedirectURI(List<String> callbackUrisRequest, Object callbackUrisSoftwareStatement) {

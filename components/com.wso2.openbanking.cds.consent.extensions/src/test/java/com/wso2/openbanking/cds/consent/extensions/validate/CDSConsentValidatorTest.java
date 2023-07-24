@@ -45,7 +45,7 @@ import static org.mockito.Mockito.when;
 import static org.powermock.api.mockito.PowerMockito.mockStatic;
 
 /**
- * Test class for CDS consent Validator
+ * Test class for CDS consent Validator.
  */
 @PrepareForTest({OpenBankingCDSConfigParser.class, MetadataService.class, CDSConsentExtensionsUtil.class,
         AccountMetadataServiceImpl.class})

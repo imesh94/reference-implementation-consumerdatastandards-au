@@ -22,7 +22,7 @@ import java.util.HashMap;
 import java.util.Map;
 
 /**
- * Constant class for consent validate tests
+ * Constant class for consent validate tests.
  */
 public class CDSConsentValidateTestConstants {
 

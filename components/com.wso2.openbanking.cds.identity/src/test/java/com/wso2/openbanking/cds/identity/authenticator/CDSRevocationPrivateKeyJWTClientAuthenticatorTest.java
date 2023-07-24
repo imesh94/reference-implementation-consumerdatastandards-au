@@ -29,6 +29,9 @@ import static org.mockito.Matchers.any;
 import static org.powermock.api.mockito.PowerMockito.when;
 import static org.testng.Assert.assertTrue;
 
+/**
+ * Test class for .
+ */
 @PrepareForTest({OAuth2Util.class, OAuthServerConfiguration.class, CDSRevocationPrivateKeyJWTClientAuthenticator.class})
 @PowerMockIgnore("jdk.internal.reflect.*")
 public class CDSRevocationPrivateKeyJWTClientAuthenticatorTest extends PowerMockTestCase {

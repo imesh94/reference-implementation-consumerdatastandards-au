@@ -12,6 +12,9 @@
 
 package com.wso2.openbanking.cds.identity.push.auth.extension.request.validator.util;
 
+/**
+ * Test data for CDS Push Auth Request Validator.
+ */
 public class CDSPushAuthRequestValidatorTestData {
 
     public static final String VALID_SIGNED_JWT = "eyJraWQiOiJXX1RjblFWY0hBeTIwcTh6Q01jZEJ5cm9vdHciLCJhbGciOiJQUz" +

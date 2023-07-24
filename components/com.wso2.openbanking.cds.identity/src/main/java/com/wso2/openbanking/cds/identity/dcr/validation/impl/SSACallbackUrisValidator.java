@@ -24,7 +24,7 @@ import javax.validation.ConstraintValidator;
 import javax.validation.ConstraintValidatorContext;
 
 /**
- * Validator class for validating the redirect URIs in software statement
+ * Validator class for validating the redirect URIs in software statement.
  */
 public class SSACallbackUrisValidator implements ConstraintValidator<ValidateSSACallbackUris, Object> {
 
@@ -37,7 +37,7 @@ public class SSACallbackUrisValidator implements ConstraintValidator<ValidateSSA
     }
 
     /**
-     * check the hostnames of redirect uris and other uris
+     * check the hostnames of redirect uris and other uris.
      *
      * @param callbackUrisSoftwareStatement    callback uris included in the software statement
      * @return true if the uris are validated

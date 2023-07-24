@@ -33,7 +33,7 @@ public class CDSCommonUtils {
     private static final Log LOG = LogFactory.getLog(CDSCommonUtils.class);
 
     /**
-     * Encrypt access token using HmacSHA256
+     * Encrypt access token using HmacSHA256.
      *
      * @param accessToken String access token
      * @return encrypted token

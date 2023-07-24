@@ -31,7 +31,7 @@ import java.util.ResourceBundle;
 import javax.servlet.http.HttpServletRequest;
 
 /**
- * The CDS implementation of servlet extension that handles CDS scenarios
+ * The CDS implementation of servlet extension that handles CDS scenarios.
  */
 public class OBCDSAuthServletImpl implements OBAuthServletInterface {
 
@@ -353,7 +353,7 @@ public class OBCDSAuthServletImpl implements OBAuthServletInterface {
     }
 
     /**
-     * Get the customer profile data list
+     * Get the customer profile data list.
      *
      * @param customerProfilesArray customer profiles array
      * @return customer profile data list

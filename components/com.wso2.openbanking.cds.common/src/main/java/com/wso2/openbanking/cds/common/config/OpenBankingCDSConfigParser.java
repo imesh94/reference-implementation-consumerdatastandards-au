@@ -35,7 +35,7 @@ import java.util.Stack;
 import javax.xml.stream.XMLStreamException;
 
 /**
- * Config parser for open-banking-cds.xml
+ * Config parser for open-banking-cds.xml.
  */
 public class OpenBankingCDSConfigParser {
 
@@ -135,7 +135,7 @@ public class OpenBankingCDSConfigParser {
     }
 
     /**
-     * Method to obtain map of configs
+     * Method to obtain map of configs.
      *
      * @return Config map
      */
@@ -145,7 +145,7 @@ public class OpenBankingCDSConfigParser {
     }
 
     /**
-     * Method to read text configs from xml when root element is given
+     * Method to read text configs from xml when root element is given.
      *
      * @param serverConfig XML root element object
      * @param nameStack    stack of config names
@@ -198,7 +198,7 @@ public class OpenBankingCDSConfigParser {
     }
 
     /**
-     * Method to obtain config key from stack
+     * Method to obtain config key from stack.
      *
      * @param nameStack Stack of strings with names
      * @return key as a String
@@ -257,7 +257,7 @@ public class OpenBankingCDSConfigParser {
     }
 
     /**
-     * Returns the element with the provided key
+     * Returns the element with the provided key.
      *
      * @param key local part name
      * @return Corresponding value for key
@@ -268,7 +268,7 @@ public class OpenBankingCDSConfigParser {
     }
 
     /**
-     * Check metadata cache is enabled from config
+     * Check metadata cache is enabled from config.
      *
      * @return configured boolean value, default value is false
      */
@@ -282,7 +282,7 @@ public class OpenBankingCDSConfigParser {
     }
 
     /**
-     * Read metadata cache update period in minutes from config
+     * Read metadata cache update period in minutes from config.
      *
      * @return configured time in minutes, default value is 5
      */
@@ -296,7 +296,7 @@ public class OpenBankingCDSConfigParser {
     }
 
     /**
-     * Read data recipients discovery url from config
+     * Read data recipients discovery url from config.
      *
      * @return configured url, default value is "https://api.cdr.gov.au/cdr-register/v1/banking/data-recipients"
      */
@@ -310,7 +310,7 @@ public class OpenBankingCDSConfigParser {
     }
 
     /**
-     * Read APIM DCR register url from config
+     * Read APIM DCR register url from config.
      *
      * @return configured url
      */
@@ -321,7 +321,7 @@ public class OpenBankingCDSConfigParser {
     }
 
     /**
-     * Read APIM application search url from config
+     * Read APIM application search url from config.
      *
      * @return configured url
      * @see <a href="https://apim.docs.wso2.com/en/latest/reference/product-apis/admin-apis/admin-v2/admin-v2/
@@ -334,7 +334,7 @@ public class OpenBankingCDSConfigParser {
     }
 
     /**
-     * Read retry count from config
+     * Read retry count from config.
      *
      * @return retry count, default value is 2
      */
@@ -349,7 +349,7 @@ public class OpenBankingCDSConfigParser {
     }
 
     /**
-     * Read metadata cache expiry time in minutes from config
+     * Read metadata cache expiry time in minutes from config.
      *
      * @return expiry time, default value is 2 min
      */
@@ -364,7 +364,7 @@ public class OpenBankingCDSConfigParser {
     }
 
     /**
-     * Check if data holder responsibilities can execute as bulk operations
+     * Check if data holder responsibilities can execute as bulk operations.
      *
      * @return configured boolean value, default value is true
      */
@@ -378,7 +378,7 @@ public class OpenBankingCDSConfigParser {
     }
 
     /**
-     * Read bulk execution hour from config
+     * Read bulk execution hour from config.
      *
      * @return execution hour, default value is 2 AM
      */
@@ -396,7 +396,7 @@ public class OpenBankingCDSConfigParser {
     }
 
     /**
-     * Check if access token encryption is enabled
+     * Check if access token encryption is enabled.
      *
      * @return configured boolean value, default value is true
      */
@@ -410,7 +410,7 @@ public class OpenBankingCDSConfigParser {
     }
 
     /**
-     * Read token encryption secret from config
+     * Read token encryption secret from config.
      *
      * @return token encryption secret, default value is "wso2"
      */
@@ -420,7 +420,7 @@ public class OpenBankingCDSConfigParser {
     }
 
     /**
-     * Read the Admin API self link Url
+     * Read the Admin API self link Url.
      *
      * @return configured url
      */

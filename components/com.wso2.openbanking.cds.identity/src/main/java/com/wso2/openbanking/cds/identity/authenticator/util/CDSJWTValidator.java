@@ -203,7 +203,7 @@ public class CDSJWTValidator {
     }
 
     /**
-     * Check if the sent audience claim is one of the expected audiences in the list
+     * Check if the sent audience claim is one of the expected audiences in the list.
      *
      * @param expectedAudiences - Expected audiences list
      * @param audienceList      - Received audiences list

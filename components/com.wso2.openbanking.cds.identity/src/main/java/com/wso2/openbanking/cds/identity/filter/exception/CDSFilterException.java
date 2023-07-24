@@ -14,7 +14,7 @@ package com.wso2.openbanking.cds.identity.filter.exception;
 import com.wso2.openbanking.accelerator.common.exception.OpenBankingException;
 
 /**
- * CDS filter exception
+ * CDS filter exception.
  */
 public class CDSFilterException extends OpenBankingException {
 

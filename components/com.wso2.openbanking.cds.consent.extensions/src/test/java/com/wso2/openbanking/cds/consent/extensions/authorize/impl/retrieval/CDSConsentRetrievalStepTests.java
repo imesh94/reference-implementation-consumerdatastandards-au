@@ -47,7 +47,7 @@ import static org.powermock.api.mockito.PowerMockito.mockStatic;
 import static org.powermock.api.mockito.PowerMockito.when;
 
 /**
- * Test class for CDS Consent Retrieval
+ * Test class for CDS Consent Retrieval.
  */
 @PrepareForTest({SessionDataCacheEntry.class, SessionDataCache.class, PushAuthRequestValidatorUtils.class,
         CDSDataRetrievalUtil.class, CDSConsentCommonUtil.class})

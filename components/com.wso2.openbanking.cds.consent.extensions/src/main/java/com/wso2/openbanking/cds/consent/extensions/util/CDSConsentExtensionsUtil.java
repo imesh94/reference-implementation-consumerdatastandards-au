@@ -31,7 +31,7 @@ public class CDSConsentExtensionsUtil {
     private static AccountMetadataService accountMetadataService = AccountMetadataServiceImpl.getInstance();
 
     /**
-     * Get secondary user instruction data
+     * Get secondary user instruction data.
      * User is eligible for data sharing from the secondary account
      * only if secondary user instruction is in active state
      *
@@ -69,7 +69,7 @@ public class CDSConsentExtensionsUtil {
     }
   
     /**
-     * Method to retrieve the sharing status of a legal entity for the given accountID, secondaryUserID and
+     * Method to retrieve the sharing status of a legal entity for the given accountID, secondaryUserID and.
      * legalEntityID
      *
      * @param accountID

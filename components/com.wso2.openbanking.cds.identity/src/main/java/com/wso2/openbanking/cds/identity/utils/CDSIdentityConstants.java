@@ -10,7 +10,7 @@
 package com.wso2.openbanking.cds.identity.utils;
 
 /**
- * Identity Constants Class
+ * Identity Constants Class.
  */
 public class CDSIdentityConstants {
 

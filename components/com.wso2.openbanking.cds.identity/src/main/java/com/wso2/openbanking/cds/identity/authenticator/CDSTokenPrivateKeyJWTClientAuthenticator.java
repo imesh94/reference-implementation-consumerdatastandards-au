@@ -21,7 +21,7 @@ import java.util.Map;
 import javax.servlet.http.HttpServletRequest;
 
 /**
- * CDSTokenPrivateKeyJWTClientAuthenticator for authenticating CDS token requests
+ * CDSTokenPrivateKeyJWTClientAuthenticator for authenticating CDS token requests.
  */
 public class CDSTokenPrivateKeyJWTClientAuthenticator extends CDSBasePrivateKeyJWTClientAuthenticator {
 

@@ -26,6 +26,9 @@ import javax.servlet.FilterChain;
 import static org.testng.Assert.assertEquals;
 import static org.testng.Assert.assertNotNull;
 
+/**
+ * class to .
+ */
 public class InfoSecDataPublishingFilterTests extends PowerMockTestCase {
 
     MockHttpServletRequest request;

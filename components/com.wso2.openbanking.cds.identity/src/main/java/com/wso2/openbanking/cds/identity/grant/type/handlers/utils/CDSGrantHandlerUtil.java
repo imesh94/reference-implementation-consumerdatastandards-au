@@ -25,7 +25,7 @@ public class CDSGrantHandlerUtil {
     private static final String CDR_ARRANGEMENT_ID = "cdr_arrangement_id";
 
     /**
-     * Populates cdr_arrangement_id parameter in the token response
+     * Populates cdr_arrangement_id parameter in the token response.
      *
      * @param oAuth2AccessTokenRespDTO oAuth2AccessTokenResponseDTO
      * @param scopes                   token scopes

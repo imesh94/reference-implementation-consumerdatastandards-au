@@ -17,7 +17,7 @@ import java.util.List;
 import java.util.Map;
 
 /**
- * CDS Consent Extension Constant class
+ * CDS Consent Extension Constant class.
  */
 public class CDSConsentExtensionConstants {
 

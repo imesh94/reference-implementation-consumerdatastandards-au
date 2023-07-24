@@ -20,8 +20,8 @@ import java.util.Map;
 import java.util.Objects;
 
 /**
- * DataHolderResponsibilitiesExecutor
- * <p>
+ * DataHolderResponsibilitiesExecutor.
+ *
  * Executes CDS data holder responsibilities in DataHolderResponsibility list
  */
 public class DataHolderResponsibilitiesExecutor {

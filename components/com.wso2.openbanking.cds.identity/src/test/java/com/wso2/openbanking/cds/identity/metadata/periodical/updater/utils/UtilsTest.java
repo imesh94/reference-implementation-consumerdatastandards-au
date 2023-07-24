@@ -34,7 +34,7 @@ import java.io.InputStream;
 import java.nio.charset.StandardCharsets;
 
 /**
- * Test class for metadata Utils
+ * Test class for metadata Utils.
  */
 @PrepareForTest({HTTPClientUtils.class})
 @PowerMockIgnore("jdk.internal.reflect.*")

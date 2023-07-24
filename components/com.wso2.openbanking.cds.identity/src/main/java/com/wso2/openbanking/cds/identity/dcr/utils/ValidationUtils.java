@@ -22,7 +22,7 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 /**
- * Util class for validation logic implementation
+ * Util class for validation logic implementation.
  */
 public class ValidationUtils {
 

@@ -134,7 +134,7 @@ public class CDSConsentEventExecutor implements OBEventExecutor {
 
     /**
      * CDS Data Holder initiated CDR Arrangement Revocation:
-     *      to notify the Data Recipient of the consent withdrawn by a Customer via the Data Holder’s consent dashboard
+     *      to notify the Data Recipient of the consent withdrawn by a Customer via the Data Holder’s consent dashboard.
      * @param clientId client ID
      * @param consentId  revoked sharing arrangement (consent) ID
      * @param dataHolderId ID of the Data Holder obtained from the CDR Register
@@ -191,7 +191,7 @@ public class CDSConsentEventExecutor implements OBEventExecutor {
     }
 
     /**
-     * Method to get the issued from the current time
+     * Method to get the issued from the current time.
      *
      * @param currentTime Current time in milliseconds (unix timestamp format)
      * @return issued time in seconds (unix timestamp format)
@@ -202,7 +202,7 @@ public class CDSConsentEventExecutor implements OBEventExecutor {
     }
 
     /**
-     * Method to get the expiry time when the current time is given
+     * Method to get the expiry time when the current time is given.
      *
      * @param currentTime Current time in milliseconds (unix timestamp format)
      * @return expiry time in seconds (unix timestamp format)
@@ -213,7 +213,7 @@ public class CDSConsentEventExecutor implements OBEventExecutor {
     }
 
     /**
-     * Method to generate signed JWT
+     * Method to generate signed JWT.
      *
      * @param payload payload as a string
      * @param alg signature algorithm
@@ -236,7 +236,7 @@ public class CDSConsentEventExecutor implements OBEventExecutor {
     }
 
     /**
-     * Method to generate http post request
+     * Method to generate http post request.
      *
      * @param consentRevocationEndpoint consent revocation endpoint url
      * @param dataHolderId data holder id
@@ -265,7 +265,7 @@ public class CDSConsentEventExecutor implements OBEventExecutor {
     }
 
     /**
-     * Method to generate http post request
+     * Method to generate http post request.
      *
      *@param dataHolderId data holder id
      * @param recipientBaseUri recipient base uri
@@ -290,7 +290,7 @@ public class CDSConsentEventExecutor implements OBEventExecutor {
     }
 
     /**
-     * Method to get signed jwt when the cdr-arrangement-id is given
+     * Method to get signed jwt when the cdr-arrangement-id is given.
      *
      * @param cdrArrangementId - cdr-arrangement-id
      * @return signed jwt with cdr-arrangement-id

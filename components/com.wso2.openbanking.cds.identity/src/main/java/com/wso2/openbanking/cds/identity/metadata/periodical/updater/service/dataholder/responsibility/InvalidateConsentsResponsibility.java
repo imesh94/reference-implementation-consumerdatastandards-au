@@ -21,8 +21,8 @@ import org.wso2.carbon.identity.application.common.model.InboundAuthenticationRe
 import org.wso2.carbon.identity.application.common.model.ServiceProvider;
 
 /**
- * InvalidateConsentsResponsibility
- * <p>
+ * InvalidateConsentsResponsibility.
+ *
  * Uses to execute CDS invalidate consents data holder responsibility
  */
 public class InvalidateConsentsResponsibility implements DataHolderResponsibility {
@@ -90,7 +90,7 @@ public class InvalidateConsentsResponsibility implements DataHolderResponsibilit
     }
 
     /**
-     * Used when inserting responsibility to responsibilities map in DataHolderResponsibilitiesExecutor class
+     * Used when inserting responsibility to responsibilities map in DataHolderResponsibilitiesExecutor class.
      * @return responsibilityId with format of applicationName-id-responsibilityType
      */
     @Override

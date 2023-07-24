@@ -25,7 +25,7 @@ import static org.powermock.api.mockito.PowerMockito.mock;
 import static org.powermock.api.mockito.PowerMockito.when;
 
 /**
- * CDSCodeResponseTypeValidator Test class
+ * CDSCodeResponseTypeValidator Test class.
  */
 @PrepareForTest({IdentityCommonUtil.class})
 @PowerMockIgnore("jdk.internal.reflect.*")

@@ -19,7 +19,7 @@ import org.testng.annotations.Test;
 import static org.mockito.Mockito.doReturn;
 
 /**
- * Test class for CDSCommonUtils
+ * Test class for CDSCommonUtils.
  */
 @PrepareForTest({OpenBankingCDSConfigParser.class})
 @PowerMockIgnore({"javax.crypto.*", "jdk.internal.reflect.*"})

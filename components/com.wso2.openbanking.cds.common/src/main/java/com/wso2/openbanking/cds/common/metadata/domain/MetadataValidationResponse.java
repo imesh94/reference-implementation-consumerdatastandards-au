@@ -13,7 +13,7 @@
 package com.wso2.openbanking.cds.common.metadata.domain;
 
 /**
- * Used to represent metadata validation responses
+ * Used to represent metadata validation responses.
  */
 public class MetadataValidationResponse {
 

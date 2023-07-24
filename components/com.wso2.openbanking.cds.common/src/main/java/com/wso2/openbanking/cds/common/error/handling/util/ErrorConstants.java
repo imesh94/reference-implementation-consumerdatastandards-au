@@ -15,7 +15,7 @@ package com.wso2.openbanking.cds.common.error.handling.util;
 import com.wso2.openbanking.accelerator.common.util.Generated;
 
 /**
- * Error Constant Class
+ * Error Constant Class.
  */
 public class ErrorConstants {
 
@@ -77,8 +77,8 @@ public class ErrorConstants {
     public enum AUErrorEnum {
 
         /**
-         * Error enumerations defined in the specification
-         * <p>
+         * Error enumerations defined in the specification.
+         *
          * Custom values in the enum will be in the following order
          * (HTTP Status Code, Error Code, Error Code Title, Error Message)
          */
@@ -194,8 +194,8 @@ public class ErrorConstants {
                 "Expected Error Encountered", "Expected Error Encountered"),
 
         /**
-         * Error enumerations defined by the WSO2
-         * <p>
+         * Error enumerations defined by the WSO2.
+         *
          * Custom values in the enum will be in the following order
          * (HTTP Status Code, Error Code, Error Code Title, Error Message)
          */

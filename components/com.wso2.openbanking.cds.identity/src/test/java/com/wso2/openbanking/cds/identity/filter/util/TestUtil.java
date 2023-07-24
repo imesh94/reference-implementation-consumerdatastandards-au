@@ -22,6 +22,9 @@ import java.util.HashMap;
 import java.util.Map;
 import javax.servlet.ServletOutputStream;
 
+/**
+ * Test util class.
+ */
 public class TestUtil {
 
     public static Map<String, String> getResponse(ServletOutputStream outputStream) {

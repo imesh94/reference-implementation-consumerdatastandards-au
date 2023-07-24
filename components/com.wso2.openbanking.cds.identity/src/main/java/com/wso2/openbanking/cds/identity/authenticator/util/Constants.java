@@ -13,7 +13,7 @@
 package com.wso2.openbanking.cds.identity.authenticator.util;
 
 /**
- * Constants are listed here
+ * Constants are listed here.
  */
 public class Constants {
 

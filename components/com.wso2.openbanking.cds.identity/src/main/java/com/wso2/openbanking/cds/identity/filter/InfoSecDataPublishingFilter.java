@@ -40,7 +40,7 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 /**
- * Tomcat filter to publish data related to infoSec endpoints
+ * Tomcat filter to publish data related to infoSec endpoints.
  * This filter should be added as the first filter of the filter chain
  * as the invocation latency data are calculated within this filter logic
  */
@@ -68,7 +68,7 @@ public class InfoSecDataPublishingFilter implements Filter {
     }
 
     /**
-     * Publish reporting data related to infoSec endpoints
+     * Publish reporting data related to infoSec endpoints.
      *
      * @param request HttpServletRequest
      * @param response HttpServletResponse
@@ -91,7 +91,7 @@ public class InfoSecDataPublishingFilter implements Filter {
     }
 
     /**
-     * Create the APIInvocation data map
+     * Create the APIInvocation data map.
      *
      * @param request HttpServletRequest
      * @param response HttpServletResponse
@@ -125,7 +125,7 @@ public class InfoSecDataPublishingFilter implements Filter {
     }
 
     /**
-     * Create the APIInvocation Latency data map
+     * Create the APIInvocation Latency data map.
      *
      * @param request HttpServletRequest
      * @param messageId Unique Id for the request

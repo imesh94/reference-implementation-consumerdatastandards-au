@@ -39,8 +39,8 @@ import java.util.List;
 import static com.wso2.openbanking.cds.common.metadata.periodical.updater.constants.MetadataConstants.AUTH_BASIC;
 
 /**
- * CleanupRegistrationResponsibility
- * <p>
+ * CleanupRegistrationResponsibility.
+ *
  * Uses to execute CDS cleanup registration data holder responsibility
  */
 public class CleanupRegistrationResponsibility implements DataHolderResponsibility {
@@ -128,7 +128,7 @@ public class CleanupRegistrationResponsibility implements DataHolderResponsibili
     }
 
     /**
-     * To send HTTP DELETE request to delete an application from APIM or to delete a service provider from IS
+     * To send HTTP DELETE request to delete an application from APIM or to delete a service provider from IS.
      *
      * @param applicationId APIM application id / IS service provider id
      * @param url APIM application delete URL / DCR internal URL
@@ -194,7 +194,7 @@ public class CleanupRegistrationResponsibility implements DataHolderResponsibili
     }
 
     /**
-     * Retrieve all existing applications from APIM store by sending HTTP GET request
+     * Retrieve all existing applications from APIM store by sending HTTP GET request.
      *
      * @return JSONArray of APIM applications
      * @throws OpenBankingException throws if invalid unexpected response code received
@@ -235,7 +235,7 @@ public class CleanupRegistrationResponsibility implements DataHolderResponsibili
     }
 
     /**
-     * Used when inserting responsibility to responsibilities map in DataHolderResponsibilitiesExecutor class
+     * Used when inserting responsibility to responsibilities map in DataHolderResponsibilitiesExecutor class.
      * @return responsibilityId with format of applicationName-id-responsibilityType
      */
     @Override

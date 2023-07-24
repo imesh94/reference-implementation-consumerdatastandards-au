@@ -9,6 +9,7 @@
 
 package com.wso2.openbanking.cds.consent.extensions.validate;
 
+import com.wso2.openbanking.accelerator.account.metadata.service.service.AccountMetadataService;
 import com.wso2.openbanking.accelerator.account.metadata.service.service.AccountMetadataServiceImpl;
 import com.wso2.openbanking.accelerator.common.exception.OpenBankingException;
 import com.wso2.openbanking.accelerator.consent.extensions.common.ConsentException;
@@ -213,7 +214,7 @@ public class CDSConsentValidator implements ConsentValidator {
     }
 
     /**
-     * Method to filter accounts based on the sharing status of legal entity
+     * Method to filter accounts based on the sharing status of legal entity.
      *
      * @param consentValidateData consentValidateData
      */

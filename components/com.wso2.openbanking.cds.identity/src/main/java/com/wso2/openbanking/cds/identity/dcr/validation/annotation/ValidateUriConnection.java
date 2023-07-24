@@ -25,7 +25,7 @@ import static java.lang.annotation.ElementType.TYPE;
 import static java.lang.annotation.RetentionPolicy.RUNTIME;
 
 /**
- * Annotation class to validate whether the tos, policy, client and logo URIs are valid URIs
+ * Annotation class to validate whether the tos, policy, client and logo URIs are valid URIs.
  */
 @Target(TYPE)
 @Retention(RUNTIME)
