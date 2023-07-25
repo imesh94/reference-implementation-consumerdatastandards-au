@@ -201,7 +201,7 @@ public class CDSBusinessAccountConsentPersistenceStep implements ConsentPersistS
      * @throws OpenBankingException OpenBankingException
      */
     private void addNominatedRepresentativeDataToAccountMetadataTable(Map<String, Map<String, String>>
-                                                      businessAccountIdUserMap) throws OpenBankingException {
+        businessAccountIdUserMap) throws OpenBankingException {
 
         for (Map.Entry<String, Map<String, String>> entry : businessAccountIdUserMap.entrySet()) {
             String accountId = entry.getKey();

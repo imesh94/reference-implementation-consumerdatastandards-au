@@ -97,6 +97,8 @@ public class CDSProfileListRetrievalStepTests extends PowerMockTestCase {
 
     @Mock
     OpenBankingCDSConfigParser openBankingCDSConfigParserMock;
+
+    @Mock
     AccountMetadataServiceImpl accountMetadataServiceMock;
 
     @Mock

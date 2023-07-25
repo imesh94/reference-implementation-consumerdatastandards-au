@@ -18,9 +18,8 @@ public class AccountTypeManagementConstants {
     public static final String CARBON_TENANT_DOMAIN = "@carbon.super";
 
     // Secondary User Instructions
-    //TODO: Add secondary user instruction related constants here.
-    public static final String PRIMARY_MEMBER = "primary_member";
-    public static final String SECONDARY_ACCOUNT_OWNER = "secondary_account_owner";
+    public static final String PRIMARY_MEMBER_AUTH_TYPE = "primary_member";
+    public static final String ACTIVE_STATUS = "active";
 
     // Ceasing Secondary User Sharing
     public static final String METADATA_KEY_BLOCKED_LEGAL_ENTITIES = "BLOCKED_LEGAL_ENTITIES";
@@ -28,9 +27,16 @@ public class AccountTypeManagementConstants {
     public static final String LEGAL_ENTITY_NAME = "legal_entity_name";
 
     // Disclosure Options Management
-    //TODO: Add disclosure options management related constants here.
+    public static final String DATA = "data";
+    public static final String ACCOUNT_ID = "accountID";
+    public static final String DISCLOSURE_OPTION = "disclosureOption";
+    public static final String DISCLOSURE_OPTION_STATUS = "DISCLOSURE_OPTIONS_STATUS";
 
     // Business Nominated Representative
-    //TODO: Add business nominated representative related constants here.
+    public static final String BNR_PERMISSION = "bnr-permission";
+    public static final String NOMINATED_REPRESENTATIVE_AUTH_TYPE = "nominated_representative";
+    public static final String REVOKED_CONSENT_STATUS = "Revoked";
+    public static final String METADATA_SERVICE_ERROR = "\"Error occurred while persisting nominated " +
+            "representative data using the account metadata service\"";
 
 }

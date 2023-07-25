@@ -16,17 +16,14 @@ import com.wso2.openbanking.accelerator.common.identity.retriever.sp.CommonServi
 import com.wso2.openbanking.accelerator.consent.mgt.dao.models.AuthorizationResource;
 import com.wso2.openbanking.accelerator.consent.mgt.dao.models.ConsentMappingResource;
 import com.wso2.openbanking.accelerator.consent.mgt.dao.models.DetailedConsentResource;
-import com.wso2.openbanking.cds.account.type.management.endpoint.ceasing.secondary.user.sharing.constants.
-        CeasingSecondaryUserEnum;
-import com.wso2.openbanking.cds.account.type.management.endpoint.ceasing.secondary.user.sharing.models.
-        LegalEntityItemUpdateDTO;
-import com.wso2.openbanking.cds.account.type.management.endpoint.ceasing.secondary.user.sharing.models.
-        LegalEntityListUpdateDTO;
-import com.wso2.openbanking.cds.account.type.management.endpoint.ceasing.secondary.user.sharing.models.
-        UsersAccountsLegalEntitiesDTO;
+import com.wso2.openbanking.cds.account.type.management.endpoint.ceasing.secondary.user.sharing.constants.CeasingSecondaryUserEnum;
+import com.wso2.openbanking.cds.account.type.management.endpoint.ceasing.secondary.user.sharing.models.LegalEntityItemUpdateDTO;
+import com.wso2.openbanking.cds.account.type.management.endpoint.ceasing.secondary.user.sharing.models.LegalEntityListUpdateDTO;
+import com.wso2.openbanking.cds.account.type.management.endpoint.ceasing.secondary.user.sharing.models.UsersAccountsLegalEntitiesDTO;
 import com.wso2.openbanking.cds.account.type.management.endpoint.constants.AccountTypeManagementConstants;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Locale;
@@ -226,7 +223,7 @@ public class CeasingSecondaryUserSharingHandler {
                 for (AuthorizationResource authorizationResource : detailedConsent.getAuthorizationResources()) {
 
                     if (authorizationResource.getAuthorizationType().
-                            equals(AccountTypeManagementConstants.PRIMARY_MEMBER)) {
+                            equals(AccountTypeManagementConstants.PRIMARY_MEMBER_AUTH_TYPE)) {
 
                         // Inserting a non-duplicate secondaryUser to the secondary user list in the
                         // responseUsersAccountsLegalEntitiesDTO

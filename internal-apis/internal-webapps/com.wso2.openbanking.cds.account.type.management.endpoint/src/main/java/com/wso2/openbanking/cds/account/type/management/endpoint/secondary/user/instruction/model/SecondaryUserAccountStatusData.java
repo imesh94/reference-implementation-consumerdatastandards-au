@@ -9,7 +9,7 @@
 
 package com.wso2.openbanking.cds.account.type.management.endpoint.secondary.user.instruction.model;
 
-import com.wso2.openbanking.cds.account.type.management.endpoint.secondary.user.instruction.constants.SecondaryUserInstructionConstants;
+import com.wso2.openbanking.cds.account.type.management.endpoint.constants.AccountTypeManagementConstants;
 
 import java.util.HashMap;
 import java.util.Locale;
@@ -42,8 +42,8 @@ public class SecondaryUserAccountStatusData {
     public void setSecondaryAccountID(String accountId) {
         // set tenant domain if not available
         if (!secondaryUserId.toLowerCase(Locale.ENGLISH).endsWith(
-                SecondaryUserInstructionConstants.CARBON_TENANT_DOMAIN)) {
-            secondaryUserId = secondaryUserId + SecondaryUserInstructionConstants.CARBON_TENANT_DOMAIN;
+                AccountTypeManagementConstants.CARBON_TENANT_DOMAIN)) {
+            secondaryUserId = secondaryUserId + AccountTypeManagementConstants.CARBON_TENANT_DOMAIN;
         }
 
         this.secondaryAccountId = accountId;

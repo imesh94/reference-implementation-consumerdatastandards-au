@@ -78,11 +78,9 @@ public class CDSConsentPersistUtil {
         // Get UserId against non-primary accounts Map from current persistence Step
         Map<String, List<String>> userIdNonPrimaryAccountsMap = getUserIdAgainstAccountsMap(
                 nonPrimaryAccountIdUsersMap);
-        // Append current step user against accounts map details to the existing map
         for (Map.Entry<String, List<String>> entry : userIdNonPrimaryAccountsMap.entrySet()) {
             final String userId = entry.getKey();
             final List<String> nonPrimaryAccounts = entry.getValue();
-            // Check if the user already has an entry in the map
             if (currentUserIdNonPrimaryAccountsMap.containsKey(userId)) {
                 currentUserIdNonPrimaryAccountsMap.get(userId).addAll(nonPrimaryAccounts);
             } else {

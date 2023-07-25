@@ -37,8 +37,8 @@ import java.util.Arrays;
 import java.util.Iterator;
 import java.util.List;
 import java.util.function.Predicate;
-import static com.wso2.openbanking.accelerator.consent.mgt.service.constants.ConsentCoreServiceConstants.
-        INACTIVE_MAPPING_STATUS;
+
+import static com.wso2.openbanking.accelerator.consent.mgt.service.constants.ConsentCoreServiceConstants.INACTIVE_MAPPING_STATUS;
 
 /**
  * Consent validator CDS implementation.
@@ -46,8 +46,7 @@ import static com.wso2.openbanking.accelerator.consent.mgt.service.constants.Con
 public class CDSConsentValidator implements ConsentValidator {
 
     private static final Log log = LogFactory.getLog(CDSConsentValidator.class);
-
-    AccountMetadataService accountMetadataService = AccountMetadataServiceImpl.getInstance();
+    AccountMetadataServiceImpl accountMetadataService = AccountMetadataServiceImpl.getInstance();
 
     @Override
     public void validate(ConsentValidateData consentValidateData, ConsentValidationResult consentValidationResult)
@@ -174,34 +173,26 @@ public class CDSConsentValidator implements ConsentValidator {
         consentValidateData.getComprehensiveConsent().setConsentMappingResources(distinctMappingResources);
     }
 
+    /**
+     * Remove joint accounts mappings if disclosure options status is not 'pre-approval'.
+     *
+     * @param consentValidateData consentValidateData
+     * @throws ConsentException ConsentException
+     */
     public void removeInactiveDOMSAccountConsentMappings(ConsentValidateData consentValidateData)
             throws ConsentException {
 
-        ArrayList<ConsentMappingResource> distinctMappingResources = new ArrayList<>(consentValidateData
+        ArrayList<ConsentMappingResource> consentMappingResources = new ArrayList<>(consentValidateData
                 .getComprehensiveConsent().getConsentMappingResources());
+        Iterator<ConsentMappingResource> consentMappingIterator = consentMappingResources.iterator();
 
-        ArrayList<AuthorizationResource> authorizationResources = new ArrayList<>(consentValidateData
-                .getComprehensiveConsent().getAuthorizationResources());
-
-        Iterator<ConsentMappingResource> iterator = distinctMappingResources.iterator();
-
-        while (iterator.hasNext()) {
-            ConsentMappingResource mappingResource = iterator.next();
+        // Remove joint account mappings if disclosure options status is not 'pre-approval'
+        while (consentMappingIterator.hasNext()) {
+            ConsentMappingResource mappingResource = consentMappingIterator.next();
             try {
-                for (AuthorizationResource authorizationResource : authorizationResources) {
-                    String authorizationType = authorizationResource.getAuthorizationType();
-                    boolean isAuthEqualMap = authorizationResource.getAuthorizationID().
-                            equals(mappingResource.getAuthorizationID());
-
-                    if ((authorizationType.equals(CDSConsentExtensionConstants.LINKED_MEMBER_AUTH_TYPE) ||
-                            authorizationType.equals(SecondaryAccountOwnerTypeEnum.JOINT.getValue()))
-                            && isAuthEqualMap) {
-                        if (!CDSConsentExtensionsUtil.isDOMSStatusEligibleForDataSharing
-                                (mappingResource.getAccountID())) {
-                            iterator.remove();
-                            log.info("Removed mapping resource for accountID: " + mappingResource.getAccountID());
-                        }
-                    }
+                if (!CDSConsentExtensionsUtil.isDOMSStatusEligibleForDataSharing(mappingResource.getAccountID())) {
+                    consentMappingIterator.remove();
+                    log.info("Removed mapping resource for accountID: " + mappingResource.getAccountID());
                 }
             } catch (OpenBankingException e) {
                 log.error("Error occurred while retrieving account metadata", e);
@@ -209,7 +200,7 @@ public class CDSConsentValidator implements ConsentValidator {
                         "Error occurred while retrieving account metadata");
             }
         }
-        consentValidateData.getComprehensiveConsent().setConsentMappingResources(distinctMappingResources);
+        consentValidateData.getComprehensiveConsent().setConsentMappingResources(consentMappingResources);
     }
 
     /**
@@ -259,7 +250,7 @@ public class CDSConsentValidator implements ConsentValidator {
                 consentValidateData.getComprehensiveConsent().getConsentMappingResources();
         List<String> blockedSecondaryAccounts = new ArrayList<>();
 
-        // get blocked secondary user accounts
+        // remove inactive secondary user account consent mappings
         for (ConsentMappingResource mappingResource : consentMappingResources) {
             if (CDSConsentExtensionConstants.SECONDARY_ACCOUNT_USER.equals(mappingResource.getPermission()) &&
                     !CDSConsentExtensionsUtil
