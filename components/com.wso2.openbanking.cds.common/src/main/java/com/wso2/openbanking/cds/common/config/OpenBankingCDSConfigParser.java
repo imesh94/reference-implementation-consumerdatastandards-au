@@ -459,7 +459,7 @@ public class OpenBankingCDSConfigParser {
     }
 
     /**
-     * Get CDSIntrospectFilter validators.
+     * Get CDSRevokeFilter validators.
      *
      * @return - List of configured validators
      */
@@ -478,7 +478,7 @@ public class OpenBankingCDSConfigParser {
     }
 
     /**
-     * Get CDSIntrospectFilter validators.
+     * Get CDSParFilter validators.
      *
      * @return - List of configured validators
      */
@@ -646,7 +646,7 @@ public class OpenBankingCDSConfigParser {
     }
 
     /**
-     * Get legal entity sharing status.
+     * Get legal entity sharing enabled status.
      *
      * @return boolean
      */

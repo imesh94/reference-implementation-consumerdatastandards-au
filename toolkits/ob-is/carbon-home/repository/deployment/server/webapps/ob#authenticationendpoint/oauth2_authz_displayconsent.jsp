@@ -75,7 +75,7 @@
                 <div class="col-md-12 ui box">
                     <h3 class="ui header"><strong><%=spFullName%>
                     </strong> requests account details on your account.</h3>
-
+    
                     <% if (!skipAccounts) { %>
                         <div class="padding-top">
                             <h4 class="section-heading-5 ui subheading">

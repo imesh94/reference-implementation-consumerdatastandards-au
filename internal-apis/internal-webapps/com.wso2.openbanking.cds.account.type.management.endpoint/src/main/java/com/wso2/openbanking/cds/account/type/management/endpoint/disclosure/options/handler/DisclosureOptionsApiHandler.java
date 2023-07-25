@@ -12,11 +12,11 @@ package com.wso2.openbanking.cds.account.type.management.endpoint.disclosure.opt
 import com.wso2.openbanking.accelerator.account.metadata.service.service.AccountMetadataService;
 import com.wso2.openbanking.accelerator.account.metadata.service.service.AccountMetadataServiceImpl;
 import com.wso2.openbanking.accelerator.common.exception.OpenBankingException;
-
-import com.wso2.openbanking.cds.account.type.management.endpoint.disclosure.options.constants.DisclosureOptionStatusConstants;
+import com.wso2.openbanking.cds.account.type.management.endpoint.constants.AccountTypeManagementConstants;
 import net.minidev.json.JSONArray;
 import net.minidev.json.JSONObject;
 import net.minidev.json.parser.JSONParser;
+import net.minidev.json.parser.ParseException;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
@@ -38,18 +38,18 @@ public class DisclosureOptionsApiHandler {
 
         try {
             JSONObject requestBodyJSON = (JSONObject) parser.parse(requestBody);
-            JSONArray requestBodyJSONData = (JSONArray) requestBodyJSON.get(DisclosureOptionStatusConstants.DATA);
+            JSONArray requestBodyJSONData = (JSONArray) requestBodyJSON.get(AccountTypeManagementConstants.DATA);
 
             for (Object requestBodyJSONDataItem : requestBodyJSONData) {
 
                 String accountId = ((JSONObject) requestBodyJSONDataItem).
-                        getAsString(DisclosureOptionStatusConstants.ACCOUNT_ID);
+                        getAsString(AccountTypeManagementConstants.ACCOUNT_ID);
                 String disclosureOption = ((JSONObject) requestBodyJSONDataItem).
-                        getAsString(DisclosureOptionStatusConstants.DISCLOSURE_OPTION);
+                        getAsString(AccountTypeManagementConstants.DISCLOSURE_OPTION);
 
                 // Add the disclosureOption value to a HashMap
                 HashMap<String, String> disclosureOptionsMap = new HashMap<String, String>();
-                disclosureOptionsMap.put(DisclosureOptionStatusConstants.DISCLOSURE_OPTION_STATUS, disclosureOption);
+                disclosureOptionsMap.put(AccountTypeManagementConstants.DISCLOSURE_OPTION_STATUS, disclosureOption);
 
                 // Call the addOrUpdateGlobalAccountMetadata method from the AccountMetadataService class
                 accountMetadataService.addOrUpdateAccountMetadata(accountId, disclosureOptionsMap);
@@ -58,7 +58,7 @@ public class DisclosureOptionsApiHandler {
         } catch (OpenBankingException e) {
             log.error("Error occurred while updating CDS Account Disclosure Options", e);
             return Response.status(Response.Status.BAD_REQUEST).entity(e.getMessage()).build();
-        } catch (Exception e) {
+        } catch (ParseException e) {
             log.error("Bad Request. Request body validation failed", e);
             return Response.status(Response.Status.BAD_REQUEST).entity(e.getMessage()).build();
         }
