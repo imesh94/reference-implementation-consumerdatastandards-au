@@ -7,6 +7,7 @@
  * You may not alter or remove any copyright or other notice from copies of this content.
  *
  */
+
 package com.wso2.openbanking.cds.identity.auth.extensions.response.handler;
 
 import com.wso2.openbanking.accelerator.common.config.OpenBankingConfigParser;

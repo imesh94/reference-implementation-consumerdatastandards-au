@@ -19,7 +19,6 @@ public class AccountTypeManagementConstants {
 
     // Secondary User Instructions
     public static final String PRIMARY_MEMBER_AUTH_TYPE = "primary_member";
-    public static final String SECONDARY_ACCOUNT_OWNER_AUTH_TYPE = "secondary_account_owner";
     public static final String ACTIVE_STATUS = "active";
 
     // Ceasing Secondary User Sharing
