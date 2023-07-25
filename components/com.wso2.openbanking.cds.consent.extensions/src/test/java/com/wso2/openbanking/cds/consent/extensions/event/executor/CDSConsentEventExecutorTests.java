@@ -45,6 +45,9 @@ import static org.powermock.api.mockito.PowerMockito.mock;
 import static org.powermock.api.mockito.PowerMockito.mockStatic;
 import static org.powermock.api.mockito.PowerMockito.when;
 
+/**
+ * Test class for CDS Consent Event Executor.
+ */
 @PrepareForTest({OpenBankingCDSConfigParser.class, HTTPClientUtils.class, ServerConfiguration.class,
         CDSIdentityUtil.class, OBDataPublisherUtil.class})
 @PowerMockIgnore("jdk.internal.reflect.*")

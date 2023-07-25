@@ -35,7 +35,7 @@ import static org.mockito.Mockito.when;
 import static org.powermock.api.mockito.PowerMockito.mockStatic;
 
 /**
- * Test class for CDS Auth Servlet
+ * Test class for CDS Auth Servlet.
  */
 @PrepareForTest({OpenBankingCDSConfigParser.class, CDSConsentExtensionsUtil.class})
 @PowerMockIgnore({"com.wso2.openbanking.accelerator.consent.extensions.common.*", "jdk.internal.reflect.*"})

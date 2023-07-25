@@ -30,6 +30,9 @@ import static org.mockito.Mockito.anyString;
 import static org.mockito.Mockito.doReturn;
 import static org.mockito.Mockito.mock;
 
+/**
+ * Test class for CDS Push Authorization Request Validator.
+ */
 public class CDSPushAuthRequestValidatorTest {
 
     private CDSPushAuthRequestValidator cdsPushAuthRequestValidator;

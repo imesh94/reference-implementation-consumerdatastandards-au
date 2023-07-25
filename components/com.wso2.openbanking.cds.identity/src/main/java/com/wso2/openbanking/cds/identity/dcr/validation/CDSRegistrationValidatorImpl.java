@@ -26,7 +26,7 @@ import org.apache.commons.lang3.StringUtils;
 import java.util.Map;
 
 /**
- * CDS Spec specific registration validator class
+ * CDS specific registration validator class.
  */
 public class CDSRegistrationValidatorImpl extends DefaultRegistrationValidatorImpl {
 

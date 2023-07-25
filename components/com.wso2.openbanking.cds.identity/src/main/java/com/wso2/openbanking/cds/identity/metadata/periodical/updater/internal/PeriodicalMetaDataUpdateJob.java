@@ -100,7 +100,7 @@ public class PeriodicalMetaDataUpdateJob implements Job, MetaDataUpdate {
     private static final Log LOG = LogFactory.getLog(PeriodicalMetaDataUpdateJob.class);
 
     /**
-     * method used to enforce periodic metadata update
+     * method used to enforce periodic metadata update.
      *
      * @param context JobExecutionContext
      */
@@ -110,7 +110,7 @@ public class PeriodicalMetaDataUpdateJob implements Job, MetaDataUpdate {
     }
 
     /**
-     * Method which triggers metadata update
+     * Method which triggers metadata update.
      */
     @Override
     @Generated(message = "Ignoring since all cases are covered from other unit tests")
@@ -216,7 +216,7 @@ public class PeriodicalMetaDataUpdateJob implements Job, MetaDataUpdate {
 
     /**
      * This method executes two tasks,
-     * task 1: Modify metadata statuses map by putting client ids
+     * task 1: Modify metadata statuses map by putting client ids.
      * task 2: Add data holder responsibilities to DataHolderResponsibilitiesExecutor
      *
      * @param dataRecipientsMap   data recipients fetched from ACCC

@@ -13,8 +13,8 @@
 package com.wso2.openbanking.cds.identity.metadata.periodical.updater.service.dataholder.responsibility;
 
 /**
- * DataHolderResponsibility
- * <p>
+ * DataHolderResponsibility.
+ *
  * Represents a data holder responsibility
  */
 public interface DataHolderResponsibility {

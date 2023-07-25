@@ -24,7 +24,7 @@ import static java.lang.annotation.ElementType.TYPE;
 import static java.lang.annotation.RetentionPolicy.RUNTIME;
 
 /**
- * Annotation class for validate whether the redirect URIs and other uris have same hostname
+ * Annotation class for validate whether the redirect URIs and other uris have same hostname.
  */
 @Target(TYPE)
 @Retention(RUNTIME)

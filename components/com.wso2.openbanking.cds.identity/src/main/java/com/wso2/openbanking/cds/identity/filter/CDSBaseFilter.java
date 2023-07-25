@@ -93,7 +93,7 @@ public class CDSBaseFilter implements Filter {
     }
 
     /**
-     * Append the transport header to the request
+     * Append the transport header to the request.
      *
      * @param request
      * @param response

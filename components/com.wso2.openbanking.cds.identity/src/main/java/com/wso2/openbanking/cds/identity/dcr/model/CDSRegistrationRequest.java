@@ -26,7 +26,7 @@ import com.wso2.openbanking.cds.identity.dcr.validation.annotation.ValidateUriHo
 import java.util.List;
 
 /**
- * Model class for CDS dcr registration request
+ * Model class for CDS dcr registration request.
  */
 @ValidateCallbackUris(registrationRequestProperty = "registrationRequest", callbackUrisProperty = "redirectUris",
         ssa = "softwareStatement", message = "Invalid callback uris:" + DCRCommonConstants.INVALID_META_DATA,

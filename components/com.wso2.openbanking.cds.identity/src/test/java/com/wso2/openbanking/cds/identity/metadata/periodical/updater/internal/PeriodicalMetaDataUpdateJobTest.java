@@ -40,7 +40,7 @@ import static com.wso2.openbanking.cds.common.metadata.periodical.updater.consta
 import static com.wso2.openbanking.cds.common.metadata.periodical.updater.constants.MetadataConstants.MAP_SOFTWARE_PRODUCTS;
 
 /**
- * Test class for PeriodicalMetaDataUpdateJob
+ * Test class for Periodical MetaData Update Job.
  */
 @PrepareForTest({ServiceHolder.class})
 @PowerMockIgnore("jdk.internal.reflect.*")

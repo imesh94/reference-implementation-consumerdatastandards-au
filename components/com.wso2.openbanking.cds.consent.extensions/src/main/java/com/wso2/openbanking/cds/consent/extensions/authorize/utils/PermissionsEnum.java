@@ -12,7 +12,7 @@
 package com.wso2.openbanking.cds.consent.extensions.authorize.utils;
 
 /**
- * PermissionsEnum enumeration
+ * PermissionsEnum enumeration.
  */
 public enum PermissionsEnum {
 

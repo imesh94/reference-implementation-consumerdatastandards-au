@@ -11,6 +11,9 @@
  */
 package com.wso2.openbanking.cds.identity.auth.extensions.request.validator.util;
 
+/**
+ * Data provider class for Request Object.
+ */
 public class ReqObjectTestDataProvider {
 
     public static final String SCOPES_INVALID_REQ = "eyJhbGciOiJQUzI1NiIsInR5cCI6IkpXVCIsImtpZCI6IkR3TUtkV01tajdQ" +

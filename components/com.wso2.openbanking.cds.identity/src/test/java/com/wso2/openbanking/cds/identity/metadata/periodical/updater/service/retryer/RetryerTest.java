@@ -22,7 +22,7 @@ import org.testng.annotations.Test;
 import java.util.concurrent.Callable;
 
 /**
- * Test class for Retryer
+ * Test class for Retryer on MetaData Update Task.
  */
 public class RetryerTest {
 

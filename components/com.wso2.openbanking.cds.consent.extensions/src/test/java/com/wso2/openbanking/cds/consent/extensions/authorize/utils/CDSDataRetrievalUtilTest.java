@@ -33,7 +33,7 @@ import static org.powermock.api.mockito.PowerMockito.mockStatic;
 import static org.powermock.api.mockito.PowerMockito.when;
 
 /**
- * Test class for CDSDataRetrievalUtil
+ * Test class for CDS Data Retrieval Utils.
  */
 @PrepareForTest({SessionDataCacheEntry.class, SessionDataCache.class, PushAuthRequestValidatorUtils.class})
 @PowerMockIgnore("jdk.internal.reflect.*")

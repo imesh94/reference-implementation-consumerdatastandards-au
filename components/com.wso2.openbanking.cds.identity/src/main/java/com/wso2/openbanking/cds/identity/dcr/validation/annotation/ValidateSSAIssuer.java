@@ -24,7 +24,7 @@ import javax.validation.Payload;
 import static java.lang.annotation.RetentionPolicy.RUNTIME;
 
 /**
- * Annotation class for SSA issuer validation
+ * Annotation class for SSA issuer validation.
  */
 @Target(ElementType.METHOD)
 @Retention(RUNTIME)

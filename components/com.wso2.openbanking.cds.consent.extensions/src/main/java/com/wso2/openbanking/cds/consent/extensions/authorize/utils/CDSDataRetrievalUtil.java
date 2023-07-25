@@ -111,7 +111,7 @@ public class CDSDataRetrievalUtil {
     }
 
     /**
-     * Build the complete URL with query parameters sent in the map
+     * Build the complete URL with query parameters sent in the map.
      *
      * @param baseURL    the base URL
      * @param parameters map of parameters
@@ -154,7 +154,7 @@ public class CDSDataRetrievalUtil {
     }
 
     /**
-     * Method to extract request object from query params
+     * Method to extract request object from query params.
      *
      * @param spQueryParams
      * @return
@@ -218,7 +218,7 @@ public class CDSDataRetrievalUtil {
     }
 
     /**
-     * Method to extract redirect url from query params
+     * Method to extract redirect url from query params.
      *
      * @param spQueryParams
      * @return
@@ -246,7 +246,7 @@ public class CDSDataRetrievalUtil {
     }
 
     /**
-     * Method to extract state from query params
+     * Method to extract state from query params.
      *
      * @param spQueryParams query params
      * @return state
@@ -285,7 +285,7 @@ public class CDSDataRetrievalUtil {
     }
 
     /**
-     * Get service provider full name
+     * Get service provider full name.
      *
      * @param clientId clientId
      * @return service provider full name

@@ -19,7 +19,7 @@ import java.util.Arrays;
 import java.util.List;
 
 /**
- * Test class for IdEncryptorDecryptor
+ * Test class for IdEncryptorDecryptor.
  */
 public class IdEncryptorDecryptorTest {
 

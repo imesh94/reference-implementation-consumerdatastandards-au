@@ -9,7 +9,7 @@
 package com.wso2.openbanking.cds.common.utils;
 
 /**
- * Common Constant Class
+ * Common Constant Class.
  */
 public class CommonConstants {
 

@@ -204,7 +204,7 @@ public class CDSConsentValidator implements ConsentValidator {
     }
 
     /**
-     * Method to filter accounts based on the sharing status of legal entity
+     * Method to filter accounts based on the sharing status of legal entity.
      *
      * @param consentValidateData consentValidateData
      */

@@ -21,7 +21,7 @@ import java.util.Map;
 import javax.servlet.http.HttpServletRequest;
 
 /**
- * CDSRevocationPrivateKeyJWTClientAuthenticator for authenticating CDS revocation requests
+ * CDSRevocationPrivateKeyJWTClientAuthenticator for authenticating CDS revocation requests.
  */
 public class CDSRevocationPrivateKeyJWTClientAuthenticator extends CDSBasePrivateKeyJWTClientAuthenticator {
 

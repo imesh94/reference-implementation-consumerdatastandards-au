@@ -17,7 +17,7 @@ import com.wso2.openbanking.accelerator.consent.mgt.dao.models.DetailedConsentRe
 import java.util.ArrayList;
 
 /**
- * Constant class for cds consent authorize tests
+ * Constant class for cds consent authorize tests.
  */
 public class CDSConsentAuthorizeTestConstants {
 

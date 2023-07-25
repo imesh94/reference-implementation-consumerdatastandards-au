@@ -17,7 +17,7 @@ import org.mockito.Mockito;
 import org.testng.annotations.Test;
 
 /**
- * Test class for DataHolderResponsibilitiesExecutor
+ * Test class for Data Holder Responsibilities Executor.
  */
 public class DataHolderResponsibilitiesExecutorTest {
 

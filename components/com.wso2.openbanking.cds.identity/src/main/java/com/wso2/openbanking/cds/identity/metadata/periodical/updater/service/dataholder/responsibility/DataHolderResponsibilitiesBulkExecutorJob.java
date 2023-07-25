@@ -19,8 +19,8 @@ import org.quartz.JobExecutionContext;
 import org.quartz.JobExecutionException;
 
 /**
- * DataHolderResponsibilitiesBulkExecutorJob
- * <p>
+ * DataHolderResponsibilitiesBulkExecutorJob.
+ *
  * Invalidation of consents and cleanup of registrations can be executed as bulk operations.
  * This class is used to execute these as batch tasks performed overnight
  */

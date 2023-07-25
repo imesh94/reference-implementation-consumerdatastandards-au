@@ -32,7 +32,7 @@ import javax.validation.ConstraintValidator;
 import javax.validation.ConstraintValidatorContext;
 
 /**
- * Validator class to check validity of tos, policy, client and logo Urls
+ * Validator class to check validity of tos, policy, client and logo Urls.
  */
 public class UriConnectionValidator implements ConstraintValidator<ValidateUriConnection, Object> {
 
@@ -83,7 +83,7 @@ public class UriConnectionValidator implements ConstraintValidator<ValidateUriCo
     }
 
     /**
-     * validate the policy,terms of service,logo and client uris
+     * validate the policy,terms of service,logo and client uris.
      */
     public static boolean checkValidityOfURI(String logoURI, String clientURI, String policyURI,
                                              String termOfServiceURI) {

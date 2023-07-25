@@ -40,6 +40,9 @@ import javax.servlet.ServletException;
 
 import static org.testng.Assert.assertEquals;
 
+/**
+ * Test class for CDS Introspection Filter.
+ */
 @PrepareForTest({IdentityCommonUtil.class})
 @PowerMockIgnore("jdk.internal.reflect.*")
 public class CDSIntrospectionFilterTest extends PowerMockTestCase {

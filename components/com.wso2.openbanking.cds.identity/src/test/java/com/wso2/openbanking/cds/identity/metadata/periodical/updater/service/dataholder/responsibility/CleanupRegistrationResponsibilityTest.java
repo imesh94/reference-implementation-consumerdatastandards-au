@@ -44,7 +44,7 @@ import java.nio.charset.StandardCharsets;
 import java.util.Collections;
 
 /**
- * Test class for CleanupRegistrationResponsibility
+ * Test class for Cleanup Registration Responsibility.
  */
 @PrepareForTest({OpenBankingCDSConfigParser.class, HTTPClientUtils.class})
 @PowerMockIgnore("jdk.internal.reflect.*")

@@ -24,7 +24,7 @@ import javax.validation.Payload;
 import static java.lang.annotation.RetentionPolicy.RUNTIME;
 
 /**
- * Annotation class for SSA sector identifier uri validation
+ * Annotation class for SSA sector identifier uri validation.
  */
 @Target(ElementType.TYPE)
 @Retention(RUNTIME)

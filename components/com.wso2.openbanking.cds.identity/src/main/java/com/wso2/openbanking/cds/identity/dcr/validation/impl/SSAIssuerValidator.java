@@ -21,7 +21,7 @@ import javax.validation.ConstraintValidator;
 import javax.validation.ConstraintValidatorContext;
 
 /**
- * Validator class for validating the issuer in software statement
+ * Validator class for validating the issuer in software statement.
  */
 public class SSAIssuerValidator implements ConstraintValidator<ValidateSSAIssuer, Object> {
 

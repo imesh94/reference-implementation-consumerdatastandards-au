@@ -10,7 +10,7 @@
 package com.wso2.openbanking.cds.identity.metadata.periodical.updater.internal;
 
 /**
- * Interface used to trigger metadata update
+ * Interface used to trigger metadata update.
  */
 public interface MetaDataUpdate {
 

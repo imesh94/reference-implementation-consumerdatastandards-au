@@ -13,7 +13,7 @@ import com.wso2.openbanking.cds.identity.metadata.periodical.updater.internal.Me
 import com.wso2.openbanking.cds.identity.metadata.periodical.updater.internal.PeriodicalMetaDataUpdateJob;
 
 /**
- * Interface exposed to trigger metadata cache update externally
+ * Interface exposed to trigger metadata cache update externally.
  */
 public class ExternalMetadataUpdater {
 

@@ -38,7 +38,7 @@ public class MetadataService {
     }
 
     /**
-     * To check disclose CDR data DataHolderResponsibility
+     * To check disclose CDR data DataHolderResponsibility.
      *
      * @param clientId client id
      * @return true when ADR status is ACTIVE also SP status is ACTIVE
@@ -73,7 +73,7 @@ public class MetadataService {
     }
 
     /**
-     * To check facilitate consent authorisation DataHolderResponsibility
+     * To check facilitate consent authorisation DataHolderResponsibility.
      *
      * @param clientId client id
      * @return true when ADR status is ACTIVE also SP status is ACTIVE
@@ -108,7 +108,7 @@ public class MetadataService {
     }
 
     /**
-     * To check facilitate consent withdrawal DataHolderResponsibility
+     * To check facilitate consent withdrawal DataHolderResponsibility.
      *
      * @param clientId client id
      * @return true if ADR status is ACTIVE and SP status is ACTIVE or INACTIVE, also
@@ -155,7 +155,7 @@ public class MetadataService {
     }
 
     /**
-     * Get ClientID - Status check
+     * Get ClientID - Status check.
      *
      * @param clientId client id
      * @return software product status
@@ -174,7 +174,7 @@ public class MetadataService {
     }
 
     /**
-     * Get ClientID - Status check
+     * Get ClientID - Status check.
      *
      * @param clientId client id
      * @return data recipient status

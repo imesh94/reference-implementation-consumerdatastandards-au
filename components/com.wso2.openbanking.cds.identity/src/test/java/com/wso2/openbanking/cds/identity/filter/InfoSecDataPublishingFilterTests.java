@@ -26,6 +26,9 @@ import javax.servlet.FilterChain;
 import static org.testng.Assert.assertEquals;
 import static org.testng.Assert.assertNotNull;
 
+/**
+ * Test class for CDS Infosec Data Publishing Filter.
+ */
 public class InfoSecDataPublishingFilterTests extends PowerMockTestCase {
 
     MockHttpServletRequest request;

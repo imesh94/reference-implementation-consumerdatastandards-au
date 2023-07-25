@@ -20,7 +20,7 @@ import javax.validation.ConstraintValidator;
 import javax.validation.ConstraintValidatorContext;
 
 /**
- * Validator class for validating the software roles in software statement
+ * Validator class for validating the software roles in software statement.
  */
 public class SSASoftwareRolesValidator implements ConstraintValidator<ValidateSSASoftwareRoles, Object> {
 

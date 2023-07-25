@@ -25,7 +25,7 @@ import java.util.HashMap;
 import java.util.Map;
 
 /**
- * CDS specific refresh grant handler
+ * CDS specific refresh grant handler.
  */
 public class CDSRefreshGrantHandler extends OBRefreshGrantHandler {
 
@@ -33,7 +33,7 @@ public class CDSRefreshGrantHandler extends OBRefreshGrantHandler {
     private CDSDataPublishingService dataPublishingService = CDSDataPublishingService.getCDSDataPublishingService();
 
     /**
-     * Add cdr_arrangement_id
+     * Add cdr_arrangement_id.
      *
      * @param oAuth2AccessTokenRespDTO
      * @param tokReqMsgCtx
@@ -46,7 +46,7 @@ public class CDSRefreshGrantHandler extends OBRefreshGrantHandler {
     }
 
     /**
-     * Publish refresh token related data
+     * Publish refresh token related data.
      *
      * @param oAuth2AccessTokenRespDTO
      */

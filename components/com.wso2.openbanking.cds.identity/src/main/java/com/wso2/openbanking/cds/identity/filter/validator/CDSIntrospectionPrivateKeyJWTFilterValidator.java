@@ -123,7 +123,7 @@ public class CDSIntrospectionPrivateKeyJWTFilterValidator implements OBIdentityF
     }
 
     /**
-     * Set client authentication context to the request
+     * Set client authentication context to the request.
      *
      * @param request
      * @param oAuthClientAuthnContext

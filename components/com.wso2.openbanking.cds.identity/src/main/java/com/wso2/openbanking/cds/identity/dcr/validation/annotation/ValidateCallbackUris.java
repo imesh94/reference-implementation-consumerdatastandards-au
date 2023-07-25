@@ -23,7 +23,7 @@ import javax.validation.Payload;
 import static java.lang.annotation.RetentionPolicy.RUNTIME;
 
 /**
- * Annotation class for grant types validation
+ * Annotation class for grant types validation.
  */
 @Target(ElementType.TYPE)
 @Retention(RUNTIME)

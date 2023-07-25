@@ -18,7 +18,7 @@ import javax.validation.ConstraintValidatorContext;
 
 
 /**
- * Validator class for validating the scopes in software statement
+ * Validator class for validating the scopes in software statement.
  */
 public class SSAScopesValidator implements ConstraintValidator<ValidateSSAScopes, Object> {
 

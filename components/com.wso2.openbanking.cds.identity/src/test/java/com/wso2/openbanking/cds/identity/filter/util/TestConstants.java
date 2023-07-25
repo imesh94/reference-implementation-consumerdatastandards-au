@@ -11,6 +11,9 @@
  */
 package com.wso2.openbanking.cds.identity.filter.util;
 
+/**
+ * Test Constants class.
+ */
 public class TestConstants {
     public static final String TARGET_STREAM = "targetStream";
     public static final String CERTIFICATE_HEADER = "x-wso2-mutual-auth-cert";

@@ -37,7 +37,7 @@ import javax.validation.ConstraintValidator;
 import javax.validation.ConstraintValidatorContext;
 
 /**
- * Validator class for validating the sector identifier uri in ssa
+ * Validator class for validating the sector identifier uri in ssa.
  */
 public class SSASectorIdentifierUriValidator implements ConstraintValidator<ValidateSSASectorIdentifierUri, Object> {
 
@@ -66,7 +66,7 @@ public class SSASectorIdentifierUriValidator implements ConstraintValidator<Vali
     }
 
     /**
-     * Retrieve redirect uri list by calling sector identifier uri
+     * Retrieve redirect uri list by calling sector identifier uri.
      * @param sectorIdentifierUri sector identifier uri
      * @param callBackUris redirect uri list from ssa
      * @return true if all the hostname of ssa callback uris matches hostnames of callback uris returned from
@@ -112,7 +112,7 @@ public class SSASectorIdentifierUriValidator implements ConstraintValidator<Vali
     }
 
     /**
-     * Check whether the redirect uris in the ssa are a subset of the redirect uris returned after calling sector
+     * Check whether the redirect uris in the ssa are a subset of the redirect uris returned after calling sector.
      * identifier uri
      */
     private boolean matchRedirectURI(List<String> callbackUris, List<String> callbackUrisFromSectorIdentifier) {

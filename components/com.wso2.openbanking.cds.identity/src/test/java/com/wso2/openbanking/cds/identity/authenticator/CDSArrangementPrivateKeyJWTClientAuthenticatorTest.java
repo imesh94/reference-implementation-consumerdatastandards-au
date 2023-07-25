@@ -31,6 +31,9 @@ import static org.mockito.Matchers.any;
 import static org.powermock.api.mockito.PowerMockito.when;
 import static org.testng.Assert.assertTrue;
 
+/**
+ * Test class for CDS Arrangement Private Key JWT Authenticator.
+ */
 @PrepareForTest({OAuth2Util.class, OAuthServerConfiguration.class,
         CDSArrangementPrivateKeyJWTClientAuthenticator.class})
 @PowerMockIgnore("jdk.internal.reflect.*")

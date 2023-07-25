@@ -11,6 +11,9 @@
  */
 package com.wso2.openbanking.cds.identity.dcr.util;
 
+/**
+ * Registration Test Constants.
+ */
 public class RegistrationTestConstants {
 
     public static final String SSA = "eyJhbGciOiJQUzI1NiIsImtpZCI6IkR3TUtkV01tajdQV2ludm9xZlF5WFZ6eVo2USIsInR5cCI6" +

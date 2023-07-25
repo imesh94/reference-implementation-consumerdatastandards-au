@@ -13,7 +13,7 @@
 package com.wso2.openbanking.cds.common.error.handling.models;
 
 /**
- * Builder class for building error in CDS
+ * Builder class for building error in CDS.
  */
 public class CDSError {
 
@@ -56,7 +56,7 @@ public class CDSError {
     }
 
     /**
-     * Object builder class for AU Error
+     * Object builder class for AU Error.
      */
     public static final class Builder {
 

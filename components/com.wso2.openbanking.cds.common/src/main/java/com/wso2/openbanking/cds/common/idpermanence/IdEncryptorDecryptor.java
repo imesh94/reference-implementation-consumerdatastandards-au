@@ -25,7 +25,7 @@ import javax.crypto.NoSuchPaddingException;
 import javax.crypto.spec.SecretKeySpec;
 
 /**
- * Handling the AES encryption and decryption
+ * Handling the AES encryption and decryption.
  */
 public class IdEncryptorDecryptor {
 
@@ -35,7 +35,7 @@ public class IdEncryptorDecryptor {
     private static byte[] key;
 
     /**
-     * Set resource ID encryption/decryption key
+     * Set resource ID encryption/decryption key.
      *
      * @param secret secret key
      */
@@ -53,7 +53,7 @@ public class IdEncryptorDecryptor {
     }
 
     /**
-     * Encrypt a string using given secret
+     * Encrypt a string using given secret.
      *
      * @param strToEncrypt string to be encrypted
      * @param secret encryption key
@@ -74,7 +74,7 @@ public class IdEncryptorDecryptor {
     }
 
     /**
-     * Decrypt a string using given secret
+     * Decrypt a string using given secret.
      *
      * @param strToDecrypt string to be decrypted
      * @param secret decryption key

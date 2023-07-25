@@ -34,6 +34,9 @@ import static org.powermock.api.mockito.PowerMockito.mock;
 import static org.powermock.api.mockito.PowerMockito.mockStatic;
 import static org.powermock.api.mockito.PowerMockito.when;
 
+/**
+ * Test class for CDS Claim Provider.
+ */
 @PrepareForTest({SessionDataCache.class, CDSClaimProviderUtil.class})
 @PowerMockIgnore("jdk.internal.reflect.*")
 public class CDSClaimProviderTest extends PowerMockTestCase {

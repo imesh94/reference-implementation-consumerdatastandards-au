@@ -36,7 +36,7 @@ public class CDSConsentValidatorUtil {
     private static final Log log = LogFactory.getLog(CDSConsentValidatorUtil.class);
 
     /**
-     * Validate whether consent is expired
+     * Validate whether consent is expired.
      *
      * @param expDateVal
      * @return
@@ -60,7 +60,7 @@ public class CDSConsentValidatorUtil {
     }
 
     /**
-     * Method to validate account ids in post request body
+     * Method to validate account ids in post request body.
      *
      * @param consentValidateData
      * @return
@@ -94,7 +94,7 @@ public class CDSConsentValidatorUtil {
     }
 
     /**
-     * Method to validate whether account id is valid
+     * Method to validate whether account id is valid.
      *
      * @param consentValidateData
      * @return

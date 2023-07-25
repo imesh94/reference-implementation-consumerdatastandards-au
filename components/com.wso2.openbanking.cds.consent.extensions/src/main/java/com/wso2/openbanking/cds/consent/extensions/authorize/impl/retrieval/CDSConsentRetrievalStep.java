@@ -280,7 +280,7 @@ public class CDSConsentRetrievalStep implements ConsentRetrievalStep {
     }
 
     /**
-     * Method to extract required data from request object
+     * Method to extract required data from request object.
      *
      * @param requestObject
      * @return

@@ -50,7 +50,7 @@ import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
 /**
- * Test class for CDS Data Cluster Retrieval
+ * Test class for CDS Data Cluster Retrieval.
  */
 @PrepareForTest({OpenBankingCDSConfigParser.class, HTTPClientUtils.class})
 @PowerMockIgnore("jdk.internal.reflect.*")

@@ -25,7 +25,7 @@ import javax.validation.ConstraintValidator;
 import javax.validation.ConstraintValidatorContext;
 
 /**
- * Validator class to validate Redirect Urls are valid Urls
+ * Validator class to validate Redirect Urls are valid Urls.
  */
 public class RedirectUriFormatValidator implements ConstraintValidator<ValidateRedirectUriFormat, Object> {
 

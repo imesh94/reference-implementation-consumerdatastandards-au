@@ -20,7 +20,7 @@ import javax.validation.Payload;
 import static java.lang.annotation.RetentionPolicy.RUNTIME;
 
 /**
- * Annotation class for SSA software roles validation
+ * Annotation class for SSA software roles validation.
  */
 @Target(ElementType.METHOD)
 @Retention(RUNTIME)

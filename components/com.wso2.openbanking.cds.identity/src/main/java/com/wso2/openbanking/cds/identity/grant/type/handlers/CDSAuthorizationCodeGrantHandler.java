@@ -30,7 +30,7 @@ import java.util.HashMap;
 import java.util.Map;
 
 /**
- * CDS specific authorization code grant handler
+ * CDS specific authorization code grant handler.
  */
 public class CDSAuthorizationCodeGrantHandler extends OBAuthorizationCodeGrantHandler {
 
@@ -38,7 +38,7 @@ public class CDSAuthorizationCodeGrantHandler extends OBAuthorizationCodeGrantHa
     private CDSDataPublishingService dataPublishingService = CDSDataPublishingService.getCDSDataPublishingService();
 
     /**
-     * Set refresh token validity period and add cdr_arrangement_id
+     * Set refresh token validity period and add cdr_arrangement_id.
      *
      * @param oAuth2AccessTokenRespDTO
      * @param tokReqMsgCtx
@@ -52,7 +52,7 @@ public class CDSAuthorizationCodeGrantHandler extends OBAuthorizationCodeGrantHa
     }
 
     /**
-     * Publish token related data
+     * Publish token related data.
      *
      * @param oAuth2AccessTokenRespDTO
      */
@@ -67,7 +67,7 @@ public class CDSAuthorizationCodeGrantHandler extends OBAuthorizationCodeGrantHa
     }
 
     /**
-     * Extend this method to perform any actions related when issuing refresh token
+     * Extend this method to perform any actions related when issuing refresh token.
      *
      * @return
      */

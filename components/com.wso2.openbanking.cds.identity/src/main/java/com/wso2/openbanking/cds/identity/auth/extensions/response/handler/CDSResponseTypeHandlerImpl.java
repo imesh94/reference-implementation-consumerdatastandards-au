@@ -24,7 +24,7 @@ import org.wso2.carbon.identity.oauth2.authz.OAuthAuthzReqMessageContext;
 import java.util.Arrays;
 
 /**
- * ResponseType Handler implementation for CDS specification
+ * ResponseType Handler implementation for CDS specification.
  */
 public class CDSResponseTypeHandlerImpl implements OBResponseTypeHandler {
 

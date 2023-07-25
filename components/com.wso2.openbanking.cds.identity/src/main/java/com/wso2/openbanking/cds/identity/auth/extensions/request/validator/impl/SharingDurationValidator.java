@@ -22,7 +22,7 @@ import javax.validation.ConstraintValidator;
 import javax.validation.ConstraintValidatorContext;
 
 /**
- * Validator class for validating the sharing duration claim in the request object
+ * Validator class for validating the sharing duration claim in the request object.
  */
 public class SharingDurationValidator implements ConstraintValidator<ValidateSharingDuration, Object> {
 

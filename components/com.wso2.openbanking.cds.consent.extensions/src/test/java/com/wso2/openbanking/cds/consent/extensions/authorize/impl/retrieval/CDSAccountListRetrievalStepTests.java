@@ -47,7 +47,7 @@ import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
 /**
- * Test class for CDS Account Retrieval
+ * Test class for CDS Account Retrieval.
  */
 @PrepareForTest({OpenBankingCDSConfigParser.class, HTTPClientUtils.class})
 @PowerMockIgnore({"com.wso2.openbanking.accelerator.consent.extensions.common.*", "jdk.internal.reflect.*"})

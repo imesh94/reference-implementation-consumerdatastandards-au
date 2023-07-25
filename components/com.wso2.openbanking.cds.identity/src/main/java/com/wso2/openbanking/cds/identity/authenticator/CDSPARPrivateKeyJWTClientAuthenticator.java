@@ -21,7 +21,7 @@ import java.util.Map;
 import javax.servlet.http.HttpServletRequest;
 
 /**
- * CDSPARPrivateKeyJWTClientAuthenticator for authenticating CDS par requests
+ * CDSPARPrivateKeyJWTClientAuthenticator for authenticating CDS par requests.
  */
 public class CDSPARPrivateKeyJWTClientAuthenticator extends CDSBasePrivateKeyJWTClientAuthenticator {
 

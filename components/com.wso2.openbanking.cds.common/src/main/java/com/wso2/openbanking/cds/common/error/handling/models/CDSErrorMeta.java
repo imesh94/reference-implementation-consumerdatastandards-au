@@ -13,7 +13,7 @@
 package com.wso2.openbanking.cds.common.error.handling.models;
 
 /**
- * Model class for Meta object in Error Response in CDS
+ * Model class for Meta object in Error Response in CDS.
  */
 public class CDSErrorMeta {
 

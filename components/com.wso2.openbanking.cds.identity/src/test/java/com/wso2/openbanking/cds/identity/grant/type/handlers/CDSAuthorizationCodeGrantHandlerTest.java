@@ -27,6 +27,9 @@ import static org.powermock.api.mockito.PowerMockito.mock;
 import static org.powermock.api.mockito.PowerMockito.mockStatic;
 import static org.powermock.api.mockito.PowerMockito.when;
 
+/**
+ * Test class for CDS Authorization Code Grant Handler.
+ */
 @PrepareForTest({CDSIdentityUtil.class, OAuthServerConfiguration.class, OAuthCache.class})
 @PowerMockIgnore("jdk.internal.reflect.*")
 public class CDSAuthorizationCodeGrantHandlerTest extends PowerMockTestCase {

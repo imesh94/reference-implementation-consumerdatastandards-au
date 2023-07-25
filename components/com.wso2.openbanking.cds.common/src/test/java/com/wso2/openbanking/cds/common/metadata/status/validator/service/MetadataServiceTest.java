@@ -25,7 +25,7 @@ import org.testng.annotations.Test;
 import java.util.HashMap;
 
 /**
- * Test class for MetadataService
+ * Test class for MetadataService.
  */
 @PrepareForTest({MetadataCache.class})
 @PowerMockIgnore("jdk.internal.reflect.*")
