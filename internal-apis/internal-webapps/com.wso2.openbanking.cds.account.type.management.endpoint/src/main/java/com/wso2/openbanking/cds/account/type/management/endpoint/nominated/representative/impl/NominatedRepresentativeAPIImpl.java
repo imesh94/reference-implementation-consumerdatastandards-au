@@ -17,6 +17,7 @@ import com.wso2.openbanking.accelerator.consent.mgt.dao.models.AuthorizationReso
 import com.wso2.openbanking.accelerator.consent.mgt.dao.models.ConsentMappingResource;
 import com.wso2.openbanking.accelerator.consent.mgt.dao.models.DetailedConsentResource;
 import com.wso2.openbanking.accelerator.consent.mgt.service.impl.ConsentCoreServiceImpl;
+import com.wso2.openbanking.cds.account.type.management.endpoint.constants.AccountTypeManagementConstants;
 import com.wso2.openbanking.cds.account.type.management.endpoint.model.ErrorDTO;
 import com.wso2.openbanking.cds.account.type.management.endpoint.model.ErrorStatusEnum;
 import com.wso2.openbanking.cds.account.type.management.endpoint.nominated.representative.api.NominatedRepresentativeAPI;
@@ -46,23 +47,6 @@ import javax.ws.rs.core.Response;
 public class NominatedRepresentativeAPIImpl implements NominatedRepresentativeAPI {
 
     private static final Log log = LogFactory.getLog(NominatedRepresentativeAPIImpl.class);
-
-    private static final String BNR_PERMISSION = "bnr-permission";
-
-    // Permission status
-    private static final String VIEW = "VIEW";
-    private static final String AUTHORIZE = "AUTHORIZE";
-    private static final String REVOKE = "REVOKE";
-
-    // Consent constants
-    private static final String PRIMARY_MEMBER_AUTH_TYPE = "primary_member";
-    private static final String NOMINATED_REPRESENTATIVE_AUTH_TYPE = "nominated_representative";
-    private static final String REVOKED_CONSENT_STATUS = "Revoked";
-
-    // Error messages
-    private static final String METADATA_SERVICE_ERROR = "\"Error occurred while persisting nominated " +
-            "representative data using the account metadata service\"";
-
     private static final ConsentCoreServiceImpl consentCoreService = new ConsentCoreServiceImpl();
 
     /**
@@ -74,8 +58,8 @@ public class NominatedRepresentativeAPIImpl implements NominatedRepresentativeAP
     protected static boolean persistUpdatedNominatedRepresentativeData(AccountListUpdateDTO accountListUpdateDTO) {
 
         AccountMetadataServiceImpl accountMetadataService = AccountMetadataServiceImpl.getInstance();
-        Map<String, String> accountOwnerPermissionMap = Collections.singletonMap(BNR_PERMISSION,
-                BNRPermissionsEnum.VIEW.toString());
+        Map<String, String> accountOwnerPermissionMap = Collections.singletonMap(AccountTypeManagementConstants.
+                BNR_PERMISSION, BNRPermissionsEnum.VIEW.toString());
 
         try {
             for (AccountDataUpdateDTO accountDataUpdateDTO : accountListUpdateDTO.getData()) {
@@ -88,7 +72,8 @@ public class NominatedRepresentativeAPIImpl implements NominatedRepresentativeAP
                 // Persist nominated representatives
                 for (NominatedRepresentativeDTO nominatedRepresentative : accountDataUpdateDTO.
                         getNominatedRepresentatives()) {
-                    Map<String, String> representativePermissionMap = Collections.singletonMap(BNR_PERMISSION,
+                    Map<String, String> representativePermissionMap = Collections.singletonMap(
+                            AccountTypeManagementConstants.BNR_PERMISSION,
                             nominatedRepresentative.getPermission());
                     String nominatedRepresentativeUserName = nominatedRepresentative.getName();
                     accountMetadataService.addOrUpdateAccountMetadata(accountID, nominatedRepresentativeUserName,
@@ -96,7 +81,7 @@ public class NominatedRepresentativeAPIImpl implements NominatedRepresentativeAP
                 }
             }
         } catch (OpenBankingException e) {
-            log.error(METADATA_SERVICE_ERROR, e);
+            log.error(AccountTypeManagementConstants.METADATA_SERVICE_ERROR, e);
             return false;
         }
         return true;
@@ -111,8 +96,8 @@ public class NominatedRepresentativeAPIImpl implements NominatedRepresentativeAP
     protected static boolean persistRevokedNominatedRepresentativeData(AccountListDeleteDTO accountListDeleteDTO) {
 
         AccountMetadataServiceImpl accountMetadataService = AccountMetadataServiceImpl.getInstance();
-        Map<String, String> revokePermissionMap = Collections.singletonMap(BNR_PERMISSION, BNRPermissionsEnum.
-                REVOKE.toString());
+        Map<String, String> revokePermissionMap = Collections.singletonMap(AccountTypeManagementConstants.
+                BNR_PERMISSION, BNRPermissionsEnum.REVOKE.toString());
         try {
             for (AccountDataDeleteDTO accountDataDeleteDTO : accountListDeleteDTO.getData()) {
                 String accountID = accountDataDeleteDTO.getAccountID();
@@ -130,7 +115,8 @@ public class NominatedRepresentativeAPIImpl implements NominatedRepresentativeAP
                         List<AuthorizationResource> authResourcesForUser = consentCoreService.
                                 searchAuthorizationsForUser(accountUser);
                         for (AuthorizationResource authResource : authResourcesForUser) {
-                            if (PRIMARY_MEMBER_AUTH_TYPE.equals(authResource.getAuthorizationType()) ||
+                            if (AccountTypeManagementConstants.PRIMARY_MEMBER_AUTH_TYPE.equals(authResource.
+                                    getAuthorizationType()) || AccountTypeManagementConstants.
                                     NOMINATED_REPRESENTATIVE_AUTH_TYPE.equals(authResource.getAuthorizationType())) {
                                 consentIds.add(authResource.getConsentID());
                             }
@@ -140,9 +126,10 @@ public class NominatedRepresentativeAPIImpl implements NominatedRepresentativeAP
                 /* Check if there are any other users who have AUTHORIZE permission for the account
                    If there are none, remove all bnr-permission records for the account*/
                 Map<String, String> userIdAttributesMap = accountMetadataService.getUserMetadataForAccountIdAndKey(
-                        accountID, BNR_PERMISSION);
+                        accountID, AccountTypeManagementConstants.BNR_PERMISSION);
                 if (!userIdAttributesMap.containsValue(BNRPermissionsEnum.AUTHORIZE.toString())) {
-                    accountMetadataService.removeAccountMetadataByKeyForAllUsers(accountID, BNR_PERMISSION);
+                    accountMetadataService.removeAccountMetadataByKeyForAllUsers(accountID,
+                            AccountTypeManagementConstants.BNR_PERMISSION);
                     // Revoke the consent where the user is the last user with AUTHORIZE permission for the account
                     // Todo: Fix the usecase for multiple accounts in the consent.
                     if (consentIds.size() > 0) {
@@ -155,7 +142,8 @@ public class NominatedRepresentativeAPIImpl implements NominatedRepresentativeAP
                             for (ConsentMappingResource consentMappingResource : consentMappingResources) {
                                 if (accountID.equals(consentMappingResource.getAccountID())) {
                                     consentCoreService.revokeConsentWithReason(detailedConsentResource.getConsentID(),
-                                            REVOKED_CONSENT_STATUS, null, true, "Revoked using BNR Dashboard");
+                                            AccountTypeManagementConstants.REVOKED_CONSENT_STATUS, null, true,
+                                            "Revoked using BNR Dashboard");
                                     break;
                                 }
                             }
@@ -164,7 +152,7 @@ public class NominatedRepresentativeAPIImpl implements NominatedRepresentativeAP
                 }
             }
         } catch (OpenBankingException e) {
-            log.error(METADATA_SERVICE_ERROR, e);
+            log.error(AccountTypeManagementConstants.METADATA_SERVICE_ERROR, e);
             return false;
         }
         return true;
@@ -208,7 +196,7 @@ public class NominatedRepresentativeAPIImpl implements NominatedRepresentativeAP
 
         AccountMetadataServiceImpl accountMetadataService = AccountMetadataServiceImpl.getInstance();
         Map<String, String> availableUserIdMap = accountMetadataService.getUserMetadataForAccountIdAndKey(accountId,
-                BNR_PERMISSION);
+                AccountTypeManagementConstants.BNR_PERMISSION);
         List<String> unavailableUserIds = new ArrayList<>();
         for (String requestedUserId : requestedUserIdList) {
             if (!availableUserIdMap.containsKey(requestedUserId)) {
@@ -340,7 +328,8 @@ public class NominatedRepresentativeAPIImpl implements NominatedRepresentativeAP
         AccountMetadataServiceImpl accountMetadataService = AccountMetadataServiceImpl.getInstance();
 
         try {
-            String permissionStatus = accountMetadataService.getAccountMetadataByKey(accountId, userId, BNR_PERMISSION);
+            String permissionStatus = accountMetadataService.getAccountMetadataByKey(accountId, userId,
+                    AccountTypeManagementConstants.BNR_PERMISSION);
             if (StringUtils.isNotBlank(permissionStatus)) {
                 NominatedRepresentativeResponseDTO nominatedRepresentativeResponseDTO = new
                         NominatedRepresentativeResponseDTO(accountId, userId, permissionStatus);

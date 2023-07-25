@@ -20,10 +20,10 @@ import com.wso2.openbanking.accelerator.consent.extensions.common.ConsentExcepti
 import com.wso2.openbanking.accelerator.consent.extensions.common.ResponseStatus;
 import com.wso2.openbanking.accelerator.consent.mgt.dao.models.DetailedConsentResource;
 import com.wso2.openbanking.accelerator.consent.mgt.service.impl.ConsentCoreServiceImpl;
+import com.wso2.openbanking.cds.account.type.management.endpoint.constants.AccountTypeManagementConstants;
 import com.wso2.openbanking.cds.account.type.management.endpoint.model.ErrorDTO;
 import com.wso2.openbanking.cds.account.type.management.endpoint.model.ErrorStatusEnum;
 import com.wso2.openbanking.cds.account.type.management.endpoint.secondary.user.instruction.api.SecondaryUserInstructionApi;
-import com.wso2.openbanking.cds.account.type.management.endpoint.secondary.user.instruction.constants.SecondaryUserInstructionConstants;
 import com.wso2.openbanking.cds.account.type.management.endpoint.secondary.user.instruction.model.SecondaryUserAccountStatusData;
 import com.wso2.openbanking.cds.account.type.management.endpoint.util.ValidationUtil;
 import net.minidev.json.JSONArray;
@@ -34,7 +34,7 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
 import java.util.ArrayList;
-import java.util.Arrays;
+import java.util.Collections;
 import java.util.stream.Collectors;
 import javax.ws.rs.core.Response;
 
@@ -47,9 +47,9 @@ public class SecondaryUserInstructionApiImpl implements SecondaryUserInstruction
 
     private static final String DATA = "data";
     private static final String AUTHORIZED = "authorized";
-    private static final String EXPIRED =  "Expired";
-    private AccountMetadataService accountMetadataService = AccountMetadataServiceImpl.getInstance();
-    private ConsentCoreServiceImpl consentCoreService = new ConsentCoreServiceImpl();
+    private static final String EXPIRED = "Expired";
+    private final AccountMetadataService accountMetadataService = AccountMetadataServiceImpl.getInstance();
+    private final ConsentCoreServiceImpl consentCoreService = new ConsentCoreServiceImpl();
 
 
     /**
@@ -119,13 +119,14 @@ public class SecondaryUserInstructionApiImpl implements SecondaryUserInstruction
      * Expire all the consents created by the secondary user that includes the given secondary account
      * of which the account owner has removed the secondary account instruction status
      * if secondary user don't have any other accounts with the DH.
+     *
      * @param secondaryUserAccountStatusData
      * @throws ConsentException
      */
     private void expireConsentsBasedOnOtherAccountAvailability(
             SecondaryUserAccountStatusData secondaryUserAccountStatusData) throws ConsentException {
 
-        Boolean isDataSharingActivation = SecondaryUserInstructionConstants.ACTIVE_STATUS
+        Boolean isDataSharingActivation = AccountTypeManagementConstants.ACTIVE_STATUS
                 .equalsIgnoreCase(secondaryUserAccountStatusData.getSecondaryAccountInstructionStatus());
 
         try {
@@ -159,8 +160,8 @@ public class SecondaryUserInstructionApiImpl implements SecondaryUserInstruction
             String userId, String accountId)
             throws ConsentManagementException {
 
-        ArrayList<String> consentStatuses = new ArrayList<>(Arrays.asList(AUTHORIZED));
-        ArrayList<String> userIds = new ArrayList<>(Arrays.asList(userId));
+        ArrayList<String> consentStatuses = new ArrayList<>(Collections.singletonList(AUTHORIZED));
+        ArrayList<String> userIds = new ArrayList<>(Collections.singletonList(userId));
 
         // retrieve active consent for the current user
         ArrayList<DetailedConsentResource> activeAccountConsentsBoundToGivenUserId = consentCoreService.
@@ -176,7 +177,7 @@ public class SecondaryUserInstructionApiImpl implements SecondaryUserInstruction
                                 .anyMatch(consentMappingResource ->
                                         consentMappingResource.getAccountID().equals(accountId)
                                                 && consentMappingResource.getMappingStatus().equals(
-                                                SecondaryUserInstructionConstants.ACTIVE_STATUS)))
+                                                AccountTypeManagementConstants.ACTIVE_STATUS)))
                         .collect(Collectors.toCollection(ArrayList::new));
         return activeConsentsWithSecondaryAccountMappings;
     }

@@ -275,9 +275,9 @@
 
         function maskAccountId(accountId) {
             var start = accountId.substring(0,4);
-            var end = accountId.slice(accountId.length - 3);
+            var end = accountId.slice(accountId.length - 3); 
             var mask = "*".repeat(accountId.length - 7); // 4+3
-            var maskedAccId = start + mask + end;
+            var maskedAccId = start + mask + end; 
             return maskedAccId;
         }
 
