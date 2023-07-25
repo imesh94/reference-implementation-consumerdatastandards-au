@@ -1,8 +1,0 @@
-FROM RequestStream
-SELECT messageID, regex:find('^\/token', apiContext) AND regex:find('unattended',cast(map:get(propertiesMap,'customerStatus'),'string')) AS isEligible,
-str:concat(apiContext, ':', appId,':',cast(map:get(propertiesMap,'customerStatus'),'string')) as throttleKey, propertiesMap
-INSERT INTO EligibilityStream;
-
-FROM EligibilityStream[isEligible==true]#throttler:timeBatch(1 day, 0)
-select throttleKey, (count(messageID) >= 20) as isThrottled, expiryTimeStamp group by throttleKey
-INSERT ALL EVENTS into ResultStream;

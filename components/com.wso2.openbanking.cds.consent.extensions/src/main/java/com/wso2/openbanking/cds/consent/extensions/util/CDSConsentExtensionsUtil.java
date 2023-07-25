@@ -67,7 +67,7 @@ public class CDSConsentExtensionsUtil {
             return true;
         }
     }
-  
+
     /**
      * Method to retrieve the sharing status of a legal entity for the given accountID, secondaryUserID and.
      * legalEntityID

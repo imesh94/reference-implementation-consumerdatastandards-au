@@ -8,7 +8,6 @@
  */
 package com.wso2.openbanking.cds.consent.extensions.authservlet.impl;
 
-
 import com.wso2.openbanking.accelerator.account.metadata.service.service.AccountMetadataServiceImpl;
 import com.wso2.openbanking.accelerator.common.exception.OpenBankingException;
 import com.wso2.openbanking.accelerator.consent.extensions.authservlet.model.OBAuthServletInterface;
@@ -22,6 +21,7 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.json.JSONArray;
 import org.json.JSONObject;
+
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.LinkedHashMap;
@@ -35,10 +35,10 @@ import javax.servlet.http.HttpServletRequest;
  */
 public class OBCDSAuthServletImpl implements OBAuthServletInterface {
 
+    private static final Log log = LogFactory.getLog(OBCDSAuthServletImpl.class);
     String preSelectedProfileId;
     AccountMetadataServiceImpl accountMetadataService = AccountMetadataServiceImpl.getInstance();
     private String userId;
-    private static final Log log = LogFactory.getLog(OBCDSAuthServletImpl.class);
     private String clientID;
     private boolean isConsentAmendment;
 
@@ -223,10 +223,25 @@ public class OBCDSAuthServletImpl implements OBAuthServletInterface {
             // Check the eligibility of the joint account for data sharing
             String accountID = account.getString("accountId");
             boolean isJointAccount = account.getBoolean("isJointAccount");
-            boolean domsPreApprovalStatus = true;
+            boolean domsPreApprovalStatus;
             try {
                 if (isJointAccount) {
                     domsPreApprovalStatus = CDSConsentExtensionsUtil.isDOMSStatusEligibleForDataSharing(accountID);
+                    data.put(CDSConsentExtensionConstants.IS_JOINT_ACCOUNT, true);
+
+                    String consentElectionStatus = String
+                            .valueOf(account.get(CDSConsentExtensionConstants.JOINT_ACCOUNT_CONSENT_ELECTION_STATUS));
+                    data.put(CDSConsentExtensionConstants.IS_SELECTABLE,
+                            CDSConsentExtensionConstants.JOINT_ACCOUNT_PRE_APPROVAL.equalsIgnoreCase(
+                                    consentElectionStatus)
+                                    && domsPreApprovalStatus);
+
+                    JSONObject jointAccountInfo = account.getJSONObject(CDSConsentExtensionConstants.
+                            JOINT_ACCOUNT_INFO);
+                    if (jointAccountInfo != null) {
+                        data.put(CDSConsentExtensionConstants.LINKED_MEMBERS_COUNT,
+                                jointAccountInfo.getJSONArray(CDSConsentExtensionConstants.LINKED_MEMBER).length());
+                    }
                 }
             } catch (OpenBankingException e) {
                 String errorMessage = "Error occurred while checking DOMS status for the joint account " +
@@ -235,20 +250,6 @@ public class OBCDSAuthServletImpl implements OBAuthServletInterface {
                 throw new ConsentException(ResponseStatus.INTERNAL_SERVER_ERROR,
                         "Error while checking DOMS status for the joint account for data sharing");
             }
-
-            data.put(CDSConsentExtensionConstants.IS_JOINT_ACCOUNT, true);
-
-            String consentElectionStatus = String
-                    .valueOf(account.get(CDSConsentExtensionConstants.JOINT_ACCOUNT_CONSENT_ELECTION_STATUS));
-            data.put(CDSConsentExtensionConstants.IS_SELECTABLE,
-                    CDSConsentExtensionConstants.JOINT_ACCOUNT_PRE_APPROVAL.equalsIgnoreCase(consentElectionStatus)
-                            && domsPreApprovalStatus);
-
-            JSONObject jointAccountInfo = account.getJSONObject(CDSConsentExtensionConstants.JOINT_ACCOUNT_INFO);
-            if (jointAccountInfo != null) {
-                data.put(CDSConsentExtensionConstants.LINKED_MEMBERS_COUNT,
-                        jointAccountInfo.getJSONArray(CDSConsentExtensionConstants.LINKED_MEMBER).length());
-            }
         }
     }
 
@@ -256,8 +257,7 @@ public class OBCDSAuthServletImpl implements OBAuthServletInterface {
      * Update Secondary Account Details.
      *
      * @param account: account object
-     * @param data: data map
-     * @return
+     * @param data:    data map
      */
     private void updateSecondaryAccountAttributes(JSONObject account, Map<String, Object> data) {
         if (account != null && account.getBoolean(CDSConsentExtensionConstants.IS_SECONDARY_ACCOUNT_RESPONSE)) {
@@ -293,14 +293,14 @@ public class OBCDSAuthServletImpl implements OBAuthServletInterface {
             // Both secondaryAccountPrivilegeStatus and secondaryAccountInstructionStatus should be in active state and
             // legal entity is not in blocked state for secondary account to be selectable
             Boolean isSelectable = secondaryAccountPrivilegeStatus && secondaryAccountInstructionStatus
-                    && !isLegalEntitySharingStatusBlocked && domsPreApprovalStatus;
+                    && !isLegalEntitySharingStatusBlocked;
 
             // handle secondary joint accounts
             if (account.getBoolean(CDSConsentExtensionConstants.IS_JOINT_ACCOUNT_RESPONSE)) {
                 String consentElectionStatus = String
                         .valueOf(account.get(CDSConsentExtensionConstants.JOINT_ACCOUNT_CONSENT_ELECTION_STATUS));
                 Boolean isPreApproved = CDSConsentExtensionConstants.JOINT_ACCOUNT_PRE_APPROVAL
-                        .equalsIgnoreCase(consentElectionStatus);
+                        .equalsIgnoreCase(consentElectionStatus) && domsPreApprovalStatus;
 
                 // For secondary joint account to be selectable, account also should be in pre-approved state.
                 data.put(CDSConsentExtensionConstants.IS_SELECTABLE, isPreApproved && isSelectable);

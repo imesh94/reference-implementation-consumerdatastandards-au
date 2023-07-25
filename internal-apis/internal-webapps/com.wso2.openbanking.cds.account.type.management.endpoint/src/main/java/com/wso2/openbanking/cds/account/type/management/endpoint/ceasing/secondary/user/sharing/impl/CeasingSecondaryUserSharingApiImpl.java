@@ -15,14 +15,10 @@ import com.wso2.openbanking.accelerator.consent.mgt.dao.models.AuthorizationReso
 import com.wso2.openbanking.accelerator.consent.mgt.dao.models.DetailedConsentResource;
 import com.wso2.openbanking.accelerator.consent.mgt.service.ConsentCoreService;
 import com.wso2.openbanking.accelerator.consent.mgt.service.impl.ConsentCoreServiceImpl;
-import com.wso2.openbanking.cds.account.type.management.endpoint.ceasing.secondary.user.sharing.api.
-        CeasingSecondaryUserSharingApi;
-import com.wso2.openbanking.cds.account.type.management.endpoint.ceasing.secondary.user.sharing.handler.
-        CeasingSecondaryUserSharingHandler;
-import com.wso2.openbanking.cds.account.type.management.endpoint.ceasing.secondary.user.sharing.models.
-        LegalEntityListUpdateDTO;
-import com.wso2.openbanking.cds.account.type.management.endpoint.ceasing.secondary.user.sharing.models.
-        UsersAccountsLegalEntitiesDTO;
+import com.wso2.openbanking.cds.account.type.management.endpoint.ceasing.secondary.user.sharing.api.CeasingSecondaryUserSharingApi;
+import com.wso2.openbanking.cds.account.type.management.endpoint.ceasing.secondary.user.sharing.handler.CeasingSecondaryUserSharingHandler;
+import com.wso2.openbanking.cds.account.type.management.endpoint.ceasing.secondary.user.sharing.models.LegalEntityListUpdateDTO;
+import com.wso2.openbanking.cds.account.type.management.endpoint.ceasing.secondary.user.sharing.models.UsersAccountsLegalEntitiesDTO;
 import com.wso2.openbanking.cds.account.type.management.endpoint.constants.AccountTypeManagementConstants;
 import com.wso2.openbanking.cds.account.type.management.endpoint.model.ErrorDTO;
 import com.wso2.openbanking.cds.account.type.management.endpoint.model.ErrorStatusEnum;
@@ -142,7 +138,7 @@ public class CeasingSecondaryUserSharingApiImpl implements CeasingSecondaryUserS
                     getUsersAccountsLegalEntities(responseDetailedConsents, responseUsersAccountsLegalEntitiesDTO);
             return Response.ok().entity(responseUsersAccountsLegalEntities).build();
 
-        } catch (Exception e) {
+        } catch (OpenBankingException e) {
             log.error("Error occurred while retrieving users,accounts and legal entities.", e);
             return Response.status(Response.Status.BAD_REQUEST).entity(e.getMessage()).build();
         }

@@ -298,5 +298,3 @@ public class CDSConsentAdminHandlerTest extends PowerMockTestCase {
         return dataObject;
     }
 }
-
-

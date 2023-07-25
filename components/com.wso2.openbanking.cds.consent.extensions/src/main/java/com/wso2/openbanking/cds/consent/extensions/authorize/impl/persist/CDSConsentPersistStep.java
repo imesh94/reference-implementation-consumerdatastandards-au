@@ -239,8 +239,8 @@ public class CDSConsentPersistStep implements ConsentPersistStep {
 
     @Generated(message = "Excluding from code coverage since it requires a service call")
     protected boolean bindNonPrimaryAccountsToConsentWithGivenPermissions(ConsentCoreServiceImpl consentCoreService,
-                                                 ConsentResource consentResource, ConsentData consentData,
-                                                 Map<String, ArrayList<String>> nonPrimaryAccountIDsMapWithPermissions)
+                                              ConsentResource consentResource, ConsentData consentData,
+                                              Map<String, ArrayList<String>> nonPrimaryAccountIDsMapWithPermissions)
             throws ConsentManagementException {
 
         return consentCoreService.bindUserAccountsToConsent(consentResource, consentData.getUserId(),
@@ -383,8 +383,8 @@ public class CDSConsentPersistStep implements ConsentPersistStep {
 
     @Generated(message = "Excluding from code coverage since it requires a service call")
     private Map<String, Object> bindNonPrimaryAccountUsersToConsent(ConsentResource consentResource,
-                           ConsentData consentData, Map<String, Map<String, String>> nonPrimaryAccountIdAgainstUsers,
-                           Map<String, ArrayList<String>> userIdAgainstNonPrimaryAccounts, boolean isConsentAmendment)
+            ConsentData consentData, Map<String, Map<String, String>> nonPrimaryAccountIdAgainstUsers,
+            Map<String, ArrayList<String>> userIdAgainstNonPrimaryAccounts, boolean isConsentAmendment)
             throws ConsentManagementException {
 
         List<String> alreadyAddedUsers = new ArrayList<>();
