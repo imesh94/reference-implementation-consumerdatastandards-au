@@ -38,7 +38,7 @@ import javax.servlet.ServletException;
 import static org.testng.Assert.assertEquals;
 
 /**
- * Test class for .
+ * Test class for CDS Token Revocation Filter.
  */
 @PrepareForTest({IdentityCommonUtil.class})
 @PowerMockIgnore("jdk.internal.reflect.*")

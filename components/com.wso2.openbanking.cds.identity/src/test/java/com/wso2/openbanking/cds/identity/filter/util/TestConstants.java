@@ -12,7 +12,7 @@
 package com.wso2.openbanking.cds.identity.filter.util;
 
 /**
- * Constants used in tests.
+ * Test Constants class.
  */
 public class TestConstants {
     public static final String TARGET_STREAM = "targetStream";

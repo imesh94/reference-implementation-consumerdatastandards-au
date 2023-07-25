@@ -30,7 +30,7 @@ import static org.powermock.api.mockito.PowerMockito.when;
 import static org.testng.Assert.assertTrue;
 
 /**
- * Test class for .
+ * Test class for CDS Revocation Private Key JWT Authenticator.
  */
 @PrepareForTest({OAuth2Util.class, OAuthServerConfiguration.class, CDSRevocationPrivateKeyJWTClientAuthenticator.class})
 @PowerMockIgnore("jdk.internal.reflect.*")

@@ -33,7 +33,7 @@ import static org.powermock.api.mockito.PowerMockito.mockStatic;
 import static org.powermock.api.mockito.PowerMockito.when;
 
 /**
- * Test class for .
+ * Test class for CDS Claim Provider.
  */
 @PrepareForTest({SessionDataCache.class, CDSClaimProviderUtil.class})
 @PowerMockIgnore("jdk.internal.reflect.*")

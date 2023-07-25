@@ -13,7 +13,7 @@
 package com.wso2.openbanking.cds.identity.push.auth.extension.request.validator.util;
 
 /**
- * Test data for CDS Push Auth Request Validator.
+ * Test data for CDS Push Authorization Request Validator.
  */
 public class CDSPushAuthRequestValidatorTestData {
 

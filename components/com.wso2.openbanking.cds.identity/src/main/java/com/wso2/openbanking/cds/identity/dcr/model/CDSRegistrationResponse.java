@@ -15,7 +15,7 @@ import com.google.gson.annotations.SerializedName;
 import com.wso2.openbanking.accelerator.identity.dcr.model.RegistrationResponse;
 
 /**
- * CDS Spec specific registration response class.
+ * CDS specific registration response class.
  */
 public class CDSRegistrationResponse extends RegistrationResponse {
 

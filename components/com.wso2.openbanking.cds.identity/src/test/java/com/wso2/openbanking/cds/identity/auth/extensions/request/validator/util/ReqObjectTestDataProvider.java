@@ -12,7 +12,7 @@
 package com.wso2.openbanking.cds.identity.auth.extensions.request.validator.util;
 
 /**
- * class to provide ReqObject test data.
+ * Data provider class for Request Object.
  */
 public class ReqObjectTestDataProvider {
 

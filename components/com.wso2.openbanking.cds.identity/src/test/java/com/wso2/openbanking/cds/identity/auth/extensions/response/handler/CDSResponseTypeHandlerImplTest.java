@@ -34,7 +34,7 @@ import static org.powermock.api.mockito.PowerMockito.mockStatic;
 import static org.powermock.api.mockito.PowerMockito.when;
 
 /**
- * CDSResponseTypeHandlerImpl Test class.
+ * Test class for CDS Response Type Handler.
  */
 @PrepareForTest({CDSIdentityUtil.class, IdentityCommonUtil.class, OpenBankingConfigParser.class})
 @PowerMockIgnore("jdk.internal.reflect.*")

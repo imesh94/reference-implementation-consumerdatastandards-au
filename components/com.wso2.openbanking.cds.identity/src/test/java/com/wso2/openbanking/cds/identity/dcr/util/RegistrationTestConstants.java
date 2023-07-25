@@ -12,7 +12,7 @@
 package com.wso2.openbanking.cds.identity.dcr.util;
 
 /**
- * RegistrationTestConstants.
+ * Registration Test Constants.
  */
 public class RegistrationTestConstants {
 
