@@ -20,7 +20,7 @@ import javax.xml.bind.annotation.XmlEnumValue;
 import javax.xml.bind.annotation.XmlType;
 
 /**
- * MetaData Update Request Data DTO
+ * MetaData Update Request Data DTO.
  */
 public class MetadataUpdateDataDTO {
     @ApiModelProperty(required = true, value = "The action to take for the meta data. At the moment the only option " +

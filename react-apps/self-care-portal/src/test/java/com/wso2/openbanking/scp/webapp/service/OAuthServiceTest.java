@@ -30,6 +30,9 @@ import javax.servlet.http.Cookie;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
+/**
+ * class comment.
+ */
 @PrepareForTest({Utils.class})
 @PowerMockIgnore("jdk.internal.reflect.*")
 public class OAuthServiceTest extends PowerMockTestCase {

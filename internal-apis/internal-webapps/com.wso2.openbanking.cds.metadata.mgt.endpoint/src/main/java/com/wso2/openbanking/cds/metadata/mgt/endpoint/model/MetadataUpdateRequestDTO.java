@@ -19,7 +19,7 @@ import javax.validation.Valid;
 import javax.validation.constraints.NotNull;
 
 /**
- *  MetaData Update Request DTO
+ *  MetaData Update Request DTO.
  */
 public class MetadataUpdateRequestDTO {
     @ApiModelProperty(required = true, value = "")

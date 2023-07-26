@@ -35,7 +35,7 @@ import java.util.HashMap;
 import java.util.Map;
 
 /**
- * Test class for CDS Error Handler class
+ * Test class for CDS Error Handler class.
  */
 @PrepareForTest({IdPermanenceUtils.class, OpenBankingCDSConfigParser.class})
 @PowerMockIgnore("jdk.internal.reflect.*")

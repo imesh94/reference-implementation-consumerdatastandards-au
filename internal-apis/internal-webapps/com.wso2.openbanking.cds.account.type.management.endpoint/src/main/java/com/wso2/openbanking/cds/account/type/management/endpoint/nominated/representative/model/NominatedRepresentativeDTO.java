@@ -12,7 +12,7 @@ import javax.validation.constraints.NotEmpty;
 import javax.validation.constraints.Pattern;
 
 /**
- * NominatedRepresentativeDTO
+ * NominatedRepresentativeDTO.
  */
 public class NominatedRepresentativeDTO {
 

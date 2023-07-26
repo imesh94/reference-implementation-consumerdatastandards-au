@@ -10,7 +10,7 @@
 package com.wso2.openbanking.cds.account.type.management.endpoint.ceasing.secondary.user.sharing.constants;
 
 /**
- * Ceasing Secondary User - Enum
+ * Ceasing Secondary User - Enum.
  */
 public enum CeasingSecondaryUserEnum {
 

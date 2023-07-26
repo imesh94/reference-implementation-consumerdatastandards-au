@@ -95,7 +95,7 @@ public class MappingUtil {
     }
 
     /**
-     * Get availability metrics DTO from availability list and period enum
+     * Get availability metrics DTO from availability list and period enum.
      *
      * @param availability
      * @param period

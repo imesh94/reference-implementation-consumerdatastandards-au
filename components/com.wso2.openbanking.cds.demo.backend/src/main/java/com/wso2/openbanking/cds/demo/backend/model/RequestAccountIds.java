@@ -37,7 +37,7 @@ public class RequestAccountIds {
     }
 
     /**
-     * Get data
+     * Get data.
      *
      * @return data
      **/
@@ -60,7 +60,7 @@ public class RequestAccountIds {
     }
 
     /**
-     * Get meta
+     * Get meta.
      *
      * @return meta
      **/

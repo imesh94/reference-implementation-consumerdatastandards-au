@@ -42,7 +42,7 @@ public class RequestAccountIdsData {
     }
 
     /**
-     * Get accountIds
+     * Get accountIds.
      *
      * @return accountIds
      **/

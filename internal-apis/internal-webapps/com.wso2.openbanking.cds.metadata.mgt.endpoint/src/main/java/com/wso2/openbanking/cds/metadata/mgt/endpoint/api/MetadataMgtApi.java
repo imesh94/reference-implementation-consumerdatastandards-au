@@ -27,7 +27,7 @@ import javax.ws.rs.Path;
 import javax.ws.rs.core.Response;
 
 /**
- *  Metadata Management API
+ *  Metadata Management API.
  */
 @Path("/admin")
 public interface MetadataMgtApi {

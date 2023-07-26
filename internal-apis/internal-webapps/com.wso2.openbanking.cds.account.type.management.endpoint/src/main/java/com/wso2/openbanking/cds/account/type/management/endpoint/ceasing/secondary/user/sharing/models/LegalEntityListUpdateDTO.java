@@ -13,7 +13,7 @@ import javax.validation.Valid;
 
 
 /**
- * Ceasing Secondary User - BlockedLegalEntityListDTO
+ * Ceasing Secondary User - BlockedLegalEntityListDTO.
  */
 public class LegalEntityListUpdateDTO {
 

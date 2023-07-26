@@ -25,6 +25,9 @@ import java.util.Optional;
 import javax.servlet.http.Cookie;
 import javax.servlet.http.HttpServletRequest;
 
+/**
+ * class comment.
+ */
 public class APIMServiceTest extends PowerMockTestCase {
 
     private APIMService uut;

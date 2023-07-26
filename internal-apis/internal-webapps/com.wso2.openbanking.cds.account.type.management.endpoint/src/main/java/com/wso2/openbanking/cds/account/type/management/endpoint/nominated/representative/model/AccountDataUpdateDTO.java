@@ -13,7 +13,7 @@ import javax.validation.Valid;
 import javax.validation.constraints.NotEmpty;
 
 /**
- * AccountDataDTO
+ * AccountDataDTO.
  */
 public class AccountDataUpdateDTO {
 

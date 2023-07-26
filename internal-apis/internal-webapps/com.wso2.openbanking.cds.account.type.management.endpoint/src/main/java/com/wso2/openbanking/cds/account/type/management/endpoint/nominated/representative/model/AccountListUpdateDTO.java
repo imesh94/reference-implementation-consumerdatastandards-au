@@ -12,7 +12,7 @@ import java.util.List;
 import javax.validation.Valid;
 
 /**
- * AccountListDTO
+ * AccountListDTO.
  */
 public class AccountListUpdateDTO {
 

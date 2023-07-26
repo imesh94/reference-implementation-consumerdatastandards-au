@@ -40,6 +40,9 @@ import static org.powermock.api.mockito.PowerMockito.mock;
 import static org.powermock.api.mockito.PowerMockito.mockStatic;
 import static org.powermock.api.mockito.PowerMockito.when;
 
+/**
+ * class comment.
+ */
 @PrepareForTest({SPQueryExecutorUtil.class, FrameworkUtil.class})
 @PowerMockIgnore("jdk.internal.reflect.*")
 public class MetricsProcessorUtilTest extends PowerMockTestCase {

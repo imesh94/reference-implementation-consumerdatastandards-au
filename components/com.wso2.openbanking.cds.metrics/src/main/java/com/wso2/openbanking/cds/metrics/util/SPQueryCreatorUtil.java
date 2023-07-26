@@ -161,7 +161,7 @@ public class SPQueryCreatorUtil {
     }
 
     /**
-     * Return query for authenticated error invocations data for the current week
+     * Return query for authenticated error invocations data for the current week.
      * Checks whether authenticated or unauthenticated based on the username
      *
      * @return - query string

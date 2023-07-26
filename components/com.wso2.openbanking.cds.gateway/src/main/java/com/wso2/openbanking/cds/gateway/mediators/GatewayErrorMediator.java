@@ -249,7 +249,7 @@ public class GatewayErrorMediator extends AbstractMediator {
     }
 
     /**
-     * set the error message to the jsonPayload to be sent back
+     * set the error message to the jsonPayload to be sent back.
      *
      * @param messageContext the messageContext sent back to the user
      * @param errorData      the details of the error for validation failure
@@ -274,7 +274,7 @@ public class GatewayErrorMediator extends AbstractMediator {
     }
 
     /**
-     * Method to get the error response for throttled out requests
+     * Method to get the error response for throttled out requests.
      *
      * @return Throttle Data JSONObject
      */
@@ -295,7 +295,7 @@ public class GatewayErrorMediator extends AbstractMediator {
     }
 
     /**
-     * Method to get the error response for auth failures
+     * Method to get the error response for auth failures.
      *
      * @param errorCode
      * @param errorMessage
@@ -351,7 +351,7 @@ public class GatewayErrorMediator extends AbstractMediator {
     }
 
     /**
-     * Method to get the error response for schema validation failures
+     * Method to get the error response for schema validation failures.
      *
      * @param errorCode
      * @param errorDetail
@@ -381,7 +381,7 @@ public class GatewayErrorMediator extends AbstractMediator {
     }
 
     /**
-     * Method to get the error response for response schema validation failures
+     * Method to get the error response for response schema validation failures.
      *
      * @param errorDetail
      * @return
@@ -392,7 +392,7 @@ public class GatewayErrorMediator extends AbstractMediator {
     }
 
     /**
-     * Method to get the oauth error response
+     * Method to get the oauth error response.
      *
      * @param errorCode
      * @param errorMessage
@@ -425,7 +425,7 @@ public class GatewayErrorMediator extends AbstractMediator {
     }
 
     /**
-     * Method to get the common error JSON object
+     * Method to get the common error JSON object.
      *
      * @param errorEnum - Error Enum
      * @param errorStatus - Error Status

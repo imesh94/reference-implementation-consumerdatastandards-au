@@ -16,6 +16,9 @@ import com.wso2.openbanking.accelerator.gateway.executor.core.OpenBankingGateway
 import com.wso2.openbanking.accelerator.gateway.executor.model.OBAPIRequestContext;
 import com.wso2.openbanking.accelerator.gateway.executor.model.OBAPIResponseContext;
 
+/**
+ * class comment.
+ */
 public class MockOBExecutor implements OpenBankingGatewayExecutor {
 
     @Override
@@ -30,7 +33,7 @@ public class MockOBExecutor implements OpenBankingGatewayExecutor {
     }
 
     /**
-     * Method to handle post response
+     * Method to handle post response.
      *
      * @param obapiResponseContext OB response context object
      */
@@ -40,7 +43,7 @@ public class MockOBExecutor implements OpenBankingGatewayExecutor {
     }
 
     /**
-     * Method to handle post request
+     * Method to handle post request.
      *
      * @param obapiRequestContext OB request context object
      */

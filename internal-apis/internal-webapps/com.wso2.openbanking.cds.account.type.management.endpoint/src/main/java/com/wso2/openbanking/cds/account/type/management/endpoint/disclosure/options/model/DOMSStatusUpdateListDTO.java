@@ -13,7 +13,7 @@ import java.util.List;
 import javax.validation.Valid;
 
 /**
- * Disclosure Options Management - DOMSStatusUpdateDTOList
+ * Disclosure Options Management - DOMSStatusUpdateDTOList.
  */
 public class DOMSStatusUpdateListDTO {
 

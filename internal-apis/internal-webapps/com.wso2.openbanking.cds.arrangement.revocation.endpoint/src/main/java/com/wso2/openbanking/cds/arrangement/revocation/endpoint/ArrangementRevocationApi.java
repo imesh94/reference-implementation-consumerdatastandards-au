@@ -144,7 +144,7 @@ public class ArrangementRevocationApi {
     }
 
     /**
-     * Return CDS specific error response
+     * Return CDS specific error response.
      *
      * @param errorCode    - CDS error code
      * @param errorMessage - Error message
@@ -160,7 +160,7 @@ public class ArrangementRevocationApi {
     }
 
     /**
-     * Return CDS specific error response
+     * Return CDS specific error response.
      *
      * @param errorCode    - CDS error code
      * @param errorMessage - CDS error message
@@ -177,7 +177,7 @@ public class ArrangementRevocationApi {
     }
 
     /**
-     * Extract user-id from DetailedConsentResource
+     * Extract user-id from DetailedConsentResource.
      *
      * @param detailedConsentResource - DetailedConsentResource
      * @return - User-Id

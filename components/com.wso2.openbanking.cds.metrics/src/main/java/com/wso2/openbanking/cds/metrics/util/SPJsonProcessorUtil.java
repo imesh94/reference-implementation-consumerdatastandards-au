@@ -62,7 +62,7 @@ public class SPJsonProcessorUtil {
     }
 
     /**
-     * Get Authenticated and Unauthenticated API rejection counts
+     * Get Authenticated and Unauthenticated API rejection counts.
      *
      * @param jsonObject - JSON object
      * @return - total counts for each type
@@ -214,7 +214,7 @@ public class SPJsonProcessorUtil {
     }
 
     /**
-     * Get server availability between given time period from the list of ServerOutages
+     * Get server availability between given time period from the list of ServerOutages.
      *
      * @param serverOutageDataList
      * @param from
@@ -256,7 +256,7 @@ public class SPJsonProcessorUtil {
     }
 
     /**
-     * Calculate total server outage time from ServerOutageDataModel
+     * Calculate total server outage time from ServerOutageDataModel.
      *
      * @param serverOutages
      * @return

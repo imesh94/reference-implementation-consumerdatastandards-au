@@ -28,7 +28,7 @@ public class CDSAPIRequestRouter extends AbstractRequestRouter {
     private static final List<OpenBankingGatewayExecutor> EMPTY_LIST = new ArrayList<>();
 
     /**
-     * Get request executors
+     * Get request executors.
      *
      * @param requestContext - OBAPIRequestContext
      * @return Executor list
@@ -73,7 +73,7 @@ public class CDSAPIRequestRouter extends AbstractRequestRouter {
     }
 
     /**
-     * Get response executors
+     * Get response executors.
      *
      * @param responseContext - OBAPIResponseContext
      * @return Executor list

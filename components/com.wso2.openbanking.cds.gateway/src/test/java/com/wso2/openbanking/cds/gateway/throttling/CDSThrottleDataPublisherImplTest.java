@@ -32,7 +32,7 @@ import java.util.Map;
 import static org.mockito.Mockito.doReturn;
 
 /**
- * CDSThrottleDataPublisherImpl Test
+ * CDSThrottleDataPublisherImpl Test.
  */
 @PrepareForTest({OpenBankingCDSConfigParser.class, CDSCommonUtils.class})
 @PowerMockIgnore("jdk.internal.reflect.*")

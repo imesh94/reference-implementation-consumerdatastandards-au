@@ -41,7 +41,7 @@ import static org.mockito.Mockito.times;
 
 
 /**
- * Test class for IDPermanenceExecutor
+ * Test class for IDPermanenceExecutor.
  */
 @PrepareForTest({IdEncryptorDecryptor.class, OpenBankingCDSConfigParser.class})
 @PowerMockIgnore("jdk.internal.reflect.*")

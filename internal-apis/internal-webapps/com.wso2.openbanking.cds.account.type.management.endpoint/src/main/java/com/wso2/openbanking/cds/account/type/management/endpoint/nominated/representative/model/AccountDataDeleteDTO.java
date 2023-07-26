@@ -12,7 +12,7 @@ import java.util.List;
 import javax.validation.constraints.NotEmpty;
 
 /**
- * AccountDataDeleteDTO
+ * AccountDataDeleteDTO.
  */
 public class AccountDataDeleteDTO {
 

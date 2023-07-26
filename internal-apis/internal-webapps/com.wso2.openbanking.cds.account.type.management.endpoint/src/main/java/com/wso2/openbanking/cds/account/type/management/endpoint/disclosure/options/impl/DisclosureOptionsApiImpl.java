@@ -24,7 +24,7 @@ import org.apache.commons.logging.LogFactory;
 import javax.ws.rs.core.Response;
 
 /**
- * Disclosure Options API Implementation
+ * Disclosure Options API Implementation.
  */
 public class DisclosureOptionsApiImpl implements DisclosureOptionsApi {
 
@@ -32,7 +32,7 @@ public class DisclosureOptionsApiImpl implements DisclosureOptionsApi {
     DisclosureOptionsApiHandler disclosureOptionsApiHandler = new DisclosureOptionsApiHandler();
 
     /**
-     * The following method updates the Disclosure Options
+     * The following method updates the Disclosure Options.
      */
     public Response updateCDSAccountDisclosureOptions(String requestBody) {
 

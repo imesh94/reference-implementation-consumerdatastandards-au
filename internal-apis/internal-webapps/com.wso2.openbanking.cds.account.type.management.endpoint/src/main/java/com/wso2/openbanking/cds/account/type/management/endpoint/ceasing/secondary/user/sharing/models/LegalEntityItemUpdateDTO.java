@@ -13,7 +13,7 @@ import javax.validation.constraints.NotEmpty;
 import javax.validation.constraints.Pattern;
 
 /**
- * Ceasing Secondary User - BlockedLegalEntityItemDTO
+ * Ceasing Secondary User - BlockedLegalEntityItemDTO.
  */
 public class LegalEntityItemUpdateDTO {
     @NotEmpty(message = "Invalid value for \"secondaryUserID\"")

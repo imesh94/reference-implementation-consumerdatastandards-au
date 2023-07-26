@@ -19,7 +19,7 @@ import com.wso2.openbanking.cds.metadata.mgt.endpoint.model.MetadataUpdateReques
 import javax.ws.rs.core.Response;
 
 /**
- * MetaData Management API Implementation
+ * MetaData Management API Implementation.
  */
 public class MetadataMgtApiImpl implements MetadataMgtApi {
 
