@@ -18,7 +18,7 @@ import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 /**
- * class comment.
+ * Test constants.
  */
 public class TestConstants {
 

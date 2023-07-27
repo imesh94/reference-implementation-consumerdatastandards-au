@@ -17,7 +17,7 @@ import com.wso2.openbanking.accelerator.gateway.executor.model.OBAPIRequestConte
 import com.wso2.openbanking.accelerator.gateway.executor.model.OBAPIResponseContext;
 
 /**
- * class comment.
+ *  Mock class for Open Banking Executor.
  */
 public class MockOBExecutor implements OpenBankingGatewayExecutor {
 

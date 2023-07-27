@@ -19,7 +19,7 @@ import org.testng.Assert;
 import org.testng.annotations.Test;
 
 /**
- * class comment.
+ * Test class for CDSMetricsServiceImpl.
  */
 public class CDSMetricsServiceImplTest {
 

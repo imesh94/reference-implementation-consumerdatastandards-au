@@ -26,7 +26,7 @@ import java.util.HashMap;
 import java.util.Map;
 
 /**
- * class comment.
+ * Test class for CDSCommonDataReportingExecutor.
  */
 public class CDSCommonDataReportingExecutorTest {
 

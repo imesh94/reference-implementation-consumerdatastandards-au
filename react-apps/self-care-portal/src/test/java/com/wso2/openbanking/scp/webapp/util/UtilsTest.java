@@ -42,7 +42,7 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 /**
- * class comment.
+ * Test class for Utils.
  */
 @PrepareForTest(HTTPClientUtils.class)
 @PowerMockIgnore("jdk.internal.reflect.*")

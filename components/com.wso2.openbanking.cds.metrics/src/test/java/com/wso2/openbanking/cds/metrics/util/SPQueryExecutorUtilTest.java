@@ -45,7 +45,7 @@ import static org.powermock.api.mockito.PowerMockito.mockStatic;
 import static org.powermock.api.mockito.PowerMockito.when;
 
 /**
- * class comment.
+ * Test class for SPQueryExecutorUtil.
  */
 @PrepareForTest({FrameworkUtil.class, HTTPClientUtils.class})
 @PowerMockIgnore("jdk.internal.reflect.*")

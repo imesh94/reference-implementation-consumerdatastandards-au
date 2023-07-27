@@ -31,7 +31,7 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 /**
- * class comment.
+ * Test class for APIM Service.
  */
 @PrepareForTest({Utils.class})
 @PowerMockIgnore("jdk.internal.reflect.*")

@@ -13,7 +13,7 @@
 package com.wso2.openbanking.cds.gateway.executors.jwt.authentication.util;
 
 /**
- * class comment.
+ * Constant class for JWTAuthenticationExecutor Tests.
  */
 public class JWTAuthenticationExecutorConstants {
 

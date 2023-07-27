@@ -18,7 +18,7 @@ import org.testng.Assert;
 import org.testng.annotations.Test;
 
 /**
- * class comment.
+ * Test class for SPJsonProcessorUtil.
  */
 public class SPJsonProcessorUtilTest {
 
