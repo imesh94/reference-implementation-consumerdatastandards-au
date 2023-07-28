@@ -30,6 +30,9 @@ import javax.servlet.http.Cookie;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
+/**
+ * Test class for APIM Service.
+ */
 @PrepareForTest({Utils.class})
 @PowerMockIgnore("jdk.internal.reflect.*")
 public class OAuthServiceTest extends PowerMockTestCase {

@@ -10,7 +10,7 @@
 package com.wso2.openbanking.cds.account.type.management.endpoint.constants;
 
 /**
- * Constant Class for Account Type Management
+ * Constant Class for Account Type Management.
  */
 public class AccountTypeManagementConstants {
 

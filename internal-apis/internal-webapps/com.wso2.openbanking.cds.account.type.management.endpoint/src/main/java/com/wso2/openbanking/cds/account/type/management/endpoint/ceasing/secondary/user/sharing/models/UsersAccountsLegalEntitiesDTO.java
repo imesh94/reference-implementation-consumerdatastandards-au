@@ -11,7 +11,7 @@ package com.wso2.openbanking.cds.account.type.management.endpoint.ceasing.second
 import java.util.ArrayList;
 
 /**
- * Ceasing Secondary User - UsersAccountsLegalEntitiesResource
+ * Ceasing Secondary User - UsersAccountsLegalEntitiesResource.
  */
 public class UsersAccountsLegalEntitiesDTO {
     private String userID;
@@ -47,7 +47,7 @@ public class UsersAccountsLegalEntitiesDTO {
     }
 
     /**
-     * Secondary User
+     * Secondary User.
      */
     public static class SecondaryUser {
         private String secondaryUserID;
@@ -90,7 +90,7 @@ public class UsersAccountsLegalEntitiesDTO {
     }
 
     /**
-     * Account
+     * Account.
      */
     public static class Account {
 
@@ -129,7 +129,7 @@ public class UsersAccountsLegalEntitiesDTO {
     }
 
     /**
-     * Legal Entity
+     * Legal Entity.
      */
     public static class LegalEntity {
         private String legalEntityID;

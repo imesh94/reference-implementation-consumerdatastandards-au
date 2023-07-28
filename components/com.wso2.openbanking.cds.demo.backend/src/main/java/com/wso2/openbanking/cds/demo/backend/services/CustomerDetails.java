@@ -19,7 +19,7 @@ import javax.ws.rs.Produces;
 import javax.ws.rs.core.Response;
 
 /**
- * Identify the customer type in the consent flow
+ * Identify the customer type in the consent flow.
  * CustomerDetailsService class
  */
 @Path("/")

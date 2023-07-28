@@ -12,6 +12,9 @@
 
 package com.wso2.openbanking.cds.gateway.executors.jwt.authentication.util;
 
+/**
+ * Constant class for JWTAuthenticationExecutor Tests.
+ */
 public class JWTAuthenticationExecutorConstants {
 
     public static final String JWT_TOKEN = "Bearer eyJhbGciOiJQUzI1NiIsInR5cCI6IkpXVCIsImtpZCI6IldfVGNuUVZjSEF5Mj" +

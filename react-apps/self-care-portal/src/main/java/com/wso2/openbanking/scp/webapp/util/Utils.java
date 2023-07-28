@@ -46,7 +46,7 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 /**
- * Utils
+ * Utils.
  * <p>
  * Contains utility methods used by self-care portal web application
  */

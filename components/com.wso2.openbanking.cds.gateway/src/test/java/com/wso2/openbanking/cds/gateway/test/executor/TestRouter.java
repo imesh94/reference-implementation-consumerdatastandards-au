@@ -19,6 +19,9 @@ import com.wso2.openbanking.accelerator.gateway.executor.model.OBAPIResponseCont
 
 import java.util.List;
 
+/**
+ * Test class for Request Router.
+ */
 public class TestRouter extends AbstractRequestRouter {
 
     @Override

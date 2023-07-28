@@ -15,7 +15,7 @@ import java.util.List;
 import java.util.regex.Pattern;
 
 /**
- * Gateway Constant Class
+ * Gateway Constant Class.
  */
 public class GatewayConstants {
 

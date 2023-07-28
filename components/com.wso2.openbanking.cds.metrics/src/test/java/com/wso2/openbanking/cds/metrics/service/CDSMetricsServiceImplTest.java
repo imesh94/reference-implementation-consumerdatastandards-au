@@ -18,6 +18,9 @@ import org.mockito.Mockito;
 import org.testng.Assert;
 import org.testng.annotations.Test;
 
+/**
+ * Test class for CDSMetricsServiceImpl.
+ */
 public class CDSMetricsServiceImplTest {
 
     @Test

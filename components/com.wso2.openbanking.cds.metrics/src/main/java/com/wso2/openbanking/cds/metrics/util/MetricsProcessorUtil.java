@@ -697,7 +697,7 @@ public class MetricsProcessorUtil {
     }
 
     /**
-     * Map server outages JSONObject from SP query to list of ServerOutageDataModels
+     * Map server outages JSONObject from SP query to list of ServerOutageDataModels.
      *
      * @param availabilityMetricsJsonObject
      * @return
@@ -724,7 +724,7 @@ public class MetricsProcessorUtil {
     }
 
     /**
-     * Map server outage JSONObject to ServerOutageDataModel
+     * Map server outage JSONObject to ServerOutageDataModel.
      *
      * @param serverOutageDateJsonObject
      * @return
@@ -740,7 +740,7 @@ public class MetricsProcessorUtil {
     }
 
     /**
-     * Get no of months to calculate the availability metrics based on the oldest record from server outages data
+     * Get no of months to calculate the availability metrics based on the oldest record from server outages data.
      *
      * @param currentDateTime
      * @return

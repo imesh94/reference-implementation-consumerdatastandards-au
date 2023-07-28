@@ -34,7 +34,7 @@ import java.io.InputStreamReader;
 import java.nio.charset.StandardCharsets;
 
 /**
- * Test class for IDPermanenceUtils
+ * Test class for IDPermanenceUtils.
  */
 @PrepareForTest({IdEncryptorDecryptor.class, OpenBankingCDSConfigParser.class})
 @PowerMockIgnore("jdk.internal.reflect.*")

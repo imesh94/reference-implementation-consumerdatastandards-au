@@ -13,7 +13,7 @@
 package com.wso2.openbanking.cds.arrangement.revocation.constants;
 
 /**
- * String constants
+ * String constants.
  */
 public class Constants {
 

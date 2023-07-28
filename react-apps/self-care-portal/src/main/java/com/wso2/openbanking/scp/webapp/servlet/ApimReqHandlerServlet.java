@@ -44,7 +44,7 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 /**
- * ApimReqHandlerServlet
+ * ApimReqHandlerServlet.
  * <p>
  * This interrupts the requests, adds auth header, and forward requests to API Manager
  */

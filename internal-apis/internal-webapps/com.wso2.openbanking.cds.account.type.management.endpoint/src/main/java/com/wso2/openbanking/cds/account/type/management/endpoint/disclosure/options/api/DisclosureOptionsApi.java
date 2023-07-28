@@ -20,7 +20,7 @@ import javax.ws.rs.Produces;
 import javax.ws.rs.core.Response;
 
 /**
- * Disclosure Options API
+ * Disclosure Options API.
  */
 
 @Path("/account-type-management")

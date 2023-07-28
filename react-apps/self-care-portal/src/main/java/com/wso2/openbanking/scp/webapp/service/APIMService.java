@@ -34,7 +34,7 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 /**
- * APIMService
+ * APIMService.
  * <p>
  * Contains methods to process requests that are forwarding to APIM
  */

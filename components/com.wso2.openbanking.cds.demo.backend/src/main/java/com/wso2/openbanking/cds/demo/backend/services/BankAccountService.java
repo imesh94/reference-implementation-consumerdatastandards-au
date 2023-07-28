@@ -19,7 +19,7 @@ import javax.ws.rs.Produces;
 import javax.ws.rs.core.Response;
 
 /**
- * BankAccountService class
+ * BankAccountService class.
  */
 @Path("/bankaccountservice/")
 public class BankAccountService {

@@ -101,7 +101,7 @@ public class JWTAuthenticationExecutor implements OpenBankingGatewayExecutor {
     }
 
     /**
-     * Validate the JWT token passed as the authorization header
+     * Validate the JWT token passed as the authorization header.
      *
      * @param obapiRequestContext OBAPIRequestContext
      * @param jwtString jwtString of the token
@@ -277,7 +277,7 @@ public class JWTAuthenticationExecutor implements OpenBankingGatewayExecutor {
     }
 
     /**
-     * Set the error as required by the OAuth Standard
+     * Set the error as required by the OAuth Standard.
      *
      * @param obapiRequestContext OBAPIRequestContext
      * @param errorTitle errorTitle

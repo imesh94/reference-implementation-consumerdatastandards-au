@@ -17,6 +17,9 @@ import net.minidev.json.JSONObject;
 import org.testng.Assert;
 import org.testng.annotations.Test;
 
+/**
+ * Test class for SPJsonProcessorUtil.
+ */
 public class SPJsonProcessorUtilTest {
 
     JSONObject jsonObject = new JSONObject();

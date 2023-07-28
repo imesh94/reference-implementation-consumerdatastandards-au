@@ -35,6 +35,9 @@ import static org.powermock.api.mockito.PowerMockito.mock;
 import static org.powermock.api.mockito.PowerMockito.mockStatic;
 import static org.powermock.api.mockito.PowerMockito.when;
 
+/**
+ * Test class for GatewayErrorMediator.
+ */
 @PrepareForTest({OpenBankingConfigParser.class, OBDataPublisherUtil.class, JsonUtil.class})
 @PowerMockIgnore("jdk.internal.reflect.*")
 public class GatewayErrorMediatorTest extends PowerMockTestCase {

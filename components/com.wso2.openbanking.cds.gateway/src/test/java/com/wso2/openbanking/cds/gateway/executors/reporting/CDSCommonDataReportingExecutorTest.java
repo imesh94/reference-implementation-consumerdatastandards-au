@@ -25,6 +25,9 @@ import org.wso2.carbon.apimgt.common.gateway.dto.MsgInfoDTO;
 import java.util.HashMap;
 import java.util.Map;
 
+/**
+ * Test class for CDSCommonDataReportingExecutor.
+ */
 public class CDSCommonDataReportingExecutorTest {
 
     OBAPIRequestContext obApiRequestContextMock;

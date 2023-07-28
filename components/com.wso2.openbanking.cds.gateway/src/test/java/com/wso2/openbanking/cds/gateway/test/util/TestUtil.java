@@ -21,6 +21,9 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+/**
+ *  Utils for Tests.
+ */
 public class TestUtil {
 
     public static Map<String, List<OpenBankingGatewayExecutor>> initExecutors() {

@@ -17,6 +17,9 @@ import java.util.Map;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
+/**
+ * Test constants.
+ */
 public class TestConstants {
 
     public static final String INVALID_EXECUTOR_CLASS =

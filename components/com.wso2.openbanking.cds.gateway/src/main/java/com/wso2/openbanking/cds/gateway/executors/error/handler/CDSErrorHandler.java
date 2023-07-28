@@ -47,7 +47,7 @@ public class CDSErrorHandler implements OpenBankingGatewayExecutor {
     public static final String ACCELERATOR_EXPECTED_ERROR = "200012";
 
     /**
-     * Method to handle pre request
+     * Method to handle pre request.
      *
      * @param obapiRequestContext OB request context object
      */
@@ -59,7 +59,7 @@ public class CDSErrorHandler implements OpenBankingGatewayExecutor {
     }
 
     /**
-     * Method to handle post request
+     * Method to handle post request.
      *
      * @param obapiRequestContext OB request context object
      */
@@ -70,7 +70,7 @@ public class CDSErrorHandler implements OpenBankingGatewayExecutor {
     }
 
     /**
-     * Method to handle pre response
+     * Method to handle pre response.
      *
      * @param obapiResponseContext OB response context object
      */
@@ -81,7 +81,7 @@ public class CDSErrorHandler implements OpenBankingGatewayExecutor {
     }
 
     /**
-     * Method to handle post response
+     * Method to handle post response.
      *
      * @param obapiResponseContext OB response context object
      */

@@ -15,7 +15,7 @@ import com.google.gson.JsonObject;
 import com.wso2.openbanking.accelerator.gateway.executor.model.OpenBankingExecutorError;
 
 /**
- * Model representation of a Id Permanence Validation Response
+ * Model representation of a Id Permanence Validation Response.
  */
 public class IdPermanenceValidationResponse {
 
@@ -42,7 +42,7 @@ public class IdPermanenceValidationResponse {
     }
 
     /**
-     * Get valid status
+     * Get valid status.
      *
      * @return True is valid, False if invalid
      */
@@ -51,7 +51,7 @@ public class IdPermanenceValidationResponse {
     }
 
     /**
-     * Set valid status
+     * Set valid status.
      *
      * @param valid valid status
      */
@@ -60,7 +60,7 @@ public class IdPermanenceValidationResponse {
     }
 
     /**
-     * Get http status code
+     * Get http status code.
      *
      * @return http status code
      */
@@ -69,7 +69,7 @@ public class IdPermanenceValidationResponse {
     }
 
     /**
-     * Set http status code
+     * Set http status code.
      *
      * @param httpStatus http status code
      */
@@ -78,7 +78,7 @@ public class IdPermanenceValidationResponse {
     }
 
     /**
-     * Get decrypted masked resource Ids sent in the request path or body
+     * Get decrypted masked resource Ids sent in the request path or body.
      *
      * @return unmasked resource Ids
      */
@@ -87,7 +87,7 @@ public class IdPermanenceValidationResponse {
     }
 
     /**
-     * Set decrypted masked resource Ids sent in the request path or body as a Json Object
+     * Set decrypted masked resource Ids sent in the request path or body as a Json Object.
      *
      * @param decryptedResourceIds unmasked resource Ids
      */
@@ -96,7 +96,7 @@ public class IdPermanenceValidationResponse {
     }
 
     /**
-     * Get list of errors
+     * Get list of errors.
      *
      * @return array of error objects
      */
@@ -105,7 +105,7 @@ public class IdPermanenceValidationResponse {
     }
 
     /**
-     * Set error
+     * Set error.
      *
      * @param error error object
      */

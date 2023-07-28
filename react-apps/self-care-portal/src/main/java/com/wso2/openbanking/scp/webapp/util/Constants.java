@@ -14,7 +14,7 @@
 package com.wso2.openbanking.scp.webapp.util;
 
 /**
- * Constants required for scp webapp
+ * Constants required for scp webapp.
  */
 public class Constants {
 

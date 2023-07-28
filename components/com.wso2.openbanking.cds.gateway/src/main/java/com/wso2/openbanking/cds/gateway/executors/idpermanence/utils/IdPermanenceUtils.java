@@ -31,7 +31,7 @@ import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 
 /**
- * Util methods required for id permanence requirement of AU spec
+ * Util methods required for id permanence requirement of AU spec.
  */
 public class IdPermanenceUtils {
 
@@ -39,7 +39,7 @@ public class IdPermanenceUtils {
     private static final String SECRET_KEY = OpenBankingCDSConfigParser.getInstance().getIdPermanenceSecretKey();
 
     /**
-     * Mask resourceIds in response payload
+     * Mask resourceIds in response payload.
      *
      * @param responseJsonPayload response payload
      * @param url                 requested Url
@@ -61,7 +61,7 @@ public class IdPermanenceUtils {
     }
 
     /**
-     * Mask resourceIds in response payload data object
+     * Mask resourceIds in response payload data object.
      *
      * @param data     data object of response payload
      * @param url      requested Url
@@ -129,7 +129,7 @@ public class IdPermanenceUtils {
     }
 
     /**
-     * Mask resourceIds in response payload
+     * Mask resourceIds in response payload.
      *
      * @param links    links object of response payload
      * @param url      requested Url
@@ -158,7 +158,7 @@ public class IdPermanenceUtils {
     }
 
     /**
-     * Unmask masked resource Ids sent in the request path
+     * Unmask masked resource Ids sent in the request path.
      *
      * @param idSet set of resource ids to be encrypted as <resourceIdKey>:<maskedResourceID> pairs
      * @param key   decryption key
@@ -228,7 +228,7 @@ public class IdPermanenceUtils {
     }
 
     /**
-     * Unmask masked accountIds sent in the request body
+     * Unmask masked accountIds sent in the request body.
      *
      * @param requestJsonPayload request body
      * @param key                decryption key
@@ -461,7 +461,7 @@ public class IdPermanenceUtils {
     }
 
     /**
-     * Remove empty strings from the json object and set them as null
+     * Remove empty strings from the json object and set them as null.
      *
      * @param jsonObject jsonObject
      * @return jsonObject
@@ -492,7 +492,7 @@ public class IdPermanenceUtils {
     }
 
     /**
-     * Encrypt set of resource ids in a json array subjected to id permanence
+     * Encrypt set of resource ids in a json array subjected to id permanence.
      * @param resourceArrayKey json array's key
      * @param resource Json array resource
      * @param memberId user ID

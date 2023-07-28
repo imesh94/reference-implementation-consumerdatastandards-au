@@ -37,6 +37,9 @@ import static org.powermock.api.mockito.PowerMockito.mock;
 import static org.powermock.api.mockito.PowerMockito.mockStatic;
 import static org.powermock.api.mockito.PowerMockito.when;
 
+/**
+ * Test class for JWTAuthenticationExecutor.
+ */
 @PrepareForTest({ JWTUtils.class, OpenBankingCDSConfigParser.class, JwtJtiCache.class})
 @PowerMockIgnore("jdk.internal.reflect.*")
 public class JWTAuthenticationExecutorTest extends PowerMockTestCase {

@@ -31,7 +31,7 @@ import java.util.Objects;
 
 
 /**
- * Handler Class for Ceasing Secondary User Sharing
+ * Handler Class for Ceasing Secondary User Sharing.
  */
 public class CeasingSecondaryUserSharingHandler {
 

@@ -33,7 +33,7 @@ import javax.ws.rs.core.Response;
 
 
 /**
- * Implementation Class for Ceasing Secondary User Sharing
+ * Implementation Class for Ceasing Secondary User Sharing.
  */
 public class CeasingSecondaryUserSharingApiImpl implements CeasingSecondaryUserSharingApi {
 
