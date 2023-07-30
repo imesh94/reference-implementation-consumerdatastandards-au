@@ -34,12 +34,7 @@ import java.util.Base64;
  * CDS stream processor utils
  */
 public class CDSStreamProcessorUtils {
-//    private static final String REST_API_URL_KEY = "stream.processor.rest.api.url";
-//    private static final String SP_USERNAME_KEY = "stream.processor.rest.api.username";
-//    private static final String SP_PASSWORD_KEY = "stream.processor.rest.api.password";
     private static Log log = LogFactory.getLog(CDSStreamProcessorUtils.class);
-
-//    private static APIManagerAnalyticsConfiguration analyticsConfiguration = getAnalyticsConfiguration();
 
     /**
      * Executes the given query in stream processor.
@@ -86,6 +81,5 @@ public class CDSStreamProcessorUtils {
         String responseStr = EntityUtils.toString(entity);
         JSONParser parser = new JSONParser(JSONParser.MODE_PERMISSIVE);
         return (JSONObject) parser.parse(responseStr);
-
     }
 }

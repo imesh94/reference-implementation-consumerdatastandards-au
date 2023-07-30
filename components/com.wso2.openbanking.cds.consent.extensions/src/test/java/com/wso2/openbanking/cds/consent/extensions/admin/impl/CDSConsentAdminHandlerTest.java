@@ -21,8 +21,10 @@ import com.wso2.openbanking.accelerator.consent.mgt.dao.models.ConsentMappingRes
 import com.wso2.openbanking.accelerator.consent.mgt.dao.models.DetailedConsentResource;
 import com.wso2.openbanking.accelerator.consent.mgt.service.impl.ConsentCoreServiceImpl;
 import com.wso2.openbanking.cds.consent.extensions.common.CDSConsentExtensionConstants;
+import com.wso2.openbanking.cds.consent.extensions.model.DataClusterSharingDateModel;
 import com.wso2.openbanking.cds.consent.extensions.util.CDSConsentValidateTestConstants;
 
+import com.wso2.openbanking.cds.consent.extensions.util.DataClusterSharingDateUtil;
 import net.minidev.json.JSONArray;
 import net.minidev.json.JSONObject;
 import org.jetbrains.annotations.NotNull;
@@ -36,6 +38,9 @@ import org.powermock.core.classloader.annotations.PrepareForTest;
 import org.powermock.modules.testng.PowerMockTestCase;
 import org.testng.annotations.BeforeClass;
 import org.testng.annotations.Test;
+
+import java.sql.Timestamp;
+import java.time.Instant;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
@@ -47,6 +52,7 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import static com.wso2.openbanking.cds.consent.extensions.common.CDSConsentExtensionConstants.AUTH_RESOURCE_TYPE_LINKED;
 import static com.wso2.openbanking.cds.consent.extensions.common.CDSConsentExtensionConstants.AUTH_RESOURCE_TYPE_PRIMARY;
+import static org.hibernate.validator.internal.util.Contracts.assertNotNull;
 import static org.junit.Assert.assertTrue;
 import static org.mockito.Matchers.any;
 import static org.mockito.Matchers.anyObject;
@@ -62,7 +68,7 @@ import static org.testng.AssertJUnit.assertEquals;
  * Test class for CDSConsentAdminHandler.
  */
 @PrepareForTest({OpenBankingConfigParser.class, AccountMetadataServiceImpl.class, ConsentAdminData.class,
-        JSONObject.class, JSONArray.class})
+        DataClusterSharingDateUtil.class, JSONObject.class, JSONArray.class})
 @PowerMockIgnore({"com.wso2.openbanking.accelerator.consent.extensions.common.*", "jdk.internal.reflect.*"})
 public class CDSConsentAdminHandlerTest extends PowerMockTestCase {
 
@@ -259,12 +265,53 @@ public class CDSConsentAdminHandlerTest extends PowerMockTestCase {
         assertEquals(CDSConsentExtensionConstants.DOMS_STATUS_PRE_APPROVAL, domsStatus);
     }
 
+    @Test
+    public void testAddSharingDatesToPermissions() throws OpenBankingException {
+
+        HttpServletRequest httpServletRequest = Mockito.mock(HttpServletRequest.class);
+        HttpServletResponse httpServletResponse = Mockito.mock(HttpServletResponse.class);
+        JSONObject payload = detailedConsentToJSON(detailedConsentResource);
+
+        ConsentAdminData consentAdminData = new ConsentAdminData(new HashMap<>(), payload, new HashMap<>(),
+                "", httpServletRequest, httpServletResponse);
+        consentAdminData.setResponsePayload(payload);
+
+        Map<String, DataClusterSharingDateModel> sharingDateDataMap = new HashMap<>();
+        DataClusterSharingDateModel dataClusterSharingDate = new DataClusterSharingDateModel();
+        dataClusterSharingDate.setDataCluster("CDRREADACCOUNTSBASIC");
+        dataClusterSharingDate.setSharingStartDate(Timestamp.from(Instant.now()));
+        dataClusterSharingDate.setSharedLastDate(Timestamp.from(Instant.now()));
+        sharingDateDataMap.put("bank_account_data", dataClusterSharingDate);
+
+        PowerMockito.mockStatic(DataClusterSharingDateUtil.class);
+        String consentId = "test_consent_id";
+        when(DataClusterSharingDateUtil.getSharingDateMap(consentId)).thenReturn(sharingDateDataMap);
+
+        uut.addSharingDatesToPermissions(consentAdminData);
+
+        // Assert that the sharing dates are added to the response payload
+        JSONArray responsePayload = (JSONArray) consentAdminData.getResponsePayload()
+                .get(CDSConsentExtensionConstants.DATA);
+        for (Object item : responsePayload) {
+            JSONObject itemJSONObject = (JSONObject) item;
+            JSONObject receipt = (JSONObject) itemJSONObject.get(CDSConsentExtensionConstants.RECEIPT);
+            JSONObject accountData = (JSONObject) receipt.get(CDSConsentExtensionConstants.ACCOUNT_DATA);
+            JSONArray permissionsWithSharingDate = (JSONArray)
+                    accountData.get(CDSConsentExtensionConstants.PERMISSIONS_WITH_SHARING_DATE);
+
+            assertNotNull(permissionsWithSharingDate);
+        }
+    }
+
     public JSONObject detailedConsentToJSON(@NotNull DetailedConsentResource detailedConsentResource) {
         JSONObject dataObject = new JSONObject();
 
         JSONObject jsonObject = new JSONObject();
         JSONArray authorizationResourcesArray = new JSONArray();
         JSONArray consentMappingResourcesArray = new JSONArray();
+        JSONArray permissions = new JSONArray();
+        JSONObject accountData = new JSONObject();
+        JSONObject receipt = new JSONObject();
 
         for (AuthorizationResource authorizationResource : detailedConsentResource.getAuthorizationResources()) {
             JSONObject authResourceJsonObject = new JSONObject();
@@ -287,8 +334,20 @@ public class CDSConsentAdminHandlerTest extends PowerMockTestCase {
             consentMappingResourcesArray.add(consentMappingResourceObject);
         }
 
+        permissions.add("CDRREADACCOUNTSBASIC");
+        permissions.add("CDRREADACCOUNTSDETAILS");
+        permissions.add("CDRREADPAYEES");
+        permissions.add("CDRREADTRANSACTION");
+        permissions.add("READCUSTOMERDETAILS");
+        permissions.add("READCUSTOMERDETAILSBASIC");
+        permissions.add("PROFILE");
+
+        accountData.put("permissions", permissions);
+        receipt.put("accountData", accountData);
         jsonObject.put("authorizationResources", authorizationResourcesArray);
         jsonObject.put("consentMappingResources", consentMappingResourcesArray);
+        jsonObject.put("consentId", "test-consent-id");
+        jsonObject.put("receipt", receipt);
 
         JSONArray dataArray = new JSONArray();
         dataArray.add(jsonObject);

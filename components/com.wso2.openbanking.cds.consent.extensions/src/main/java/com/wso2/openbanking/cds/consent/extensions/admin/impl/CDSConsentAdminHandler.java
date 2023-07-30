@@ -14,6 +14,7 @@ import com.wso2.openbanking.accelerator.account.metadata.service.service.Account
 import com.wso2.openbanking.accelerator.common.config.OpenBankingConfigParser;
 import com.wso2.openbanking.accelerator.common.exception.ConsentManagementException;
 import com.wso2.openbanking.accelerator.common.exception.OpenBankingException;
+import com.wso2.openbanking.accelerator.common.exception.OpenBankingRuntimeException;
 import com.wso2.openbanking.accelerator.consent.extensions.admin.impl.DefaultConsentAdminHandler;
 import com.wso2.openbanking.accelerator.consent.extensions.admin.model.ConsentAdminData;
 import com.wso2.openbanking.accelerator.consent.extensions.admin.model.ConsentAdminHandler;
@@ -96,7 +97,7 @@ public class CDSConsentAdminHandler implements ConsentAdminHandler {
             try {
                 addSharingDatesToPermissions(consentAdminData);
             } catch (OpenBankingException e) {
-                throw new RuntimeException(e);
+                throw new OpenBankingRuntimeException("Error while adding sharing dates to permissions", e);
             }
         }
     }
