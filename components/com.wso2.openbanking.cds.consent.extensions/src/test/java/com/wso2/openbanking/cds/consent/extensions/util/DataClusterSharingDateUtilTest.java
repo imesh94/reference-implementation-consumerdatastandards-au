@@ -35,7 +35,7 @@ import static org.powermock.api.mockito.PowerMockito.mockStatic;
 /**
  * Test class for Data Cluster Sharing Date Utils.
  */
-@PrepareForTest({DataClusterSharingDateUtil.class, OpenBankingCDSConfigParser.class, SPQueryExecutorUtil.class})
+@PrepareForTest({OpenBankingCDSConfigParser.class, SPQueryExecutorUtil.class})
 @PowerMockIgnore("jdk.internal.reflect.*")
 
 public class DataClusterSharingDateUtilTest extends PowerMockTestCase {
@@ -44,18 +44,17 @@ public class DataClusterSharingDateUtilTest extends PowerMockTestCase {
     private OpenBankingCDSConfigParser openBankingCDSConfigParser;
     private Map<String, Object> cdsConfigMap = new HashMap<>();
 
-
     @Test
     public void testGetSharingDateMap() throws OpenBankingException, IOException, ParseException {
 
         JSONObject spQueryResponse = new JSONObject();
         JSONArray records = new JSONArray();
-        JSONArray recordOnj = new JSONArray();
-        recordOnj.add(0, consentId);
-        recordOnj.add(1, dataCluster);
-        recordOnj.add(2, 111111);
-        recordOnj.add(3, 222222);
-        records.add(recordOnj);
+        JSONArray recordObj = new JSONArray();
+        recordObj.add(0, consentId);
+        recordObj.add(1, dataCluster);
+        recordObj.add(2, 111111);
+        recordObj.add(3, 222222);
+        records.add(recordObj);
         spQueryResponse.put("records", records);
 
         cdsConfigMap.put(CommonConstants.SP_SERVER_URL, "server_url");

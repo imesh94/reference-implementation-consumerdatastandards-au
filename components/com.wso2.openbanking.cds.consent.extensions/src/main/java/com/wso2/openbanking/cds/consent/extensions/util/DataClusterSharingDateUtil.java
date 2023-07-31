@@ -9,7 +9,6 @@
 package com.wso2.openbanking.cds.consent.extensions.util;
 
 import com.wso2.openbanking.accelerator.common.exception.OpenBankingException;
-import com.wso2.openbanking.accelerator.common.util.Generated;
 import com.wso2.openbanking.accelerator.common.util.SPQueryExecutorUtil;
 import com.wso2.openbanking.cds.common.config.OpenBankingCDSConfigParser;
 import com.wso2.openbanking.cds.common.utils.CommonConstants;
@@ -39,7 +38,6 @@ public class DataClusterSharingDateUtil {
      * @throws OpenBankingException
      */
 
-    @Generated(message = "")
     public static Map<String, DataClusterSharingDateModel> getSharingDateMap(String consentId)
             throws OpenBankingException {
 
