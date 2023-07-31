@@ -145,12 +145,18 @@
      <StreamProcessor>
          {% if open_banking_cds.stream_processor.server_url is defined %}
          <ServerUrl>{{open_banking_cds.stream_processor.server_url}}</ServerUrl>
+         {% else %}
+         <ServerUrl>https://BI_HOSTNAME:7444</ServerUrl>
          {% endif %}
          {% if open_banking_cds.stream_processor.username is defined %}
          <Username>{{open_banking_cds.stream_processor.username}}</Username>
+         {% else %}
+         <Username>admin@wso2.com@carbon.super</Username>
          {% endif %}
          {% if open_banking_cds.stream_processor.password is defined %}
          <Password>{{open_banking_cds.stream_processor.password}}</Password>
+         {% else %}
+         <Password>wso2123</Password>
          {% endif %}
       </StreamProcessor>
      <RecipientConsentRevocationEndpoint>

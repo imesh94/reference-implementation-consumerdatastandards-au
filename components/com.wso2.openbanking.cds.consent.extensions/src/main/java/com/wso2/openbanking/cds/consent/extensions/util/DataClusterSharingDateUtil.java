@@ -9,7 +9,10 @@
 package com.wso2.openbanking.cds.consent.extensions.util;
 
 import com.wso2.openbanking.accelerator.common.exception.OpenBankingException;
-import com.wso2.openbanking.cds.common.utils.CDSStreamProcessorUtils;
+import com.wso2.openbanking.accelerator.common.util.Generated;
+import com.wso2.openbanking.accelerator.common.util.SPQueryExecutorUtil;
+import com.wso2.openbanking.cds.common.config.OpenBankingCDSConfigParser;
+import com.wso2.openbanking.cds.common.utils.CommonConstants;
 import com.wso2.openbanking.cds.consent.extensions.model.DataClusterSharingDateModel;
 import com.wso2.openbanking.cds.consent.extensions.validate.utils.CDSConsentValidatorUtil;
 import net.minidev.json.JSONArray;
@@ -35,19 +38,23 @@ public class DataClusterSharingDateUtil {
      * @param consentId
      * @throws OpenBankingException
      */
+
+    @Generated(message = "")
     public static Map<String, DataClusterSharingDateModel> getSharingDateMap(String consentId)
             throws OpenBankingException {
 
+        OpenBankingCDSConfigParser configParser = OpenBankingCDSConfigParser.getInstance();
+        String spApiHost = configParser.getConfiguration().get(CommonConstants.SP_SERVER_URL).toString();
+        String spUserName = configParser.getConfiguration().get(CommonConstants.SP_USERNAME).toString();
+        String spPassword = configParser.getConfiguration().get(CommonConstants.SP_PASSWORD).toString();
+
+        String appName = "CDSSharingDateSummarizationApp";
+        String spQuery = "from CDS_SHARING_START_END_DATE select CONSENT_ID, DATA_CLUSTER, " +
+                "SHARING_START_DATE, SHARED_LAST_DATE having CONSENT_ID == '" + consentId + "';";
         try {
-            String appName = "CDSSharingDateSummarizationApp";
-
-            String spQuery = "from CDS_SHARING_START_END_DATE select CONSENT_ID, DATA_CLUSTER, " +
-                    "SHARING_START_DATE, SHARED_LAST_DATE having CONSENT_ID == '" + consentId + "';";
-
-            JSONObject sharingDateJsonObject = CDSStreamProcessorUtils.executeQueryOnStreamProcessor(appName, spQuery);
-
+            JSONObject sharingDateJsonObject = SPQueryExecutorUtil
+                    .executeQueryOnStreamProcessor(appName, spQuery, spUserName, spPassword, spApiHost);
             return getListFromSharingDateData(sharingDateJsonObject);
-
         } catch (OpenBankingException | IOException | ParseException e) {
             log.error("Error occurred while retrieving sharing dates for consent ID: " + consentId);
             throw new OpenBankingException("Error occurred while retrieving sharing date", e);
