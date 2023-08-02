@@ -444,16 +444,50 @@
                 <artifactId>hibernate-validator</artifactId>
                 <version>${hibernate-validator}</version>
             </dependency>
+            <!-- Dependencies to resolve local build failures when using install script -->
+            <dependency>
+                <groupId>org.wso2.securevault</groupId>
+                <artifactId>org.wso2.securevault</artifactId>
+                <version>${wso2.securevault}</version>
+            </dependency>
+            <dependency>
+                <groupId>javax.validation</groupId>
+                <artifactId>validation-api</artifactId>
+                <version>${javax.validation.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>org.jetbrains</groupId>
+                <artifactId>annotations</artifactId>
+                <version>${jetbrains.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>org.quartz-scheduler</groupId>
+                <artifactId>quartz</artifactId>
+                <version>${quartz.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>commons-beanutils</groupId>
+                <artifactId>commons-beanutils</artifactId>
+                <version>${commons-beanutils.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>io.jsonwebtoken</groupId>
+                <artifactId>jjwt</artifactId>
+                <version>${jjwt.version}</version>
+            </dependency>
         </dependencies>
     </dependencyManagement>
 
     <properties>
         <commons-lang.version>3.4</commons-lang.version>
+        <commons-beanutils.version>1.9.4</commons-beanutils.version>
+        <jjwt.version>0.9.1</jjwt.version>
         <identity.inbound.auth.oauth.version>6.4.111</identity.inbound.auth.oauth.version>
         <accelerator.project.version>3.0.0</accelerator.project.version>
         <accelerator.project.version.range>[3.0.0, 4.0.0)</accelerator.project.version.range>
         <wso2.maven.compiler.source>1.8</wso2.maven.compiler.source>
         <wso2.maven.compiler.target>1.8</wso2.maven.compiler.target>
+        <wso2.securevault>1.1.5</wso2.securevault>
         <maven.bundle.plugin.version>3.2.0</maven.bundle.plugin.version>
         <maven.surefire.plugin.version>2.22.2</maven.surefire.plugin.version>
         <maven.compiler.plugin.version>2.3.2</maven.compiler.plugin.version>
@@ -463,6 +497,7 @@
         <json-smart>2.3</json-smart>
         <org.json.version>3.0.0.wso2v1</org.json.version>
         <jacoco.version>0.8.6</jacoco.version>
+        <jetbrains.version>13.0</jetbrains.version>
         <org.testng.version>7.3.0</org.testng.version>
         <mockito.version>1.10.19</mockito.version>
         <h2database.version>1.3.175</h2database.version>
@@ -474,6 +509,7 @@
         <javax.ws.rs.version>1.1.1</javax.ws.rs.version>
         <javax.annotation.version>1.3.2</javax.annotation.version>
         <javax.xml.bind.version>2.3.1</javax.xml.bind.version>
+        <javax.validation.version>2.0.1.Final</javax.validation.version>
         <jackson.databinding.version>2.12.0</jackson.databinding.version>
         <hibernate-validator>6.0.20.Final</hibernate-validator>
         <swagger-annotations.version>1.5.10</swagger-annotations.version>
@@ -492,6 +528,7 @@
         <osgi.service.component.imp.pkg.version.range>[1.2.0, 2.0.0)</osgi.service.component.imp.pkg.version.range>
         <carbon.kernel.version>4.6.0</carbon.kernel.version>
         <carbon.identity.clientauth.jwt.version>2.2.0</carbon.identity.clientauth.jwt.version>
+        <quartz.version>2.1.1</quartz.version>
     </properties>
 
 </project>
