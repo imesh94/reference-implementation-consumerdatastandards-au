@@ -97,7 +97,7 @@ public class CDSConsentAdminHandler implements ConsentAdminHandler {
             try {
                 addSharingDatesToPermissions(consentAdminData);
             } catch (OpenBankingException e) {
-                log.error("Error while adding sharing dates to permissions");
+                log.error("Error while adding sharing dates to permissions", e);
                 throw new OpenBankingRuntimeException("Error while adding sharing dates to permissions", e);
             }
         }
