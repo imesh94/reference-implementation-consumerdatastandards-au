@@ -55,8 +55,7 @@ class ProductRetrievalHeaderValidationTest extends AUTest {
         doConsentAuthorisation()
         generateUserAccessToken()
 
-        Response response = AURequestBuilder.buildBasicRequestWithOptionalHeaders(userAccessToken,
-                AUConstants.X_V_HEADER_PRODUCTS, clientHeader)
+        Response response = AURequestBuilder.buildBasicRequestWithoutAuthorisationHeader(AUConstants.X_V_HEADER_PRODUCTS)
                 .baseUri(AUTestUtil.getBaseUrl(AUConstants.BASE_PATH_TYPE_PRODUCTS))
                 .get("${AUConstants.BANKING_PRODUCT_PATH}")
 
@@ -78,8 +77,9 @@ class ProductRetrievalHeaderValidationTest extends AUTest {
 
         def holderID = "HID"
 
-        def response = AURequestBuilder.buildBasicRequestWithCustomHeaders(userAccessToken,
-                AUConstants.X_V_HEADER_PRODUCTS, clientHeader)
+        def response = AURequestBuilder.buildBasicRequestWithoutAuthorisationHeader(AUConstants.X_V_HEADER_PRODUCTS)
+                .header(AUConstants.X_FAPI_AUTH_DATE, AUConstants.DATE)
+                .header(AUConstants.X_CDS_CLIENT_HEADERS , clientHeader)
                 .header("x-${holderID}-v", AUConstants.X_V_HEADER_PRODUCTS)
                 .baseUri(AUTestUtil.getBaseUrl(AUConstants.BASE_PATH_TYPE_PRODUCTS))
                 .get("${AUConstants.BANKING_PRODUCT_PATH}")
@@ -101,8 +101,9 @@ class ProductRetrievalHeaderValidationTest extends AUTest {
     //Validate X_FAPI_INTERACTION_ID,X_FAPI_AUTH_DATE,X_FAPI_CUSTOMER_IP_ADDRESS & X_CDS_CLIENT_HEADER optional headers
     void "TC0701026_Retrieve banking products with optional-headers"(){
 
-        def response = AURequestBuilder.buildBasicRequestWithOptionalHeaders(userAccessToken,
-                AUConstants.X_V_HEADER_PRODUCTS, clientHeader)
+        def response = AURequestBuilder.buildBasicRequestWithoutAuthorisationHeader(AUConstants.X_V_HEADER_PRODUCTS)
+                .header(AUConstants.X_FAPI_AUTH_DATE, AUConstants.DATE)
+                .header(AUConstants.X_CDS_CLIENT_HEADERS , clientHeader)
                 .baseUri(AUTestUtil.getBaseUrl(AUConstants.BASE_PATH_TYPE_PRODUCTS))
                 .get("${AUConstants.BANKING_PRODUCT_PATH}")
 
@@ -303,8 +304,9 @@ class ProductRetrievalHeaderValidationTest extends AUTest {
 
         def holderID = "HID"
 
-        def response = AURequestBuilder.buildBasicRequestWithCustomHeaders(userAccessToken,
-                AUConstants.X_V_HEADER_PRODUCTS, clientHeader)
+        def response = AURequestBuilder.buildBasicRequestWithoutAuthorisationHeader(AUConstants.X_V_HEADER_PRODUCTS)
+                .header(AUConstants.X_FAPI_AUTH_DATE, AUConstants.DATE)
+                .header(AUConstants.X_CDS_CLIENT_HEADERS , clientHeader)
                 .header("x-${holderID}-v", AUConstants.UNSUPPORTED_X_V_VERSION)
                 .baseUri(AUTestUtil.getBaseUrl(AUConstants.BASE_PATH_TYPE_PRODUCTS))
                 .get("${AUConstants.BANKING_PRODUCT_PATH}")

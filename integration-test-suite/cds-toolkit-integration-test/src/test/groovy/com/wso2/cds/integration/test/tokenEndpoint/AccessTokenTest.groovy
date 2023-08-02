@@ -33,6 +33,8 @@ class AccessTokenTest extends AUTest {
             AUAccountScope.BANK_CUSTOMER_DETAIL_READ
     ]
 
+    String user_AccessToken, idToken
+
     private final String ACCOUNTS_BASIC_OPENID_SCOPE_LIST = "bank:accounts.basic:read bank:accounts.detail:" +
             "read openid"
     private final String ACCOUNTS_BASIC_ACCOUNT_DETAIL_OPENID_SCOPE_LIST = "bank:accounts.basic:read bank:" +
@@ -188,6 +190,51 @@ class AccessTokenTest extends AUTest {
         Assert.assertNotNull(userAccessToken.tokens.refreshToken)
         Assert.assertNotNull(userAccessToken.getCustomParameters().get("cdr_arrangement_id"))
         Assert.assertEquals(userAccessToken.toJSONObject().get("scope"),ACCOUNTS_BASIC_ACCOUNT_DETAIL_OPENID_SCOPE_LIST)
+    }
+
+    @Test
+    void "CDS-705_Verify introspection response not returning username field"() {
+
+        // Generating a new authorisation code
+        doConsentAuthorisation()
+        Assert.assertNotNull(authorisationCode)
+
+        //Generate Access Token
+        AccessTokenResponse accessTokenResponse = getUserAccessTokenResponse(clientId)
+        String refreshToken = accessTokenResponse.tokens.refreshToken
+        user_AccessToken = accessTokenResponse.tokens.accessToken
+        idToken = accessTokenResponse.getCustomParameters().get(AUConstants.ID_TOKEN_KEY)
+
+        String scopeString = "${String.join(" ", scopes.collect({ it.scopeString }))} openid"
+
+        //Check the status of the refresh token
+        def introspectResponse = AURequestBuilder.buildIntrospectionRequest(refreshToken, auConfiguration.getAppInfoClientID())
+                .post(AUConstants.INTROSPECTION_ENDPOINT)
+
+        Assert.assertTrue(introspectResponse.jsonPath().get("active").equals(true))
+        Assert.assertNotNull(introspectResponse.jsonPath().get("exp"))
+        Assert.assertNotNull(introspectResponse.jsonPath().get("scope"))
+        Assert.assertNull(introspectResponse.jsonPath().get("username"))
+    }
+
+    @Test (dependsOnMethods = "CDS-705_Verify introspection response not returning username field")
+    void "CDS-718_Send introspection call for user access token"() {
+
+        def introspectResponse = AURequestBuilder.buildIntrospectionRequest(user_AccessToken,
+                auConfiguration.getAppInfoClientID())
+                .post(AUConstants.INTROSPECTION_ENDPOINT)
+
+        Assert.assertTrue(introspectResponse.jsonPath().get("active").equals(false))
+    }
+
+    @Test (dependsOnMethods = "CDS-705_Verify introspection response not returning username field")
+    void "CDS-718_Send introspection call for id_token"() {
+
+        def introspectResponse = AURequestBuilder.buildIntrospectionRequest(idToken,
+                auConfiguration.getAppInfoClientID())
+                .post(AUConstants.INTROSPECTION_ENDPOINT)
+
+        Assert.assertTrue(introspectResponse.jsonPath().get("active").equals(false))
     }
 
 }

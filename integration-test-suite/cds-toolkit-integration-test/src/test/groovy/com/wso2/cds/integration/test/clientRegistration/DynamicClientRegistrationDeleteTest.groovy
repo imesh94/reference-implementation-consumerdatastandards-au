@@ -13,6 +13,7 @@ import com.wso2.cds.test.framework.AUTest
 import com.wso2.cds.test.framework.configuration.AUConfigurationService
 import com.wso2.cds.test.framework.constant.AUConstants
 import com.wso2.cds.test.framework.constant.ContextConstants
+import com.wso2.cds.test.framework.data_provider.ConsentDataProviders
 import com.wso2.cds.test.framework.request_builder.AURegistrationRequestBuilder
 import com.wso2.cds.test.framework.utility.AUTestUtil
 import org.testng.Assert
@@ -34,17 +35,19 @@ class DynamicClientRegistrationDeleteTest extends AUTest {
         AURegistrationRequestBuilder dcr = new AURegistrationRequestBuilder()
         AUConfigurationService auConfiguration = new AUConfigurationService()
 
-        def  registrationResponse = AURegistrationRequestBuilder
-                .buildRegistrationRequest(dcr.getAURegularClaims())
-                .when()
-                .post(AUConstants.DCR_REGISTRATION_ENDPOINT)
+//        def  registrationResponse = AURegistrationRequestBuilder
+//                .buildRegistrationRequest(dcr.getAURegularClaims())
+//                .when()
+//                .post(AUConstants.DCR_REGISTRATION_ENDPOINT)
+//
+//        clientId = parseResponseBody(registrationResponse, "client_id")
+//        context.setAttribute(ContextConstants.CLIENT_ID,clientId)
+//
+//        Assert.assertEquals(registrationResponse.statusCode(), AUConstants.STATUS_CODE_201)
+//        AUTestUtil.writeXMLContent(AUTestUtil.getTestConfigurationFilePath(), "Application",
+//                "ClientID", clientId, auConfiguration.getTppNumber())
 
-        clientId = parseResponseBody(registrationResponse, "client_id")
-        context.setAttribute(ContextConstants.CLIENT_ID,clientId)
-
-        Assert.assertEquals(registrationResponse.statusCode(), AUConstants.STATUS_CODE_201)
-        AUTestUtil.writeXMLContent(auConfiguration.getOBXMLFile().toString(), "Application",
-                "ClientID", clientId, auConfiguration.getTppNumber())
+        clientId = "2gLanO_mJbyAgekOCCO1oVkYfnka"
         accessToken = getApplicationAccessToken(clientId)
         Assert.assertNotNull(accessToken)
     }
@@ -69,8 +72,26 @@ class DynamicClientRegistrationDeleteTest extends AUTest {
         Assert.assertEquals(registrationResponse.statusCode(), AUConstants.STATUS_CODE_204)
     }
 
-    @AfterClass(alwaysRun = true)
-    void tearDown() {
-        deleteApplicationIfExists(clientId)
+    @Test(dependsOnMethods = "TC0101009_Verify Get Application Access Token", priority = 2, dataProvider = "httpMethods",
+            dataProviderClass = ConsentDataProviders.class)
+    void "CDS-707_Send DCR request with supported http methods"(httpMethod) {
+
+        def registrationResponse = AURegistrationRequestBuilder.buildBasicRequest(accessToken)
+                .when()
+                .request(httpMethod.toString(), AUConstants.DCR_REGISTRATION_ENDPOINT + clientId)
+
+        Assert.assertEquals(registrationResponse.statusCode(), AUConstants.STATUS_CODE_405)
+        Assert.assertNotNull(registrationResponse.getHeader(AUConstants.X_FAPI_INTERACTION_ID))
+    }
+
+    @Test(dependsOnMethods = "TC0101009_Verify Get Application Access Token", priority = 2, dataProvider = "unsupportedHttpMethods",
+            dataProviderClass = ConsentDataProviders.class)
+    void "CDS-713_Send DCR request with unsupported http methods"(httpMethod) {
+
+        def registrationResponse = AURegistrationRequestBuilder.buildBasicRequest(accessToken)
+                .when()
+                .request(httpMethod.toString(), AUConstants.DCR_REGISTRATION_ENDPOINT + clientId)
+
+        Assert.assertEquals(registrationResponse.statusCode(), AUConstants.STATUS_CODE_400)
     }
 }

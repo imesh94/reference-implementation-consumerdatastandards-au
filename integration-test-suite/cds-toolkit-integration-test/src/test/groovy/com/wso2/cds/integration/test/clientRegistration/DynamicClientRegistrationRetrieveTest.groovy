@@ -43,7 +43,7 @@ class DynamicClientRegistrationRetrieveTest extends AUTest{
 
         clientId = AUTestUtil.parseResponseBody(registrationResponse, "client_id")
         context.setAttribute(ContextConstants.CLIENT_ID,clientId)
-        AUTestUtil.writeXMLContent(auConfiguration.getOBXMLFile().toString(), "Application",
+        AUTestUtil.writeXMLContent(AUTestUtil.getTestConfigurationFilePath(), "Application",
                 "ClientID", clientId, auConfiguration.getTppNumber())
     }
 
@@ -74,10 +74,5 @@ class DynamicClientRegistrationRetrieveTest extends AUTest{
                 .get(AUConstants.DCR_REGISTRATION_ENDPOINT + clientId)
 
         Assert.assertEquals(registrationResponse.statusCode(), AUConstants.STATUS_CODE_200)
-    }
-
-    @AfterClass(alwaysRun = true)
-    void tearDown() {
-        deleteApplicationIfExists(clientId)
     }
 }

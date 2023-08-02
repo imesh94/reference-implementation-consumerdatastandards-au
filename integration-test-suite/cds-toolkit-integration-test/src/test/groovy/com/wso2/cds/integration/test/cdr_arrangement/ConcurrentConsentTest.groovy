@@ -304,4 +304,32 @@ class ConcurrentConsentTest extends AUTest {
 
         Assert.assertEquals(revocationResponse.statusCode(), AUConstants.STATUS_CODE_400)
     }
+
+    @Test
+    void "CDS-1022_Verify revoke cdr_arrangement request having resource uri as audience"() {
+
+        List<AUAccountScope> sharingScope = [ AUAccountScope.BANK_ACCOUNT_BASIC_READ ]
+
+        //authorise sharing arrangement
+        response = auAuthorisationBuilder.doPushAuthorisationRequest(sharingScope, AUConstants.DEFAULT_SHARING_DURATION,
+                true, "")
+        requestUri = AUTestUtil.parseResponseBody(response, AUConstants.REQUEST_URI)
+        doConsentAuthorisationViaRequestUri(sharingScope, requestUri.toURI(), clientId, AUAccountProfile.INDIVIDUAL)
+        Assert.assertNotNull(authorisationCode)
+        def userAccessTokenResponse = AURequestBuilder.getUserToken(authorisationCode,
+                sharingScope, AUConstants.CODE_VERIFIER)
+        String userAccessToken = userAccessTokenResponse.tokens.accessToken.toString()
+
+        //obtain cdr_arrangement_id from token response
+        String cdrArrangementId = userAccessTokenResponse.getCustomParameters().get(AUConstants.CDR_ARRANGEMENT_ID)
+        Assert.assertNotNull(cdrArrangementId)
+
+        def resourcePath = auConfiguration.getServerBaseURL() + AUConstants.CDR_ARRANGEMENT_ENDPOINT
+
+        //revoke sharing arrangement
+        def revokeResponse = doRevokeCdrArrangement(auConfiguration.getAppInfoClientID(), cdrArrangementId,
+                resourcePath)
+
+        Assert.assertEquals(revokeResponse.statusCode(), AUConstants.STATUS_CODE_204)
+    }
 }

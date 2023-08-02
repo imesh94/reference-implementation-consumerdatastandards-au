@@ -9,7 +9,6 @@
 
 package com.wso2.cds.integration.test.accounts
 
-import com.wso2.cds.test.framework.constant.AUAccountScope
 import com.wso2.cds.test.framework.constant.AUConstants
 import com.nimbusds.oauth2.sdk.AccessTokenResponse
 import com.wso2.cds.test.framework.AUTest
@@ -123,10 +122,10 @@ class MultiTppConsentValidationTest extends AUTest {
         String errorUrl
 
         errorUrl = url.split("oauthErrorCode=")[1].split("&")[0].replaceAll("\\+"," ")
-        Assert.assertEquals(errorUrl, AUConstants.INVALID_CLIENT)
+        Assert.assertEquals(errorUrl, AUConstants.INVALID_REQUEST_URI)
 
         errorUrl = url.split("oauthErrorMsg=")[1].split("&")[0].replaceAll("\\+"," ")
-        Assert.assertEquals(errorUrl, "application.not.found")
+        Assert.assertEquals(errorUrl, "Request Object and Authorization request contains unmatched client_id")
 
     }
 
@@ -150,8 +149,8 @@ class MultiTppConsentValidationTest extends AUTest {
 
         Assert.assertEquals(parResponse.statusCode(), AUConstants.STATUS_CODE_400)
         Assert.assertEquals(AUTestUtil.parseResponseBody(parResponse, AUConstants.ERROR_DESCRIPTION),
-                "Service provider metadata retrieval failed. Error retrieving service provider tenant domain for client_id: '${auConfiguration.getAppInfoClientID()}' ")
-        Assert.assertEquals(AUTestUtil.parseResponseBody(parResponse, AUConstants.ERROR), AUConstants.INVALID_REQUEST)
+                "Invalid cdr_arrangement_id")
+        Assert.assertEquals(AUTestUtil.parseResponseBody(parResponse, AUConstants.ERROR), AUConstants.INVALID_REQUEST_OBJECT)
     }
 
     @AfterClass(alwaysRun = true)

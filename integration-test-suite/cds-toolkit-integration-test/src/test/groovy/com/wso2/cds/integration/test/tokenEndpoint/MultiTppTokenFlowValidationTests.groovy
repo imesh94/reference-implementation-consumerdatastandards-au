@@ -36,7 +36,7 @@ class MultiTppTokenFlowValidationTests extends AUTest {
         Assert.assertEquals(registrationResponse.statusCode(), AUConstants.CREATED)
 
         //Write Client Id of TPP2 to config file.
-        AUTestUtil.writeXMLContent(auConfiguration.getOBXMLFile().toString(), "Application",
+        AUTestUtil.writeXMLContent(AUTestUtil.getTestConfigurationFilePath(), "Application",
                 "ClientID", clientId, auConfiguration.getTppNumber())
 
         doConsentAuthorisation(clientId)

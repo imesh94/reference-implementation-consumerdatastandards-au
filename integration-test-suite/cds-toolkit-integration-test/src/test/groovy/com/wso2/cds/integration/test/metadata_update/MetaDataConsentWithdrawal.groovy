@@ -28,22 +28,22 @@ class MetaDataConsentWithdrawal extends AUTest{
         auConfiguration.setTppNumber(1)
 
         //Register Second TPP.
+        deleteApplicationIfExists(auConfiguration.getAppInfoClientID())
         def registrationResponse = tppRegistration()
         clientId = AUTestUtil.parseResponseBody(registrationResponse, "client_id")
         Assert.assertEquals(registrationResponse.statusCode(), AUConstants.CREATED)
 
         //Write Client Id of TPP2 to config file.
-        AUTestUtil.writeXMLContent(auConfiguration.getOBXMLFile().toString(), "Application",
+        AUTestUtil.writeXMLContent(AUTestUtil.getTestConfigurationFilePath(), "Application",
                 "ClientID", clientId, auConfiguration.getTppNumber())
 
         doConsentAuthorisation(clientId)
 
-        auConfiguration.setTppNumber(0)
         accessToken = getApplicationAccessToken(clientId)
         Assert.assertNotNull(accessToken)
     }
 
-    @Test(priority = 1)
+    @Test(enabled = true)
     void "TC015_Verify the Consent Withdrawal when the SP Active and ADR Active"() {
 
         doConsentAuthorisation(clientId)
@@ -61,7 +61,7 @@ class MetaDataConsentWithdrawal extends AUTest{
         Assert.assertEquals(response.statusCode(), AUConstants.STATUS_CODE_204)
     }
 
-    @Test(priority = 1)
+    @Test(enabled = true)
     void "TC016_Verify the Consent Withdrawal when the SP Inactive and ADR Active"() {
 
         doConsentAuthorisation(clientId)
@@ -75,14 +75,15 @@ class MetaDataConsentWithdrawal extends AUTest{
         //TODO: Change Status
         sleep(81000)
 
-        //Revoke the Consent
-        Response response = doRevokeCdrArrangement(clientId, cdrArrangementId)
+        //revoke sharing arrangement
+        def response = doRevokeCdrArrangement(auConfiguration.getAppInfoClientID(), cdrArrangementId)
 
         //Assert the consent revoke status code
         Assert.assertEquals(response.statusCode(), AUConstants.STATUS_CODE_204)
     }
 
-    @Test(priority = 1)
+    //Enable the test case when running the test case. Disabled due to the mock authenticator is not available now.
+    @Test(enabled = false)
     void "TC017_Verify the Consent Withdrawal when the SP Inactive and ADR Suspended"() {
 
         doConsentAuthorisation(clientId)
@@ -97,13 +98,14 @@ class MetaDataConsentWithdrawal extends AUTest{
         sleep(81000)
 
         //Revoke the Consent
-        Response response = doRevokeCdrArrangement(clientId, cdrArrangementId)
+        def response = doRevokeCdrArrangement(auConfiguration.getAppInfoClientID(), cdrArrangementId)
 
         //Assert the consent revoke status code
         Assert.assertEquals(response.statusCode(), AUConstants.STATUS_CODE_204)
     }
 
-    @Test(priority = 2)
+    //Enable the test case when running the test case. Disabled due to the mock authenticator is not available now.
+    @Test(enabled = false)
     void "TC018_Verify the Consent Withdrawal when the SP Removed and ADR Active"() {
 
         doConsentAuthorisation(clientId)
@@ -118,17 +120,20 @@ class MetaDataConsentWithdrawal extends AUTest{
         sleep(81000)
 
         //Revoke the Consent
-        Response response = doRevokeCdrArrangement(clientId, cdrArrangementId)
+        def response = doRevokeCdrArrangement(auConfiguration.getAppInfoClientID(), cdrArrangementId)
 
         //Assert the consent revoke status code
-        Assert.assertEquals(response.statusCode(), AUConstants.STATUS_CODE_400)
+        Assert.assertEquals(response.statusCode(), AUConstants.STATUS_CODE_403)
         Assert.assertTrue(AUTestUtil.parseResponseBody(response, AUConstants.ERROR_CODE)
-                .contains(AUConstants.INVALID_REQUEST))
+                .contains(AUConstants.ERROR_CODE_ADR_STATUS_NOT_ACTIVE))
         Assert.assertTrue(AUTestUtil.parseResponseBody(response, AUConstants.ERROR_TITLE)
                 .contains(AUConstants.ERROR_TITLE_INVALID_SP_STATUS))
+        Assert.assertTrue(AUTestUtil.parseResponseBody(response, AUConstants.ERROR_DETAIL)
+                .contains("The software product of ADR is not in an active state in the CDR Register. Current status is REMOVED"))
     }
 
-    @Test(priority = 3)
+    //Enable the test case when running the test case. Disabled due to the mock authenticator is not available now.
+    @Test(enabled = false)
     void "TC019_Verify the Consent Withdrawal when the SP Removed and ADR Suspended"() {
 
         setup()
@@ -145,17 +150,20 @@ class MetaDataConsentWithdrawal extends AUTest{
         sleep(81000)
 
         //Revoke the Consent
-        Response response = doRevokeCdrArrangement(clientId, cdrArrangementId)
+        def response = doRevokeCdrArrangement(auConfiguration.getAppInfoClientID(), cdrArrangementId)
 
         //Assert the consent revoke status code
-        Assert.assertEquals(response.statusCode(), AUConstants.STATUS_CODE_400)
+        Assert.assertEquals(response.statusCode(), AUConstants.STATUS_CODE_403)
         Assert.assertTrue(AUTestUtil.parseResponseBody(response, AUConstants.ERROR_CODE)
-                .contains(AUConstants.INVALID_REQUEST))
+                .contains(AUConstants.ERROR_CODE_ADR_STATUS_NOT_ACTIVE))
         Assert.assertTrue(AUTestUtil.parseResponseBody(response, AUConstants.ERROR_TITLE)
                 .contains(AUConstants.ERROR_TITLE_INVALID_SP_STATUS))
+        Assert.assertTrue(AUTestUtil.parseResponseBody(response, AUConstants.ERROR_DETAIL)
+                .contains("The software product of ADR is not in an active state in the CDR Register. Current status is REMOVED"))
     }
 
-    @Test(priority = 3)
+    //Enable the test case when running the test case. Disabled due to the mock authenticator is not available now.
+    @Test(enabled = false)
     void "TC020_Verify the Consent Withdrawal when the SP Removed and ADR Revoked"() {
 
         setup()
@@ -172,18 +180,21 @@ class MetaDataConsentWithdrawal extends AUTest{
         sleep(81000)
 
         //Revoke the Consent
-        Response response = doRevokeCdrArrangement(clientId, cdrArrangementId)
+        def response = doRevokeCdrArrangement(auConfiguration.getAppInfoClientID(), cdrArrangementId)
 
         //Assert the consent revoke status code
         //Assert the consent revoke status code
-        Assert.assertEquals(response.statusCode(), AUConstants.STATUS_CODE_400)
+        Assert.assertEquals(response.statusCode(), AUConstants.STATUS_CODE_403)
         Assert.assertTrue(AUTestUtil.parseResponseBody(response, AUConstants.ERROR_CODE)
-                .contains(AUConstants.INVALID_REQUEST))
+                .contains(AUConstants.ERROR_CODE_ADR_STATUS_NOT_ACTIVE))
         Assert.assertTrue(AUTestUtil.parseResponseBody(response, AUConstants.ERROR_TITLE)
                 .contains(AUConstants.ERROR_TITLE_INVALID_SP_STATUS))
+        Assert.assertTrue(AUTestUtil.parseResponseBody(response, AUConstants.ERROR_DETAIL)
+                .contains("The ADR is not in an active state in the CDR Register. Current status is REVOKED"))
     }
 
-    @Test(priority = 3)
+    //Enable the test case when running the test case. Disabled due to the mock authenticator is not available now.
+    @Test(enabled = false)
     void "TC021_Verify the Consent Withdrawal when the SP Removed and ADR Surrendered"() {
 
         setup()
@@ -200,14 +211,15 @@ class MetaDataConsentWithdrawal extends AUTest{
         sleep(81000)
 
         //Revoke the Consent
-        Response response = doRevokeCdrArrangement(clientId, cdrArrangementId)
+        def response = doRevokeCdrArrangement(auConfiguration.getAppInfoClientID(), cdrArrangementId)
 
         //Assert the consent revoke status code
-        //Assert the consent revoke status code
-        Assert.assertEquals(response.statusCode(), AUConstants.STATUS_CODE_400)
+        Assert.assertEquals(response.statusCode(), AUConstants.STATUS_CODE_403)
         Assert.assertTrue(AUTestUtil.parseResponseBody(response, AUConstants.ERROR_CODE)
-                .contains(AUConstants.INVALID_REQUEST))
+                .contains(AUConstants.ERROR_CODE_ADR_STATUS_NOT_ACTIVE))
         Assert.assertTrue(AUTestUtil.parseResponseBody(response, AUConstants.ERROR_TITLE)
                 .contains(AUConstants.ERROR_TITLE_INVALID_SP_STATUS))
+        Assert.assertTrue(AUTestUtil.parseResponseBody(response, AUConstants.ERROR_DETAIL)
+                .contains("The ADR is not in an active state in the CDR Register. Current status is SURRENDERED"))
     }
 }

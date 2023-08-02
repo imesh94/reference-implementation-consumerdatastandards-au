@@ -42,9 +42,9 @@ class DynamicClientRegistrationUpdateTest extends AUTest{
 
         clientId = parseResponseBody(registrationResponse, "client_id")
         context.setAttribute(ContextConstants.CLIENT_ID,clientId)
-
-        AUTestUtil.writeXMLContent(auConfiguration.getOBXMLFile().toString(), "Application",
-                "ClientID", clientId, auConfiguration.getTppNumber())
+//
+//        AUTestUtil.writeXMLContent(AUTestUtil.getTestConfigurationFilePath(), "Application",
+//                "ClientID", clientId, auConfiguration.getTppNumber())
     }
 
     @Test(groups = "SmokeTest")
@@ -54,7 +54,7 @@ class DynamicClientRegistrationUpdateTest extends AUTest{
         Assert.assertNotNull(accessToken)
     }
 
-    @Test(dependsOnMethods = "TC0101009_Get access token")
+    @Test(dependsOnMethods = "TC0101009_Get access token", priority = 1)
     void "TC0103001_Update registration details with invalid client id"() {
 
         AURegistrationRequestBuilder registrationRequestBuilder = new AURegistrationRequestBuilder()
@@ -70,6 +70,9 @@ class DynamicClientRegistrationUpdateTest extends AUTest{
     @Test(groups = "SmokeTest", dependsOnMethods = "TC0101009_Get access token")
     void "TC0103002_Update registration details"() {
 
+        accessToken = getApplicationAccessToken(clientId)
+        Assert.assertNotNull(accessToken)
+
         AUJWTGenerator aujwtGenerator =new AUJWTGenerator()
         AURegistrationRequestBuilder registrationRequestBuilder = new AURegistrationRequestBuilder()
         def registrationResponse = AURegistrationRequestBuilder
@@ -81,7 +84,7 @@ class DynamicClientRegistrationUpdateTest extends AUTest{
         Assert.assertEquals(registrationResponse.statusCode(), AUConstants.STATUS_CODE_200)
     }
 
-    @Test(dependsOnMethods = "TC0101009_Get access token")
+    @Test(dependsOnMethods = "TC0101009_Get access token", priority = 1)
     void "OB-1167_Update registration details without SSA"() {
 
         AUJWTGenerator aujwtGenerator = new AUJWTGenerator()
@@ -97,7 +100,7 @@ class DynamicClientRegistrationUpdateTest extends AUTest{
                 AUConstants.INVALID_CLIENT_METADATA)
     }
 
-    @Test(dependsOnMethods = "TC0101009_Get access token")
+    @Test(dependsOnMethods = "TC0101009_Get access token", priority = 1)
     void "OB-1168_Update registration details with fields not supported by data holder brand"() {
 
         AURegistrationRequestBuilder registrationRequestBuilder = new AURegistrationRequestBuilder()
@@ -113,7 +116,8 @@ class DynamicClientRegistrationUpdateTest extends AUTest{
                 .when()
                 .get(registrationPath + clientId)
 
-        Assert.assertEquals(retrievalResponse.statusCode(), AUConstants.STATUS_CODE_400)
+        //Unsupported claims will be ignored. Therefore, gives a success response.
+        Assert.assertEquals(retrievalResponse.statusCode(), AUConstants.STATUS_CODE_200)
         Assert.assertNull(parseResponseBody(retrievalResponse, "adr_name"))
     }
 
@@ -170,8 +174,8 @@ class DynamicClientRegistrationUpdateTest extends AUTest{
         Assert.assertEquals(registrationResponse.statusCode(), AUConstants.STATUS_CODE_401)
     }
 
-    @AfterClass(alwaysRun = true)
-    void tearDown() {
-        deleteApplicationIfExists(clientId)
-    }
+//    @AfterClass(alwaysRun = true)
+//    void tearDown() {
+//        deleteApplicationIfExists(clientId)
+//    }
 }

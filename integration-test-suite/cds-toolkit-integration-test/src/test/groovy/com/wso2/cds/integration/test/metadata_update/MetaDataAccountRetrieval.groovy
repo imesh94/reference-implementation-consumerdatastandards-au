@@ -27,22 +27,22 @@ class MetaDataAccountRetrieval extends AUTest{
         auConfiguration.setTppNumber(1)
 
         //Register Second TPP.
+        deleteApplicationIfExists(auConfiguration.getAppInfoClientID())
         def registrationResponse = tppRegistration()
         clientId = AUTestUtil.parseResponseBody(registrationResponse, "client_id")
         Assert.assertEquals(registrationResponse.statusCode(), AUConstants.CREATED)
 
         //Write Client Id of TPP2 to config file.
-        AUTestUtil.writeXMLContent(auConfiguration.getOBXMLFile().toString(), "Application",
+        AUTestUtil.writeXMLContent(AUTestUtil.getTestConfigurationFilePath(), "Application",
                 "ClientID", clientId, auConfiguration.getTppNumber())
 
         doConsentAuthorisation(clientId)
 
-        auConfiguration.setTppNumber(0)
-        accessToken = getApplicationAccessToken(clientId)
-        Assert.assertNotNull(accessToken)
+        // Retrieve the user access token by auth code
+        userAccessToken = getUserAccessTokenResponse(clientId).tokens.accessToken
     }
 
-    @Test(priority = 1)
+    @Test(enabled = true)
     void "TC008 Verify the Account Retrieval when the SP and ADR both active"() {
 
         doConsentAuthorisation(clientId)
@@ -55,16 +55,11 @@ class MetaDataAccountRetrieval extends AUTest{
 
         //Asserting account retrieval response and status code
         Assert.assertEquals(response.statusCode(), AUConstants.STATUS_CODE_200)
-        Assert.assertNotNull(response.jsonPath().get("${AUConstants.RESPONSE_DATA_BULK_ACCOUNTID_LIST}[0].accountId"))
+        Assert.assertNotNull(response.jsonPath().get("${AUConstants.RESPONSE_DATA_BULK_ACCOUNTID_LIST}"))
     }
 
-    @Test(priority = 2)
+    @Test(enabled = true)
     void "TC009 _Verify the Account Retrieval when the SP Removed and ADR active"() {
-
-        doConsentAuthorisation(clientId)
-
-        // Retrieve the user access token by auth code
-        userAccessToken = getUserAccessTokenResponse(clientId).tokens.accessToken
 
         //TODO: Change the Status
         sleep(100000)
@@ -73,21 +68,19 @@ class MetaDataAccountRetrieval extends AUTest{
         Response response = doAccountRetrieval(userAccessToken, AUConstants.X_V_HEADER_ACCOUNTS)
 
         //Asserting account retrieval response and status code
-        Assert.assertEquals(response.statusCode(), AUConstants.STATUS_CODE_401)
+        Assert.assertEquals(response.statusCode(), AUConstants.STATUS_CODE_403)
         Assert.assertTrue(AUTestUtil.parseResponseBody(response, AUConstants.ERROR_CODE)
-                .contains(AUConstants.ERROR_CODE_UNAUTHORIZED))
+                .contains(AUConstants.ERROR_CODE_ADR_STATUS_NOT_ACTIVE))
         Assert.assertTrue(AUTestUtil.parseResponseBody(response, AUConstants.ERROR_TITLE)
-                .contains(AUConstants.INVALID_AUTHORISATION))
+                .contains(AUConstants.ADR_STATUS_NOT_ACTIVE))
+        Assert.assertTrue(AUTestUtil.parseResponseBody(response, AUConstants.ERROR_DETAIL)
+                .contains("The software product of ADR is not in an active state in the CDR Register. Current status is REMOVED"))
     }
 
-    @Test(priority = 1)
+    //Enable the test case when running the test case. Disabled due to the mock authenticator is not available now.
+    @Test(enabled = false)
     void "TC010_Verify the Account Retrieval when the SP Inactive and ADR active"() {
 
-        doConsentAuthorisation(clientId)
-
-        // Retrieve the user access token by auth code
-        userAccessToken = getUserAccessTokenResponse(clientId).tokens.accessToken
-
         //TODO: Change the Status
         sleep(100000)
 
@@ -97,18 +90,36 @@ class MetaDataAccountRetrieval extends AUTest{
         //Asserting account retrieval error response and status code
         Assert.assertEquals(response.statusCode(), AUConstants.STATUS_CODE_403)
         Assert.assertTrue(AUTestUtil.parseResponseBody(response, AUConstants.ERROR_CODE)
-                .contains(AUConstants.ERROR_CODE_INVALID_SP_STATUS))
+                .contains(AUConstants.ERROR_CODE_ADR_STATUS_NOT_ACTIVE))
         Assert.assertTrue(AUTestUtil.parseResponseBody(response, AUConstants.ERROR_TITLE)
-                .contains(AUConstants.ERROR_TITLE_INVALID_SP_STATUS))
+                .contains(AUConstants.ADR_STATUS_NOT_ACTIVE))
+        Assert.assertTrue(AUTestUtil.parseResponseBody(response, AUConstants.ERROR_DETAIL)
+                .contains("The software product of ADR is not in an active state in the CDR Register. Current status is INACTIVE"))
     }
 
-    @Test(priority = 1)
+    //Enable the test case when running the test case. Disabled due to the mock authenticator is not available now.
+    @Test(enabled = false)
     void "TC011_Verify the Account Retrieval when the SP Inactive and ADR Suspended"() {
 
-        doConsentAuthorisation(clientId)
+        //TODO: Change the Status
+        sleep(100000)
 
-        // Retrieve the user access token by auth code
-        userAccessToken = getUserAccessTokenResponse(clientId).tokens.accessToken
+        //Account Retrieval request
+        Response response = doAccountRetrieval(userAccessToken, AUConstants.X_V_HEADER_ACCOUNTS)
+
+        //Asserting account retrieval error response and status code
+        Assert.assertEquals(response.statusCode(), AUConstants.STATUS_CODE_403)
+        Assert.assertTrue(AUTestUtil.parseResponseBody(response, AUConstants.ERROR_CODE)
+                .contains(AUConstants.ERROR_CODE_ADR_STATUS_NOT_ACTIVE))
+        Assert.assertTrue(AUTestUtil.parseResponseBody(response, AUConstants.ERROR_TITLE)
+                .contains(AUConstants.ADR_STATUS_NOT_ACTIVE))
+        Assert.assertTrue(AUTestUtil.parseResponseBody(response, AUConstants.ERROR_DETAIL)
+                .contains("The ADR is not in an active state in the CDR Register. Current status is SUSPENDED"))
+    }
+
+    //Enable the test case when running the test case. Disabled due to the mock authenticator is not available now.
+    @Test(enabled = false)
+    void "TC012_Verify the Account Retrieval when the SP Removed and ADR Suspended"() {
 
         //TODO: Change the Status
         sleep(100000)
@@ -119,46 +130,17 @@ class MetaDataAccountRetrieval extends AUTest{
         //Asserting account retrieval error response and status code
         Assert.assertEquals(response.statusCode(), AUConstants.STATUS_CODE_403)
         Assert.assertTrue(AUTestUtil.parseResponseBody(response, AUConstants.ERROR_CODE)
-                .contains(AUConstants.ERROR_CODE_INVALID_ADR_STATUS))
+                .contains(AUConstants.ERROR_CODE_ADR_STATUS_NOT_ACTIVE))
         Assert.assertTrue(AUTestUtil.parseResponseBody(response, AUConstants.ERROR_TITLE)
-                .contains(AUConstants.ERROR_TITLE_INVALID_ADR_STATUS))
+                .contains(AUConstants.ADR_STATUS_NOT_ACTIVE))
+        Assert.assertTrue(AUTestUtil.parseResponseBody(response, AUConstants.ERROR_DETAIL)
+                .contains("The ADR is not in an active state in the CDR Register. Current status is SUSPENDED"))
     }
 
-    @Test(priority = 3)
-    void "TC012_Verify the Account Retrieval when the SP Removed and ADR Suspended"() {
-        //creating application again since meta data state changes delete the application
-        setup()
-
-        doConsentAuthorisation(clientId)
-
-        // Retrieve the user access token by auth code
-        userAccessToken = getUserAccessTokenResponse(clientId).tokens.accessToken
-
-        //TODO: Change the Status
-        sleep(100000)
-
-        //Account Retrieval request
-        Response response = doAccountRetrieval(userAccessToken, AUConstants.X_V_HEADER_ACCOUNTS)
-
-        //Asserting account retrieval error response and status code
-        Assert.assertEquals(response.statusCode(), AUConstants.STATUS_CODE_401)
-        Assert.assertTrue(AUTestUtil.parseResponseBody(response, AUConstants.ERROR_CODE)
-                .contains(AUConstants.ERROR_CODE_UNAUTHORIZED))
-        Assert.assertTrue(AUTestUtil.parseResponseBody(response, AUConstants.ERROR_TITLE)
-                .contains(AUConstants.INVALID_AUTHORISATION))
-    }
-
-    @Test(priority = 3)
+    //Enable the test case when running the test case. Disabled due to the mock authenticator is not available now.
+    @Test(enabled = false)
     void "TC013_Verify the Account Retrieval when the SP Removed and ADR Revoked"() {
 
-        //creating application again since meta data state changes delete the application
-        setup()
-
-        doConsentAuthorisation(clientId)
-
-        // Retrieve the user access token by auth code
-        userAccessToken = getUserAccessTokenResponse(clientId).tokens.accessToken
-
         //TODO: Change the Status
         sleep(100000)
 
@@ -166,23 +148,18 @@ class MetaDataAccountRetrieval extends AUTest{
         Response response = doAccountRetrieval(userAccessToken, AUConstants.X_V_HEADER_ACCOUNTS)
 
         //Asserting account retrieval error response and status code
-        Assert.assertEquals(response.statusCode(), AUConstants.STATUS_CODE_401)
+        Assert.assertEquals(response.statusCode(), AUConstants.STATUS_CODE_403)
         Assert.assertTrue(AUTestUtil.parseResponseBody(response, AUConstants.ERROR_CODE)
-                .contains(AUConstants.ERROR_CODE_UNAUTHORIZED))
+                .contains(AUConstants.ERROR_CODE_ADR_STATUS_NOT_ACTIVE))
         Assert.assertTrue(AUTestUtil.parseResponseBody(response, AUConstants.ERROR_TITLE)
-                .contains(AUConstants.INVALID_AUTHORISATION))
+                .contains(AUConstants.ADR_STATUS_NOT_ACTIVE))
+        Assert.assertTrue(AUTestUtil.parseResponseBody(response, AUConstants.ERROR_DETAIL)
+                .contains("The ADR is not in an active state in the CDR Register. Current status is REVOKED"))
     }
 
-    @Test(priority = 3)
+    //Enable the test case when running the test case. Disabled due to the mock authenticator is not available now.
+    @Test(enabled = false)
     void "TC014_Verify the Account Retrieval when the SP Removed and ADR Surrendered"() {
-
-        //creating application again since meta data state changes delete the application
-        setup()
-
-        doConsentAuthorisation(clientId)
-
-        // Retrieve the user access token by auth code
-        userAccessToken = getUserAccessTokenResponse(clientId).tokens.accessToken
 
         //TODO: Change the Status
         sleep(100000)
@@ -191,10 +168,12 @@ class MetaDataAccountRetrieval extends AUTest{
         Response response = doAccountRetrieval(userAccessToken, AUConstants.X_V_HEADER_ACCOUNTS)
 
         //Asserting account retrieval error response and status code
-        Assert.assertEquals(response.statusCode(), AUConstants.STATUS_CODE_401)
+        Assert.assertEquals(response.statusCode(), AUConstants.STATUS_CODE_403)
         Assert.assertTrue(AUTestUtil.parseResponseBody(response, AUConstants.ERROR_CODE)
-                .contains(AUConstants.ERROR_CODE_UNAUTHORIZED))
+                .contains(AUConstants.ERROR_CODE_ADR_STATUS_NOT_ACTIVE))
         Assert.assertTrue(AUTestUtil.parseResponseBody(response, AUConstants.ERROR_TITLE)
-                .contains(AUConstants.INVALID_AUTHORISATION))
+                .contains(AUConstants.ADR_STATUS_NOT_ACTIVE))
+        Assert.assertTrue(AUTestUtil.parseResponseBody(response, AUConstants.ERROR_DETAIL)
+                .contains("The ADR is not in an active state in the CDR Register. Current status is SURRENDERED"))
     }
 }
