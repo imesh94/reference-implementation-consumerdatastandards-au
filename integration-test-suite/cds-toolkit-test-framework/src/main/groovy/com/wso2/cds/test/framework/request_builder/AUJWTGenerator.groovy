@@ -324,7 +324,9 @@ class AUJWTGenerator {
         JSONObject authTimeString = new JSONObject().put("essential", true)
         JSONObject userInfoString = new JSONObject().put("name", null).put("given_name", null).put("family_name", null).put("updated_at", Instant.now())
         JSONObject claimsString = new JSONObject().put("id_token", new JSONObject().put("acr", acr).put("auth_time", authTimeString))
-        claimsString.put("sharing_duration", sharingDuration)
+        if (sendSharingDuration) {
+            claimsString.put("sharing_duration", sharingDuration)
+        }
 
         if (!StringUtils.isEmpty(cdrArrangementId)) {
             claimsString.put("cdr_arrangement_id", cdrArrangementId)

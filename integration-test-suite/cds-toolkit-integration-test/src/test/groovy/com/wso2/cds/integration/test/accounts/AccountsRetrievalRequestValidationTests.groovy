@@ -750,6 +750,7 @@ class AccountsRetrievalRequestValidationTests extends AUTest {
         Assert.assertNotNull(response.getHeader(AUConstants.X_FAPI_INTERACTION_ID))
     }
 
+    //TODO: Issue: https://github.com/wso2-enterprise/financial-open-banking/issues/8455
     @Test
     void "CDS-680_Send token request with same authorisation code"() {
 

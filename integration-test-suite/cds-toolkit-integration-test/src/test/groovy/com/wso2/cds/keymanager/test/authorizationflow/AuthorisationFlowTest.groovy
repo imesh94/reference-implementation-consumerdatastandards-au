@@ -47,8 +47,9 @@ class AuthorisationFlowTest extends AUTest {
 
         AccessTokenResponse accessTokenResponse = getUserAccessTokenResponse(clientId)
         userAccessToken = accessTokenResponse.tokens.accessToken
+        refreshToken = accessTokenResponse.tokens.refreshToken
         Assert.assertNotNull(userAccessToken)
-        Assert.assertNotNull(accessTokenResponse.tokens.refreshToken)
+        Assert.assertNotNull(refreshToken)
         Assert.assertNotNull(accessTokenResponse.getCustomParameters().get(AUConstants.CDR_ARRANGEMENT_ID))
     }
 

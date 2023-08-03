@@ -201,7 +201,8 @@ class AccessTokenTest extends AUTest {
 
         //Generate Access Token
         AccessTokenResponse accessTokenResponse = getUserAccessTokenResponse(clientId)
-        String refreshToken = accessTokenResponse.tokens.refreshToken
+        cdrArrangementId = accessTokenResponse.getCustomParameters().get(AUConstants.CDR_ARRANGEMENT_ID)
+        refreshToken = accessTokenResponse.tokens.refreshToken
         user_AccessToken = accessTokenResponse.tokens.accessToken
         idToken = accessTokenResponse.getCustomParameters().get(AUConstants.ID_TOKEN_KEY)
 
@@ -237,4 +238,18 @@ class AccessTokenTest extends AUTest {
         Assert.assertTrue(introspectResponse.jsonPath().get("active").equals(false))
     }
 
+    //TODO: Issue: https://github.com/wso2-enterprise/financial-open-banking/issues/8456
+    @Test(dependsOnMethods = "CDS-705_Verify introspection response not returning username field")
+    void "CDS-1023_Verify introspection request return cdr_arrangement_id"() {
+
+        def response = AURequestBuilder.buildIntrospectionRequest(refreshToken,
+                auConfiguration.getAppInfoClientID(), 0)
+                .post(AUConstants.INTROSPECTION_ENDPOINT)
+
+        //Introspection validation can only be done for refresh token
+        Assert.assertTrue(response.jsonPath().get("active").equals(true))
+        Assert.assertNotNull(response.jsonPath().get("scope"))
+        Assert.assertNotNull(response.jsonPath().get("exp"))
+        Assert.assertEquals(response.jsonPath().get("cdr_arrangement_id"), cdrArrangementId)
+    }
 }

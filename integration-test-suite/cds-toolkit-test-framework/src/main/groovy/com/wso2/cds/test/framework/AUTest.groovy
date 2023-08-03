@@ -84,7 +84,7 @@ class AUTest extends OBTest {
 
     private List<String> DCRScopes
     public String redirectURL
-    public String userAccessToken
+    public String userAccessToken, refreshToken
     public String authorisationCode
     public String consentedAccount
     public String secondConsentedAccount
@@ -304,7 +304,7 @@ class AUTest extends OBTest {
      */
     void deleteApplicationIfExists(String clientId = auConfiguration.getAppInfoClientID()) {
         if (clientId) {
-            String token = AURequestBuilder.getApplicationAccessToken(getApplicationScope(), clientId)
+            String token = getApplicationAccessToken(clientId)
 
             if (token) {
                 deletionResponse = AURegistrationRequestBuilder.buildBasicRequest(token)
