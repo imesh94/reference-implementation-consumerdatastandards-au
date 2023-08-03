@@ -34,6 +34,8 @@ import io.restassured.response.Response
 import org.jsoup.Jsoup
 
 import java.nio.charset.StandardCharsets
+import java.nio.file.Path
+import java.nio.file.Paths
 import java.security.MessageDigest
 
 
@@ -458,6 +460,43 @@ class AUTestUtil extends OBTestUtil {
             log.error("Unable to find error description in URL", e)
         }
         return null
+    }
+
+    /**
+     * Read the File Content.
+     * @param filePath
+     * @return file content
+     */
+    static String readFileContent(String filePath) {
+        StringBuilder content = new StringBuilder()
+
+        try (BufferedReader reader = new BufferedReader(new FileReader(filePath))) {
+            String line
+            while ((line = reader.readLine()) != null) {
+                content.append(line).append(System.lineSeparator())
+            }
+        } catch (IOException e) {
+            e.printStackTrace()
+        }
+
+        return content.toString().replaceAll("[\r\n]", "")
+    }
+
+    /**
+     * Get Test Configuration File Path.
+     * @return file path
+     */
+    static String getTestConfigurationFilePath() {
+        //Get File Path to TestConfiguration.xml
+        String fileName = "TestConfiguration.xml"
+
+        // Get the path of the "src/resources" directory
+        Path resourcesDirectory = Paths.get("..", "cds-toolkit-test-framework", "src", "main", "resources")
+
+        // Combine the resources directory with the file name to get the absolute file path
+        String filePath = resourcesDirectory.resolve(fileName).toAbsolutePath().toString()
+
+        return filePath
     }
 
 }

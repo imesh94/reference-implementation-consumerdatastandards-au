@@ -54,6 +54,12 @@ class ConsentAmendmentFlowTests extends AUTest {
                 nominatedRepUserID, AUBusinessUserPermission.AUTHORIZE.getPermissionString(), nominatedRepUserID2,
                 AUBusinessUserPermission.VIEW.getPermissionString())
         Assert.assertEquals(updateResponse.statusCode(), AUConstants.OK)
+
+        def businessAccount3 = "586-522-B0025"
+        def updateSecondAccPermissionResponse = updateMultiBusinessUserPermission(clientHeader, businessAccount3, accountOwnerUserID,
+                nominatedRepUserID, AUBusinessUserPermission.AUTHORIZE.getPermissionString(), nominatedRepUserID2,
+                AUBusinessUserPermission.VIEW.getPermissionString())
+        Assert.assertEquals(updateSecondAccPermissionResponse.statusCode(), AUConstants.OK)
     }
 
     @Test

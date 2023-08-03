@@ -46,6 +46,7 @@ class CeasingSecondaryUserConsentFlowTest extends AUTest {
 
         accountID =  shareableElements[AUConstants.PARAM_ACCOUNT_ID]
         userId = auConfiguration.getUserPSUName()
+        clientHeader = "${Base64.encoder.encodeToString(getCDSClient().getBytes(Charset.defaultCharset()))}"
 
         def updateResponse = updateSecondaryUserInstructionPermission(accountID, userId, AUConstants.ACTIVE)
         Assert.assertEquals(updateResponse.statusCode(), AUConstants.OK)
@@ -92,7 +93,7 @@ class CeasingSecondaryUserConsentFlowTest extends AUTest {
                 .execute()
     }
 
-    @Test
+    @Test (priority = 1)
     void "CDS-644_Verify account is not listed under unavailable accounts once the legal entity is active by account owner"() {
 
         //Active the sharing status
@@ -130,7 +131,8 @@ class CeasingSecondaryUserConsentFlowTest extends AUTest {
         authorisationCode = AUTestUtil.getCodeFromJwtResponse(automation.currentUrl.get())
     }
 
-    @Test (dependsOnMethods = "CDS-644_Verify account is not listed under unavailable accounts once the legal entity is active by account owner")
+    @Test (priority = 1,
+            dependsOnMethods = "CDS-644_Verify account is not listed under unavailable accounts once the legal entity is active by account owner")
     void "CDS-645_Retrieve accounts after blocking the data sharing for legal entity"() {
 
         //Get User Access Token
@@ -147,7 +149,8 @@ class CeasingSecondaryUserConsentFlowTest extends AUTest {
                 "${AUConstants.RESPONSE_DATA_BULK_ACCOUNTID_LIST}[0]"))
     }
 
-    @Test (dependsOnMethods = "CDS-645_Retrieve accounts after blocking the data sharing for legal entity")
+    @Test (priority = 1,
+            dependsOnMethods = "CDS-645_Retrieve accounts after blocking the data sharing for legal entity")
     void "CDS-646_Retrieve accounts after activating the data sharing for legal entity"() {
 
         //Block the sharing status

@@ -30,13 +30,14 @@ import java.nio.file.Paths
 class DynamicClientRegistrationCreateTest extends AUTest{
 
     AUJWTGenerator generator = new AUJWTGenerator()
+    String clientId
 
     @BeforeClass
     void "Delete Application if exists"() {
         deleteApplicationIfExists()
     }
 
-    @Test(priority = 2,dependsOnMethods = "TC0101008_Verify Dynamic client registration test")
+    @Test(priority = 1,dependsOnMethods = "TC0101008_Verify Dynamic client registration test")
     void "TC0101009_Verify Get Application Access Token"(ITestContext context){
 
         // retrieve from context using key
@@ -55,10 +56,11 @@ class DynamicClientRegistrationCreateTest extends AUTest{
                 .post(AUConstants.DCR_REGISTRATION_ENDPOINT)
 
         clientId = AUTestUtil.parseResponseBody(registrationResponse, AUConstants.CLIENT_ID)
+
         // add to context using key value pair
         context.setAttribute(ContextConstants.CLIENT_ID,clientId)
-//        AUTestUtil.writeXMLContent(AUTestUtil.getTestConfigurationFilePath(), "Application",
-//                "ClientID", clientId, auConfiguration.getTppNumber())
+        AUTestUtil.writeXMLContent(AUTestUtil.getTestConfigurationFilePath(), "Application",
+                "ClientID", clientId, auConfiguration.getTppNumber())
 
         Assert.assertEquals(registrationResponse.statusCode(), AUConstants.STATUS_CODE_201)
         Assert.assertEquals(parseResponseBody(registrationResponse, "software_statement"),
@@ -66,8 +68,8 @@ class DynamicClientRegistrationCreateTest extends AUTest{
 
     }
 
-    @Test(priority = 3, dependsOnMethods = "TC0101008_Verify Dynamic client registration test")
-    void "TC0101011_Create application with already available SSA"() {
+    @Test(priority = 1, dependsOnMethods = "TC0101008_Verify Dynamic client registration test")
+    void "TC0101011_Create application with already available SSA"(ITestContext context) {
 
         AURegistrationRequestBuilder registrationRequestBuilder = new AURegistrationRequestBuilder()
         def registrationResponse = AURegistrationRequestBuilder
@@ -81,9 +83,11 @@ class DynamicClientRegistrationCreateTest extends AUTest{
         Assert.assertTrue(parseResponseBody(registrationResponse, AUConstants.ERROR_DESCRIPTION).
                 contains("Application with the name " + AUConstants.DCR_SOFTWARE_PRODUCT_ID +
                         " already exist in the system"))
+
+        deleteApplicationIfExists(context.getAttribute(ContextConstants.CLIENT_ID).toString())
     }
 
-    @Test(priority = 5)
+    @Test
     void "TC0101001_Create application without Aud"() {
 
         AURegistrationRequestBuilder dcr = new AURegistrationRequestBuilder()
@@ -97,7 +101,7 @@ class DynamicClientRegistrationCreateTest extends AUTest{
                 AUConstants.INVALID_CLIENT_METADATA)
     }
 
-    @Test(priority = 5)
+    @Test
     void "TC0101002_Create application with non matching redirect uris"() {
 
         AURegistrationRequestBuilder dcr = new AURegistrationRequestBuilder()
@@ -111,7 +115,7 @@ class DynamicClientRegistrationCreateTest extends AUTest{
                 AUConstants.DCR_INVALID_REDIRECT_DESCRIPTION)
     }
 
-    @Test(priority = 5)
+    @Test
     void "TC0101003_Create application without TokenEndpointAuthSigningAlg"() {
 
         AURegistrationRequestBuilder dcr = new AURegistrationRequestBuilder()
@@ -127,7 +131,7 @@ class DynamicClientRegistrationCreateTest extends AUTest{
                 AUConstants.DCR_WITHOUT_TOKEN_ENDPOINT_SIGNINGALGO)
     }
 
-    @Test(priority = 5)
+    @Test
     void "TC0101004_Create application without TokenEndpointAuthMethod"() {
 
         AURegistrationRequestBuilder dcr = new AURegistrationRequestBuilder()
@@ -141,7 +145,7 @@ class DynamicClientRegistrationCreateTest extends AUTest{
                 AUConstants.DCR_WITHOUT_TOKEN_ENDPOINT_AUTHMETHOD)
     }
 
-    @Test(priority = 5)
+    @Test
     void "TC0101005_Create application without GrantTypes"() {
 
         AURegistrationRequestBuilder dcr = new AURegistrationRequestBuilder()
@@ -155,7 +159,7 @@ class DynamicClientRegistrationCreateTest extends AUTest{
                 AUConstants.DCR_GRANT_TYPES_NULL)
     }
 
-    @Test(priority = 5)
+    @Test
     void "TC0101006_Create application without ResponseTypes"() {
 
         AURegistrationRequestBuilder dcr = new AURegistrationRequestBuilder()
@@ -171,7 +175,7 @@ class DynamicClientRegistrationCreateTest extends AUTest{
                 AUConstants.DCR_WITHOUT_RESPONSE_TYPES)
     }
 
-    @Test(priority = 5)
+    @Test
     void "TC0101007_Create application without SSA"() {
 
         AURegistrationRequestBuilder dcr = new AURegistrationRequestBuilder()
@@ -185,14 +189,13 @@ class DynamicClientRegistrationCreateTest extends AUTest{
                 AUConstants.DCR_WITHOUT_SSA)
     }
 
-    @Test(priority = 5)
-    void "TC0101012_Create application without ID Token Encrypted Response Algorithm"() {
+    @Test
+    void "TC0101012_Create application without ID Token Encrypted Response Algorithm"(ITestContext context) {
 
-        deleteApplicationIfExists()
+        deleteApplicationIfExists(clientId)
         AUConfigurationService auConfiguration = new AUConfigurationService()
         AURegistrationRequestBuilder dcr = new AURegistrationRequestBuilder()
 
-        deleteApplicationIfExists(clientId)
         def registrationResponse = AURegistrationRequestBuilder
                 .buildRegistrationRequest(dcr.getClaimsWithoutIdTokenAlg())
                 .when()
@@ -201,18 +204,20 @@ class DynamicClientRegistrationCreateTest extends AUTest{
         Assert.assertEquals(registrationResponse.statusCode(), AUConstants.STATUS_CODE_201)
         clientId = parseResponseBody(registrationResponse, AUConstants.CLIENT_ID)
 
+        context.setAttribute(ContextConstants.CLIENT_ID,clientId)
         AUTestUtil.writeXMLContent(AUTestUtil.getTestConfigurationFilePath(), "Application",
                 "ClientID", clientId, auConfiguration.getTppNumber())
+
+        deleteApplicationIfExists(clientId)
     }
 
-    @Test(priority = 5)
-    void "TC0101013_Create application without ID Token Encrypted Response Encryption Method"() {
+    @Test
+    void "TC0101013_Create application without ID Token Encrypted Response Encryption Method"(ITestContext context) {
 
-        deleteApplicationIfExists()
+        deleteApplicationIfExists(clientId)
         AUConfigurationService auConfiguration = new AUConfigurationService()
         AURegistrationRequestBuilder dcr = new AURegistrationRequestBuilder()
 
-        deleteApplicationIfExists(clientId)
         def registrationResponse = AURegistrationRequestBuilder
                 .buildRegistrationRequest(dcr.getClaimsWithoutIdTokenEnc())
                 .when()
@@ -221,11 +226,14 @@ class DynamicClientRegistrationCreateTest extends AUTest{
         Assert.assertEquals(registrationResponse.statusCode(), AUConstants.STATUS_CODE_201)
         clientId = parseResponseBody(registrationResponse, AUConstants.CLIENT_ID)
 
+        context.setAttribute(ContextConstants.CLIENT_ID,clientId)
         AUTestUtil.writeXMLContent(AUTestUtil.getTestConfigurationFilePath(), "Application",
                 "ClientID", clientId, auConfiguration.getTppNumber())
+
+        deleteApplicationIfExists(clientId)
     }
 
-    @Test(priority = 5)
+    @Test
     void "TC0101014_Create application with invalid ID Token Encrypted Response Algorithm"() {
 
         AURegistrationRequestBuilder dcr = new AURegistrationRequestBuilder()
@@ -241,7 +249,7 @@ class DynamicClientRegistrationCreateTest extends AUTest{
                 AUConstants.DCR_INVALID_ID_TOKEN_ENCRYPTION_ALGO)
     }
 
-    @Test(priority = 5)
+    @Test
     void "TC0101015_Create application with invalid ID Token Encrypted Response Encryption Method"() {
 
         AURegistrationRequestBuilder dcr = new AURegistrationRequestBuilder()
@@ -257,7 +265,7 @@ class DynamicClientRegistrationCreateTest extends AUTest{
                 AUConstants.DCR_INVALID_ID_TOKEN_ENCRYPTION_METHOD)
     }
 
-    @Test(priority = 5)
+    @Test
     void "TC0101016_Create application with different values for software ID in SSA and ISS in request JWT"() {
 
         AURegistrationRequestBuilder dcr = new AURegistrationRequestBuilder()
@@ -273,7 +281,7 @@ class DynamicClientRegistrationCreateTest extends AUTest{
                 "Invalid issuer")
     }
 
-    @Test(priority = 5)
+    @Test
     void "TC0101017_Create application with a replayed JTI value in JWT request"() {
 
         deleteApplicationIfExists(clientId)
@@ -286,6 +294,8 @@ class DynamicClientRegistrationCreateTest extends AUTest{
 
         Assert.assertEquals(registrationResponse.statusCode(), AUConstants.STATUS_CODE_201)
 
+        clientId = parseResponseBody(registrationResponse, AUConstants.CLIENT_ID)
+
         registrationResponse = AURegistrationRequestBuilder
                 .buildRegistrationRequest(registrationRequestBuilder.getRegularClaimsWithGivenJti(jtiVal))
                 .when()
@@ -296,9 +306,11 @@ class DynamicClientRegistrationCreateTest extends AUTest{
                 AUConstants.INVALID_CLIENT_METADATA)
         Assert.assertEquals(parseResponseBody(registrationResponse, AUConstants.ERROR_DESCRIPTION),
                 "JTI value of the registration request has been replayed")
+
+        deleteApplicationIfExists(clientId)
     }
 
-    @Test(priority = 4)
+    @Test
     void "OB-1160_Create application with unsupported TokenEndpointAuthMethod"() {
 
         AURegistrationRequestBuilder dcr = new AURegistrationRequestBuilder()
@@ -314,7 +326,7 @@ class DynamicClientRegistrationCreateTest extends AUTest{
                 "Invalid tokenEndPointAuthentication provided")
     }
 
-    @Test(priority = 5)
+    @Test
     void "OB-1161_Create application with unsupported GrantTypes"() {
 
         AURegistrationRequestBuilder dcr = new AURegistrationRequestBuilder()
@@ -330,7 +342,7 @@ class DynamicClientRegistrationCreateTest extends AUTest{
                 "Invalid grantTypes provided")
     }
 
-    @Test(priority = 5)
+    @Test
     void "OB-1162_Create application with unsupported ResponseTypes"() {
 
         AURegistrationRequestBuilder dcr = new AURegistrationRequestBuilder()
@@ -346,7 +358,7 @@ class DynamicClientRegistrationCreateTest extends AUTest{
                 "Invalid responseTypes provided")
     }
 
-    @Test(priority = 5)
+    @Test
     void "OB-1163_Create application with unsupported ApplicationType"() {
 
         AURegistrationRequestBuilder dcr = new AURegistrationRequestBuilder()
@@ -362,7 +374,7 @@ class DynamicClientRegistrationCreateTest extends AUTest{
                 "Invalid applicationType provided")
     }
 
-    @Test(priority = 5)
+    @Test
     void "OB-1164_Create application with malformed SSA"() {
 
         AURegistrationRequestBuilder dcr = new AURegistrationRequestBuilder()
@@ -378,12 +390,11 @@ class DynamicClientRegistrationCreateTest extends AUTest{
                 "Malformed request JWT")
     }
 
-    @Test(priority = 5)
-    void "OB-1165_Create application without request_object_signing_alg"() {
+    @Test(priority = 2)
+    void "OB-1165_Create application without request_object_signing_alg"(ITestContext context) {
 
-        deleteApplicationIfExists(clientId)
         AURegistrationRequestBuilder dcr = new AURegistrationRequestBuilder()
-        deleteApplicationIfExists(clientId)
+
         def registrationResponse = AURegistrationRequestBuilder
                 .buildRegistrationRequest(dcr.getRegularClaimsWithoutRequestObjectSigningAlg())
                 .when()
@@ -393,7 +404,8 @@ class DynamicClientRegistrationCreateTest extends AUTest{
         Assert.assertNotNull(parseResponseBody(registrationResponse, "request_object_signing_alg"))
 
         clientId = parseResponseBody(registrationResponse, AUConstants.CLIENT_ID)
-        deleteApplicationIfExists(clientId)
+        context.setAttribute(ContextConstants.CLIENT_ID,clientId)
+        deleteApplicationIfExists(context.getAttribute(ContextConstants.CLIENT_ID).toString())
 
         registrationResponse = AURegistrationRequestBuilder
                 .buildRegistrationRequest(dcr.getAURegularClaims())
@@ -403,12 +415,15 @@ class DynamicClientRegistrationCreateTest extends AUTest{
         Assert.assertEquals(registrationResponse.statusCode(), AUConstants.STATUS_CODE_201)
         clientId = parseResponseBody(registrationResponse, AUConstants.CLIENT_ID)
 
+        context.setAttribute(ContextConstants.CLIENT_ID,clientId)
         AUTestUtil.writeXMLContent(AUTestUtil.getTestConfigurationFilePath(), "Application",
                 "ClientID", clientId, auConfiguration.getTppNumber())
+
+        deleteApplicationIfExists(context.getAttribute(ContextConstants.CLIENT_ID).toString())
     }
 
-    @Test(priority = 5)
-    void "OB-1166_Create application without redirect_uris"() {
+    @Test
+    void "OB-1166_Create application without redirect_uris"(ITestContext context) {
 
         deleteApplicationIfExists(clientId)
         AURegistrationRequestBuilder dcr = new AURegistrationRequestBuilder()
@@ -418,14 +433,17 @@ class DynamicClientRegistrationCreateTest extends AUTest{
                 .post(AUConstants.DCR_REGISTRATION_ENDPOINT)
 
         clientId = parseResponseBody(registrationResponse, AUConstants.CLIENT_ID)
+        context.setAttribute(ContextConstants.CLIENT_ID,clientId)
         AUTestUtil.writeXMLContent(AUTestUtil.getTestConfigurationFilePath(), "Application",
                 "ClientID", clientId, auConfiguration.getTppNumber())
 
         Assert.assertEquals(registrationResponse.statusCode(), AUConstants.STATUS_CODE_201)
         Assert.assertNotNull(parseResponseBody(registrationResponse, "redirect_uris"))
+
+        deleteApplicationIfExists(clientId)
     }
 
-    @Test(priority = 5)
+    @Test
     void "CDS-651_Create application with hybrid response type"() {
 
         jtiVal = String.valueOf(System.currentTimeMillis())
@@ -443,7 +461,7 @@ class DynamicClientRegistrationCreateTest extends AUTest{
     }
 
     @Test
-    void "CDS-673_DCR registration request with localhost url in the SSA"() {
+    void "CDS-673_DCR registration request with localhost url in the SSA"(ITestContext context) {
 
         Path dcrArtifactsPath = Paths.get(auConfiguration.getAppDCRSSAPath())
         String filePath = Paths.get(dcrArtifactsPath.getParent().toString(), "ssa_localhost.txt")
@@ -459,6 +477,10 @@ class DynamicClientRegistrationCreateTest extends AUTest{
 
         clientId = AUTestUtil.parseResponseBody(registrationResponse, AUConstants.CLIENT_ID)
 
+        context.setAttribute(ContextConstants.CLIENT_ID,clientId)
+        AUTestUtil.writeXMLContent(AUTestUtil.getTestConfigurationFilePath(), "Application",
+                "ClientID", clientId, auConfiguration.getTppNumber())
+
         Assert.assertEquals(registrationResponse.statusCode(), AUConstants.STATUS_CODE_201)
         Assert.assertEquals(parseResponseBody(registrationResponse, "software_statement"),
                 AUTestUtil.readFileContent(filePath))
@@ -467,10 +489,5 @@ class DynamicClientRegistrationCreateTest extends AUTest{
 
         deleteApplicationIfExists(clientId)
     }
-
-//    @AfterClass(alwaysRun = true)
-//    void tearDown() {
-//        deleteApplicationIfExists(clientId)
-//    }
 }
 

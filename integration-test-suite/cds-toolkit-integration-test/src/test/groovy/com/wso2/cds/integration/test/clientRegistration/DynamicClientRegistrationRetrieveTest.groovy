@@ -28,14 +28,13 @@ import org.testng.ITestContext
  */
 class DynamicClientRegistrationRetrieveTest extends AUTest{
 
-    private String applicationId
-
     @SuppressWarnings('GroovyAccessibility')
     @Test
     void "TC0101018_Retrieve Application"(ITestContext context) {
 
         AURegistrationRequestBuilder registrationRequestBuilder = new AURegistrationRequestBuilder()
 
+        deleteApplicationIfExists()
         def registrationResponse = AURegistrationRequestBuilder
                 .buildRegistrationRequest(registrationRequestBuilder.getAURegularClaims())
                 .when()

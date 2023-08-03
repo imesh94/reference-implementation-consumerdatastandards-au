@@ -14,6 +14,7 @@ import com.nimbusds.oauth2.sdk.TokenErrorResponse
 import com.nimbusds.oauth2.sdk.token.RefreshToken
 import com.wso2.cds.test.framework.AUTest
 import com.wso2.cds.test.framework.automation.consent.AUBasicAuthAutomationStep
+import com.wso2.cds.test.framework.constant.AUAccountProfile
 import com.wso2.cds.test.framework.constant.AUAccountScope
 import com.wso2.cds.test.framework.constant.AUConstants
 import com.wso2.cds.test.framework.constant.AUPageObjects
@@ -48,7 +49,7 @@ class ConsentAmendmentFlowTest extends AUTest{
     private RefreshToken refreshToken, secondRefreshToken
 
     @Test(groups = "SmokeTest")
-    void "TC001_Verify Consent Amendment flow when both sharing duration and scope has been amended"() {
+    void "CDS-977_Verify Consent Amendment flow when both sharing duration and scope has been amended"() {
 
         // Send Authorisation request
         doConsentAuthorisation()
@@ -65,7 +66,7 @@ class ConsentAmendmentFlowTest extends AUTest{
 
         //remove an existing scope and add a new scope to amend the consent
         scopes.remove(AUAccountScope.BANK_TRANSACTION_READ)
-        scopes.add(AUAccountScope.BANK_PAYEES_READ)
+        scopes.add(AUAccountScope.PROFILE)
 
         //Retrieve and assert the request URI from Push Authorization request
         response = auAuthorisationBuilder.doPushAuthorisationRequest(scopes, AUConstants.DEFAULT_SHARING_DURATION,
@@ -106,8 +107,8 @@ class ConsentAmendmentFlowTest extends AUTest{
     }
 
     @Test(groups = "SmokeTest",
-            dependsOnMethods = "TC001_Verify Consent Amendment flow when both sharing duration and scope has been amended")
-    void "TC002_Verify account retrieval for amended consent User Access Token to test consent enforcement"() {
+            dependsOnMethods = "CDS-977_Verify Consent Amendment flow when both sharing duration and scope has been amended")
+    void "CDS-978_Verify account retrieval for amended consent User Access Token to test consent enforcement"() {
 
         //Get Account Transaction Details
         def responseAfterAmendment = AURequestBuilder.buildBasicRequestWithCustomHeaders(secondUserAccessToken,
@@ -122,8 +123,8 @@ class ConsentAmendmentFlowTest extends AUTest{
     }
 
     @Test(groups = "SmokeTest",
-            dependsOnMethods = "TC001_Verify Consent Amendment flow when both sharing duration and scope has been amended")
-    void "TC003_Verify account retrieval for original consent User Access Token"() {
+            dependsOnMethods = "CDS-977_Verify Consent Amendment flow when both sharing duration and scope has been amended")
+    void "CDS-979_Verify account retrieval for original consent User Access Token"() {
 
         //Get Account Transaction Details
         def responseAfterAmendment = AURequestBuilder.buildBasicRequestWithCustomHeaders(userAccessToken,
@@ -139,8 +140,8 @@ class ConsentAmendmentFlowTest extends AUTest{
                 .contains(AUConstants.INVALID_CLIENT))
     }
 
-    @Test(dependsOnMethods = "TC001_Verify Consent Amendment flow when both sharing duration and scope has been amended")
-    void "TC004_Verify Token Introspection for newly amended consent user access Token"() {
+    @Test(dependsOnMethods = "CDS-977_Verify Consent Amendment flow when both sharing duration and scope has been amended")
+    void "CDS-980_Verify Token Introspection for newly amended consent user access Token"() {
 
         Response response = AURequestBuilder.buildIntrospectionRequest(secondRefreshToken.toString(), auConfiguration.getAppInfoClientID())
                 .post(AUConstants.INTROSPECTION_ENDPOINT)
@@ -149,8 +150,8 @@ class ConsentAmendmentFlowTest extends AUTest{
         Assert.assertTrue(response.jsonPath().get("active"))
     }
 
-    @Test(dependsOnMethods = "TC001_Verify Consent Amendment flow when both sharing duration and scope has been amended")
-    void "TC005_Verify Token Introspection for previous user access Token"() {
+    @Test(dependsOnMethods = "CDS-977_Verify Consent Amendment flow when both sharing duration and scope has been amended")
+    void "CDS-981_Verify Token Introspection for previous user access Token"() {
 
         Response response = AURequestBuilder.buildIntrospectionRequest(refreshToken.toString(), auConfiguration.getAppInfoClientID())
                 .post(AUConstants.INTROSPECTION_ENDPOINT)
@@ -159,15 +160,15 @@ class ConsentAmendmentFlowTest extends AUTest{
         Assert.assertFalse(response.jsonPath().get("active"))
     }
 
-    @Test(dependsOnMethods = "TC001_Verify Consent Amendment flow when both sharing duration and scope has been amended")
-    void "TC006_Verify regenerate Access Token using Refresh Token for amended Consent"() {
+    @Test(dependsOnMethods = "CDS-977_Verify Consent Amendment flow when both sharing duration and scope has been amended")
+    void "CDS-982_Verify regenerate Access Token using Refresh Token for amended Consent"() {
 
         AccessTokenResponse userAccessToken = getUserAccessTokenFormRefreshToken(secondRefreshToken)
         Assert.assertNotNull(userAccessToken.tokens.accessToken)
     }
 
-    @Test(dependsOnMethods = "TC001_Verify Consent Amendment flow when both sharing duration and scope has been amended")
-    void "TC007_Verify regenerate Access Token using Refresh Token for original Consent"() {
+    @Test(dependsOnMethods = "CDS-977_Verify Consent Amendment flow when both sharing duration and scope has been amended")
+    void "CDS-983_Verify regenerate Access Token using Refresh Token for original Consent"() {
 
         TokenErrorResponse userAccessToken = AURequestBuilder.getUserTokenFromRefreshTokenErrorResponse(refreshToken)
         Assert.assertEquals(userAccessToken.toJSONObject().get(AUConstants.ERROR_DESCRIPTION),
@@ -175,9 +176,9 @@ class ConsentAmendmentFlowTest extends AUTest{
     }
 
     @Test(groups = "SmokeTest",
-            dependsOnMethods = "TC001_Verify Consent Amendment flow when both sharing duration and scope has been amended",
+            dependsOnMethods = "CDS-977_Verify Consent Amendment flow when both sharing duration and scope has been amended",
             priority = 1)
-    void "TC008_Verify an amended consent can be re-amended"() {
+    void "CDS-984_Verify an amended consent can be re-amended"() {
 
         //Re amend the scopes of the consent amendment
         scopes.remove(AUAccountScope.BANK_PAYEES_READ)
@@ -218,9 +219,9 @@ class ConsentAmendmentFlowTest extends AUTest{
         Assert.assertEquals(cdrArrangementId, cdrArrangementId3, "Amended CDR id is not original CDR id")
     }
 
-    @Test(dependsOnMethods = "TC001_Verify Consent Amendment flow when both sharing duration and scope has been amended",
+    @Test(dependsOnMethods = "CDS-977_Verify Consent Amendment flow when both sharing duration and scope has been amended",
             priority = 1)
-    void "TC009_Verify a revoked consent cannot be amended"() {
+    void "CDS-985_Verify a revoked consent cannot be amended"() {
 
         //Revoke the Consent
         Response cdrResponse = AURequestBuilder.doRevokeConsent(auConfiguration.getAppInfoClientID(), cdrArrangementId)
@@ -238,7 +239,7 @@ class ConsentAmendmentFlowTest extends AUTest{
     }
 
     @Test(priority = 1)
-    void "TC010_Verify Status of the refresh token after the Consent Amendment - sharing duration has expired"() {
+    void "CDS-986_Verify Status of the refresh token after the Consent Amendment - sharing duration has expired"() {
 
         // Send Authorisation request
         doConsentAuthorisation()
@@ -290,7 +291,7 @@ class ConsentAmendmentFlowTest extends AUTest{
         secondUserAccessToken = accessTokenResponse2.tokens.accessToken
         secondRefreshToken = accessTokenResponse2.tokens.refreshToken
 
-        sleep(7000)
+        sleep(70000)
 
         //Verify the status of the refresh token
         AccessTokenResponse userAccessToken3 = AURequestBuilder.getUserTokenFromRefreshTokenErrorResponse(secondRefreshToken as RefreshToken)
@@ -299,7 +300,7 @@ class ConsentAmendmentFlowTest extends AUTest{
     }
 
     @Test(priority = 1)
-    void "TC011_Verify a consent cannot be amended with expired CDR Amendment ID"() {
+    void "CDS-987_Verify a consent cannot be amended with expired CDR Amendment ID"() {
 
         // Send Authorisation request
         doConsentAuthorisation()
@@ -324,7 +325,7 @@ class ConsentAmendmentFlowTest extends AUTest{
         requestUri = AUTestUtil.parseResponseBody(response, AUConstants.REQUEST_URI)
         authoriseUrl = auAuthorisationBuilder.getAuthorizationRequest(requestUri.toURI()).toURI().toString()
 
-        sleep(7000)
+        sleep(70000)
 
         //Consent Amendment Authorisation Flow
         def automation = getBrowserAutomation(AUConstants.DEFAULT_DELAY)
@@ -336,7 +337,7 @@ class ConsentAmendmentFlowTest extends AUTest{
     }
 
     @Test(priority = 1)
-    void "TC012_Verify a consent cannot be amended with invalid CDR Amendment ID"() {
+    void "CDS-988_Verify a consent cannot be amended with invalid CDR Amendment ID"() {
 
         String invalidCDRArrangementID = "80486445-2744-464d-af90-57654f4d5b00"
 
@@ -349,6 +350,43 @@ class ConsentAmendmentFlowTest extends AUTest{
                 true, invalidCDRArrangementID)
 
         Assert.assertEquals(AUTestUtil.parseResponseBody(response, AUConstants.ERROR_DESCRIPTION), "Invalid cdr_arrangement_id")
+        Assert.assertEquals(AUTestUtil.parseResponseBody(response, AUConstants.ERROR), AUConstants.INVALID_REQUEST_OBJECT)
+    }
+
+    @Test
+    void "CDS-694_Consent Amendment for consent with 0 sharing duration" () {
+
+        //Send Authorisation Request
+        response = auAuthorisationBuilder.doPushAuthorisationRequest(scopes, AUConstants.SINGLE_ACCESS_CONSENT,
+                true, "")
+
+        Assert.assertEquals(response.statusCode(), AUConstants.STATUS_CODE_201)
+        requestUri = AUTestUtil.parseResponseBody(response, AUConstants.REQUEST_URI)
+
+        doConsentAuthorisationViaRequestUri(scopes, requestUri.toURI(), auConfiguration.getAppInfoClientID(),
+                AUAccountProfile.INDIVIDUAL)
+        Assert.assertNotNull(authorisationCode)
+
+        // Retrieve the user access token by auth code
+        accessTokenResponse = getUserAccessTokenResponse(clientId)
+        cdrArrangementId = accessTokenResponse.getCustomParameters().get(AUConstants.CDR_ARRANGEMENT_ID)
+        userAccessToken = accessTokenResponse.tokens.accessToken
+        refreshToken = accessTokenResponse.tokens.refreshToken
+
+        Assert.assertNotNull(userAccessToken)
+        Assert.assertNull(refreshToken)
+        Assert.assertNotNull(cdrArrangementId)
+
+        //remove an existing scope and add a new scope to amend the consent
+        scopes.remove(AUAccountScope.BANK_TRANSACTION_READ)
+        scopes.add(AUAccountScope.BANK_PAYEES_READ)
+
+        //Consent Amendment - PAR request
+        response = auAuthorisationBuilder.doPushAuthorisationRequest(scopes, AUConstants.SINGLE_ACCESS_CONSENT,
+                true, cdrArrangementId)
+
+        Assert.assertEquals(response.getStatusCode(), AUConstants.STATUS_CODE_400)
+        Assert.assertEquals(AUTestUtil.parseResponseBody(response, AUConstants.ERROR_DESCRIPTION), "Expired cdr-arrangement-id")
         Assert.assertEquals(AUTestUtil.parseResponseBody(response, AUConstants.ERROR), AUConstants.INVALID_REQUEST_OBJECT)
     }
 }

@@ -10,6 +10,10 @@
 package com.wso2.cds.keymanager.test.authorizationflow
 
 import com.nimbusds.oauth2.sdk.AccessTokenResponse
+import com.nimbusds.oauth2.sdk.AuthorizationRequest
+import com.nimbusds.oauth2.sdk.ResponseMode
+import com.nimbusds.oauth2.sdk.ResponseType
+import com.nimbusds.oauth2.sdk.id.ClientID
 import com.wso2.cds.test.framework.AUTest
 import com.wso2.cds.test.framework.automation.consent.AUBasicAuthAutomationStep
 import com.wso2.cds.test.framework.constant.AUAccountProfile
@@ -17,9 +21,11 @@ import com.wso2.cds.test.framework.constant.AUAccountScope
 import com.wso2.cds.test.framework.constant.AUConstants
 import com.wso2.cds.test.framework.constant.AUPageObjects
 import com.wso2.cds.test.framework.request_builder.AURequestBuilder
+import com.wso2.cds.test.framework.utility.AURestAsRequestBuilder
 import com.wso2.cds.test.framework.utility.AUTestUtil
 import com.wso2.openbanking.test.framework.automation.AutomationMethod
 import com.wso2.openbanking.test.framework.automation.NavigationAutomationStep
+import io.restassured.http.ContentType
 import org.openqa.selenium.By
 import org.testng.Assert
 import org.testng.annotations.Test
@@ -56,6 +62,19 @@ class AuthorisationFlowTest extends AUTest {
 
         //Introspection validation can only be done for refresh token
         Assert.assertTrue(response.jsonPath().get("active").equals(false))
+    }
+
+    @Test(groups = "SmokeTest",
+            dependsOnMethods = "TC0203001_Exchange authorisation code for access token")
+    void "CDS-723_Retrieve user info"() {
+
+        def response = AURestAsRequestBuilder.buildRequest()
+                .header(AUConstants.AUTHORIZATION_HEADER_KEY, "${AUConstants.AUTHORIZATION_BEARER_TAG}${userAccessToken}")
+                .baseUri(auConfiguration.getServerAuthorisationServerURL())
+                .get(AUConstants.USERINFO_ENDPOINT)
+
+        Assert.assertEquals(response.getStatusCode(), AUConstants.STATUS_CODE_200)
+        Assert.assertEquals(AUTestUtil.parseResponseBody(response, "sub"), auConfiguration.getUserPSUName()+"@carbon.super")
     }
 
     @Test (priority = 1)
@@ -259,6 +278,7 @@ class AuthorisationFlowTest extends AUTest {
         Assert.assertEquals(state, stateParam)
     }
 
+    //TODO: Issue: https://github.com/wso2-enterprise/financial-open-banking/issues/8303
     @Test
     void "OB-1695_Cancel consent authorisation sent with state param in the login page"() {
 
@@ -281,7 +301,7 @@ class AuthorisationFlowTest extends AUTest {
                 .execute()
 
         def authUrl = automation.currentUrl.get()
-        Assert.assertTrue(AUTestUtil.getDecodedUrl(authUrl).contains("User skipped the consent flow"))
+        Assert.assertTrue(AUTestUtil.getDecodedUrl(authUrl).contains(AUConstants.USER_SKIP_THE_CONSENT_FLOW))
         String stateParam = authUrl.split("state=")[1]
         Assert.assertEquals(auAuthorisationBuilder.state.toString(), stateParam)
     }
@@ -325,11 +345,49 @@ class AuthorisationFlowTest extends AUTest {
                 .execute()
 
         def authUrl = automation.currentUrl.get()
-        Assert.assertTrue(AUTestUtil.getDecodedUrl(authUrl).contains("User skipped the consent flow"))
+        Assert.assertTrue(AUTestUtil.getDecodedUrl(authUrl).contains(AUConstants.USER_SKIP_THE_CONSENT_FLOW))
         String stateParam = authUrl.split("state=")[1]
         Assert.assertEquals(auAuthorisationBuilder.state.toString(), stateParam)
     }
 
+    @Test
+    void "CDS-700_Cancel consent with state param in Profile selection page"() {
+
+        response = auAuthorisationBuilder.doPushAuthorisationRequest(scopes, AUConstants.DEFAULT_SHARING_DURATION,
+                true, "")
+        requestUri = AUTestUtil.parseResponseBody(response, AUConstants.REQUEST_URI)
+
+        authoriseUrl = auAuthorisationBuilder.getAuthorizationRequest(requestUri.toURI(),
+                auConfiguration.getAppInfoClientID(), true).toURI().toString()
+
+        //Consent Authorisation UI Flow
+        def automation = getBrowserAutomation(AUConstants.DEFAULT_DELAY)
+                .addStep(new AUBasicAuthAutomationStep(authoriseUrl))
+                .addStep { driver, context ->
+                    AutomationMethod authWebDriver = new AutomationMethod(driver)
+
+                    //Select Profile and Accounts
+                    if (auConfiguration.getProfileSelectionEnabled()) {
+
+                        //Select Individual Profile
+                        authWebDriver.selectOption(AUPageObjects.INDIVIDUAL_PROFILE_SELECTION)
+
+                        authWebDriver.clickButtonXpath(AUPageObjects.CONSENT_CANCEL_XPATH)
+                        driver.findElement(By.xpath(AUPageObjects.CONFIRM_CONSENT_DENY_XPATH)).click()
+
+                    } else {
+                        assert authWebDriver.isElementDisplayed(AUTestUtil.getSingleAccountXPath())
+                        log.info("Profile Selection is Disabled")
+                    }
+                }
+                .execute()
+
+        def authUrl = automation.currentUrl.get()
+        Assert.assertTrue(AUTestUtil.getDecodedUrl(authUrl).contains(AUConstants.USER_SKIP_THE_CONSENT_FLOW))
+        Assert.assertTrue(authUrl.contains("state"))
+    }
+
+    //TODO: Issue: https://github.com/wso2-enterprise/financial-open-banking/issues/8303
     @Test
     void "OB-1697_Deny consent authorisation request sent without state param in the display_consent page"() {
 
@@ -377,7 +435,7 @@ class AuthorisationFlowTest extends AUTest {
                 .execute()
 
         def authUrl = automation.currentUrl.get()
-        Assert.assertTrue(AUTestUtil.getErrorFromUrl(authUrl).contains("User skip the consent flow"))
+        Assert.assertTrue(AUTestUtil.getDecodedUrl(authUrl).contains(AUConstants.USER_SKIP_THE_CONSENT_FLOW))
         Assert.assertFalse(authUrl.contains("state"))
     }
 
@@ -420,7 +478,7 @@ class AuthorisationFlowTest extends AUTest {
                 .execute()
 
         def authUrl = automation.currentUrl.get()
-        Assert.assertTrue(AUTestUtil.getDecodedUrl(authUrl).contains("User skip the consent flow"))
+        Assert.assertTrue(AUTestUtil.getDecodedUrl(authUrl).contains(AUConstants.USER_SKIP_THE_CONSENT_FLOW))
         Assert.assertFalse(authUrl.contains("state"))
     }
 
@@ -462,6 +520,7 @@ class AuthorisationFlowTest extends AUTest {
         Assert.assertEquals(AUTestUtil.parseResponseBody(response, AUConstants.ERROR_DESCRIPTION), errorMessage)
     }
 
+    //TODO: Issue: https://github.com/wso2-enterprise/financial-open-banking/issues/8420
     @Test
     void "OB-1253_Initiate authorisation consent flow only with openid and profile scopes"() {
 
@@ -506,6 +565,7 @@ class AuthorisationFlowTest extends AUTest {
         response = auAuthorisationBuilder.doPushAuthorisationRequest(scopes, AUConstants.DEFAULT_SHARING_DURATION,
                 true, "")
         requestUri = AUTestUtil.parseResponseBody(response, AUConstants.REQUEST_URI)
+        Assert.assertEquals(response.statusCode(), AUConstants.STATUS_CODE_201)
         Assert.assertEquals(response.statusCode(), AUConstants.STATUS_CODE_201)
         Assert.assertNotNull(requestUri)
 
@@ -564,5 +624,210 @@ class AuthorisationFlowTest extends AUTest {
                         "${AUAccountScope.BANK_ACCOUNT_BASIC_READ.toString()} ${AUAccountScope.BANK_ACCOUNT_DETAIL_READ.toString()} " +
                         "${AUAccountScope.BANK_TRANSACTION_READ.toString()} ${AUAccountScope.BANK_REGULAR_PAYMENTS_READ.toString()} " +
                         "${AUAccountScope.BANK_PAYEES_READ.toString()} openid ${AUAccountScope.PROFILE.toString()}")
+    }
+
+    @Test
+    void "CDS-677_Send authorisation request with the same request_uri multiple times"() {
+
+        response = auAuthorisationBuilder.doPushAuthorisationRequest(scopes, AUConstants.DEFAULT_SHARING_DURATION,
+                true, "")
+        requestUri = AUTestUtil.parseResponseBody(response, AUConstants.REQUEST_URI)
+        doConsentAuthorisationViaRequestUri(scopes, requestUri.toURI(), null, AUAccountProfile.INDIVIDUAL)
+
+        //Resend authorisation request with the same request_uri
+        authoriseUrl = auAuthorisationBuilder.getAuthorizationRequest(requestUri.toURI(), auConfiguration.getAppInfoClientID())
+                .toURI().toString()
+
+        automationResponse = getBrowserAutomation(AUConstants.DEFAULT_DELAY)
+                .addStep(new NavigationAutomationStep(authoriseUrl, 10))
+                .execute()
+
+        def authUrl = automationResponse.currentUrl.get()
+        Assert.assertTrue(AUTestUtil.getDecodedUrl(authUrl).contains("Provided request URI is not valid"))
+
+        def error = URLDecoder.decode(authUrl.split("=")[1].split("&")[0], "UTF8")
+        Assert.assertEquals(error, AUConstants.INVALID_REQUEST_URI)
+    }
+
+    //Note: Update Application Redirect URL of Service Provider before running the test case.
+    @Test (enabled = false)
+    void "CDS-714_Verify cancelling authorisation in account selection page when redirect URI having query parameters"() {
+
+        String claims = generator.getRequestObjectClaim(scopes, AUConstants.DEFAULT_SHARING_DURATION, true, "",
+                auConfiguration.getAppInfoRedirectURL(), auConfiguration.getAppInfoClientID(),
+                auAuthorisationBuilder.getResponseType().toString(), true,
+                auAuthorisationBuilder.getState().toString())
+
+        String newRedirectUri = AUConstants.REDIRECT_URL_WITH_QUERY_PARAMS
+
+        String modifiedClaimSet = generator.addClaimsFromRequestObject(claims, "redirect_uri",
+                newRedirectUri)
+        def response = auAuthorisationBuilder.doPushAuthorisationRequest(modifiedClaimSet)
+
+        Assert.assertEquals(response.statusCode(), AUConstants.STATUS_CODE_201)
+        requestUri = AUTestUtil.parseResponseBody(response, AUConstants.REQUEST_URI)
+
+        authoriseUrl = auAuthorisationBuilder.getAuthorizationRequest(requestUri.toURI(),
+                auConfiguration.getAppInfoClientID(), true).toURI().toString()
+
+        //Consent Authorisation UI Flow
+        def automation = getBrowserAutomation(AUConstants.DEFAULT_DELAY)
+                .addStep(new AUBasicAuthAutomationStep(authoriseUrl))
+                .addStep { driver, context ->
+                    AutomationMethod authWebDriver = new AutomationMethod(driver)
+
+                    //Select Profile and Accounts
+                    if (auConfiguration.getProfileSelectionEnabled()) {
+
+                        //Select Individual Profile
+                        authWebDriver.selectOption(AUPageObjects.INDIVIDUAL_PROFILE_SELECTION)
+                        authWebDriver.clickButtonXpath(AUPageObjects.PROFILE_SELECTION_NEXT_BUTTON)
+
+                        //Select Business Account 1
+                        consentedAccount = authWebDriver.getElementAttribute(AUTestUtil.getSingleAccountXPath(),
+                                AUPageObjects.VALUE)
+                        authWebDriver.clickButtonXpath(AUTestUtil.getSingleAccountXPath())
+
+                        authWebDriver.clickButtonXpath(AUPageObjects.CONSENT_CANCEL_XPATH)
+                        driver.findElement(By.xpath(AUPageObjects.CONFIRM_CONSENT_DENY_XPATH)).click()
+
+                    } else {
+                        assert authWebDriver.isElementDisplayed(AUTestUtil.getSingleAccountXPath())
+                        log.info("Profile Selection is Disabled")
+                    }
+                }
+                .execute()
+
+        def authUrl = automation.currentUrl.get()
+        def error_description = URLDecoder.decode(authUrl.split("&")[2].split("=")[1], "UTF8")
+
+        Assert.assertTrue(error_description.contains(AUConstants.USER_SKIP_THE_CONSENT_FLOW))
+        String actualRedirectUrl = authUrl.split("#")[0]
+        Assert.assertEquals(actualRedirectUrl.toString(), newRedirectUri)
+    }
+
+    //Note: Update Application Redirect URL of Service Provider before running the test case.
+    @Test (enabled = false)
+    void "CDS-715_Verify deny authorisation when redirect URI having query parameters"() {
+
+        String claims = generator.getRequestObjectClaim(scopes, AUConstants.DEFAULT_SHARING_DURATION,
+                true, "", auConfiguration.getAppInfoRedirectURL(),
+                auConfiguration.getAppInfoClientID(), auAuthorisationBuilder.getResponseType().toString(),
+                true, auAuthorisationBuilder.getState().toString())
+
+        String newRedirectUri = AUConstants.REDIRECT_URL_WITH_QUERY_PARAMS
+
+        String modifiedClaimSet = generator.addClaimsFromRequestObject(claims, "redirect_uri",
+                newRedirectUri)
+        def response = auAuthorisationBuilder.doPushAuthorisationRequest(modifiedClaimSet)
+
+        Assert.assertEquals(response.statusCode(), AUConstants.STATUS_CODE_201)
+        requestUri = AUTestUtil.parseResponseBody(response, AUConstants.REQUEST_URI)
+
+        //Consent Authorisation UI Flow
+        String authUrl = doConsentAuthorisationViaRequestUriDenyFlow(scopes, requestUri.toURI(),
+                auConfiguration.getAppInfoClientID(), AUAccountProfile.INDIVIDUAL, false)
+
+        def error_description = URLDecoder.decode(authUrl.split("&")[2].split("=")[1], "UTF8")
+        Assert.assertTrue(error_description.contains(AUConstants.USER_DENIED_THE_CONSENT))
+
+        String actualRedirectUrl = authUrl.split("#")[0]
+        Assert.assertEquals(actualRedirectUrl.toString(), newRedirectUri)
+    }
+
+    //Note: Update Application Redirect URL of Service Provider before running the test case.
+    @Test (enabled = false)
+    void "CDS-716_Verify cancelling authorisation in profile selection page when redirect URI having query parameters"() {
+
+        String claims = generator.getRequestObjectClaim(scopes, AUConstants.DEFAULT_SHARING_DURATION,
+                true, "", auConfiguration.getAppInfoRedirectURL(),
+                auConfiguration.getAppInfoClientID(), auAuthorisationBuilder.getResponseType().toString(),
+                true, auAuthorisationBuilder.getState().toString())
+
+        String newRedirectUri = AUConstants.REDIRECT_URL_WITH_QUERY_PARAMS
+
+        String modifiedClaimSet = generator.addClaimsFromRequestObject(claims, "redirect_uri",
+                newRedirectUri)
+        def response = auAuthorisationBuilder.doPushAuthorisationRequest(modifiedClaimSet)
+
+        Assert.assertEquals(response.statusCode(), AUConstants.STATUS_CODE_201)
+        requestUri = AUTestUtil.parseResponseBody(response, AUConstants.REQUEST_URI)
+
+        authoriseUrl = auAuthorisationBuilder.getAuthorizationRequest(requestUri.toURI(),
+                auConfiguration.getAppInfoClientID(), true).toURI().toString()
+
+        //Consent Authorisation UI Flow
+        def automation = getBrowserAutomation(AUConstants.DEFAULT_DELAY)
+                .addStep(new AUBasicAuthAutomationStep(authoriseUrl))
+                .addStep { driver, context ->
+                    AutomationMethod authWebDriver = new AutomationMethod(driver)
+
+                    //Select Profile and Accounts
+                    if (auConfiguration.getProfileSelectionEnabled()) {
+
+                        //Select Individual Profile
+                        authWebDriver.selectOption(AUPageObjects.INDIVIDUAL_PROFILE_SELECTION)
+
+                        authWebDriver.clickButtonXpath(AUPageObjects.CONSENT_CANCEL_XPATH)
+                        driver.findElement(By.xpath(AUPageObjects.CONFIRM_CONSENT_DENY_XPATH)).click()
+
+                    } else {
+                        assert authWebDriver.isElementDisplayed(AUTestUtil.getSingleAccountXPath())
+                        log.info("Profile Selection is Disabled")
+                    }
+                }
+                .execute()
+
+        def authUrl = automation.currentUrl.get()
+        def error_description = URLDecoder.decode(authUrl.split("&")[2].split("=")[1], "UTF8")
+
+        Assert.assertTrue(error_description.contains(AUConstants.USER_SKIP_THE_CONSENT_FLOW))
+        String actualRedirectUrl = authUrl.split("#")[0]
+        Assert.assertEquals(actualRedirectUrl.toString(), newRedirectUri)
+    }
+
+    //Note: Update Application Redirect URL of Service Provider before running the test case.
+    @Test (enabled = false)
+    void "CDS-715_Generate user access token for client which has query params in redirect url"() {
+
+        String claims = generator.getRequestObjectClaim(scopes, AUConstants.DEFAULT_SHARING_DURATION,
+                true, "", auConfiguration.getAppInfoRedirectURL(),
+                auConfiguration.getAppInfoClientID(), auAuthorisationBuilder.getResponseType().toString(),
+                true, auAuthorisationBuilder.getState().toString())
+
+        String newRedirectUri = AUConstants.REDIRECT_URL_WITH_QUERY_PARAMS
+
+        String modifiedClaimSet = generator.addClaimsFromRequestObject(claims, "redirect_uri",
+                newRedirectUri)
+        def response = auAuthorisationBuilder.doPushAuthorisationRequest(modifiedClaimSet)
+
+        Assert.assertEquals(response.statusCode(), AUConstants.STATUS_CODE_201)
+        requestUri = AUTestUtil.parseResponseBody(response, AUConstants.REQUEST_URI)
+
+        //Consent Authorisation UI Flow
+        doConsentAuthorisationViaRequestUri(scopes, requestUri.toURI(), null, AUAccountProfile.INDIVIDUAL)
+        Assert.assertNotNull(authorisationCode)
+
+        AccessTokenResponse accessTokenResponse = AURequestBuilder.getUserToken(authorisationCode,
+                AUConstants.CODE_VERIFIER, auConfiguration.getAppInfoClientID(), newRedirectUri)
+        userAccessToken = accessTokenResponse.tokens.accessToken
+        Assert.assertNotNull(userAccessToken)
+        Assert.assertNotNull(accessTokenResponse.tokens.refreshToken)
+        Assert.assertNotNull(accessTokenResponse.getCustomParameters().get(AUConstants.CDR_ARRANGEMENT_ID))
+    }
+
+    @Test
+    void "CDS-721_Send authorisation request with invalid response type, response mode"() {
+
+        response = auAuthorisationBuilder.doPushAuthorisationRequest(scopes, AUConstants.DEFAULT_SHARING_DURATION,
+                true, "")
+        requestUri = AUTestUtil.parseResponseBody(response, AUConstants.REQUEST_URI)
+
+        authoriseUrl = auAuthorisationBuilder.getAuthorizationRequest(scopes, requestUri.toURI(),
+                auConfiguration.getAppInfoClientID(), auConfiguration.getAppInfoRedirectURL(), ResponseType.CODE_IDTOKEN,
+                ResponseMode.QUERY_JWT).toURI().toString()
+
+        def automation = doAuthorisationFlowNavigation(authoriseUrl, AUAccountProfile.INDIVIDUAL, true)
+        authorisationCode = AUTestUtil.getCodeFromJwtResponse(automation.currentUrl.get())
     }
 }

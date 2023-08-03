@@ -962,11 +962,11 @@ class AUTest extends OBTest {
      * Authorisation FLow UI Navigation Method.
      * @param authoriseUrl
      * @param profiles
-     * @param isStateParamPresent
+     * @param isMultipleAccSelect
      * @return
      */
     def doAuthorisationFlowNavigation(String authoriseUrl, AUAccountProfile profiles = null,
-                                      boolean isStateParamPresent = true) {
+                                      boolean isMultipleAccSelect = false) {
 
         automationResponse = getBrowserAutomation(AUConstants.DEFAULT_DELAY)
                 .addStep(new AUBasicAuthAutomationStep(authoriseUrl))
@@ -974,7 +974,7 @@ class AUTest extends OBTest {
                     AutomationMethod authWebDriver = new AutomationMethod(driver)
 
                     //Select Profile and Accounts
-                    selectProfileAndAccount(authWebDriver, profiles, isStateParamPresent)
+                    selectProfileAndAccount(authWebDriver, profiles, isMultipleAccSelect)
 
                     //Click Confirm Button
                     authWebDriver.clickButtonXpath(AUPageObjects.CONSENT_CONFIRM_XPATH)
@@ -1226,7 +1226,7 @@ class AUTest extends OBTest {
                                         .getBytes(Charset.forName("UTF-8"))))
                 .contentType(AUConstants.CONTENT_TYPE_APPLICATION_JSON)
                 .baseUri(auConfiguration.getServerAuthorisationServerURL())
-                .get("${AUConstants.CONSENT_STATUS_AU_ENDPOINT}${AUConstants.LEGAL_ENTITY_LIST_ENDPOINT}=${userID}")
+                .get("${AUConstants.CONSENT_STATUS_AU_ENDPOINT}${AUConstants.LEGAL_ENTITY_LIST_ENDPOINT}/${userID}")
     }
 
     /**
@@ -1256,11 +1256,11 @@ class AUTest extends OBTest {
             if (secondaryUserObj.get(AUConstants.SECONDARY_USERS_USERID).getAsString().equals(userId)) {
 
                 // Get the legal entity details array for the given user
-                JsonArray legalEntityDetailsArray = secondaryUserObj.getAsJsonArray(AUConstants.LEGAL_ENTITY_DETAILS)
+                JsonArray accountsArray = secondaryUserObj.getAsJsonArray("accounts")
 
                 // Iterate through the legal entity details
-                for (JsonElement legalEntityDetailsElement : legalEntityDetailsArray) {
-                    JsonObject legalEntityDetailsObj = legalEntityDetailsElement.getAsJsonObject();
+                for (JsonElement legalEntityDetailsElement : accountsArray) {
+                    JsonObject legalEntityDetailsObj = legalEntityDetailsElement.getAsJsonObject()
 
                     // Check if the account ID matches
                     if (legalEntityDetailsObj.get(AUConstants.PAYLOAD_PARAM_ACCOUNT_ID).getAsString().equals(accountId)) {
@@ -1315,6 +1315,32 @@ class AUTest extends OBTest {
 
         generator = new AUJWTGenerator()
         String assertionString = generator.getClientAssertionJwt(clientId)
+
+        def bodyContent = [(AUConstants.CLIENT_ID_KEY): (clientId),
+                           (AUConstants.CLIENT_ASSERTION_TYPE_KEY): (AUConstants.CLIENT_ASSERTION_TYPE),
+                           (AUConstants.CLIENT_ASSERTION_KEY)     : assertionString,
+                           (AUConstants.CDR_ARRANGEMENT_ID)       : cdrArrangementId]
+
+        revocationResponse = AURestAsRequestBuilder.buildRequest()
+                .contentType(AUConstants.ACCESS_TOKEN_CONTENT_TYPE)
+                .formParams(bodyContent)
+                .baseUri(AUTestUtil.getBaseUrl(AUConstants.BASE_PATH_TYPE_CDR_ARRANGEMENT))
+                .post("${AUConstants.CDR_ARRANGEMENT_ENDPOINT}")
+
+        return revocationResponse
+    }
+
+    /**
+     * Revoke CDR Arrangement Request.
+     * @param clientId
+     * @param cdrArrangementId
+     * @param audience
+     * @return response of revoke request.
+     */
+    Response doRevokeCdrArrangement(String clientId, String cdrArrangementId, String audience){
+
+        generator = new AUJWTGenerator()
+        String assertionString = generator.getClientAssertionJwt(clientId, audience)
 
         def bodyContent = [(AUConstants.CLIENT_ID_KEY): (clientId),
                            (AUConstants.CLIENT_ASSERTION_TYPE_KEY): (AUConstants.CLIENT_ASSERTION_TYPE),

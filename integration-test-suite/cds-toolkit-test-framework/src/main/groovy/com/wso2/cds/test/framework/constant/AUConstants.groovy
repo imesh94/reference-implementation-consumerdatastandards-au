@@ -53,8 +53,8 @@ class AUConstants extends OBConstants {
     public static final String TOKEN = "d94c5b2e-b615-366e-862b-374b429e4d5e"
     public static final String accountID = "qu4WMZ-59LsndgjMN-kikHgbJzws-clthVMQELUH9BMhTt6fOc80bgAI1HN82kKCsFWl9OMhDKA3Wck1IMX2Q1qQy9Sykg5kJOSYgFEnjFU"
     public static final String accountID2 = "qu4WMZ-59LsndgjMN-kikHgbJzws-clthVMQELUH9BMhTt6fOc80bgAI1HN82kKCZKqCobYWnFNnWih_ukgKZmidyLDUN-43WATQRbw0VSI"
-    public static final String jointAccountID = "qu4WMZ-59LsndgjMN-kikHgbJzws-clthVMQELUH9BMhTt6fOc80bgAI1HN82kKCeOjYlRtzT9yJ2o0dhgs6fJpW5_PdscIMToQHtalBGYU"
-    public static final String businessAccountID = "7ZFnnKruJ7WX52D-vhD4ygZJm07cm-EkVGA87OvIQfRM5q6I63xR780QJeLqtskCHsiGUbkcN8QwkTbZXt0rH-oRaKcEC-FJb2g605s6EeQ"
+    public static final String jointAccountID = "qu4WMZ-59LsndgjMN-kikHdjzaZChLicltzPvkKrL13hrPrA_NE_6Oklcjp8a2saw3tFqwqv0HPeh7CCg4EBMZpW5_PdscIMToQHtalBGYU"
+    public static final String businessAccountID = "7ZFnnKruJ7WX52D-vhD4ygZJm07cm-EkVGA87OvIQfSH8yRdrJWxwtRGmHRA-RtlCxLPLQWcNkKsfYc97yqYgQPRrZPKSwrJF3wuJEXUg3g"
     public static final String GET_META = "/admin/register/metadata"
     public static final String GET_STAT = "/admin/metrics"
     public static final String X_FAPI_FINANCIAL_ID = "x-fapi-financial-id"
@@ -70,7 +70,7 @@ class AUConstants extends OBConstants {
     public static final long ONE_YEAR_DURATION = 31536200
     public static final long NEGATIVE_DURATION = -3000
     public static final long AMENDED_SHARING_DURATION = 3000
-    public static final long SHORT_SHARING_DURATION = 4
+    public static final long SHORT_SHARING_DURATION = 60
     static final long NEGATIVE_SHARING_DURATION = -3000
 
     public static final String BULK_ACCOUNT_PATH = CDS_PATH + "/banking/accounts"
@@ -102,7 +102,7 @@ class AUConstants extends OBConstants {
     public static final String CONSENT_SEARCH_ENDPOINT = "/api/openbanking/consent/admin/search"
     public static final String DISCLOSURE_OPTIONS_ENDPOINT = "/account-type-management/disclosure-options"
     public static final String SECONDARY_ACCOUNT_ENDPOINT = "/account-type-management/secondary-accounts"
-    public static final String LEGAL_ENTITY_LIST_ENDPOINT = "/account-type-management/legal-entity-list/${QUERY_PARAM_USERID}"
+    public static final String LEGAL_ENTITY_LIST_ENDPOINT = "/account-type-management/legal-entity-list"
     public static final String UPDATE_LEGAL_ENTITY_SHARING_STATUS = "/account-type-management/legal-entity"
     public static final String GET_TRANSACTIONS = SINGLE_ACCOUNT_PATH + "/transactions"
     public static final String GET_PRODUCTS = CDS_PATH + "/banking/products"
@@ -347,6 +347,7 @@ class AUConstants extends OBConstants {
     static final int STATUS_CODE_403 = 403
     static final int STATUS_CODE_500 = 500
     static final int STATUS_CODE_415 = 415
+    static final int STATUS_CODE_501 = 501
 
     //Payload Links
     public static final String LINKS_SELF = "links.self"
@@ -371,7 +372,7 @@ class AUConstants extends OBConstants {
 
     public static final String PARAM_CUSTOMER_ACCOUNT_TYPE = "customerAccountType"
     public static final String INCORRECT_ACC_ID = "1234567"
-    public static final String QUERY_PARAM_USERID = "userID"
+    public static final String QUERY_PARAM_USERID = "userId"
     public static final String QUERY_PARAM_ACCID = "accountId"
     public static final String PARAM_PERMISSION_STATUS = "permissionStatus"
 
@@ -401,18 +402,19 @@ class AUConstants extends OBConstants {
     public static final String ERROR_NOT_ALLOWED_TO_ACCESS = "The access token does not allow you to access the requested resource"
     public static final String PARAM_PROFILE_NAME = "profileName"
     public static final String USER_DENIED_THE_CONSENT = "User denied the consent"
+    public static final String USER_SKIP_THE_CONSENT_FLOW = "User skip the consent flow"
 
     public static final String ACTIVE = "active"
     public static final String INACTIVE = "inactive"
     public static final String IS_JOINT_ACCOUNT = "isJointAccount"
     public static final String LEGAL_ENTITY_DETAILS = "LegalEntityDetails"
-    public static final String SECONDARY_USERS_USERID = "SecondaryUserId"
-    public static final String PAYLOAD_SECONDARY_USERS = "SecondaryUsers"
-    public static final String LEGAL_ENTITIES = "LegalEntities"
-    public static final String LEGAL_ENTITY_ID_MAP = "LegalEntityId"
+    public static final String SECONDARY_USERS_USERID = "secondaryUserID"
+    public static final String PAYLOAD_SECONDARY_USERS = "secondaryUsers"
+    public static final String LEGAL_ENTITIES = "legalEntities"
+    public static final String LEGAL_ENTITY_ID_MAP = "legalEntityID"
     public static final String LEGAL_ENTITY_ID2_MAP = "LegalEntityId2"
-    public static final String SHARING_STATUS = "SharingStatus"
-    public static final String PAYLOAD_PARAM_ACCOUNT_ID = "AccountId"
+    public static final String SHARING_STATUS = "legalEntitySharingStatus"
+    public static final String PAYLOAD_PARAM_ACCOUNT_ID = "accountID"
     public static final String BLOCK_ENTITY = "blocked"
     public static final String CLIENT_ID = "client_id"
 
@@ -447,6 +449,10 @@ class AUConstants extends OBConstants {
             "'New')]"
     public static final String ERROR_INVALID_CLIENT_ID = "Cannot find an application associated with the given consumer key"
     public static final String UNABLE_TO_DECODE_JWT = "Unable to decode JWT."
+    public static final String MISSING_REDIRECT_URL_VALUE= "Mandatory parameter redirect_uri, not found in the request"
+    public static final String CALLBACK_NOT_MATCH = "callback.not.match"
+    public static final String INVALID_CDR_ARRANGEMENT_ID = "Invalid cdr_arrangement_id"
+    public static final String INVALID_AUDIENCE = "Invalid audience value in the request"
 
     //Endpoint Versions
     public static final int X_V_HEADER_ACCOUNTS = 2
@@ -477,5 +483,27 @@ class AUConstants extends OBConstants {
     public static final String SAMPLE_LEGAL_ENTITY_NAME = "Mock Company Pty Ltd."
     public static final String AlternateAccountId = "30080098763501"
     public static final CodeVerifier CODE_VERIFIER = new CodeVerifier()
+    public static final String INVALID_REQUEST_URI = "invalid_request_uri"
+    public static final String ALT_LEGAL_ENTITY = "DR_82"
+    public static final String PAYLOAD_PARAM_ACCOUNTS = "accounts"
+
+    public static final String HTTP_METHOD_PATCH = "PATCH"
+    public static final String HTTP_METHOD_HEAD = "HEAD"
+    public static final String HTTP_METHOD_OPTIONS = "OPTIONS"
+    public static final String HTTP_METHOD_TRACE = "TRACE"
+    public static final String HTTP_METHOD_CONNECT = "CONNECT"
+    public static final String HTTP_METHOD_COPY = "COPY"
+    public static final String HTTP_METHOD_LINK = "LINK"
+    public static final String HTTP_METHOD_UNLINK = "UNLINK"
+    public static final String HTTP_METHOD_PURGE = "PURGE"
+    public static final String HTTP_METHOD_LOCK = "LOCK"
+    public static final String HTTP_METHOD_UNLOCK = "UNLOCK"
+    public static final String HTTP_METHOD_PROPFIND = "PROPFIND"
+    public static final String HTTP_METHOD_VIEW = "VIEW"
+    public static final String REDIRECT_URL_WITH_QUERY_PARAMS = "${auConfiguration.getAppInfoRedirectURL()}?dummy1=lorem&dummy2=ipsum"
+    public static final String LOCALHOST_REDIRECT_URL = "https://localhost:9443/carbon"
+    public static final String USERINFO_ENDPOINT = "/oauth2/userinfo"
+    public static final String ADR_STATUS_NOT_ACTIVE = "ADR Status Is Not Active"
+    public static final String ERROR_CODE_ADR_STATUS_NOT_ACTIVE = "urn:au-cds:error:cds-banking:Authorisation/AdrStatusNotActive"
 }
 

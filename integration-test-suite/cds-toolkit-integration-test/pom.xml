@@ -149,6 +149,11 @@
                 </executions>
             </plugin>
         </plugins>
+        <resources>
+            <resource>
+                <directory>${project.basedir}/../cds-toolkit-test-framework/src/main/resources</directory>
+            </resource>
+        </resources>
     </build>
 
     <properties>

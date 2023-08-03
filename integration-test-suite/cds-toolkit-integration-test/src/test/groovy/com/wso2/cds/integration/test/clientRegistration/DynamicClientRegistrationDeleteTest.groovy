@@ -34,20 +34,20 @@ class DynamicClientRegistrationDeleteTest extends AUTest {
         // retrieve from context using key
         AURegistrationRequestBuilder dcr = new AURegistrationRequestBuilder()
         AUConfigurationService auConfiguration = new AUConfigurationService()
+        deleteApplicationIfExists()
 
-//        def  registrationResponse = AURegistrationRequestBuilder
-//                .buildRegistrationRequest(dcr.getAURegularClaims())
-//                .when()
-//                .post(AUConstants.DCR_REGISTRATION_ENDPOINT)
-//
-//        clientId = parseResponseBody(registrationResponse, "client_id")
-//        context.setAttribute(ContextConstants.CLIENT_ID,clientId)
-//
-//        Assert.assertEquals(registrationResponse.statusCode(), AUConstants.STATUS_CODE_201)
-//        AUTestUtil.writeXMLContent(AUTestUtil.getTestConfigurationFilePath(), "Application",
-//                "ClientID", clientId, auConfiguration.getTppNumber())
+        def  registrationResponse = AURegistrationRequestBuilder
+                .buildRegistrationRequest(dcr.getAURegularClaims())
+                .when()
+                .post(AUConstants.DCR_REGISTRATION_ENDPOINT)
 
-        clientId = "2gLanO_mJbyAgekOCCO1oVkYfnka"
+        clientId = parseResponseBody(registrationResponse, "client_id")
+        context.setAttribute(ContextConstants.CLIENT_ID,clientId)
+
+        Assert.assertEquals(registrationResponse.statusCode(), AUConstants.STATUS_CODE_201)
+        AUTestUtil.writeXMLContent(AUTestUtil.getTestConfigurationFilePath(), "Application",
+                "ClientID", clientId, auConfiguration.getTppNumber())
+
         accessToken = getApplicationAccessToken(clientId)
         Assert.assertNotNull(accessToken)
     }

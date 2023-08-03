@@ -35,6 +35,7 @@ class DynamicClientRegistrationUpdateTest extends AUTest{
 
         AURegistrationRequestBuilder dcr = new AURegistrationRequestBuilder()
 
+        deleteApplicationIfExists()
         def registrationResponse = AURegistrationRequestBuilder
                 .buildRegistrationRequest(dcr.getAURegularClaims())
                 .when()
@@ -42,9 +43,9 @@ class DynamicClientRegistrationUpdateTest extends AUTest{
 
         clientId = parseResponseBody(registrationResponse, "client_id")
         context.setAttribute(ContextConstants.CLIENT_ID,clientId)
-//
-//        AUTestUtil.writeXMLContent(AUTestUtil.getTestConfigurationFilePath(), "Application",
-//                "ClientID", clientId, auConfiguration.getTppNumber())
+
+        AUTestUtil.writeXMLContent(AUTestUtil.getTestConfigurationFilePath(), "Application",
+                "ClientID", clientId, auConfiguration.getTppNumber())
     }
 
     @Test(groups = "SmokeTest")
@@ -173,9 +174,4 @@ class DynamicClientRegistrationUpdateTest extends AUTest{
 
         Assert.assertEquals(registrationResponse.statusCode(), AUConstants.STATUS_CODE_401)
     }
-
-//    @AfterClass(alwaysRun = true)
-//    void tearDown() {
-//        deleteApplicationIfExists(clientId)
-//    }
 }

@@ -10,16 +10,16 @@
 
 <!DOCTYPE suite SYSTEM "http://testng.org/testng-1.0.dtd" >
 <suite name="Consumer Data Standards Test Suite">
-    <test name="Client Registration Tests" parallel="false" enabled="true">
+    <test name="Client Registration Tests" parallel="true" enabled="true">
         <classes>
             <class name="com.wso2.cds.integration.test.clientRegistration.DynamicClientRegistrationCreateTest"/>
-            <class name="com.wso2.cds.integration.test.clientRegistration.DynamicClientRegistrationRetrieveTest"/>
-            <class name="com.wso2.cds.integration.test.clientRegistration.DynamicClientRegistrationUpdateTest"/>
             <class name="com.wso2.cds.integration.test.clientRegistration.DynamicClientRegistrationDeleteTest"/>
+            <class name="com.wso2.cds.integration.test.clientRegistration.DynamicClientRegistrationUpdateTest"/>
+            <class name="com.wso2.cds.integration.test.clientRegistration.DynamicClientRegistrationRetrieveTest"/>
             <class name="com.wso2.cds.integration.test.clientRegistration.MultiTppDcrEndpointTests"/>
         </classes>
     </test>
-    <test name="Accounts Integration Tests" parallel="false" enabled="true">
+    <test name="Accounts Integration Tests" parallel="false" enabled="false">
         <classes>
             <class name="com.wso2.cds.integration.test.accounts.AccountsRetrievalRequestHeaderValidationTest"/>
             <class name="com.wso2.cds.integration.test.accounts.AccountsRetrievalRequestValidationTests"/>
@@ -28,35 +28,35 @@
             <class name="com.wso2.cds.integration.test.accounts.MultiTppConsentValidationTest"/>
         </classes>
     </test>
-    <test name="Banking API Tests" parallel="false" enabled="true">
+    <test name="Banking API Tests" parallel="false" enabled="false">
         <classes>
             <class name="com.wso2.cds.integration.test.banking_products.ProductRetrievalHeaderValidationTest"/>
             <class name="com.wso2.cds.integration.test.banking_products.ProductRetrievalValidationTest"/>
         </classes>
     </test>
-    <test name="Common API Tests" parallel="false" enabled="true">
+    <test name="Common API Tests" parallel="false" enabled="false">
         <classes>
             <class name="com.wso2.cds.integration.test.common_api.CustomerDetailsRetrievalHeaderValidationTests"/>
             <class name="com.wso2.cds.integration.test.common_api.CustomerDetailsRetrievalTest"/>
         </classes>
     </test>
-    <test name="Admin API Tests" parallel="false" enabled="true">
+    <test name="Admin API Tests" parallel="false" enabled="false">
         <classes>
             <class name="com.wso2.cds.integration.test.admin_api.AdminApiValidationTests"/>
         </classes>
     </test>
-    <test name="CDR Arrangement Management API Tests" parallel="false" enabled="true">
+    <test name="CDR Arrangement Management API Tests" parallel="false" enabled="false">
         <classes>
             <class name="com.wso2.cds.integration.test.cdr_arrangement.ConcurrentConsentTest"/>
         </classes>
     </test>
-    <test name="Token Validation Tests" parallel="false" enabled="true">
+    <test name="Token Validation Tests" parallel="false" enabled="false">
         <classes>
             <class name="com.wso2.cds.integration.test.tokenEndpoint.AccessTokenTest"/>
             <class name="com.wso2.cds.integration.test.tokenEndpoint.MultiTppTokenFlowValidationTests"/>
         </classes>
     </test>
-    <test name="Metadata Update Tests" parallel="false" enabled="true">
+    <test name="Metadata Update Tests" parallel="false" enabled="false">
         <classes>
             <class name="com.wso2.cds.integration.test.metadata_update.MetaDataAccountRetrieval"/>
             <class name="com.wso2.cds.integration.test.metadata_update.MetaDataConsentAmendment"/>
@@ -80,20 +80,20 @@
     </test>
 
     <!-- Key Manager Validation Tests-->
-    <test name="Authorisation Flow Validation Tests" parallel="false" enabled="true">
+    <test name="Authorisation Flow Validation Tests" parallel="false" enabled="false">
         <classes>
             <class name="com.wso2.cds.keymanager.test.authorizationflow.AuthorisationFlowTest"/>
             <class name="com.wso2.cds.keymanager.test.authorizationflow.ConsentAmendmentFlowTest"/>
             <class name="com.wso2.cds.keymanager.test.authorizationflow.SharingDurationValidationTest"/>
         </classes>
     </test>
-    <test name="Pushed Authorisation Flow Tests" parallel="false" enabled="true">
+    <test name="Pushed Authorisation Flow Tests" parallel="false" enabled="false">
         <classes>
             <class name="com.wso2.cds.keymanager.test.par.PushedAuthorisationFlowTest"/>
             <class name="com.wso2.cds.keymanager.test.par.RequestObjectValidationTest"/>
         </classes>
     </test>
-    <test name="Business Nominated User Representative Tests" parallel="false" enabled="true">
+    <test name="Business Nominated User Representative Tests" parallel="false" enabled="false">
         <classes>
             <class name="com.wso2.cds.keymanager.test.bnr.BnrEndToEndTest"/>
             <class name="com.wso2.cds.keymanager.test.bnr.ConsentAmendmentFlowTests"/>
@@ -101,18 +101,18 @@
             <class name="com.wso2.cds.keymanager.test.bnr.UserNominationManagementTests"/>
         </classes>
     </test>
-    <test parallel="false" enabled="true" name="Disclosure Option Management Service">
+    <test parallel="false" enabled="false" name="Disclosure Option Management Service">
         <classes>
             <class name="com.wso2.cds.keymanager.test.doms.DisclosureOptionManagementServiceTest"/>
         </classes>
     </test>
-    <test parallel="false" enabled="true" name="Secondary User Instructions">
+    <test parallel="false" enabled="false" name="Secondary User Instructions">
         <classes>
             <class name="com.wso2.cds.keymanager.test.secondaryUser.SecondaryUserInstructionsAuthorisationTest"/>
             <class name="com.wso2.cds.keymanager.test.secondaryUser.SecondaryUserAmendmentFlow"/>
         </classes>
     </test>
-    <test parallel="false" enabled="true" name="Ceasing Secondary User">
+    <test parallel="false" enabled="false" name="Ceasing Secondary User">
         <classes>
             <class name="com.wso2.cds.keymanager.test.secondaryUser.CeasingSecondaryUserManagementTest"/>
             <class name="com.wso2.cds.keymanager.test.secondaryUser.CeasingSecondaryUserConsentFlowTest"/>

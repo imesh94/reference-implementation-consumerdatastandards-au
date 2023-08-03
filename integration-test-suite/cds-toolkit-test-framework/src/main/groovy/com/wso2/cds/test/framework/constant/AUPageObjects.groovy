@@ -209,5 +209,6 @@ class AUPageObjects {
     public static String TXT_OTP_CODE = "OTPcode"
     public static BTN_CONSENT_EXPIRY_XPATH = "//span[@id='consentExpiryTime']"
     public static LBL_UNAVAILABLE_ACCOUNT = "//h4[contains(text(),'Accounts Unavailable To Share')]/following-sibling::div/"
-
+    public static POPUP_UNAVAILABLE_ACCOUNTS = "//p[@id='UnavailableAccountPopover']"
+    public static LBL_WHY_CANT_SHARE = "//h4[contains(text(),'Accounts Unavailable To Share')]/following-sibling::div/p[2]"
 }

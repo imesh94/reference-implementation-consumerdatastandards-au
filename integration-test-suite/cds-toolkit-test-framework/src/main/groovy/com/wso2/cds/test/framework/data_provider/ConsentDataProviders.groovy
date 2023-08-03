@@ -13,12 +13,13 @@
 package com.wso2.cds.test.framework.data_provider
 
 import com.wso2.cds.test.framework.constant.AUConstants
+import org.openqa.selenium.remote.http.HttpMethod
 import org.testng.annotations.DataProvider
 
 /**
  *  Data provide class for Accounts tests
  */
-class AccountsDataProviders {
+class ConsentDataProviders {
 
     @DataProvider(name = "AccountsRetrievalFlow")
     Object[] getAccountsRetrievalFlow() {
@@ -54,6 +55,33 @@ class AccountsDataProviders {
         accounts.add(AUConstants.BULK_SCHEDULE_PAYMENTS_PATH as Object)
         accounts.add(AUConstants.BULK_PAYEES as Object)
         return accounts
+    }
+
+    @DataProvider(name = "httpMethods")
+    Object[] getHttpMethods() {
+
+        def httpMethod = new ArrayList<>()
+        httpMethod.add(AUConstants.HTTP_METHOD_PATCH as Object)
+        httpMethod.add(AUConstants.HTTP_METHOD_HEAD as Object)
+        httpMethod.add(AUConstants.HTTP_METHOD_OPTIONS as Object)
+        httpMethod.add(AUConstants.HTTP_METHOD_TRACE as Object)
+        httpMethod.add(AUConstants.HTTP_METHOD_CONNECT as Object)
+        return httpMethod
+    }
+
+    @DataProvider(name = "unsupportedHttpMethods")
+    Object[] getUnsupportedHttpMethods() {
+
+        def httpMethod = new ArrayList<>()
+        httpMethod.add(AUConstants.HTTP_METHOD_COPY as Object)
+        httpMethod.add(AUConstants.HTTP_METHOD_LINK as Object)
+        httpMethod.add(AUConstants.HTTP_METHOD_UNLINK as Object)
+        httpMethod.add(AUConstants.HTTP_METHOD_PURGE as Object)
+        httpMethod.add(AUConstants.HTTP_METHOD_LOCK as Object)
+        httpMethod.add(AUConstants.HTTP_METHOD_UNLOCK as Object)
+        httpMethod.add(AUConstants.HTTP_METHOD_PROPFIND as Object)
+        httpMethod.add(AUConstants.HTTP_METHOD_VIEW as Object)
+        return httpMethod
     }
 
 }
