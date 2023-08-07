@@ -34,7 +34,7 @@ class DynamicClientRegistrationDeleteTest extends AUTest {
         // retrieve from context using key
         AURegistrationRequestBuilder dcr = new AURegistrationRequestBuilder()
         AUConfigurationService auConfiguration = new AUConfigurationService()
-        deleteApplicationIfExists()
+        deleteApplicationIfExists(auConfiguration.getAppInfoClientID())
 
         def  registrationResponse = AURegistrationRequestBuilder
                 .buildRegistrationRequest(dcr.getAURegularClaims())
@@ -45,8 +45,7 @@ class DynamicClientRegistrationDeleteTest extends AUTest {
         context.setAttribute(ContextConstants.CLIENT_ID,clientId)
 
         Assert.assertEquals(registrationResponse.statusCode(), AUConstants.STATUS_CODE_201)
-        AUTestUtil.writeXMLContent(AUTestUtil.getTestConfigurationFilePath(), "Application",
-                "ClientID", clientId, auConfiguration.getTppNumber())
+        AUTestUtil.writeToConfigFile(clientId)
 
         accessToken = getApplicationAccessToken(clientId)
         Assert.assertNotNull(accessToken)

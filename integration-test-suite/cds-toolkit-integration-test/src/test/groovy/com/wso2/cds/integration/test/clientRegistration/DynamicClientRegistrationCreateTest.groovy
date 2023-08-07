@@ -34,7 +34,7 @@ class DynamicClientRegistrationCreateTest extends AUTest{
 
     @BeforeClass
     void "Delete Application if exists"() {
-        deleteApplicationIfExists()
+        deleteApplicationIfExists(auConfiguration.getAppInfoClientID())
     }
 
     @Test(priority = 1,dependsOnMethods = "TC0101008_Verify Dynamic client registration test")
@@ -59,8 +59,7 @@ class DynamicClientRegistrationCreateTest extends AUTest{
 
         // add to context using key value pair
         context.setAttribute(ContextConstants.CLIENT_ID,clientId)
-        AUTestUtil.writeXMLContent(AUTestUtil.getTestConfigurationFilePath(), "Application",
-                "ClientID", clientId, auConfiguration.getTppNumber())
+        AUTestUtil.writeToConfigFile(clientId)
 
         Assert.assertEquals(registrationResponse.statusCode(), AUConstants.STATUS_CODE_201)
         Assert.assertEquals(parseResponseBody(registrationResponse, "software_statement"),
@@ -205,8 +204,7 @@ class DynamicClientRegistrationCreateTest extends AUTest{
         clientId = parseResponseBody(registrationResponse, AUConstants.CLIENT_ID)
 
         context.setAttribute(ContextConstants.CLIENT_ID,clientId)
-        AUTestUtil.writeXMLContent(AUTestUtil.getTestConfigurationFilePath(), "Application",
-                "ClientID", clientId, auConfiguration.getTppNumber())
+        AUTestUtil.writeToConfigFile(clientId)
 
         deleteApplicationIfExists(clientId)
     }
@@ -227,8 +225,7 @@ class DynamicClientRegistrationCreateTest extends AUTest{
         clientId = parseResponseBody(registrationResponse, AUConstants.CLIENT_ID)
 
         context.setAttribute(ContextConstants.CLIENT_ID,clientId)
-        AUTestUtil.writeXMLContent(AUTestUtil.getTestConfigurationFilePath(), "Application",
-                "ClientID", clientId, auConfiguration.getTppNumber())
+        AUTestUtil.writeToConfigFile(clientId)
 
         deleteApplicationIfExists(clientId)
     }
@@ -416,8 +413,7 @@ class DynamicClientRegistrationCreateTest extends AUTest{
         clientId = parseResponseBody(registrationResponse, AUConstants.CLIENT_ID)
 
         context.setAttribute(ContextConstants.CLIENT_ID,clientId)
-        AUTestUtil.writeXMLContent(AUTestUtil.getTestConfigurationFilePath(), "Application",
-                "ClientID", clientId, auConfiguration.getTppNumber())
+        AUTestUtil.writeToConfigFile(clientId)
 
         deleteApplicationIfExists(context.getAttribute(ContextConstants.CLIENT_ID).toString())
     }
@@ -434,8 +430,7 @@ class DynamicClientRegistrationCreateTest extends AUTest{
 
         clientId = parseResponseBody(registrationResponse, AUConstants.CLIENT_ID)
         context.setAttribute(ContextConstants.CLIENT_ID,clientId)
-        AUTestUtil.writeXMLContent(AUTestUtil.getTestConfigurationFilePath(), "Application",
-                "ClientID", clientId, auConfiguration.getTppNumber())
+        AUTestUtil.writeToConfigFile(clientId)
 
         Assert.assertEquals(registrationResponse.statusCode(), AUConstants.STATUS_CODE_201)
         Assert.assertNotNull(parseResponseBody(registrationResponse, "redirect_uris"))
@@ -478,8 +473,7 @@ class DynamicClientRegistrationCreateTest extends AUTest{
         clientId = AUTestUtil.parseResponseBody(registrationResponse, AUConstants.CLIENT_ID)
 
         context.setAttribute(ContextConstants.CLIENT_ID,clientId)
-        AUTestUtil.writeXMLContent(AUTestUtil.getTestConfigurationFilePath(), "Application",
-                "ClientID", clientId, auConfiguration.getTppNumber())
+        AUTestUtil.writeToConfigFile(clientId)
 
         Assert.assertEquals(registrationResponse.statusCode(), AUConstants.STATUS_CODE_201)
         Assert.assertEquals(parseResponseBody(registrationResponse, "software_statement"),

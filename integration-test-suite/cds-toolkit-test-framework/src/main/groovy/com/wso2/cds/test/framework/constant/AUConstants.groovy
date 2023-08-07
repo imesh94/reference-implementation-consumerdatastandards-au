@@ -505,5 +505,6 @@ class AUConstants extends OBConstants {
     public static final String USERINFO_ENDPOINT = "/oauth2/userinfo"
     public static final String ADR_STATUS_NOT_ACTIVE = "ADR Status Is Not Active"
     public static final String ERROR_CODE_ADR_STATUS_NOT_ACTIVE = "urn:au-cds:error:cds-banking:Authorisation/AdrStatusNotActive"
+    public static final String CONFIG_FILE_NAME = "TestConfiguration.xml"
 }
 

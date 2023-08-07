@@ -38,7 +38,6 @@ import java.nio.file.Path
 import java.nio.file.Paths
 import java.security.MessageDigest
 
-
 /**
  * Domain specific AU layer Class to contain utility classes used for Test Framework.
  */
@@ -497,6 +496,23 @@ class AUTestUtil extends OBTestUtil {
         String filePath = resourcesDirectory.resolve(fileName).toAbsolutePath().toString()
 
         return filePath
+    }
+
+    /**
+     * Write To Test Configuration File.
+     * @param clientId
+     */
+    static void writeToConfigFile(String clientId) {
+        //This step will write the clientId to the TestConfiguration file in resources folder in order to
+        // use it in case of failure in test execution flow.
+        writeXMLContent(getTestConfigurationFilePath(), "Application", "ClientID", clientId,
+                auConfiguration.getTppNumber())
+
+        //This step will write the clientId to the TestConfiguration file in target folder to access during the execution flow.
+        String userDirectory = System.getProperty("user.dir")
+        String filePathInTarget = userDirectory + "/target/classes/${AUConstants.CONFIG_FILE_NAME}"
+        String configFilePath = Paths.get(filePathInTarget).toString()
+        writeXMLContent(configFilePath, "Application", "ClientID", clientId, auConfiguration.getTppNumber())
     }
 
 }

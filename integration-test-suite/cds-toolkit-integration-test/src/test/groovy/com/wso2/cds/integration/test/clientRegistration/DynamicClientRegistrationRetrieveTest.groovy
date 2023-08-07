@@ -34,7 +34,7 @@ class DynamicClientRegistrationRetrieveTest extends AUTest{
 
         AURegistrationRequestBuilder registrationRequestBuilder = new AURegistrationRequestBuilder()
 
-        deleteApplicationIfExists()
+        deleteApplicationIfExists(auConfiguration.getAppInfoClientID())
         def registrationResponse = AURegistrationRequestBuilder
                 .buildRegistrationRequest(registrationRequestBuilder.getAURegularClaims())
                 .when()
@@ -42,8 +42,7 @@ class DynamicClientRegistrationRetrieveTest extends AUTest{
 
         clientId = AUTestUtil.parseResponseBody(registrationResponse, "client_id")
         context.setAttribute(ContextConstants.CLIENT_ID,clientId)
-        AUTestUtil.writeXMLContent(AUTestUtil.getTestConfigurationFilePath(), "Application",
-                "ClientID", clientId, auConfiguration.getTppNumber())
+        AUTestUtil.writeToConfigFile(clientId)
     }
 
     @Test(priority = 1, dependsOnMethods = "TC0101018_Retrieve Application")

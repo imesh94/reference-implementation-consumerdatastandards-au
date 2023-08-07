@@ -37,8 +37,7 @@ class MultiTppDcrEndpointTests extends AUTest {
         Assert.assertEquals(registrationResponse.statusCode(), AUConstants.CREATED)
 
         //Write Client Id of TPP2 to config file.
-        AUTestUtil.writeXMLContent(AUTestUtil.getTestConfigurationFilePath(), "Application",
-                "ClientID", clientId, auConfiguration.getTppNumber())
+        AUTestUtil.writeToConfigFile(clientId)
 
         auConfiguration.setTppNumber(0)
         accessToken = AURequestBuilder.getApplicationAccessToken(getApplicationScope(), auConfiguration.getAppInfoClientID())

@@ -42,8 +42,7 @@ class MultiTppTokenFlowValidationTests extends AUTest {
         clientId = parseResponseBody(registrationResponse, "client_id")
 
         Assert.assertEquals(registrationResponse.statusCode(), AUConstants.STATUS_CODE_201)
-        AUTestUtil.writeXMLContent(AUTestUtil.getTestConfigurationFilePath(), "Application",
-                "ClientID", clientId, auConfiguration.getTppNumber())
+        AUTestUtil.writeToConfigFile(clientId)
 
         doConsentAuthorisation(clientId)
     }

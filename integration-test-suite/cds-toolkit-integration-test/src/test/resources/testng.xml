@@ -10,13 +10,18 @@
 
 <!DOCTYPE suite SYSTEM "http://testng.org/testng-1.0.dtd" >
 <suite name="Consumer Data Standards Test Suite">
-    <test name="Client Registration Tests" parallel="true" enabled="true">
+    <test name="Client Registration Tests" parallel="false" enabled="true">
         <classes>
             <class name="com.wso2.cds.integration.test.clientRegistration.DynamicClientRegistrationCreateTest"/>
-            <class name="com.wso2.cds.integration.test.clientRegistration.DynamicClientRegistrationDeleteTest"/>
-            <class name="com.wso2.cds.integration.test.clientRegistration.DynamicClientRegistrationUpdateTest"/>
             <class name="com.wso2.cds.integration.test.clientRegistration.DynamicClientRegistrationRetrieveTest"/>
+            <class name="com.wso2.cds.integration.test.clientRegistration.DynamicClientRegistrationUpdateTest"/>
+            <class name="com.wso2.cds.integration.test.clientRegistration.DynamicClientRegistrationDeleteTest"/>
             <class name="com.wso2.cds.integration.test.clientRegistration.MultiTppDcrEndpointTests"/>
+        </classes>
+    </test>
+    <test name="Client Registration Prerequisite Step" parallel="false" enabled="true">
+        <classes>
+            <class name="com.wso2.cds.integration.test.tpponboarding.CommonTppOnboardingStep"/>
         </classes>
     </test>
     <test name="Accounts Integration Tests" parallel="false" enabled="true">
