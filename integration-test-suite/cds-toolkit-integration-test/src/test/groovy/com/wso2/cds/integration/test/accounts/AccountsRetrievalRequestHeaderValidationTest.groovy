@@ -342,17 +342,20 @@ class AccountsRetrievalRequestHeaderValidationTest extends AUTest {
     @Test
     void "TC0304011_Retrieve banking products with optional-headers"(){
 
+        String xFapiInteractionId = UUID.randomUUID()
+
         def response = AURequestBuilder.buildBasicRequestWithoutAuthorisationHeader(AUConstants.X_V_HEADER_PRODUCTS)
                 .header(AUConstants.X_FAPI_AUTH_DATE, AUConstants.DATE)
                 .header(AUConstants.X_FAPI_CUSTOMER_IP_ADDRESS , AUConstants.IP)
                 .header(AUConstants.X_CDS_CLIENT_HEADERS , clientHeader)
-                .header(AUConstants.X_FAPI_INTERACTION_ID, UUID.randomUUID())
+                .header(AUConstants.X_FAPI_INTERACTION_ID, xFapiInteractionId)
                 .accept(AUConstants.ACCEPT)
                 .baseUri(AUTestUtil.getBaseUrl(AUConstants.BASE_PATH_TYPE_ACCOUNT))
                 .get("${AUConstants.BANKING_PRODUCT_PATH}")
 
         Assert.assertEquals(response.statusCode(), AUConstants.STATUS_CODE_200)
         Assert.assertEquals(response.getHeader(AUConstants.X_V_HEADER).toInteger(), AUConstants.X_V_HEADER_PRODUCTS)
+        Assert.assertEquals(response.getHeader(AUConstants.X_FAPI_INTERACTION_ID), xFapiInteractionId)
         Assert.assertTrue(response.getHeader(AUConstants.CONTENT_TYPE).contains(AUConstants.ACCEPT))
         Assert.assertNotNull(AUTestUtil.parseResponseBody(response, AUConstants.LINKS_SELF))
         Assert.assertNotNull(AUTestUtil.parseResponseBody(response, AUConstants.LINKS_FIRST))
