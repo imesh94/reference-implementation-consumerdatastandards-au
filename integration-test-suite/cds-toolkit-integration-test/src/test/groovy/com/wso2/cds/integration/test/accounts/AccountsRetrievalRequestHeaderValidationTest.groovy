@@ -549,7 +549,7 @@ class AccountsRetrievalRequestHeaderValidationTest extends AUTest {
         Assert.assertNotNull(response.getHeader(AUConstants.X_FAPI_INTERACTION_ID))
     }
 
-    //TODO: Issue: https://github.com/wso2-enterprise/financial-open-banking/issues/7316 (Check with latest swagger)
+    //TODO: Issue: https://github.com/wso2-enterprise/financial-open-banking/issues/7316
     @Test
     void "OB-1191_Retrieve transaction list with invalid newest-time"() {
 
