@@ -33,7 +33,7 @@ This test suite covers all the functional scenarios and use cases of CDS Toolkit
 
 10. Then you can run the test cases via;
     1. Maven Command: `mvn clean install`
-    2. Test Class by Class: Click on run button in front of the class
+    2. Test Class from IDE (Eg: IntelliJ IDEA): Click on run button in front of the class
     3. Run testng.xml: Goto [testng.xml](integration-test-suite/cds-toolkit-integration-test/src/test/resources/testng.xml) 
     in resources folder and right click can run the test suite.
 11. Reports will be generated cds-toolkit-integration-test/target/surefire-reports folder.
