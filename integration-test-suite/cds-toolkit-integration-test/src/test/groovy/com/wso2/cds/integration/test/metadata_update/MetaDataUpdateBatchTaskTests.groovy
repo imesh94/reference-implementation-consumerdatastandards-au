@@ -35,12 +35,13 @@ class MetaDataUpdateBatchTaskTests extends AUTest{
         auConfiguration.setTppNumber(1)
 
         //Register Second TPP.
+        deleteApplicationIfExists(auConfiguration.getAppInfoClientID())
         def registrationResponse = tppRegistration()
         clientId = AUTestUtil.parseResponseBody(registrationResponse, "client_id")
         Assert.assertEquals(registrationResponse.statusCode(), AUConstants.CREATED)
 
         //Write Client Id of TPP2 to config file.
-        AUTestUtil.writeXMLContent(auConfiguration.getOBXMLFile().toString(), "Application",
+        AUTestUtil.writeXMLContent(AUTestUtil.getTestConfigurationFilePath(), "Application",
                 "ClientID", clientId, auConfiguration.getTppNumber())
 
         doConsentAuthorisation(clientId)
@@ -50,8 +51,7 @@ class MetaDataUpdateBatchTaskTests extends AUTest{
         Assert.assertNotNull(accessToken)
     }
 
-    //TODO: Enable the tests case after implementing the feature
-    @Test(enabled = false)
+    @Test(enabled = true)
     void "TC10030001_Verify the Consent Status when the SP Active and ADR Active"() {
 
         doConsentAuthorisation(clientId)
@@ -72,8 +72,7 @@ class MetaDataUpdateBatchTaskTests extends AUTest{
         Assert.assertEquals(response.jsonPath().get("List[0].Status"), "Authorised")
     }
 
-    //TODO: Enable the tests case after implementing the feature
-    @Test(enabled = false)
+    @Test(enabled = true)
     void "TC10030002_Verify the Consent Status when the ADR Active and SP removed"() {
 
         doConsentAuthorisation(clientId)
@@ -94,7 +93,7 @@ class MetaDataUpdateBatchTaskTests extends AUTest{
         Assert.assertEquals(response.jsonPath().get("List[0].Status"), "Authorised")
     }
 
-    //TODO: Enable the tests case after implementing the feature
+    //Enable the test case when running the test case. Disabled due to the mock authenticator is not available now.
     @Test(enabled = false)
     void "TC10030003_Verify the Consent Status when the ADR Suspended and SP removed"() {
 
@@ -116,7 +115,7 @@ class MetaDataUpdateBatchTaskTests extends AUTest{
         Assert.assertEquals(response.jsonPath().get("List[0].Status"), "Authorised")
     }
 
-    //TODO: Enable the tests case after implementing the feature
+    //Enable the test case when running the test case. Disabled due to the mock authenticator is not available now.
     @Test(enabled = false)
     void "TC10030004_Verify the Consent Status when the ADR Surrendered and SP removed"() {
 
@@ -138,7 +137,7 @@ class MetaDataUpdateBatchTaskTests extends AUTest{
         Assert.assertEquals(response.jsonPath().get("List[0].Status"), "Authorised")
     }
 
-    //TODO: Enable the tests case after implementing the feature
+    //Enable the test case when running the test case. Disabled due to the mock authenticator is not available now.
     @Test(enabled = false)
     void "TC10030005_Verify the Consent Status when the ADR Revoked and SP removed"() {
 
@@ -160,7 +159,7 @@ class MetaDataUpdateBatchTaskTests extends AUTest{
         Assert.assertEquals(response.jsonPath().get("List[0].Status"), "Authorised")
     }
 
-    //TODO: Enable the tests case after implementing the feature
+    //Enable the test case when running the test case. Disabled due to the mock authenticator is not available now.
     @Test(enabled = false)
     void "TC10030006_Verify the Registration Status when the SP Active and ADR Active"() {
 
@@ -175,7 +174,7 @@ class MetaDataUpdateBatchTaskTests extends AUTest{
         Assert.assertEquals(registrationResponse.statusCode(), AUConstants.STATUS_CODE_200)
     }
 
-    //TODO: Enable the tests case after implementing the feature
+    //Enable the test case when running the test case. Disabled due to the mock authenticator is not available now.
     @Test(enabled = false)
     void "TC10030007_Verify the Registration Status when the ADR Suspended and SP Removed"() {
 
@@ -190,7 +189,7 @@ class MetaDataUpdateBatchTaskTests extends AUTest{
         Assert.assertEquals(registrationResponse.statusCode(), AUConstants.STATUS_CODE_200)
     }
 
-    //TODO: Enable the tests case after implementing the feature
+    //Enable the test case when running the test case. Disabled due to the mock authenticator is not available now.
     @Test(enabled = false)
     void "TC10030008_Verify the Registration Status when the ADR Revoked and SP Removed"() {
 
@@ -205,7 +204,7 @@ class MetaDataUpdateBatchTaskTests extends AUTest{
         Assert.assertEquals(registrationResponse.statusCode(), AUConstants.STATUS_CODE_200)
     }
 
-    //TODO: Enable the tests case after implementing the feature
+    //Enable the test case when running the test case. Disabled due to the mock authenticator is not available now.
     @Test(enabled = false)
     void "TC10030009_Verify the Registration Status when the ADR Surrendered and SP Removed"() {
 
@@ -218,16 +217,5 @@ class MetaDataUpdateBatchTaskTests extends AUTest{
                 .get(AUConstants.DCR_REGISTRATION_ENDPOINT + clientId)
 
         Assert.assertEquals(registrationResponse.statusCode(), AUConstants.STATUS_CODE_200)
-    }
-
-    @AfterClass(alwaysRun = true)
-    void tearDown() {
-        List<String> scopes = new ArrayList<>();
-        scopes.add(AUAccountScope.CDR_REGISTRATION.getScopeString())
-        accessToken = getApplicationAccessToken(clientId)
-        def deletionResponse = AURegistrationRequestBuilder.buildBasicRequest(accessToken)
-                .delete(AUConstants.DCR_REGISTRATION_ENDPOINT + clientId)
-
-        Assert.assertEquals(deletionResponse.statusCode(), AUConstants.STATUS_CODE_204)
     }
 }

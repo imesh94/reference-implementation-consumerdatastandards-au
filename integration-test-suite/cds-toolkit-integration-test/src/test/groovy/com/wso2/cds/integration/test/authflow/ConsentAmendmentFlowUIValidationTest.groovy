@@ -117,7 +117,7 @@ class ConsentAmendmentFlowUIValidationTest extends AUTest {
     @Test()
     void "CDS208_Verify the System should display the review page to reflect the amended attributes"() {
 
-        response = auAuthorisationBuilder.doPushAuthorisationRequest(scopes, AUConstants.AMENDED_SHARING_DURATION,
+        response = auAuthorisationBuilder.doPushAuthorisationRequest(scopes, 172800,
                 true, cdrArrangementId)
         requestUri = AUTestUtil.parseResponseBody(response, AUConstants.REQUEST_URI)
         authoriseUrl = auAuthorisationBuilder.getAuthorizationRequest(requestUri.toURI()).toURI().toString()
@@ -125,7 +125,7 @@ class ConsentAmendmentFlowUIValidationTest extends AUTest {
         Date today = new Date()
         Calendar calendar = Calendar.getInstance()
         calendar.setTime(today)
-        calendar.add(Calendar.DAY_OF_YEAR, 1)
+        calendar.add(Calendar.DAY_OF_YEAR, 2)
         Date tomorrow = calendar.getTime()
 
         String sharingPeriod = new SimpleDateFormat("YYYY-MM-dd").format(today) + " - " +

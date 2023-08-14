@@ -1,24 +1,22 @@
 /*
- * Copyright (c) 2022, WSO2 Inc. (http://www.wso2.com). All Rights Reserved.
+ * Copyright (c) 2022 - 2023, WSO2 LLC. (https://www.wso2.com). All Rights Reserved.
  *
- * This software is the property of WSO2 Inc. and its suppliers, if any.
+ * This software is the property of WSO2 LLC. and its suppliers, if any.
  * Dissemination of any information or reproduction of any material contained
- * herein is strictly forbidden, unless permitted by WSO2 in accordance with
- * the WSO2 Software License available at https://wso2.com/licenses/eula/3.1. For specific
- * language governing the permissions and limitations under this license,
- * please see the license as well as any agreement you’ve entered into with
- * WSO2 governing the purchase of this software and any associated services.
+ * herein in any form is strictly forbidden, unless permitted by WSO2 expressly.
+ * You may not alter or remove any copyright or other notice from copies of this content.
  */
 
 package com.wso2.cds.test.framework.data_provider
 
 import com.wso2.cds.test.framework.constant.AUConstants
+import org.openqa.selenium.remote.http.HttpMethod
 import org.testng.annotations.DataProvider
 
 /**
  *  Data provide class for Accounts tests
  */
-class AccountsDataProviders {
+class ConsentDataProviders {
 
     @DataProvider(name = "AccountsRetrievalFlow")
     Object[] getAccountsRetrievalFlow() {
@@ -54,6 +52,33 @@ class AccountsDataProviders {
         accounts.add(AUConstants.BULK_SCHEDULE_PAYMENTS_PATH as Object)
         accounts.add(AUConstants.BULK_PAYEES as Object)
         return accounts
+    }
+
+    @DataProvider(name = "httpMethods")
+    Object[] getHttpMethods() {
+
+        def httpMethod = new ArrayList<>()
+        httpMethod.add(AUConstants.HTTP_METHOD_PATCH as Object)
+        httpMethod.add(AUConstants.HTTP_METHOD_HEAD as Object)
+        httpMethod.add(AUConstants.HTTP_METHOD_OPTIONS as Object)
+        httpMethod.add(AUConstants.HTTP_METHOD_TRACE as Object)
+        httpMethod.add(AUConstants.HTTP_METHOD_CONNECT as Object)
+        return httpMethod
+    }
+
+    @DataProvider(name = "unsupportedHttpMethods")
+    Object[] getUnsupportedHttpMethods() {
+
+        def httpMethod = new ArrayList<>()
+        httpMethod.add(AUConstants.HTTP_METHOD_COPY as Object)
+        httpMethod.add(AUConstants.HTTP_METHOD_LINK as Object)
+        httpMethod.add(AUConstants.HTTP_METHOD_UNLINK as Object)
+        httpMethod.add(AUConstants.HTTP_METHOD_PURGE as Object)
+        httpMethod.add(AUConstants.HTTP_METHOD_LOCK as Object)
+        httpMethod.add(AUConstants.HTTP_METHOD_UNLOCK as Object)
+        httpMethod.add(AUConstants.HTTP_METHOD_PROPFIND as Object)
+        httpMethod.add(AUConstants.HTTP_METHOD_VIEW as Object)
+        return httpMethod
     }
 
 }

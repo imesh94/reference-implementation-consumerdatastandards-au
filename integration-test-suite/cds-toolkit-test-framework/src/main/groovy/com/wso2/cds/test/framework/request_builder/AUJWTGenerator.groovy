@@ -40,6 +40,7 @@ import com.wso2.openbanking.test.framework.keystore.OBKeyStore
 import io.restassured.response.Response
 import org.apache.commons.lang3.StringUtils
 import org.bouncycastle.jce.provider.BouncyCastleProvider
+import org.json.JSONException
 import org.json.JSONObject
 import org.testng.Reporter
 
@@ -300,7 +301,153 @@ class AUJWTGenerator {
      * @param notBefore - not before
      * @return claimSet
      */
-    String getRequestObjectClaim(List<AUAccountScope> scopes, long sharingDuration, Boolean sendSharingDuration,
+    String getRequestObjectClaim(List<AUAccountScope> scopes, Long sharingDuration, Boolean sendSharingDuration,
+                                 String cdrArrangementId, String redirect_uri, String clientId, String responseType,
+                                 boolean isStateRequired = true, String state, String responseMode = ResponseMode.JWT,
+                                 Instant expiryDate = Instant.now().plus(1, ChronoUnit.HOURS),
+                                 Instant notBefore = Instant.now(),
+                                 CodeChallengeMethod codeChallengeMethod = CodeChallengeMethod.S256) {
+        String claims
+
+        String scopeString = "openid ${String.join(" ", scopes.collect({ it.scopeString }))}"
+
+        //Generate Code Challenge
+        CodeChallenge codeChallenge = CodeChallenge.compute(codeChallengeMethod, AUConstants.CODE_VERIFIER)
+        String codeChallengeValue = codeChallenge.getValue()
+
+        //Define additional claims
+        JSONObject acr = new JSONObject().put("essential", true).put("values", new ArrayList<String>() {
+            {
+                add("urn:cds.au:cdr:3")
+            }
+        })
+        JSONObject authTimeString = new JSONObject().put("essential", true)
+        JSONObject userInfoString = new JSONObject().put("name", null).put("given_name", null).put("family_name", null).put("updated_at", Instant.now())
+        JSONObject claimsString = new JSONObject().put("id_token", new JSONObject().put("acr", acr).put("auth_time", authTimeString))
+        if (sendSharingDuration) {
+            claimsString.put("sharing_duration", sharingDuration)
+        }
+
+        if (!StringUtils.isEmpty(cdrArrangementId)) {
+            claimsString.put("cdr_arrangement_id", cdrArrangementId)
+        }
+
+        if (isStateRequired) {
+            claims = new JSONRequestGenerator()
+                    .addAudience()
+                    .addResponseType(responseType)
+                    .addExpireDate(expiryDate.getEpochSecond().toLong())
+                    .addClientID(clientId)
+                    .addIssuer(clientId)
+                    .addRedirectURI(redirect_uri)
+                    .addScope(scopeString)
+                    .addState(state)
+                    .addNonce()
+                    .addCustomValue("max_age", 86400)
+                    .addCustomValue("nbf", notBefore.getEpochSecond().toLong())
+                    .addCustomJson("claims", claimsString)
+                    .addCustomValue("response_mode", responseMode)
+                    .addCustomValue("code_challenge_method", codeChallengeMethod)
+                    .addCustomValue("code_challenge", codeChallengeValue)
+                    .addCustomValue("userinfo", userInfoString)
+                    .getJsonObject().toString()
+        } else {
+            claims = new JSONRequestGenerator()
+                    .addAudience()
+                    .addResponseType(responseType)
+                    .addExpireDate(expiryDate.getEpochSecond().toLong())
+                    .addClientID(clientId)
+                    .addIssuer(clientId)
+                    .addRedirectURI(redirect_uri)
+                    .addScope(scopeString)
+                    .addNonce()
+                    .addCustomValue("max_age", 86400)
+                    .addCustomValue("nbf", notBefore.getEpochSecond().toLong())
+                    .addCustomJson("claims", claimsString)
+                    .addCustomValue("response_mode", responseMode)
+                    .addCustomValue("code_challenge_method", codeChallengeMethod)
+                    .addCustomValue("code_challenge", codeChallengeValue)
+                    .addCustomValue("userinfo", userInfoString)
+                    .getJsonObject().toString()
+        }
+        return claims
+    }
+
+    /**
+     * Remove claims from Request Object.
+     * @param claims - Request Object
+     * @param nodeToBeRemoved - Node to be removed from the Request Object
+     * @return modifiedJsonPayload - Modified Request Object
+     */
+    static String removeClaimsFromRequestObject(String claims, String nodeToBeRemoved) {
+
+        // Parse the JSON payload
+        ObjectMapper objectMapper = new ObjectMapper()
+        JsonNode rootNode = objectMapper.readTree(claims)
+
+        // Remove elements from the JSON payload
+        if (rootNode instanceof ObjectNode) {
+            ObjectNode objectNode = (ObjectNode) rootNode
+            objectNode.remove(nodeToBeRemoved)
+        }
+
+        // Convert the modified JSON back to a string
+        String modifiedJsonPayload = objectMapper.writeValueAsString(rootNode)
+        System.out.println(modifiedJsonPayload)
+
+        return modifiedJsonPayload
+    }
+
+    /**
+     * Add Claims to Request Object.
+     * @param claims
+     * @param updatedClaim
+     * @param nodeToBeAdded
+     * @return newClaims
+     */
+    static String addClaimsFromRequestObject(String claims, String updatedClaim, String nodeToBeAdded) {
+
+        JSONObject payload = new JSONObject(claims)
+        try {
+            payload.put(updatedClaim, nodeToBeAdded)
+        } catch (JSONException e) {
+            e.printStackTrace()
+        }
+    }
+
+    /**
+     * Add Claims to Request Object.
+     * @param claims
+     * @param updatedClaim
+     * @param nodeToBeAdded
+     * @return newClaims
+     */
+    static String addClaimsFromRequestObject(String claims, String updatedClaim, Long nodeToBeAdded) {
+
+        JSONObject payload = new JSONObject(claims)
+        try {
+            payload.put(updatedClaim, nodeToBeAdded)
+        } catch (JSONException e) {
+            e.printStackTrace()
+        }
+    }
+
+    /**
+     * Utility function to generate a regular claim set with default values
+     * @param scopeString - scope string
+     * @param sharingDuration - sharing duration
+     * @param sendSharingDuration - send sharing duration
+     * @param cdrArrangementId - cdr arrangement id
+     * @param redirect_uri - redirect uri
+     * @param clientId - client id
+     * @param responseType - response type
+     * @param isStateRequired - is state required
+     * @param state - state
+     * @param expiryDate - expiry date
+     * @param notBefore - not before
+     * @return claimSet
+     */
+    String getRequestObjectClaimWithMaxAge(List<AUAccountScope> scopes, long sharingDuration, Boolean sendSharingDuration,
                                  String cdrArrangementId, String redirect_uri, String clientId, String responseType,
                                  boolean isStateRequired = true, String state, String responseMode = ResponseMode.JWT,
                                  Instant expiryDate = Instant.now().plus(1, ChronoUnit.HOURS),
@@ -321,8 +468,7 @@ class AUJWTGenerator {
             }
         })
         JSONObject userInfoString = new JSONObject().put("given_name", null).put("family_name", null)
-        JSONObject authTimeString = new JSONObject().put("essential", true)
-        JSONObject claimsString = new JSONObject().put("id_token", new JSONObject().put("acr", acr).put("auth_time", authTimeString))
+        JSONObject claimsString = new JSONObject().put("id_token", new JSONObject().put("acr", acr))
         if (sharingDuration.intValue() != 0 || sendSharingDuration) {
             claimsString.put("sharing_duration", sharingDuration)
         }
@@ -367,30 +513,5 @@ class AUJWTGenerator {
                     .getJsonObject().toString()
         }
         return claims
-    }
-
-    /**
-     * Remove claims from Request Object.
-     * @param claims - Request Object
-     * @param nodeToBeRemoved - Node to be removed from the Request Object
-     * @return modifiedJsonPayload - Modified Request Object
-     */
-    static String removeClaimsFromRequestObject(String claims, String nodeToBeRemoved) {
-
-        // Parse the JSON payload
-        ObjectMapper objectMapper = new ObjectMapper()
-        JsonNode rootNode = objectMapper.readTree(claims)
-
-        // Remove elements from the JSON payload
-        if (rootNode instanceof ObjectNode) {
-            ObjectNode objectNode = (ObjectNode) rootNode
-            objectNode.remove(nodeToBeRemoved)
-        }
-
-        // Convert the modified JSON back to a string
-        String modifiedJsonPayload = objectMapper.writeValueAsString(rootNode)
-        System.out.println(modifiedJsonPayload)
-
-        return modifiedJsonPayload
     }
 }

@@ -28,14 +28,13 @@ import org.testng.ITestContext
  */
 class DynamicClientRegistrationRetrieveTest extends AUTest{
 
-    private String applicationId
-
     @SuppressWarnings('GroovyAccessibility')
     @Test
     void "TC0101018_Retrieve Application"(ITestContext context) {
 
         AURegistrationRequestBuilder registrationRequestBuilder = new AURegistrationRequestBuilder()
 
+        deleteApplicationIfExists(auConfiguration.getAppInfoClientID())
         def registrationResponse = AURegistrationRequestBuilder
                 .buildRegistrationRequest(registrationRequestBuilder.getAURegularClaims())
                 .when()
@@ -43,8 +42,7 @@ class DynamicClientRegistrationRetrieveTest extends AUTest{
 
         clientId = AUTestUtil.parseResponseBody(registrationResponse, "client_id")
         context.setAttribute(ContextConstants.CLIENT_ID,clientId)
-        AUTestUtil.writeXMLContent(auConfiguration.getOBXMLFile().toString(), "Application",
-                "ClientID", clientId, auConfiguration.getTppNumber())
+        AUTestUtil.writeToConfigFile(clientId)
     }
 
     @Test(priority = 1, dependsOnMethods = "TC0101018_Retrieve Application")
@@ -74,10 +72,5 @@ class DynamicClientRegistrationRetrieveTest extends AUTest{
                 .get(AUConstants.DCR_REGISTRATION_ENDPOINT + clientId)
 
         Assert.assertEquals(registrationResponse.statusCode(), AUConstants.STATUS_CODE_200)
-    }
-
-    @AfterClass(alwaysRun = true)
-    void tearDown() {
-        deleteApplicationIfExists(clientId)
     }
 }

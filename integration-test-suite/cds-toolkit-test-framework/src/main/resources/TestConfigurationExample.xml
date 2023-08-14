@@ -136,9 +136,9 @@
         <AppConfig>
             <!-- Application Keystore -->
             <KeyStore>
-                <!--Absolute path + file name of keystore file.-->
-                <!-- {Path to ob-compliance-toolkit-cds}/integration-test-suite/test-artifacts/DynamicClientRegistration/
-                AU/sample-client-resources2/signing-keystore/signing.jks-->
+                <!--Absolute path + file name of JKS keystore file-->
+                <!--Sample Values:  {Path to ob-compliance-toolkit-cds}/integration-test-suite/test-artifacts/DynamicClientRegistration/
+                AU/sample-client-resources/signing-keystore/signing.jks -->
                 <Location>AppConfig2.KeyStore.Location</Location>
 
                 <!--Sample Values: tpp6-signing -->
@@ -150,7 +150,7 @@
                 <!--Sample Values: https://wso2.com -->
                 <DomainName>AppConfig2.KeyStore.DomainName</DomainName>
 
-                <!--Sample Values: w7NFeMODzCMOZen_WECAlG9N8gg -->
+                <!--Sample Values: h3ZCF0VrzgXgnHCqbHbKXzzfjTg -->
                 <SigningKid>AppConfig2.KeyStore.SigningKid</SigningKid>
             </KeyStore>
 
@@ -163,9 +163,8 @@
                 true-->
                 <KeyStore>
                     <!--Absolute path + file name of keystore file.-->
-                    <!--Sample Value: {Path to ob-compliance-toolkit-cds}/integration-test-suite/test-artifacts/
-                    DynamicClientRegistration/AU/sample-client-resources2/transport-keystore/transport.jks
-                    <Location>AppConfig2.Transport.KeyStore.Location</Location> -->
+                    <!--Sample Values:  {Path to ob-compliance-toolkit-cds}/integration-test-suite/test-artifacts/DynamicClientRegistration/
+                    AU/sample-client-resources/transport-keystore/transport.jks-->
 
                     <!--Sample Values: jks -->
                     <Type>AppConfig2.Transport.KeyStore.Type</Type>
@@ -177,12 +176,12 @@
 
             <!-- DCR Configurations -->
             <DCR>
-                <!--Sample Values: {Path to ob-compliance-toolkit-cds}/integration-test-suite/test-artifacts/DynamicClientRegistration/
-                AU/sample-client-resources2/ssa.txt -->
+                <!--Sample Values:  {Path to ob-compliance-toolkit-cds}/integration-test-suite/test-artifacts/DynamicClientRegistration/
+                AU/sample-client-resources/ssa2.txt -->
                 <SSAPath>AppConfig2.DCR.SSAPath</SSAPath>
 
                 <!-- Software Product ID -->
-                <!--Sample Values: 8PwKpjuPDgU76j3QxJzfOtE9CWw -->
+                <!--Sample Values: app8 -->
                 <SoftwareId>DCR.SoftwareId</SoftwareId>
 
                 <!-- SSA Redirect Uri -->
@@ -259,7 +258,7 @@
         <!-- Account Owner-->
         <PSUInfo>
             <Credentials>
-                <User>user2@wso2.com</User>
+                <User>amy@gold.com</User>
                 <Password>wso2123</Password>
             </Credentials>
         </PSUInfo>
@@ -268,19 +267,19 @@
     <!-- Publisher Info -->
     <PublisherInfo>
         <!--Sample Values: admin@wso2.com -->
-        <User>PublisherInfo.User</User>
+        <User>admin@wso2.com</User>
 
         <!--Sample Values: wso2123 -->
-        <Password>PublisherInfo.Password</Password>
+        <Password>wso2123</Password>
     </PublisherInfo>
     <!-- PSU Info -->
 
     <TPPInfo>
         <!--Sample Values: admin@wso2.com -->
-        <User>TPPInfo.user_name</User>
+        <User>admin@wso2.com</User>
 
         <!--Sample Values: wso2123 -->
-        <Password>TPPInfo.Password</Password>
+        <Password>wso2123</Password>
     </TPPInfo>
 
     <!-- Customer Care Info -->
@@ -295,18 +294,18 @@
     <!-- Basic Auth Info -->
     <BasicAuthInfo>
         <!--Sample Values: admin@wso2.com -->
-        <User>BasicAuthInfo.User</User>
+        <User>admin@wso2.com</User>
 
         <!--Sample Values: wso2123 -->
-        <Password>BasicAuthInfo.Password</Password>
+        <Password>wso2123</Password>
     </BasicAuthInfo>
 
     <KeyManagerAdmin>
         <!--Sample Values: admin@wso2.com -->
-        <User>KeyManagerAdmin.User</User>
+        <User>admin@wso2.com</User>
 
         <!--Sample Values: wso2123 -->
-        <Password>KeyManagerAdmin.Password</Password>
+        <Password>wso2123</Password>
     </KeyManagerAdmin>
 
     <!-- Browser Automation -->
@@ -424,4 +423,3 @@
     </ProfileSelection>
 
 </Configurations>
-

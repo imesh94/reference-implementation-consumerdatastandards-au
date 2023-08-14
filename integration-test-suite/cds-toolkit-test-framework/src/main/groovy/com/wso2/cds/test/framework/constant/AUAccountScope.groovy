@@ -27,7 +27,7 @@ enum AUAccountScope {
     CDR_REGISTRATION("cdr:registration"),
     ADMIN_METRICS_BASIC_READ("admin:metrics.basic:read"),
     ADMIN_METADATA_UPDATE("admin:metadata:update"),
-    PROFILE("profile"),
+    PROFILE("profile")
 
     private String value
 

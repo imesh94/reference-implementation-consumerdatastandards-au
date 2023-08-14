@@ -36,8 +36,9 @@ class ProductRetrievalValidationTest extends AUTest {
     @Test (priority = 1, groups = "SmokeTest")
     void "TC1101001_Retrieve banking products"() {
 
-        Response response = AURequestBuilder.buildBasicRequestWithOptionalHeaders(userAccessToken,
-                AUConstants.X_V_HEADER_PRODUCTS, clientHeader)
+        Response response = AURequestBuilder.buildBasicRequestWithoutAuthorisationHeader(AUConstants.X_V_HEADER_PRODUCTS)
+                .header(AUConstants.X_FAPI_AUTH_DATE, AUConstants.DATE)
+                .header(AUConstants.X_CDS_CLIENT_HEADERS , clientHeader)
                 .baseUri(AUTestUtil.getBaseUrl(AUConstants.BASE_PATH_TYPE_PRODUCTS))
                 .get("${AUConstants.BANKING_PRODUCT_PATH}")
 
@@ -66,8 +67,9 @@ class ProductRetrievalValidationTest extends AUTest {
     @Test (priority = 1, dependsOnMethods = "TC1101001_Retrieve banking products")
     void "TC1101002_Retrieve specific banking product details"() {
 
-        Response response = AURequestBuilder.buildBasicRequestWithOptionalHeaders(userAccessToken,
-                AUConstants.X_V_HEADER_PRODUCTS, clientHeader)
+        Response response = AURequestBuilder.buildBasicRequestWithoutAuthorisationHeader(AUConstants.X_V_HEADER_PRODUCTS)
+                .header(AUConstants.X_FAPI_AUTH_DATE, AUConstants.DATE)
+                .header(AUConstants.X_CDS_CLIENT_HEADERS , clientHeader)
                 .baseUri(AUTestUtil.getBaseUrl(AUConstants.BASE_PATH_TYPE_PRODUCTS))
                 .get("${AUConstants.BANKING_PRODUCT_PATH}")
 
@@ -89,8 +91,9 @@ class ProductRetrievalValidationTest extends AUTest {
     @Test
     void "TC1101003_Retrieve specific banking product details for invalid product id"() {
 
-        Response response = AURequestBuilder.buildBasicRequestWithOptionalHeaders(userAccessToken,
-                AUConstants.X_V_HEADER_PRODUCT, clientHeader)
+        Response response = AURequestBuilder.buildBasicRequestWithoutAuthorisationHeader(AUConstants.X_V_HEADER_PRODUCT)
+                .header(AUConstants.X_FAPI_AUTH_DATE, AUConstants.DATE)
+                .header(AUConstants.X_CDS_CLIENT_HEADERS , clientHeader)
                 .baseUri(AUTestUtil.getBaseUrl(AUConstants.BASE_PATH_TYPE_PRODUCTS))
                 .get("${AUConstants.BANKING_PRODUCT_PATH}/12345")
 
@@ -101,11 +104,12 @@ class ProductRetrievalValidationTest extends AUTest {
     }
 
     //TODO: Issue: https://github.com/wso2-enterprise/financial-open-banking/issues/5558
-    @Test
+    @Test (enabled = false)
     void "TC1101019_Retrieve banking products with page size greater than the maximum standard pagination"() {
 
-        Response response = AURequestBuilder.buildBasicRequestWithOptionalHeaders(userAccessToken,
-                AUConstants.X_V_HEADER_PRODUCTS, clientHeader)
+        Response response = AURequestBuilder.buildBasicRequestWithoutAuthorisationHeader(AUConstants.X_V_HEADER_PRODUCTS)
+                .header(AUConstants.X_FAPI_AUTH_DATE, AUConstants.DATE)
+                .header(AUConstants.X_CDS_CLIENT_HEADERS , clientHeader)
                 .queryParam(AUConstants.PAGE_SIZE, 200000)
                 .baseUri(AUTestUtil.getBaseUrl(AUConstants.BASE_PATH_TYPE_PRODUCTS))
                 .get("${AUConstants.BANKING_PRODUCT_PATH}")
@@ -125,8 +129,9 @@ class ProductRetrievalValidationTest extends AUTest {
 
         String queryParams = "?effective=CURRENT&brand=TEST&product-category=TRANS_AND_SAVINGS_ACCOUNTS&page=2&" +
                 "page-size=25&updated-since=2019-12-25T15:43:00-08:00"
-        Response response = AURequestBuilder.buildBasicRequestWithOptionalHeaders(userAccessToken,
-                AUConstants.X_V_HEADER_PRODUCTS, clientHeader)
+        Response response = AURequestBuilder.buildBasicRequestWithoutAuthorisationHeader(AUConstants.X_V_HEADER_PRODUCTS)
+                .header(AUConstants.X_FAPI_AUTH_DATE, AUConstants.DATE)
+                .header(AUConstants.X_CDS_CLIENT_HEADERS , clientHeader)
                 .baseUri(AUTestUtil.getBaseUrl(AUConstants.BASE_PATH_TYPE_PRODUCTS))
                 .get("${AUConstants.BANKING_PRODUCT_PATH}${queryParams}")
 
@@ -150,8 +155,9 @@ class ProductRetrievalValidationTest extends AUTest {
     void "TC1101021_Retrieve banking products with invalid updated-since value"() {
 
         def updatedSince = AUConstants.DATE_FORMAT
-        def response = AURequestBuilder.buildBasicRequestWithOptionalHeaders(userAccessToken,
-                AUConstants.X_V_HEADER_PRODUCTS, clientHeader)
+        def response = AURequestBuilder.buildBasicRequestWithoutAuthorisationHeader(AUConstants.X_V_HEADER_PRODUCTS)
+                .header(AUConstants.X_FAPI_AUTH_DATE, AUConstants.DATE)
+                .header(AUConstants.X_CDS_CLIENT_HEADERS , clientHeader)
                 .queryParam(AUConstants.UPDATED_SINCE, updatedSince)
                 .baseUri(AUTestUtil.getBaseUrl(AUConstants.BASE_PATH_TYPE_PRODUCTS))
                 .get("${AUConstants.BANKING_PRODUCT_PATH}")

@@ -54,9 +54,10 @@ class AccountsIdPermanenceTest extends AUTest {
 
         SoftAssert softAssertion= new SoftAssert()
         softAssertion.assertEquals(response.statusCode(), AUConstants.STATUS_CODE_200)
+        softAssertion.assertNotNull(response.getHeader(AUConstants.X_FAPI_INTERACTION_ID))
 
-        firstEncryptedAccountId = AUTestUtil.parseResponseBody(response, "data.accounts.accountId[1]")
-        secondEncryptedAccountId = AUTestUtil.parseResponseBody(response, "data.accounts.accountId[0]")
+        firstEncryptedAccountId = AUTestUtil.parseResponseBody(response, "data.accounts.accountId[0]")
+        secondEncryptedAccountId = AUTestUtil.parseResponseBody(response, "data.accounts.accountId[1]")
 
         softAssertion.assertTrue(AUIdEncryptorDecryptor.decrypt(
                 AUTestUtil.parseResponseBody(response, "${AUConstants.RESPONSE_DATA_BULK_ACCOUNTID_LIST}[0]"), secretKey).
@@ -103,11 +104,12 @@ class AccountsIdPermanenceTest extends AUTest {
 
         SoftAssert softAssertion= new SoftAssert()
         softAssertion.assertEquals(response.statusCode(), AUConstants.STATUS_CODE_200)
+        softAssertion.assertNotNull(response.getHeader(AUConstants.X_FAPI_INTERACTION_ID))
 
-        softAssertion.assertEquals(consentedAccount, AUIdEncryptorDecryptor.decrypt(
+        softAssertion.assertEquals(secondConsentedAccount, AUIdEncryptorDecryptor.decrypt(
                 AUTestUtil.parseResponseBody(response, "${AUConstants.RESPONSE_DATA_BULK_BALANCE_LIST}[0]"), secretKey).
                 split(":")[2])
-        softAssertion.assertEquals(secondConsentedAccount, AUIdEncryptorDecryptor.decrypt(
+        softAssertion.assertEquals(consentedAccount, AUIdEncryptorDecryptor.decrypt(
                 AUTestUtil.parseResponseBody(response, "${AUConstants.RESPONSE_DATA_BULK_BALANCE_LIST}[1]"), secretKey).
                 split(":")[2])
 
@@ -137,7 +139,8 @@ class AccountsIdPermanenceTest extends AUTest {
 
         SoftAssert softAssertion= new SoftAssert()
         softAssertion.assertEquals(response.statusCode(), AUConstants.STATUS_CODE_200)
-        softAssertion.assertEquals(consentedAccount, AUIdEncryptorDecryptor.decrypt(
+        softAssertion.assertNotNull(response.getHeader(AUConstants.X_FAPI_INTERACTION_ID))
+        softAssertion.assertEquals(secondConsentedAccount, AUIdEncryptorDecryptor.decrypt(
                 AUTestUtil.parseResponseBody(response, AUConstants.RESPONSE_DATA_SINGLE_ACCOUNTID), secretKey).
                 split(":")[2])
         softAssertion.assertTrue(AUTestUtil.parseResponseBody(response, AUConstants.LINKS_SELF)
@@ -157,13 +160,16 @@ class AccountsIdPermanenceTest extends AUTest {
 
         SoftAssert softAssertion= new SoftAssert()
         softAssertion.assertEquals(response.statusCode(), AUConstants.STATUS_CODE_200)
+        softAssertion.assertNotNull(response.getHeader(AUConstants.X_FAPI_INTERACTION_ID))
 
-        softAssertion.assertEquals(consentedAccount, AUIdEncryptorDecryptor.decrypt(
+        softAssertion.assertEquals(secondConsentedAccount, AUIdEncryptorDecryptor.decrypt(
                 AUTestUtil.parseResponseBody(response, "data.accountId"), secretKey).
                 split(":")[2])
 
         softAssertion.assertTrue(AUTestUtil.parseResponseBody(response, AUConstants.LINKS_SELF)
                 .contains(accountRequestUrl.split(AUConstants.CDS_PATH)[1]))
+
+        softAssertion.assertNotNull(AUTestUtil.parseResponseBody(response, "data.loan.offsetAccountIds"))
 
         softAssertion.assertAll()
     }
@@ -188,6 +194,7 @@ class AccountsIdPermanenceTest extends AUTest {
                 .get("${AUConstants.BULK_ACCOUNT_PATH}/${AUConstants.accountID2}")
 
         softAssertion.assertEquals(response.statusCode(), AUConstants.STATUS_CODE_404)
+        softAssertion.assertNotNull(response.getHeader(AUConstants.X_FAPI_INTERACTION_ID))
 
         softAssertion.assertEquals(AUTestUtil.parseResponseBody(response, AUConstants.ERROR_CODE),
                 AUConstants.ERROR_CODE_INVALID_BANK_ACC)
@@ -207,6 +214,7 @@ class AccountsIdPermanenceTest extends AUTest {
 
         SoftAssert softAssertion= new SoftAssert()
         softAssertion.assertEquals(response.statusCode(), AUConstants.STATUS_CODE_404)
+        softAssertion.assertNotNull(response.getHeader(AUConstants.X_FAPI_INTERACTION_ID))
 
        softAssertion.assertEquals(AUTestUtil.parseResponseBody(response, AUConstants.ERROR_CODE),
                AUConstants.ERROR_CODE_INVALID_RESOURCE)
@@ -227,8 +235,9 @@ class AccountsIdPermanenceTest extends AUTest {
 
         SoftAssert softAssertion= new SoftAssert()
         softAssertion.assertEquals(response.statusCode(), AUConstants.STATUS_CODE_200)
+        softAssertion.assertNotNull(response.getHeader(AUConstants.X_FAPI_INTERACTION_ID))
 
-        softAssertion.assertEquals(consentedAccount, AUIdEncryptorDecryptor.decrypt(
+        softAssertion.assertEquals(secondConsentedAccount, AUIdEncryptorDecryptor.decrypt(
                 AUTestUtil.parseResponseBody(response, "data.directDebitAuthorisations.accountId[0]"), secretKey).
                 split(":")[2])
 
@@ -256,6 +265,7 @@ class AccountsIdPermanenceTest extends AUTest {
 
         SoftAssert softAssertion= new SoftAssert()
         softAssertion.assertEquals(response.statusCode(), AUConstants.STATUS_CODE_404)
+        softAssertion.assertNotNull(response.getHeader(AUConstants.X_FAPI_INTERACTION_ID))
 
         softAssertion.assertEquals(AUTestUtil.parseResponseBody(response, AUConstants.ERROR_CODE),
                 AUConstants.ERROR_CODE_INVALID_BANK_ACC)
@@ -290,8 +300,9 @@ class AccountsIdPermanenceTest extends AUTest {
 
         SoftAssert softAssertion= new SoftAssert()
         softAssertion.assertEquals(response.statusCode(), AUConstants.STATUS_CODE_200)
+        softAssertion.assertNotNull(response.getHeader(AUConstants.X_FAPI_INTERACTION_ID))
 
-        softAssertion.assertEquals(consentedAccount, AUIdEncryptorDecryptor.decrypt(
+        softAssertion.assertEquals(secondConsentedAccount, AUIdEncryptorDecryptor.decrypt(
                 AUTestUtil.parseResponseBody(response, "${AUConstants.RESPONSE_DATA_DIRECT_DEBIT_AUTH}.accountId[0]"), secretKey).
                 split(":")[2])
 
@@ -321,12 +332,13 @@ class AccountsIdPermanenceTest extends AUTest {
 
         SoftAssert softAssertion= new SoftAssert()
         softAssertion.assertEquals(response.statusCode(), AUConstants.STATUS_CODE_200)
+        softAssertion.assertNotNull(response.getHeader(AUConstants.X_FAPI_INTERACTION_ID))
 
         softAssertion.assertEquals(userId, AUIdEncryptorDecryptor.decrypt(
                 AUTestUtil.parseResponseBody(response,
                         "${AUConstants.RESPONSE_DATA_SCHEDULE_PAY}.scheduledPaymentId[0]"), secretKey)
                 .split(":")[0])
-        softAssertion.assertEquals(consentedAccount, AUIdEncryptorDecryptor.decrypt(
+        softAssertion.assertEquals(secondConsentedAccount, AUIdEncryptorDecryptor.decrypt(
                 AUTestUtil.parseResponseBody(response,
                         "${AUConstants.RESPONSE_DATA_SCHEDULE_PAY}.from.accountId[0]"), secretKey)
                 .split(":")[2])
@@ -378,12 +390,13 @@ class AccountsIdPermanenceTest extends AUTest {
 
         SoftAssert softAssertion= new SoftAssert()
         softAssertion.assertEquals(response.statusCode(), AUConstants.STATUS_CODE_200)
+        softAssertion.assertNotNull(response.getHeader(AUConstants.X_FAPI_INTERACTION_ID))
 
         softAssertion.assertEquals(userId, AUIdEncryptorDecryptor.decrypt(
                 AUTestUtil.parseResponseBody(response,
                         "${AUConstants.RESPONSE_DATA_SCHEDULE_PAY}.scheduledPaymentId[0]"), secretKey)
                 .split(":")[0])
-        softAssertion.assertEquals(consentedAccount, AUIdEncryptorDecryptor.decrypt(
+        softAssertion.assertEquals(secondConsentedAccount, AUIdEncryptorDecryptor.decrypt(
                 AUTestUtil.parseResponseBody(response,
                         "${AUConstants.RESPONSE_DATA_SCHEDULE_PAY}.from.accountId[0]"), secretKey)
                 .split(":")[2])
@@ -424,8 +437,9 @@ class AccountsIdPermanenceTest extends AUTest {
 
         SoftAssert softAssertion= new SoftAssert()
         softAssertion.assertEquals(response.statusCode(), AUConstants.STATUS_CODE_200)
+        softAssertion.assertNotNull(response.getHeader(AUConstants.X_FAPI_INTERACTION_ID))
 
-        softAssertion.assertEquals(consentedAccount, AUIdEncryptorDecryptor.decrypt(
+        softAssertion.assertEquals(secondConsentedAccount, AUIdEncryptorDecryptor.decrypt(
                 AUTestUtil.parseResponseBody(response, "${AUConstants.RESPONSE_DATA_TRANSACTION_LIST}.accountId[0]"), secretKey).
                 split(":")[2])
         softAssertion.assertEquals(userId, AUIdEncryptorDecryptor.decrypt(encryptedTransactionId, secretKey).
@@ -458,8 +472,9 @@ class AccountsIdPermanenceTest extends AUTest {
 
         SoftAssert softAssertion= new SoftAssert()
         softAssertion.assertEquals(response.statusCode(), AUConstants.STATUS_CODE_200)
+        softAssertion.assertNotNull(response.getHeader(AUConstants.X_FAPI_INTERACTION_ID))
 
-        softAssertion.assertEquals(consentedAccount, AUIdEncryptorDecryptor.decrypt(
+        softAssertion.assertEquals(secondConsentedAccount, AUIdEncryptorDecryptor.decrypt(
                 AUTestUtil.parseResponseBody(response, AUConstants.RESPONSE_DATA_SINGLE_ACCOUNTID), secretKey).
                 split(":")[2])
         softAssertion.assertEquals(userId, AUIdEncryptorDecryptor.decrypt(
@@ -484,6 +499,7 @@ class AccountsIdPermanenceTest extends AUTest {
 
         SoftAssert softAssertion= new SoftAssert()
         softAssertion.assertEquals(response.statusCode(), AUConstants.STATUS_CODE_200)
+        softAssertion.assertNotNull(response.getHeader(AUConstants.X_FAPI_INTERACTION_ID))
 
         softAssertion.assertTrue(AUIdEncryptorDecryptor.decrypt(
                 AUTestUtil.parseResponseBody(response, "${AUConstants.RESPONSE_DATA_BULK_BALANCE_LIST}[0]"), secretKey).
@@ -529,6 +545,7 @@ class AccountsIdPermanenceTest extends AUTest {
 
         SoftAssert softAssertion= new SoftAssert()
         softAssertion.assertEquals(response.statusCode(), AUConstants.STATUS_CODE_422)
+        softAssertion.assertNotNull(response.getHeader(AUConstants.X_FAPI_INTERACTION_ID))
 
         softAssertion.assertEquals(AUTestUtil.parseResponseBody(response, AUConstants.ERROR_CODE),
                 AUConstants.ERROR_CODE_INVALID_BANK_ACC)
@@ -548,6 +565,7 @@ class AccountsIdPermanenceTest extends AUTest {
 
         SoftAssert softAssertion= new SoftAssert()
         softAssertion.assertEquals(response.statusCode(), AUConstants.STATUS_CODE_404)
+        softAssertion.assertNotNull(response.getHeader(AUConstants.X_FAPI_INTERACTION_ID))
 
         softAssertion.assertEquals(AUTestUtil.parseResponseBody(response, AUConstants.ERROR_CODE),
                 AUConstants.ERROR_CODE_INVALID_BANK_ACC)
@@ -566,6 +584,7 @@ class AccountsIdPermanenceTest extends AUTest {
 
         SoftAssert softAssertion= new SoftAssert()
         softAssertion.assertEquals(response.statusCode(), AUConstants.STATUS_CODE_404)
+        softAssertion.assertNotNull(response.getHeader(AUConstants.X_FAPI_INTERACTION_ID))
 
         softAssertion.assertEquals(AUTestUtil.parseResponseBody(response, AUConstants.ERROR_CODE),
                 AUConstants.ERROR_CODE_INVALID_BANK_ACC)
@@ -584,6 +603,7 @@ class AccountsIdPermanenceTest extends AUTest {
 
         SoftAssert softAssertion= new SoftAssert()
         softAssertion.assertEquals(response.statusCode(), AUConstants.STATUS_CODE_404)
+        softAssertion.assertNotNull(response.getHeader(AUConstants.X_FAPI_INTERACTION_ID))
 
         softAssertion.assertEquals(AUTestUtil.parseResponseBody(response, AUConstants.ERROR_CODE),
                 AUConstants.ERROR_CODE_INVALID_BANK_ACC)
@@ -604,6 +624,7 @@ class AccountsIdPermanenceTest extends AUTest {
 
         SoftAssert softAssertion= new SoftAssert()
         softAssertion.assertEquals(response.statusCode(), AUConstants.STATUS_CODE_200)
+        softAssertion.assertNotNull(response.getHeader(AUConstants.X_FAPI_INTERACTION_ID))
 
         softAssertion.assertTrue(AUIdEncryptorDecryptor.decrypt(
                 AUTestUtil.parseResponseBody(response, "${AUConstants.RESPONSE_DATA_DIRECT_DEBIT_AUTH}.accountId[0]"), secretKey).
@@ -649,6 +670,7 @@ class AccountsIdPermanenceTest extends AUTest {
 
         SoftAssert softAssertion= new SoftAssert()
         softAssertion.assertEquals(response.statusCode(), AUConstants.STATUS_CODE_422)
+        softAssertion.assertNotNull(response.getHeader(AUConstants.X_FAPI_INTERACTION_ID))
 
         softAssertion.assertEquals(AUTestUtil.parseResponseBody(response, AUConstants.ERROR_CODE),
                     AUConstants.ERROR_CODE_INVALID_BANK_ACC)
@@ -669,6 +691,7 @@ class AccountsIdPermanenceTest extends AUTest {
 
         SoftAssert softAssertion= new SoftAssert()
         softAssertion.assertEquals(response.statusCode(), AUConstants.STATUS_CODE_200)
+        softAssertion.assertNotNull(response.getHeader(AUConstants.X_FAPI_INTERACTION_ID))
 
         softAssertion.assertEquals(userId, AUIdEncryptorDecryptor.decrypt(
                 AUTestUtil.parseResponseBody(response, "${AUConstants.RESPONSE_DATA_SCHEDULE_PAY}.scheduledPaymentId[0]"),
@@ -734,6 +757,7 @@ class AccountsIdPermanenceTest extends AUTest {
 
         SoftAssert softAssertion= new SoftAssert()
         softAssertion.assertEquals(response.statusCode(), AUConstants.STATUS_CODE_422)
+        softAssertion.assertNotNull(response.getHeader(AUConstants.X_FAPI_INTERACTION_ID))
 
         softAssertion.assertEquals(AUTestUtil.parseResponseBody(response, AUConstants.ERROR_CODE),
                 AUConstants.ERROR_CODE_INVALID_BANK_ACC)
@@ -753,6 +777,7 @@ class AccountsIdPermanenceTest extends AUTest {
 
         SoftAssert softAssertion= new SoftAssert()
         softAssertion.assertEquals(response.statusCode(), AUConstants.STATUS_CODE_404)
+        softAssertion.assertNotNull(response.getHeader(AUConstants.X_FAPI_INTERACTION_ID))
 
         softAssertion.assertEquals(AUTestUtil.parseResponseBody(response, AUConstants.ERROR_CODE),
                 AUConstants.ERROR_CODE_INVALID_RESOURCE)
@@ -776,6 +801,7 @@ class AccountsIdPermanenceTest extends AUTest {
 
         SoftAssert softAssertion= new SoftAssert()
         softAssertion.assertEquals(response.statusCode(), AUConstants.STATUS_CODE_200)
+        softAssertion.assertNotNull(response.getHeader(AUConstants.X_FAPI_INTERACTION_ID))
 
         softAssertion.assertEquals(userId, AUIdEncryptorDecryptor.decrypt(encryptedPayeeId,
                 secretKey).split(":")[0])
@@ -806,6 +832,7 @@ class AccountsIdPermanenceTest extends AUTest {
 
         SoftAssert softAssertion= new SoftAssert()
         softAssertion.assertEquals(response.statusCode(), AUConstants.STATUS_CODE_200)
+        softAssertion.assertNotNull(response.getHeader(AUConstants.X_FAPI_INTERACTION_ID))
 
         softAssertion.assertEquals(userId, AUIdEncryptorDecryptor.decrypt(
                 AUTestUtil.parseResponseBody(response, "${AUConstants.RESPONSE_DATA_PAYEEID}"),

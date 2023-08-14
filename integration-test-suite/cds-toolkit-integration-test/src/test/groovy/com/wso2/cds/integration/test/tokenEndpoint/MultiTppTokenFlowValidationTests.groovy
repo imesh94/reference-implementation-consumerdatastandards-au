@@ -12,6 +12,7 @@ package com.wso2.cds.integration.test.tokenEndpoint
 import com.wso2.cds.test.framework.AUTest
 import com.wso2.cds.test.framework.constant.AUAccountScope
 import com.wso2.cds.test.framework.constant.AUConstants
+import com.wso2.cds.test.framework.request_builder.AURegistrationRequestBuilder
 import com.wso2.cds.test.framework.request_builder.AURequestBuilder
 import com.wso2.cds.test.framework.utility.AUMockCDRIntegrationUtil
 import com.wso2.cds.test.framework.utility.AUTestUtil
@@ -29,15 +30,19 @@ class MultiTppTokenFlowValidationTests extends AUTest {
     void setup() {
 
         auConfiguration.setTppNumber(1)
+        AURegistrationRequestBuilder dcr = new AURegistrationRequestBuilder()
 
+        deleteApplicationIfExists()
         //Register Second TPP.
-        def registrationResponse = tppRegistration()
-        clientId = AUTestUtil.parseResponseBody(registrationResponse, "client_id")
-        Assert.assertEquals(registrationResponse.statusCode(), AUConstants.CREATED)
+        def  registrationResponse = AURegistrationRequestBuilder
+                .buildRegistrationRequest(dcr.getAURegularClaims())
+                .when()
+                .post(AUConstants.DCR_REGISTRATION_ENDPOINT)
 
-        //Write Client Id of TPP2 to config file.
-        AUTestUtil.writeXMLContent(auConfiguration.getOBXMLFile().toString(), "Application",
-                "ClientID", clientId, auConfiguration.getTppNumber())
+        clientId = parseResponseBody(registrationResponse, "client_id")
+
+        Assert.assertEquals(registrationResponse.statusCode(), AUConstants.STATUS_CODE_201)
+        AUTestUtil.writeToConfigFile(clientId)
 
         doConsentAuthorisation(clientId)
     }

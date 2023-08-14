@@ -187,7 +187,6 @@ class SecondaryUserInstructionsAuthorisationTest extends AUTest {
                 .execute()
     }
 
-    //TODO: Issue: https://github.com/wso2-enterprise/financial-open-banking/issues/8291
     //TODO: Update the test case to enable all the unavailable accounts
     //@Test
     void "CDS-547_Verify the account selection page when there are no unavailable accounts"() {
@@ -268,7 +267,7 @@ class SecondaryUserInstructionsAuthorisationTest extends AUTest {
                 .execute()
 
         def authUrl = automation.currentUrl.get()
-        Assert.assertTrue(AUTestUtil.getDecodedUrl(authUrl).contains("User skip the consent flow"))
+        Assert.assertTrue(AUTestUtil.getDecodedUrl(authUrl).contains(AUConstants.USER_SKIP_THE_CONSENT_FLOW))
         def stateParam = authUrl.split("state=")[1]
         Assert.assertEquals(auAuthorisationBuilder.state.toString(), stateParam)
     }
@@ -298,7 +297,7 @@ class SecondaryUserInstructionsAuthorisationTest extends AUTest {
                 .execute()
 
         def authUrl = automation.currentUrl.get()
-        Assert.assertTrue(AUTestUtil.getDecodedUrl(authUrl).contains("User skip the consent flow"))
+        Assert.assertTrue(AUTestUtil.getDecodedUrl(authUrl).contains(AUConstants.USER_SKIP_THE_CONSENT_FLOW))
         def stateParam = authUrl.split("state=")[1]
         Assert.assertEquals(auAuthorisationBuilder.state.toString(), stateParam)
     }
@@ -438,9 +437,9 @@ class SecondaryUserInstructionsAuthorisationTest extends AUTest {
                     AutomationMethod authWebDriver = new AutomationMethod(driver)
 
                     //Verify Notification to indicate the reason for pausing the data sharing
-                    //TODO: Modify after fixing the issue: https://github.com/wso2-enterprise/financial-open-banking/issues/8291
-                    //                    Assert.assertTrue(authWebDriver.getAttributeText(AUPageObjects.LBL_SECONDARY_JOINT_ACCOUNT_1)
-                    //                            .contains(""))
+                    Assert.assertTrue(authWebDriver.getAttributeText(AUPageObjects.LBL_WHY_CANT_SHARE)
+                            .contains("Why can't I share these? "))
+                    Assert.assertNotNull(authWebDriver.getAttributeText(AUPageObjects.POPUP_UNAVAILABLE_ACCOUNTS))
                 }
                 .execute()
     }

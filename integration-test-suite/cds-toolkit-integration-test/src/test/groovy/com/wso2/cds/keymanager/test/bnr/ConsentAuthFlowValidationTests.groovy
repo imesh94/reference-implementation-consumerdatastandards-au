@@ -54,6 +54,12 @@ class ConsentAuthFlowValidationTests extends AUTest{
                 nominatedRepUserID, AUBusinessUserPermission.AUTHORIZE.getPermissionString(), nominatedRepUserID2,
                 AUBusinessUserPermission.VIEW.getPermissionString())
         Assert.assertEquals(updateResponse.statusCode(), AUConstants.OK)
+
+        def businessAccount3 = "586-522-B0025"
+        def updateSecondAccPermissionResponse = updateMultiBusinessUserPermission(clientHeader, businessAccount3, accountOwnerUserID,
+                nominatedRepUserID, AUBusinessUserPermission.AUTHORIZE.getPermissionString(), nominatedRepUserID2,
+                AUBusinessUserPermission.VIEW.getPermissionString())
+        Assert.assertEquals(updateSecondAccPermissionResponse.statusCode(), AUConstants.OK)
     }
 
     @Test
@@ -217,7 +223,7 @@ class ConsentAuthFlowValidationTests extends AUTest{
                 .execute()
 
         def authUrl = automation.currentUrl.get()
-        Assert.assertTrue(AUTestUtil.getDecodedUrl(authUrl).contains("User skip the consent flow"))
+        Assert.assertTrue(AUTestUtil.getDecodedUrl(authUrl).contains(AUConstants.USER_SKIP_THE_CONSENT_FLOW))
         def stateParam = authUrl.split("state=")[1]
         Assert.assertEquals(auAuthorisationBuilder.state.toString(), stateParam)
     }
@@ -261,7 +267,7 @@ class ConsentAuthFlowValidationTests extends AUTest{
                 .execute()
 
         def authUrl = automation.currentUrl.get()
-        Assert.assertTrue(AUTestUtil.getDecodedUrl(authUrl).contains("User skip the consent flow"))
+        Assert.assertTrue(AUTestUtil.getDecodedUrl(authUrl).contains(AUConstants.USER_SKIP_THE_CONSENT_FLOW))
         def stateParam = authUrl.split("state=")[1]
         Assert.assertEquals(auAuthorisationBuilder.state.toString(), stateParam)
     }

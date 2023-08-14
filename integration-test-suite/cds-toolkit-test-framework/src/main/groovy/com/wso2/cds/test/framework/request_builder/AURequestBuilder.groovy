@@ -159,12 +159,14 @@ class AURequestBuilder {
      * @param code authorisation code
      * @param codeVerifier code verifier
      * @param clientId client id
+     * @param redirectUrl application redirect url
      * @return user access token
      */
-    static AccessTokenResponse getUserToken(String code, CodeVerifier codeVerifier, String clientId = null) {
+    static AccessTokenResponse getUserToken(String code, CodeVerifier codeVerifier, String clientId = null,
+                                            String redirectUrl = auConfiguration.getAppInfoRedirectURL()) {
 
         AuthorizationCode grant = new AuthorizationCode(code)
-        URI callbackUri = new URI(auConfiguration.getAppInfoRedirectURL())
+        URI callbackUri = new URI(redirectUrl)
         AuthorizationGrant codeGrant = new AuthorizationCodeGrant(grant, callbackUri, codeVerifier)
 
         String assertionString = new SignedObject().getJwt(clientId)

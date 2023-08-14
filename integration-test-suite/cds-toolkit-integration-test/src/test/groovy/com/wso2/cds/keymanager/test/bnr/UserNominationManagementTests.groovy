@@ -81,7 +81,7 @@ class UserNominationManagementTests extends AUTest {
         Assert.assertTrue(AUTestUtil.parseResponseBody(permissionsResponse, AUConstants.PARAM_PERMISSION_STATUS)
                 .contains("${nominatedRepUserID}:${AUBusinessUserPermission.AUTHORIZE.getPermissionString()}"))
 
-        //Update the Permission of Nominated User to Revoke
+        //Update the Permission of Nominated User to View
         def updateResponse = updateSingleBusinessUserPermission(clientHeader, accountID, accountOwnerUserID,
                 nominatedRepUserID, AUBusinessUserPermission.VIEW.getPermissionString())
         Assert.assertEquals(updateResponse.statusCode(), AUConstants.OK)
@@ -130,7 +130,8 @@ class UserNominationManagementTests extends AUTest {
         Assert.assertEquals(updateResponse.statusCode(), AUConstants.BAD_REQUEST)
         Assert.assertEquals(AUTestUtil.parseResponseBody(updateResponse, AUConstants.ERROR),
                 AUConstants.INVALID_REQUEST)
-        Assert.assertNotNull(AUTestUtil.parseResponseBody(updateResponse, AUConstants.ERROR_DESCRIPTION))
+        Assert.assertEquals(AUTestUtil.parseResponseBody(updateResponse, AUConstants.ERROR_DESCRIPTION),
+                "accountID field cannot be empty. Error path :data[0].accountID")
     }
 
     @Test
@@ -258,7 +259,7 @@ class UserNominationManagementTests extends AUTest {
         def shareableElements = AUTestUtil.getSharableAccountsList(getSharableBankAccounts())
 
         String accountID =  shareableElements[AUConstants.PARAM_ACCOUNT_ID]
-        String accountOwnerUserID = shareableElements[AUConstants.ACCOUNT_OWNER_USER_ID]
+        String accountOwnerUserID = "user1@wso2.com@carbon.super"
         String nominatedRepUserID = shareableElements[AUConstants.NOMINATED_REP_USER_ID]
 
         //Update the Business User endpoint with the relevant Permission Status
@@ -328,7 +329,8 @@ class UserNominationManagementTests extends AUTest {
         Assert.assertEquals(deleteResponse.statusCode(), AUConstants.BAD_REQUEST)
         Assert.assertEquals(AUTestUtil.parseResponseBody(deleteResponse, AUConstants.ERROR),
                 AUConstants.INVALID_REQUEST)
-        Assert.assertNotNull(AUTestUtil.parseResponseBody(deleteResponse, AUConstants.ERROR_DESCRIPTION))
+        Assert.assertEquals(AUTestUtil.parseResponseBody(deleteResponse, AUConstants.ERROR_DESCRIPTION),
+                "accountID field cannot be empty. Error path :data[0].accountID")
     }
 
     @Test

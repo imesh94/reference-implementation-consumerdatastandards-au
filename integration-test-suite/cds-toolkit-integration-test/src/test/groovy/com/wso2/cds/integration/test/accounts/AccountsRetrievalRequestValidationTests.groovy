@@ -9,6 +9,7 @@
 
 package com.wso2.cds.integration.test.accounts
 
+import com.nimbusds.oauth2.sdk.AccessTokenResponse
 import com.wso2.cds.test.framework.AUTest
 import com.wso2.cds.test.framework.constant.AUAccountScope
 import com.wso2.cds.test.framework.constant.AUConstants
@@ -242,7 +243,6 @@ class AccountsRetrievalRequestValidationTests extends AUTest {
         softAssertion.assertEquals(response.getHeader(AUConstants.X_V_HEADER).toInteger(), AUConstants.X_V_HEADER_PAYMENT_SCHEDULED)
 
         softAssertion.assertNotNull(response.getHeader(AUConstants.X_FAPI_INTERACTION_ID))
-        softAssertion.assertNotNull(response.getHeader(AUConstants.X_FAPI_INTERACTION_ID))
         softAssertion.assertNotNull(AUTestUtil.parseResponseBody(response,
                 "${AUConstants.RESPONSE_DATA_SCHEDULE_PAY}.scheduledPaymentId"))
         softAssertion.assertNotNull(AUTestUtil.parseResponseBody(response,
@@ -277,7 +277,6 @@ class AccountsRetrievalRequestValidationTests extends AUTest {
         softAssertion.assertEquals(response.getHeader(AUConstants.X_V_HEADER).toInteger(), AUConstants.X_V_HEADER_PAYEES)
 
         softAssertion.assertNotNull(response.getHeader(AUConstants.X_FAPI_INTERACTION_ID))
-        softAssertion.assertNotNull(response.getHeader(AUConstants.X_FAPI_INTERACTION_ID))
         softAssertion.assertNotNull(AUTestUtil.parseResponseBody(response,
                 "${AUConstants.RESPONSE_DATA_PAYEE}.payeeId"))
         softAssertion.assertNotNull(AUTestUtil.parseResponseBody(response,
@@ -305,7 +304,6 @@ class AccountsRetrievalRequestValidationTests extends AUTest {
         softAssertion.assertEquals(response.statusCode(), AUConstants.STATUS_CODE_200)
         softAssertion.assertEquals(response.getHeader(AUConstants.X_V_HEADER).toInteger(), AUConstants.X_V_HEADER_PAYEES)
 
-        softAssertion.assertNotNull(response.getHeader(AUConstants.X_FAPI_INTERACTION_ID))
         softAssertion.assertNotNull(response.getHeader(AUConstants.X_FAPI_INTERACTION_ID))
         softAssertion.assertNotNull(AUTestUtil.parseResponseBody(response, AUConstants.LINKS_SELF))
         softAssertion.assertNotNull(AUTestUtil.parseResponseBody(response, AUConstants.META))
@@ -590,12 +588,13 @@ class AccountsRetrievalRequestValidationTests extends AUTest {
                 .post("${AUConstants.BULK_BALANCES_PATH}")
 
         Assert.assertEquals(response.statusCode(), AUConstants.STATUS_CODE_400)
+
         Assert.assertEquals(AUTestUtil.parseResponseBody(response, AUConstants.ERROR_CODE),
                 AUConstants.ERROR_CODE_MISSING_FIELD)
-        //TODO: Incomplete Error description
-//        Assert.assertEquals(AUTestUtil.parseResponseBody(response, AUConstants.ERROR_DETAIL),
-//                "request body")
+        Assert.assertEquals(AUTestUtil.parseResponseBody(response, AUConstants.ERROR_DETAIL),
+                "Missing Required Field request body in the request")
         Assert.assertEquals(AUTestUtil.parseResponseBody(response, AUConstants.ERROR_TITLE), AUConstants.MISSING_FIELD)
+        Assert.assertNotNull(response.getHeader(AUConstants.X_FAPI_INTERACTION_ID))
     }
 
     @Test
@@ -620,11 +619,14 @@ class AccountsRetrievalRequestValidationTests extends AUTest {
                 .post("${AUConstants.BULK_BALANCES_PATH}")
 
         Assert.assertEquals(response.statusCode(), AUConstants.STATUS_CODE_400)
+
         Assert.assertEquals(AUTestUtil.parseResponseBody(response, AUConstants.ERROR_CODE),
                 AUConstants.ERROR_CODE_INVALID_FIELD)
         Assert.assertEquals(AUTestUtil.parseResponseBody(response, AUConstants.ERROR_TITLE), AUConstants.INVALID_FIELD)
         Assert.assertEquals(AUTestUtil.parseResponseBody(response, AUConstants.ERROR_DETAIL),
                 "Invalid Field accountIds found in the request")
+
+        Assert.assertNotNull(response.getHeader(AUConstants.X_FAPI_INTERACTION_ID))
     }
 
     @Test(groups = "SmokeTest")
@@ -708,12 +710,14 @@ class AccountsRetrievalRequestValidationTests extends AUTest {
                 .post("${AUConstants.BULK_BALANCES_PATH}")
 
         Assert.assertEquals(response.statusCode(), AUConstants.STATUS_CODE_422)
+
         Assert.assertEquals(AUTestUtil.parseResponseBody(response, AUConstants.ERROR_CODE),
                 AUConstants.ERROR_CODE_INVALID_BANK_ACC)
         Assert.assertEquals(AUTestUtil.parseResponseBody(response, AUConstants.ERROR_DETAIL),
                 AUConstants.ACCOUNT_ID_NOT_FOUND)
         Assert.assertEquals(AUTestUtil.parseResponseBody(response, AUConstants.ERROR_TITLE),
                 AUConstants.INVALID_BANK_ACC)
+        Assert.assertNotNull(response.getHeader(AUConstants.X_FAPI_INTERACTION_ID))
     }
 
     @Test
@@ -736,11 +740,67 @@ class AccountsRetrievalRequestValidationTests extends AUTest {
                 .post("${AUConstants.BULK_BALANCES_PATH}")
 
         Assert.assertEquals(response.statusCode(), AUConstants.STATUS_CODE_400)
+
         Assert.assertEquals(AUTestUtil.parseResponseBody(response, AUConstants.ERROR_CODE),
                 AUConstants.ERROR_CODE_MISSING_FIELD)
         Assert.assertEquals(AUTestUtil.parseResponseBody(response, AUConstants.ERROR_DETAIL),
                 "accountIds field is missing in the request")
         Assert.assertEquals(AUTestUtil.parseResponseBody(response, AUConstants.ERROR_TITLE),
                 AUConstants.MISSING_FIELD)
+        Assert.assertNotNull(response.getHeader(AUConstants.X_FAPI_INTERACTION_ID))
+    }
+
+    //TODO: Issue: https://github.com/wso2-enterprise/financial-open-banking/issues/8455
+    @Test
+    void "CDS-680_Send token request with same authorisation code"() {
+
+        //Generate user access token from auth code for the first time
+        doConsentAuthorisation()
+        AccessTokenResponse accessTokenResponse = getUserAccessTokenResponse(clientId)
+        userAccessToken = accessTokenResponse.tokens.accessToken
+        def refreshToken = accessTokenResponse.tokens.refreshToken
+        Assert.assertNotNull(userAccessToken)
+        Assert.assertNotNull(refreshToken)
+
+        //Account Retrieval
+        String bulkAccountRequestUrl = "${AUConstants.BULK_ACCOUNT_PATH}"
+
+        def response = AURequestBuilder.buildBasicRequestWithCustomHeaders(userAccessToken,
+                AUConstants.X_V_HEADER_ACCOUNTS, clientHeader)
+                .baseUri(AUTestUtil.getBaseUrl(AUConstants.BASE_PATH_TYPE_ACCOUNT))
+                .get(bulkAccountRequestUrl)
+
+        SoftAssert softAssertion= new SoftAssert()
+        softAssertion.assertEquals(response.statusCode(), AUConstants.STATUS_CODE_200)
+
+        //Try to generate user access token from the same auth code used before
+        def userToken = AURequestBuilder.getUserTokenErrorResponse(authorisationCode,
+                auConfiguration.getAppInfoRedirectURL(), auConfiguration.getAppInfoClientID())
+
+        Assert.assertEquals(userToken.error.httpStatusCode, AUConstants.BAD_REQUEST)
+        Assert.assertEquals(userToken.error.code, AUConstants.INVALID_GRANT)
+        Assert.assertEquals(userToken.error.description, "Inactive authorization code received from token request")
+
+        sleep(60000)
+
+        //Try Account Retrieval Request Again
+        def responseSecondAttempt = AURequestBuilder.buildBasicRequestWithCustomHeaders(userAccessToken,
+                AUConstants.X_V_HEADER_ACCOUNTS, clientHeader)
+                .baseUri(AUTestUtil.getBaseUrl(AUConstants.BASE_PATH_TYPE_ACCOUNT))
+                .get(bulkAccountRequestUrl)
+
+        Assert.assertEquals(responseSecondAttempt.statusCode(), AUConstants.STATUS_CODE_401)
+        Assert.assertEquals(AUTestUtil.parseResponseBody(responseSecondAttempt, AUConstants.ERROR_DESCRIPTION),
+                AUConstants.INVALID_CREDENTIALS)
+        Assert.assertEquals(AUTestUtil.parseResponseBody(responseSecondAttempt, AUConstants.ERROR),
+                AUConstants.INVALID_CLIENT)
+
+        //Token introspection request
+        def introspectResponse = AURequestBuilder.buildIntrospectionRequest(refreshToken.toString(),
+                auConfiguration.getAppInfoClientID(), 0)
+                .post(AUConstants.INTROSPECTION_ENDPOINT)
+
+        //Introspection validation can only be done for refresh token
+        Assert.assertTrue(introspectResponse.jsonPath().get("active").equals(false))
     }
 }

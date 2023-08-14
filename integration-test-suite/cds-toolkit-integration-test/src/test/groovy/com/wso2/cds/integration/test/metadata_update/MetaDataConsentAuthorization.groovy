@@ -10,6 +10,7 @@
 package com.wso2.cds.integration.test.metadata_update
 
 import com.wso2.cds.test.framework.AUTest
+import com.wso2.cds.test.framework.configuration.AUConfigurationService
 import com.wso2.cds.test.framework.constant.AUConstants
 import com.wso2.cds.test.framework.utility.AUTestUtil
 import com.wso2.openbanking.test.framework.automation.NavigationAutomationStep
@@ -22,11 +23,14 @@ import org.testng.annotations.Test
  */
 class MetaDataConsentAuthorization extends AUTest{
 
+    AUConfigurationService auConfiguration = new AUConfigurationService()
+
     @BeforeClass(alwaysRun = true)
     void setup() {
         auConfiguration.setTppNumber(1)
 
         //Register Second TPP.
+        deleteApplicationIfExists(auConfiguration.getAppInfoClientID())
         def registrationResponse = tppRegistration()
         clientId = AUTestUtil.parseResponseBody(registrationResponse, "client_id")
         Assert.assertEquals(registrationResponse.statusCode(), AUConstants.CREATED)
@@ -36,28 +40,24 @@ class MetaDataConsentAuthorization extends AUTest{
                 "ClientID", clientId, auConfiguration.getTppNumber())
 
         doConsentAuthorisation(clientId)
-
-        auConfiguration.setTppNumber(0)
-        accessToken = getApplicationAccessToken(clientId)
-        Assert.assertNotNull(accessToken)
     }
 
-    @Test(priority = 1)
+    @Test(enabled = true)
     void "TC001_Verify the Consent Authorisation when the SP and ADR both active"() {
 
         doConsentAuthorisation()
         generateUserAccessToken()
     }
 
-    @Test(priority = 3)
+    @Test(enabled = true)
     void "TC002_Verify the Consent Authorisation when the SP Removed and ADR active"() {
 
-        response = auAuthorisationBuilder.doPushAuthorisationRequest(scopes, AUConstants.DEFAULT_SHARING_DURATION,
-                true, "")
-        requestUri = AUTestUtil.parseResponseBody(response, AUConstants.REQUEST_URI)
-
         //TODO: Update status
         sleep(81000)
+
+        response = auAuthorisationBuilder.doPushAuthorisationRequest(scopes, AUConstants.DEFAULT_SHARING_DURATION,
+                true, "", clientId)
+        requestUri = AUTestUtil.parseResponseBody(response, AUConstants.REQUEST_URI)
 
         authoriseUrl = auAuthorisationBuilder.getAuthorizationRequest(requestUri.toURI(), clientId)
                 .toURI().toString()
@@ -69,19 +69,21 @@ class MetaDataConsentAuthorization extends AUTest{
         String url = automationResponse.currentUrl.get()
         String errorUrl
 
-        errorUrl = url.split("error_description=")[1].split("&")[0].replaceAll("\\+"," ")
-        Assert.assertEquals(errorUrl, AUConstants.ERROR_INVALID_CLIENT_ID)
+        errorUrl = url.split("oauthErrorMsg=")[1].split("&")[0].replaceAll("\\+"," ")
+        Assert.assertEquals(errorUrl, "The software product of ADR is not in an active state in the CDR Register. Current status is REMOVED")
+
     }
 
-    @Test(priority = 2)
-    void "TC003_Verify the Consent Authorisation when the SP Inactive and ADR  active"() {
-
-        response = auAuthorisationBuilder.doPushAuthorisationRequest(scopes, AUConstants.DEFAULT_SHARING_DURATION,
-                true, "")
-        requestUri = AUTestUtil.parseResponseBody(response, AUConstants.REQUEST_URI)
+    //Enable the test case when running the test case. Disabled due to the mock authenticator is not available now.
+    @Test(enabled = false)
+    void "TC003_Verify the Consent Authorisation when the SP Inactive and ADR active"() {
 
         //TODO: Update status
         sleep(81000)
+
+        response = auAuthorisationBuilder.doPushAuthorisationRequest(scopes, AUConstants.DEFAULT_SHARING_DURATION,
+                true, "", clientId)
+        requestUri = AUTestUtil.parseResponseBody(response, AUConstants.REQUEST_URI)
 
         authoriseUrl = auAuthorisationBuilder.getAuthorizationRequest(requestUri.toURI(), clientId)
                 .toURI().toString()
@@ -93,19 +95,20 @@ class MetaDataConsentAuthorization extends AUTest{
         String url = automationResponse.currentUrl.get()
         String errorUrl
 
-        errorUrl = url.split("error_description=")[1].split("&")[0].replaceAll("\\+"," ")
-        Assert.assertEquals(errorUrl, AUConstants.ERROR_INVALID_SOFTWARE_PRODUCT)
+        errorUrl = url.split("oauthErrorMsg=")[1].split("&")[0].replaceAll("\\+"," ")
+        Assert.assertEquals(errorUrl, "The software product of ADR is not in an active state in the CDR Register. Current status is INACTIVE")
     }
 
-    @Test(priority = 2)
-    void "TC004_Verify the Consent Authorisation when the SP Inactive and ADR  Suspended"() {
-
-        response = auAuthorisationBuilder.doPushAuthorisationRequest(scopes, AUConstants.DEFAULT_SHARING_DURATION,
-                true, "")
-        requestUri = AUTestUtil.parseResponseBody(response, AUConstants.REQUEST_URI)
+    //Enable the test case when running the test case. Disabled due to the mock authenticator is not available now.
+    @Test(enabled = false)
+    void "TC004_Verify the Consent Authorisation when the SP Inactive and ADR Suspended"() {
 
         //TODO: Update status
         sleep(81000)
+
+        response = auAuthorisationBuilder.doPushAuthorisationRequest(scopes, AUConstants.DEFAULT_SHARING_DURATION,
+                true, "", clientId)
+        requestUri = AUTestUtil.parseResponseBody(response, AUConstants.REQUEST_URI)
 
         authoriseUrl = auAuthorisationBuilder.getAuthorizationRequest(requestUri.toURI(), clientId)
                 .toURI().toString()
@@ -117,21 +120,20 @@ class MetaDataConsentAuthorization extends AUTest{
         String url = automationResponse.currentUrl.get()
         String errorUrl
 
-        errorUrl = url.split("error_description=")[1].split("&")[0].replaceAll("\\+"," ")
-        Assert.assertEquals(errorUrl, AUConstants.ERROR_INVALID_SOFTWARE_PRODUCT)
+        errorUrl = url.split("oauthErrorMsg=")[1].split("&")[0].replaceAll("\\+"," ")
+        Assert.assertEquals(errorUrl, "The software product of ADR is not in an active state in the CDR Register. Current status is SUSPENDED")
     }
 
-    @Test(priority = 4)
-    void "TC005_Verify the Consent Authorisation when the SP Removed and ADR  Suspended"() {
-
-        setup()
-
-        response = auAuthorisationBuilder.doPushAuthorisationRequest(scopes, AUConstants.DEFAULT_SHARING_DURATION,
-                true, "")
-        requestUri = AUTestUtil.parseResponseBody(response, AUConstants.REQUEST_URI)
+    //Enable the test case when running the test case. Disabled due to the mock authenticator is not available now.
+    @Test(enabled = false)
+    void "TC005_Verify the Consent Authorisation when the SP Removed and ADR Suspended"() {
 
         //TODO: Update status
         sleep(81000)
+
+        response = auAuthorisationBuilder.doPushAuthorisationRequest(scopes, AUConstants.DEFAULT_SHARING_DURATION,
+                true, "", clientId)
+        requestUri = AUTestUtil.parseResponseBody(response, AUConstants.REQUEST_URI)
 
         authoriseUrl = auAuthorisationBuilder.getAuthorizationRequest(requestUri.toURI(), clientId)
                 .toURI().toString()
@@ -143,21 +145,20 @@ class MetaDataConsentAuthorization extends AUTest{
         String url = automationResponse.currentUrl.get()
         String errorUrl
 
-        errorUrl = url.split("error_description=")[1].split("&")[0].replaceAll("\\+"," ")
-        Assert.assertEquals(errorUrl, AUConstants.ERROR_INVALID_CLIENT_ID)
+        errorUrl = url.split("oauthErrorMsg=")[1].split("&")[0].replaceAll("\\+"," ")
+        Assert.assertEquals(errorUrl, "The software product of ADR is not in an active state in the CDR Register. Current status is SUSPENDED")
     }
 
-    @Test(priority = 4)
-    void "TC006_Verify the Consent Authorisation when the SP Removed and ADR  Surrendered"() {
-
-        setup()
-
-        response = auAuthorisationBuilder.doPushAuthorisationRequest(scopes, AUConstants.DEFAULT_SHARING_DURATION,
-                true, "")
-        requestUri = AUTestUtil.parseResponseBody(response, AUConstants.REQUEST_URI)
+    //Enable the test case when running the test case. Disabled due to the mock authenticator is not available now.
+    @Test(enabled = false)
+    void "TC006_Verify the Consent Authorisation when the SP Removed and ADR Surrendered"() {
 
         //TODO: Update status
         sleep(81000)
+
+        response = auAuthorisationBuilder.doPushAuthorisationRequest(scopes, AUConstants.DEFAULT_SHARING_DURATION,
+                true, "", clientId)
+        requestUri = AUTestUtil.parseResponseBody(response, AUConstants.REQUEST_URI)
 
         authoriseUrl = auAuthorisationBuilder.getAuthorizationRequest(requestUri.toURI(), clientId)
                 .toURI().toString()
@@ -169,21 +170,20 @@ class MetaDataConsentAuthorization extends AUTest{
         String url = automationResponse.currentUrl.get()
         String errorUrl
 
-        errorUrl = url.split("error_description=")[1].split("&")[0].replaceAll("\\+"," ")
-        Assert.assertEquals(errorUrl, AUConstants.ERROR_INVALID_CLIENT_ID)
+        errorUrl = url.split("oauthErrorMsg=")[1].split("&")[0].replaceAll("\\+"," ")
+        Assert.assertEquals(errorUrl, "The ADR is not in an active state in the CDR Register. Current status is SURRENDERED")
     }
 
-    @Test(priority = 4)
-    void "TC007_Verify the Consent Authorisation when the SP Removed and ADR  Revoked"() {
-
-        setup()
-
-        response = auAuthorisationBuilder.doPushAuthorisationRequest(scopes, AUConstants.DEFAULT_SHARING_DURATION,
-                true, "")
-        requestUri = AUTestUtil.parseResponseBody(response, AUConstants.REQUEST_URI)
+    //Enable the test case when running the test case. Disabled due to the mock authenticator is not available now.
+    @Test(enabled = false)
+    void "TC007_Verify the Consent Authorisation when the SP Removed and ADR Revoked"() {
 
         //TODO: Update status
         sleep(81000)
+
+        response = auAuthorisationBuilder.doPushAuthorisationRequest(scopes, AUConstants.DEFAULT_SHARING_DURATION,
+                true, "", clientId)
+        requestUri = AUTestUtil.parseResponseBody(response, AUConstants.REQUEST_URI)
 
         authoriseUrl = auAuthorisationBuilder.getAuthorizationRequest(requestUri.toURI(), clientId)
                 .toURI().toString()
@@ -195,7 +195,7 @@ class MetaDataConsentAuthorization extends AUTest{
         String url = automationResponse.currentUrl.get()
         String errorUrl
 
-        errorUrl = url.split("error_description=")[1].split("&")[0].replaceAll("\\+"," ")
-        Assert.assertEquals(errorUrl, AUConstants.ERROR_INVALID_CLIENT_ID)
+        errorUrl = url.split("oauthErrorMsg=")[1].split("&")[0].replaceAll("\\+"," ")
+        Assert.assertEquals(errorUrl, "The ADR is not in an active state in the CDR Register. Current status is REVOKED")
     }
 }

@@ -14,7 +14,7 @@ import com.wso2.cds.test.framework.configuration.AUConfigurationService
 import com.wso2.cds.test.framework.constant.AUAccountProfile
 import com.wso2.cds.test.framework.constant.AUBusinessUserPermission
 import com.wso2.cds.test.framework.constant.AUConstants
-import com.wso2.cds.test.framework.data_provider.AccountsDataProviders
+import com.wso2.cds.test.framework.data_provider.ConsentDataProviders
 import com.wso2.cds.test.framework.request_builder.AURequestBuilder
 import com.wso2.cds.test.framework.utility.AUTestUtil
 import org.testng.Assert
@@ -48,7 +48,7 @@ class BnrEndToEndTest extends AUTest{
         Assert.assertEquals(updateResponse.statusCode(), AUConstants.OK)
     }
 
-    @Test (groups = "SmokeTest", dataProvider = "BankingApisBusinessProfile", dataProviderClass = AccountsDataProviders.class)
+    @Test (groups = "SmokeTest", dataProvider = "BankingApisBusinessProfile", dataProviderClass = ConsentDataProviders.class)
     void "CDS-486_Verify an accounts retrieval call after business profile selection and business accounts consented"(resourcePath) {
 
         //Consent Authorisation

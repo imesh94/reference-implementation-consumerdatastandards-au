@@ -34,8 +34,9 @@ import io.restassured.response.Response
 import org.jsoup.Jsoup
 
 import java.nio.charset.StandardCharsets
+import java.nio.file.Path
+import java.nio.file.Paths
 import java.security.MessageDigest
-
 
 /**
  * Domain specific AU layer Class to contain utility classes used for Test Framework.
@@ -458,6 +459,60 @@ class AUTestUtil extends OBTestUtil {
             log.error("Unable to find error description in URL", e)
         }
         return null
+    }
+
+    /**
+     * Read the File Content.
+     * @param filePath
+     * @return file content
+     */
+    static String readFileContent(String filePath) {
+        StringBuilder content = new StringBuilder()
+
+        try (BufferedReader reader = new BufferedReader(new FileReader(filePath))) {
+            String line
+            while ((line = reader.readLine()) != null) {
+                content.append(line).append(System.lineSeparator())
+            }
+        } catch (IOException e) {
+            e.printStackTrace()
+        }
+
+        return content.toString().replaceAll("[\r\n]", "")
+    }
+
+    /**
+     * Get Test Configuration File Path.
+     * @return file path
+     */
+    static String getTestConfigurationFilePath() {
+        //Get File Path to TestConfiguration.xml
+        String fileName = "TestConfiguration.xml"
+
+        // Get the path of the "src/resources" directory
+        Path resourcesDirectory = Paths.get("..", "cds-toolkit-test-framework", "src", "main", "resources")
+
+        // Combine the resources directory with the file name to get the absolute file path
+        String filePath = resourcesDirectory.resolve(fileName).toAbsolutePath().toString()
+
+        return filePath
+    }
+
+    /**
+     * Write To Test Configuration File.
+     * @param clientId
+     */
+    static void writeToConfigFile(String clientId) {
+        //This step will write the clientId to the TestConfiguration file in resources folder in order to
+        // use it in case of failure in test execution flow.
+        writeXMLContent(getTestConfigurationFilePath(), "Application", "ClientID", clientId,
+                auConfiguration.getTppNumber())
+
+        //This step will write the clientId to the TestConfiguration file in target folder to access during the execution flow.
+        String userDirectory = System.getProperty("user.dir")
+        String filePathInTarget = userDirectory + "/target/classes/${AUConstants.CONFIG_FILE_NAME}"
+        String configFilePath = Paths.get(filePathInTarget).toString()
+        writeXMLContent(configFilePath, "Application", "ClientID", clientId, auConfiguration.getTppNumber())
     }
 
 }

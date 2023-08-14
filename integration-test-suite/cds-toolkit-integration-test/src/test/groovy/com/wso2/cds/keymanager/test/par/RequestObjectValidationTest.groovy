@@ -11,9 +11,14 @@ package com.wso2.cds.keymanager.test.par
 
 import com.nimbusds.oauth2.sdk.ResponseMode
 import com.wso2.cds.test.framework.AUTest
+import com.wso2.cds.test.framework.automation.consent.AUBasicAuthAutomationStep
+import com.wso2.cds.test.framework.constant.AUAccountProfile
 import com.wso2.cds.test.framework.constant.AUConstants
+import com.wso2.cds.test.framework.constant.AUPageObjects
 import com.wso2.cds.test.framework.request_builder.AUJWTGenerator
 import com.wso2.cds.test.framework.utility.AUTestUtil
+import com.wso2.openbanking.test.framework.automation.AutomationMethod
+import org.openqa.selenium.By
 import org.testng.Assert
 import org.testng.annotations.Test
 
@@ -66,6 +71,7 @@ class RequestObjectValidationTest extends AUTest {
         Assert.assertEquals(AUTestUtil.parseResponseBody(response, AUConstants.ERROR), AUConstants.INVALID_REQUEST_OBJECT)
     }
 
+    //TODO: Issue: https://github.com/wso2-enterprise/financial-open-banking/issues/8457
     @Test (priority = 1)
     void "OB-1234_Initiate authorisation consent flow with 'PS512' signature algorithm"() {
 
@@ -81,7 +87,6 @@ class RequestObjectValidationTest extends AUTest {
         Assert.assertEquals(AUTestUtil.parseResponseBody(response, AUConstants.ERROR_DESCRIPTION),
                 AUConstants.INVALID_ALGORITHM)
         Assert.assertEquals(AUTestUtil.parseResponseBody(response, AUConstants.ERROR), AUConstants.INVALID_REQUEST_OBJECT)
-
     }
 
     @Test
@@ -202,5 +207,139 @@ class RequestObjectValidationTest extends AUTest {
         Assert.assertEquals(AUTestUtil.parseResponseBody(response, AUConstants.ERROR_DESCRIPTION),
                 AUConstants.INVALID_EXPIRY_TIME)
         Assert.assertEquals(AUTestUtil.parseResponseBody(response, AUConstants.ERROR), AUConstants.INVALID_REQUEST_OBJECT)
+    }
+
+    @Test
+    void "CDS-658_Send PAR request without redirect URL"() {
+
+        String claims = generator.getRequestObjectClaim(scopes, AUConstants.DEFAULT_SHARING_DURATION, true, "",
+                auConfiguration.getAppInfoRedirectURL(), auConfiguration.getAppInfoClientID(),
+                auAuthorisationBuilder.getResponseType().toString(), true,
+                auAuthorisationBuilder.getState().toString())
+
+        String modifiedClaimSet = generator.removeClaimsFromRequestObject(claims, "redirect_uri")
+        def response = auAuthorisationBuilder.doPushAuthorisationRequest(modifiedClaimSet)
+
+        Assert.assertEquals(response.statusCode(), AUConstants.STATUS_CODE_400)
+        Assert.assertEquals(AUTestUtil.parseResponseBody(response, AUConstants.ERROR_DESCRIPTION),
+                AUConstants.MISSING_REDIRECT_URL_VALUE)
+        Assert.assertEquals(AUTestUtil.parseResponseBody(response, AUConstants.ERROR), AUConstants.INVALID_REQUEST)
+    }
+
+    @Test
+    void "CDS-669_Send PAR request with invalid redirect URL"() {
+
+        String claims = generator.getRequestObjectClaim(scopes, AUConstants.DEFAULT_SHARING_DURATION, true, "",
+                auConfiguration.getAppInfoRedirectURL(), auConfiguration.getAppInfoClientID(),
+                auAuthorisationBuilder.getResponseType().toString(), true,
+                auAuthorisationBuilder.getState().toString())
+
+        String modifiedClaimSet = generator.addClaimsFromRequestObject(claims, "redirect_uri",
+                "https://www.google.com")
+        def response = auAuthorisationBuilder.doPushAuthorisationRequest(modifiedClaimSet)
+
+        Assert.assertEquals(response.statusCode(), AUConstants.STATUS_CODE_400)
+        Assert.assertEquals(AUTestUtil.parseResponseBody(response, AUConstants.ERROR_DESCRIPTION),
+                AUConstants.CALLBACK_NOT_MATCH)
+        Assert.assertEquals(AUTestUtil.parseResponseBody(response, AUConstants.ERROR), AUConstants.INVALID_REQUEST)
+    }
+
+    @Test
+    void "CDS-670_Send PAR request with empty cdr_arrangement_id"() {
+
+        String claims = generator.getRequestObjectClaim(scopes, AUConstants.DEFAULT_SHARING_DURATION, true, "",
+                auConfiguration.getAppInfoRedirectURL(), auConfiguration.getAppInfoClientID(),
+                auAuthorisationBuilder.getResponseType().toString(), true,
+                auAuthorisationBuilder.getState().toString())
+
+        def response = auAuthorisationBuilder.doPushAuthorisationRequest(claims)
+
+        Assert.assertEquals(response.statusCode(), AUConstants.STATUS_CODE_201)
+        Assert.assertNotNull(AUTestUtil.parseResponseBody(response, AUConstants.REQUEST_URI))
+    }
+
+    @Test
+    void "CDS-671_Send PAR request with null cdr_arrangement_id"() {
+
+        String claims = generator.getRequestObjectClaim(scopes, AUConstants.DEFAULT_SHARING_DURATION,
+                true, "null", auConfiguration.getAppInfoRedirectURL(),
+                auConfiguration.getAppInfoClientID(), auAuthorisationBuilder.getResponseType().toString(),
+                true, auAuthorisationBuilder.getState().toString())
+
+        def response = auAuthorisationBuilder.doPushAuthorisationRequest(claims)
+
+        Assert.assertEquals(response.statusCode(), AUConstants.STATUS_CODE_400)
+        Assert.assertEquals(AUTestUtil.parseResponseBody(response, AUConstants.ERROR_DESCRIPTION),
+                AUConstants.INVALID_CDR_ARRANGEMENT_ID)
+        Assert.assertEquals(AUTestUtil.parseResponseBody(response, AUConstants.ERROR), AUConstants.INVALID_REQUEST_OBJECT)
+    }
+
+    @Test
+    void "CDS-684_PAR call with an expired request object"() {
+
+        Long expiryDate = Instant.now().minus(1, ChronoUnit.HOURS).getEpochSecond().toLong()
+
+        String claims = generator.getRequestObjectClaim(scopes, AUConstants.DEFAULT_SHARING_DURATION, true, "",
+                auConfiguration.getAppInfoRedirectURL(), auConfiguration.getAppInfoClientID(),
+                auAuthorisationBuilder.getResponseType().toString(), true,
+                auAuthorisationBuilder.getState().toString())
+
+        String modifiedClaimSet = generator.addClaimsFromRequestObject(claims, "exp", expiryDate)
+
+        def response = auAuthorisationBuilder.doPushAuthorisationRequest(modifiedClaimSet)
+
+        Assert.assertEquals(response.statusCode(), AUConstants.STATUS_CODE_400)
+        Assert.assertEquals(AUTestUtil.parseResponseBody(response, AUConstants.ERROR_DESCRIPTION),
+                "Invalid expiry time. 'exp' claim must be a future value.")
+        Assert.assertEquals(AUTestUtil.parseResponseBody(response, AUConstants.ERROR), AUConstants.INVALID_REQUEST_OBJECT)
+    }
+
+    @Test
+    void "CDS-685_PAR call with an invalid audience"() {
+
+        String claims = generator.getRequestObjectClaim(scopes, AUConstants.DEFAULT_SHARING_DURATION, true, "",
+                auConfiguration.getAppInfoRedirectURL(), auConfiguration.getAppInfoClientID(),
+                auAuthorisationBuilder.getResponseType().toString(), true,
+                auAuthorisationBuilder.getState().toString())
+
+        String modifiedClaimSet = generator.addClaimsFromRequestObject(claims, "aud", "123")
+
+        def response = auAuthorisationBuilder.doPushAuthorisationRequest(modifiedClaimSet)
+
+        Assert.assertEquals(response.statusCode(), AUConstants.STATUS_CODE_400)
+        Assert.assertEquals(AUTestUtil.parseResponseBody(response, AUConstants.ERROR_DESCRIPTION),
+                AUConstants.INVALID_AUDIENCE)
+        Assert.assertEquals(AUTestUtil.parseResponseBody(response, AUConstants.ERROR), AUConstants.INVALID_REQUEST_OBJECT)
+    }
+
+    @Test
+    void "CDS-688_Verify null sharing_duration in PAR authorisation url"() {
+
+        String claims = generator.getRequestObjectClaim(scopes, null, true, "",
+                auConfiguration.getAppInfoRedirectURL(), auConfiguration.getAppInfoClientID(),
+                auAuthorisationBuilder.getResponseType().toString(), true,
+                auAuthorisationBuilder.getState().toString())
+
+        def response = auAuthorisationBuilder.doPushAuthorisationRequest(claims)
+
+        Assert.assertEquals(response.statusCode(), AUConstants.STATUS_CODE_201)
+        Assert.assertNotNull(AUTestUtil.parseResponseBody(response, AUConstants.REQUEST_URI))
+    }
+
+    @Test
+    void "CDS-717_Send PAR request by passing resource path as the aud value"() {
+
+        String claims = generator.getRequestObjectClaim(scopes, AUConstants.DEFAULT_SHARING_DURATION, true, "",
+                auConfiguration.getAppInfoRedirectURL(), auConfiguration.getAppInfoClientID(),
+                auAuthorisationBuilder.getResponseType().toString(), true,
+                auAuthorisationBuilder.getState().toString())
+
+        def audienceValue = AUConstants.PUSHED_AUTHORISATION_BASE_PATH + AUConstants.PAR_ENDPOINT
+        String modifiedClaimSet = generator.addClaimsFromRequestObject(claims, "aud", audienceValue)
+
+        def response = auAuthorisationBuilder.doPushAuthorisationRequest(modifiedClaimSet)
+
+        Assert.assertEquals(response.statusCode(), AUConstants.STATUS_CODE_201)
+        Assert.assertNotNull(AUTestUtil.parseResponseBody(response, AUConstants.REQUEST_URI))
     }
 }

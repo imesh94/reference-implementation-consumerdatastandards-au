@@ -10,6 +10,7 @@
 package com.wso2.cds.integration.test.common_api
 
 import com.wso2.cds.test.framework.AUTest
+import com.wso2.cds.test.framework.constant.AUAccountScope
 import com.wso2.cds.test.framework.constant.AUConstants
 import com.wso2.cds.test.framework.request_builder.AURequestBuilder
 import com.wso2.cds.test.framework.utility.AURestAsRequestBuilder
@@ -31,7 +32,13 @@ class CustomerDetailsRetrievalHeaderValidationTests extends AUTest {
 
     @BeforeClass(alwaysRun = true)
     void "Get User Access Token"() {
-        doConsentAuthorisation()
+
+        scopes = [
+                AUAccountScope.BANK_CUSTOMER_BASIC_READ,
+                AUAccountScope.BANK_CUSTOMER_DETAIL_READ
+        ]
+
+        doConsentAuthorisationWithoutAccountSelection()
         generateUserAccessToken()
     }
 
@@ -45,11 +52,13 @@ class CustomerDetailsRetrievalHeaderValidationTests extends AUTest {
                 .get("${AUConstants.BULK_CUSTOMER}")
 
         Assert.assertEquals(response.statusCode(), AUConstants.STATUS_CODE_400)
+
         Assert.assertEquals(AUTestUtil.parseResponseBody(response, AUConstants.ERROR_DETAIL),
                 AUConstants.ERROR_X_V_MISSING)
         Assert.assertEquals(AUTestUtil.parseResponseBody(response, AUConstants.ERROR_CODE),
                 AUConstants.ERROR_CODE_MISSING_HEADER)
         Assert.assertEquals(AUTestUtil.parseResponseBody(response, AUConstants.ERROR_TITLE), AUConstants.MISSING_HEADER)
+        Assert.assertNotNull(response.getHeader(AUConstants.X_FAPI_INTERACTION_ID))
     }
 
     @Test
@@ -67,6 +76,7 @@ class CustomerDetailsRetrievalHeaderValidationTests extends AUTest {
         Assert.assertNotNull(AUTestUtil.parseResponseBody(response, AUConstants.RESPONSE_DATA_PERSON))
         Assert.assertNotNull(AUTestUtil.parseResponseBody(response, AUConstants.RESPONSE_DATA_ORGANIZATION))
         Assert.assertNotNull(AUTestUtil.parseResponseBody(response, AUConstants.LINKS_SELF))
+        Assert.assertNotNull(response.getHeader(AUConstants.X_FAPI_INTERACTION_ID))
     }
 
     @Test
@@ -78,6 +88,8 @@ class CustomerDetailsRetrievalHeaderValidationTests extends AUTest {
                 .get("${AUConstants.BULK_CUSTOMER}")
 
         Assert.assertEquals(response.statusCode(), AUConstants.STATUS_CODE_400)
+        Assert.assertNotNull(response.getHeader(AUConstants.X_FAPI_INTERACTION_ID))
+
         Assert.assertEquals(AUTestUtil.parseResponseBody(response, AUConstants.ERROR_CODE),
                 AUConstants.ERROR_CODE_INVALID_VERSION)
         Assert.assertEquals(AUTestUtil.parseResponseBody(response, AUConstants.ERROR_TITLE), AUConstants.INVALID_VERSION)
@@ -92,6 +104,8 @@ class CustomerDetailsRetrievalHeaderValidationTests extends AUTest {
                 .get("${AUConstants.BULK_CUSTOMER}")
 
         Assert.assertEquals(response.statusCode(), AUConstants.STATUS_CODE_400)
+        Assert.assertNotNull(response.getHeader(AUConstants.X_FAPI_INTERACTION_ID))
+
         Assert.assertEquals(AUTestUtil.parseResponseBody(response, AUConstants.ERROR_CODE),
                 AUConstants.ERROR_CODE_INVALID_VERSION)
         Assert.assertEquals(AUTestUtil.parseResponseBody(response, AUConstants.ERROR_TITLE), AUConstants.INVALID_VERSION)
@@ -106,6 +120,8 @@ class CustomerDetailsRetrievalHeaderValidationTests extends AUTest {
                 .get("${AUConstants.BULK_CUSTOMER}")
 
         Assert.assertEquals(response.statusCode(), AUConstants.STATUS_CODE_400)
+        Assert.assertNotNull(response.getHeader(AUConstants.X_FAPI_INTERACTION_ID))
+
         Assert.assertEquals(AUTestUtil.parseResponseBody(response, AUConstants.ERROR_CODE),
                 AUConstants.ERROR_CODE_INVALID_VERSION)
         Assert.assertEquals(AUTestUtil.parseResponseBody(response, AUConstants.ERROR_TITLE), AUConstants.INVALID_VERSION)
@@ -121,6 +137,8 @@ class CustomerDetailsRetrievalHeaderValidationTests extends AUTest {
                 .get("${AUConstants.BULK_CUSTOMER}")
 
         Assert.assertEquals(response.statusCode(), AUConstants.STATUS_CODE_400)
+        Assert.assertNotNull(response.getHeader(AUConstants.X_FAPI_INTERACTION_ID))
+
         Assert.assertEquals(AUTestUtil.parseResponseBody(response, AUConstants.ERROR_CODE),
                 AUConstants.ERROR_CODE_INVALID_VERSION)
         Assert.assertEquals(AUTestUtil.parseResponseBody(response, AUConstants.ERROR_TITLE), AUConstants.INVALID_VERSION)
@@ -136,6 +154,8 @@ class CustomerDetailsRetrievalHeaderValidationTests extends AUTest {
                 .get("${AUConstants.BULK_CUSTOMER}")
 
         Assert.assertEquals(response.statusCode(), AUConstants.STATUS_CODE_400)
+        Assert.assertNotNull(response.getHeader(AUConstants.X_FAPI_INTERACTION_ID))
+
         Assert.assertEquals(AUTestUtil.parseResponseBody(response, AUConstants.ERROR_CODE),
                 AUConstants.ERROR_CODE_INVALID_VERSION)
         Assert.assertEquals(AUTestUtil.parseResponseBody(response, AUConstants.ERROR_TITLE), AUConstants.INVALID_VERSION)
@@ -157,6 +177,7 @@ class CustomerDetailsRetrievalHeaderValidationTests extends AUTest {
         Assert.assertNotNull(AUTestUtil.parseResponseBody(response, AUConstants.RESPONSE_DATA_PERSON))
         Assert.assertNotNull(AUTestUtil.parseResponseBody(response, AUConstants.RESPONSE_DATA_ORGANIZATION))
         Assert.assertNotNull(AUTestUtil.parseResponseBody(response, AUConstants.LINKS_SELF))
+        Assert.assertNotNull(response.getHeader(AUConstants.X_FAPI_INTERACTION_ID))
     }
 
     @Test
@@ -175,6 +196,7 @@ class CustomerDetailsRetrievalHeaderValidationTests extends AUTest {
         Assert.assertNotNull(AUTestUtil.parseResponseBody(response, AUConstants.RESPONSE_DATA_PERSON))
         Assert.assertNotNull(AUTestUtil.parseResponseBody(response, AUConstants.RESPONSE_DATA_ORGANIZATION))
         Assert.assertNotNull(AUTestUtil.parseResponseBody(response, AUConstants.LINKS_SELF))
+        Assert.assertNotNull(response.getHeader(AUConstants.X_FAPI_INTERACTION_ID))
     }
 
     @Test
@@ -193,6 +215,7 @@ class CustomerDetailsRetrievalHeaderValidationTests extends AUTest {
         Assert.assertNotNull(AUTestUtil.parseResponseBody(response, AUConstants.RESPONSE_DATA_PERSON))
         Assert.assertNotNull(AUTestUtil.parseResponseBody(response, AUConstants.RESPONSE_DATA_ORGANIZATION))
         Assert.assertNotNull(AUTestUtil.parseResponseBody(response, AUConstants.LINKS_SELF))
+        Assert.assertNotNull(response.getHeader(AUConstants.X_FAPI_INTERACTION_ID))
     }
 
     @Test
@@ -204,6 +227,8 @@ class CustomerDetailsRetrievalHeaderValidationTests extends AUTest {
                 .get("${AUConstants.BULK_CUSTOMER}")
 
         Assert.assertEquals(response.statusCode(), AUConstants.STATUS_CODE_406)
+        Assert.assertNotNull(response.getHeader(AUConstants.X_FAPI_INTERACTION_ID))
+
         Assert.assertEquals(AUTestUtil.parseResponseBody(response, AUConstants.ERROR_CODE),
                 AUConstants.ERROR_CODE_UNSUPPORTED_VERSION)
         Assert.assertEquals(AUTestUtil.parseResponseBody(response, AUConstants.ERROR_TITLE), AUConstants.UNSUPPORTED_VERSION)
@@ -224,6 +249,7 @@ class CustomerDetailsRetrievalHeaderValidationTests extends AUTest {
                 .get("${AUConstants.BULK_CUSTOMER}")
 
         Assert.assertEquals(response.statusCode(), AUConstants.STATUS_CODE_200)
+        Assert.assertNotNull(response.getHeader(AUConstants.X_FAPI_INTERACTION_ID))
         Assert.assertEquals(response.getHeader(AUConstants.X_V_HEADER).toInteger(), AUConstants.X_V_HEADER_CUSTOMER)
     }
 
@@ -249,6 +275,7 @@ class CustomerDetailsRetrievalHeaderValidationTests extends AUTest {
         Assert.assertNotNull(AUTestUtil.parseResponseBody(response, AUConstants.RESPONSE_DATA_PERSON))
         Assert.assertNotNull(AUTestUtil.parseResponseBody(response, AUConstants.RESPONSE_DATA_ORGANIZATION))
         Assert.assertNotNull(AUTestUtil.parseResponseBody(response, AUConstants.LINKS_SELF))
+        Assert.assertNotNull(response.getHeader(AUConstants.X_FAPI_INTERACTION_ID))
     }
 
     @Test
@@ -268,6 +295,7 @@ class CustomerDetailsRetrievalHeaderValidationTests extends AUTest {
         Assert.assertNotNull(AUTestUtil.parseResponseBody(response, AUConstants.RESPONSE_DATA_PERSON))
         Assert.assertNotNull(AUTestUtil.parseResponseBody(response, AUConstants.RESPONSE_DATA_ORGANIZATION))
         Assert.assertNotNull(AUTestUtil.parseResponseBody(response, AUConstants.LINKS_SELF))
+        Assert.assertNotNull(response.getHeader(AUConstants.X_FAPI_INTERACTION_ID))
     }
 
     @Test
@@ -279,6 +307,8 @@ class CustomerDetailsRetrievalHeaderValidationTests extends AUTest {
                 .get("${AUConstants.BULK_CUSTOMER}")
 
         Assert.assertEquals(response.statusCode(), AUConstants.STATUS_CODE_400)
+        Assert.assertNotNull(response.getHeader(AUConstants.X_FAPI_INTERACTION_ID))
+
         Assert.assertEquals(AUTestUtil.parseResponseBody(response, AUConstants.ERROR_CODE),
                 AUConstants.ERROR_CODE_INVALID_HEADER)
         Assert.assertEquals(AUTestUtil.parseResponseBody(response, AUConstants.ERROR_DETAIL),
@@ -296,9 +326,11 @@ class CustomerDetailsRetrievalHeaderValidationTests extends AUTest {
                 .get("${AUConstants.BULK_CUSTOMER}")
 
         Assert.assertEquals(response.statusCode(), AUConstants.STATUS_CODE_400)
+
         Assert.assertEquals(AUTestUtil.parseResponseBody(response, AUConstants.ERROR_CODE),
                 AUConstants.ERROR_CODE_INVALID_HEADER)
         Assert.assertEquals(AUTestUtil.parseResponseBody(response, AUConstants.ERROR_TITLE), AUConstants.INVALID_HEADER)
+        Assert.assertNotNull(response.getHeader(AUConstants.X_FAPI_INTERACTION_ID))
     }
 
     @Test
@@ -311,9 +343,11 @@ class CustomerDetailsRetrievalHeaderValidationTests extends AUTest {
                 .get("${AUConstants.BULK_CUSTOMER}")
 
         Assert.assertEquals(response.statusCode(), AUConstants.STATUS_CODE_400)
+
         Assert.assertEquals(AUTestUtil.parseResponseBody(response, AUConstants.ERROR_CODE),
                 AUConstants.ERROR_CODE_INVALID_HEADER)
         Assert.assertEquals(AUTestUtil.parseResponseBody(response, AUConstants.ERROR_TITLE), AUConstants.INVALID_HEADER)
+        Assert.assertNotNull(response.getHeader(AUConstants.X_FAPI_INTERACTION_ID))
     }
 
     @Test
@@ -327,13 +361,15 @@ class CustomerDetailsRetrievalHeaderValidationTests extends AUTest {
                 .get("${AUConstants.BULK_CUSTOMER}")
 
         Assert.assertEquals(response.statusCode(), AUConstants.STATUS_CODE_400)
+        Assert.assertNotNull(response.getHeader(AUConstants.X_FAPI_INTERACTION_ID))
+
         Assert.assertEquals(AUTestUtil.parseResponseBody(response, AUConstants.ERROR_CODE),
                 AUConstants.ERROR_CODE_INVALID_FIELD)
         Assert.assertEquals(AUTestUtil.parseResponseBody(response, AUConstants.ERROR_TITLE), AUConstants.INVALID_FIELD)
         Assert.assertTrue(AUTestUtil.parseResponseBody(response, AUConstants.ERROR_DETAIL)
                 .contains("Schema validation failed in the Request: ECMA 262 regex " +
                         "\"^([A-Za-z0-9+/]{4})*([A-Za-z0-9+/]{3}=|[A-Za-z0-9+/]{2}==)?\$\" does not match input " +
-                        "string \"pEpMozLXDwCiGi_dVKwcabSSyHoa:AppConfig1.Application.ClientSecret\""))
+                        "string \"${auConfiguration.getAppInfoClientID()}:${auConfiguration.getAppInfoClientSecret()}\""))
     }
 
     @Test
@@ -351,6 +387,7 @@ class CustomerDetailsRetrievalHeaderValidationTests extends AUTest {
         Assert.assertNotNull(AUTestUtil.parseResponseBody(response, "data.explanation"))
         Assert.assertNotNull(AUTestUtil.parseResponseBody(response, "data.expectedResolutionTime"))
         Assert.assertNotNull(AUTestUtil.parseResponseBody(response, AUConstants.LINKS_SELF))
+        Assert.assertNotNull(response.getHeader(AUConstants.X_FAPI_INTERACTION_ID))
     }
 
     @Test
@@ -367,5 +404,6 @@ class CustomerDetailsRetrievalHeaderValidationTests extends AUTest {
         Assert.assertNotNull(AUTestUtil.parseResponseBody(response, "data.outages.outageTime"))
         Assert.assertNotNull(AUTestUtil.parseResponseBody(response, "data.outages.duration"))
         Assert.assertNotNull(AUTestUtil.parseResponseBody(response, "data.outages.isPartial"))
+        Assert.assertNotNull(response.getHeader(AUConstants.X_FAPI_INTERACTION_ID))
     }
 }

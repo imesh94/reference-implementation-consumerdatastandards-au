@@ -26,7 +26,7 @@ class AUPageObjects {
     public static String ALT_SINGLE_ACCOUNT_XPATH = "//input[@id='account_2']"
     public static String LBL_WHERE_TO_MANAGE_INSTRUCTION_XPATH = "//div[contains(text(),'Where to manage this arrangement')]//h5"
     public static String LBL_NEW_PAYEES_INDICATOR_XPATH = "//button[contains(text(),'Saved payees')]/span[contains(text(),'New')]"
-    public static String LBL_NEW_SHARING_DURATION_XPATH = "//span[@id='consentExpiryTime']/following-sibling::span[contains(text(),'New')]"
+    public static String LBL_NEW_SHARING_DURATION_XPATH = "//button[@id='consent-expiry-date']/span[contains(text(),'New')]"
     public static String LBL_ACCOUNT_1_ID_XPATH = "//input[@id='account_1']//following::small[1]"
     public static String LBL_ACCOUNT_2_ID_XPATH = "//input[@id='account_2']//following::small[1]"
     public static String LBL_SELECT_THE_ACCOUNTS_XPATH = "//h4[contains(text(),'Select the accounts you wish to authorise')]"
@@ -207,7 +207,8 @@ class AUPageObjects {
     public static String LBL_ERROR_TRY_AGAIN = "//div[@id='error-msg']"
     public static String BTN_AUTHENTICATE = "//input[@id='authenticate']"
     public static String TXT_OTP_CODE = "OTPcode"
-    public static BTN_CONSENT_EXPIRY_XPATH = "//span[@id='consentExpiryTime']"
+    public static BTN_CONSENT_EXPIRY_XPATH = "//button[@id='consent-expiry-date']"
     public static LBL_UNAVAILABLE_ACCOUNT = "//h4[contains(text(),'Accounts Unavailable To Share')]/following-sibling::div/"
-
+    public static POPUP_UNAVAILABLE_ACCOUNTS = "//p[@id='UnavailableAccountPopover']"
+    public static LBL_WHY_CANT_SHARE = "//h4[contains(text(),'Accounts Unavailable To Share')]/following-sibling::div/p[2]"
 }

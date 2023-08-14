@@ -102,8 +102,6 @@ class DisclosureOptionManagementServiceTest extends AUTest {
     @Test(groups = "SmokeTest")
     void "CDS-625_Verify Account retrieval when DOMS status change to pre-approval"() {
 
-
-
         //Update the DOMS Status to pre-approval
         map.put(jointAccountIdList[0], AUDOMSStatus.PRE_APPROVAL.getDomsStatusString())
 
@@ -135,6 +133,7 @@ class DisclosureOptionManagementServiceTest extends AUTest {
         Assert.assertNotNull(AUTestUtil.parseResponseBody(accountResponse, "${AUConstants.RESPONSE_DATA_SINGLE_ACCOUNTID}"))
     }
 
+    //TODO: Issue: https://github.com/wso2-enterprise/financial-open-banking/issues/8452
     @Test
     void "CDS-407_Verify single account retrieval when DOMS status change to no-sharing"() {
 
@@ -151,8 +150,13 @@ class DisclosureOptionManagementServiceTest extends AUTest {
                 .baseUri(auConfiguration.getServerBaseURL())
                 .get("${AUConstants.BULK_ACCOUNT_PATH}/${AUConstants.jointAccountID}")
 
-        Assert.assertEquals(accountResponse.statusCode(), AUConstants.STATUS_CODE_200)
-        Assert.assertNull(AUTestUtil.parseResponseBody(accountResponse, "${AUConstants.RESPONSE_DATA_SINGLE_ACCOUNTID}"))
+        Assert.assertEquals(accountResponse.statusCode(), AUConstants.STATUS_CODE_404)
+        Assert.assertEquals(AUTestUtil.parseResponseBody(accountResponse, AUConstants.ERROR_CODE),
+                AUConstants.ERROR_CODE_INVALID_BANK_ACC)
+        Assert.assertEquals(AUTestUtil.parseResponseBody(accountResponse, AUConstants.ERROR_TITLE),
+                AUConstants.INVALID_BANK_ACC)
+        Assert.assertEquals(AUTestUtil.parseResponseBody(accountResponse, AUConstants.ERROR_DETAIL),
+                AUConstants.jointAccountID)
     }
 
     @Test
@@ -322,7 +326,6 @@ class DisclosureOptionManagementServiceTest extends AUTest {
 
         def response = doConsentSearch()
         Assert.assertEquals(response.statusCode(), AUConstants.STATUS_CODE_200)
-        //TODO: Add assertion after checking the feature on a working product
     }
 
     @Test(priority = 1, dependsOnMethods = "CDS-624_Consent search API for DOMS status to no-sharing status")
@@ -336,7 +339,6 @@ class DisclosureOptionManagementServiceTest extends AUTest {
 
         def response = doConsentSearch()
         Assert.assertEquals(response.statusCode(), AUConstants.STATUS_CODE_200)
-        //TODO: Add assertion after checking the feature on a working product
     }
 
     @Test

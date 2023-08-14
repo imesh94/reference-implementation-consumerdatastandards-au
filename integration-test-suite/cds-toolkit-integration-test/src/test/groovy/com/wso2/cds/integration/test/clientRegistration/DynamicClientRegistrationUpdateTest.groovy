@@ -35,6 +35,7 @@ class DynamicClientRegistrationUpdateTest extends AUTest{
 
         AURegistrationRequestBuilder dcr = new AURegistrationRequestBuilder()
 
+        deleteApplicationIfExists(auConfiguration.getAppInfoClientID())
         def registrationResponse = AURegistrationRequestBuilder
                 .buildRegistrationRequest(dcr.getAURegularClaims())
                 .when()
@@ -43,18 +44,13 @@ class DynamicClientRegistrationUpdateTest extends AUTest{
         clientId = parseResponseBody(registrationResponse, "client_id")
         context.setAttribute(ContextConstants.CLIENT_ID,clientId)
 
-        AUTestUtil.writeXMLContent(auConfiguration.getOBXMLFile().toString(), "Application",
-                "ClientID", clientId, auConfiguration.getTppNumber())
-    }
-
-    @Test(groups = "SmokeTest")
-    void "TC0101009_Get access token"() {
+        AUTestUtil.writeToConfigFile(clientId)
 
         accessToken = getApplicationAccessToken(clientId)
         Assert.assertNotNull(accessToken)
     }
 
-    @Test(dependsOnMethods = "TC0101009_Get access token")
+    @Test
     void "TC0103001_Update registration details with invalid client id"() {
 
         AURegistrationRequestBuilder registrationRequestBuilder = new AURegistrationRequestBuilder()
@@ -67,8 +63,11 @@ class DynamicClientRegistrationUpdateTest extends AUTest{
         Assert.assertEquals(registrationResponse.statusCode(), AUConstants.STATUS_CODE_401)
     }
 
-    @Test(groups = "SmokeTest", dependsOnMethods = "TC0101009_Get access token")
+    @Test(groups = "SmokeTest")
     void "TC0103002_Update registration details"() {
+
+        accessToken = getApplicationAccessToken(clientId)
+        Assert.assertNotNull(accessToken)
 
         AUJWTGenerator aujwtGenerator =new AUJWTGenerator()
         AURegistrationRequestBuilder registrationRequestBuilder = new AURegistrationRequestBuilder()
@@ -81,7 +80,7 @@ class DynamicClientRegistrationUpdateTest extends AUTest{
         Assert.assertEquals(registrationResponse.statusCode(), AUConstants.STATUS_CODE_200)
     }
 
-    @Test(dependsOnMethods = "TC0101009_Get access token")
+    @Test
     void "OB-1167_Update registration details without SSA"() {
 
         AUJWTGenerator aujwtGenerator = new AUJWTGenerator()
@@ -97,7 +96,7 @@ class DynamicClientRegistrationUpdateTest extends AUTest{
                 AUConstants.INVALID_CLIENT_METADATA)
     }
 
-    @Test(dependsOnMethods = "TC0101009_Get access token")
+    @Test
     void "OB-1168_Update registration details with fields not supported by data holder brand"() {
 
         AURegistrationRequestBuilder registrationRequestBuilder = new AURegistrationRequestBuilder()
@@ -113,7 +112,8 @@ class DynamicClientRegistrationUpdateTest extends AUTest{
                 .when()
                 .get(registrationPath + clientId)
 
-        Assert.assertEquals(retrievalResponse.statusCode(), AUConstants.STATUS_CODE_400)
+        //Unsupported claims will be ignored. Therefore, gives a success response.
+        Assert.assertEquals(retrievalResponse.statusCode(), AUConstants.STATUS_CODE_200)
         Assert.assertNull(parseResponseBody(retrievalResponse, "adr_name"))
     }
 
@@ -168,10 +168,5 @@ class DynamicClientRegistrationUpdateTest extends AUTest{
                 .put(registrationPath + clientId)
 
         Assert.assertEquals(registrationResponse.statusCode(), AUConstants.STATUS_CODE_401)
-    }
-
-    @AfterClass(alwaysRun = true)
-    void tearDown() {
-        deleteApplicationIfExists(clientId)
     }
 }

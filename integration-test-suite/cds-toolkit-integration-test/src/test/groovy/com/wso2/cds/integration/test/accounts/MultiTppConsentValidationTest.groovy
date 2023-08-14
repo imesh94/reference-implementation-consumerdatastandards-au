@@ -9,11 +9,12 @@
 
 package com.wso2.cds.integration.test.accounts
 
-import com.wso2.cds.test.framework.constant.AUAccountScope
 import com.wso2.cds.test.framework.constant.AUConstants
 import com.nimbusds.oauth2.sdk.AccessTokenResponse
 import com.wso2.cds.test.framework.AUTest
 import com.wso2.cds.test.framework.configuration.AUConfigurationService
+import com.wso2.cds.test.framework.constant.ContextConstants
+import com.wso2.cds.test.framework.request_builder.AURegistrationRequestBuilder
 import com.wso2.openbanking.test.framework.automation.NavigationAutomationStep
 import io.restassured.response.Response
 import org.testng.Assert
@@ -35,18 +36,23 @@ class MultiTppConsentValidationTest extends AUTest {
     @BeforeClass(alwaysRun = true)
     void setup() {
         auConfiguration.setTppNumber(1)
+        AURegistrationRequestBuilder dcr = new AURegistrationRequestBuilder()
 
         deleteApplicationIfExists()
         //Register Second TPP.
-        def registrationResponse = tppRegistration()
-        Assert.assertEquals(registrationResponse.statusCode(), AUConstants.CREATED)
+        def  registrationResponse = AURegistrationRequestBuilder
+                .buildRegistrationRequest(dcr.getAURegularClaims())
+                .when()
+                .post(AUConstants.DCR_REGISTRATION_ENDPOINT)
 
-        clientID = AUTestUtil.parseResponseBody(registrationResponse, "client_id")
-        List<String> redirectURI = AUTestUtil.parseResponseBodyList(registrationResponse, "redirect_uris")
+        clientID = parseResponseBody(registrationResponse, "client_id")
 
-        //Write Client Id of TPP2 to config file.
-        AUTestUtil.writeXMLContent(auConfiguration.getOBXMLFile().toString(), "Application",
-                "ClientID", clientID, auConfiguration.getTppNumber())
+        Assert.assertEquals(registrationResponse.statusCode(), AUConstants.STATUS_CODE_201)
+        AUTestUtil.writeXMLContent(AUTestUtil.getTestConfigurationFilePath(), "Application",
+                "ClientID", clientId, auConfiguration.getTppNumber())
+
+        accessToken = getApplicationAccessToken(clientID)
+        Assert.assertNotNull(accessToken)
     }
 
     @Test
@@ -112,8 +118,7 @@ class MultiTppConsentValidationTest extends AUTest {
 
         //Send consent authorisation using request_uri bound to TPP1 with client id of TPP2
         auConfiguration.setTppNumber(1)
-        def authoriseUrl = auAuthorisationBuilder.getAuthorizationRequest(requestUri.toURI(),
-                auConfiguration.getAppInfoClientID()).toURI().toString()
+        def authoriseUrl = auAuthorisationBuilder.getAuthorizationRequest(requestUri.toURI(), clientID).toURI().toString()
 
         def automationResponse = getBrowserAutomation(AUConstants.DEFAULT_DELAY)
                 .addStep(new NavigationAutomationStep(authoriseUrl, 10))
@@ -123,10 +128,10 @@ class MultiTppConsentValidationTest extends AUTest {
         String errorUrl
 
         errorUrl = url.split("oauthErrorCode=")[1].split("&")[0].replaceAll("\\+"," ")
-        Assert.assertEquals(errorUrl, AUConstants.INVALID_CLIENT)
+        Assert.assertEquals(errorUrl, AUConstants.INVALID_REQUEST_URI)
 
         errorUrl = url.split("oauthErrorMsg=")[1].split("&")[0].replaceAll("\\+"," ")
-        Assert.assertEquals(errorUrl, "application.not.found")
+        Assert.assertEquals(errorUrl, "Request Object and Authorization request contains unmatched client_id")
 
     }
 
@@ -146,17 +151,21 @@ class MultiTppConsentValidationTest extends AUTest {
         auConfiguration.setTppNumber(1)
         //Send PAR request.
         def parResponse = auAuthorisationBuilder.doPushAuthorisationRequest(scopes, AUConstants.DEFAULT_SHARING_DURATION,
-                true, cdrArrangementId, auConfiguration.getAppInfoClientID())
+                true, cdrArrangementId, clientID)
 
         Assert.assertEquals(parResponse.statusCode(), AUConstants.STATUS_CODE_400)
         Assert.assertEquals(AUTestUtil.parseResponseBody(parResponse, AUConstants.ERROR_DESCRIPTION),
-                "Service provider metadata retrieval failed. Error retrieving service provider tenant domain for client_id: '${auConfiguration.getAppInfoClientID()}' ")
-        Assert.assertEquals(AUTestUtil.parseResponseBody(parResponse, AUConstants.ERROR), AUConstants.INVALID_REQUEST)
+                "Invalid cdr_arrangement_id")
+        Assert.assertEquals(AUTestUtil.parseResponseBody(parResponse, AUConstants.ERROR), AUConstants.INVALID_REQUEST_OBJECT)
     }
 
     @AfterClass(alwaysRun = true)
     void tearDown() {
-        deleteApplicationIfExists(clientId)
+        def registrationResponse = AURegistrationRequestBuilder.buildBasicRequest(accessToken)
+                .when()
+                .delete(AUConstants.DCR_REGISTRATION_ENDPOINT + clientID)
+
+        Assert.assertEquals(registrationResponse.statusCode(), AUConstants.STATUS_CODE_204)
     }
 }
 

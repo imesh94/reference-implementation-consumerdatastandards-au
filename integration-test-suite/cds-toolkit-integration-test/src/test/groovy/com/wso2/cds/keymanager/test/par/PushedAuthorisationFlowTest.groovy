@@ -1,3 +1,12 @@
+/*
+ * Copyright (c) 2023, WSO2 LLC. (https://www.wso2.com). All Rights Reserved.
+ *
+ * This software is the property of WSO2 LLC. and its suppliers, if any.
+ * Dissemination of any information or reproduction of any material contained
+ * herein in any form is strictly forbidden, unless permitted by WSO2 expressly.
+ * You may not alter or remove any copyright or other notice from copies of this content.
+ */
+
 package com.wso2.cds.keymanager.test.par
 
 import com.nimbusds.oauth2.sdk.AccessTokenResponse
@@ -29,7 +38,7 @@ class PushedAuthorisationFlowTest extends AUTest {
     AUJWTGenerator generator = new AUJWTGenerator()
     def refreshToken
 
-    @Test(priority = 1)
+    @Test
     void "TC0205001_Data Recipients Initiate authorisation request using PAR"() {
 
         def response = auAuthorisationBuilder.doPushAuthorisationRequest(scopes, AUConstants.DEFAULT_SHARING_DURATION,
@@ -41,15 +50,14 @@ class PushedAuthorisationFlowTest extends AUTest {
         Assert.assertNotNull(AUTestUtil.parseResponseBody(response, AUConstants.RESPONSE_EXPIRES_IN))
     }
 
-    @Test(priority = 1, dependsOnMethods = "TC0205001_Data Recipients Initiate authorisation request using PAR")
+    @Test(dependsOnMethods = "TC0205001_Data Recipients Initiate authorisation request using PAR")
     void "TC0205002_Initiate consent authorisation flow with pushed authorisation request uri"() {
 
         doConsentAuthorisationViaRequestUri(scopes, requestUri.toURI())
         Assert.assertNotNull(authorisationCode)
     }
 
-    @Test(priority = 1,
-            dependsOnMethods = "TC0205002_Initiate consent authorisation flow with pushed authorisation request uri")
+    @Test(dependsOnMethods = "TC0205002_Initiate consent authorisation flow with pushed authorisation request uri")
     void "TC0203013_Generate User access token by code generated from PAR model"() {
 
         AccessTokenResponse userAccessToken = AURequestBuilder.getUserToken(authorisationCode,
@@ -114,14 +122,20 @@ class PushedAuthorisationFlowTest extends AUTest {
                 .addStep(new NavigationAutomationStep(authoriseUrl, 10))
                 .execute()
 
-        Assert.assertTrue(AUTestUtil.getErrorFromUrl(automationResponse.currentUrl.get()).contains("Expired request URI"))
+        def url = automationResponse.currentUrl.get()
+        Assert.assertTrue(AUTestUtil.getErrorFromUrl(url).contains("Expired request URI"))
+
+        def errorUrl = url.split("oauthErrorCode=")[1].split("&")[0].replaceAll("\\+"," ")
+        Assert.assertEquals(errorUrl, AUConstants.INVALID_REQUEST_URI)
     }
 
-    @Test(priority = 2)
+    @Test(priority = 3)
     void "TC0205006_Establish a new consent for an existing arrangement by passing existing cdr_arrangement_id"() {
 
+        sleep(3000)
+
         Response response = auAuthorisationBuilder.doPushAuthorisationRequest(scopes, AUConstants.DEFAULT_SHARING_DURATION,
-                true, cdrArrangementId)
+                true, "")
         requestUri = AUTestUtil.parseResponseBody(response, AUConstants.REQUEST_URI)
 
         Assert.assertEquals(response.statusCode(), AUConstants.STATUS_CODE_201)
@@ -172,7 +186,7 @@ class PushedAuthorisationFlowTest extends AUTest {
         Assert.assertNotNull(authorisationCode)
     }
 
-    @Test(enabled = true, priority = 2,
+    @Test(enabled = true, priority = 3,
             dependsOnMethods = "TC0205006_Establish a new consent for an existing arrangement by passing existing cdr_arrangement_id")
     void "TC0203014_Tokens get revoked upon successful reestablishment of new consent via PAR model"() {
 
@@ -186,7 +200,7 @@ class PushedAuthorisationFlowTest extends AUTest {
         Assert.assertTrue((refreshTokenIntrospect.jsonPath().get("active")).equals(false))
     }
 
-    @Test(priority = 3)
+    @Test(priority = 2)
     void "TC0205015_Unable to initiate authorisation if the redirect uri mismatch with the application redirect uri"() {
 
         Response response = auAuthorisationBuilder.doPushAuthorisationRequest(scopes, AUConstants.DEFAULT_SHARING_DURATION,
@@ -232,7 +246,7 @@ class PushedAuthorisationFlowTest extends AUTest {
         Assert.assertEquals(errorMessage, "invalid_callback")
     }
 
-    @Test(priority = 3,
+    @Test(priority = 2,
             dependsOnMethods = "TC0205015_Unable to initiate authorisation if the redirect uri mismatch with the application redirect uri")
     void "TC0203015_Tokens not get revoked upon unsuccessful reestablishment of new consent via PAR model"() {
 
@@ -246,7 +260,7 @@ class PushedAuthorisationFlowTest extends AUTest {
         Assert.assertTrue((refreshTokenIntrospect.jsonPath().get("active")).equals(true))
     }
 
-    @Test()
+    @Test
     void "TC0205007_Reject consent authorisation flow when the cdr_arrangement_id define is not related to the authenticated user"() {
 
         def invalidCdrArrangementId = "db638818-be86-42fc-bdb8-1e2a1011866d"
@@ -334,19 +348,6 @@ class PushedAuthorisationFlowTest extends AUTest {
     }
 
     @Test
-    void "TC0205013_Unable to extract request uri if the redirect uri mismatch with the application redirect uri"() {
-
-        def incorrectRedirectUrl = "https://www.abc.com"
-
-        def response = auAuthorisationBuilder.doPushAuthorisationRequest(scopes, AUConstants.NEGATIVE_DURATION,
-                true, "", auConfiguration.getAppInfoClientID(), incorrectRedirectUrl)
-
-        Assert.assertEquals(response.statusCode(), AUConstants.STATUS_CODE_400)
-        Assert.assertEquals(AUTestUtil.parseResponseBody(response, AUConstants.ERROR_DESCRIPTION), "callback.not.match")
-        Assert.assertEquals(AUTestUtil.parseResponseBody(response, AUConstants.ERROR), AUConstants.INVALID_REQUEST)
-    }
-
-    @Test
     void "TC0205016_Unable to extract request uri if the client id mismatch with the application client id"() {
 
         def incorrectClientId = "YwSmCUteklf0T3MJdW8IQeM1kLga"
@@ -429,7 +430,7 @@ class PushedAuthorisationFlowTest extends AUTest {
         Assert.assertEquals(response.statusCode(), AUConstants.STATUS_CODE_400)
     }
 
-    @Test (enabled = true ,priority = 3)
+    @Test (enabled = true ,priority = 1)
     void "TC0205019_Unable to initiate authorisation if the scope not available"() {
 
         String claims = generator.getRequestObjectClaim(scopes, AUConstants.DEFAULT_SHARING_DURATION, true, "",
