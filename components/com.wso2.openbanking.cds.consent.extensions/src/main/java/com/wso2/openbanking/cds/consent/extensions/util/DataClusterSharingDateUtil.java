@@ -13,7 +13,6 @@ import com.wso2.openbanking.accelerator.common.util.SPQueryExecutorUtil;
 import com.wso2.openbanking.cds.common.config.OpenBankingCDSConfigParser;
 import com.wso2.openbanking.cds.common.utils.CommonConstants;
 import com.wso2.openbanking.cds.consent.extensions.model.DataClusterSharingDateModel;
-import com.wso2.openbanking.cds.consent.extensions.validate.utils.CDSConsentValidatorUtil;
 import net.minidev.json.JSONArray;
 import net.minidev.json.JSONObject;
 import net.minidev.json.parser.ParseException;
@@ -73,12 +72,12 @@ public class DataClusterSharingDateUtil {
             JSONArray countArray = (JSONArray) object;
             String dataCluster = (String) (countArray.get(1));
             Timestamp sharingStartDate = new Timestamp(((Integer) countArray.get(2)).longValue() * 1000L);;
-            Timestamp sharedLastDate = new Timestamp(((Integer) countArray.get(3)).longValue() * 1000L);;
+            Timestamp lastSharedDate = new Timestamp(((Integer) countArray.get(3)).longValue() * 1000L);;
 
             DataClusterSharingDateModel sharingDates = new DataClusterSharingDateModel();
             sharingDates.setDataCluster(dataCluster);
             sharingDates.setSharingStartDate(sharingStartDate);
-            sharingDates.setLastSharedDate(sharedLastDate);
+            sharingDates.setLastSharedDate(lastSharedDate);
 
             sharingDateMap.put(dataCluster, sharingDates);
         }

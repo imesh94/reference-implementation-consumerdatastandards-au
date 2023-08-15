@@ -51,11 +51,11 @@ public class PermissionWithSharingDate {
         }
     }
 
-    public void setLastSharedDate(Timestamp sharedLastDate) {
-        if (sharedLastDate == null) {
+    public void setLastSharedDate(Timestamp lastSharedDate) {
+        if (lastSharedDate == null) {
             this.lastSharedDate = null;
         } else {
-            this.lastSharedDate = (Timestamp) sharedLastDate.clone();
+            this.lastSharedDate = (Timestamp) lastSharedDate.clone();
         }
     }
 }
