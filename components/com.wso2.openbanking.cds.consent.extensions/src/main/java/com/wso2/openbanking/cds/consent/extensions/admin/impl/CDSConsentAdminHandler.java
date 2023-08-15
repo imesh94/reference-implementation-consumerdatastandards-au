@@ -638,34 +638,34 @@ public class CDSConsentAdminHandler implements ConsentAdminHandler {
                     if (sharingDateDataMap.get(bankAccountData) != null) {
                         permissionObj.setSharingStartDate(sharingDateDataMap.get(bankAccountData)
                                 .getSharingStartDate());
-                        permissionObj.setSharedLastDate(sharingDateDataMap.get(bankAccountData).getSharedLastDate());
+                        permissionObj.setLastSharedDate(sharingDateDataMap.get(bankAccountData).getLastSharedDate());
                     }
                 } else if (permission.equals(PermissionsEnum.CDRREADTRANSACTION.toString())) {
                     if (sharingDateDataMap.get(bankTransactionData) != null) {
                         permissionObj.setSharingStartDate(sharingDateDataMap.get(bankTransactionData)
                                 .getSharingStartDate());
-                        permissionObj.setSharedLastDate(sharingDateDataMap.get(bankTransactionData)
-                                .getSharedLastDate());
+                        permissionObj.setLastSharedDate(sharingDateDataMap.get(bankTransactionData)
+                                .getLastSharedDate());
                     }
                 } else if (permission.equals(PermissionsEnum.CDRREADPAYEES.toString())) {
                     if (sharingDateDataMap.get(bankPayeeData) != null) {
                         permissionObj.setSharingStartDate(sharingDateDataMap.get(bankPayeeData).getSharingStartDate());
-                        permissionObj.setSharedLastDate(sharingDateDataMap.get(bankPayeeData).getSharedLastDate());
+                        permissionObj.setLastSharedDate(sharingDateDataMap.get(bankPayeeData).getLastSharedDate());
                     }
                 } else if (permission.equals(PermissionsEnum.CDRREADPAYMENTS.toString())) {
                     if (sharingDateDataMap.get(bankRegularPaymentData) != null) {
                         permissionObj.setSharingStartDate(sharingDateDataMap.get(bankRegularPaymentData)
                                 .getSharingStartDate());
-                        permissionObj.setSharedLastDate(sharingDateDataMap.get(bankRegularPaymentData)
-                                .getSharedLastDate());
+                        permissionObj.setLastSharedDate(sharingDateDataMap.get(bankRegularPaymentData)
+                                .getLastSharedDate());
                     }
                 } else if (permission.equals(PermissionsEnum.READCUSTOMERDETAILSBASIC.toString()) ||
                         permission.equals(PermissionsEnum.READCUSTOMERDETAILS.toString())) {
                     if (sharingDateDataMap.get(commonCustomerData) != null) {
                         permissionObj.setSharingStartDate(sharingDateDataMap.get(commonCustomerData)
                                 .getSharingStartDate());
-                        permissionObj.setSharedLastDate(sharingDateDataMap.get(commonCustomerData)
-                                .getSharedLastDate());
+                        permissionObj.setLastSharedDate(sharingDateDataMap.get(commonCustomerData)
+                                .getLastSharedDate());
                     }
                 } else if (permission.equals(PermissionsEnum.PROFILE.toString()) ||
                         permission.equals(PermissionsEnum.NAME.toString()) ||
@@ -679,7 +679,7 @@ public class CDSConsentAdminHandler implements ConsentAdminHandler {
                         permission.equals(PermissionsEnum.ADDRESS.toString())) {
                     if (sharingDateDataMap.get(profileData) != null) {
                         permissionObj.setSharingStartDate(sharingDateDataMap.get(profileData).getSharingStartDate());
-                        permissionObj.setSharedLastDate(sharingDateDataMap.get(profileData).getSharedLastDate());
+                        permissionObj.setLastSharedDate(sharingDateDataMap.get(profileData).getLastSharedDate());
                     }
                 }
                 permissionsWithSharingDate.add(permissionObj);

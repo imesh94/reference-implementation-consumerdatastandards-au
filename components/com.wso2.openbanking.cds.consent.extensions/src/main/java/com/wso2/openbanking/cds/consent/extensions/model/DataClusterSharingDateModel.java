@@ -17,7 +17,7 @@ import java.sql.Timestamp;
 public class DataClusterSharingDateModel {
     private String dataCluster;
     private Timestamp sharingStartDate;
-    private Timestamp sharedLastDate;
+    private Timestamp LastSharedDate;
 
     public String getDataCluster() {
         return dataCluster;
@@ -43,19 +43,19 @@ public class DataClusterSharingDateModel {
         }
     }
 
-    public Timestamp getSharedLastDate() {
-        if (sharedLastDate == null) {
+    public Timestamp getLastSharedDate() {
+        if (LastSharedDate == null) {
             return null;
         } else {
-            return (Timestamp) sharedLastDate.clone();
+            return (Timestamp) LastSharedDate.clone();
         }
     }
 
-    public void setSharedLastDate(Timestamp sharedLastDate) {
+    public void setLastSharedDate(Timestamp sharedLastDate) {
         if (sharedLastDate == null) {
-            this.sharedLastDate = null;
+            this.LastSharedDate = null;
         } else {
-            this.sharedLastDate = (Timestamp) sharedLastDate.clone();
+            this.LastSharedDate = (Timestamp) sharedLastDate.clone();
         }
     }
 }

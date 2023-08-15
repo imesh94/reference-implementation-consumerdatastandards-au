@@ -280,7 +280,7 @@ public class CDSConsentAdminHandlerTest extends PowerMockTestCase {
         DataClusterSharingDateModel dataClusterSharingDate = new DataClusterSharingDateModel();
         dataClusterSharingDate.setDataCluster("CDRREADACCOUNTSBASIC");
         dataClusterSharingDate.setSharingStartDate(Timestamp.from(Instant.now()));
-        dataClusterSharingDate.setSharedLastDate(Timestamp.from(Instant.now()));
+        dataClusterSharingDate.setLastSharedDate(Timestamp.from(Instant.now()));
         sharingDateDataMap.put("bank_account_data", dataClusterSharingDate);
 
         PowerMockito.mockStatic(DataClusterSharingDateUtil.class);

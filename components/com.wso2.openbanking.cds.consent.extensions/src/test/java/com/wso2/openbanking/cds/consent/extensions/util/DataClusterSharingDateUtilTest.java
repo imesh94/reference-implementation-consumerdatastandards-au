@@ -78,6 +78,6 @@ public class DataClusterSharingDateUtilTest extends PowerMockTestCase {
         Assert.assertNotNull(sharingDateModel);
         Assert.assertNotNull(sharingDateModel.getDataCluster());
         Assert.assertNotNull(sharingDateModel.getSharingStartDate());
-        Assert.assertNotNull(sharingDateModel.getSharedLastDate());
+        Assert.assertNotNull(sharingDateModel.getLastSharedDate());
     }
 }

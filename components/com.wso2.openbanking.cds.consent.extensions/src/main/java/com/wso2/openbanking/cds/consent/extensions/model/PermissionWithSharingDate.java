@@ -17,7 +17,7 @@ public class PermissionWithSharingDate {
 
     private String permission;
     private Timestamp sharingStartDate;
-    private Timestamp sharedLastDate;
+    private Timestamp lastSharedDate;
 
     public String getPermission() {
         return permission;
@@ -43,19 +43,19 @@ public class PermissionWithSharingDate {
         }
     }
 
-    public Timestamp getSharedLastDate() {
-        if (sharedLastDate == null) {
+    public Timestamp getLastSharedDate() {
+        if (lastSharedDate == null) {
             return null;
         } else {
-            return (Timestamp) sharedLastDate.clone();
+            return (Timestamp) lastSharedDate.clone();
         }
     }
 
-    public void setSharedLastDate(Timestamp sharedLastDate) {
+    public void setLastSharedDate(Timestamp sharedLastDate) {
         if (sharedLastDate == null) {
-            this.sharedLastDate = null;
+            this.lastSharedDate = null;
         } else {
-            this.sharedLastDate = (Timestamp) sharedLastDate.clone();
+            this.lastSharedDate = (Timestamp) sharedLastDate.clone();
         }
     }
 }

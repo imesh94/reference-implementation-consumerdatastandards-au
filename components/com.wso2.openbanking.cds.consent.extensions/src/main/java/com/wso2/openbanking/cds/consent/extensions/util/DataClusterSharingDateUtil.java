@@ -29,7 +29,7 @@ import java.util.Map;
  * Utility class for data cluster sharing date related operations.
  */
 public class DataClusterSharingDateUtil {
-    private static final Log log = LogFactory.getLog(CDSConsentValidatorUtil.class);
+    private static final Log log = LogFactory.getLog(DataClusterSharingDateUtil.class);
 
     /**
      * Get sharing date map for a given consent ID.
@@ -54,7 +54,7 @@ public class DataClusterSharingDateUtil {
                     .executeQueryOnStreamProcessor(appName, spQuery, spUserName, spPassword, spApiHost);
             return getListFromSharingDateData(sharingDateJsonObject);
         } catch (OpenBankingException | IOException | ParseException e) {
-            log.error("Error occurred while retrieving sharing dates for consent ID: " + consentId);
+            log.error("Error occurred while retrieving sharing dates for consent ID: " + consentId, e);
             throw new OpenBankingException("Error occurred while retrieving sharing date", e);
         }
     }
@@ -78,7 +78,7 @@ public class DataClusterSharingDateUtil {
             DataClusterSharingDateModel sharingDates = new DataClusterSharingDateModel();
             sharingDates.setDataCluster(dataCluster);
             sharingDates.setSharingStartDate(sharingStartDate);
-            sharingDates.setSharedLastDate(sharedLastDate);
+            sharingDates.setLastSharedDate(sharedLastDate);
 
             sharingDateMap.put(dataCluster, sharingDates);
         }
