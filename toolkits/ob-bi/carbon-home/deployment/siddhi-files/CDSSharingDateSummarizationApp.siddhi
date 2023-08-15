@@ -18,7 +18,7 @@ define stream APIInputStream(MESSAGE_ID string, CONSENT_ID string, CONSUMER_ID s
 
 @primaryKey('CONSENT_ID', 'DATA_CLUSTER')
 @store(type='rdbms', datasource='OB_REPORTING_DB')
-define table CDS_SHARING_START_END_DATE(CONSENT_ID string, DATA_CLUSTER string, SHARING_START_DATE long, SHARED_LAST_DATE long);
+define table CDS_SHARING_START_END_DATE(CONSENT_ID string, DATA_CLUSTER string, SHARING_START_DATE long, LAST_SHARED_DATE long);
 
 -- Function to map elected resource endpoint to the data cluster.
 define function getDataCluster[JavaScript] return string {
@@ -51,7 +51,7 @@ define function getDataCluster[JavaScript] return string {
 };
 
 from APIInputStream[STATUS_CODE == 200 or STATUS_CODE == 201]
-select CONSENT_ID, getDataCluster(ELECTED_RESOURCE) AS DATA_CLUSTER, TIMESTAMP as SHARING_START_DATE, TIMESTAMP as SHARED_LAST_DATE
+select CONSENT_ID, getDataCluster(ELECTED_RESOURCE) AS DATA_CLUSTER, TIMESTAMP as SHARING_START_DATE, TIMESTAMP as LAST_SHARED_DATE
 update or insert into CDS_SHARING_START_END_DATE
-set CDS_SHARING_START_END_DATE.SHARED_LAST_DATE = SHARED_LAST_DATE
+set CDS_SHARING_START_END_DATE.LAST_SHARED_DATE = LAST_SHARED_DATE
 on CONSENT_ID == CDS_SHARING_START_END_DATE.CONSENT_ID and DATA_CLUSTER == CDS_SHARING_START_END_DATE.DATA_CLUSTER;

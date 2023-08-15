@@ -47,7 +47,7 @@ public class DataClusterSharingDateUtil {
 
         String appName = "CDSSharingDateSummarizationApp";
         String spQuery = "from CDS_SHARING_START_END_DATE select CONSENT_ID, DATA_CLUSTER, " +
-                "SHARING_START_DATE, SHARED_LAST_DATE having CONSENT_ID == '" + consentId + "';";
+                "SHARING_START_DATE, LAST_SHARED_DATE having CONSENT_ID == '" + consentId + "';";
         try {
             JSONObject sharingDateJsonObject = SPQueryExecutorUtil
                     .executeQueryOnStreamProcessor(appName, spQuery, spUserName, spPassword, spApiHost);
