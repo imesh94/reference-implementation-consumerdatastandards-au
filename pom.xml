@@ -295,7 +295,7 @@
                 <groupId>org.wso2.carbon.identity.inbound.auth.oauth2</groupId>
                 <artifactId>org.wso2.carbon.identity.oauth</artifactId>
                 <version>${identity.inbound.auth.oauth.version}</version>
-                <!-- Comment out exclusions when building locally with updates 2 nexus repository -->
+                <!-- Comment out exclusions when building locally with m2 repository updated using install scripts -->
                 <exclusions>
                     <exclusion>
                         <groupId>org.ops4j.pax.logging</groupId>
@@ -455,7 +455,7 @@
                 <groupId>org.wso2.securevault</groupId>
                 <artifactId>org.wso2.securevault</artifactId>
                 <version>${wso2.securevault}</version>
-                <!-- Comment out exclusions when building locally with updates 2 nexus repository -->
+                <!-- Comment out exclusions when building locally with m2 repository updated using install scripts -->
                 <exclusions>
                     <exclusion>
                         <groupId>org.ops4j.pax.logging</groupId>
