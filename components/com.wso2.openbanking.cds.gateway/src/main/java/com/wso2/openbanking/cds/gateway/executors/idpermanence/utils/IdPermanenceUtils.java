@@ -76,16 +76,12 @@ public class IdPermanenceUtils {
             // handle responses with a resource list
             List<String> keys = getJsonObjectMembers(data);
             JsonArray resourceList = (JsonArray) data.get(keys.get(0));
-            int resourceArrayLength = resourceList.size();
 
-            if (resourceArrayLength > 0) {
-                List<String> availableResourceIdKeys =
-                        getListOfAvailableResourceIdKeysInResponse(resourceList.get(0).getAsJsonObject());
+            for (int resourceIndex = 0; resourceIndex < resourceList.size(); resourceIndex++) {
 
-                for (int resourceIndex = 0; resourceIndex < resourceArrayLength; resourceIndex++) {
-                    JsonObject resourceNew = resourceList.get(resourceIndex).getAsJsonObject();
-                    encryptResourceIdsInJsonObject(availableResourceIdKeys, resourceNew, memberId, appId, key);
-                }
+                JsonObject resourceNew = resourceList.get(resourceIndex).getAsJsonObject();
+                List<String> availableResourceIdKeys = getListOfAvailableResourceIdKeysInResponse(resourceNew);
+                encryptResourceIdsInJsonObject(availableResourceIdKeys, resourceNew, memberId, appId, key);
             }
         } else if (isSingleResourceResponse(url)) {
             // handle response with a single resource
@@ -419,9 +415,14 @@ public class IdPermanenceUtils {
         Matcher urlMatcher = urlPattern.matcher(rawUrl);
         if (urlMatcher.find()) {
             for (String resourceKey : resourceKeys) {
-                processedUri = processedUri.replaceAll(urlMatcher.group(resourceKey),
-                        (newIdSet.get(resourceKey).getAsString()).replaceAll("^[\"']+|[\"']+$", ""));
+                processedUri = processedUri.replaceAll("/" + urlMatcher.group(resourceKey) + "($|[/])", "/" +
+                        (newIdSet.get(resourceKey).getAsString()).replaceAll("^[\"']+|[\"']+$", "") + "/");
             }
+        }
+
+        if (!rawUrl.substring(rawUrl.length() - 1).equals("/") &&
+                processedUri.substring(processedUri.length() - 1).equals("/")) {
+            return processedUri.substring(0, processedUri.length() - 1);
         }
 
         return processedUri;
