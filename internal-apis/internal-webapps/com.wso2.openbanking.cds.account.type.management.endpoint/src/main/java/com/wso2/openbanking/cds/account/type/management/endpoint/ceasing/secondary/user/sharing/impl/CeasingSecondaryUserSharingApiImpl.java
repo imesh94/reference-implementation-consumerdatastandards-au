@@ -28,6 +28,7 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.Locale;
 import javax.ws.rs.core.Response;
 
@@ -97,8 +98,8 @@ public class CeasingSecondaryUserSharingApiImpl implements CeasingSecondaryUserS
                     new UsersAccountsLegalEntitiesDTO(userID);
 
             ArrayList<DetailedConsentResource> responseDetailedConsents = consentCoreService.searchDetailedConsents
-                    (null, null, null, null, userIDAL, null, null,
-                            null, null, false);
+                    (null, null, null, new ArrayList<>(Collections.singletonList(AccountTypeManagementConstants.
+                            AUTHORIZED_STATUS)), userIDAL, null, null, null, null, false);
 
             // Checking the validity of the userID
             if (responseDetailedConsents.size() == 0) {

@@ -175,7 +175,7 @@
      <BNR>
         <!-- Accepted Values : profile_selection, customer_utype, cookie_data -->
         {% if open_banking_cds.bnr.customer_type_selection_method is defined %}
-        <CustomerTypeSelectionMethod>{{customer_type_selection_method}}</CustomerTypeSelectionMethod>
+        <CustomerTypeSelectionMethod>{{open_banking_cds.bnr.customer_type_selection_method}}</CustomerTypeSelectionMethod>
         {% else %}
         <CustomerTypeSelectionMethod>profile_selection</CustomerTypeSelectionMethod>
         {% endif %}

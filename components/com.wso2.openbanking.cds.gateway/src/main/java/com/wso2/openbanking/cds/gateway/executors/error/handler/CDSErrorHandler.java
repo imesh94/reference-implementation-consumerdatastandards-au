@@ -33,6 +33,7 @@ import org.apache.http.HttpStatus;
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.Map;
+import java.util.UUID;
 
 /**
  * Executor to handle gateway errors in CDS format.
@@ -42,6 +43,7 @@ public class CDSErrorHandler implements OpenBankingGatewayExecutor {
     private static Log log = LogFactory.getLog(CDSErrorHandler.class);
     private static final String STATUS_CODE = "statusCode";
     private static final String RESPONSE_PAYLOAD_SIZE = "responsePayloadSize";
+    public static final String X_FAPI_INTERACTION_ID = "x-fapi-interaction-id";
 
     //Accelerator error codes
     public static final String ACCELERATOR_EXPECTED_ERROR = "200012";
@@ -126,6 +128,11 @@ public class CDSErrorHandler implements OpenBankingGatewayExecutor {
         }
         Map<String, String> addedHeaders = obapiRequestContext.getAddedHeaders();
         addedHeaders.put(GatewayConstants.CONTENT_TYPE_TAG, GatewayConstants.JSON_CONTENT_TYPE);
+
+        // Add x-fapi-interaction-id header if not present.
+        if (!isXFapiInteractionIdPresent(obapiRequestContext)) {
+            addedHeaders.put(X_FAPI_INTERACTION_ID, UUID.randomUUID().toString());
+        }
         obapiRequestContext.setAddedHeaders(addedHeaders);
 
         int statusCode;
@@ -255,5 +262,19 @@ public class CDSErrorHandler implements OpenBankingGatewayExecutor {
         }
         parentObject.add(ErrorConstants.ERRORS, errorList);
         return parentObject;
+    }
+
+    /**
+     * Check if x-fapi-interaction-id is present in request headers.
+     *
+     * @param obapiRequestContext OBAPIRequestContext
+     * @return true if x-fapi-interaction-id is present in request headers.
+     */
+    private boolean isXFapiInteractionIdPresent(OBAPIRequestContext obapiRequestContext) {
+
+        Map<String, String> headers = obapiRequestContext.getMsgInfo().getHeaders();
+        Map<String, String> addedHeaders = obapiRequestContext.getAddedHeaders();
+        return ((headers != null && headers.containsKey(X_FAPI_INTERACTION_ID)) ||
+                (addedHeaders != null && addedHeaders.containsKey(X_FAPI_INTERACTION_ID)));
     }
 }

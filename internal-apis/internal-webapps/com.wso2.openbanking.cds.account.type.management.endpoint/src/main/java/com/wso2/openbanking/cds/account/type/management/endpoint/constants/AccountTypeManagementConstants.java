@@ -16,6 +16,7 @@ public class AccountTypeManagementConstants {
 
     // Common
     public static final String CARBON_TENANT_DOMAIN = "@carbon.super";
+    public static final String AUTHORIZED_STATUS = "authorized";
 
     // Secondary User Instructions
     public static final String PRIMARY_MEMBER_AUTH_TYPE = "primary_member";
