@@ -42,14 +42,26 @@ public class CDSProfileListRetrievalStep implements ConsentRetrievalStep {
     @Override
     public void execute(ConsentData consentData, JSONObject jsonObject) throws ConsentException {
 
+        String customerType = null;
         if (!consentData.isRegulatory()) {
             return;
         }
+        log.info("Engaging CDS profile list retrieval step.");
+        jsonObject.put(CDSConsentExtensionConstants.USER_ID, consentData.getUserId());
         JSONArray accountsJSON = (JSONArray) jsonObject.get(CDSConsentExtensionConstants.ACCOUNTS);
         if (accountsJSON == null || accountsJSON.isEmpty()) {
+            log.info("No accounts received for the given customer. Selecting customer profile using customer " +
+                    "details endpoint.");
+            customerType = CDSConsentCommonUtil.getCustomerType(consentData);
+            if (customerType.equalsIgnoreCase(CDSConsentExtensionConstants.ORGANISATION)) {
+                jsonObject.put(CDSConsentExtensionConstants.PRE_SELECTED_PROFILE_ID, CDSConsentExtensionConstants.
+                        ORGANISATION_PROFILE_ID);
+            } else {
+                jsonObject.put(CDSConsentExtensionConstants.PRE_SELECTED_PROFILE_ID, CDSConsentExtensionConstants.
+                        INDIVIDUAL_PROFILE_ID);
+            }
             return;
         }
-        log.info("Engaging CDS profile list retrieval step.");
         //Consent amendment flow. Get selected profile.
         if (jsonObject.containsKey(CDSConsentExtensionConstants.IS_CONSENT_AMENDMENT) &&
                 (boolean) jsonObject.get(CDSConsentExtensionConstants.IS_CONSENT_AMENDMENT)) {
@@ -59,7 +71,6 @@ public class CDSProfileListRetrievalStep implements ConsentRetrievalStep {
 
         // Get Customer Type Selection Method from config
         String customerTypeSelectionMethod = openBankingCDSConfigParser.getBNRCustomerTypeSelectionMethod();
-        String customerType = null;
         if (CustomerTypeSelectionMethodEnum.CUSTOMER_UTYPE.toString().equals(customerTypeSelectionMethod)) {
             customerType = CDSConsentCommonUtil.getCustomerType(consentData);
         } else if (CustomerTypeSelectionMethodEnum.COOKIE_DATA.toString().equals(customerTypeSelectionMethod)) {
@@ -104,7 +115,6 @@ public class CDSProfileListRetrievalStep implements ConsentRetrievalStep {
                         profileMap, accountJSON);
                 JSONArray customerProfilesJson = getCustomerProfilesAsJson(profileMap, profileIdAccountsMap);
                 jsonObject.put(CDSConsentExtensionConstants.CUSTOMER_PROFILES_ATTRIBUTE, customerProfilesJson);
-                jsonObject.put(CDSConsentExtensionConstants.USER_ID, consentData.getUserId());
             }
         }
 
