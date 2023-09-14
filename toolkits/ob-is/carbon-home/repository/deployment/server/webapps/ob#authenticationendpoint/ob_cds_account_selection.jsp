@@ -27,6 +27,7 @@
     Object contactClaims = request.getAttribute("contactClaims");
     String contactClaimsString = contactClaims != null ? (String) contactClaims : "";
     session.setAttribute("contactClaims", contactClaimsString);
+
     if (session.getAttribute("profiles_data") == null || isConsentAmendment) {
         session.setAttribute("profiles_data", request.getAttribute("profiles_data"));
     }
@@ -68,6 +69,7 @@
                 request.getAttribute("consent_expiration") : session.getAttribute("consent_expiration");
         request.setAttribute("consent-expiry-date", consentExpiryDateTime);
         request.setAttribute("accountMaskingEnabled", session.getAttribute("account_masking_enabled"));
+        request.setAttribute("sharing_duration_value", session.getAttribute("sharing_duration_value"));
         requestDispatcher.forward(request, response);
     }
 %>
@@ -184,6 +186,7 @@
                     <input type="hidden" name="isSharingDurationUpdated" id="isSharingDurationUpdated" value="${isSharingDurationUpdated}"/>
                     <input type="hidden" name="selectedProfileId" id="selectedProfileId" value="<%=selectedProfileId%>"/>
                     <input type="hidden" name="selectedProfileName" id="selectedProfileName" value="${selectedProfileName}"/>
+                    <input type="hidden" name="sharing_duration_value" id="sharing_duration_value" value="${sharing_duration_value}"/>
                 </div>
             </div>
 

@@ -65,6 +65,7 @@
     String nameClaims = (String) session.getAttribute("nameClaims");
     String contactClaims = (String) session.getAttribute("contactClaims");
     boolean skipAccounts = (boolean) session.getAttribute("skipAccounts");
+    int sharingDurationValue = Integer.parseInt(getRequestAttribute(request, "sharing_duration_value"));
 %>
 <div class="col-xs-12 col-sm-12 col-md-12 col-lg-12">
     <div class="clearfix"></div>
@@ -268,26 +269,17 @@
         }
 
         var consentExpiryDate = "<%=consentExpiryDateTime%>";
+        var sharingDurationValue = "<%=sharingDurationValue%>";
         var output = "";
         var finalOutput = "";
 
         if ("Single use consent" == consentExpiryDate) {
             output = "Your data will be shared once.";
         } else {
-            var consentExpiryTime = consentExpiryDate.split("T")[0] + " " + (consentExpiryDate.split("T")[1]).split("\\.")[0];
-            if (!navigator.userAgent.match(/(chrome|firefox)\/?\s*(\d+)/i)) {
-                consentExpiryTime = consentExpiryDate.split(".")[0] + "Z";
-            }
-            var datetime = new Date(consentExpiryTime);
-            var date = new Date();
-            var now = new Date(date.getTime());
-            var diff = datetime.getTime() - now.getTime();
-
-            var seconds = Number(diff/1000)
-            var months = Math.floor(seconds / (3600*24*30));
-            var days = Math.ceil((seconds / (3600*24)) % 30);
-            var hours = Math.floor(seconds % (3600*24) / 3600);
-            var mins = Math.ceil(seconds % 3600 / 60);
+            var months = Math.floor(sharingDurationValue / (3600*24*30));
+            var days = Math.ceil((sharingDurationValue / (3600*24)) % 30);
+            var hours = Math.floor(sharingDurationValue % (3600*24) / 3600);
+            var mins = Math.ceil(sharingDurationValue % 3600 / 60);
 
             var monthsDisplay = months > 0 ? months + (months == 1 ? " month " : " months ") : "";
             var daysDisplay = days > 0 ? days + (days == 1 ? " day " : " days ") : "";
@@ -295,7 +287,7 @@
             var minsDisplay = mins > 0 ? mins + (mins == 1 ? " minute " : " minutes ") : "";
 
             var value;
-            if (seconds < 86400) {
+            if (sharingDurationValue < 86400) {
                 if (hoursDisplay == "") {
                     finalOutput = "Your data will be accessible for the next 1 hour";
                 } else {
