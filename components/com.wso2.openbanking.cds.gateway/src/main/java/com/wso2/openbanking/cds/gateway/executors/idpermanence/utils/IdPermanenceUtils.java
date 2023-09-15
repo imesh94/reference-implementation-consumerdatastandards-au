@@ -414,12 +414,14 @@ public class IdPermanenceUtils {
         Pattern urlPattern = Pattern.compile(urlTemplateRegex);
         Matcher urlMatcher = urlPattern.matcher(rawUrl);
         if (urlMatcher.find()) {
+            // replace resource ids in the url with new resource ids
             for (String resourceKey : resourceKeys) {
                 processedUri = processedUri.replaceAll("/" + urlMatcher.group(resourceKey) + "($|[/])", "/" +
                         (newIdSet.get(resourceKey).getAsString()).replaceAll("^[\"']+|[\"']+$", "") + "/");
             }
         }
 
+        // remove trailing slash if the raw url doesn't have one
         if (!rawUrl.substring(rawUrl.length() - 1).equals("/") &&
                 processedUri.substring(processedUri.length() - 1).equals("/")) {
             return processedUri.substring(0, processedUri.length() - 1);
