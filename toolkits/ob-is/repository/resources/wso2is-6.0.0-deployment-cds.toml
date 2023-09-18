@@ -881,3 +881,8 @@ ceasing_secondary_user_sharing_enable = true
 
 [open_banking_cds.disclosure_options_management]
 enable = true
+
+[open_banking_cds.stream_processor]
+server_url = "https://BI_HOSTNAME:7444"
+username = "$ref{super_admin.username}@carbon.super"
+password = "$ref{super_admin.password}"

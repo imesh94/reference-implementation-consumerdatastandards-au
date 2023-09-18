@@ -69,6 +69,10 @@ public class CDSConsentExtensionConstants {
     public static final String USER_ID_KEY_NAME = "userID";
     public static final String CONSENT_STATUS_REVOKED = "revoked";
     public static final String CONSENT_ATTRIBUTES = "consentAttributes";
+    public static final String INCLUDE_SHARING_DATES = "includeSharingDates";
+    public static final String CONSENT_ID = "consentId";
+    public static final String RECEIPT = "receipt";
+    public static final String PERMISSIONS_WITH_SHARING_DATE = "permissionsWithSharingDate";
 
     // Joint account constants
     public static final String IS_JOINT_ACCOUNT_RESPONSE = "isJointAccount";
