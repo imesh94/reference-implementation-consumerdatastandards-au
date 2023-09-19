@@ -13,7 +13,6 @@ import com.wso2.openbanking.accelerator.common.exception.OpenBankingException;
 import com.wso2.openbanking.accelerator.common.util.Generated;
 import com.wso2.openbanking.cds.common.config.OpenBankingCDSConfigParser;
 import com.wso2.openbanking.cds.common.metadata.periodical.updater.MetadataHolder;
-import com.wso2.openbanking.cds.common.metadata.periodical.updater.constants.MetadataConstants;
 import com.wso2.openbanking.cds.identity.metadata.periodical.updater.service.dataholder.responsibility.CleanupRegistrationResponsibility;
 import com.wso2.openbanking.cds.identity.metadata.periodical.updater.service.dataholder.responsibility.DataHolderResponsibilitiesExecutor;
 import com.wso2.openbanking.cds.identity.metadata.periodical.updater.service.dataholder.responsibility.InvalidateConsentsResponsibility;
@@ -41,15 +40,20 @@ import java.util.Map;
 import java.util.Objects;
 import java.util.TreeMap;
 
+import static com.wso2.openbanking.cds.common.metadata.periodical.updater.constants.MetadataConstants.DATA_RECIPIENTS;
+import static com.wso2.openbanking.cds.common.metadata.periodical.updater.constants.MetadataConstants.DATA_RECIPIENT_ID;
+import static com.wso2.openbanking.cds.common.metadata.periodical.updater.constants.MetadataConstants.DATA_RECIPIENT_STATUS;
 import static com.wso2.openbanking.cds.common.metadata.periodical.updater.constants.MetadataConstants.DR_JSON_BRANDS;
-import static com.wso2.openbanking.cds.common.metadata.periodical.updater.constants.MetadataConstants.DR_JSON_LEGAL_ENTITY_ID;
 import static com.wso2.openbanking.cds.common.metadata.periodical.updater.constants.MetadataConstants.DR_JSON_SOFTWARE_PRODUCTS;
 import static com.wso2.openbanking.cds.common.metadata.periodical.updater.constants.MetadataConstants.DR_JSON_SP_KEY;
 import static com.wso2.openbanking.cds.common.metadata.periodical.updater.constants.MetadataConstants.DR_JSON_STATUS;
 import static com.wso2.openbanking.cds.common.metadata.periodical.updater.constants.MetadataConstants.LEGAL_ENTITY_ID;
 import static com.wso2.openbanking.cds.common.metadata.periodical.updater.constants.MetadataConstants.MAP_DATA_RECIPIENTS;
 import static com.wso2.openbanking.cds.common.metadata.periodical.updater.constants.MetadataConstants.MAP_SOFTWARE_PRODUCTS;
+import static com.wso2.openbanking.cds.common.metadata.periodical.updater.constants.MetadataConstants.SOFTWARE_ID;
+import static com.wso2.openbanking.cds.common.metadata.periodical.updater.constants.MetadataConstants.SOFTWARE_PRODUCTS;
 import static com.wso2.openbanking.cds.common.metadata.periodical.updater.constants.MetadataConstants.SOFTWARE_PRODUCT_ID;
+import static com.wso2.openbanking.cds.common.metadata.periodical.updater.constants.MetadataConstants.SOFTWARE_PRODUCT_STATUS;
 
 /**
  * Scheduled Task to get data every n minutes and perform data holder responsibilities depending
@@ -117,18 +121,24 @@ public class PeriodicalMetaDataUpdateJob implements Job, MetaDataUpdate {
     public void updateMetaDataValues() {
 
         LOG.debug("Metadata Scheduled Task is executing.");
-
-        Map<String, Map<String, String>> metaDataStatuses;
+        Map<String, Map<String, String>> metaDataStatuses = new HashMap<>();
         try {
-            Retryer<JSONObject> retryer = new Retryer<>(1000, OpenBankingCDSConfigParser.getInstance().getRetryCount());
-            JSONObject responseJson = retryer.execute(() -> Utils
-                    .readJsonFromUrl(OpenBankingCDSConfigParser.getInstance().getDataRecipientsDiscoveryUrl()));
+            Retryer<JSONObject> retryer = new Retryer<>(1000, OpenBankingCDSConfigParser.getInstance().
+                    getRetryCount());
+            JSONObject drStatusResponseJson = retryer.execute(() -> Utils
+                    .readJsonFromUrl(OpenBankingCDSConfigParser.getInstance().getDataRecipientStatusUrl()));
+            JSONObject spStatusResponseJson = retryer.execute(() -> Utils
+                    .readJsonFromUrl(OpenBankingCDSConfigParser.getInstance().getSoftwareProductStatusUrl()));
 
-            if (responseJson == null) {
+            if (drStatusResponseJson == null || spStatusResponseJson == null) {
                 // CDR response is null, possible because Common HttpPool is not initialized yet.
                 return;
             }
-            metaDataStatuses = getDataRecipientsStatusesFromRegister(responseJson);
+            Map<String, String> dataRecipientStatuses = getDataRecipientStatusesFromRegister(drStatusResponseJson);
+            Map<String, String> softwareProductStatuses = getSoftwareProductStatusesFromRegister(spStatusResponseJson);
+
+            metaDataStatuses.put(MAP_DATA_RECIPIENTS, dataRecipientStatuses);
+            metaDataStatuses.put(MAP_SOFTWARE_PRODUCTS, softwareProductStatuses);
 
         } catch (OpenBankingException e) {
             /*
@@ -160,58 +170,41 @@ public class PeriodicalMetaDataUpdateJob implements Job, MetaDataUpdate {
     }
 
     /**
-     * Get software product statuses map from ACCC registry response.
+     * Get Software Product status map from CDR Register.
      *
      * @return map of software product IDs and statuses
+     * @throws OpenBankingException - OpenBankingException
      */
-    protected Map<String, String> getSoftwareProducts(@NotNull JSONObject dataRecipient) {
+    public Map<String, String> getDataRecipientStatusesFromRegister(@NotNull JSONObject responseJson)
+            throws OpenBankingException {
 
-        JSONArray dataRecipientBrands = dataRecipient.getJSONArray(DR_JSON_BRANDS);
-
-        Comparator<String> caseInsensitiveNullsFirstComparator = Comparator.nullsFirst(String.CASE_INSENSITIVE_ORDER);
-        Map<String, String> softwareProductsMap = new TreeMap<>(caseInsensitiveNullsFirstComparator);
-
-        if (dataRecipientBrands != null) {
-            for (int i = 0; i < dataRecipientBrands.length(); i++) {
-                JSONObject dataRecipientBrand = dataRecipientBrands.getJSONObject(i);
-                JSONArray softwareProducts = dataRecipientBrand.getJSONArray(DR_JSON_SOFTWARE_PRODUCTS);
-                for (int j = 0; j < softwareProducts.length(); j++) {
-                    JSONObject softwareProduct = softwareProducts.getJSONObject(j);
-                    softwareProductsMap
-                            .put(softwareProduct.getString(DR_JSON_SP_KEY), softwareProduct.getString(DR_JSON_STATUS));
-                }
-            }
+        JSONArray softwareProductsArray = responseJson.getJSONArray(DATA_RECIPIENTS);
+        Map<String, String> softwareProductsMap = new HashMap<>();
+        for (int jsonElementIndex = 0; jsonElementIndex < softwareProductsArray.length(); jsonElementIndex++) {
+            JSONObject softwareProduct = softwareProductsArray.getJSONObject(jsonElementIndex);
+            softwareProductsMap.put(softwareProduct.getString(DATA_RECIPIENT_ID),
+                    softwareProduct.getString(DATA_RECIPIENT_STATUS));
         }
-
         return softwareProductsMap;
     }
 
     /**
-     * Get data recipients statuses map from ACCC Registry.
+     * Get Software Product status map from CDR Register.
      *
-     * @return data recipients map of legalEntityIds and statuses and software products map
+     * @return map of software product IDs and statuses
+     * @throws OpenBankingException - OpenBankingException
      */
-    protected Map<String, Map<String, String>> getDataRecipientsStatusesFromRegister(@NotNull JSONObject responseJson) {
+    public Map<String, String> getSoftwareProductStatusesFromRegister(@NotNull JSONObject responseJson)
+            throws OpenBankingException {
 
-        JSONArray dataRecipientsArray = responseJson.getJSONArray(MetadataConstants.DR_JSON_ROOT);
-
-        Comparator<String> caseInsensitiveNullsFirstComparator = Comparator.nullsFirst(String.CASE_INSENSITIVE_ORDER);
-        Map<String, String> dataRecipientsMap = new TreeMap<>(caseInsensitiveNullsFirstComparator);
+        JSONArray softwareProductsArray = responseJson.getJSONArray(SOFTWARE_PRODUCTS);
         Map<String, String> softwareProductsMap = new HashMap<>();
-
-        for (int jsonElementIndex = 0; jsonElementIndex < dataRecipientsArray.length(); jsonElementIndex++) {
-            JSONObject dataRecipient = dataRecipientsArray.getJSONObject(jsonElementIndex);
-
-            dataRecipientsMap.put(dataRecipient.getString(DR_JSON_LEGAL_ENTITY_ID),
-                    dataRecipient.getString(DR_JSON_STATUS));
-            softwareProductsMap.putAll(getSoftwareProducts(dataRecipient));
+        for (int jsonElementIndex = 0; jsonElementIndex < softwareProductsArray.length(); jsonElementIndex++) {
+            JSONObject softwareProduct = softwareProductsArray.getJSONObject(jsonElementIndex);
+            softwareProductsMap.put(softwareProduct.getString(SOFTWARE_PRODUCT_ID),
+                    softwareProduct.getString(SOFTWARE_PRODUCT_STATUS));
         }
-
-        Map<String, Map<String, String>> metaDataMap = new HashMap<>();
-        metaDataMap.put(MAP_DATA_RECIPIENTS, dataRecipientsMap);
-        metaDataMap.put(MAP_SOFTWARE_PRODUCTS, softwareProductsMap);
-
-        return metaDataMap;
+        return softwareProductsMap;
     }
 
     /**
@@ -242,7 +235,7 @@ public class PeriodicalMetaDataUpdateJob implements Job, MetaDataUpdate {
 
         for (ServiceProvider serviceProvider : serviceProviders) {
             String dataRecipientId = getIdFromProperties(serviceProvider.getSpProperties(), LEGAL_ENTITY_ID);
-            String softwareProductId = getIdFromProperties(serviceProvider.getSpProperties(), SOFTWARE_PRODUCT_ID);
+            String softwareProductId = getIdFromProperties(serviceProvider.getSpProperties(), SOFTWARE_ID);
 
             String dataRecipientsStatus = dataRecipientsMap.get(dataRecipientId);
             String softwareProductsStatus = softwareProductsMap.get(softwareProductId);

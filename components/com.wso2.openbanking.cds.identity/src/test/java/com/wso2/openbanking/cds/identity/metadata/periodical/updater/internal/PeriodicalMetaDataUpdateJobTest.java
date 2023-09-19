@@ -48,14 +48,11 @@ public class PeriodicalMetaDataUpdateJobTest extends PowerMockTestCase {
 
     private static final String DUMMY_SOFTWARE_PRODUCT_ID_1 = "af9f578f-3d96-ea11-a831-000d3a8842e1";
     private static final String DUMMY_SOFTWARE_PRODUCT_ID_2 = "12316470-f7ae-eb11-a822-000d3a884a20";
-    private static final String DUMMY_SOFTWARE_PRODUCT_ID_3 = "3051b3ab-4096-ea11-a831-000d3a8842e1";
-    private static final String DUMMY_SOFTWARE_PRODUCT_ID_4 = "469811b0-90d8-eb11-a824-000d3a884a20";
-
     private static final String DUMMY_LEGAL_ENTITY_ID_1 = "379f578f-3d96-ea11-a831-000d3a8842e1";
     private static final String DUMMY_LEGAL_ENTITY_ID_2 = "b850b3ab-4096-ea11-a831-000d3a8842e1";
 
-    private JSONObject responseJson;
-    private JSONObject dataRecipient;
+    private JSONObject dataRecipientsWrapper = new JSONObject();
+    private JSONObject softwareProductsWrapper = new JSONObject();
     private PeriodicalMetaDataUpdateJob uut;
 
     @BeforeClass
@@ -63,44 +60,38 @@ public class PeriodicalMetaDataUpdateJobTest extends PowerMockTestCase {
 
         this.uut = new PeriodicalMetaDataUpdateJob();
 
-        // creating dummy data response
-        JSONArray softwareProducts1 = new JSONArray();
-        softwareProducts1.put(getSoftwareProduct(DUMMY_SOFTWARE_PRODUCT_ID_1, SoftwareProductStatusEnum.ACTIVE));
-        softwareProducts1.put(getSoftwareProduct(DUMMY_SOFTWARE_PRODUCT_ID_2, SoftwareProductStatusEnum.INACTIVE));
 
-        JSONArray softwareProducts2 = new JSONArray();
-        softwareProducts2.put(getSoftwareProduct(DUMMY_SOFTWARE_PRODUCT_ID_3, SoftwareProductStatusEnum.ACTIVE));
-        softwareProducts2.put(getSoftwareProduct(DUMMY_SOFTWARE_PRODUCT_ID_4, SoftwareProductStatusEnum.REMOVED));
+        JSONArray dataRecipients = new JSONArray();
+        JSONArray softwareProducts = new JSONArray();
+        // creating dummy data responses
+        JSONObject dataRecipient1 = getDataRecipient(DUMMY_LEGAL_ENTITY_ID_1, DataRecipientStatusEnum.ACTIVE);
+        JSONObject dataRecipient2 = getDataRecipient(DUMMY_LEGAL_ENTITY_ID_2, DataRecipientStatusEnum.SUSPENDED);
+        dataRecipients.put(dataRecipient1);
+        dataRecipients.put(dataRecipient2);
 
-        this.dataRecipient = getDataRecipient(DUMMY_LEGAL_ENTITY_ID_1, softwareProducts1,
-                DataRecipientStatusEnum.ACTIVE);
+        JSONObject softwareProduct1 = getSoftwareProduct(DUMMY_SOFTWARE_PRODUCT_ID_1, SoftwareProductStatusEnum.ACTIVE);
+        JSONObject softwareProduct2 = getSoftwareProduct(DUMMY_SOFTWARE_PRODUCT_ID_2,
+                SoftwareProductStatusEnum.INACTIVE);
+        softwareProducts.put(softwareProduct1);
+        softwareProducts.put(softwareProduct2);
 
-        JSONArray data = new JSONArray();
-        data.put(dataRecipient);
-        data.put(getDataRecipient(DUMMY_LEGAL_ENTITY_ID_2, softwareProducts2, DataRecipientStatusEnum.SUSPENDED));
+        dataRecipientsWrapper.put("dataRecipients", dataRecipients);
+        softwareProductsWrapper.put("softwareProducts", softwareProducts);
 
-        this.responseJson = new JSONObject();
-        this.responseJson.put(MetadataConstants.DR_JSON_ROOT, data);
     }
 
-    @Test(description = "when valid data recipient provided, should return software products map")
-    public void testGetSoftwareProducts() {
+    @Test(description = "when valid data recipient response json provided, should return data recipient maps")
+    public void testGetDataRecipientStatusesFromRegister() throws OpenBankingException {
 
-        Map<String, String> softwareProducts = uut.getSoftwareProducts(this.dataRecipient);
-
-        Assert.assertEquals(softwareProducts.get(DUMMY_SOFTWARE_PRODUCT_ID_1),
-                SoftwareProductStatusEnum.ACTIVE.toString());
-        Assert.assertEquals(softwareProducts.get(DUMMY_SOFTWARE_PRODUCT_ID_2),
-                SoftwareProductStatusEnum.INACTIVE.toString());
+        Map<String, String> statuses = uut.getDataRecipientStatusesFromRegister(this.dataRecipientsWrapper);
+        Assert.assertFalse(statuses.isEmpty());
     }
 
-    @Test(description = "when valid response json provided, should return data recipient and software product maps")
-    public void testGetDataRecipientsStatusesFromRegister() {
+    @Test(description = "when valid software product response json provided, should return software product maps")
+    public void testGetSoftwareProductStatusesFromRegister() throws OpenBankingException {
 
-        Map<String, Map<String, String>> statuses = uut.getDataRecipientsStatusesFromRegister(this.responseJson);
-
-        Assert.assertFalse(statuses.get(MetadataConstants.MAP_DATA_RECIPIENTS).isEmpty());
-        Assert.assertFalse(statuses.get(MetadataConstants.MAP_SOFTWARE_PRODUCTS).isEmpty());
+        Map<String, String> statuses = uut.getSoftwareProductStatusesFromRegister(this.softwareProductsWrapper);
+        Assert.assertFalse(statuses.isEmpty());
     }
 
     @Test(description = "when valid data provided, should return modified maps")
@@ -113,7 +104,7 @@ public class PeriodicalMetaDataUpdateJobTest extends PowerMockTestCase {
         spProperty1.setValue(DUMMY_LEGAL_ENTITY_ID_1);
 
         ServiceProviderProperty spProperty2 = new ServiceProviderProperty();
-        spProperty2.setDisplayName(MetadataConstants.SOFTWARE_PRODUCT_ID);
+        spProperty2.setDisplayName(MetadataConstants.SOFTWARE_ID);
         spProperty2.setValue(DUMMY_SOFTWARE_PRODUCT_ID_1);
 
         InboundAuthenticationRequestConfig config = new InboundAuthenticationRequestConfig();
@@ -156,26 +147,17 @@ public class PeriodicalMetaDataUpdateJobTest extends PowerMockTestCase {
 
         JSONObject softwareProduct = new JSONObject();
         softwareProduct.put(MetadataConstants.DR_JSON_SP_KEY, softwareProductId);
-        softwareProduct.put(MetadataConstants.DR_JSON_STATUS, status.toString());
+        softwareProduct.put(MetadataConstants.SOFTWARE_PRODUCT_STATUS, status.toString());
 
         return softwareProduct;
     }
 
 
-    private JSONObject getDataRecipient(String legalEntityId, JSONArray softwareProducts,
-                                        DataRecipientStatusEnum status) {
-
-        JSONObject dataRecipientBrand = new JSONObject();
-        dataRecipientBrand.put(MetadataConstants.DR_JSON_SOFTWARE_PRODUCTS, softwareProducts);
-
-        JSONArray dataRecipientBrands = new JSONArray();
-        dataRecipientBrands.put(dataRecipientBrand);
+    private JSONObject getDataRecipient(String legalEntityId, DataRecipientStatusEnum status) {
 
         JSONObject dataRecipient = new JSONObject();
-        dataRecipient.put(MetadataConstants.DR_JSON_LEGAL_ENTITY_ID, legalEntityId);
-        dataRecipient.put(MetadataConstants.DR_JSON_STATUS, status.toString());
-        dataRecipient.put(MetadataConstants.DR_JSON_BRANDS, dataRecipientBrands);
-
+        dataRecipient.put(MetadataConstants.DATA_RECIPIENT_ID, legalEntityId);
+        dataRecipient.put(MetadataConstants.DATA_RECIPIENT_STATUS, status.toString());
         return dataRecipient;
     }
 }
