@@ -53,7 +53,7 @@ public class CDSProfileListRetrievalStep implements ConsentRetrievalStep {
             log.info("No accounts received for the given customer. Selecting customer profile using customer " +
                     "details endpoint.");
             customerType = CDSConsentCommonUtil.getCustomerType(consentData);
-            if (customerType.equalsIgnoreCase(CDSConsentExtensionConstants.ORGANISATION)) {
+            if (CDSConsentExtensionConstants.ORGANISATION.equalsIgnoreCase(customerType)) {
                 jsonObject.put(CDSConsentExtensionConstants.PRE_SELECTED_PROFILE_ID, CDSConsentExtensionConstants.
                         ORGANISATION_PROFILE_ID);
             } else {
@@ -93,8 +93,8 @@ public class CDSProfileListRetrievalStep implements ConsentRetrievalStep {
                 // Check if the logged-in user is a valid nominated user that has permission
                 // to authorize a consent for the account.
                 if (isUserEligibleForConsentAuthorization(userId, accountJSON)) {
-                    if (customerType != null && customerType.equalsIgnoreCase(
-                            CDSConsentExtensionConstants.ORGANISATION)) {
+                    if (customerType != null && CDSConsentExtensionConstants.ORGANISATION.equalsIgnoreCase(
+                            customerType)) {
                         jsonObject.put(CDSConsentExtensionConstants.PRE_SELECTED_PROFILE_ID,
                                 CDSConsentExtensionConstants.ORGANISATION_PROFILE_ID);
                         profileIdAccountsMap = getProfileIdAccountsMapForGeneralBusinessAccounts(
@@ -106,8 +106,7 @@ public class CDSProfileListRetrievalStep implements ConsentRetrievalStep {
                 }
                 //Process individual accounts (non-business accounts are processed as individual).
             } else {
-                if (customerType != null && customerType.equalsIgnoreCase(CDSConsentExtensionConstants.
-                        PERSON)) {
+                if (customerType != null && CDSConsentExtensionConstants.PERSON.equalsIgnoreCase(customerType)) {
                     jsonObject.put(CDSConsentExtensionConstants.PRE_SELECTED_PROFILE_ID,
                             CDSConsentExtensionConstants.INDIVIDUAL_PROFILE_ID);
                 }
