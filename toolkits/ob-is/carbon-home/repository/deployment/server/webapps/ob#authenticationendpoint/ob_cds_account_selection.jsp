@@ -121,7 +121,7 @@
                                                 <c:if test="${record['is_joint_account'] eq true && record['is_secondary_account'] ne true}">
                                                     <p class="hide data-container" id="selectablePopoverContent" style='color: rgb(0, 0, 0); text-align: left'> ${record['linked_members_count']} other account holder(s) can share this joint account data at any time,
                                                         without each other&lsquo;s permission. <br/><br/> You can change sharing preferences for this account by going to &lsquo;Settings &gt;Data sharing &gt; Account permissions&rsquo;</p>
-                                                    <a id="selectablePopoverContentElement">&#9432;</a>
+                                                    <a class="selectablePopoverContentElement">&#9432;</a>
                                                 </c:if>
                                             </span>
 
@@ -296,7 +296,7 @@
             '</div>',
             '</div>'].join('');
 
-        $("#selectablePopoverContentElement").popover({
+        $(".selectablePopoverContentElement").popover({
             placement: 'right',
             title: '&check; Pre-approval enabled',
             content: $("#selectablePopoverContent").html(),
