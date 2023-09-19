@@ -170,9 +170,9 @@ public class PeriodicalMetaDataUpdateJob implements Job, MetaDataUpdate {
     }
 
     /**
-     * Get Software Product status map from CDR Register.
+     * Get data recipient status map from CDR Register.
      *
-     * @return map of software product IDs and statuses
+     * @return map of data recipient IDs and statuses
      * @throws OpenBankingException - OpenBankingException
      */
     public Map<String, String> getDataRecipientStatusesFromRegister(@NotNull JSONObject responseJson)
@@ -189,7 +189,7 @@ public class PeriodicalMetaDataUpdateJob implements Job, MetaDataUpdate {
     }
 
     /**
-     * Get Software Product status map from CDR Register.
+     * Get software product status map from CDR Register.
      *
      * @return map of software product IDs and statuses
      * @throws OpenBankingException - OpenBankingException
