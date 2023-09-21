@@ -22,6 +22,7 @@ import com.wso2.openbanking.accelerator.gateway.executor.model.OpenBankingExecut
 import com.wso2.openbanking.accelerator.gateway.util.GatewayConstants;
 import com.wso2.openbanking.cds.common.error.handling.util.ErrorConstants;
 import com.wso2.openbanking.cds.common.error.handling.util.ErrorUtil;
+import com.wso2.openbanking.cds.gateway.executors.idpermanence.utils.IdPermanenceConstants;
 import com.wso2.openbanking.cds.gateway.executors.idpermanence.utils.IdPermanenceUtils;
 import net.minidev.json.JSONObject;
 import net.minidev.json.parser.JSONParser;
@@ -31,6 +32,7 @@ import org.apache.commons.logging.LogFactory;
 import org.apache.http.HttpStatus;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Map;
 import java.util.UUID;
@@ -121,9 +123,11 @@ public class CDSErrorHandler implements OpenBankingGatewayExecutor {
             JSONObject oAuthErrorPayload = getOAuthErrorJSON(errors);
             obapiRequestContext.setModifiedPayload(oAuthErrorPayload.toString());
         } else {
+            Map<String, String> encryptedAccountIds = getEncryptedAccountIdMapFromContext(
+                    obapiRequestContext.getContextProps().get("encrypted-id-mapping"));
             String memberId = obapiRequestContext.getApiRequestInfo().getUsername();
             String appId = obapiRequestContext.getApiRequestInfo().getConsumerKey();
-            JsonObject errorPayload = getErrorJson(errors, memberId, appId);
+            JsonObject errorPayload = getErrorJson(errors, memberId, appId, encryptedAccountIds);
             obapiRequestContext.setModifiedPayload(errorPayload.toString());
         }
         Map<String, String> addedHeaders = obapiRequestContext.getAddedHeaders();
@@ -153,6 +157,9 @@ public class CDSErrorHandler implements OpenBankingGatewayExecutor {
         analyticsData.put(STATUS_CODE, statusCode);
         analyticsData.put(RESPONSE_PAYLOAD_SIZE, (long) obapiRequestContext.getModifiedPayload().length());
         obapiRequestContext.setAnalyticsData(analyticsData);
+
+        //Remove headers added by the id permanence executor
+        obapiRequestContext.getMsgInfo().getHeaders().remove(IdPermanenceConstants.DECRYPTED_SUB_REQUEST_PATH);
     }
 
     protected void handleResponseError(OBAPIResponseContext obapiResponseContext) {
@@ -171,9 +178,11 @@ public class CDSErrorHandler implements OpenBankingGatewayExecutor {
             JSONObject oAuthErrorPayload = getOAuthErrorJSON(errors);
             obapiResponseContext.setModifiedPayload(oAuthErrorPayload.toString());
         } else {
+            Map<String, String> encryptedAccountIds = getEncryptedAccountIdMapFromContext(
+                    obapiResponseContext.getContextProps().get("encrypted-id-mapping"));
             String memberId = obapiResponseContext.getApiRequestInfo().getUsername();
             String appId = obapiResponseContext.getApiRequestInfo().getConsumerKey();
-            JsonObject errorPayload = getErrorJson(errors, memberId, appId);
+            JsonObject errorPayload = getErrorJson(errors, memberId, appId, encryptedAccountIds);
             obapiResponseContext.setModifiedPayload(errorPayload.toString());
         }
         Map<String, String> addedHeaders = obapiResponseContext.getAddedHeaders();
@@ -198,6 +207,9 @@ public class CDSErrorHandler implements OpenBankingGatewayExecutor {
         analyticsData.put(STATUS_CODE, statusCode);
         analyticsData.put(RESPONSE_PAYLOAD_SIZE, (long) obapiResponseContext.getModifiedPayload().length());
         obapiResponseContext.setAnalyticsData(analyticsData);
+
+        //Remove headers added by the id permanence executor
+        obapiResponseContext.getMsgInfo().getHeaders().remove(IdPermanenceConstants.DECRYPTED_SUB_REQUEST_PATH);
     }
 
     public static JSONObject getOAuthErrorJSON(ArrayList<OpenBankingExecutorError> errors) {
@@ -210,7 +222,8 @@ public class CDSErrorHandler implements OpenBankingGatewayExecutor {
         return errorObj;
     }
 
-    public static JsonObject getErrorJson(ArrayList<OpenBankingExecutorError> errors, String memberId, String appId) {
+    public static JsonObject getErrorJson(ArrayList<OpenBankingExecutorError> errors, String memberId, String appId,
+                                          Map<String, String> encryptedAccountIds) {
 
         JsonArray errorList = new JsonArray();
         JsonObject parentObject = new JsonObject();
@@ -225,8 +238,14 @@ public class CDSErrorHandler implements OpenBankingGatewayExecutor {
                     if (ErrorConstants.CONSENT_ENFORCEMENT_ERROR.equals(error.getTitle())) {
                         errorObj.addProperty(ErrorConstants.TITLE, errorJSON.getAsString(ErrorConstants.TITLE));
                         if (errorJSON.get(ErrorConstants.ACCOUNT_ID) != null) {
-                            String encryptedId = IdPermanenceUtils.encryptAccountIdInErrorResponse(errorJSON,
-                                    memberId, appId);
+                            String accountId = errorJSON.getAsString(ErrorConstants.ACCOUNT_ID);
+                            String encryptedId;
+                            if (encryptedAccountIds != null && encryptedAccountIds.containsKey(accountId)) {
+                                encryptedId = encryptedAccountIds.get(accountId);
+                            } else {
+                                encryptedId = IdPermanenceUtils.encryptAccountIdInErrorResponse(errorJSON,
+                                        memberId, appId);
+                            }
                             errorObj.addProperty(ErrorConstants.DETAIL, encryptedId);
                         } else {
                             errorObj.addProperty(ErrorConstants.DETAIL, errorJSON.getAsString(ErrorConstants.DETAIL));
@@ -276,5 +295,19 @@ public class CDSErrorHandler implements OpenBankingGatewayExecutor {
         Map<String, String> addedHeaders = obapiRequestContext.getAddedHeaders();
         return ((headers != null && headers.containsKey(X_FAPI_INTERACTION_ID)) ||
                 (addedHeaders != null && addedHeaders.containsKey(X_FAPI_INTERACTION_ID)));
+    }
+
+    private Map<String, String> getEncryptedAccountIdMapFromContext(String encryptedAccountIdMappings) {
+
+            Map<String, String> encryptedAccountIdMap = new HashMap<>();
+            if (encryptedAccountIdMappings != null) {
+                String[] encryptedAccountIdMappingArray = encryptedAccountIdMappings.split(",");
+                for (String encryptedAccountIdMapping : encryptedAccountIdMappingArray) {
+                    String[] encryptedAccountIdPair = encryptedAccountIdMapping.split(":");
+                    encryptedAccountIdMap.put(encryptedAccountIdPair[0].replaceAll("^\"|\"$", ""),
+                            encryptedAccountIdPair[1].replaceAll("^\"|\"$", ""));
+                }
+            }
+            return encryptedAccountIdMap;
     }
 }

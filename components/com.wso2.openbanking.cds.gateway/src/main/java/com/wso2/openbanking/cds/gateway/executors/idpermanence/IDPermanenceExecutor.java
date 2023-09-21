@@ -99,6 +99,8 @@ public class IDPermanenceExecutor implements OpenBankingGatewayExecutor {
             obApiRequestContext.getMsgInfo().setResource(decryptedSubRequestPath);
             obApiRequestContext.getMsgInfo().getHeaders().put(
                     IdPermanenceConstants.DECRYPTED_SUB_REQUEST_PATH, decryptedSubRequestPath);
+            obApiRequestContext.getContextProps().put("encrypted-id-mapping", decryptedIdSet.get(
+                    IdPermanenceConstants.ACCOUNT_ID) + ":" + idSet.get(IdPermanenceConstants.ACCOUNT_ID));
         }
 
     }
