@@ -789,3 +789,10 @@ subject = "cdr-register"
 audience = "https://wso2ob.com"
 jwks_url = "https://keystore.openbankingtest.org.uk/0015800001HQQrZAAX/ykNOgWd2RgnuoLRRyWBkaY.jwks"
 cache_expiry_time = "1440"
+
+[open_banking_cds.metrics.aggregation_job]
+enabled = true
+cache_expiry_time = 1380
+current_tps_retrieval_url = "http://BI_HOSTNAME:8007/CDSCurrentPeakTPSApp/CDSCurrentPeakTPSAppStream"
+max_tps_aggregation_url = "https://BI_HOSTNAME:8008/CDSAvailabilityMetricsAggregationApp/MaxTPSMetricsAggregationInputStream"
+availability_aggregation_url = "https://BI_HOSTNAME:8008/CDSAvailabilityMetricsAggregationApp/AvailabilityMetricsAggregationInputStream"

@@ -658,4 +658,63 @@ public class OpenBankingCDSConfigParser {
             return false;
         }
     }
+
+    /**
+     * Get metrics aggregation periodical job enable status.
+     *
+     * @return boolean
+     */
+    public boolean isMetricsPeriodicalJobEnabled() {
+        Object config = getConfigElementFromKey(CommonConstants.METRICS_AGGREGATION_JOB_ENABLED);
+        if (config != null) {
+            return Boolean.parseBoolean((String) config);
+        } else {
+            return false;
+        }
+    }
+
+    /**
+     * Get metric cache expiry time.
+     *
+     * @return int
+     */
+    public int getMetricCacheExpiryInMinutes() {
+
+        Object config = getConfigElementFromKey(CommonConstants.METRICS_CACHE_EXPIRY_TIME);
+        if (config != null && 0 < Integer.parseInt((String) config)) {
+            // configured value is a positive number
+            return Integer.parseInt((String) config);
+        }
+        return CommonConstants.METRICS_CACHE_DEFAULT_EXPIRY_TIME;
+    }
+
+    /**
+     * Get Metrics current TPS Retrieval URL.
+     *
+     * @return String
+     */
+    public String getMetricsCurrentTpsRetrievalUrl () {
+
+        return (String) getConfigElementFromKey(CommonConstants.METRICS_CURRENT_TPS_RETRIEVAL_URL);
+    }
+
+    /**
+     * Get Metrics max TPS Retrieval URL.
+     *
+     * @return String
+     */
+    public String getMetricsMaxTpsRetrievalUrl () {
+
+        return (String) getConfigElementFromKey(CommonConstants.METRICS_MAX_TPS_RETRIEVAL_URL);
+    }
+
+    /**
+     * Get Metrics availability Retrieval URL.
+     *
+     * @return String
+     */
+    public String getMetricsAvailabilityRetrievalUrl () {
+
+        return (String) getConfigElementFromKey(CommonConstants.METRICS_AVAILABILITY_RETRIEVAL_URL);
+    }
 }

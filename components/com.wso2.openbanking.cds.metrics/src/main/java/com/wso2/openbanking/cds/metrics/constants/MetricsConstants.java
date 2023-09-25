@@ -1,13 +1,10 @@
 /*
- * Copyright (c) 2021, WSO2 Inc. (http://www.wso2.com). All Rights Reserved.
+ * Copyright (c) 2021-2023, WSO2 LLC. (https://www.wso2.com). All Rights Reserved.
  *
- * This software is the property of WSO2 Inc. and its suppliers, if any.
+ * This software is the property of WSO2 LLC. and its suppliers, if any.
  * Dissemination of any information or reproduction of any material contained
- * herein is strictly forbidden, unless permitted by WSO2 in accordance with
- * the WSO2 Software License available at https://wso2.com/licenses/eula/3.1.
- * For specific language governing the permissions and limitations under this
- * license, please see the license as well as any agreement you’ve entered into
- * with WSO2 governing the purchase of this software and any associated services.
+ * herein in any form is strictly forbidden, unless permitted by WSO2 expressly.
+ * You may not alter or remove any copyright or other notice from copies of this content.
  */
 
 package com.wso2.openbanking.cds.metrics.constants;
@@ -24,6 +21,9 @@ public class MetricsConstants {
 
     // sp api endpoint
     public static final String SP_API_PATH = "/stores/query";
+    public static final String REST_API_URL_KEY = "stream.processor.rest.api.url";
+    public static final String SP_USERNAME_KEY = "stream.processor.rest.api.username";
+    public static final String SP_PASSWORD_KEY = "stream.processor.rest.api.password";
 
     //siddhi-app constants
     public static final String CDS_INVOCATION_METRICS_APP = "CDSInvocationMetricsApp";
@@ -32,6 +32,10 @@ public class MetricsConstants {
     public static final String CDS_CUSTOMER_RECIPIENT_METRICS_APP = "CDSCustomerRecipientMetricsApp";
     public static final String REGISTRATION_DATA_SUBMISSION_APP = "AppRegistrationDataSubmissionApp";
     public static final String API_RAW_DATA_SUBMISSION_APP = "APIRawDataSubmissionApp";
+    public static final String CDS_PEAK_TPS_AGG_DATA_APP = "CDSPeakTPSMetricsAggregationApp";
+    public static final String CDS_AVAILABILITY_AGG_DATA_APP = "CDSAvailabilityMetricsAggregationApp";
+    public static final String PEAK_TPS_AGG_INPUT_STREAM = "MaxTPSMetricsAggregationInputStream";
+    public static final String AVAILABILITY_AGG_INPUT_STREAM = "AvailabilityMetricsAggregationInputStream";
 
     //date-time constants
     public static final String TIME_ZONE = "GMT";
@@ -47,4 +51,14 @@ public class MetricsConstants {
     //availability constants
     public static final String SCHEDULED_OUTAGE = "scheduled";
     public static final String INCIDENT_OUTAGE = "incident";
+
+    // metrics aggregation constants
+    public static final String RECORDS = "records";
+    public static final String AVAILABILITY_DATA = "availability_data";
+    public static final String AVAILABILITY_AGG_DATA = "availability_agg_data";
+    public static final String AGG_MONTH = "agg_month";
+    public static final String DATE_AGGREGATED = "date_aggregated";
+    public static final String AGG_DATE = "agg_date";
+    public static final String MAX_TPS = "max_tps";
+    public static final String TPS_AGG_DATA = "aggregated_tps_data";
 }

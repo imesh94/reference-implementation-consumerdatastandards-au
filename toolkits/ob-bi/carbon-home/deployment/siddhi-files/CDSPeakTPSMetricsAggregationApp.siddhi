@@ -1,0 +1,51 @@
+/*
+ * Copyright (c) 2023, WSO2 LLC. (https://www.wso2.com). All Rights Reserved.
+ *
+ * This software is the property of WSO2 LLC. and its suppliers, if any.
+ * Dissemination of any information or reproduction of any material contained
+ * herein in any form is strictly forbidden, unless permitted by WSO2 expressly.
+ * You may not alter or remove any copyright or other notice from copies of this content.
+ */
+
+ @App:name('CDSPeakTPSMetricsAggregationApp')
+ @App:description('Aggregate MAX_TPS to be used by CDS Metrics API')
+
+-- Input to retrieve aggregated Max TPS data from database
+@Source(type = 'http-request',
+        source.id='MaxTPSMetricsAggregationRetrieveStream',
+        receiver.url='http://<ANALYTICS_HOSTNAME>:8007/CDSAvailabilityMetricsAggregationApp/MaxTPSMetricsAggregationRetrieveStream',
+        basic.auth.enabled='true',
+        @map(type = 'json',@attributes(MESSAGE_ID='trp:messageId', DATE_AGGREGATED='$.event.date')))
+define stream MaxTPSMetricsAggregationRetrieveStream(MESSAGE_ID string, DATE_AGGREGATED string);
+
+-- Output to retrieve aggregated Max TPS data from database
+@sink(type='http-response', source.id='MaxTPSMetricsAggregationRetrieveStream', message.id='{{MESSAGE_ID}}', @map(type='json'))
+define stream MaxTPSMetricsAggregationRetrieveOutputStream(MESSAGE_ID string, DATE_AGGREGATED string, TIMESTAMP long, AGG_DATE int, MAX_TPS String);
+
+-- Input to store aggregated Max TPS data to database
+@source(type='wso2event',  @map(type='wso2event'))
+define stream MaxTPSMetricsAggregationInputStream(DATE_AGGREGATED string, AGG_DATE int, MAX_TPS String);
+
+-- Table to store Aggregated Peak TPS Data
+@primaryKey('DATE_AGGREGATED', 'TIMESTAMP', 'AGG_DATE')
+@store(type='rdbms', datasource='OB_REPORTING_DB')
+define table AGGREGATED_CDS_METRICS_TPS(DATE_AGGREGATED string, TIMESTAMP long, AGG_DATE int, MAX_TPS String);
+
+-- -- store aggregated Max TPS data to database
+from MaxTPSMetricsAggregationInputStream
+select DATE_AGGREGATED, time:timestampInMilliseconds() as TIMESTAMP, AGG_DATE, MAX_TPS
+insert into AGGREGATED_CDS_METRICS_TPS;
+
+-- -- retrieve aggregated Max TPS data to database
+from MaxTPSMetricsAggregationRetrieveStream as a LEFT OUTER JOIN AGGREGATED_CDS_METRICS_TPS as d
+        on a.DATE_AGGREGATED == d.DATE_AGGREGATED
+select a.MESSAGE_ID, a.DATE_AGGREGATED, d.TIMESTAMP, d.AGG_DATE, d.MAX_TPS
+insert into MaxTpsDataStream;
+
+from MaxTpsDataStream[TIMESTAMP is NULL]
+select MESSAGE_ID, DATE_AGGREGATED, time:timestampInMilliseconds() as TIMESTAMP, 0 as AGG_DATE, "0" as MAX_TPS
+insert into MaxTPSMetricsAggregationRetrieveOutputStream;
+
+from MaxTpsDataStream[NOT(TIMESTAMP is NULL)]
+select *
+insert into MaxTPSMetricsAggregationRetrieveOutputStream;

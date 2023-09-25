@@ -42,8 +42,11 @@ fi
 
 # read CDSAvailabilityMetricsApp.siddhi file
 AVAILABILITY_METRICS_APP=${WSO2_OB_BI_HOME}/deployment/siddhi-files/CDSAvailabilityMetricsApp.siddhi;
+AGGREGATED_AVAILABILITY_METRICS_APP=${WSO2_OB_BI_HOME}/deployment/siddhi-files/CDSAvailabilityMetricsAggregationApp.siddhi;
+AGGREGATED_PEAK_TPS_METRICS_APP=${WSO2_OB_BI_HOME}/deployment/siddhi-files/CDSPeakTPSMetricsAggregationApp.siddhi;
 
 echo -e "\nReplace hostnames \n"
 echo -e "================================================\n"
 sed -i -e 's|<BI_HOSTNAME>|'${BI_HOSTNAME}'|g' ${AVAILABILITY_METRICS_APP}
-
+sed -i -e 's|<BI_HOSTNAME>|'${BI_HOSTNAME}'|g' ${AGGREGATED_AVAILABILITY_METRICS_APP}
+sed -i -e 's|<BI_HOSTNAME>|'${BI_HOSTNAME}'|g' ${AGGREGATED_PEAK_TPS_METRICS_APP}
