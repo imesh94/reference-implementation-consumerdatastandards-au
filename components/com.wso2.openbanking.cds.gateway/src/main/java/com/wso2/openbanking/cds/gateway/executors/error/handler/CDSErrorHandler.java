@@ -300,7 +300,7 @@ public class CDSErrorHandler implements OpenBankingGatewayExecutor {
      * String format: "encryptedAccountId1:accountId1,encryptedAccountId2:accountId2"
      *
      * @param encryptedAccountIdMappings - Comma separated string containing encrypted account id mappings
-     * @return
+     * @return Map of encrypted and decrypted account ids
      */
     private Map<String, String> getEncryptedAccountIdMapFromContextProperty(String encryptedAccountIdMappings) {
 
