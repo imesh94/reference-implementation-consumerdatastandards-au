@@ -109,7 +109,6 @@ public class GatewayConstants {
     // Constants related to executors
     public static final String HTTP_GET = "GET";
     public static final String HTTP_POST = "POST";
-    public static final String ENCRYPTED_ID_MAPPING = "encrypted-id-mapping";
 
     // CDSHeaderValidationExecutor constants
     public static final String X_CDS_CLIENT_HEADERS = "x-cds-client-headers";

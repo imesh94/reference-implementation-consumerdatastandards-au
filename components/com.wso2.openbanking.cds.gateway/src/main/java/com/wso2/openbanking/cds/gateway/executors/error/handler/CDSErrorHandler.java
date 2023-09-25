@@ -35,8 +35,6 @@ import java.util.HashSet;
 import java.util.Map;
 import java.util.UUID;
 
-import static com.wso2.openbanking.cds.gateway.utils.GatewayConstants.ENCRYPTED_ID_MAPPING;
-
 /**
  * Executor to handle gateway errors in CDS format.
  */
@@ -124,7 +122,7 @@ public class CDSErrorHandler implements OpenBankingGatewayExecutor {
             obapiRequestContext.setModifiedPayload(oAuthErrorPayload.toString());
         } else {
             Map<String, String> encryptedAccountIds = getEncryptedAccountIdMapFromContextProperty(
-                    obapiRequestContext.getContextProps().get(ENCRYPTED_ID_MAPPING));
+                    obapiRequestContext.getContextProps().get(IdPermanenceConstants.ENCRYPTED_ID_MAPPING));
             String memberId = obapiRequestContext.getApiRequestInfo().getUsername();
             String appId = obapiRequestContext.getApiRequestInfo().getConsumerKey();
             JsonObject errorPayload = getErrorJson(errors, memberId, appId, encryptedAccountIds);
@@ -179,7 +177,7 @@ public class CDSErrorHandler implements OpenBankingGatewayExecutor {
             obapiResponseContext.setModifiedPayload(oAuthErrorPayload.toString());
         } else {
             Map<String, String> encryptedAccountIds = getEncryptedAccountIdMapFromContextProperty(
-                    obapiResponseContext.getContextProps().get(ENCRYPTED_ID_MAPPING));
+                    obapiResponseContext.getContextProps().get(IdPermanenceConstants.ENCRYPTED_ID_MAPPING));
             String memberId = obapiResponseContext.getApiRequestInfo().getUsername();
             String appId = obapiResponseContext.getApiRequestInfo().getConsumerKey();
             JsonObject errorPayload = getErrorJson(errors, memberId, appId, encryptedAccountIds);
