@@ -1,13 +1,10 @@
 /*
- * Copyright (c) 2021, WSO2 Inc. (http://www.wso2.com). All Rights Reserved.
+ * Copyright (c) 2021-2023, WSO2 LLC. (https://www.wso2.com). All Rights Reserved.
  *
- * This software is the property of WSO2 Inc. and its suppliers, if any.
+ * This software is the property of WSO2 LLC. and its suppliers, if any.
  * Dissemination of any information or reproduction of any material contained
- * herein is strictly forbidden, unless permitted by WSO2 in accordance with
- * the WSO2 Software License available at https://wso2.com/licenses/eula/3.1. For specific
- * language governing the permissions and limitations under this license,
- * please see the license as well as any agreement you’ve entered into with
- * WSO2 governing the purchase of this software and any associated services.
+ * herein in any form is strictly forbidden, unless permitted by WSO2 expressly.
+ * You may not alter or remove any copyright or other notice from copies of this content.
  */
 
 package com.wso2.openbanking.cds.gateway.executors.error.handler;
@@ -24,6 +21,7 @@ import com.wso2.openbanking.cds.common.error.handling.util.ErrorConstants;
 import com.wso2.openbanking.cds.common.error.handling.util.ErrorUtil;
 import com.wso2.openbanking.cds.gateway.executors.idpermanence.utils.IdPermanenceConstants;
 import com.wso2.openbanking.cds.gateway.executors.idpermanence.utils.IdPermanenceUtils;
+
 import net.minidev.json.JSONObject;
 import net.minidev.json.parser.JSONParser;
 import net.minidev.json.parser.ParseException;
@@ -36,6 +34,8 @@ import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Map;
 import java.util.UUID;
+
+import static com.wso2.openbanking.cds.gateway.utils.GatewayConstants.ENCRYPTED_ID_MAPPING;
 
 /**
  * Executor to handle gateway errors in CDS format.
@@ -123,8 +123,8 @@ public class CDSErrorHandler implements OpenBankingGatewayExecutor {
             JSONObject oAuthErrorPayload = getOAuthErrorJSON(errors);
             obapiRequestContext.setModifiedPayload(oAuthErrorPayload.toString());
         } else {
-            Map<String, String> encryptedAccountIds = getEncryptedAccountIdMapFromContext(
-                    obapiRequestContext.getContextProps().get("encrypted-id-mapping"));
+            Map<String, String> encryptedAccountIds = getEncryptedAccountIdMapFromContextProperty(
+                    obapiRequestContext.getContextProps().get(ENCRYPTED_ID_MAPPING));
             String memberId = obapiRequestContext.getApiRequestInfo().getUsername();
             String appId = obapiRequestContext.getApiRequestInfo().getConsumerKey();
             JsonObject errorPayload = getErrorJson(errors, memberId, appId, encryptedAccountIds);
@@ -178,8 +178,8 @@ public class CDSErrorHandler implements OpenBankingGatewayExecutor {
             JSONObject oAuthErrorPayload = getOAuthErrorJSON(errors);
             obapiResponseContext.setModifiedPayload(oAuthErrorPayload.toString());
         } else {
-            Map<String, String> encryptedAccountIds = getEncryptedAccountIdMapFromContext(
-                    obapiResponseContext.getContextProps().get("encrypted-id-mapping"));
+            Map<String, String> encryptedAccountIds = getEncryptedAccountIdMapFromContextProperty(
+                    obapiResponseContext.getContextProps().get(ENCRYPTED_ID_MAPPING));
             String memberId = obapiResponseContext.getApiRequestInfo().getUsername();
             String appId = obapiResponseContext.getApiRequestInfo().getConsumerKey();
             JsonObject errorPayload = getErrorJson(errors, memberId, appId, encryptedAccountIds);
@@ -297,7 +297,14 @@ public class CDSErrorHandler implements OpenBankingGatewayExecutor {
                 (addedHeaders != null && addedHeaders.containsKey(X_FAPI_INTERACTION_ID)));
     }
 
-    private Map<String, String> getEncryptedAccountIdMapFromContext(String encryptedAccountIdMappings) {
+    /**
+     * Get a map of encrypted account ids from the context property string.
+     * String format: "encryptedAccountId1:accountId1,encryptedAccountId2:accountId2"
+     *
+     * @param encryptedAccountIdMappings - Comma separated string containing encrypted account id mappings
+     * @return
+     */
+    private Map<String, String> getEncryptedAccountIdMapFromContextProperty(String encryptedAccountIdMappings) {
 
             Map<String, String> encryptedAccountIdMap = new HashMap<>();
             if (encryptedAccountIdMappings != null) {
