@@ -1,7 +1,16 @@
-package com.wso2.openbanking.cds.metrics.scheduler.internal;
+/*
+ * Copyright (c) 2023, WSO2 LLC. (https://www.wso2.com). All Rights Reserved.
+ *
+ * This software is the property of WSO2 LLC. and its suppliers, if any.
+ * Dissemination of any information or reproduction of any material contained
+ * herein in any form is strictly forbidden, unless permitted by WSO2 expressly.
+ * You may not alter or remove any copyright or other notice from copies of this content.
+ */
+
+package com.wso2.openbanking.cds.metrics.internal;
 
 import com.wso2.openbanking.cds.common.config.OpenBankingCDSConfigParser;
-import com.wso2.openbanking.cds.common.periodic.job.PeriodicJobScheduler;
+import com.wso2.openbanking.cds.metrics.periodic.scheduler.MetricsPeriodicJobScheduler;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.osgi.service.component.ComponentContext;
@@ -19,19 +28,19 @@ import org.wso2.carbon.user.core.service.RealmService;
  * Metrics API Service Component
  */
 @Component(
-        name = "com.wso2.openbanking.cds.metrics.scheduler.internal.MetricsApiServiceComponent",
+        name = "com.wso2.openbanking.cds.metrics.internal.MetricsServiceComponent",
         immediate = true
 )
-public class MetricsApiServiceComponent {
-    private static Log log = LogFactory.getLog(MetricsApiServiceComponent.class);
-    private OpenBankingCDSConfigParser configParser = OpenBankingCDSConfigParser.getInstance();
+public class MetricsServiceComponent {
+    private static final Log log = LogFactory.getLog(MetricsServiceComponent.class);
+    private final OpenBankingCDSConfigParser configParser = OpenBankingCDSConfigParser.getInstance();
 
     @Activate
     protected void activate(ComponentContext context) {
 
         if (configParser.isMetricsPeriodicalJobEnabled()) {
-            new PeriodicJobScheduler().run();
-            log.debug("Periodic Task Manager bundle is activated");
+            MetricsPeriodicJobScheduler.getInstance().initScheduler();
+            log.info("Metrics Periodic Task Manager bundle is activated");
         }
 
     }
@@ -57,13 +66,13 @@ public class MetricsApiServiceComponent {
     protected void setRealmService(RealmService realmService) {
 
         log.debug("Setting the Realm Service");
-        MetricsApiSchedulerDataHolder.getInstance().setRealmService(realmService);
+        MetricsDataHolder.getInstance().setRealmService(realmService);
     }
 
     protected void unsetRealmService(RealmService realmService) {
 
         log.debug("UnSetting the Realm Service");
-        MetricsApiSchedulerDataHolder.getInstance().setRealmService(null);
+        MetricsDataHolder.getInstance().setRealmService(null);
     }
 
     @Reference(name = "api.manager.config.service",
@@ -74,13 +83,13 @@ public class MetricsApiServiceComponent {
     )
     protected void setAPIConfigurationService(APIManagerConfigurationService confService) {
 
-        MetricsApiSchedulerDataHolder.getInstance().setApiManagerConfigurationService(confService);
+        MetricsDataHolder.getInstance().setApiManagerConfigurationService(confService);
         log.debug("API manager configuration service bound to the CDS Admin Mgt data holder");
     }
 
     protected void unsetAPIManagerConfigurationService(APIManagerConfigurationService amcService) {
 
-        MetricsApiSchedulerDataHolder.getInstance().setApiManagerConfigurationService(null);
+        MetricsDataHolder.getInstance().setApiManagerConfigurationService(null);
         log.debug("API manager configuration service unbound from the CDS Admin Mgt data holder");
 
     }

@@ -7,9 +7,11 @@
  * You may not alter or remove any copyright or other notice from copies of this content.
  */
 
-package com.wso2.openbanking.cds.metrics.scheduler.util;
+package com.wso2.openbanking.cds.metrics.periodic.util;
 
+import com.wso2.openbanking.cds.metrics.constants.MetricsConstants;
 import com.wso2.openbanking.cds.metrics.util.DateTimeUtil;
+import com.wso2.openbanking.cds.metrics.util.SPQueryExecutorUtil;
 import com.wso2.openbanking.cds.metrics.util.TimeFormatEnum;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -27,15 +29,14 @@ import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
 import org.json.simple.parser.JSONParser;
 import org.json.simple.parser.ParseException;
+import org.wso2.carbon.apimgt.impl.APIManagerAnalyticsConfiguration;
 
 import java.io.IOException;
 import java.math.BigDecimal;
 import java.math.RoundingMode;
-import java.nio.charset.StandardCharsets;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.Base64;
 import java.util.Calendar;
 import java.util.Collections;
 import java.util.Comparator;
@@ -49,6 +50,10 @@ import java.util.stream.Collectors;
 public class MetricsApiSchedulerUtil {
 
     private static Log log = LogFactory.getLog(MetricsApiSchedulerUtil.class);
+    private static final APIManagerAnalyticsConfiguration analyticsConfiguration =
+            SPQueryExecutorUtil.getAnalyticsConfiguration();
+    public static final String SP_API_HOST = analyticsConfiguration.getReporterProperties()
+            .get(MetricsConstants.REST_API_URL_KEY);
 
     /**
      * Executes the given query in SP.
@@ -62,14 +67,11 @@ public class MetricsApiSchedulerUtil {
     public static JSONObject executeQueryOnStreamProcessor(String appName, String query)
             throws IOException, ParseException {
 
-        byte[] encodedAuth = Base64.getEncoder()
-                .encode((MetricsApiSchedulerConstants.SP_USERNAME + ":" + MetricsApiSchedulerConstants.SP_PASSWORD)
-                        .getBytes(StandardCharsets.ISO_8859_1));
-        String authHeader = "Basic " + new String(encodedAuth, StandardCharsets.UTF_8.toString());
+        String authHeader = SPQueryExecutorUtil.getAuthHeader();
 
         CloseableHttpClient httpClient = HttpClients.createDefault();
-        HttpPost httpPost = new HttpPost(MetricsApiSchedulerConstants.SP_API_HOST +
-                MetricsApiSchedulerConstants.SP_API_PATH);
+        HttpPost httpPost = new HttpPost(SP_API_HOST +
+                MetricsConstants.SP_API_PATH);
         httpPost.setHeader(HttpHeaders.AUTHORIZATION, authHeader);
         JSONObject jsonObject = new JSONObject();
         jsonObject.put("appName", appName);
@@ -145,8 +147,8 @@ public class MetricsApiSchedulerUtil {
 
         String[] timestamps = new String[2];
         Calendar calendar = Calendar.getInstance();
-        SimpleDateFormat formatter = new SimpleDateFormat(MetricsApiSchedulerConstants.SP_TIMESTAMP_PATTERN);
-        formatter.setTimeZone(TimeZone.getTimeZone(MetricsApiSchedulerConstants.TIME_ZONE));
+        SimpleDateFormat formatter = new SimpleDateFormat(MetricsConstants.SP_TIMESTAMP_PATTERN);
+        formatter.setTimeZone(TimeZone.getTimeZone(MetricsConstants.TIME_ZONE));
 
         // reset hour, minutes, seconds and millis
         calendar.set(Calendar.HOUR_OF_DAY, 0);
@@ -180,7 +182,7 @@ public class MetricsApiSchedulerUtil {
      */
     public static List<BigDecimal> getListFromJsonObject(JSONObject jsonObject) {
 
-        JSONArray recordsArray = (JSONArray) jsonObject.get(MetricsApiSchedulerConstants.RECORDS);
+        JSONArray recordsArray = (JSONArray) jsonObject.get(MetricsConstants.RECORDS);
         ArrayList<BigDecimal> elementList = new ArrayList<>(Arrays.asList(new BigDecimal[7]));
         Collections.fill(elementList, BigDecimal.valueOf(0));
 
@@ -227,7 +229,7 @@ public class MetricsApiSchedulerUtil {
             long timeFrom = (long) recordObj.get(3);
             String type = (String) recordObj.get(2);
             if (timeFrom >= from && timeFrom < to) {
-                if (MetricsApiSchedulerConstants.SCHEDULED_OUTAGE.equals(type)) {
+                if (MetricsConstants.SCHEDULED_OUTAGE.equals(type)) {
                     scheduledOutages.add(recordObj);
                 } else {
                     incidentOutages.add(recordObj);

@@ -7,21 +7,24 @@
  * You may not alter or remove any copyright or other notice from copies of this content.
  */
 
-package com.wso2.openbanking.cds.metrics.scheduler.internal;
+package com.wso2.openbanking.cds.metrics.internal;
 
 import org.wso2.carbon.apimgt.impl.APIManagerConfigurationService;
 import org.wso2.carbon.user.core.service.RealmService;
 
-public class MetricsApiSchedulerDataHolder {
-    private static MetricsApiSchedulerDataHolder instance = new MetricsApiSchedulerDataHolder();
+/**
+ * Metrics API Scheduler Data Holder class
+ */
+public class MetricsDataHolder {
+    private static final MetricsDataHolder instance = new MetricsDataHolder();
     private RealmService realmService;
     private APIManagerConfigurationService apiManagerConfigurationService;
 
-    private MetricsApiSchedulerDataHolder() {
+    private MetricsDataHolder() {
 
     }
 
-    public static MetricsApiSchedulerDataHolder getInstance() {
+    public static MetricsDataHolder getInstance() {
 
         return instance;
     }

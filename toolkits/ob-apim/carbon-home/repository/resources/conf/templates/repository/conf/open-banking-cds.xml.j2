@@ -73,4 +73,27 @@
         <HolderIdentifier>{{open_banking_cds.headers.holder_identifier}}</HolderIdentifier>
         {% endif %}
     </Headers>
+    <Metrics>
+        {% if open_banking_cds.metrics.aggregation_job.enabled is defined %}
+        <AggregationJobEnabled>{{open_banking_cds.metrics.aggregation_job.enabled}}</AggregationJobEnabled>
+        {% endif %}
+        {% if open_banking_cds.metrics.aggregation_job.cache_expiry_time is defined %}
+        <CacheExpiryTime>{{open_banking_cds.metrics.aggregation_job.cache_expiry_time}}</CacheExpiryTime>
+        {% endif %}
+        {% if open_banking_cds.metrics.aggregation_job.current_tps_retrieval_url is defined %}
+        <CurrentTpsRetrievalURL>{{open_banking_cds.metrics.aggregation_job.current_tps_retrieval_url}}</CurrentTpsRetrievalURL>
+        {% else %}
+        <CurrentTpsRetrievalURL>http://localhost:8007/CDSCurrentPeakTPSApp/CDSCurrentPeakTPSAppStream</CurrentTpsRetrievalURL>
+        {% endif %}
+        {% if open_banking_cds.metrics.aggregation_job.max_tps_aggregation_url is defined %}
+        <MaxTPSMetricsAggregationURL>{{open_banking_cds.metrics.aggregation_job.max_tps_aggregation_url}}</MaxTPSMetricsAggregationURL>
+        {% else %}
+        <MaxTPSMetricsAggregationURL>http://localhost:8007/CDSPeakTPSMetricsAggregationApp/MaxTPSMetricsAggregationInputStream</MaxTPSMetricsAggregationURL>
+        {% endif %}
+        {% if open_banking_cds.metrics.aggregation_job.availability_aggregation_url is defined %}
+        <AvailabilityAggregationURL>{{open_banking_cds.metrics.availability_aggregation_url}}</AvailabilityAggregationURL>
+        {% else %}
+        <AvailabilityAggregationURL>http://localhost:8007/CDSAvailabilityMetricsAggregationApp/AvailabilityMetricsAggregationInputStream</AvailabilityAggregationURL>
+        {% endif %}
+    </Metrics>
 </Server>

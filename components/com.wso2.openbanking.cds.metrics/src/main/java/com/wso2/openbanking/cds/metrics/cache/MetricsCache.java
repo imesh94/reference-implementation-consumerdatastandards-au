@@ -14,7 +14,6 @@ import com.wso2.openbanking.cds.common.config.OpenBankingCDSConfigParser;
 
 import java.math.BigDecimal;
 import java.util.List;
-import java.util.Map;
 
 /**
  * Cache definition to store Metrics aggregated data.
@@ -35,8 +34,8 @@ public class MetricsCache extends OpenBankingBaseCache<MetricsCacheKey, List<Big
 
         super(CACHE_NAME);
 
-        accessExpiryMinutes = OpenBankingCDSConfigParser.getInstance().getCacheExpiryInMinutes();
-        modifiedExpiryMinutes = OpenBankingCDSConfigParser.getInstance().getCacheExpiryInMinutes();
+        accessExpiryMinutes = OpenBankingCDSConfigParser.getInstance().getMetricCacheExpiryInMinutes();
+        modifiedExpiryMinutes = OpenBankingCDSConfigParser.getInstance().getMetricCacheExpiryInMinutes();
     }
 
     public static MetricsCache getInstance() {

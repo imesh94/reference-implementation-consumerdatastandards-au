@@ -12,40 +12,33 @@
 
 -- Input to retrieve aggregated availability data from database
 @Source(type = 'http-request',
-        source.id='AvailabilityMetricsAggregationRetrieveStream',
-        receiver.url='http://<ANALYTICS_HOSTNAME>:8007/CDSAvailabilityMetricsAggregationApp/AvailabilityMetricsAggregationRetrieveStream',
-        basic.auth.enabled='true',
-        @map(type = 'json',@attributes(MESSAGE_ID='trp:messageId', AGGREGATED_DATE='$.event.date')))
-define stream AvailabilityMetricsAggregationRetrieveStream(MESSAGE_ID string, AGGREGATED_DATE string);
+        source.id='AvailabilityMetricsAggregationInputStream',
+        receiver.url='http://<BI_HOSTNAME>:8007/CDSAvailabilityMetricsAggregationApp/AvailabilityMetricsAggregationInputStream',
+        basic.auth.enabled='false',
+        @map(type = 'json',@attributes(MESSAGE_ID='trp:messageId', availability_data='$.event')))
+define stream AvailabilityMetricsAggregationInputStream(MESSAGE_ID string, availability_data string);
 
 -- Output to retrieve aggregated availability data from database
-@sink(type='http-response', source.id='AvailabilityMetricsAggregationRetrieveStream', message.id='{{MESSAGE_ID}}', @map(type='json'))
-define stream AvailabilityMetricsAggregationRetrieveOutputStream(MESSAGE_ID string, AGGREGATED_DATE string, TIMESTAMP long, AGG_MONTH int, AVAILABILITY_AGG_DATA String);
-
--- Input to store aggregated availability data to database
-@source(type='wso2event',  @map(type='wso2event'))
-define stream AvailabilityMetricsAggregationInputStream(AGGREGATED_DATE string, AGG_MONTH int, AVAILABILITY_AGG_DATA String);
+@sink(type='http-response', source.id='AvailabilityMetricsAggregationInputStream', message.id='{{MESSAGE_ID}}', @map(type='json'))
+define stream AvailabilityMetricsAggregationRetrieveOutputStream(MESSAGE_ID string, RESPONSE String);
 
 -- Table with aggregated availability data
-@primaryKey('AGGREGATED_DATE', 'TIMESTAMP')
+@primaryKey('AGGREGATED_DATE', 'TIMESTAMP', 'AGG_MONTH')
 @store(type='rdbms', datasource='OB_REPORTING_DB')
 define table AGGREGATED_CDS_AVAILABILITY_DATA(AGGREGATED_DATE string, TIMESTAMP long, AGG_MONTH int, AVAILABILITY_AGG_DATA String);
 
+-- -- Extract Availability Data
+from AvailabilityMetricsAggregationInputStream#json:tokenizeAsObject ( availability_data, '$.availability_data')
+select MESSAGE_ID, json:getString(jsonElement, '$.date_aggregated') as AGGREGATED_DATE,
+        json:getInt(jsonElement, '$.agg_month') as AGG_MONTH,
+        json:getString(jsonElement, '$.availability_agg_data') as AVAILABILITY_AGG_DATA
+insert into AvailabilityMetricsAggregationRawStream;
+
 -- -- store aggregated availability data to database
-from AvailabilityMetricsAggregationInputStream
+from AvailabilityMetricsAggregationRawStream
 select AGGREGATED_DATE, time:timestampInMilliseconds() as TIMESTAMP, AGG_MONTH, AVAILABILITY_AGG_DATA
 insert into AGGREGATED_CDS_AVAILABILITY_DATA;
 
--- -- retrieve aggregated availability data to database
-from AvailabilityMetricsAggregationRetrieveStream as a LEFT OUTER JOIN AGGREGATED_CDS_AVAILABILITY_DATA as d
-        on a.AGGREGATED_DATE == d.AGGREGATED_DATE
-select a.MESSAGE_ID, a.AGGREGATED_DATE, d.TIMESTAMP, d.AGG_MONTH, d.AVAILABILITY_AGG_DATA
-insert into AvailabilityDataStream;
-
-from AvailabilityDataStream[TIMESTAMP is NULL]
-select MESSAGE_ID, AGGREGATED_DATE, time:timestampInMilliseconds() as TIMESTAMP, 0 as AGG_MONTH, "0" as AVAILABILITY_AGG_DATA
-insert into AvailabilityMetricsAggregationRetrieveOutputStream;
-
-from AvailabilityDataStream[NOT(TIMESTAMP is NULL)]
-select *
+from AvailabilityMetricsAggregationRawStream
+select MESSAGE_ID, "OK" as RESPONSE
 insert into AvailabilityMetricsAggregationRetrieveOutputStream;

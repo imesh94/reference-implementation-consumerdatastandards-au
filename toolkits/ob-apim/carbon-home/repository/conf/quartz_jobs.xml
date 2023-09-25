@@ -18,8 +18,8 @@
                 <group>AdminApiScheduler</group>
                 <job-name>MetricsApiSchedulerCronJob</job-name>
                 <job-group>AdminApiScheduler</job-group>
-                <!-- trigger at 00:00:00am every day-->
-                <cron-expression>0 0 14 * * ?</cron-expression>
+                <!-- trigger at 03:00:00am every day-->
+                <cron-expression>0 0 03 * * ?</cron-expression>
             </cron>
         </trigger>
     </schedule>

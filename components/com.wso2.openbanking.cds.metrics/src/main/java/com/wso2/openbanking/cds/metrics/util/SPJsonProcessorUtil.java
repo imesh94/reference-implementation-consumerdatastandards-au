@@ -213,10 +213,10 @@ public class SPJsonProcessorUtil {
     /**
      * Get server availability between given time period from the list of ServerOutages.
      *
-     * @param serverOutageDataList
-     * @param from
-     * @param to
-     * @return
+     * @param serverOutageDataList - Server Outage Data List
+     * @param from - from value
+     * @param to - to value
+     * @return availability value
      */
     public static BigDecimal getAvailabilityFromServerOutages(List<ServerOutageDataModel> serverOutageDataList,
                                                               long from, long to) {
@@ -255,8 +255,8 @@ public class SPJsonProcessorUtil {
     /**
      * Calculate total server outage time from ServerOutageDataModel.
      *
-     * @param serverOutages
-     * @return
+     * @param serverOutages - Server Outages
+     * @return server outage time
      */
     @Generated(message = "Excluded from code coverage")
     private static long calculateServerOutageTime(List<ServerOutageDataModel> serverOutages) {

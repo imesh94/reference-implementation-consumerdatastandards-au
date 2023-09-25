@@ -7,14 +7,14 @@
  * You may not alter or remove any copyright or other notice from copies of this content.
  */
 
-package com.wso2.openbanking.cds.metrics.scheduler;
+package com.wso2.openbanking.cds.metrics.periodic.job;
 
 import com.wso2.openbanking.accelerator.common.exception.OpenBankingException;
 import com.wso2.openbanking.cds.common.config.OpenBankingCDSConfigParser;
-import com.wso2.openbanking.cds.common.data.publisher.CDSDataPublishingServiceImpl;
 import com.wso2.openbanking.cds.metrics.cache.MetricsCache;
-import com.wso2.openbanking.cds.metrics.scheduler.util.MetricsApiSchedulerConstants;
-import com.wso2.openbanking.cds.metrics.scheduler.util.MetricsApiSchedulerUtil;
+import com.wso2.openbanking.cds.metrics.constants.MetricsConstants;
+import com.wso2.openbanking.cds.metrics.internal.MetricsDataHolder;
+import com.wso2.openbanking.cds.metrics.periodic.util.MetricsApiSchedulerUtil;
 import com.wso2.openbanking.cds.metrics.util.SPQueryExecutorUtil;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -25,6 +25,9 @@ import org.quartz.DisallowConcurrentExecution;
 import org.quartz.Job;
 import org.quartz.JobExecutionContext;
 import org.quartz.JobExecutionException;
+import org.wso2.carbon.context.CarbonContext;
+import org.wso2.carbon.context.PrivilegedCarbonContext;
+import org.wso2.carbon.user.api.UserStoreException;
 
 import java.io.IOException;
 import java.math.BigDecimal;
@@ -40,12 +43,12 @@ import java.util.ArrayList;
 import java.util.List;
 
 /**
- * Admin Api Metrics Aggregation Scheduler Job
+ * Admin Api Metrics Aggregation Job
  */
 @DisallowConcurrentExecution
-public class MetricsApiSchedulerJob implements Job {
+public class MetricsAggregationJob implements Job {
 
-    private static final Log log = LogFactory.getLog(MetricsApiSchedulerJob.class);
+    private static final Log log = LogFactory.getLog(MetricsAggregationJob.class);
 
     DateTimeFormatter dtf = DateTimeFormatter.ofPattern("yyyy-MM-dd");
     LocalDateTime currentDateInLocalTime = LocalDateTime.now();
@@ -55,18 +58,31 @@ public class MetricsApiSchedulerJob implements Job {
     @Override
     public void execute(JobExecutionContext jobExecutionContext) throws JobExecutionException {
 
-        log.debug("Executing Admin Api Metrics Aggregation Scheduler Job");
+        log.info("Executing Admin Api Metrics Aggregation Scheduler Job");
 
         try {
+            // Set tenant domain if already not defined.
+            final String tenantDomain = MetricsDataHolder.getInstance()
+                    .getRealmService().getTenantManager().getSuperTenantDomain();
+            final int tenantId = MetricsDataHolder.getInstance()
+                    .getRealmService().getTenantManager().getTenantId(tenantDomain);
+
+            if (CarbonContext.getThreadLocalCarbonContext().getTenantDomain() == null) {
+                PrivilegedCarbonContext.getThreadLocalCarbonContext().setTenantDomain(tenantDomain);
+                PrivilegedCarbonContext.getThreadLocalCarbonContext().setTenantId(tenantId);
+            }
             //Aggregate Peak TPS data and store in cache
             aggregatePeakTpsData();
 
             //Aggregate Availability data and store in cache
             aggregateAvailabilityData();
+            log.info("Executing Admin Api Metrics Aggregation Scheduler Job successful!");
         } catch (OpenBankingException e) {
             log.error("Exception while running the Admin Api Metrics Aggregation Scheduler Job", e);
         } catch (IOException | ParseException e) {
             log.error("Exception while executing the queries on Stream Processor", e);
+        } catch (UserStoreException e) {
+            throw new RuntimeException(e);
         }
     }
 
@@ -80,7 +96,7 @@ public class MetricsApiSchedulerJob implements Job {
     private void aggregatePeakTpsData() throws IOException, ParseException, OpenBankingException {
         String spQuery = MetricsApiSchedulerUtil.getHistoricPeakTPSQuery();
         JSONObject tpsMetricsJsonObject = MetricsApiSchedulerUtil.executeQueryOnStreamProcessor(
-                MetricsApiSchedulerConstants.CDS_INVOCATION_METRICS_APP, spQuery);
+                MetricsConstants.CDS_INVOCATION_METRICS_APP, spQuery);
         List<BigDecimal> tpsMetricsList;
         if (tpsMetricsJsonObject != null) {
             tpsMetricsList = MetricsApiSchedulerUtil.getListFromJsonObject(tpsMetricsJsonObject);
@@ -130,7 +146,7 @@ public class MetricsApiSchedulerJob implements Job {
             spQuery = MetricsApiSchedulerUtil.getAvailabilityRecordsByTimePeriod(
                     timestamps[noOfMonthsForHistory - 1][0], timestamps[0][1]);
             availabilityMetricsJsonObject = MetricsApiSchedulerUtil.executeQueryOnStreamProcessor(
-                    MetricsApiSchedulerConstants.CDS_AVAILABILITY_METRICS_APP, spQuery);
+                    MetricsConstants.CDS_AVAILABILITY_METRICS_APP, spQuery);
             // calculate availability for past months
             if (availabilityMetricsJsonObject != null) {
                 for (int month = 0; month < noOfMonthsForHistory; month++) {
@@ -172,7 +188,7 @@ public class MetricsApiSchedulerJob implements Job {
 
         spQuery = MetricsApiSchedulerUtil.getOldestServerOutageRecord();
         serverOutageJsonObject = MetricsApiSchedulerUtil.executeQueryOnStreamProcessor(
-                MetricsApiSchedulerConstants.CDS_AVAILABILITY_METRICS_APP, spQuery);
+                MetricsConstants.CDS_AVAILABILITY_METRICS_APP, spQuery);
         JSONArray records = (JSONArray) serverOutageJsonObject.get("records");
 
         if (records != null && records.size() == 1) {
@@ -202,47 +218,47 @@ public class MetricsApiSchedulerJob implements Job {
     /**
      * Method to construct max Tps data as a JSONObject
      *
-     * @param currentDate - Current Date
+     * @param currentDate    - Current Date
      * @param tpsMetricsList - List of TPS metrics
      * @return JSONObject
      */
-    private static JSONObject constructMaxTPSEvent(String currentDate, List<BigDecimal> tpsMetricsList) {
+    private static net.minidev.json.JSONObject constructMaxTPSEvent(
+            String currentDate, List<BigDecimal> tpsMetricsList) {
         JSONArray eventsArray = new JSONArray();
         for (int aggregateDate = 0; aggregateDate < tpsMetricsList.size(); aggregateDate++) {
             JSONObject eventObj = new JSONObject();
-            eventObj.put(MetricsApiSchedulerConstants.DATE_AGGREGATED , currentDate);
-            eventObj.put(MetricsApiSchedulerConstants.AGG_DATE , aggregateDate);
-            eventObj.put(MetricsApiSchedulerConstants.MAX_TPS , tpsMetricsList.get(aggregateDate).toString());
+            eventObj.put(MetricsConstants.DATE_AGGREGATED , currentDate);
+            eventObj.put(MetricsConstants.AGG_DATE , aggregateDate);
+            eventObj.put(MetricsConstants.MAX_TPS , tpsMetricsList.get(aggregateDate).toString());
 
             eventsArray.add(eventObj);
         }
-        JSONObject event = new JSONObject();
-        event.put(MetricsApiSchedulerConstants.TPS_AGG_DATA, eventsArray);
+        net.minidev.json.JSONObject event = new net.minidev.json.JSONObject();
+        event.put(MetricsConstants.TPS_AGG_DATA, eventsArray);
         return event;
-
     }
 
     /**
      * Method to construct Availability data as a JSONObject
      *
-     * @param currentDate  - Current Date
+     * @param currentDate             - Current Date
      * @param availabilityMetricsList - List of availability metrics
      * @return JSONObject
      */
-    private static JSONObject constructAvailabilityEvent(String currentDate, List<BigDecimal> availabilityMetricsList) {
+    private static net.minidev.json.JSONObject constructAvailabilityEvent(
+            String currentDate, List<BigDecimal> availabilityMetricsList) {
         JSONArray eventsArray = new JSONArray();
         for (int aggregateDate = 0; aggregateDate < availabilityMetricsList.size(); aggregateDate++) {
             JSONObject eventObj = new JSONObject();
-            eventObj.put(MetricsApiSchedulerConstants.DATE_AGGREGATED, currentDate);
-            eventObj.put(MetricsApiSchedulerConstants.AGG_MONTH, aggregateDate);
-            eventObj.put(MetricsApiSchedulerConstants.AVAILABILITY_AGG_DATA,
+            eventObj.put(MetricsConstants.DATE_AGGREGATED, currentDate);
+            eventObj.put(MetricsConstants.AGG_MONTH, aggregateDate);
+            eventObj.put(MetricsConstants.AVAILABILITY_AGG_DATA,
                     availabilityMetricsList.get(aggregateDate).toString());
 
             eventsArray.add(eventObj);
         }
-        JSONObject event = new JSONObject();
-        event.put(MetricsApiSchedulerConstants.AVAILABILITY_DATA, eventsArray);
+        net.minidev.json.JSONObject event = new net.minidev.json.JSONObject();
+        event.put(MetricsConstants.AVAILABILITY_DATA, eventsArray);
         return event;
-
     }
 }
