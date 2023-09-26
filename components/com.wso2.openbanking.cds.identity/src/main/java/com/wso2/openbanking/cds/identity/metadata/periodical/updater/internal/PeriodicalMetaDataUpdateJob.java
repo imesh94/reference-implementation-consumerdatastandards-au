@@ -33,20 +33,14 @@ import org.wso2.carbon.identity.application.common.model.ServiceProviderProperty
 import org.wso2.carbon.user.core.UserStoreException;
 
 import java.util.Arrays;
-import java.util.Comparator;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
-import java.util.TreeMap;
 
 import static com.wso2.openbanking.cds.common.metadata.periodical.updater.constants.MetadataConstants.DATA_RECIPIENTS;
 import static com.wso2.openbanking.cds.common.metadata.periodical.updater.constants.MetadataConstants.DATA_RECIPIENT_ID;
 import static com.wso2.openbanking.cds.common.metadata.periodical.updater.constants.MetadataConstants.DATA_RECIPIENT_STATUS;
-import static com.wso2.openbanking.cds.common.metadata.periodical.updater.constants.MetadataConstants.DR_JSON_BRANDS;
-import static com.wso2.openbanking.cds.common.metadata.periodical.updater.constants.MetadataConstants.DR_JSON_SOFTWARE_PRODUCTS;
-import static com.wso2.openbanking.cds.common.metadata.periodical.updater.constants.MetadataConstants.DR_JSON_SP_KEY;
-import static com.wso2.openbanking.cds.common.metadata.periodical.updater.constants.MetadataConstants.DR_JSON_STATUS;
 import static com.wso2.openbanking.cds.common.metadata.periodical.updater.constants.MetadataConstants.LEGAL_ENTITY_ID;
 import static com.wso2.openbanking.cds.common.metadata.periodical.updater.constants.MetadataConstants.MAP_DATA_RECIPIENTS;
 import static com.wso2.openbanking.cds.common.metadata.periodical.updater.constants.MetadataConstants.MAP_SOFTWARE_PRODUCTS;
