@@ -679,13 +679,9 @@ public class OpenBankingCDSConfigParser {
      * @return int
      */
     public int getMetricCacheExpiryInMinutes() {
-
-        Object config = getConfigElementFromKey(CommonConstants.METRICS_CACHE_EXPIRY_TIME);
-        if (config != null && 0 < Integer.parseInt((String) config)) {
-            // configured value is a positive number
-            return Integer.parseInt((String) config);
-        }
-        return CommonConstants.METRICS_CACHE_DEFAULT_EXPIRY_TIME;
+        return performConfigIntegerValueCheck(
+                CommonConstants.METRICS_CACHE_EXPIRY_TIME,
+                CommonConstants.METRICS_CACHE_DEFAULT_EXPIRY_TIME);
     }
 
     /**
@@ -693,7 +689,7 @@ public class OpenBankingCDSConfigParser {
      *
      * @return String
      */
-    public String getMetricsCurrentTpsRetrievalUrl () {
+    public String getMetricsCurrentTPSRetrievalUrl () {
 
         return (String) getConfigElementFromKey(CommonConstants.METRICS_CURRENT_TPS_RETRIEVAL_URL);
     }
@@ -703,7 +699,7 @@ public class OpenBankingCDSConfigParser {
      *
      * @return String
      */
-    public String getMetricsMaxTpsRetrievalUrl () {
+    public String getMetricsMaxTPSRetrievalUrl() {
 
         return (String) getConfigElementFromKey(CommonConstants.METRICS_MAX_TPS_RETRIEVAL_URL);
     }
@@ -716,5 +712,25 @@ public class OpenBankingCDSConfigParser {
     public String getMetricsAvailabilityRetrievalUrl () {
 
         return (String) getConfigElementFromKey(CommonConstants.METRICS_AVAILABILITY_RETRIEVAL_URL);
+    }
+
+    /**
+     * Perform integer value check on given config.
+     *
+     * @return Object
+     */
+    public int performConfigIntegerValueCheck(String key, int defaultValue) {
+
+        Object config = getConfigElementFromKey(key);
+        if (config != null) {
+            try {
+                return Integer.parseInt((String) config);
+            } catch (NumberFormatException e) {
+                log.warn("Error while parsing config value for key : " + key + " . Expected value is a number. " +
+                        "Default value : " + defaultValue + " will be used.");
+                return defaultValue;
+            }
+        }
+        return defaultValue;
     }
 }
