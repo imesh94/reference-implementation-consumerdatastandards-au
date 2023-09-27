@@ -691,7 +691,7 @@ public class OpenBankingCDSConfigParser {
      */
     public String getMetricsCurrentTPSRetrievalUrl () {
 
-        return (String) getConfigElementFromKey(CommonConstants.METRICS_CURRENT_TPS_RETRIEVAL_URL);
+        return ((String) getConfigElementFromKey(CommonConstants.METRICS_CURRENT_TPS_RETRIEVAL_URL)).trim();
     }
 
     /**
@@ -701,7 +701,7 @@ public class OpenBankingCDSConfigParser {
      */
     public String getMetricsMaxTPSRetrievalUrl() {
 
-        return (String) getConfigElementFromKey(CommonConstants.METRICS_MAX_TPS_RETRIEVAL_URL);
+        return ((String) getConfigElementFromKey(CommonConstants.METRICS_MAX_TPS_RETRIEVAL_URL)).trim();
     }
 
     /**
@@ -711,7 +711,7 @@ public class OpenBankingCDSConfigParser {
      */
     public String getMetricsAvailabilityRetrievalUrl () {
 
-        return (String) getConfigElementFromKey(CommonConstants.METRICS_AVAILABILITY_RETRIEVAL_URL);
+        return ((String) getConfigElementFromKey(CommonConstants.METRICS_AVAILABILITY_RETRIEVAL_URL)).trim();
     }
 
     /**
