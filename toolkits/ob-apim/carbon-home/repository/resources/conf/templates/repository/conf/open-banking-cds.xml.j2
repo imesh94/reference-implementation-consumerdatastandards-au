@@ -78,9 +78,9 @@
         <CacheExpiryTime>{{open_banking_cds.metrics.aggregation_job.cache_expiry_time}}</CacheExpiryTime>
         {% endif %}
         {% if open_banking_cds.metrics.aggregation_job.current_tps_retrieval_url is defined %}
-        <CurrentTpsRetrievalURL>{{open_banking_cds.metrics.aggregation_job.current_tps_retrieval_url}}</CurrentTpsRetrievalURL>
+        <CurrentTPSRetrievalURL>{{open_banking_cds.metrics.aggregation_job.current_tps_retrieval_url}}</CurrentTPSRetrievalURL>
         {% else %}
-        <CurrentTpsRetrievalURL>http://localhost:8007/CDSCurrentPeakTPSApp/CDSCurrentPeakTPSAppStream</CurrentTpsRetrievalURL>
+        <CurrentTPSRetrievalURL>http://localhost:8007/CDSCurrentPeakTPSApp/CDSCurrentPeakTPSAppStream</CurrentTPSRetrievalURL>
         {% endif %}
         {% if open_banking_cds.metrics.aggregation_job.max_tps_aggregation_url is defined %}
         <MaxTPSMetricsAggregationURL>{{open_banking_cds.metrics.aggregation_job.max_tps_aggregation_url}}</MaxTPSMetricsAggregationURL>
