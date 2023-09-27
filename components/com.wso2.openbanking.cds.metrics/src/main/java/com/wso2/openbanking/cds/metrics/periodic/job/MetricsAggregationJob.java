@@ -16,11 +16,11 @@ import com.wso2.openbanking.cds.metrics.constants.MetricsConstants;
 import com.wso2.openbanking.cds.metrics.internal.MetricsDataHolder;
 import com.wso2.openbanking.cds.metrics.periodic.util.MetricsApiSchedulerUtil;
 import com.wso2.openbanking.cds.metrics.util.SPQueryExecutorUtil;
+import net.minidev.json.JSONArray;
+import net.minidev.json.JSONObject;
+import net.minidev.json.parser.ParseException;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.json.simple.JSONArray;
-import org.json.simple.JSONObject;
-import org.json.simple.parser.ParseException;
 import org.quartz.DisallowConcurrentExecution;
 import org.quartz.Job;
 import org.quartz.JobExecutionContext;
@@ -71,6 +71,7 @@ public class MetricsAggregationJob implements Job {
                 PrivilegedCarbonContext.getThreadLocalCarbonContext().setTenantDomain(tenantDomain);
                 PrivilegedCarbonContext.getThreadLocalCarbonContext().setTenantId(tenantId);
             }
+
             //Aggregate Peak TPS data and store in cache
             aggregatePeakTpsData();
 
@@ -79,24 +80,27 @@ public class MetricsAggregationJob implements Job {
             log.info("Executing Admin Api Metrics Aggregation Scheduler Job successful!");
         } catch (OpenBankingException e) {
             log.error("Exception while running the Admin Api Metrics Aggregation Scheduler Job", e);
-        } catch (IOException | ParseException e) {
-            log.error("Exception while executing the queries on Stream Processor", e);
         } catch (UserStoreException e) {
-            throw new RuntimeException(e);
+            log.error("Exception while retrieving the tenant domain and tenant ID from RealmService", e);
         }
     }
 
     /**
      * Method to retrieve and aggregate Peak TPS data
      *
-     * @throws IOException - IOException
-     * @throws ParseException - ParseException
      * @throws OpenBankingException - OpenBankingException
      */
-    private void aggregatePeakTpsData() throws IOException, ParseException, OpenBankingException {
+    private void aggregatePeakTpsData() throws OpenBankingException {
         String spQuery = MetricsApiSchedulerUtil.getHistoricPeakTPSQuery();
-        JSONObject tpsMetricsJsonObject = MetricsApiSchedulerUtil.executeQueryOnStreamProcessor(
-                MetricsConstants.CDS_INVOCATION_METRICS_APP, spQuery);
+        JSONObject tpsMetricsJsonObject = null;
+
+        try {
+            tpsMetricsJsonObject = SPQueryExecutorUtil.executeQueryOnStreamProcessor(
+                    MetricsConstants.CDS_INVOCATION_METRICS_APP, spQuery);
+        } catch (ParseException | IOException e) {
+            throw new OpenBankingException("Error occurred while retrieving TPS metrics data from SP", e);
+        }
+
         List<BigDecimal> tpsMetricsList;
         if (tpsMetricsJsonObject != null) {
             tpsMetricsList = MetricsApiSchedulerUtil.getListFromJsonObject(tpsMetricsJsonObject);
@@ -114,18 +118,16 @@ public class MetricsAggregationJob implements Job {
         //Store aggregated data in database
         SPQueryExecutorUtil.executeRequestOnStreamProcessor(
                 constructMaxTPSEvent(currentDate, tpsMetricsList),
-                openBankingCDSConfigParser.getMetricsMaxTpsRetrievalUrl());
+                openBankingCDSConfigParser.getMetricsMaxTPSRetrievalUrl());
 
     }
 
     /**
      * Retrieve and aggregate availability data
      *
-     * @throws IOException - IOException
-     * @throws ParseException - ParseException
      * @throws OpenBankingException - OpenBankingException
      */
-    private void aggregateAvailabilityData() throws OpenBankingException, IOException, ParseException {
+    private void aggregateAvailabilityData() throws OpenBankingException {
 
         List<BigDecimal> availabilityMetricsList = new ArrayList<>();
         String spQuery;
@@ -142,11 +144,17 @@ public class MetricsAggregationJob implements Job {
                     .withSecond(59).withDayOfMonth(lengthOfTheMonth).toInstant().toEpochMilli() / 1000;
             timestamps[month - 1] = new long[]{startTimeOfMonth, endTimeOfMonth};
         }
-        if (noOfMonthsForHistory > 0) {
+
+        try {
             spQuery = MetricsApiSchedulerUtil.getAvailabilityRecordsByTimePeriod(
                     timestamps[noOfMonthsForHistory - 1][0], timestamps[0][1]);
-            availabilityMetricsJsonObject = MetricsApiSchedulerUtil.executeQueryOnStreamProcessor(
+            availabilityMetricsJsonObject = SPQueryExecutorUtil.executeQueryOnStreamProcessor(
                     MetricsConstants.CDS_AVAILABILITY_METRICS_APP, spQuery);
+        } catch (ParseException | IOException e) {
+            throw new OpenBankingException("Error occurred while retrieving availability data from SP", e);
+        }
+
+        if (noOfMonthsForHistory > 0) {
             // calculate availability for past months
             if (availabilityMetricsJsonObject != null) {
                 for (int month = 0; month < noOfMonthsForHistory; month++) {
@@ -175,27 +183,25 @@ public class MetricsAggregationJob implements Job {
      * Get no of months to calculate the availability metrics based on the oldest record from server outages data
      *
      * @param currentDateTime - Current DateTime
-     * @throws IOException -    IOException
-     * @throws ParseException - ParseException
+     * @throws OpenBankingException - OpenBankingException
      * @return months count
      */
     private static int getMonthsCountForAvailabilityHistoricMetrics(ZonedDateTime currentDateTime)
-            throws IOException, ParseException, OpenBankingException {
+            throws OpenBankingException {
 
-        String spQuery;
-        JSONObject serverOutageJsonObject;
         int noOfMonthsCount = 0;
 
-        spQuery = MetricsApiSchedulerUtil.getOldestServerOutageRecord();
-        serverOutageJsonObject = MetricsApiSchedulerUtil.executeQueryOnStreamProcessor(
-                MetricsConstants.CDS_AVAILABILITY_METRICS_APP, spQuery);
-        JSONArray records = (JSONArray) serverOutageJsonObject.get("records");
+        try {
+            String spQuery = MetricsApiSchedulerUtil.getOldestServerOutageRecord();
+            JSONObject serverOutageJsonObject = SPQueryExecutorUtil.executeQueryOnStreamProcessor(
+                    MetricsConstants.CDS_AVAILABILITY_METRICS_APP, spQuery);
+            JSONArray records = (JSONArray) serverOutageJsonObject.get("records");
 
-        if (records != null && records.size() == 1) {
-            try {
+            if (records != null && records.size() == 1) {
                 JSONArray serverOutageDateJsonObject = (JSONArray) records.get(0);
                 LocalDateTime oldestRecordTime = LocalDateTime.ofInstant(
-                        Instant.ofEpochSecond((Long) serverOutageDateJsonObject.get(3)), ZoneOffset.UTC);
+                        Instant.ofEpochSecond(Long.parseLong(serverOutageDateJsonObject.get(3).toString())),
+                        ZoneOffset.UTC);
                 noOfMonthsCount = (int) ChronoUnit.MONTHS.between(
                         oldestRecordTime.withDayOfMonth(1).withHour(0).withMinute(0).withSecond(0),
                         currentDateTime.withDayOfMonth(1).withHour(0).withMinute(0).withSecond(0));
@@ -204,11 +210,13 @@ public class MetricsAggregationJob implements Job {
                 } else if (noOfMonthsCount < 0) {
                     noOfMonthsCount = 0;
                 }
-            } catch (DateTimeException e) {
-                throw new OpenBankingException("Error occurred while temporal calculation on server outage data", e);
-            } catch (RuntimeException e) {
-                throw new OpenBankingException("Error occurred while mapping server outage data", e);
             }
+        } catch (DateTimeException e) {
+            throw new OpenBankingException("Error occurred while temporal calculation on server outage data", e);
+        } catch (RuntimeException e) {
+            throw new OpenBankingException("Error occurred while mapping server outage data", e);
+        } catch (ParseException | IOException e) {
+            throw new OpenBankingException("Error occurred while retrieving server outage data from SP", e);
         }
 
         return noOfMonthsCount;
@@ -222,7 +230,7 @@ public class MetricsAggregationJob implements Job {
      * @param tpsMetricsList - List of TPS metrics
      * @return JSONObject
      */
-    private static net.minidev.json.JSONObject constructMaxTPSEvent(
+    private static JSONObject constructMaxTPSEvent(
             String currentDate, List<BigDecimal> tpsMetricsList) {
         JSONArray eventsArray = new JSONArray();
         for (int aggregateDate = 0; aggregateDate < tpsMetricsList.size(); aggregateDate++) {
@@ -233,7 +241,7 @@ public class MetricsAggregationJob implements Job {
 
             eventsArray.add(eventObj);
         }
-        net.minidev.json.JSONObject event = new net.minidev.json.JSONObject();
+        JSONObject event = new JSONObject();
         event.put(MetricsConstants.TPS_AGG_DATA, eventsArray);
         return event;
     }
@@ -245,7 +253,7 @@ public class MetricsAggregationJob implements Job {
      * @param availabilityMetricsList - List of availability metrics
      * @return JSONObject
      */
-    private static net.minidev.json.JSONObject constructAvailabilityEvent(
+    private static JSONObject constructAvailabilityEvent(
             String currentDate, List<BigDecimal> availabilityMetricsList) {
         JSONArray eventsArray = new JSONArray();
         for (int aggregateDate = 0; aggregateDate < availabilityMetricsList.size(); aggregateDate++) {
@@ -257,7 +265,7 @@ public class MetricsAggregationJob implements Job {
 
             eventsArray.add(eventObj);
         }
-        net.minidev.json.JSONObject event = new net.minidev.json.JSONObject();
+        JSONObject event = new JSONObject();
         event.put(MetricsConstants.AVAILABILITY_DATA, eventsArray);
         return event;
     }

@@ -70,9 +70,10 @@ public class MetricsPeriodicJobScheduler {
                     + QUARTZ_PROPERTY_FILE;
             String jobConfigFile = Paths.get(CarbonUtils.getCarbonConfigDirPath()).toString() + "/"
                     + QUARTZ_JOB_CONFIG_FILE;
-            boolean exists = new File(quartzConfigFile).exists();
+            boolean isCustomQuartzConfigDefined = new File(quartzConfigFile).exists();
+            boolean isQuartzJobConfigExists = new File(jobConfigFile).exists();
 
-            if (exists) {
+            if (isCustomQuartzConfigDefined) {
                 StdSchedulerFactory stdSchedulerFactory = new StdSchedulerFactory();
                 stdSchedulerFactory.initialize(quartzConfigFile);
                 scheduler = stdSchedulerFactory.getScheduler();
@@ -81,12 +82,17 @@ public class MetricsPeriodicJobScheduler {
             }
 
             // Specify the job configuration file dynamically
-            ClassLoadHelper classLoadHelper = new SimpleClassLoadHelper();
-            XMLSchedulingDataProcessor processor = new XMLSchedulingDataProcessor(classLoadHelper);
-            processor.processFileAndScheduleJobs(jobConfigFile, scheduler);
-            scheduler.start();
+            if (isQuartzJobConfigExists) {
+                ClassLoadHelper classLoadHelper = new SimpleClassLoadHelper();
+                XMLSchedulingDataProcessor processor = new XMLSchedulingDataProcessor(classLoadHelper);
+                processor.processFileAndScheduleJobs(jobConfigFile, scheduler);
+                scheduler.start();
+            } else {
+                log.error("Quartz job configuration file is not found in the path: " + jobConfigFile);
+            }
+
         } catch (Exception e) {
-            log.error("Exception while scheduling the job.", e);
+            log.error("Error while initializing MetricsPeriodicJobScheduler", e);
         }
     }
 

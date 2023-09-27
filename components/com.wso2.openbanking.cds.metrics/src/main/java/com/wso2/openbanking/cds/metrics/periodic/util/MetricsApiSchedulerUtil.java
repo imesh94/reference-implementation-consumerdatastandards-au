@@ -13,25 +13,12 @@ import com.wso2.openbanking.cds.metrics.constants.MetricsConstants;
 import com.wso2.openbanking.cds.metrics.util.DateTimeUtil;
 import com.wso2.openbanking.cds.metrics.util.SPQueryExecutorUtil;
 import com.wso2.openbanking.cds.metrics.util.TimeFormatEnum;
+import net.minidev.json.JSONArray;
+import net.minidev.json.JSONObject;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.apache.http.HttpEntity;
-import org.apache.http.HttpHeaders;
-import org.apache.http.HttpResponse;
-import org.apache.http.HttpStatus;
-import org.apache.http.client.methods.HttpPost;
-import org.apache.http.entity.ContentType;
-import org.apache.http.entity.StringEntity;
-import org.apache.http.impl.client.CloseableHttpClient;
-import org.apache.http.impl.client.HttpClients;
-import org.apache.http.util.EntityUtils;
-import org.json.simple.JSONArray;
-import org.json.simple.JSONObject;
-import org.json.simple.parser.JSONParser;
-import org.json.simple.parser.ParseException;
 import org.wso2.carbon.apimgt.impl.APIManagerAnalyticsConfiguration;
 
-import java.io.IOException;
 import java.math.BigDecimal;
 import java.math.RoundingMode;
 import java.text.SimpleDateFormat;
@@ -54,50 +41,6 @@ public class MetricsApiSchedulerUtil {
             SPQueryExecutorUtil.getAnalyticsConfiguration();
     public static final String SP_API_HOST = analyticsConfiguration.getReporterProperties()
             .get(MetricsConstants.REST_API_URL_KEY);
-
-    /**
-     * Executes the given query in SP.
-     *
-     * @param appName Name of the siddhi app.
-     * @param query   Name of the query
-     * @return - JSON object with result
-     * @throws IOException    IO Exception.
-     * @throws ParseException Parse Exception.
-     */
-    public static JSONObject executeQueryOnStreamProcessor(String appName, String query)
-            throws IOException, ParseException {
-
-        String authHeader = SPQueryExecutorUtil.getAuthHeader();
-
-        CloseableHttpClient httpClient = HttpClients.createDefault();
-        HttpPost httpPost = new HttpPost(SP_API_HOST +
-                MetricsConstants.SP_API_PATH);
-        httpPost.setHeader(HttpHeaders.AUTHORIZATION, authHeader);
-        JSONObject jsonObject = new JSONObject();
-        jsonObject.put("appName", appName);
-        jsonObject.put("query", query);
-        StringEntity requestEntity = new StringEntity(jsonObject.toString(), ContentType.APPLICATION_JSON);
-        httpPost.setEntity(requestEntity);
-        HttpResponse response;
-        try {
-            if (log.isDebugEnabled()) {
-                log.debug(String.format("Executing query %s on SP", query));
-            }
-            response = httpClient.execute(httpPost);
-            HttpEntity entity = response.getEntity();
-            if (response.getStatusLine().getStatusCode() != HttpStatus.SC_OK) {
-                String error = String.format("Error while invoking SP rest api : %s %s",
-                        response.getStatusLine().getStatusCode(), response.getStatusLine().getReasonPhrase());
-                log.error(error);
-                return null;
-            }
-            String responseStr = EntityUtils.toString(entity);
-            JSONParser parser = new JSONParser();
-            return (JSONObject) parser.parse(responseStr);
-        } finally {
-            httpPost.releaseConnection();
-        }
-    }
 
     /**
      * Return query for retrieving Max TPS data.
@@ -178,7 +121,7 @@ public class MetricsApiSchedulerUtil {
      * Convert JSON object returned from SP to a list.
      *
      * @param jsonObject - JSON object
-     * @return - total
+     * @return - List<BigDecimal>
      */
     public static List<BigDecimal> getListFromJsonObject(JSONObject jsonObject) {
 
@@ -187,11 +130,11 @@ public class MetricsApiSchedulerUtil {
         Collections.fill(elementList, BigDecimal.valueOf(0));
 
         JSONArray countArray;
-        Long currentElement;
+        Integer currentElement;
         int currentDay;
         for (Object object : recordsArray) {
             countArray = (JSONArray) object;
-            currentElement = (Long) (countArray.get(0));
+            currentElement = (Integer) (countArray.get(0));
             long currentTimestamp = ((Long) (countArray.get(1))) / 1000;
             currentDay = DateTimeUtil.getDaysAgo(currentTimestamp);
             if (currentDay > 0 && currentDay <= 7) { //allowed range of days
@@ -207,10 +150,10 @@ public class MetricsApiSchedulerUtil {
     /**
      * Get server availability between given time period from the list of ServerOutages
      *
-     * @param serverOutageDataList
-     * @param from
-     * @param to
-     * @return
+     * @param serverOutageDataList - List of ServerOutages
+     * @param from - from date in epoch
+     * @param to - to date in epoch
+     * @return BigDecimal
      */
     public static BigDecimal getAvailabilityFromServerOutages(JSONObject serverOutageDataList, long from, long to) {
 
@@ -226,7 +169,7 @@ public class MetricsApiSchedulerUtil {
         // filter the outages. scheduled vs incidents
         for (Object record : records) {
             JSONArray recordObj = (JSONArray) record;
-            long timeFrom = (long) recordObj.get(3);
+            long timeFrom = Long.parseLong(recordObj.get(3).toString());
             String type = (String) recordObj.get(2);
             if (timeFrom >= from && timeFrom < to) {
                 if (MetricsConstants.SCHEDULED_OUTAGE.equals(type)) {
@@ -253,17 +196,17 @@ public class MetricsApiSchedulerUtil {
     /**
      * Calculate total server outage time from ServerOutageData Object
      *
-     * @param serverOutages
-     * @return
+     * @param serverOutages - List of ServerOutages
+     * @return total server outage time
      */
     private static long calculateServerOutageTime(List<JSONArray> serverOutages) {
 
         long totalTime = 0;
 
         List<JSONArray> filteredServerOutages = serverOutages.stream()
-                .filter(outage -> (long) outage.get(4) >= (long) outage.get(3))
+                .filter(outage -> Long.parseLong(outage.get(4).toString()) >= Long.parseLong(outage.get(3).toString()))
                 .distinct()
-                .sorted(Comparator.comparingLong(outage -> (long) outage.get(3)))
+                .sorted(Comparator.comparingLong(outage -> Long.parseLong(outage.get(3).toString())))
                 .collect(Collectors.toList());
 
         if (!filteredServerOutages.isEmpty()) {
@@ -273,8 +216,8 @@ public class MetricsApiSchedulerUtil {
             for (int outageIndex = 0; outageIndex < filteredServerOutages.size(); outageIndex++) {
 
                 JSONArray serverOutage = filteredServerOutages.get(outageIndex);
-                long timeFrom = (long) serverOutage.get(3);
-                long timeTo = (long) serverOutage.get(4);
+                long timeFrom = Long.parseLong(serverOutage.get(3).toString());
+                long timeTo = Long.parseLong(serverOutage.get(4).toString());
                 if (timeFrom >= currentEndTime) {
                     // not an overlap
                     totalTime += timeTo - timeFrom;
