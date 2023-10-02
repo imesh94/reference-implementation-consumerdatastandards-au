@@ -106,5 +106,13 @@ public class CommonConstants {
     public static final String SP_USERNAME = "StreamProcessor.Username";
     public static final String SP_PASSWORD = "StreamProcessor.Password";
 
+    // metrics config constants
+    public static final String METRICS_AGGREGATION_JOB_ENABLED = "Metrics.AggregationJobEnabled";
+    public static final String METRICS_CACHE_EXPIRY_TIME = "Metrics.CacheExpiryTime";
+    public static final int METRICS_CACHE_DEFAULT_EXPIRY_TIME = 1380;
+    public static final String METRICS_CURRENT_TPS_RETRIEVAL_URL = "Metrics.CurrentTPSRetrievalURL";
+    public static final String METRICS_MAX_TPS_RETRIEVAL_URL = "Metrics.MaxTPSMetricsAggregationURL";
+    public static final String METRICS_AVAILABILITY_RETRIEVAL_URL = "Metrics.AvailabilityAggregationURL";
+
     private CommonConstants() {}
 }

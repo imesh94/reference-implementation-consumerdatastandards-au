@@ -18,6 +18,7 @@ import com.wso2.openbanking.cds.metrics.constants.MetricsConstants;
 import net.minidev.json.JSONObject;
 import net.minidev.json.parser.JSONParser;
 import net.minidev.json.parser.ParseException;
+import org.apache.axis2.transport.http.HTTPConstants;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
@@ -46,12 +47,11 @@ import java.util.Base64;
  */
 public class SPQueryExecutorUtil {
 
-    private static final String REST_API_URL_KEY = "stream.processor.rest.api.url";
-    private static final String SP_USERNAME_KEY = "stream.processor.rest.api.username";
-    private static final String SP_PASSWORD_KEY = "stream.processor.rest.api.password";
     private static Log log = LogFactory.getLog(SPQueryExecutorUtil.class);
 
     private static APIManagerAnalyticsConfiguration analyticsConfiguration = getAnalyticsConfiguration();
+    private static final String spApiHost = analyticsConfiguration.getReporterProperties()
+            .get(MetricsConstants.REST_API_URL_KEY);
 
     /**
      * Executes the given query in SP.
@@ -65,17 +65,9 @@ public class SPQueryExecutorUtil {
     public static JSONObject executeQueryOnStreamProcessor(String appName, String query)
             throws IOException, ParseException, OpenBankingException {
 
-        String spApiHost = analyticsConfiguration.getReporterProperties().get(REST_API_URL_KEY);
-        String spUserName = analyticsConfiguration.getReporterProperties().get(SP_USERNAME_KEY);
-        String spPassword = analyticsConfiguration.getReporterProperties().get(SP_PASSWORD_KEY);
-
-        byte[] encodedAuth = Base64.getEncoder()
-                .encode((spUserName + ":" + spPassword).getBytes(StandardCharsets.ISO_8859_1));
-        String authHeader = "Basic " + new String(encodedAuth, StandardCharsets.UTF_8.toString());
-
-        CloseableHttpClient httpClient = HTTPClientUtils.getHttpsClient();;
+        CloseableHttpClient httpClient = HTTPClientUtils.getHttpsClient();
         HttpPost httpPost = new HttpPost(spApiHost + MetricsConstants.SP_API_PATH);
-        httpPost.setHeader(HttpHeaders.AUTHORIZATION, authHeader);
+        httpPost.setHeader(HttpHeaders.AUTHORIZATION, getAuthHeader());
         JSONObject jsonObject = new JSONObject();
         jsonObject.put("appName", appName);
         jsonObject.put("query", query);
@@ -100,7 +92,50 @@ public class SPQueryExecutorUtil {
 
     }
 
-    protected static APIManagerAnalyticsConfiguration getAnalyticsConfiguration() {
+    /**
+     * Executes the given request in SP.
+     *
+     * @param event - event object.
+     * @param url - url of the SP.
+     */
+    public static void executeRequestOnStreamProcessor(JSONObject event, String url) {
+
+        JSONObject params = new JSONObject();
+        params.put("event", event);
+        log.debug("Executing requests on Stream Processor with url " + url);
+
+        try {
+            CloseableHttpClient httpClient = HTTPClientUtils.getHttpsClient();
+            HttpPost request = new HttpPost(url);
+            request.setEntity(new StringEntity(params.toString(), ContentType.APPLICATION_JSON));
+
+            request.addHeader(HTTPConstants.HEADER_AUTHORIZATION, getAuthHeader());
+
+            if (log.isDebugEnabled()) {
+                log.debug("Publishing event to Stream Processor on url:" + url + ", data:" + params);
+            }
+
+            HttpResponse response = httpClient.execute(request);
+
+            if (log.isDebugEnabled()) {
+                log.debug("Response from Stream Processor:" + response);
+            }
+
+            if (response.getStatusLine().getStatusCode() != HttpStatus.SC_OK) {
+                String error = String.format("Error while invoking SP rest api : %s %s",
+                        response.getStatusLine().getStatusCode(), response.getStatusLine().getReasonPhrase());
+                log.error(error);
+            }
+            log.debug("Returning response after executing requests on Stream Processor with url " + url);
+
+        } catch (IOException e) {
+            log.error("Exception occurred while publishing/receiving API stats: " + e.getMessage(), e);
+        } catch (OpenBankingException e) {
+            log.error("Exception occurred while getting Http client: " + e.getMessage(), e);
+        }
+    }
+
+    public static APIManagerAnalyticsConfiguration getAnalyticsConfiguration() {
 
         Bundle bundle = FrameworkUtil.getBundle(APIManagerConfigurationService.class);
         BundleContext context = bundle.getBundleContext();
@@ -108,5 +143,14 @@ public class SPQueryExecutorUtil {
                 context.getServiceReference(APIManagerConfigurationService.class);
         APIManagerConfigurationService service = context.getService(reference);
         return service.getAPIAnalyticsConfiguration();
+    }
+
+    public static String getAuthHeader() {
+        String spUserName = analyticsConfiguration.getReporterProperties().get(MetricsConstants.SP_USERNAME_KEY);
+        String spPassword = analyticsConfiguration.getReporterProperties().get(MetricsConstants.SP_PASSWORD_KEY);
+
+        byte[] encodedAuth = Base64.getEncoder()
+                .encode((spUserName + ":" + spPassword).getBytes(StandardCharsets.ISO_8859_1));
+        return "Basic " + new String(encodedAuth, StandardCharsets.UTF_8);
     }
 }

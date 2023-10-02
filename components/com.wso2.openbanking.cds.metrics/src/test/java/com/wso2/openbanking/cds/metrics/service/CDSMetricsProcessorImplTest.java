@@ -10,11 +10,13 @@
  
 package com.wso2.openbanking.cds.metrics.service;
 
+import com.wso2.openbanking.cds.metrics.cache.MetricsCache;
 import com.wso2.openbanking.cds.metrics.model.ResponseMetricsListModel;
 import com.wso2.openbanking.cds.metrics.util.MetricsProcessorUtil;
 import com.wso2.openbanking.cds.metrics.util.SPQueryExecutorUtil;
 import net.minidev.json.JSONArray;
 import net.minidev.json.JSONObject;
+import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.osgi.framework.Bundle;
 import org.osgi.framework.BundleContext;
@@ -25,7 +27,11 @@ import org.powermock.core.classloader.annotations.PrepareForTest;
 import org.powermock.modules.testng.PowerMockTestCase;
 import org.testng.Assert;
 import org.testng.annotations.Test;
+import org.wso2.carbon.apimgt.impl.APIManagerAnalyticsConfiguration;
 import org.wso2.carbon.apimgt.impl.APIManagerConfigurationService;
+
+import java.util.HashMap;
+import java.util.Map;
 
 import static org.powermock.api.mockito.PowerMockito.mock;
 import static org.powermock.api.mockito.PowerMockito.mockStatic;
@@ -34,9 +40,12 @@ import static org.powermock.api.mockito.PowerMockito.when;
 /**
  * Test class for CDSMetricsProcessorImpl.
  */
-@PrepareForTest({MetricsProcessorUtil.class, SPQueryExecutorUtil.class, FrameworkUtil.class})
+@PrepareForTest({MetricsProcessorUtil.class, SPQueryExecutorUtil.class, FrameworkUtil.class, MetricsCache.class})
 @PowerMockIgnore("jdk.internal.reflect.*")
 public class CDSMetricsProcessorImplTest extends PowerMockTestCase {
+
+    @Mock
+    MetricsCache metricsCacheMock;
 
     @Test
     public void testGetResponseMetricsModel() throws Exception {
@@ -51,6 +60,16 @@ public class CDSMetricsProcessorImplTest extends PowerMockTestCase {
         when(bundleContextMock.getServiceReference(APIManagerConfigurationService.class))
                 .thenReturn(serviceReferenceMock);
         when(bundleContextMock.getService(Mockito.any())).thenReturn(apiManagerConfigurationServiceMock);
+        APIManagerAnalyticsConfiguration apiManagerAnalyticsConfigurationMock =
+                mock(APIManagerAnalyticsConfiguration.class);
+        when(apiManagerConfigurationServiceMock.getAPIAnalyticsConfiguration())
+                .thenReturn(apiManagerAnalyticsConfigurationMock);
+        Map<String, String> reporterProperties = new HashMap<>();
+        reporterProperties.put("stream.processor.rest.api.url", "https://localhost:7444");
+        when(apiManagerAnalyticsConfigurationMock.getReporterProperties()).thenReturn(reporterProperties);
+        mockStatic(MetricsCache.class);
+        metricsCacheMock = mock(MetricsCache.class);
+        when(MetricsCache.getInstance()).thenReturn(metricsCacheMock);
 
         mockStatic(SPQueryExecutorUtil.class);
         JSONArray jsonArray = new JSONArray();

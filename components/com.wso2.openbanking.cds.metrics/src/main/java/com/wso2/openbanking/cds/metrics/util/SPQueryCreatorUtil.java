@@ -1,13 +1,10 @@
 /*
- * Copyright (c) 2021, WSO2 Inc. (http://www.wso2.com). All Rights Reserved.
+ * Copyright (c) 2021-2023, WSO2 LLC. (https://www.wso2.com). All Rights Reserved.
  *
- * This software is the property of WSO2 Inc. and its suppliers, if any.
+ * This software is the property of WSO2 LLC. and its suppliers, if any.
  * Dissemination of any information or reproduction of any material contained
- * herein is strictly forbidden, unless permitted by WSO2 in accordance with
- * the WSO2 Software License available at https://wso2.com/licenses/eula/3.1.
- * For specific language governing the permissions and limitations under this
- * license, please see the license as well as any agreement you’ve entered into
- * with WSO2 governing the purchase of this software and any associated services.
+ * herein in any form is strictly forbidden, unless permitted by WSO2 expressly.
+ * You may not alter or remove any copyright or other notice from copies of this content.
  */
 
 package com.wso2.openbanking.cds.metrics.util;
@@ -15,6 +12,8 @@ package com.wso2.openbanking.cds.metrics.util;
 import com.wso2.openbanking.cds.metrics.constants.MetricsConstants;
 
 import java.text.SimpleDateFormat;
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 import java.util.Calendar;
 import java.util.TimeZone;
 
@@ -191,16 +190,18 @@ public class SPQueryCreatorUtil {
     }
 
     /**
-     * Return query for retrieving Max TPS data.
+     * Return query for retrieving Max TPS aggregated data.
      *
      * @return - query string
      */
     static String getHistoricPeakTPSQuery() {
 
-        String[] timeRangeArray = getTimeGapForDays(7, TimeFormatEnum.EPOCH);
+        DateTimeFormatter dtf = DateTimeFormatter.ofPattern("yyyy-MM-dd");
+        String currentDate = dtf.format(LocalDateTime.now());
 
-        return String.format("from CDS_METRICS_TPS select MAX_TPS, TIMESTAMP*1000 as TIMESTAMP group by TIMESTAMP, " +
-                "MAX_TPS having TIMESTAMP > %s and TIMESTAMP < %s;", timeRangeArray[0], timeRangeArray[1]);
+        return String.format("from AGGREGATED_CDS_METRICS_TPS select DATE_AGGREGATED, AGG_DATE, MAX_TPS " +
+                        "group by DATE_AGGREGATED, AGG_DATE, MAX_TPS having DATE_AGGREGATED == \"%s\";",
+                currentDate);
     }
 
     /**
@@ -276,14 +277,18 @@ public class SPQueryCreatorUtil {
     }
 
     /**
-     * Return query for retrieving oldest records of server outages.
+     * Return query for retrieving Availability aggregated data.
      *
      * @return - query string
      */
-    static String getOldestServerOutageRecord() {
+    static String getAggregatedAvailabilityQuery() {
 
-        return ("from SERVER_OUTAGES_RAW_DATA select OUTAGE_ID, TIMESTAMP, TYPE, TIME_FROM, TIME_TO " +
-                "order by TIME_FROM asc limit 1;");
+        DateTimeFormatter dtf = DateTimeFormatter.ofPattern("yyyy-MM-dd");
+        String currentDate = dtf.format(LocalDateTime.now());
+
+        return String.format("from AGGREGATED_CDS_AVAILABILITY_DATA select AGGREGATED_DATE, AGG_MONTH, " +
+                "AVAILABILITY_AGG_DATA group by AGGREGATED_DATE, AGG_MONTH, AVAILABILITY_AGG_DATA " +
+                "having AGGREGATED_DATE == \"%s\" ;", currentDate);
     }
 
     /**

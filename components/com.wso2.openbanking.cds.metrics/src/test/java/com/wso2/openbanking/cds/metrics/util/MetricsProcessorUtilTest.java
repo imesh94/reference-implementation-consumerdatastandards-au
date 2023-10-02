@@ -11,9 +11,12 @@
 package com.wso2.openbanking.cds.metrics.util;
 
 import com.wso2.openbanking.accelerator.common.exception.OpenBankingException;
+import com.wso2.openbanking.cds.metrics.cache.MetricsCache;
+import com.wso2.openbanking.cds.metrics.cache.MetricsCacheKey;
 import net.minidev.json.JSONArray;
 import net.minidev.json.JSONObject;
 import net.minidev.json.parser.ParseException;
+import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.osgi.framework.Bundle;
 import org.osgi.framework.BundleContext;
@@ -25,6 +28,7 @@ import org.powermock.modules.testng.PowerMockTestCase;
 import org.testng.Assert;
 import org.testng.annotations.BeforeMethod;
 import org.testng.annotations.Test;
+import org.wso2.carbon.apimgt.impl.APIManagerAnalyticsConfiguration;
 import org.wso2.carbon.apimgt.impl.APIManagerConfigurationService;
 
 import java.io.IOException;
@@ -43,10 +47,13 @@ import static org.powermock.api.mockito.PowerMockito.when;
 /**
  * Test class for MetricsProcessorUtil.
  */
-@PrepareForTest({SPQueryExecutorUtil.class, FrameworkUtil.class})
+@PrepareForTest({SPQueryExecutorUtil.class, FrameworkUtil.class, MetricsCache.class})
 @PowerMockIgnore("jdk.internal.reflect.*")
 public class MetricsProcessorUtilTest extends PowerMockTestCase {
 
+    @Mock
+    MetricsCache metricsCacheMock;
+    MetricsCacheKey sampleCacheKey = new MetricsCacheKey("sampleCacheKey");
     JSONObject jsonObject = new JSONObject();
 
     @BeforeMethod
@@ -62,12 +69,27 @@ public class MetricsProcessorUtilTest extends PowerMockTestCase {
         when(bundleContextMock.getServiceReference(APIManagerConfigurationService.class))
                 .thenReturn(serviceReferenceMock);
         when(bundleContextMock.getService(Mockito.any())).thenReturn(apiManagerConfigurationServiceMock);
+        APIManagerAnalyticsConfiguration apiManagerAnalyticsConfigurationMock =
+                mock(APIManagerAnalyticsConfiguration.class);
+        when(apiManagerConfigurationServiceMock.getAPIAnalyticsConfiguration())
+                .thenReturn(apiManagerAnalyticsConfigurationMock);
+        Map<String, String> reporterProperties = new HashMap<>();
+        reporterProperties.put("stream.processor.rest.api.url", "https://localhost:7444");
+        when(apiManagerAnalyticsConfigurationMock.getReporterProperties()).thenReturn(reporterProperties);
 
         mockStatic(SPQueryExecutorUtil.class);
         JSONArray jsonArray = new JSONArray();
+        Object[] objects = new Object[8];
         jsonObject.put("records", jsonArray);
         when(SPQueryExecutorUtil.executeQueryOnStreamProcessor(Mockito.anyString(), Mockito.anyString()))
                 .thenReturn(jsonObject);
+
+        mockStatic(MetricsCache.class);
+        metricsCacheMock = mock(MetricsCache.class);
+        when(MetricsCache.getInstance()).thenReturn(metricsCacheMock);
+        List<BigDecimal> list = new ArrayList<>(Arrays.asList(BigDecimal.ONE, BigDecimal.ONE, BigDecimal.ONE,
+                BigDecimal.ONE, BigDecimal.ONE, BigDecimal.ONE, BigDecimal.ONE, BigDecimal.ONE));
+        when(metricsCacheMock.getFromCache(sampleCacheKey)).thenReturn(list);
     }
 
     @Test
@@ -173,9 +195,9 @@ public class MetricsProcessorUtilTest extends PowerMockTestCase {
 
         JSONArray jsonArray = new JSONArray();
         JSONArray jsonElement = new JSONArray();
-        jsonElement.add("anonymous");
+        jsonElement.add("0.2");
         jsonElement.add(Long.parseLong("1"));
-        jsonElement.add("anonymous");
+        jsonElement.add("0.3");
         jsonElement.add(Long.parseLong("2"));
         jsonElement.add(Long.parseLong("3"));
         jsonArray.add(jsonElement);

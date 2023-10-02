@@ -658,4 +658,79 @@ public class OpenBankingCDSConfigParser {
             return false;
         }
     }
+
+    /**
+     * Get metrics aggregation periodical job enable status.
+     *
+     * @return boolean
+     */
+    public boolean isMetricsPeriodicalJobEnabled() {
+        Object config = getConfigElementFromKey(CommonConstants.METRICS_AGGREGATION_JOB_ENABLED);
+        if (config != null) {
+            return Boolean.parseBoolean((String) config);
+        } else {
+            return false;
+        }
+    }
+
+    /**
+     * Get metric cache expiry time.
+     *
+     * @return int
+     */
+    public int getMetricCacheExpiryInMinutes() {
+        return performConfigIntegerValueCheck(
+                CommonConstants.METRICS_CACHE_EXPIRY_TIME,
+                CommonConstants.METRICS_CACHE_DEFAULT_EXPIRY_TIME);
+    }
+
+    /**
+     * Get Metrics current TPS Retrieval URL.
+     *
+     * @return String
+     */
+    public String getMetricsCurrentTPSRetrievalUrl () {
+
+        return ((String) getConfigElementFromKey(CommonConstants.METRICS_CURRENT_TPS_RETRIEVAL_URL)).trim();
+    }
+
+    /**
+     * Get Metrics max TPS Retrieval URL.
+     *
+     * @return String
+     */
+    public String getMetricsMaxTPSRetrievalUrl() {
+
+        return ((String) getConfigElementFromKey(CommonConstants.METRICS_MAX_TPS_RETRIEVAL_URL)).trim();
+    }
+
+    /**
+     * Get Metrics availability Retrieval URL.
+     *
+     * @return String
+     */
+    public String getMetricsAvailabilityRetrievalUrl () {
+
+        return ((String) getConfigElementFromKey(CommonConstants.METRICS_AVAILABILITY_RETRIEVAL_URL)).trim();
+    }
+
+    /**
+     * Perform integer value check on given config.
+     *
+     * @return Object
+     */
+    public int performConfigIntegerValueCheck(String key, int defaultValue) {
+
+        Object config = getConfigElementFromKey(key);
+        if (config != null) {
+            try {
+                return Integer.parseInt((String) config);
+            } catch (NumberFormatException e) {
+                log.warn("Error while parsing config value for key : " + key + " . Expected value is a number. " +
+                        "Default value : " + defaultValue + " will be used.");
+                return defaultValue;
+            }
+        }
+        return defaultValue;
+    }
 }

@@ -1,18 +1,16 @@
 /*
- * Copyright (c) 2021, WSO2 Inc. (http://www.wso2.com). All Rights Reserved.
+ * Copyright (c) 2021-2023, WSO2 LLC. (https://www.wso2.com). All Rights Reserved.
  *
- * This software is the property of WSO2 Inc. and its suppliers, if any.
+ * This software is the property of WSO2 LLC. and its suppliers, if any.
  * Dissemination of any information or reproduction of any material contained
- * herein is strictly forbidden, unless permitted by WSO2 in accordance with
- * the WSO2 Software License available at https://wso2.com/licenses/eula/3.1.
- * For specific language governing the permissions and limitations under this
- * license, please see the license as well as any agreement you’ve entered into
- * with WSO2 governing the purchase of this software and any associated services.
+ * herein in any form is strictly forbidden, unless permitted by WSO2 expressly.
+ * You may not alter or remove any copyright or other notice from copies of this content.
  */
 
 package com.wso2.openbanking.cds.metrics.util;
 
 import com.wso2.openbanking.accelerator.common.exception.OpenBankingException;
+import com.wso2.openbanking.cds.metrics.cache.MetricsCache;
 import com.wso2.openbanking.cds.metrics.constants.MetricsConstants;
 import com.wso2.openbanking.cds.metrics.model.ServerOutageDataModel;
 import net.minidev.json.JSONArray;
@@ -24,13 +22,9 @@ import org.apache.commons.logging.LogFactory;
 import java.io.IOException;
 import java.math.BigDecimal;
 import java.math.RoundingMode;
-import java.time.DateTimeException;
-import java.time.Instant;
-import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.ZoneOffset;
 import java.time.ZonedDateTime;
-import java.time.temporal.ChronoUnit;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -51,7 +45,7 @@ public class MetricsProcessorUtil {
      * Compose invocation metrics data per priority tier and day.
      *
      * @param period - PeriodEnum
-     * @return - invocation metrics map
+     * @return invocation metrics map
      * @throws OpenBankingException - OpenBankingException
      */
     public static Map<PriorityEnum, List<BigDecimal>> getInvocationMetrics(PeriodEnum period)
@@ -75,7 +69,7 @@ public class MetricsProcessorUtil {
      * Compose average response time metrics data per priority tier and day.
      *
      * @param period - PeriodEnum
-     * @return - average response time map
+     * @return average response time map
      * @throws OpenBankingException - OpenBankingException
      */
     public static Map<PriorityEnum, List<BigDecimal>> getAverageResponseMetrics(
@@ -98,7 +92,7 @@ public class MetricsProcessorUtil {
      * Compose total response time metrics data per priority tier and day.
      *
      * @param period - PeriodEnum
-     * @return - total response time map
+     * @return total response time map
      * @throws OpenBankingException - OpenBankingException
      */
     private static Map<PriorityEnum, List<BigDecimal>> getTotalResponseTimeMetrics(PeriodEnum period)
@@ -124,7 +118,7 @@ public class MetricsProcessorUtil {
      *
      * @param priority - priority tier
      * @param period   - PeriodEnum
-     * @return - list of invocation metrics
+     * @return list of invocation metrics
      * @throws OpenBankingException - OpenBankingException
      */
     private static List<BigDecimal> getInvocationMetricsByPriority(PriorityEnum priority, PeriodEnum period)
@@ -177,11 +171,11 @@ public class MetricsProcessorUtil {
      * Get response time metrics according to the given priority and day range.
      *
      * @param priority - priority tier
-     * @return - list of average response time metrics
+     * @return list of average response time metrics
      * @throws OpenBankingException - OpenBankingException
      */
     private static List<BigDecimal> getTotalResponseTimeMetricsByPriority(PriorityEnum priority, PeriodEnum period)
-            throws OpenBankingException, OpenBankingException {
+            throws OpenBankingException {
 
         String spQuery;
         JSONObject totalResponseMetricsJsonObject;
@@ -243,9 +237,9 @@ public class MetricsProcessorUtil {
     /**
      * Get performance metrics.
      *
-     * @param period               - Perion Enum
+     * @param period               - Period Enum
      * @param totalInvocationsList - List of total invocations for each
-     * @return - performance metrics list
+     * @return performance metrics list
      * @throws OpenBankingException - OpenBankingException
      */
     public static List<BigDecimal> getPerformanceMetrics(PeriodEnum period, List<BigDecimal> totalInvocationsList)
@@ -258,7 +252,8 @@ public class MetricsProcessorUtil {
     /**
      * Get total successful api invocations for each day.
      *
-     * @return - list of success invocation metrics
+     * @param period - Period Enum
+     * @return list of success invocation metrics
      * @throws OpenBankingException - OpenBankingException
      */
     private static List<BigDecimal> getSuccessInvocationsList(PeriodEnum period)
@@ -311,6 +306,7 @@ public class MetricsProcessorUtil {
     /**
      * Get api invocation count with errors.
      *
+     * @param period - Period Enum
      * @return - list of error invocation metrics
      * @throws OpenBankingException - OpenBankingException
      */
@@ -364,6 +360,8 @@ public class MetricsProcessorUtil {
     /**
      * Get rejected api invocation count due to throttling out.
      *
+     * @param period - Period Enum
+     * @param authentication - Authentication String
      * @return - list of rejected invocation metrics
      * @throws OpenBankingException - OpenBankingException
      */
@@ -447,7 +445,7 @@ public class MetricsProcessorUtil {
      * Used formula: averageTPS = (total no. of transactions for a day / no. of seconds in a day)
      *
      * @param totalTransactionsList - list of total transactions for each day.
-     * @return - list of average TPS
+     * @return list of average TPS
      */
     public static List<BigDecimal> getAverageTPSMetrics(List<BigDecimal> totalTransactionsList) {
 
@@ -467,7 +465,8 @@ public class MetricsProcessorUtil {
     /**
      * Get session count metrics for the given range of days.
      *
-     * @return - list of session counts
+     * @param period - Period Enum
+     * @return list of session counts
      * @throws OpenBankingException - OpenBankingException
      */
     public static List<BigDecimal> getSessionCountMetrics(PeriodEnum period) throws OpenBankingException {
@@ -519,7 +518,8 @@ public class MetricsProcessorUtil {
     /**
      * Get peak TPS metrics for the given range of days.
      *
-     * @return - list of peak TPS
+     * @param period - Period Enum
+     * @return list of peak TPS
      * @throws OpenBankingException - OpenBankingException
      */
     public static List<BigDecimal> getPeakTPSMetrics(PeriodEnum period) throws OpenBankingException {
@@ -549,18 +549,8 @@ public class MetricsProcessorUtil {
             // historic metrics
             if (PeriodEnum.HISTORIC == period || PeriodEnum.ALL == period) {
                 log.debug("Retrieving peak TPS metrics for past seven days.");
-                spQuery = SPQueryCreatorUtil.getHistoricPeakTPSQuery();
-                tpsMetricsJsonObject = SPQueryExecutorUtil.executeQueryOnStreamProcessor(
-                        MetricsConstants.CDS_INVOCATION_METRICS_APP, spQuery);
-                if (tpsMetricsJsonObject != null) {
-                    peakTPSList.addAll(SPJsonProcessorUtil.getListFromJsonObject(
-                            tpsMetricsJsonObject));
-                } else {
-                    log.error(String.format("Error occurred while retrieving peak TPS metrics for " +
-                            "the past 7 days using the query: %s", spQuery));
-                    throw new OpenBankingException("Null value returned after executing query for retrieving " +
-                            "peak TPS data for past 7 days on Stream Processor");
-                }
+                List<BigDecimal> peakTpsMetricsHistoryList = retrieveAggregatedPeakTPSData();
+                peakTPSList.addAll(peakTpsMetricsHistoryList);
             }
         } catch (ParseException | IOException e) {
             throw new OpenBankingException("Error occurred while retrieving peak TPS data", e);
@@ -571,7 +561,7 @@ public class MetricsProcessorUtil {
     /**
      * Get recipient count metrics.
      *
-     * @return - number of active data recipients
+     * @return number of active data recipients
      * @throws OpenBankingException - OpenBankingException
      */
     public static int getRecipientCountMetrics() throws OpenBankingException {
@@ -596,7 +586,7 @@ public class MetricsProcessorUtil {
     /**
      * Get customer count metrics.
      *
-     * @return - number of consent ids
+     * @return number of consent ids
      * @throws OpenBankingException - OpenBankingException
      */
     public static int getCustomerCountMetrics() throws OpenBankingException {
@@ -622,8 +612,8 @@ public class MetricsProcessorUtil {
     /**
      * Get availability count metrics.
      *
-     * @param periodEnum
-     * @return
+     * @param periodEnum - Period Enum
+     * @return list of availability metrics
      */
     public static List<BigDecimal> getAvailabilityMetrics(PeriodEnum periodEnum) throws OpenBankingException {
 
@@ -658,37 +648,8 @@ public class MetricsProcessorUtil {
             // historic metrics
             if (PeriodEnum.HISTORIC == periodEnum || PeriodEnum.ALL == periodEnum) {
                 log.debug("Retrieving availability metrics for past 12 months.");
-                int noOfMonthsForHistory = getMonthsCountForAvailabilityHistoricMetrics(currentDateTime);
-                // declaring timestamps for no of historic months
-                long[][] timestamps = new long[noOfMonthsForHistory][2];
-                for (int month = 1; month < noOfMonthsForHistory + 1; month++) {
-                    int lengthOfTheMonth = LocalDate.now().minusMonths(month).lengthOfMonth();
-                    long startTimeOfMonth = currentDateTime.minusMonths(month).withHour(0).withMinute(0)
-                            .withSecond(0).withDayOfMonth(1).toInstant().toEpochMilli() / 1000;
-                    long endTimeOfMonth = currentDateTime.minusMonths(month).withHour(23).withMinute(59)
-                            .withSecond(59).withDayOfMonth(lengthOfTheMonth).toInstant().toEpochMilli() / 1000;
-                    timestamps[month - 1] = new long[]{startTimeOfMonth, endTimeOfMonth};
-                }
-                if (noOfMonthsForHistory > 0) {
-                    spQuery = SPQueryCreatorUtil.getAvailabilityRecordsByTimePeriod(
-                            timestamps[noOfMonthsForHistory - 1][0], timestamps[0][1]);
-                    availabilityMetricsJsonObject = SPQueryExecutorUtil.executeQueryOnStreamProcessor(
-                            MetricsConstants.CDS_AVAILABILITY_METRICS_APP, spQuery);
-                    // calculate availability for past months
-                    if (availabilityMetricsJsonObject != null) {
-                        for (int month = 0; month < noOfMonthsForHistory; month++) {
-                            BigDecimal availabilityValues = SPJsonProcessorUtil.getAvailabilityFromServerOutages(
-                                    mapToServerOutageDataList(availabilityMetricsJsonObject),
-                                    timestamps[month][0], timestamps[month][1]);
-                            availabilityMetricsList.add(availabilityValues);
-                        }
-                    } else {
-                        log.error(String.format("Error occurred while retrieving invocation metrics " +
-                                "for the past months using the query: %s", spQuery));
-                        throw new OpenBankingException("Null value returned after executing query for retrieving" +
-                                "availability data for past months on Stream Processor");
-                    }
-                }
+                List<BigDecimal> availabilityMetricsHistoryList = retrieveAggregateAvailabilityData();
+                availabilityMetricsList.addAll(availabilityMetricsHistoryList);
             }
         } catch (ParseException | IOException e) {
             throw new OpenBankingException("Error occurred while retrieving availability data", e);
@@ -699,9 +660,9 @@ public class MetricsProcessorUtil {
     /**
      * Map server outages JSONObject from SP query to list of ServerOutageDataModels.
      *
-     * @param availabilityMetricsJsonObject
-     * @return
-     * @throws OpenBankingException
+     * @param availabilityMetricsJsonObject - Availability Metrics JsonObject
+     * @return list of server outage data
+     * @throws OpenBankingException - OpenBankingException
      */
     private static List<ServerOutageDataModel> mapToServerOutageDataList(JSONObject availabilityMetricsJsonObject)
             throws OpenBankingException {
@@ -726,8 +687,8 @@ public class MetricsProcessorUtil {
     /**
      * Map server outage JSONObject to ServerOutageDataModel.
      *
-     * @param serverOutageDateJsonObject
-     * @return
+     * @param serverOutageDateJsonObject - Server Outage Date JsonObject
+     * @return ServerOutageDataModel
      */
     private static ServerOutageDataModel getServerOutageDataModel(JSONArray serverOutageDateJsonObject) {
 
@@ -739,51 +700,6 @@ public class MetricsProcessorUtil {
                 Long.parseLong(serverOutageDateJsonObject.get(4).toString()));
     }
 
-    /**
-     * Get no of months to calculate the availability metrics based on the oldest record from server outages data.
-     *
-     * @param currentDateTime
-     * @return
-     * @throws IOException
-     * @throws ParseException
-     * @throws OpenBankingException
-     */
-    private static int getMonthsCountForAvailabilityHistoricMetrics(ZonedDateTime currentDateTime)
-            throws IOException, ParseException, OpenBankingException {
-
-        String spQuery;
-        JSONObject serverOutageJsonObject;
-        int noOfMonthsCount = 0;
-        ServerOutageDataModel dataModel;
-
-        spQuery = SPQueryCreatorUtil.getOldestServerOutageRecord();
-        serverOutageJsonObject = SPQueryExecutorUtil.executeQueryOnStreamProcessor(
-                MetricsConstants.CDS_AVAILABILITY_METRICS_APP, spQuery);
-        JSONArray records = (JSONArray) serverOutageJsonObject.get("records");
-
-        if (records != null && records.size() == 1) {
-            try {
-                JSONArray serverOutageDateJsonObject = (JSONArray) records.get(0);
-                dataModel = getServerOutageDataModel(serverOutageDateJsonObject);
-                LocalDateTime oldestRecordTime = LocalDateTime.ofInstant(
-                        Instant.ofEpochSecond(dataModel.getTimeFrom()), ZoneOffset.UTC);
-                noOfMonthsCount = (int) ChronoUnit.MONTHS.between(
-                        oldestRecordTime.withDayOfMonth(1).withHour(0).withMinute(0).withSecond(0),
-                        currentDateTime.withDayOfMonth(1).withHour(0).withMinute(0).withSecond(0));
-                if (noOfMonthsCount > 12) {
-                    noOfMonthsCount = 12;
-                } else if (noOfMonthsCount < 0) {
-                    noOfMonthsCount = 0;
-                }
-            } catch (DateTimeException e) {
-                throw new OpenBankingException("Error occurred while temporal calculation on server outage data", e);
-            } catch (RuntimeException e) {
-                throw new OpenBankingException("Error occurred while mapping server outage data", e);
-            }
-        }
-
-        return noOfMonthsCount;
-    }
 
     /**
      * Get map of metrics when priority tier lists are given.
@@ -793,7 +709,7 @@ public class MetricsProcessorUtil {
      * @param lowPriorityList     - low priority list
      * @param unattendedList      - unattended list
      * @param largePayloadList    - large payload list
-     * @return
+     * @return map of metrics
      */
     private static Map<PriorityEnum, List<BigDecimal>> getMetricsMap(List<BigDecimal> unauthenticatedList,
                                                                      List<BigDecimal> highPriorityList,
@@ -862,5 +778,65 @@ public class MetricsProcessorUtil {
             }
         }
         return resultList;
+    }
+
+    /**
+     * Method to retrieve aggregated Peak TPS data.
+     * If data is available in cache retrieve from cache, else retrieve from aggregated database table.
+     * @return list of aggregated peak TPS data
+     */
+    private static List<BigDecimal> retrieveAggregatedPeakTPSData()
+            throws IOException, ParseException, OpenBankingException {
+        List<BigDecimal> peakTpsData = new ArrayList<>();
+
+        //Retrieve data from cache
+        MetricsCache metricsCache = MetricsCache.getInstance();
+        Object aggregatedPeakTPSData = metricsCache.getFromCache(MetricsCache.getPeakTPSCacheKey());
+
+        if (aggregatedPeakTPSData != null) {
+            log.debug("Aggregated peak TPS data found in the cache.");
+            peakTpsData = (List<BigDecimal>) aggregatedPeakTPSData;
+        } else {
+            //Retrieve data from database
+            log.debug("Aggregated peak TPS data not found in the cache. Retrieve data from database.");
+            String spQuery = SPQueryCreatorUtil.getHistoricPeakTPSQuery();
+            JSONObject tpsMetricsJsonObject = SPQueryExecutorUtil.executeQueryOnStreamProcessor(
+                    MetricsConstants.CDS_PEAK_TPS_AGG_DATA_APP, spQuery);
+            if (tpsMetricsJsonObject != null) {
+                peakTpsData = SPJsonProcessorUtil.getListFromAggregatedData(tpsMetricsJsonObject, 7);
+            }
+        }
+
+        return peakTpsData;
+    }
+
+    /**
+     * Method to retrieve aggregated availability data.
+     * If data is available in cache retrieve from cache, else retrieve from aggregated database table.
+     * @return list of aggregated availability data
+     */
+    private static List<BigDecimal> retrieveAggregateAvailabilityData()
+            throws IOException, ParseException, OpenBankingException {
+        List<BigDecimal> availabilityData = new ArrayList<>();
+
+        //Retrieve data from cache
+        MetricsCache metricsCache = MetricsCache.getInstance();
+        Object aggregatedAvailabilityData = metricsCache.getFromCache(MetricsCache.getAvailabilityCacheKey());
+
+        if (aggregatedAvailabilityData != null) {
+            log.debug("Aggregated availability data found in the cache.");
+            availabilityData = (List<BigDecimal>) aggregatedAvailabilityData;
+        } else {
+            //Retrieve data from database
+            log.debug("Aggregated availability data not found in the cache. Retrieve data from database.");
+            String spQuery = SPQueryCreatorUtil.getAggregatedAvailabilityQuery();
+            JSONObject tpsMetricsJsonObject = SPQueryExecutorUtil.executeQueryOnStreamProcessor(
+                    MetricsConstants.CDS_AVAILABILITY_AGG_DATA_APP, spQuery);
+            if (tpsMetricsJsonObject != null) {
+                availabilityData = SPJsonProcessorUtil.getListFromAggregatedData(tpsMetricsJsonObject, 12);
+            }
+        }
+
+        return availabilityData;
     }
 }
