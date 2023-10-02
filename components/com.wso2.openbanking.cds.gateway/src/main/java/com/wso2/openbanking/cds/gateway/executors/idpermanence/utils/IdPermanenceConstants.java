@@ -37,6 +37,9 @@ public class IdPermanenceConstants {
     // Header Parameters
     public static final String DECRYPTED_SUB_REQUEST_PATH = "decrypted-sub-req-path";
 
+    //Context Properties
+    public static final String ENCRYPTED_ID_MAPPING = "encrypted-id-mapping";
+
     // response URLs
     public static final ImmutableList<String> RESOURCE_LIST_RES_URLS = ImmutableList.of(
             "/banking/accounts", "/banking/accounts/balances", "/banking/accounts/{accountId}/transactions",
