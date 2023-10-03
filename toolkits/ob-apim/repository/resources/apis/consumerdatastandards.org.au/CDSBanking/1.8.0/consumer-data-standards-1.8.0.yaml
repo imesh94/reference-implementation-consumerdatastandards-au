@@ -465,12 +465,14 @@ paths:
           description: Filter transactions to only transactions with amounts higher or equal to than this amount
           required: false
           type: string
+          pattern: '^\-?\d{1,16}\.\d{2,}$'
           x-cds-type: AmountString
         - name: max-amount
           in: query
           description: Filter transactions to only transactions with amounts less than or equal to than this amount
           required: false
           type: string
+          pattern: '^\-?\d{1,16}\.\d{2,}$'
           x-cds-type: AmountString
         - name: text
           in: query

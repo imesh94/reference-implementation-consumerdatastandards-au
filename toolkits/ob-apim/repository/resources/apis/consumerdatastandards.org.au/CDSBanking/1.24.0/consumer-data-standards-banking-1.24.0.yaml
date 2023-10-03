@@ -1146,6 +1146,7 @@ paths:
           required: false
           schema:
             type: string
+            pattern: '^\-?\d{1,16}\.\d{2,}$'
             x-cds-type: AmountString
           style: form
           x-cds-type: AmountString
@@ -1157,6 +1158,7 @@ paths:
           required: false
           schema:
             type: string
+            pattern: '^\-?\d{1,16}\.\d{2,}$'
             x-cds-type: AmountString
           style: form
           x-cds-type: AmountString

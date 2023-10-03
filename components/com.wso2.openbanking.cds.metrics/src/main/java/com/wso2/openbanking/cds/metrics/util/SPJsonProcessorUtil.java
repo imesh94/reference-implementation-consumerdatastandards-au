@@ -1,13 +1,10 @@
 /*
- * Copyright (c) 2021, WSO2 Inc. (http://www.wso2.com). All Rights Reserved.
+ * Copyright (c) 2021-2023, WSO2 LLC. (https://www.wso2.com). All Rights Reserved.
  *
- * This software is the property of WSO2 Inc. and its suppliers, if any.
+ * This software is the property of WSO2 LLC. and its suppliers, if any.
  * Dissemination of any information or reproduction of any material contained
- * herein is strictly forbidden, unless permitted by WSO2 in accordance with
- * the WSO2 Software License available at https://wso2.com/licenses/eula/3.1.
- * For specific language governing the permissions and limitations under this
- * license, please see the license as well as any agreement you’ve entered into
- * with WSO2 governing the purchase of this software and any associated services.
+ * herein in any form is strictly forbidden, unless permitted by WSO2 expressly.
+ * You may not alter or remove any copyright or other notice from copies of this content.
  */
 
 package com.wso2.openbanking.cds.metrics.util;
@@ -216,10 +213,10 @@ public class SPJsonProcessorUtil {
     /**
      * Get server availability between given time period from the list of ServerOutages.
      *
-     * @param serverOutageDataList
-     * @param from
-     * @param to
-     * @return
+     * @param serverOutageDataList - Server Outage Data List
+     * @param from - from value
+     * @param to - to value
+     * @return availability value
      */
     public static BigDecimal getAvailabilityFromServerOutages(List<ServerOutageDataModel> serverOutageDataList,
                                                               long from, long to) {
@@ -258,8 +255,8 @@ public class SPJsonProcessorUtil {
     /**
      * Calculate total server outage time from ServerOutageDataModel.
      *
-     * @param serverOutages
-     * @return
+     * @param serverOutages - Server Outages
+     * @return server outage time
      */
     @Generated(message = "Excluded from code coverage")
     private static long calculateServerOutageTime(List<ServerOutageDataModel> serverOutages) {
@@ -295,5 +292,35 @@ public class SPJsonProcessorUtil {
             }
         }
         return totalTime;
+    }
+
+    /**
+     * Get Aggregated Data list.
+     *
+     * @param jsonObject - Aggregated Data Object
+     * @param noOfRecords - number of records
+     * @return list of BigDecimal
+     */
+    static List<BigDecimal> getListFromAggregatedData(JSONObject jsonObject, int noOfRecords) {
+
+        JSONArray recordsArray = (JSONArray) jsonObject.get(RECORDS);
+        ArrayList<BigDecimal> elementList = new ArrayList<>(Arrays.asList(new BigDecimal[noOfRecords]));
+        Collections.fill(elementList, BigDecimal.valueOf(0));
+
+        JSONArray countArray;
+        String currentElement;
+        int currentDay;
+        for (Object object : recordsArray) {
+            countArray = (JSONArray) object;
+            currentDay = ((Long) countArray.get(1)).intValue();
+            currentElement = (String) (countArray.get(2));
+            if (currentDay >= 0 && currentDay < noOfRecords) { //allowed range
+                if (log.isDebugEnabled()) {
+                    log.debug(String.format("Adding metrics data for element %s", currentDay));
+                }
+                elementList.set(currentDay , new BigDecimal(currentElement));
+            }
+        }
+        return elementList;
     }
 }

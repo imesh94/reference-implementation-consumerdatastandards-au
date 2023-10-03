@@ -1,13 +1,10 @@
 /*
- * Copyright (c) 2021, WSO2 Inc. (http://www.wso2.com). All Rights Reserved.
+ * Copyright (c) 2021-2023, WSO2 LLC. (https://www.wso2.com). All Rights Reserved.
  *
- * This software is the property of WSO2 Inc. and its suppliers, if any.
+ * This software is the property of WSO2 LLC. and its suppliers, if any.
  * Dissemination of any information or reproduction of any material contained
- * herein is strictly forbidden, unless permitted by WSO2 in accordance with
- * the WSO2 Software License available at https://wso2.com/licenses/eula/3.1. For specific
- * language governing the permissions and limitations under this license,
- * please see the license as well as any agreement you’ve entered into with
- * WSO2 governing the purchase of this software and any associated services.
+ * herein in any form is strictly forbidden, unless permitted by WSO2 expressly.
+ * You may not alter or remove any copyright or other notice from copies of this content.
  */
 
 package com.wso2.openbanking.cds.gateway.executors.error.handler;
@@ -22,7 +19,9 @@ import com.wso2.openbanking.accelerator.gateway.executor.model.OpenBankingExecut
 import com.wso2.openbanking.accelerator.gateway.util.GatewayConstants;
 import com.wso2.openbanking.cds.common.error.handling.util.ErrorConstants;
 import com.wso2.openbanking.cds.common.error.handling.util.ErrorUtil;
+import com.wso2.openbanking.cds.gateway.executors.idpermanence.utils.IdPermanenceConstants;
 import com.wso2.openbanking.cds.gateway.executors.idpermanence.utils.IdPermanenceUtils;
+
 import net.minidev.json.JSONObject;
 import net.minidev.json.parser.JSONParser;
 import net.minidev.json.parser.ParseException;
@@ -31,6 +30,7 @@ import org.apache.commons.logging.LogFactory;
 import org.apache.http.HttpStatus;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Map;
 import java.util.UUID;
@@ -121,9 +121,11 @@ public class CDSErrorHandler implements OpenBankingGatewayExecutor {
             JSONObject oAuthErrorPayload = getOAuthErrorJSON(errors);
             obapiRequestContext.setModifiedPayload(oAuthErrorPayload.toString());
         } else {
+            Map<String, String> encryptedAccountIds = getEncryptedAccountIdMapFromContextProperty(
+                    obapiRequestContext.getContextProps().get(IdPermanenceConstants.ENCRYPTED_ID_MAPPING));
             String memberId = obapiRequestContext.getApiRequestInfo().getUsername();
             String appId = obapiRequestContext.getApiRequestInfo().getConsumerKey();
-            JsonObject errorPayload = getErrorJson(errors, memberId, appId);
+            JsonObject errorPayload = getErrorJson(errors, memberId, appId, encryptedAccountIds);
             obapiRequestContext.setModifiedPayload(errorPayload.toString());
         }
         Map<String, String> addedHeaders = obapiRequestContext.getAddedHeaders();
@@ -153,6 +155,9 @@ public class CDSErrorHandler implements OpenBankingGatewayExecutor {
         analyticsData.put(STATUS_CODE, statusCode);
         analyticsData.put(RESPONSE_PAYLOAD_SIZE, (long) obapiRequestContext.getModifiedPayload().length());
         obapiRequestContext.setAnalyticsData(analyticsData);
+
+        //Remove headers added by the id permanence executor
+        obapiRequestContext.getMsgInfo().getHeaders().remove(IdPermanenceConstants.DECRYPTED_SUB_REQUEST_PATH);
     }
 
     protected void handleResponseError(OBAPIResponseContext obapiResponseContext) {
@@ -171,9 +176,11 @@ public class CDSErrorHandler implements OpenBankingGatewayExecutor {
             JSONObject oAuthErrorPayload = getOAuthErrorJSON(errors);
             obapiResponseContext.setModifiedPayload(oAuthErrorPayload.toString());
         } else {
+            Map<String, String> encryptedAccountIds = getEncryptedAccountIdMapFromContextProperty(
+                    obapiResponseContext.getContextProps().get(IdPermanenceConstants.ENCRYPTED_ID_MAPPING));
             String memberId = obapiResponseContext.getApiRequestInfo().getUsername();
             String appId = obapiResponseContext.getApiRequestInfo().getConsumerKey();
-            JsonObject errorPayload = getErrorJson(errors, memberId, appId);
+            JsonObject errorPayload = getErrorJson(errors, memberId, appId, encryptedAccountIds);
             obapiResponseContext.setModifiedPayload(errorPayload.toString());
         }
         Map<String, String> addedHeaders = obapiResponseContext.getAddedHeaders();
@@ -198,6 +205,9 @@ public class CDSErrorHandler implements OpenBankingGatewayExecutor {
         analyticsData.put(STATUS_CODE, statusCode);
         analyticsData.put(RESPONSE_PAYLOAD_SIZE, (long) obapiResponseContext.getModifiedPayload().length());
         obapiResponseContext.setAnalyticsData(analyticsData);
+
+        //Remove headers added by the id permanence executor
+        obapiResponseContext.getMsgInfo().getHeaders().remove(IdPermanenceConstants.DECRYPTED_SUB_REQUEST_PATH);
     }
 
     public static JSONObject getOAuthErrorJSON(ArrayList<OpenBankingExecutorError> errors) {
@@ -210,7 +220,8 @@ public class CDSErrorHandler implements OpenBankingGatewayExecutor {
         return errorObj;
     }
 
-    public static JsonObject getErrorJson(ArrayList<OpenBankingExecutorError> errors, String memberId, String appId) {
+    public static JsonObject getErrorJson(ArrayList<OpenBankingExecutorError> errors, String memberId, String appId,
+                                          Map<String, String> encryptedAccountIds) {
 
         JsonArray errorList = new JsonArray();
         JsonObject parentObject = new JsonObject();
@@ -225,8 +236,14 @@ public class CDSErrorHandler implements OpenBankingGatewayExecutor {
                     if (ErrorConstants.CONSENT_ENFORCEMENT_ERROR.equals(error.getTitle())) {
                         errorObj.addProperty(ErrorConstants.TITLE, errorJSON.getAsString(ErrorConstants.TITLE));
                         if (errorJSON.get(ErrorConstants.ACCOUNT_ID) != null) {
-                            String encryptedId = IdPermanenceUtils.encryptAccountIdInErrorResponse(errorJSON,
-                                    memberId, appId);
+                            String accountId = errorJSON.getAsString(ErrorConstants.ACCOUNT_ID);
+                            String encryptedId;
+                            if (encryptedAccountIds != null && encryptedAccountIds.containsKey(accountId)) {
+                                encryptedId = encryptedAccountIds.get(accountId);
+                            } else {
+                                encryptedId = IdPermanenceUtils.encryptAccountIdInErrorResponse(errorJSON,
+                                        memberId, appId);
+                            }
                             errorObj.addProperty(ErrorConstants.DETAIL, encryptedId);
                         } else {
                             errorObj.addProperty(ErrorConstants.DETAIL, errorJSON.getAsString(ErrorConstants.DETAIL));
@@ -276,5 +293,26 @@ public class CDSErrorHandler implements OpenBankingGatewayExecutor {
         Map<String, String> addedHeaders = obapiRequestContext.getAddedHeaders();
         return ((headers != null && headers.containsKey(X_FAPI_INTERACTION_ID)) ||
                 (addedHeaders != null && addedHeaders.containsKey(X_FAPI_INTERACTION_ID)));
+    }
+
+    /**
+     * Get a map of encrypted account ids from the context property string.
+     * String format: "encryptedAccountId1:accountId1,encryptedAccountId2:accountId2"
+     *
+     * @param encryptedAccountIdMappings - Comma separated string containing encrypted account id mappings
+     * @return Map of encrypted and decrypted account ids
+     */
+    private Map<String, String> getEncryptedAccountIdMapFromContextProperty(String encryptedAccountIdMappings) {
+
+            Map<String, String> encryptedAccountIdMap = new HashMap<>();
+            if (encryptedAccountIdMappings != null) {
+                String[] encryptedAccountIdMappingArray = encryptedAccountIdMappings.split(",");
+                for (String encryptedAccountIdMapping : encryptedAccountIdMappingArray) {
+                    String[] encryptedAccountIdPair = encryptedAccountIdMapping.split(":");
+                    encryptedAccountIdMap.put(encryptedAccountIdPair[0].replaceAll("^\"|\"$", ""),
+                            encryptedAccountIdPair[1].replaceAll("^\"|\"$", ""));
+                }
+            }
+            return encryptedAccountIdMap;
     }
 }

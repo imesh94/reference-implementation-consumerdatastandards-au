@@ -27,6 +27,7 @@
     Object contactClaims = request.getAttribute("contactClaims");
     String contactClaimsString = contactClaims != null ? (String) contactClaims : "";
     session.setAttribute("contactClaims", contactClaimsString);
+
     if (session.getAttribute("profiles_data") == null || isConsentAmendment) {
         session.setAttribute("profiles_data", request.getAttribute("profiles_data"));
     }
@@ -68,6 +69,7 @@
                 request.getAttribute("consent_expiration") : session.getAttribute("consent_expiration");
         request.setAttribute("consent-expiry-date", consentExpiryDateTime);
         request.setAttribute("accountMaskingEnabled", session.getAttribute("account_masking_enabled"));
+        request.setAttribute("sharing_duration_value", session.getAttribute("sharing_duration_value"));
         requestDispatcher.forward(request, response);
     }
 %>
@@ -121,7 +123,7 @@
                                                 <c:if test="${record['is_joint_account'] eq true && record['is_secondary_account'] ne true}">
                                                     <p class="hide data-container" id="selectablePopoverContent" style='color: rgb(0, 0, 0); text-align: left'> ${record['linked_members_count']} other account holder(s) can share this joint account data at any time,
                                                         without each other&lsquo;s permission. <br/><br/> You can change sharing preferences for this account by going to &lsquo;Settings &gt;Data sharing &gt; Account permissions&rsquo;</p>
-                                                    <a id="selectablePopoverContentElement">&#9432;</a>
+                                                    <a class="selectablePopoverContentElement">&#9432;</a>
                                                 </c:if>
                                             </span>
 
@@ -184,6 +186,7 @@
                     <input type="hidden" name="isSharingDurationUpdated" id="isSharingDurationUpdated" value="${isSharingDurationUpdated}"/>
                     <input type="hidden" name="selectedProfileId" id="selectedProfileId" value="<%=selectedProfileId%>"/>
                     <input type="hidden" name="selectedProfileName" id="selectedProfileName" value="${selectedProfileName}"/>
+                    <input type="hidden" name="sharing_duration_value" id="sharing_duration_value" value="${sharing_duration_value}"/>
                 </div>
             </div>
 
@@ -296,7 +299,7 @@
             '</div>',
             '</div>'].join('');
 
-        $("#selectablePopoverContentElement").popover({
+        $(".selectablePopoverContentElement").popover({
             placement: 'right',
             title: '&check; Pre-approval enabled',
             content: $("#selectablePopoverContent").html(),

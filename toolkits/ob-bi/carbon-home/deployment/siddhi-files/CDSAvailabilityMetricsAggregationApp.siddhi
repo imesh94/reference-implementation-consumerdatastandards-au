@@ -1,0 +1,44 @@
+/*
+ * Copyright (c) 2023, WSO2 LLC. (https://www.wso2.com). All Rights Reserved.
+ *
+ * This software is the property of WSO2 LLC. and its suppliers, if any.
+ * Dissemination of any information or reproduction of any material contained
+ * herein in any form is strictly forbidden, unless permitted by WSO2 expressly.
+ * You may not alter or remove any copyright or other notice from copies of this content.
+ */
+
+@App:name('CDSAvailabilityMetricsAggregationApp')
+@App:description('Aggregate Availability to be used by CDS Metrics API')
+
+-- Input to retrieve aggregated availability data from database
+@Source(type = 'http-request',
+        source.id='AvailabilityMetricsAggregationInputStream',
+        receiver.url='http://<BI_HOSTNAME>:8007/CDSAvailabilityMetricsAggregationApp/AvailabilityMetricsAggregationInputStream',
+        basic.auth.enabled='false',
+        @map(type = 'json',@attributes(MESSAGE_ID='trp:messageId', availability_data='$.event')))
+define stream AvailabilityMetricsAggregationInputStream(MESSAGE_ID string, availability_data string);
+
+-- Output to retrieve aggregated availability data from database
+@sink(type='http-response', source.id='AvailabilityMetricsAggregationInputStream', message.id='{{MESSAGE_ID}}', @map(type='json'))
+define stream AvailabilityMetricsAggregationRetrieveOutputStream(MESSAGE_ID string, RESPONSE String);
+
+-- Table with aggregated availability data
+@primaryKey('AGGREGATED_DATE', 'TIMESTAMP', 'AGG_MONTH')
+@store(type='rdbms', datasource='OB_REPORTING_DB')
+define table AGGREGATED_CDS_AVAILABILITY_DATA(AGGREGATED_DATE string, TIMESTAMP long, AGG_MONTH int, AVAILABILITY_AGG_DATA String);
+
+-- -- Extract Availability Data
+from AvailabilityMetricsAggregationInputStream#json:tokenizeAsObject ( availability_data, '$.availability_data')
+select MESSAGE_ID, json:getString(jsonElement, '$.date_aggregated') as AGGREGATED_DATE,
+        json:getInt(jsonElement, '$.agg_month') as AGG_MONTH,
+        json:getString(jsonElement, '$.availability_agg_data') as AVAILABILITY_AGG_DATA
+insert into AvailabilityMetricsAggregationRawStream;
+
+-- -- store aggregated availability data to database
+from AvailabilityMetricsAggregationRawStream
+select AGGREGATED_DATE, time:timestampInMilliseconds() as TIMESTAMP, AGG_MONTH, AVAILABILITY_AGG_DATA
+insert into AGGREGATED_CDS_AVAILABILITY_DATA;
+
+from AvailabilityMetricsAggregationRawStream
+select MESSAGE_ID, "OK" as RESPONSE
+insert into AvailabilityMetricsAggregationRetrieveOutputStream;

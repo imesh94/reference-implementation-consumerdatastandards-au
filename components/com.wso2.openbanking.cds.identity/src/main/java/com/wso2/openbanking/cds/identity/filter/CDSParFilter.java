@@ -41,7 +41,7 @@ public class CDSParFilter extends CDSBaseFilter {
     private void initializeFilterValidators() {
         if (validators.isEmpty()) {
             log.debug("Adding CDSParFilter validators");
-            for (Object element : OpenBankingCDSConfigParser.getInstance().getRevokeFilterValidators()) {
+            for (Object element : OpenBankingCDSConfigParser.getInstance().getParFilterValidators()) {
                 validators.add((OBIdentityFilterValidator) OpenBankingUtils.
                         getClassInstanceFromFQN(element.toString()));
                 if (log.isDebugEnabled()) {
