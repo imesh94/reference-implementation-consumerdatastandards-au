@@ -310,6 +310,35 @@ public class OpenBankingCDSConfigParser {
     }
 
     /**
+     * Read data recipient status url from config.
+     *
+     * @return configured url, default value is "https://api.cdr.gov.au/cdr-register/v1/banking/data-recipients/status"
+     */
+    public String getDataRecipientStatusUrl() {
+
+        Object config = getConfigElementFromKey(CommonConstants.METADATA_CACHE_DATA_RECIPIENT_STATUS_URL);
+        if (config != null) {
+            return (String) config;
+        }
+        return CommonConstants.DEFAULT_DATA_RECIPIENT_STATUS_URL;
+    }
+
+    /**
+     * Read software product status url from config.
+     *
+     * @return configured url, default value is
+     * "https://api.cdr.gov.au/cdr-register/v1/banking/data-recipients/brands/software-products/status"
+     */
+    public String getSoftwareProductStatusUrl() {
+
+        Object config = getConfigElementFromKey(CommonConstants.METADATA_CACHE_SOFTWARE_PRODUCT_STATUS_URL);
+        if (config != null) {
+            return (String) config;
+        }
+        return CommonConstants.DEFAULT_SOFTWARE_PRODUCT_STATUS_URL;
+    }
+
+    /**
      * Read APIM DCR register url from config.
      *
      * @return configured url

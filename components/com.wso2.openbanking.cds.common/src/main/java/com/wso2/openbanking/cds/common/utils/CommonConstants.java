@@ -52,6 +52,9 @@ public class CommonConstants {
     public static final String METADATA_CACHE_ENABLED = METADATA_CACHE + ".EnableMetaDataCache";
     public static final String METADATA_CACHE_UPDATE_TIME = METADATA_CACHE + ".MetaDataCacheUpdatePeriod";
     public static final String METADATA_CACHE_DATA_RECIPIENTS_URL = METADATA_CACHE + ".DataRecipientsDiscoveryURL";
+    public static final String METADATA_CACHE_DATA_RECIPIENT_STATUS_URL = METADATA_CACHE + ".DataRecipientStatusURL";
+    public static final String METADATA_CACHE_SOFTWARE_PRODUCT_STATUS_URL = METADATA_CACHE +
+            ".SoftwareProductStatusURL";
     public static final String METADATA_CACHE_DCR_INTERNAL_URL = METADATA_CACHE + ".DCRInternalURL";
     public static final String METADATA_CACHE_APPLICATION_SEARCH_URL = METADATA_CACHE + ".APIMApplicationSearchURL";
     public static final String METADATA_CACHE_RETRY_COUNT = METADATA_CACHE + ".RetryCount";
@@ -83,6 +86,10 @@ public class CommonConstants {
     // Default value constants
     public static final String DEFAULT_DATA_RECIPIENT_DISCOVERY_URL =
             "https://api.cdr.gov.au/cdr-register/v1/banking/data-recipients";
+    public static final String DEFAULT_DATA_RECIPIENT_STATUS_URL =
+            "https://api.cdr.gov.au/cdr-register/v1/banking/data-recipients/status";
+    public static final String DEFAULT_SOFTWARE_PRODUCT_STATUS_URL =
+            "https://api.cdr.gov.au/cdr-register/v1/banking/data-recipients/brands/software-products/status";
     public static final int DEFAULT_META_DATA_CACHE_UPDATE_PERIOD = 5;
     public static final int DEFAULT_CACHE_EXPIRY = 2;
     public static final int DEFAULT_RETRY_COUNT = 2;

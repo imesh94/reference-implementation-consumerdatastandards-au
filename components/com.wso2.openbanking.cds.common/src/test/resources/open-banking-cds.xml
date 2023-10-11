@@ -37,6 +37,8 @@
         <EnableMetaDataCache>true</EnableMetaDataCache>
         <MetaDataCacheUpdatePeriod>2</MetaDataCacheUpdatePeriod>
         <DataRecipientsDiscoveryURL>https://test-discovery/</DataRecipientsDiscoveryURL>
+        <DataRecipientStatusURL>https://test-dr/</DataRecipientStatusURL>
+        <SoftwareProductStatusURL>https://test-sp/</SoftwareProductStatusURL>
         <DCRInternalURL>https://localhost:9446/api/openbanking/dynamic-client-registration/register</DCRInternalURL>
         <APIMApplicationSearchURL>https://localhost:9443/api/am/admin/v2/applications</APIMApplicationSearchURL>
         <RetryCount>3</RetryCount>

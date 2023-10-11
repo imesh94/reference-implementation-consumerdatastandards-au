@@ -113,6 +113,20 @@ public class OpenBankingCDSConfigParserTest {
     }
 
     @Test(priority = 7)
+    public void testGetDataRecipientStatusUrl() {
+        String dummyConfigFile = absolutePathForTestResources + "/open-banking-cds.xml";
+        OpenBankingCDSConfigParser openBankingCDSConfigParser = OpenBankingCDSConfigParser.getInstance(dummyConfigFile);
+        Assert.assertEquals(openBankingCDSConfigParser.getDataRecipientStatusUrl(), "https://test-dr/");
+    }
+
+    @Test(priority = 7)
+    public void testGetSoftwareProductStatusUrl() {
+        String dummyConfigFile = absolutePathForTestResources + "/open-banking-cds.xml";
+        OpenBankingCDSConfigParser openBankingCDSConfigParser = OpenBankingCDSConfigParser.getInstance(dummyConfigFile);
+        Assert.assertEquals(openBankingCDSConfigParser.getSoftwareProductStatusUrl(), "https://test-sp/");
+    }
+
+    @Test(priority = 7)
     public void testGetDcrInternalUrl() {
         String dummyConfigFile = absolutePathForTestResources + "/open-banking-cds.xml";
         OpenBankingCDSConfigParser openBankingCDSConfigParser = OpenBankingCDSConfigParser.getInstance(dummyConfigFile);
