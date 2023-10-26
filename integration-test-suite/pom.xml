@@ -73,7 +73,7 @@
                 <version>${org.testng.version}</version>
             </dependency>
             <dependency>
-                <groupId>com.wso2.openbanking.accelerator</groupId>
+                <groupId>com.wso2</groupId>
                 <artifactId>open-banking-test-framework</artifactId>
                 <version>${com.wso2.openbanking.test}</version>
                 <scope>compile</scope>
