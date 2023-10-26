@@ -46,7 +46,7 @@
             <scope>provided</scope>
         </dependency>
         <dependency>
-            <groupId>com.wso2</groupId>
+            <groupId>com.wso2.openbanking.accelerator</groupId>
             <artifactId>com.wso2.openbanking.accelerator.gateway</artifactId>
             <scope>provided</scope>
         </dependency>
