@@ -11,6 +11,7 @@
 package com.wso2.openbanking.cds.identity.dcr;
 
 import com.google.gson.Gson;
+import com.wso2.openbanking.accelerator.common.config.OpenBankingConfigParser;
 import com.wso2.openbanking.accelerator.common.constant.OpenBankingConstants;
 import com.wso2.openbanking.accelerator.common.util.JWTUtils;
 import com.wso2.openbanking.accelerator.identity.dcr.exception.DCRValidationException;
@@ -64,7 +65,8 @@ import static org.powermock.api.mockito.PowerMockito.when;
 /**
  * Test class for DCR functionalities.
  */
-@PrepareForTest({JWTUtils.class, OpenBankingCDSConfigParser.class, HTTPClientUtils.class})
+@PrepareForTest({JWTUtils.class, OpenBankingCDSConfigParser.class, HTTPClientUtils.class,
+        OpenBankingConfigParser.class})
 @PowerMockIgnore({"javax.net.ssl.*", "jdk.internal.reflect.*"})
 public class DCRUtilTest {
 
@@ -74,6 +76,7 @@ public class DCRUtilTest {
     private CDSRegistrationValidatorImpl extendedValidator = new CDSRegistrationValidatorImpl();
     private RegistrationRequest registrationRequest;
     private OpenBankingCDSConfigParser openBankingCDSConfigParser;
+    private OpenBankingConfigParser openBankingConfigParser;
     private Map<String, Object> cdsConfigMap = new HashMap<>();
     private static final String NULL = "null";
 
@@ -167,6 +170,16 @@ public class DCRUtilTest {
         openBankingCDSConfigParser = mock(OpenBankingCDSConfigParser.class);
         when(OpenBankingCDSConfigParser.getInstance()).thenReturn(openBankingCDSConfigParser);
         when(openBankingCDSConfigParser.getConfiguration()).thenReturn(cdsConfigMap);
+
+        mockStatic(OpenBankingConfigParser.class);
+        openBankingConfigParser = mock(OpenBankingConfigParser.class);
+        when(OpenBankingConfigParser.getInstance()).thenReturn(openBankingConfigParser);
+        PowerMockito.when(OpenBankingConfigParser.getInstance()
+                .getSoftwareEnvIdentificationSSAPropertyValueForSandbox()).thenReturn("sandbox");
+        PowerMockito.when(OpenBankingConfigParser.getInstance()
+                .getSoftwareEnvIdentificationSSAPropertyName()).thenReturn("software_environment");
+        when(openBankingConfigParser.getConfiguration()).thenReturn(new HashMap<>());
+
 
         JSONParser parser = new JSONParser();
         JSONObject json = (JSONObject) parser.parse(RegistrationTestConstants.ssaBodyJsonWithDummyWorkingURLs);
