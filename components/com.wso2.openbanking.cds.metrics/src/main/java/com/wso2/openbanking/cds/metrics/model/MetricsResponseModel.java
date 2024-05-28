@@ -1,68 +1,64 @@
 /*
- * Copyright (c) 2021, WSO2 Inc. (http://www.wso2.com). All Rights Reserved.
+ * Copyright (c) 2021-2024, WSO2 LLC. (https://www.wso2.com). All Rights Reserved.
  *
- * This software is the property of WSO2 Inc. and its suppliers, if any.
+ * This software is the property of WSO2 LLC. and its suppliers, if any.
  * Dissemination of any information or reproduction of any material contained
- * herein is strictly forbidden, unless permitted by WSO2 in accordance with
- * the WSO2 Software License available at https://wso2.com/licenses/eula/3.1.
- * For specific language governing the permissions and limitations under this
- * license, please see the license as well as any agreement you’ve entered into
- * with WSO2 governing the purchase of this software and any associated services.
+ * herein in any form is strictly forbidden, unless permitted by WSO2 expressly.
+ * You may not alter or remove any copyright or other notice from copies of this content.
  */
 
 package com.wso2.openbanking.cds.metrics.model;
 
+import com.wso2.openbanking.cds.metrics.util.AspectEnum;
+import com.wso2.openbanking.cds.metrics.util.PriorityEnum;
+
 import java.math.BigDecimal;
 import java.util.List;
+import java.util.Map;
 
 /**
- * Model class for CDS metrics data.
+ * Model class for CDS Metrics V3 data.
+ * In this model, List<BigDecimal> is used to represent metrics that require representation of data for multiple days.
+ * <p>
+ * For the CURRENT period, each list will contain a single value representing the metric for the current day.
+ * For the HISTORIC period, each list will contain seven elements representing the metrics for the last seven days.
+ * For the ALL period, the first element in the list represents the current day and the subsequent elements
+ * represent the metrics for the previous 7 days starting from yesterday.
  */
-public class ResponseMetricsListModel {
+public class MetricsResponseModel {
 
     private String requestTime;
-
-    // recipient count
     private int recipientCount;
-
-    // customer count
     private int customerCount;
+    private List<BigDecimal> errors;
+    private List<BigDecimal> peakTPS;
+    private List<BigDecimal> averageTPS;
+    private List<BigDecimal> performance;
+    private List<BigDecimal> sessionCount;
+    private List<BigDecimal> availability;
 
-    // invocations
+    // Invocations
     private List<BigDecimal> invocationUnauthenticated;
     private List<BigDecimal> invocationHighPriority;
     private List<BigDecimal> invocationLowPriority;
     private List<BigDecimal> invocationUnattended;
     private List<BigDecimal> invocationLargePayload;
 
-    // average response
+    // Average response
     private List<BigDecimal> averageResponseUnauthenticated;
     private List<BigDecimal> averageResponseHighPriority;
     private List<BigDecimal> averageResponseLowPriority;
     private List<BigDecimal> averageResponseUnattended;
     private List<BigDecimal> averageResponseLargePayload;
 
-    // average TPS
-    private List<BigDecimal> averageTPS;
-
-    // max TPS
-    private List<BigDecimal> peakTPS;
-
-    // errors
-    private List<BigDecimal> errors;
-
-    // rejections
+    // Rejections
     private List<BigDecimal> authenticatedEndpointRejections;
-    private List<BigDecimal> unauthenticatedEndpointRejectons;
+    private List<BigDecimal> unauthenticatedEndpointRejections;
 
-    // performance
-    private List<BigDecimal> performance;
 
-    // sessionCount
-    private List<BigDecimal> sessionCount;
-
-    // availabilityMetrics
-    private List<BigDecimal> availability;
+    public MetricsResponseModel(String requestTime) {
+        this.requestTime = requestTime;
+    }
 
     public String getRequestTime() {
         return requestTime;
@@ -128,6 +124,15 @@ public class ResponseMetricsListModel {
         this.invocationLargePayload = invocationLargePayload;
     }
 
+    public void setInvocations(Map<PriorityEnum, List<BigDecimal>> invocationMap) {
+
+        setInvocationUnauthenticated(invocationMap.get(PriorityEnum.UNAUTHENTICATED));
+        setInvocationHighPriority(invocationMap.get(PriorityEnum.HIGH_PRIORITY));
+        setInvocationLowPriority(invocationMap.get(PriorityEnum.LOW_PRIORITY));
+        setInvocationUnattended(invocationMap.get(PriorityEnum.UNATTENDED));
+        setInvocationLargePayload(invocationMap.get(PriorityEnum.LARGE_PAYLOAD));
+    }
+
     public List<BigDecimal> getAverageResponseUnauthenticated() {
         return averageResponseUnauthenticated;
     }
@@ -168,6 +173,15 @@ public class ResponseMetricsListModel {
         this.averageResponseLargePayload = averageResponseLargePayload;
     }
 
+    public void setAverageResponseTime(Map<PriorityEnum, List<BigDecimal>> averageResponseMap) {
+
+        setAverageResponseUnauthenticated(averageResponseMap.get(PriorityEnum.UNAUTHENTICATED));
+        setAverageResponseHighPriority(averageResponseMap.get(PriorityEnum.HIGH_PRIORITY));
+        setAverageResponseLowPriority(averageResponseMap.get(PriorityEnum.LOW_PRIORITY));
+        setAverageResponseUnattended(averageResponseMap.get(PriorityEnum.UNATTENDED));
+        setAverageResponseLargePayload(averageResponseMap.get(PriorityEnum.LARGE_PAYLOAD));
+    }
+
     public List<BigDecimal> getAverageTPS() {
         return averageTPS;
     }
@@ -200,12 +214,18 @@ public class ResponseMetricsListModel {
         this.authenticatedEndpointRejections = authenticatedEndpointRejections;
     }
 
-    public List<BigDecimal> getUnauthenticatedEndpointRejectons() {
-        return unauthenticatedEndpointRejectons;
+    public List<BigDecimal> getUnauthenticatedEndpointRejections() {
+        return unauthenticatedEndpointRejections;
     }
 
-    public void setUnauthenticatedEndpointRejectons(List<BigDecimal> unauthenticatedEndpointRejectons) {
-        this.unauthenticatedEndpointRejectons = unauthenticatedEndpointRejectons;
+    public void setUnauthenticatedEndpointRejections(List<BigDecimal> unauthenticatedEndpointRejectons) {
+        this.unauthenticatedEndpointRejections = unauthenticatedEndpointRejectons;
+    }
+
+    public void setRejections(Map<AspectEnum, List<BigDecimal>> rejectionsMap) {
+
+        setAuthenticatedEndpointRejections(rejectionsMap.get(AspectEnum.AUTHENTICATED));
+        setUnauthenticatedEndpointRejections(rejectionsMap.get(AspectEnum.UNAUTHENTICATED));
     }
 
     public List<BigDecimal> getPerformance() {
@@ -225,12 +245,10 @@ public class ResponseMetricsListModel {
     }
 
     public List<BigDecimal> getAvailability() {
-
         return availability;
     }
 
     public void setAvailability(List<BigDecimal> availability) {
-
         this.availability = availability;
     }
 }

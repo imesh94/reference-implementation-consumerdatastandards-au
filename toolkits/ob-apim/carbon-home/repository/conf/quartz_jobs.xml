@@ -16,8 +16,8 @@
         <job>
             <name>MetricsApiSchedulerCronJob</name>
             <group>AdminApiScheduler</group>
-            <description>Cron Job Task to run daily to aggregate availability and peak TPS data</description>
-            <job-class>com.wso2.openbanking.cds.metrics.periodic.job.MetricsAggregationJob</job-class>
+            <description>Daily cron job to cache historic metrics data</description>
+            <job-class>com.wso2.openbanking.cds.metrics.periodic.job.HistoricMetricsCacheJob</job-class>
         </job>
 
         <trigger>

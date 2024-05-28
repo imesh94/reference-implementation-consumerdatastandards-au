@@ -77,20 +77,15 @@
         {% if open_banking_cds.metrics.aggregation_job.cache_expiry_time is defined %}
         <CacheExpiryTime>{{open_banking_cds.metrics.aggregation_job.cache_expiry_time}}</CacheExpiryTime>
         {% endif %}
-        {% if open_banking_cds.metrics.aggregation_job.current_tps_retrieval_url is defined %}
-        <CurrentTPSRetrievalURL>{{open_banking_cds.metrics.aggregation_job.current_tps_retrieval_url}}</CurrentTPSRetrievalURL>
+        {% if open_banking_cds.metrics.tps_data_retrieval_url is defined %}
+        <TPSDataRetrievalURL>{{open_banking_cds.metrics.tps_data_retrieval_url}}</TPSDataRetrievalURL>
         {% else %}
-        <CurrentTPSRetrievalURL>http://localhost:8007/CDSCurrentPeakTPSApp/CDSCurrentPeakTPSAppStream</CurrentTPSRetrievalURL>
+        <TPSDataRetrievalURL>http://localhost:8007/CDSCurrentPeakTPSApp/CDSCurrentPeakTPSAppStream</TPSDataRetrievalURL>
         {% endif %}
-        {% if open_banking_cds.metrics.aggregation_job.max_tps_aggregation_url is defined %}
-        <MaxTPSMetricsAggregationURL>{{open_banking_cds.metrics.aggregation_job.max_tps_aggregation_url}}</MaxTPSMetricsAggregationURL>
+        {% if open_banking_cds.metrics.time_zone is defined %}
+        <TimeZone>{{open_banking_cds.metrics.time_zone}}</TimeZone>
         {% else %}
-        <MaxTPSMetricsAggregationURL>http://localhost:8007/CDSPeakTPSMetricsAggregationApp/MaxTPSMetricsAggregationInputStream</MaxTPSMetricsAggregationURL>
-        {% endif %}
-        {% if open_banking_cds.metrics.aggregation_job.availability_aggregation_url is defined %}
-        <AvailabilityAggregationURL>{{open_banking_cds.metrics.availability_aggregation_url}}</AvailabilityAggregationURL>
-        {% else %}
-        <AvailabilityAggregationURL>http://localhost:8007/CDSAvailabilityMetricsAggregationApp/AvailabilityMetricsAggregationInputStream</AvailabilityAggregationURL>
+        <TimeZone>GMT</TimeZone>
         {% endif %}
     </Metrics>
 </Server>

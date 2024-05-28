@@ -39,8 +39,8 @@ public class ErrorUtil {
     /**
      * Method to check whether error status code list have any client errors.
      *
-     * @param statusCodes
-     * @return
+     * @param statusCodes - Set of Status Codes
+     * @return - Boolean depicting whether a client error or not
      */
     public static boolean isAnyClientErrors(HashSet<String> statusCodes) {
 
@@ -83,8 +83,8 @@ public class ErrorUtil {
     /**
      * Method to get the error json with multiple error objects for AU.
      *
-     * @param errors Array with multiple error details
-     * @return
+     * @param errors - Array with multiple error details
+     * @return Error in JSON format
      */
     public static String getErrorJson(JSONArray errors) {
         Gson gson = new Gson();
@@ -113,7 +113,7 @@ public class ErrorUtil {
     }
 
     /**
-     * Method to construct final error object for AU
+     * Method to construct final error object for AU.
      * JSONArray errorData is an array of JSONObjects which has the following structure
      * {
      * "auErrorEnum":"...",
@@ -125,8 +125,8 @@ public class ErrorUtil {
      * the error.
      * To construct the JSONObjects getErrorArray() method in AUErrorHandlingUtils class can be used
      *
-     * @param errorData
-     * @return
+     * @param errorData - Error Data
+     * @return CDS Error Response
      */
     public static CDSErrorResponse constructErrorObject(JSONArray errorData) {
 

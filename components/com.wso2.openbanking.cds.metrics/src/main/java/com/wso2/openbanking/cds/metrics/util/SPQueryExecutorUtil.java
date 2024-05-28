@@ -1,13 +1,10 @@
 /*
- * Copyright (c) 2021, WSO2 Inc. (http://www.wso2.com). All Rights Reserved.
+ * Copyright (c) 2021-2024, WSO2 LLC. (https://www.wso2.com). All Rights Reserved.
  *
- * This software is the property of WSO2 Inc. and its suppliers, if any.
+ * This software is the property of WSO2 LLC. and its suppliers, if any.
  * Dissemination of any information or reproduction of any material contained
- * herein is strictly forbidden, unless permitted by WSO2 in accordance with
- * the WSO2 Software License available at https://wso2.com/licenses/eula/3.1.
- * For specific language governing the permissions and limitations under this
- * license, please see the license as well as any agreement you’ve entered into
- * with WSO2 governing the purchase of this software and any associated services.
+ * herein in any form is strictly forbidden, unless permitted by WSO2 expressly.
+ * You may not alter or remove any copyright or other notice from copies of this content.
  */
 
 package com.wso2.openbanking.cds.metrics.util;
@@ -21,7 +18,6 @@ import net.minidev.json.parser.ParseException;
 import org.apache.axis2.transport.http.HTTPConstants;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-
 import org.apache.http.HttpEntity;
 import org.apache.http.HttpHeaders;
 import org.apache.http.HttpResponse;
@@ -58,7 +54,7 @@ public class SPQueryExecutorUtil {
      *
      * @param appName Name of the siddhi app.
      * @param query   Name of the query
-     * @return - JSON object with result
+     * @return JSON object with result
      * @throws IOException    IO Exception.
      * @throws ParseException Parse Exception.
      */
@@ -93,12 +89,13 @@ public class SPQueryExecutorUtil {
     }
 
     /**
-     * Executes the given request in SP.
+     * Executes the given http request in SP.
      *
-     * @param event - event object.
-     * @param url - url of the SP.
+     * @param event
+     * @param url
+     * @return
      */
-    public static void executeRequestOnStreamProcessor(JSONObject event, String url) {
+    public static String executeRequestOnStreamProcessor(JSONObject event, String url) {
 
         JSONObject params = new JSONObject();
         params.put("event", event);
@@ -108,7 +105,6 @@ public class SPQueryExecutorUtil {
             CloseableHttpClient httpClient = HTTPClientUtils.getHttpsClient();
             HttpPost request = new HttpPost(url);
             request.setEntity(new StringEntity(params.toString(), ContentType.APPLICATION_JSON));
-
             request.addHeader(HTTPConstants.HEADER_AUTHORIZATION, getAuthHeader());
 
             if (log.isDebugEnabled()) {
@@ -121,17 +117,25 @@ public class SPQueryExecutorUtil {
                 log.debug("Response from Stream Processor:" + response);
             }
 
+            HttpEntity entity = response.getEntity();
             if (response.getStatusLine().getStatusCode() != HttpStatus.SC_OK) {
                 String error = String.format("Error while invoking SP rest api : %s %s",
                         response.getStatusLine().getStatusCode(), response.getStatusLine().getReasonPhrase());
                 log.error(error);
+                return null;
             }
+            String responseStr = EntityUtils.toString(entity);
             log.debug("Returning response after executing requests on Stream Processor with url " + url);
+            return responseStr;
 
         } catch (IOException e) {
-            log.error("Exception occurred while publishing/receiving API stats: " + e.getMessage(), e);
+            log.error("Exception occurred while publishing/receiving API stats: " + e.getMessage(),
+                    e);
+            return null;
         } catch (OpenBankingException e) {
-            log.error("Exception occurred while getting Http client: " + e.getMessage(), e);
+            log.error("Exception occurred while getting Http client: " + e.getMessage(),
+                    e);
+            return null;
         }
     }
 

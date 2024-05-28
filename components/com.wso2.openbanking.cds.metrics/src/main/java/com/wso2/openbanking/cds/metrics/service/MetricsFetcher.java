@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2021-2024, WSO2 LLC. (https://www.wso2.com). All Rights Reserved.
+ * Copyright (c) 2024, WSO2 LLC. (https://www.wso2.com). All Rights Reserved.
  *
  * This software is the property of WSO2 LLC. and its suppliers, if any.
  * Dissemination of any information or reproduction of any material contained
@@ -11,20 +11,20 @@ package com.wso2.openbanking.cds.metrics.service;
 
 import com.wso2.openbanking.accelerator.common.exception.OpenBankingException;
 import com.wso2.openbanking.cds.metrics.model.MetricsResponseModel;
-import com.wso2.openbanking.cds.metrics.util.PeriodEnum;
 
 /**
- * Service class for CDS Admin metrics.
+ * Interface for fetching metrics data asynchronously.
  */
-public interface CDSMetricsService {
+public interface MetricsFetcher {
 
     /**
-     * Return CDS operational statistics model.
+     * Get populated metrics data model with given request time.
      *
-     * @param xV     - expected endpoint version
-     * @param period - requested time period [CURRENT, HISTORIC, ALL]
+     * @param requestTime - time of request
      * @return ResponseMetricsListModel - model containing metrics data
+     * @throws OpenBankingException - OpenBankingException
      */
-    MetricsResponseModel getMetrics(String xV, PeriodEnum period) throws OpenBankingException;
+    MetricsResponseModel getResponseMetricsListModel(String requestTime)
+            throws OpenBankingException;
 
 }
