@@ -148,4 +148,20 @@ public class CDSProfileListRetrievalStepTests extends PowerMockTestCase {
 
         Assert.assertNotNull(jsonObject.get(CDSConsentExtensionConstants.CUSTOMER_PROFILES_ATTRIBUTE));
     }
+
+    @Test
+    public void testProfileDataRetrievalWithEmptyAccountData() throws ParseException, OpenBankingException {
+        PowerMockito.mockStatic(CDSConsentCommonUtil.class);
+        PowerMockito.mockStatic(OpenBankingCDSConfigParser.class);
+        PowerMockito.when(OpenBankingCDSConfigParser.getInstance()).thenReturn(openBankingCDSConfigParserMock);
+        JSONObject jsonObject = new JSONObject();
+        doReturn(CDSConsentExtensionConstants.ACCOUNTS).when(consentDataMock).getType();
+        doReturn(true).when(consentDataMock).isRegulatory();
+        doReturn("user1@wso2.com").when(consentDataMock).getUserId();
+
+        cdsProfileListRetrievalStep.execute(consentDataMock, jsonObject);
+
+        // Assert that no customer profiles are returned when there's no account data
+        Assert.assertNull(jsonObject.get(CDSConsentExtensionConstants.CUSTOMER_PROFILES_ATTRIBUTE));
+    }
 }
