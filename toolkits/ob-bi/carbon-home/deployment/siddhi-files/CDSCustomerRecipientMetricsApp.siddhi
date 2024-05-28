@@ -1,13 +1,10 @@
 /*
- * Copyright (c) 2021, WSO2 Inc. (http://www.wso2.com). All Rights Reserved.
+ * Copyright (c) 2021-2024, WSO2 LLC. (https://www.wso2.com). All Rights Reserved.
  *
- * This software is the property of WSO2 Inc. and its suppliers, if any.
+ * This software is the property of WSO2 LLC. and its suppliers, if any.
  * Dissemination of any information or reproduction of any material contained
- * herein is strictly forbidden, unless permitted by WSO2 in accordance with
- * the WSO2 Software License available at https://wso2.com/licenses/eula/3.1.
- * For specific language governing the permissions and limitations under this
- * license, please see the license as well as any agreement you’ve entered into
- * with WSO2 governing the purchase of this software and any associated services.
+ * herein in any form is strictly forbidden, unless permitted by WSO2 expressly.
+ * You may not alter or remove any copyright or other notice from copies of this content.
  */
 
 @App:name("CDSCustomerRecipientMetricsApp")
@@ -26,6 +23,19 @@ define stream ExpiredConsentStream(CONSENT_ID string, CLIENT_ID string, USER_ID 
 define stream RevokedConsentStream(CONSENT_ID string, CLIENT_ID string, USER_ID string);
 
 define stream ActiveAuthCountStream(CLIENT_ID string, USER_ID string, ACTIVE_AUTH_COUNT long, LAST_UPDATED long);
+
+@source(type='wso2event',  @map(type='wso2event'))
+define stream AppDeletionInputStream(clientId string);
+
+define function getNewActiveAuthCount[JavaScript] return int {
+	var newActiveAuthCount = data[0];
+
+	if (newActiveAuthCount > 0) {
+	    return newActiveAuthCount;
+	} else {
+	    return 0;
+	}
+};
 
 -- Persist consent data.
 @primaryKey('CONSENT_ID')
@@ -133,12 +143,13 @@ select I.CLIENT_ID as CLIENT_ID, I.USER_ID as USER_ID,
     time:timestampInMilliseconds()/1000 as LAST_UPDATED
 insert into ActiveAuthCountStream;
 
-from ExpiredConsentStream#window.timeBatch(5 sec) as I
+from ExpiredConsentStream#window.batch() as I
 left outer join CDSMetricsCustomerRecipientSummary as T
 on I.CLIENT_ID == T.CLIENT_ID and I.USER_ID == T.USER_ID
 select I.CLIENT_ID, I.USER_ID,
-    ifThenElse(T.ACTIVE_AUTH_COUNT - count(CONSENT_ID) > 0, T.ACTIVE_AUTH_COUNT - count(CONSENT_ID), 0L) as ACTIVE_AUTH_COUNT,
+    cast(getNewActiveAuthCount(T.ACTIVE_AUTH_COUNT - count(CONSENT_ID)), 'long') as ACTIVE_AUTH_COUNT,
     time:timestampInMilliseconds()/1000 as LAST_UPDATED
+group by I.CLIENT_ID, I.USER_ID
 insert into ActiveAuthCountStream;
 
 from ActiveAuthCountStream
@@ -148,3 +159,7 @@ update or insert into CDSMetricsCustomerRecipientSummary
     CDSMetricsCustomerRecipientSummary.LAST_UPDATED = LAST_UPDATED
     on CDSMetricsCustomerRecipientSummary.CLIENT_ID == CLIENT_ID
         and CDSMetricsCustomerRecipientSummary.USER_ID == USER_ID;
+
+from AppDeletionInputStream
+delete CDSMetricsCustomerRecipientSummary
+    on CDSMetricsCustomerRecipientSummary.CLIENT_ID == clientId;
