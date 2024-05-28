@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2023, WSO2 LLC. (https://www.wso2.com). All Rights Reserved.
+ * Copyright (c) 2023-2024, WSO2 LLC. (https://www.wso2.com). All Rights Reserved.
  *
  * This software is the property of WSO2 LLC. and its suppliers, if any.
  * Dissemination of any information or reproduction of any material contained
@@ -10,6 +10,7 @@
 package com.wso2.openbanking.cds.metrics.internal;
 
 import com.wso2.openbanking.cds.common.config.OpenBankingCDSConfigParser;
+import com.wso2.openbanking.cds.metrics.periodic.job.HistoricMetricsCacheJob;
 import com.wso2.openbanking.cds.metrics.periodic.scheduler.MetricsPeriodicJobScheduler;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -25,7 +26,7 @@ import org.wso2.carbon.context.PrivilegedCarbonContext;
 import org.wso2.carbon.user.core.service.RealmService;
 
 /**
- * Metrics API Service Component
+ * Metrics Service Component
  */
 @Component(
         name = "com.wso2.openbanking.cds.metrics.internal.MetricsServiceComponent",
@@ -40,15 +41,20 @@ public class MetricsServiceComponent {
 
         if (configParser.isMetricsPeriodicalJobEnabled()) {
             MetricsPeriodicJobScheduler.getInstance().initScheduler();
-            log.info("Metrics Periodic Task Manager bundle is activated");
+            log.debug("CDS Metrics periodic scheduler is initialized");
+
+            // Cache historic metrics at server startup
+            HistoricMetricsCacheJob job = new HistoricMetricsCacheJob();
+            job.execute(null);
+            log.debug("HistoricMetricsCacheJob executed at server startup");
         }
+        log.debug("CDS Metrics bundle is activated");
 
     }
 
     @Deactivate
     protected void deactivate(ComponentContext context) {
-
-        log.debug("Periodic Task Manager bundle is deactivated");
+        log.debug("CDS Metrics bundle is deactivated");
     }
 
     public static RealmService getRealmService() {
@@ -84,13 +90,13 @@ public class MetricsServiceComponent {
     protected void setAPIConfigurationService(APIManagerConfigurationService confService) {
 
         MetricsDataHolder.getInstance().setApiManagerConfigurationService(confService);
-        log.debug("API manager configuration service bound to the CDS Admin Mgt data holder");
+        log.debug("API manager configuration service bound to the CDS Metrics data holder");
     }
 
     protected void unsetAPIManagerConfigurationService(APIManagerConfigurationService amcService) {
 
         MetricsDataHolder.getInstance().setApiManagerConfigurationService(null);
-        log.debug("API manager configuration service unbound from the CDS Admin Mgt data holder");
+        log.debug("API manager configuration service unbound from the CDS Metrics data holder");
 
     }
 

@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2023, WSO2 LLC. (https://www.wso2.com). All Rights Reserved.
+ * Copyright (c) 2023-2024, WSO2 LLC. (https://www.wso2.com). All Rights Reserved.
  *
  * This software is the property of WSO2 LLC. and its suppliers, if any.
  * Dissemination of any information or reproduction of any material contained
@@ -12,20 +12,16 @@ package com.wso2.openbanking.cds.metrics.cache;
 import com.wso2.openbanking.accelerator.common.caching.OpenBankingBaseCache;
 import com.wso2.openbanking.cds.common.config.OpenBankingCDSConfigParser;
 
-import java.math.BigDecimal;
-import java.util.List;
-
 /**
  * Cache definition to store Metrics aggregated data.
  */
-public class MetricsCache extends OpenBankingBaseCache<MetricsCacheKey, List<BigDecimal>> {
+public class MetricsCache extends OpenBankingBaseCache<MetricsCacheKey, Object> {
 
     private static final String CACHE_NAME = "CDS_METRICS_CACHE";
     private static volatile MetricsCache instance;
     private final Integer accessExpiryMinutes;
     private final Integer modifiedExpiryMinutes;
-    private static MetricsCacheKey peakTPSCacheKey = new MetricsCacheKey("AggregatedPeakTPSData");
-    private static MetricsCacheKey availabilityCacheKey = new MetricsCacheKey("AggregatedAvailabilityData");
+    private static final MetricsCacheKey historicMetricsCacheKey = new MetricsCacheKey("HistoricMetricsData");
 
     /**
      * Initialize with unique cache name.
@@ -60,13 +56,7 @@ public class MetricsCache extends OpenBankingBaseCache<MetricsCacheKey, List<Big
         return modifiedExpiryMinutes;
     }
 
-    public static MetricsCacheKey getPeakTPSCacheKey() {
-
-        return peakTPSCacheKey;
-    }
-
-    public static MetricsCacheKey getAvailabilityCacheKey() {
-
-        return availabilityCacheKey;
+    public static MetricsCacheKey getHistoricMetricsCacheKey() {
+        return historicMetricsCacheKey;
     }
 }

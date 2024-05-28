@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2021-2023, WSO2 LLC. (https://www.wso2.com). All Rights Reserved.
+ * Copyright (c) 2021-2024, WSO2 LLC. (https://www.wso2.com). All Rights Reserved.
  *
  * This software is the property of WSO2 LLC. and its suppliers, if any.
  * Dissemination of any information or reproduction of any material contained
@@ -19,6 +19,9 @@ public class MetricsConstants {
     private MetricsConstants() {
     }
 
+    public static final String RECORDS = "records";
+    public static final String METRICS_VERSION_3 = "3";
+
     // sp api endpoint
     public static final String SP_API_PATH = "/stores/query";
     public static final String REST_API_URL_KEY = "stream.processor.rest.api.url";
@@ -30,16 +33,10 @@ public class MetricsConstants {
     public static final String CDS_AVAILABILITY_METRICS_APP = "CDSAvailabilityMetricsApp";
     public static final String CDS_SESSION_METRICS_APP = "CDSSessionMetricsApp";
     public static final String CDS_CUSTOMER_RECIPIENT_METRICS_APP = "CDSCustomerRecipientMetricsApp";
-    public static final String REGISTRATION_DATA_SUBMISSION_APP = "AppRegistrationDataSubmissionApp";
     public static final String API_RAW_DATA_SUBMISSION_APP = "APIRawDataSubmissionApp";
-    public static final String CDS_PEAK_TPS_AGG_DATA_APP = "CDSPeakTPSMetricsAggregationApp";
-    public static final String CDS_AVAILABILITY_AGG_DATA_APP = "CDSAvailabilityMetricsAggregationApp";
-    public static final String PEAK_TPS_AGG_INPUT_STREAM = "MaxTPSMetricsAggregationInputStream";
-    public static final String AVAILABILITY_AGG_INPUT_STREAM = "AvailabilityMetricsAggregationInputStream";
 
     //date-time constants
-    public static final String TIME_ZONE = "GMT";
-    public static final String SP_TIMESTAMP_PATTERN = "yyyy-MM-dd HH:mm:ss";
+    public static final String SP_TIMESTAMP_PATTERN = "yyyy-MM-dd HH:mm:ss XXX";
     public static final String REQUEST_TIMESTAMP_PATTERN = "yyyy-MM-dd'T'HH:mm:ssXXX";
     public static final BigDecimal SECONDS_IN_DAY = BigDecimal.valueOf(86400); // 60 * 60 * 24
 
@@ -48,17 +45,31 @@ public class MetricsConstants {
     public static final String CDS_REJECTION_METRICS_APP_UNAUTHENTICATED = "unauthenticated";
     public static final String CDS_REJECTION_METRICS_APP_VALIDITY = "anonymous";
 
+    //peak TPS metrics constants
+    public static final String EVENT = "event";
+    public static final String ASPECT = "aspect";
+    public static final String TOTAL_COUNT = "total_count";
+    public static final String TIMESTAMP = "TIMESTAMP";
+
     //availability constants
     public static final String SCHEDULED_OUTAGE = "scheduled";
     public static final String INCIDENT_OUTAGE = "incident";
 
-    // metrics aggregation constants
-    public static final String RECORDS = "records";
-    public static final String AVAILABILITY_DATA = "availability_data";
-    public static final String AVAILABILITY_AGG_DATA = "availability_agg_data";
-    public static final String AGG_MONTH = "agg_month";
-    public static final String DATE_AGGREGATED = "date_aggregated";
-    public static final String AGG_DATE = "agg_date";
-    public static final String MAX_TPS = "max_tps";
-    public static final String TPS_AGG_DATA = "aggregated_tps_data";
+    // metrics logging constants
+    public static final String ASYNC_FETCH_ERROR = "Error occurred while asynchronously fetching %s metrics.";
+    public static final String RETRIEVAL_ERROR = "Error occurred while retrieving %s data from analytics server.";
+    public static final String NO_DATA_ERROR = "No data returned from the analytics server for %s metrics.";
+    public static final String AVAILABILITY = "availability";
+    public static final String INVOCATION = "invocation";
+    public static final String PERFORMANCE = "performance";
+    public static final String SESSION_COUNT = "session count";
+    public static final String PEAK_TPS = "peak TPS";
+    public static final String ERROR = "error";
+    public static final String REJECTION = "rejection";
+    public static final String RECIPIENT_COUNT = "recipient count";
+    public static final String CUSTOMER_COUNT = "customer count";
+    public static final String SUCCESSFUL_INVOCATIONS = "successful invocations";
+    public static final String TOTAL_RESPONSE_TIME = "total response time";
+    public static final String AVERAGE_RESPONSE_TIME = "average response time";
+
 }

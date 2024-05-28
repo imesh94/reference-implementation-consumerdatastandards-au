@@ -708,40 +708,32 @@ public class OpenBankingCDSConfigParser {
      * @return int
      */
     public int getMetricCacheExpiryInMinutes() {
+
         return performConfigIntegerValueCheck(
                 CommonConstants.METRICS_CACHE_EXPIRY_TIME,
                 CommonConstants.METRICS_CACHE_DEFAULT_EXPIRY_TIME);
     }
 
     /**
-     * Get Metrics current TPS Retrieval URL.
+     * Get URL for retrieving metrics TPS data.
      *
      * @return String
      */
-    public String getMetricsCurrentTPSRetrievalUrl () {
+    public String getMetricsTPSDataRetrievalUrl() {
 
-        return ((String) getConfigElementFromKey(CommonConstants.METRICS_CURRENT_TPS_RETRIEVAL_URL)).trim();
+        return ((String) getConfigElementFromKey(CommonConstants.METRICS_TPS_DATA_RETRIEVAL_URL)).trim();
     }
 
     /**
-     * Get Metrics max TPS Retrieval URL.
+     * Get Time Zone for metrics calculations.
      *
      * @return String
      */
-    public String getMetricsMaxTPSRetrievalUrl() {
+    public String getMetricsTimeZone() {
 
-        return ((String) getConfigElementFromKey(CommonConstants.METRICS_MAX_TPS_RETRIEVAL_URL)).trim();
+        return ((String) getConfigElementFromKey(CommonConstants.METRICS_TIME_ZONE)).trim();
     }
 
-    /**
-     * Get Metrics availability Retrieval URL.
-     *
-     * @return String
-     */
-    public String getMetricsAvailabilityRetrievalUrl () {
-
-        return ((String) getConfigElementFromKey(CommonConstants.METRICS_AVAILABILITY_RETRIEVAL_URL)).trim();
-    }
 
     /**
      * Perform integer value check on given config.
