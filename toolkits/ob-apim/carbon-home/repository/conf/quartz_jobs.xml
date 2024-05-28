@@ -1,0 +1,34 @@
+<?xml version='1.0' encoding='utf-8'?>
+<!--
+ ~ Copyright (c) 2021-2023, WSO2 LLC. (https://www.wso2.com). All Rights Reserved.
+ ~
+ ~ This software is the property of WSO2 LLC. and its suppliers, if any.
+ ~ Dissemination of any information or reproduction of any material contained
+ ~ herein in any form is strictly forbidden, unless permitted by WSO2 expressly.
+ ~ You may not alter or remove any copyright or other notice from copies of this content.
+-->
+<job-scheduling-data xmlns="http://www.quartz-scheduler.org/xml/JobSchedulingData"
+  xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+  xsi:schemaLocation="http://www.quartz-scheduler.org/xml/JobSchedulingData http://www.quartz-scheduler.org/xml/job_scheduling_data_1_8.xsd"
+  version="1.8">
+
+    <schedule>
+        <job>
+            <name>MetricsApiSchedulerCronJob</name>
+            <group>AdminApiScheduler</group>
+            <description>Daily cron job to cache historic metrics data</description>
+            <job-class>com.wso2.openbanking.cds.metrics.periodic.job.HistoricMetricsCacheJob</job-class>
+        </job>
+
+        <trigger>
+            <cron>
+                <name>MetricsApiSchedulerCronTrigger</name>
+                <group>AdminApiScheduler</group>
+                <job-name>MetricsApiSchedulerCronJob</job-name>
+                <job-group>AdminApiScheduler</job-group>
+                <!-- trigger at 03:00:00am every day-->
+                <cron-expression>0 0 03 * * ?</cron-expression>
+            </cron>
+        </trigger>
+    </schedule>
+</job-scheduling-data>

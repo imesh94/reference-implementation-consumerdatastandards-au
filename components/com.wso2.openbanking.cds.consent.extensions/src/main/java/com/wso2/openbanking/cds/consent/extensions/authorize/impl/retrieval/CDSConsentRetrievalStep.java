@@ -247,6 +247,10 @@ public class CDSConsentRetrievalStep implements ConsentRetrievalStep {
             // append consent expiry date
             jsonObject.appendField(CDSConsentExtensionConstants.CONSENT_EXPIRY, expiry);
 
+            // append consent sharing duration
+            jsonObject.appendField(CDSConsentExtensionConstants.SHARING_DURATION_VALUE,
+                    requiredData.get(CDSConsentExtensionConstants.SHARING_DURATION_VALUE));
+
             //check the scopes has "bank:" scopes to skip account selection
             String scopesString = consentData.getScopeString();
             if (scopesString.contains(CDSConsentExtensionConstants.COMMON_ACCOUNTS_BASIC_READ_SCOPE) ||

@@ -1,16 +1,13 @@
 /*
- * Copyright (c) 2021, WSO2 Inc. (http://www.wso2.com). All Rights Reserved.
+ * Copyright (c) 2021-2024, WSO2 LLC. (https://www.wso2.com). All Rights Reserved.
  *
- * This software is the property of WSO2 Inc. and its suppliers, if any.
+ * This software is the property of WSO2 LLC. and its suppliers, if any.
  * Dissemination of any information or reproduction of any material contained
- * herein is strictly forbidden, unless permitted by WSO2 in accordance with
- * the WSO2 Software License available at https://wso2.com/licenses/eula/3.1. For specific
- * language governing the permissions and limitations under this license,
- * please see the license as well as any agreement you’ve entered into with
- * WSO2 governing the purchase of this software and any associated services.
+ * herein in any form is strictly forbidden, unless permitted by WSO2 expressly.
+ * You may not alter or remove any copyright or other notice from copies of this content.
  */
 
-package com.wso2.openbanking.cds.metrics.endpoint.util;
+package com.wso2.openbanking.cds.metrics.endpoint.mapper;
 
 import com.wso2.openbanking.cds.common.config.OpenBankingCDSConfigParser;
 import com.wso2.openbanking.cds.metrics.endpoint.model.AvailabilityMetricsDTO;
@@ -37,31 +34,21 @@ import com.wso2.openbanking.cds.metrics.endpoint.model.RejectionMetricsUnauthent
 import com.wso2.openbanking.cds.metrics.endpoint.model.ResponseMetricsListDTO;
 import com.wso2.openbanking.cds.metrics.endpoint.model.ResponseMetricsListDataDTO;
 import com.wso2.openbanking.cds.metrics.endpoint.model.SessionCountMetricsDTO;
-import com.wso2.openbanking.cds.metrics.model.ResponseMetricsListModel;
+import com.wso2.openbanking.cds.metrics.model.MetricsResponseModel;
 import com.wso2.openbanking.cds.metrics.util.PeriodEnum;
 
 import java.math.BigDecimal;
 import java.util.List;
 
 /**
- * Class containing utility methods to map ResponseMetricsListModel to API Response DTO.
+ * Class containing methods to map MetricsResponseModel to Metrics V3 API Response DTO.
  */
-public class MappingUtil {
+public class MetricsV3MapperImpl implements MetricsMapper {
 
     /**
-     * private constructor.
+     * {@inheritDoc}
      */
-    private MappingUtil() {
-    }
-
-    /**
-     * Map the ResponseMetricsListModel to ResponseMetricsListDTO.
-     *
-     * @param metricsListModel - Metrics model used in the service layer
-     * @return - Specification supported DTO
-     */
-    public static ResponseMetricsListDTO getResponseMetricsListDTO(ResponseMetricsListModel metricsListModel,
-                                                                   String period) {
+    public ResponseMetricsListDTO getResponseMetricsListDTO(MetricsResponseModel metricsListModel, String period) {
 
         ResponseMetricsListDTO metricsListDTO = new ResponseMetricsListDTO();
         LinksDTO linksDTO = new LinksDTO();
@@ -71,10 +58,18 @@ public class MappingUtil {
         metricsListDTO.setData(metricsListDataDTO);
         linksDTO.setSelf(getCDSAdminSelfLink(period));
         metricsListDTO.setLinks(linksDTO);
+
         return metricsListDTO;
     }
 
-    private static ResponseMetricsListDataDTO getResponseMetricsListDataDTO(ResponseMetricsListModel metricsListModel
+    /**
+     * Get ResponseMetricsListDataDTO from MetricsResponseModel and period enum.
+     *
+     * @param metricsListModel - Metrics model
+     * @param period           - period enum
+     * @return ResponseMetricsListDataDTO
+     */
+    private ResponseMetricsListDataDTO getResponseMetricsListDataDTO(MetricsResponseModel metricsListModel
             , PeriodEnum period) {
 
         ResponseMetricsListDataDTO responseMetricsListDataDTO = new ResponseMetricsListDataDTO();
@@ -91,17 +86,18 @@ public class MappingUtil {
         responseMetricsListDataDTO.setSessionCount(getSessionCountDTO(metricsListModel.getSessionCount(), period));
         responseMetricsListDataDTO.setAvailability(
                 getAvailabilityMetricsDTO(metricsListModel.getAvailability(), period));
+
         return responseMetricsListDataDTO;
     }
 
     /**
      * Get availability metrics DTO from availability list and period enum.
      *
-     * @param availability
-     * @param period
-     * @return
+     * @param availability - list of availability data
+     * @param period       - period enum
+     * @return AvailabilityMetricsDTO
      */
-    private static AvailabilityMetricsDTO getAvailabilityMetricsDTO(List<BigDecimal> availability, PeriodEnum period) {
+    private AvailabilityMetricsDTO getAvailabilityMetricsDTO(List<BigDecimal> availability, PeriodEnum period) {
 
         AvailabilityMetricsDTO availabilityMetricsDTO = new AvailabilityMetricsDTO();
 
@@ -114,12 +110,16 @@ public class MappingUtil {
         return availabilityMetricsDTO;
     }
 
-    private static InvocationMetricsDTO getInvocationMetricsDTO(ResponseMetricsListModel metricsListModel,
-                                                                PeriodEnum period) {
+    /**
+     * Get invocation metrics DTO from metrics list model and period enum.
+     *
+     * @param metricsListModel - Metrics model
+     * @param period           - period enum
+     * @return InvocationMetricsDTO
+     */
+    private InvocationMetricsDTO getInvocationMetricsDTO(MetricsResponseModel metricsListModel, PeriodEnum period) {
 
         InvocationMetricsDTO invocationMetricsDTO = new InvocationMetricsDTO();
-
-        //invocation metrics
         invocationMetricsDTO.setUnauthenticated(getInvocationMetricsUnauthenticatedDTO(
                 metricsListModel.getInvocationUnauthenticated(), period));
         invocationMetricsDTO.setHighPriority(getInvocationMetricsHighPriorityDTO(
@@ -134,12 +134,17 @@ public class MappingUtil {
         return invocationMetricsDTO;
     }
 
-    private static AverageResponseMetricsDTO getAverageResponseMetricsDTO(ResponseMetricsListModel metricsListModel,
-                                                                          PeriodEnum period) {
+    /**
+     * Get Average response metrics DTO from metrics list model and period enum.
+     *
+     * @param metricsListModel - Metrics model
+     * @param period           - period enum
+     * @return AverageResponseMetricsDTO
+     */
+    private AverageResponseMetricsDTO getAverageResponseMetricsDTO(
+            MetricsResponseModel metricsListModel, PeriodEnum period) {
 
         AverageResponseMetricsDTO averageResponseMetricsDTO = new AverageResponseMetricsDTO();
-
-        //average response metrics
         averageResponseMetricsDTO.setUnauthenticated(getAverageResponseMetricsUnauthenticatedDTO(
                 metricsListModel.getAverageResponseUnauthenticated(), period));
         averageResponseMetricsDTO.setHighPriority(getAverageResponseMetricsHighPriorityDTO(
@@ -154,7 +159,14 @@ public class MappingUtil {
         return averageResponseMetricsDTO;
     }
 
-    private static InvocationMetricsUnauthenticatedDTO getInvocationMetricsUnauthenticatedDTO(
+    /**
+     * Get InvocationMetrics Unauthenticated DTO from invocation unauthenticated List model and period enum.
+     *
+     * @param invocationUnauthenticatedList - invocation unauthenticated list
+     * @param period                        - period enum
+     * @return InvocationMetricsUnauthenticatedDTO
+     */
+    private InvocationMetricsUnauthenticatedDTO getInvocationMetricsUnauthenticatedDTO(
             List<BigDecimal> invocationUnauthenticatedList, PeriodEnum period) {
 
         InvocationMetricsUnauthenticatedDTO invocationMetricsUnauthenticatedDTO =
@@ -168,7 +180,14 @@ public class MappingUtil {
         return invocationMetricsUnauthenticatedDTO;
     }
 
-    private static InvocationMetricsHighPriorityDTO getInvocationMetricsHighPriorityDTO(
+    /**
+     * Get InvocationMetrics HighPriority DTO from invocation high priority List model and period enum.
+     *
+     * @param invocationHighPriorityList - invocation high priority list
+     * @param period                     - period enum
+     * @return InvocationMetricsHighPriorityDTO
+     */
+    private InvocationMetricsHighPriorityDTO getInvocationMetricsHighPriorityDTO(
             List<BigDecimal> invocationHighPriorityList, PeriodEnum period) {
 
         InvocationMetricsHighPriorityDTO invocationMetricsHighPriorityDTO = new InvocationMetricsHighPriorityDTO();
@@ -181,7 +200,14 @@ public class MappingUtil {
         return invocationMetricsHighPriorityDTO;
     }
 
-    private static InvocationMetricsLowPriorityDTO getInvocationMetricsLowPriorityDTO(
+    /**
+     * Get InvocationMetrics LowPriority DTO  from invocation high priority List model and period enum.
+     *
+     * @param invocationLowPriorityList - invocation low priority list
+     * @param period                    - period enum
+     * @return InvocationMetricsLowPriorityDTO
+     */
+    private InvocationMetricsLowPriorityDTO getInvocationMetricsLowPriorityDTO(
             List<BigDecimal> invocationLowPriorityList, PeriodEnum period) {
 
         InvocationMetricsLowPriorityDTO invocationMetricsLowPriorityDTO = new InvocationMetricsLowPriorityDTO();
@@ -194,7 +220,14 @@ public class MappingUtil {
         return invocationMetricsLowPriorityDTO;
     }
 
-    private static InvocationMetricsUnattendedDTO getInvocationMetricsUnattendedDTO(
+    /**
+     * Get InvocationMetrics Unattended DTO from invocation unattended List model and period enum.
+     *
+     * @param invocationUnattendedList - invocation unattended list
+     * @param period                   - period enum
+     * @return InvocationMetricsUnattendedDTO
+     */
+    private InvocationMetricsUnattendedDTO getInvocationMetricsUnattendedDTO(
             List<BigDecimal> invocationUnattendedList, PeriodEnum period) {
 
         InvocationMetricsUnattendedDTO invocationMetricsUnattendedDTO =
@@ -208,7 +241,14 @@ public class MappingUtil {
         return invocationMetricsUnattendedDTO;
     }
 
-    private static InvocationMetricsLargePayloadDTO getInvocationMetricsLargePayloadDTO(
+    /**
+     * Get InvocationMetrics LargePayload DTO from invocation large payload List model and period enum.
+     *
+     * @param invocationLargePayloadList - invocation large payload list
+     * @param period                     - period enum
+     * @return InvocationMetricsLargePayloadDTO
+     */
+    private InvocationMetricsLargePayloadDTO getInvocationMetricsLargePayloadDTO(
             List<BigDecimal> invocationLargePayloadList, PeriodEnum period) {
 
         InvocationMetricsLargePayloadDTO invocationMetricsLargePayloadDTO =
@@ -222,7 +262,14 @@ public class MappingUtil {
         return invocationMetricsLargePayloadDTO;
     }
 
-    private static AverageResponseMetricsUnauthenticatedDTO getAverageResponseMetricsUnauthenticatedDTO(
+    /**
+     * Get AverageResponseMetricsUnauthenticatedDTO from average response unauthenticated List model and period enum.
+     *
+     * @param averageResponseUnauthenticatedList - average response unauthenticated list
+     * @param period                             - period enum
+     * @return AverageResponseMetricsUnauthenticatedDTO
+     */
+    private AverageResponseMetricsUnauthenticatedDTO getAverageResponseMetricsUnauthenticatedDTO(
             List<BigDecimal> averageResponseUnauthenticatedList, PeriodEnum period) {
 
         AverageResponseMetricsUnauthenticatedDTO averageResponseMetricsUnauthenticatedDTO =
@@ -237,7 +284,14 @@ public class MappingUtil {
         return averageResponseMetricsUnauthenticatedDTO;
     }
 
-    private static AverageResponseMetricsHighPriorityDTO getAverageResponseMetricsHighPriorityDTO(
+    /**
+     * Get AverageResponseMetricsHighPriorityDTO from average response high priority List model and period enum.
+     *
+     * @param averageResponseHighPriorityList - average response high priority list
+     * @param period                          - period enum
+     * @return AverageResponseMetricsHighPriorityDTO
+     */
+    private AverageResponseMetricsHighPriorityDTO getAverageResponseMetricsHighPriorityDTO(
             List<BigDecimal> averageResponseHighPriorityList, PeriodEnum period) {
 
         AverageResponseMetricsHighPriorityDTO averageResponseMetricsHighPriorityDTO =
@@ -251,7 +305,14 @@ public class MappingUtil {
         return averageResponseMetricsHighPriorityDTO;
     }
 
-    private static AverageResponseMetricsLowPriorityDTO getAverageResponseMetricsLowPriorityDTO(
+    /**
+     * Get AverageResponseMetricsLowPriorityDTO from average response low priority List model and period enum.
+     *
+     * @param averageResponseLowPriorityList - average response low priority list
+     * @param period                         - period enum
+     * @return AverageResponseMetricsLowPriorityDTO
+     */
+    private AverageResponseMetricsLowPriorityDTO getAverageResponseMetricsLowPriorityDTO(
             List<BigDecimal> averageResponseLowPriorityList, PeriodEnum period) {
 
         AverageResponseMetricsLowPriorityDTO averageResponseMetricsLowPriorityDTO =
@@ -265,7 +326,14 @@ public class MappingUtil {
         return averageResponseMetricsLowPriorityDTO;
     }
 
-    private static AverageResponseMetricsUnattendedDTO getAverageResponseMetricsUnattendedDTO(
+    /**
+     * Get AverageResponseMetricsUnattendedDTO from average response unattended List model and period enum.
+     *
+     * @param averageResponseUnattendedList - average response unattended list
+     * @param period                        - period enum
+     * @return AverageResponseMetricsUnattendedDTO
+     */
+    private AverageResponseMetricsUnattendedDTO getAverageResponseMetricsUnattendedDTO(
             List<BigDecimal> averageResponseUnattendedList, PeriodEnum period) {
 
         AverageResponseMetricsUnattendedDTO averageResponseMetricsUnattendedDTO =
@@ -279,7 +347,14 @@ public class MappingUtil {
         return averageResponseMetricsUnattendedDTO;
     }
 
-    private static AverageResponseMetricsLargePayloadDTO getAverageResponseMetricsLargePayloadDTO(
+    /**
+     * Get AverageResponseMetricsLargePayloadDTO from average response large payload List model and period enum.
+     *
+     * @param averageResponseLargePayloadList - average response large payload list
+     * @param period                          - period enum
+     * @return AverageResponseMetricsLargePayloadDTO
+     */
+    private AverageResponseMetricsLargePayloadDTO getAverageResponseMetricsLargePayloadDTO(
             List<BigDecimal> averageResponseLargePayloadList, PeriodEnum period) {
 
         AverageResponseMetricsLargePayloadDTO averageResponseMetricsLargePayloadDTO =
@@ -293,7 +368,14 @@ public class MappingUtil {
         return averageResponseMetricsLargePayloadDTO;
     }
 
-    private static AverageTPSMetricsDTO getaverageTPSMetricsDTO(List<BigDecimal> averageTPSList, PeriodEnum
+    /**
+     * Get Average TPS metrics DTO from average TPS list and period enum.
+     *
+     * @param averageTPSList - list of average TPS data
+     * @param period         - period enum
+     * @return AverageTPSMetricsDTO
+     */
+    private AverageTPSMetricsDTO getaverageTPSMetricsDTO(List<BigDecimal> averageTPSList, PeriodEnum
             period) {
 
         AverageTPSMetricsDTO averageTPSMetricsDTO = new AverageTPSMetricsDTO();
@@ -306,7 +388,14 @@ public class MappingUtil {
         return averageTPSMetricsDTO;
     }
 
-    private static PeakTPSMetricsDTO getPeakTPSMetricsDTO(List<BigDecimal> peakTPSList, PeriodEnum period) {
+    /**
+     * Get Peak TPS metrics DTO from peak TPS list and period enum.
+     *
+     * @param peakTPSList - list of peak TPS data
+     * @param period      - period enum
+     * @return PeakTPSMetricsDTO
+     */
+    private PeakTPSMetricsDTO getPeakTPSMetricsDTO(List<BigDecimal> peakTPSList, PeriodEnum period) {
 
         PeakTPSMetricsDTO peakTPSMetricsDTO = new PeakTPSMetricsDTO();
         if (!peakTPSList.isEmpty() && (PeriodEnum.ALL == period || PeriodEnum.CURRENT == period)) {
@@ -318,7 +407,14 @@ public class MappingUtil {
         return peakTPSMetricsDTO;
     }
 
-    private static ErrorMetricsDTO getErrorsDTO(List<BigDecimal> errorList, PeriodEnum period) {
+    /**
+     * Get Error metrics DTO from errors list and period enum.
+     *
+     * @param errorList - list of error data
+     * @param period    - period enum
+     * @return ErrorMetricsDTO
+     */
+    private ErrorMetricsDTO getErrorsDTO(List<BigDecimal> errorList, PeriodEnum period) {
 
         ErrorMetricsDTO errorMetricsDTO = new ErrorMetricsDTO();
         if (!errorList.isEmpty() && (PeriodEnum.ALL == period || PeriodEnum.CURRENT == period)) {
@@ -330,8 +426,15 @@ public class MappingUtil {
         return errorMetricsDTO;
     }
 
-    private static RejectionMetricsDTO getRejectionsDTO(ResponseMetricsListModel metricsListModel,
-                                                        PeriodEnum period) {
+    /**
+     * Get Rejection metrics DTO from metrics list model and period enum.
+     *
+     * @param metricsListModel - Metrics model
+     * @param period           - period enum
+     * @return RejectionMetricsDTO
+     */
+    private RejectionMetricsDTO getRejectionsDTO(MetricsResponseModel metricsListModel,
+                                                 PeriodEnum period) {
 
         RejectionMetricsDTO rejectionMetricsDTO = new RejectionMetricsDTO();
 
@@ -339,12 +442,19 @@ public class MappingUtil {
         rejectionMetricsDTO.setAuthenticated(getRejectionMetricsAuthenticatedDTO(
                 metricsListModel.getAuthenticatedEndpointRejections(), period));
         rejectionMetricsDTO.setUnauthenticated(getRejectionMetricsUnauthenticatedDTO(
-                metricsListModel.getUnauthenticatedEndpointRejectons(), period));
+                metricsListModel.getUnauthenticatedEndpointRejections(), period));
 
         return rejectionMetricsDTO;
     }
 
-    private static RejectionMetricsAuthenticatedDTO getRejectionMetricsAuthenticatedDTO(
+    /**
+     * Get Rejection metrics DTO from metrics list model and period enum.
+     *
+     * @param rejectionAuthenticatedList - rejection authenticated list
+     * @param period                     - period enum
+     * @return RejectionMetricsAuthenticatedDTO
+     */
+    private RejectionMetricsAuthenticatedDTO getRejectionMetricsAuthenticatedDTO(
             List<BigDecimal> rejectionAuthenticatedList, PeriodEnum period) {
 
         RejectionMetricsAuthenticatedDTO rejectionMetricsAuthenticatedDTO =
@@ -359,7 +469,14 @@ public class MappingUtil {
         return rejectionMetricsAuthenticatedDTO;
     }
 
-    private static RejectionMetricsUnauthenticatedDTO getRejectionMetricsUnauthenticatedDTO(
+    /**
+     * Get Rejection metrics DTO from metrics list model and period enum.
+     *
+     * @param rejectionUnauthenticatedList - rejection unauthenticated list
+     * @param period                       - period enum
+     * @return RejectionMetricsUnauthenticatedDTO
+     */
+    private RejectionMetricsUnauthenticatedDTO getRejectionMetricsUnauthenticatedDTO(
             List<BigDecimal> rejectionUnauthenticatedList, PeriodEnum period) {
 
         RejectionMetricsUnauthenticatedDTO rejectionMetricsUnauthenticatedDTO =
@@ -374,7 +491,14 @@ public class MappingUtil {
         return rejectionMetricsUnauthenticatedDTO;
     }
 
-    private static PerformanceMetricsDTO getPerformanceDTO(List<BigDecimal> performanceList, PeriodEnum period) {
+    /**
+     * Get Performance metrics DTO from performance list and period enum.
+     *
+     * @param performanceList - list of performance data
+     * @param period          - period enum
+     * @return PerformanceMetricsDTO
+     */
+    private PerformanceMetricsDTO getPerformanceDTO(List<BigDecimal> performanceList, PeriodEnum period) {
 
         PerformanceMetricsDTO performanceMetricsDTO = new PerformanceMetricsDTO();
         if (!performanceList.isEmpty() && (PeriodEnum.ALL == period || PeriodEnum.CURRENT == period)) {
@@ -386,7 +510,14 @@ public class MappingUtil {
         return performanceMetricsDTO;
     }
 
-    private static SessionCountMetricsDTO getSessionCountDTO(List<BigDecimal> sessionCountList, PeriodEnum
+    /**
+     * Get Session count metrics DTO from session count list and period enum.
+     *
+     * @param sessionCountList - list of session count data
+     * @param period           - period enum
+     * @return SessionCountMetricsDTO
+     */
+    private SessionCountMetricsDTO getSessionCountDTO(List<BigDecimal> sessionCountList, PeriodEnum
             period) {
 
         SessionCountMetricsDTO sessionCountMetricsDTO = new SessionCountMetricsDTO();
@@ -403,7 +534,7 @@ public class MappingUtil {
      * Get Admin API Self URL.
      *
      * @param period - period (ALL, CURRENT, HISTORIC)
-     * @return - self-url string
+     * @return self-url string
      */
     private static String getCDSAdminSelfLink(String period) {
 

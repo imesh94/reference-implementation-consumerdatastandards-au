@@ -28,6 +28,7 @@
             <class name="com.wso2.openbanking.cds.consent.extensions.admin.impl.CDSConsentAdminHandlerTest"/>
             <class name="com.wso2.openbanking.cds.consent.extensions.authorize.impl.persist.CDSJointAccountConsentPersistenceStepTest"/>
             <class name="com.wso2.openbanking.cds.consent.extensions.authorize.impl.persist.CDSBusinessAccountConsentPersistenceStepTest"/>
+            <class name="com.wso2.openbanking.cds.consent.extensions.util.DataClusterSharingDateUtilTest"/>
         </classes>
     </test>
 </suite>

@@ -22,7 +22,7 @@ public interface CDSDataPublishingService {
     /**
      * Method to get the CDSDataPublishingService instance.
      *
-     * @return
+     * @return An instance of CDSDataPublishingService
      */
     static CDSDataPublishingService getCDSDataPublishingService() {
 

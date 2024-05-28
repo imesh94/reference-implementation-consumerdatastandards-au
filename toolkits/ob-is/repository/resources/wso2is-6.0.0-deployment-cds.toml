@@ -845,6 +845,8 @@ enable=true
 expiry=2
 update_period=4
 data_recipients_discovery_url="https://api.cdr.gov.au/cdr-register/v1/banking/data-recipients"
+data_recipient_status_url="https://api.cdr.gov.au/cdr-register/v1/banking/data-recipients/status"
+software_product_status_url="https://api.cdr.gov.au/cdr-register/v1/banking/data-recipients/brands/software-products/status"
 dcr_internal_url="https://IS_HOSTNAME:9446/api/openbanking/dynamic-client-registration/register"
 apim_application_search_url="https://APIM_HOSTNAME:9443/api/am/admin/v4/applications"
 http_request_retry_count=2
@@ -881,3 +883,8 @@ ceasing_secondary_user_sharing_enable = true
 
 [open_banking_cds.disclosure_options_management]
 enable = true
+
+[open_banking_cds.stream_processor]
+server_url = "https://BI_HOSTNAME:7444"
+username = "$ref{super_admin.username}@carbon.super"
+password = "$ref{super_admin.password}"

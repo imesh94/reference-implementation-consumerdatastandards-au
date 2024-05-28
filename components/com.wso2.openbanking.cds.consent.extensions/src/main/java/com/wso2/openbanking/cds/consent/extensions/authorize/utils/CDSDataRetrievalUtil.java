@@ -175,7 +175,7 @@ public class CDSDataRetrievalUtil {
                 } else if (param.contains("request_uri=")) {
                     log.debug("Resolving request URI during Steps execution");
                     String[] requestUri = (param.substring("request_uri=".length())).replaceAll(
-                            "\\%3A", ":").split(":");
+                            "(?i)\\%3A", ":").split(":");
                     // session key will be obtained splitting the request uri with ":" and getting the last index
                     // sample request_uri - urn:<substring>:<sessionKey>
                     String sessionKey = requestUri[(requestUri.length - 1)];

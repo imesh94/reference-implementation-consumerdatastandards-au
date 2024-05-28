@@ -310,6 +310,35 @@ public class OpenBankingCDSConfigParser {
     }
 
     /**
+     * Read data recipient status url from config.
+     *
+     * @return configured url, default value is "https://api.cdr.gov.au/cdr-register/v1/banking/data-recipients/status"
+     */
+    public String getDataRecipientStatusUrl() {
+
+        Object config = getConfigElementFromKey(CommonConstants.METADATA_CACHE_DATA_RECIPIENT_STATUS_URL);
+        if (config != null) {
+            return (String) config;
+        }
+        return CommonConstants.DEFAULT_DATA_RECIPIENT_STATUS_URL;
+    }
+
+    /**
+     * Read software product status url from config.
+     *
+     * @return configured url, default value is
+     * "https://api.cdr.gov.au/cdr-register/v1/banking/data-recipients/brands/software-products/status"
+     */
+    public String getSoftwareProductStatusUrl() {
+
+        Object config = getConfigElementFromKey(CommonConstants.METADATA_CACHE_SOFTWARE_PRODUCT_STATUS_URL);
+        if (config != null) {
+            return (String) config;
+        }
+        return CommonConstants.DEFAULT_SOFTWARE_PRODUCT_STATUS_URL;
+    }
+
+    /**
      * Read APIM DCR register url from config.
      *
      * @return configured url
@@ -657,5 +686,72 @@ public class OpenBankingCDSConfigParser {
         } else {
             return false;
         }
+    }
+
+    /**
+     * Get metrics aggregation periodical job enable status.
+     *
+     * @return boolean
+     */
+    public boolean isMetricsPeriodicalJobEnabled() {
+        Object config = getConfigElementFromKey(CommonConstants.METRICS_AGGREGATION_JOB_ENABLED);
+        if (config != null) {
+            return Boolean.parseBoolean((String) config);
+        } else {
+            return false;
+        }
+    }
+
+    /**
+     * Get metric cache expiry time.
+     *
+     * @return int
+     */
+    public int getMetricCacheExpiryInMinutes() {
+
+        return performConfigIntegerValueCheck(
+                CommonConstants.METRICS_CACHE_EXPIRY_TIME,
+                CommonConstants.METRICS_CACHE_DEFAULT_EXPIRY_TIME);
+    }
+
+    /**
+     * Get URL for retrieving metrics TPS data.
+     *
+     * @return String
+     */
+    public String getMetricsTPSDataRetrievalUrl() {
+
+        return ((String) getConfigElementFromKey(CommonConstants.METRICS_TPS_DATA_RETRIEVAL_URL)).trim();
+    }
+
+    /**
+     * Get Time Zone for metrics calculations.
+     *
+     * @return String
+     */
+    public String getMetricsTimeZone() {
+
+        return ((String) getConfigElementFromKey(CommonConstants.METRICS_TIME_ZONE)).trim();
+    }
+
+
+    /**
+     * Perform integer value check on given config.
+     *
+     * @return Object
+     */
+    public int performConfigIntegerValueCheck(String key, int defaultValue) {
+
+        Object config = getConfigElementFromKey(key);
+        if (config != null) {
+            try {
+                return Integer.parseInt((String) config);
+            } catch (NumberFormatException e) {
+                log.warn("Error while parsing config value for key : " + key + " . Expected value is a number. " +
+                        "Default value : " + defaultValue + " will be used.");
+                return defaultValue;
+            }
+        }
+        return defaultValue;
     }
 }

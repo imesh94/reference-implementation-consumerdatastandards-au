@@ -279,7 +279,7 @@ public class CDSErrorHandlerTest extends PowerMockTestCase {
         accountErrorList.add(new OpenBankingExecutorError("AU.CDR.Resource.InvalidBankingAccount",
                 "Consent Enforcement Error", errorDetails.toString(),
                 ErrorConstants.NOT_FOUND_CODE));
-        JsonObject errorJson = CDSErrorHandler.getErrorJson(accountErrorList, "", "");
+        JsonObject errorJson = CDSErrorHandler.getErrorJson(accountErrorList, "", "", new HashMap<>());
 
         Assert.assertNotNull(errorJson);
     }
@@ -295,7 +295,7 @@ public class CDSErrorHandlerTest extends PowerMockTestCase {
         accountErrorList.add(new OpenBankingExecutorError("AU.CDR.Resource.InvalidBankingAccount",
                 "Consent Enforcement Error", errorDetails.toString(),
                 ErrorConstants.NOT_FOUND_CODE));
-        JsonObject errorJson = CDSErrorHandler.getErrorJson(accountErrorList, "", "");
+        JsonObject errorJson = CDSErrorHandler.getErrorJson(accountErrorList, "", "", new HashMap<>());
 
         Assert.assertNotNull(errorJson);
     }
