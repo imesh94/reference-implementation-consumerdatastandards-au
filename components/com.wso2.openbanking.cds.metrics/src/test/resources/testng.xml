@@ -15,6 +15,8 @@
     <test name="cds-client-authenticators">
         <classes>
             <class name="com.wso2.openbanking.cds.metrics.service.MetricsV3QueryCreatorImplTest"/>
+            <class name="com.wso2.openbanking.cds.metrics.service.MetricsV3ProcessorImplTest"/>
+            <class name="com.wso2.openbanking.cds.metrics.service.MetricsV3FetcherImplTest"/>
             <class name="com.wso2.openbanking.cds.metrics.util.DateTimeUtilTest"/>
             <class name="com.wso2.openbanking.cds.metrics.util.MetricsProcessorUtilTest"/>
             <class name="com.wso2.openbanking.cds.metrics.util.MetricsServiceUtilTest"/>

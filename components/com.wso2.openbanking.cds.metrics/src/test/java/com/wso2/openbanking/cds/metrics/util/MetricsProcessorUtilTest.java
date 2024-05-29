@@ -11,9 +11,16 @@
 package com.wso2.openbanking.cds.metrics.util;
 
 import com.wso2.openbanking.accelerator.common.exception.OpenBankingException;
+import com.wso2.openbanking.cds.common.config.OpenBankingCDSConfigParser;
 import net.minidev.json.JSONArray;
 import net.minidev.json.JSONObject;
+import org.mockito.Mockito;
+import org.powermock.api.mockito.PowerMockito;
+import org.powermock.core.classloader.annotations.PowerMockIgnore;
+import org.powermock.core.classloader.annotations.PrepareForTest;
+import org.powermock.modules.testng.PowerMockTestCase;
 import org.testng.Assert;
+import org.testng.annotations.BeforeMethod;
 import org.testng.annotations.Test;
 
 import java.math.BigDecimal;
@@ -23,7 +30,29 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-public class MetricsProcessorUtilTest {
+import static org.mockito.Mockito.doReturn;
+import static org.mockito.Mockito.when;
+
+@PrepareForTest({OpenBankingCDSConfigParser.class})
+@PowerMockIgnore({"javax.crypto.*", "jdk.internal.reflect.*"})
+public class MetricsProcessorUtilTest extends PowerMockTestCase {
+
+    private JSONObject metricsJsonObject;
+    private int numberOfDays;
+    private long metricsCountLastDateEpoch;
+    private OpenBankingCDSConfigParser openBankingCDSConfigParserMock;
+
+    @BeforeMethod
+    public void setup() {
+        openBankingCDSConfigParserMock = PowerMockito.mock(OpenBankingCDSConfigParser.class);
+        PowerMockito.mockStatic(OpenBankingCDSConfigParser.class);
+        PowerMockito.when(OpenBankingCDSConfigParser.getInstance()).thenReturn(openBankingCDSConfigParserMock);
+        doReturn("GMT").when(openBankingCDSConfigParserMock).getMetricsTimeZone();
+
+        metricsJsonObject = Mockito.mock(JSONObject.class);
+        numberOfDays = 7;
+        metricsCountLastDateEpoch = 1715299199L;
+    }
 
     @Test
     public void testDivideListEqualSizeNoZeroDivisor() throws OpenBankingException {
@@ -97,5 +126,153 @@ public class MetricsProcessorUtilTest {
             Assert.assertEquals(value, BigDecimal.ZERO, "Each entry in the list should be BigDecimal.ZERO.");
         }
     }
+
+    @Test
+    public void testGetPopulatedInvocationMetricsMap() {
+
+        JSONArray records = new JSONArray();
+        records.add(new JSONArray().appendElement("Unattended").appendElement(13).appendElement(1715273999000L));
+        records.add(new JSONArray().appendElement("LowPriority").appendElement(12).appendElement(1715187599000L));
+        records.add(new JSONArray().appendElement("HighPriority").appendElement(13).appendElement(1715101199000L));
+
+        when(metricsJsonObject.get("records")).thenReturn(records);
+
+        Map<PriorityEnum, List<BigDecimal>> result = MetricsProcessorUtil.getPopulatedInvocationMetricsMap(
+                metricsJsonObject, numberOfDays, metricsCountLastDateEpoch);
+
+        // Assert the size of the map
+        Assert.assertEquals(result.size(), PriorityEnum.values().length);
+
+        // Assert the size of the lists in the map
+        for (PriorityEnum priority : PriorityEnum.values()) {
+            Assert.assertEquals(result.get(priority).size(), numberOfDays);
+        }
+
+        // Assert specific values based on the provided JSON
+        Assert.assertEquals(result.get(PriorityEnum.UNATTENDED).get(0), BigDecimal.valueOf(13));
+        Assert.assertEquals(result.get(PriorityEnum.LOW_PRIORITY).get(1), BigDecimal.valueOf(12));
+        Assert.assertEquals(result.get(PriorityEnum.HIGH_PRIORITY).get(2), BigDecimal.valueOf(13));
+    }
+
+    @Test
+    public void testGetPopulatedTotalResponseTimeMetricsMap() {
+
+        JSONArray records = new JSONArray();
+        records.add(new JSONArray().appendElement("Unattended").appendElement(112.0).appendElement(1715273999000L));
+        records.add(new JSONArray().appendElement("LowPriority").appendElement(234.0).appendElement(1715187599000L));
+        records.add(new JSONArray().appendElement("HighPriority").appendElement(177.0).appendElement(1715101199000L));
+
+        when(metricsJsonObject.get("records")).thenReturn(records);
+
+        Map<PriorityEnum, List<BigDecimal>> result = MetricsProcessorUtil.getPopulatedTotalResponseTimeMetricsMap(
+                metricsJsonObject, numberOfDays, metricsCountLastDateEpoch);
+
+        // Assert the size of the map
+        Assert.assertEquals(result.size(), PriorityEnum.values().length);
+
+        // Assert the size of the lists in the map
+        for (PriorityEnum priority : PriorityEnum.values()) {
+            Assert.assertEquals(result.get(priority).size(), numberOfDays);
+        }
+
+        // Assert specific values based on the provided JSON
+        Assert.assertEquals(result.get(PriorityEnum.UNATTENDED).get(0), BigDecimal.valueOf(112.0));
+        Assert.assertEquals(result.get(PriorityEnum.LOW_PRIORITY).get(1), BigDecimal.valueOf(234.0));
+        Assert.assertEquals(result.get(PriorityEnum.HIGH_PRIORITY).get(2), BigDecimal.valueOf(177.0));
+    }
+
+    @Test
+    public void testInitializeMap() {
+        int numberOfDays = 5;
+        Map<PriorityEnum, List<BigDecimal>> result = MetricsProcessorUtil.initializeMap(numberOfDays);
+
+        // Assert the size of the map
+        Assert.assertEquals(result.size(), PriorityEnum.values().length);
+
+        // Assert the size of the lists in the map
+        for (PriorityEnum priority : PriorityEnum.values()) {
+            Assert.assertEquals(result.get(priority).size(), numberOfDays);
+        }
+
+        // Assert that all values in the lists are BigDecimal.ZERO
+        for (PriorityEnum priority : PriorityEnum.values()) {
+            for (BigDecimal value : result.get(priority)) {
+                Assert.assertEquals(value, BigDecimal.ZERO);
+            }
+        }
+    }
+
+    @Test
+    public void testGetPopulatedMetricsList() {
+
+        JSONArray records = new JSONArray();
+        records.add(new JSONArray().appendElement(13).appendElement(1715273999000L));
+        records.add(new JSONArray().appendElement(12).appendElement(1715187599000L));
+        records.add(new JSONArray().appendElement(13).appendElement(1715101199000L));
+
+        when(metricsJsonObject.get("records")).thenReturn(records);
+
+        List<BigDecimal> result = MetricsProcessorUtil.getPopulatedMetricsList(metricsJsonObject, numberOfDays,
+                metricsCountLastDateEpoch);
+
+        // Assert the size of the list
+        Assert.assertEquals(result.size(), numberOfDays);
+
+        // Assert specific values based on the provided JSON
+        Assert.assertEquals(result.get(0), BigDecimal.valueOf(13));
+        Assert.assertEquals(result.get(1), BigDecimal.valueOf(12));
+        Assert.assertEquals(result.get(2), BigDecimal.valueOf(13));
+    }
+
+    @Test
+    public void testGetListFromRejectionsJson() {
+        JSONArray records = new JSONArray();
+        records.add(new JSONArray().appendElement(13).appendElement(1715273999L).appendElement("authenticated"));
+        records.add(new JSONArray().appendElement(12).appendElement(1715187599L).appendElement("anonymous"));
+
+        when(metricsJsonObject.get("records")).thenReturn(records);
+
+        List<ArrayList<BigDecimal>> result = MetricsProcessorUtil.getListFromRejectionsJson(metricsJsonObject,
+                numberOfDays, metricsCountLastDateEpoch);
+
+        // Assert the size of the list
+        Assert.assertEquals(result.size(), 2);
+
+        // Assert specific values based on the provided JSON
+        Assert.assertEquals(result.get(0).get(0), BigDecimal.valueOf(13));
+        Assert.assertEquals(result.get(1).get(1), BigDecimal.valueOf(12));
+    }
+
+    @Test
+    public void testGetPeakTPSMapFromJsonArray() {
+        JSONObject record1 = new JSONObject();
+        record1.put("event", new JSONObject().appendField("total_count", 1)
+                .appendField("aspect", "authenticated")
+                .appendField("TIMESTAMP", 1715273999));
+        JSONObject record2 = new JSONObject();
+        record2.put("event", new JSONObject().appendField("total_count", 1)
+                .appendField("aspect", "unauthenticated")
+                .appendField("TIMESTAMP", 1715101199));
+
+        JSONArray tpsMetricsJsonArray = new JSONArray();
+        tpsMetricsJsonArray.add(record1);
+        tpsMetricsJsonArray.add(record2);
+
+        Map<AspectEnum, List<BigDecimal>> result = MetricsProcessorUtil.getPeakTPSMapFromJsonArray(tpsMetricsJsonArray,
+                numberOfDays, metricsCountLastDateEpoch);
+
+        // Assert the size of the map
+        Assert.assertEquals(result.size(), AspectEnum.values().length);
+
+        // Assert the size of the lists in the map
+        for (AspectEnum aspect : AspectEnum.values()) {
+            Assert.assertEquals(result.get(aspect).size(), numberOfDays);
+        }
+
+        // Assert specific values based on the provided JSON
+        Assert.assertEquals(result.get(AspectEnum.AUTHENTICATED).get(0), BigDecimal.valueOf(1));
+        Assert.assertEquals(result.get(AspectEnum.UNAUTHENTICATED).get(2), BigDecimal.valueOf(1));
+    }
+
 
 }
