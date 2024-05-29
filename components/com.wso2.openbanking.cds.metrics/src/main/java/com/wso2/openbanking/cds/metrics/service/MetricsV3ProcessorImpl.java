@@ -10,22 +10,19 @@
 package com.wso2.openbanking.cds.metrics.service;
 
 import com.wso2.openbanking.accelerator.common.exception.OpenBankingException;
-import com.wso2.openbanking.cds.common.config.OpenBankingCDSConfigParser;
 import com.wso2.openbanking.cds.metrics.constants.MetricsConstants;
+import com.wso2.openbanking.cds.metrics.data.MetricsDataProvider;
 import com.wso2.openbanking.cds.metrics.model.ServerOutageDataModel;
 import com.wso2.openbanking.cds.metrics.util.AspectEnum;
 import com.wso2.openbanking.cds.metrics.util.MetricsProcessorUtil;
 import com.wso2.openbanking.cds.metrics.util.PeriodEnum;
 import com.wso2.openbanking.cds.metrics.util.PriorityEnum;
-import com.wso2.openbanking.cds.metrics.util.SPQueryExecutorUtil;
 import net.minidev.json.JSONArray;
 import net.minidev.json.JSONObject;
-import net.minidev.json.parser.JSONParser;
 import net.minidev.json.parser.ParseException;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
-import java.io.IOException;
 import java.math.BigDecimal;
 import java.math.RoundingMode;
 import java.time.LocalTime;
@@ -37,32 +34,29 @@ import java.util.List;
 import java.util.Map;
 
 import static com.wso2.openbanking.cds.metrics.constants.MetricsConstants.NO_DATA_ERROR;
-import static com.wso2.openbanking.cds.metrics.constants.MetricsConstants.RETRIEVAL_ERROR;
 
 /**
  * A general metrics processor implementation that can be used to calculate metrics for any given period of time.
  */
 public class MetricsV3ProcessorImpl implements MetricsProcessor {
 
-    MetricsV3QueryCreator metricsV3QueryCreator;
+    MetricsDataProvider metricsDataProvider;
     int numberOfDays;
     int numberOfMonths;
     long metricsCountLastDateEpoch;
     ZonedDateTime availabilityMetricsLastDate;
 
     private static final Log log = LogFactory.getLog(MetricsV3ProcessorImpl.class);
-    private static final OpenBankingCDSConfigParser configParser = OpenBankingCDSConfigParser.getInstance();
-    private static final ZoneId TIME_ZONE = ZoneId.of(configParser.getMetricsTimeZone());
-    private static final String tpsDataRetrievalUrl = configParser.getMetricsTPSDataRetrievalUrl();
 
     /**
      * Constructor for MetricsV3ProcessorImpl.
      *
-     * @param period - period (Current, Historic).
+     * @param period - period (Current, Historic, All).
      */
-    public MetricsV3ProcessorImpl(PeriodEnum period) throws OpenBankingException {
+    public MetricsV3ProcessorImpl(PeriodEnum period, MetricsDataProvider metricsDataProvider, ZoneId timeZone)
+            throws OpenBankingException {
 
-        ZonedDateTime currentDateEnd = ZonedDateTime.now(TIME_ZONE).with(LocalTime.MAX);
+        ZonedDateTime currentDateEnd = ZonedDateTime.now(timeZone).with(LocalTime.MAX);
         switch (period) {
             case CURRENT:
                 numberOfDays = 1;
@@ -83,10 +77,10 @@ public class MetricsV3ProcessorImpl implements MetricsProcessor {
                 availabilityMetricsLastDate = currentDateEnd;
                 break;
             default:
-                throw new OpenBankingException("Invalid period value. Only CURRENT and HISTORIC periods are" +
+                throw new OpenBankingException("Invalid period value. Only CURRENT and HISTORIC and ALL periods are" +
                         " accepted at this level.");
         }
-        this.metricsV3QueryCreator = new MetricsV3QueryCreatorImpl(period);
+        this.metricsDataProvider = metricsDataProvider;
     }
 
     /**
@@ -96,17 +90,7 @@ public class MetricsV3ProcessorImpl implements MetricsProcessor {
     public List<BigDecimal> getAvailabilityMetrics() throws OpenBankingException {
 
         log.debug("Starting availability metrics calculation.");
-        JSONObject availabilityMetricsJsonObject;
-        String spQuery = metricsV3QueryCreator.getAvailabilityMetricsQuery();
-        try {
-            availabilityMetricsJsonObject = SPQueryExecutorUtil.executeQueryOnStreamProcessor(
-                    MetricsConstants.CDS_AVAILABILITY_METRICS_APP, spQuery);
-        } catch (ParseException | IOException e) {
-            String errorMessage = String.format(RETRIEVAL_ERROR, MetricsConstants.AVAILABILITY);
-            log.error(errorMessage, e);
-            throw new OpenBankingException(errorMessage, e);
-        }
-
+        JSONObject availabilityMetricsJsonObject = metricsDataProvider.getAvailabilityMetricsData();
         if (availabilityMetricsJsonObject != null) {
             List<ServerOutageDataModel> serverOutageData = MetricsProcessorUtil.getServerOutageDataFromJson(
                     availabilityMetricsJsonObject);
@@ -126,18 +110,7 @@ public class MetricsV3ProcessorImpl implements MetricsProcessor {
     public Map<PriorityEnum, List<BigDecimal>> getInvocationMetrics() throws OpenBankingException {
 
         log.debug("Starting invocation metrics calculation.");
-        JSONObject invocationMetricsJsonObject;
-        String spQuery = metricsV3QueryCreator.getInvocationMetricsQuery();
-
-        try {
-            invocationMetricsJsonObject = SPQueryExecutorUtil.executeQueryOnStreamProcessor(
-                    MetricsConstants.CDS_INVOCATION_METRICS_APP, spQuery);
-        } catch (ParseException | IOException e) {
-            String errorMessage = String.format(RETRIEVAL_ERROR, MetricsConstants.INVOCATION);
-            log.error(errorMessage, e);
-            throw new OpenBankingException(errorMessage, e);
-        }
-
+        JSONObject invocationMetricsJsonObject = metricsDataProvider.getInvocationMetricsData();
         if (invocationMetricsJsonObject != null) {
             Map<PriorityEnum, List<BigDecimal>> invocationMetricsMap = MetricsProcessorUtil.
                 getPopulatedInvocationMetricsMap(invocationMetricsJsonObject, numberOfDays, metricsCountLastDateEpoch);
@@ -192,18 +165,7 @@ public class MetricsV3ProcessorImpl implements MetricsProcessor {
     public List<BigDecimal> getSessionCountMetrics() throws OpenBankingException {
 
         log.debug("Starting session count metrics calculation.");
-        JSONObject sessionCountMetricsJsonObject;
-        String spQuery = metricsV3QueryCreator.getSessionCountMetricsQuery();
-
-        try {
-            sessionCountMetricsJsonObject = SPQueryExecutorUtil.executeQueryOnStreamProcessor(
-                    MetricsConstants.CDS_SESSION_METRICS_APP, spQuery);
-        } catch (ParseException | IOException e) {
-            String errorMessage = String.format(RETRIEVAL_ERROR, MetricsConstants.SESSION_COUNT);
-            log.error(errorMessage, e);
-            throw new OpenBankingException(errorMessage, e);
-        }
-
+        JSONObject sessionCountMetricsJsonObject = metricsDataProvider.getSessionCountMetricsData();
         if (sessionCountMetricsJsonObject != null) {
             List<BigDecimal> sessionCountMetricsList = MetricsProcessorUtil.getPopulatedMetricsList(
                     sessionCountMetricsJsonObject, numberOfDays, metricsCountLastDateEpoch);
@@ -244,7 +206,7 @@ public class MetricsV3ProcessorImpl implements MetricsProcessor {
         try {
             log.debug("Starting peak TPS metrics calculation.");
             List<BigDecimal> peakTPSList;
-            JSONArray peakTPSData = getPeakTPSMetricsData();
+            JSONArray peakTPSData = metricsDataProvider.getPeakTPSMetricsData();
             Map<AspectEnum, List<BigDecimal>> peakTPSDataMap = MetricsProcessorUtil.getPeakTPSMapFromJsonArray(
                     peakTPSData, numberOfDays, metricsCountLastDateEpoch);
             peakTPSList = peakTPSDataMap.get(AspectEnum.ALL);
@@ -262,18 +224,7 @@ public class MetricsV3ProcessorImpl implements MetricsProcessor {
     public List<BigDecimal> getErrorMetrics() throws OpenBankingException {
 
         log.debug("Starting error metrics calculation.");
-        JSONObject errorMetricsJsonObject;
-        String spQuery = metricsV3QueryCreator.getErrorMetricsQuery();
-
-        try {
-            errorMetricsJsonObject = SPQueryExecutorUtil.executeQueryOnStreamProcessor(
-                    MetricsConstants.CDS_INVOCATION_METRICS_APP, spQuery);
-        } catch (ParseException | IOException e) {
-            String errorMessage = String.format(RETRIEVAL_ERROR, MetricsConstants.ERROR);
-            log.error(errorMessage, e);
-            throw new OpenBankingException(errorMessage, e);
-        }
-
+        JSONObject errorMetricsJsonObject = metricsDataProvider.getErrorMetricsData();
         if (errorMetricsJsonObject != null) {
             List<BigDecimal> errorMetricsList = MetricsProcessorUtil.getPopulatedMetricsList(errorMetricsJsonObject,
                     numberOfDays, metricsCountLastDateEpoch);
@@ -291,19 +242,9 @@ public class MetricsV3ProcessorImpl implements MetricsProcessor {
     public Map<AspectEnum, List<BigDecimal>> getRejectionMetrics() throws OpenBankingException {
 
         log.debug("Starting rejection metrics calculation.");
-        JSONObject rejectionMetricsJsonObject;
+        JSONObject rejectionMetricsJsonObject = metricsDataProvider.getRejectionMetricsData();
         Map<AspectEnum, List<BigDecimal>> rejectionMetricsMap = new HashMap<>();
         ArrayList<ArrayList<BigDecimal>> rejectedInvocationMetricsList = new ArrayList<ArrayList<BigDecimal>>(2);
-        String spQuery = metricsV3QueryCreator.getRejectionMetricsQuery();
-
-        try {
-            rejectionMetricsJsonObject = SPQueryExecutorUtil.executeQueryOnStreamProcessor(
-                    MetricsConstants.API_RAW_DATA_SUBMISSION_APP, spQuery);
-        } catch (ParseException | IOException e) {
-            String errorMessage = String.format(RETRIEVAL_ERROR, MetricsConstants.REJECTION);
-            log.error(errorMessage, e);
-            throw new OpenBankingException(errorMessage, e);
-        }
 
         if (rejectionMetricsJsonObject != null) {
             rejectedInvocationMetricsList.addAll(MetricsProcessorUtil.getListFromRejectionsJson(
@@ -324,18 +265,7 @@ public class MetricsV3ProcessorImpl implements MetricsProcessor {
     public int getRecipientCountMetrics() throws OpenBankingException {
 
         log.debug("Starting recipient count metrics calculation.");
-        JSONObject recipientCountMetricsJsonObject;
-        String spQuery = metricsV3QueryCreator.getRecipientCountMetricsQuery();
-
-        try {
-            recipientCountMetricsJsonObject = SPQueryExecutorUtil.executeQueryOnStreamProcessor(
-                    MetricsConstants.CDS_CUSTOMER_RECIPIENT_METRICS_APP, spQuery);
-        } catch (ParseException | IOException e) {
-            String errorMessage = String.format(RETRIEVAL_ERROR, MetricsConstants.RECIPIENT_COUNT);
-            log.error(errorMessage, e);
-            throw new OpenBankingException(errorMessage, e);
-        }
-
+        JSONObject recipientCountMetricsJsonObject = metricsDataProvider.getRecipientCountMetricsData();
         if (recipientCountMetricsJsonObject != null) {
             int recipientCount = MetricsProcessorUtil.getLastElementValueFromJsonObject(
                     recipientCountMetricsJsonObject);
@@ -353,48 +283,13 @@ public class MetricsV3ProcessorImpl implements MetricsProcessor {
     public int getCustomerCountMetrics() throws OpenBankingException {
 
         log.debug("Starting customer count metrics calculation.");
-        JSONObject customerCountMetricsJsonObject;
-        String spQuery = metricsV3QueryCreator.getCustomerCountMetricsQuery();
-
-        try {
-            customerCountMetricsJsonObject = SPQueryExecutorUtil.executeQueryOnStreamProcessor(
-                    MetricsConstants.CDS_CUSTOMER_RECIPIENT_METRICS_APP, spQuery);
-        } catch (ParseException | IOException e) {
-            String errorMessage = String.format(RETRIEVAL_ERROR, MetricsConstants.CUSTOMER_COUNT);
-            log.error(errorMessage, e);
-            throw new OpenBankingException(errorMessage, e);
-        }
-
+        JSONObject customerCountMetricsJsonObject = metricsDataProvider.getCustomerCountMetricsData();
         if (customerCountMetricsJsonObject != null) {
             int customerCount = MetricsProcessorUtil.getLastElementValueFromJsonObject(customerCountMetricsJsonObject);
             log.debug("Finished customer count metrics calculation successfully.");
             return customerCount;
         } else {
             throw new OpenBankingException(String.format(NO_DATA_ERROR, MetricsConstants.CUSTOMER_COUNT));
-        }
-    }
-
-    /**
-     * Method to retrieve Peak TPS by calling CDSCurrentPeakTPSApp.
-     *
-     * @return - peak TPS data as a JSONArray
-     */
-    private JSONArray getPeakTPSMetricsData() throws ParseException {
-
-        JSONObject peakTPSEvent = metricsV3QueryCreator.getPeakTPSMetricsEvent();
-        String responseStr = SPQueryExecutorUtil.executeRequestOnStreamProcessor(peakTPSEvent, tpsDataRetrievalUrl);
-        //ToDO: Address vulnerable usage of JSONParser
-        Object jsonResponse = new JSONParser(JSONParser.MODE_PERMISSIVE).parse(responseStr);
-
-        if (jsonResponse instanceof JSONArray) {
-            return (JSONArray) jsonResponse;
-        } else if (jsonResponse instanceof JSONObject) {
-            JSONObject jsonResponseObt = (JSONObject) jsonResponse;
-            JSONArray responseArray = new JSONArray();
-            responseArray.add(jsonResponseObt);
-            return responseArray;
-        } else {
-            return new JSONArray();
         }
     }
 
@@ -408,18 +303,7 @@ public class MetricsV3ProcessorImpl implements MetricsProcessor {
     private Map<PriorityEnum, List<BigDecimal>> getTotalResponseTimeMap() throws OpenBankingException {
 
         log.debug("Starting total response time calculation.");
-        JSONObject totalResponseTimeJsonObject;
-        String spQuery = metricsV3QueryCreator.getTotalResponseTimeQuery();
-
-        try {
-            totalResponseTimeJsonObject = SPQueryExecutorUtil.executeQueryOnStreamProcessor(
-                    MetricsConstants.CDS_INVOCATION_METRICS_APP, spQuery);
-        } catch (ParseException | IOException e) {
-            String errorMessage = String.format(RETRIEVAL_ERROR, MetricsConstants.TOTAL_RESPONSE_TIME);
-            log.error(errorMessage, e);
-            throw new OpenBankingException(errorMessage, e);
-        }
-
+        JSONObject totalResponseTimeJsonObject = metricsDataProvider.getTotalResponseTimeMetricsData();
         if (totalResponseTimeJsonObject != null) {
             Map<PriorityEnum, List<BigDecimal>> totalResponseTimeMap = MetricsProcessorUtil.
                     getPopulatedTotalResponseTimeMetricsMap(totalResponseTimeJsonObject, numberOfDays,
@@ -441,18 +325,7 @@ public class MetricsV3ProcessorImpl implements MetricsProcessor {
     public List<BigDecimal> getSuccessfulInvocations() throws OpenBankingException {
 
         log.debug("Starting successful invocations calculation.");
-        JSONObject successInvocationsJsonObject;
-        String spQuery = metricsV3QueryCreator.getSuccessfulInvocationsQuery();
-
-        try {
-            successInvocationsJsonObject = SPQueryExecutorUtil.executeQueryOnStreamProcessor(
-                    MetricsConstants.CDS_INVOCATION_METRICS_APP, spQuery);
-        } catch (ParseException | IOException e) {
-            String errorMessage = String.format(RETRIEVAL_ERROR, MetricsConstants.SUCCESSFUL_INVOCATIONS);
-            log.error(errorMessage, e);
-            throw new OpenBankingException(errorMessage, e);
-        }
-
+        JSONObject successInvocationsJsonObject = metricsDataProvider.getSuccessfulInvocationMetricsData();
         if (successInvocationsJsonObject != null) {
             List<BigDecimal> successInvocationsList = MetricsProcessorUtil.getPopulatedMetricsList(
                     successInvocationsJsonObject, numberOfDays, metricsCountLastDateEpoch);

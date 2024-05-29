@@ -11,8 +11,11 @@ package com.wso2.openbanking.cds.metrics.service;
 
 import com.google.gson.Gson;
 import com.wso2.openbanking.accelerator.common.exception.OpenBankingException;
+import com.wso2.openbanking.cds.common.config.OpenBankingCDSConfigParser;
 import com.wso2.openbanking.cds.metrics.cache.MetricsCache;
 import com.wso2.openbanking.cds.metrics.constants.MetricsConstants;
+import com.wso2.openbanking.cds.metrics.data.MetricsDataProvider;
+import com.wso2.openbanking.cds.metrics.data.MetricsV3DataProvider;
 import com.wso2.openbanking.cds.metrics.model.MetricsResponseModel;
 import com.wso2.openbanking.cds.metrics.util.MetricsServiceUtil;
 import com.wso2.openbanking.cds.metrics.util.PeriodEnum;
@@ -20,6 +23,7 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
 import java.text.SimpleDateFormat;
+import java.time.ZoneId;
 import java.util.Date;
 
 /**
@@ -28,6 +32,8 @@ import java.util.Date;
 public class CDSMetricsServiceImpl implements CDSMetricsService {
 
     private static final Log log = LogFactory.getLog(CDSMetricsServiceImpl.class);
+    private static final ZoneId TIME_ZONE = ZoneId.of(OpenBankingCDSConfigParser.getInstance().getMetricsTimeZone());
+
     /**
      * {@inheritDoc}
      */
@@ -59,7 +65,11 @@ public class CDSMetricsServiceImpl implements CDSMetricsService {
      */
     public MetricsResponseModel getCurrentDayMetrics(String requestTime) throws OpenBankingException {
 
-        MetricsFetcher metricsFetcherV3Current = new MetricsV3FetcherImpl(PeriodEnum.CURRENT);
+        MetricsQueryCreator metricsV3QueryCreator = new MetricsV3QueryCreatorImpl(PeriodEnum.CURRENT);
+        MetricsDataProvider metricsDataProvider = new MetricsV3DataProvider(metricsV3QueryCreator);
+        MetricsProcessor metricsProcessor = new MetricsV3ProcessorImpl(PeriodEnum.CURRENT,
+                metricsDataProvider, TIME_ZONE);
+        MetricsFetcher metricsFetcherV3Current = new MetricsV3FetcherImpl(metricsProcessor);
         return metricsFetcherV3Current.getResponseMetricsListModel(requestTime);
     }
 
@@ -94,7 +104,11 @@ public class CDSMetricsServiceImpl implements CDSMetricsService {
      */
     private MetricsResponseModel getRealtimeHistoricMetrics(String requestTime) throws OpenBankingException {
 
-        MetricsFetcher metricsFetcherV3Historic = new MetricsV3FetcherImpl(PeriodEnum.HISTORIC);
+        MetricsQueryCreator metricsV3QueryCreator = new MetricsV3QueryCreatorImpl(PeriodEnum.HISTORIC);
+        MetricsDataProvider metricsDataProvider = new MetricsV3DataProvider(metricsV3QueryCreator);
+        MetricsProcessor metricsProcessor = new MetricsV3ProcessorImpl(
+                PeriodEnum.HISTORIC, metricsDataProvider, TIME_ZONE);
+        MetricsFetcher metricsFetcherV3Historic = new MetricsV3FetcherImpl(metricsProcessor);
         return metricsFetcherV3Historic.getResponseMetricsListModel(requestTime);
     }
 
@@ -136,7 +150,11 @@ public class CDSMetricsServiceImpl implements CDSMetricsService {
                     metricsResponseModelHistoric);
         } else {
             log.debug("Getting all metrics from analytics server since cached model is not found.");
-            MetricsFetcher metricsFetcherV3Current = new MetricsV3FetcherImpl(PeriodEnum.ALL);
+            MetricsQueryCreator metricsV3QueryCreator = new MetricsV3QueryCreatorImpl(PeriodEnum.ALL);
+            MetricsDataProvider metricsDataProvider = new MetricsV3DataProvider(metricsV3QueryCreator);
+            MetricsProcessor metricsProcessor = new MetricsV3ProcessorImpl(
+                    PeriodEnum.ALL, metricsDataProvider, TIME_ZONE);
+            MetricsFetcher metricsFetcherV3Current = new MetricsV3FetcherImpl(metricsProcessor);
             metricsResponseModel = metricsFetcherV3Current.getResponseMetricsListModel(requestTime);
             log.debug("All metrics retrieval completed.");
         }

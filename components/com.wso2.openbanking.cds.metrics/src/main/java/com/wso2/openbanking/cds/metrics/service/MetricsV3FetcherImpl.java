@@ -13,7 +13,6 @@ import com.wso2.openbanking.accelerator.common.exception.OpenBankingException;
 import com.wso2.openbanking.cds.metrics.constants.MetricsConstants;
 import com.wso2.openbanking.cds.metrics.model.MetricsResponseModel;
 import com.wso2.openbanking.cds.metrics.util.AspectEnum;
-import com.wso2.openbanking.cds.metrics.util.PeriodEnum;
 import com.wso2.openbanking.cds.metrics.util.PriorityEnum;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -52,8 +51,8 @@ public class MetricsV3FetcherImpl implements MetricsFetcher {
     private CompletableFuture<List<BigDecimal>> performanceFuture;
     private CompletableFuture<Map<PriorityEnum, List<BigDecimal>>> averageResponseTimeFuture;
 
-    public MetricsV3FetcherImpl(PeriodEnum period) throws OpenBankingException {
-        metricsProcessor = new MetricsV3ProcessorImpl(period);
+    public MetricsV3FetcherImpl(MetricsProcessor metricsProcessor) throws OpenBankingException {
+        this.metricsProcessor = metricsProcessor;
     }
 
     @Override

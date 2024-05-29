@@ -12,9 +12,9 @@ package com.wso2.openbanking.cds.metrics.service;
 import net.minidev.json.JSONObject;
 
 /**
- * Interface of Metrics Query Creator for CDS Metrics V3.
+ * Interface of Metrics Query Creator.
  */
-public interface MetricsV3QueryCreator {
+public interface MetricsQueryCreator {
 
     /**
      * Returns the query for getting availability metrics data.
