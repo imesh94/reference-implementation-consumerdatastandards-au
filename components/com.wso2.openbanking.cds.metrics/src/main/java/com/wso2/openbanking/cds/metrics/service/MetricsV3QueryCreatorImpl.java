@@ -18,7 +18,7 @@ import net.minidev.json.JSONObject;
  * Implementation of Metrics Query Creator for CDS Metrics V3.
  * This class will initialize a query creator with timestamps relevant to the given period.
  */
-public class MetricsV3QueryCreatorImpl implements MetricsV3QueryCreator {
+public class MetricsV3QueryCreatorImpl implements MetricsQueryCreator {
 
     private final String fromTimestamp;
     private final String toTimestamp;

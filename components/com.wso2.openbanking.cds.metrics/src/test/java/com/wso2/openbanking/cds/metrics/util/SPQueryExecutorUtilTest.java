@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2021-2023, WSO2 LLC. (https://www.wso2.com). All Rights Reserved.
+ * Copyright (c) 2021-2024, WSO2 LLC. (https://www.wso2.com). All Rights Reserved.
  *
  * This software is the property of WSO2 LLC. and its suppliers, if any.
  * Dissemination of any information or reproduction of any material contained
@@ -7,10 +7,12 @@
  * You may not alter or remove any copyright or other notice from copies of this content.
  *
  */
+
 package com.wso2.openbanking.cds.metrics.util;
 
 import com.wso2.openbanking.accelerator.common.exception.OpenBankingException;
 import com.wso2.openbanking.accelerator.common.util.HTTPClientUtils;
+import net.minidev.json.JSONObject;
 import net.minidev.json.parser.ParseException;
 import org.apache.commons.io.FileUtils;
 import org.apache.http.HttpEntity;
@@ -29,6 +31,7 @@ import org.powermock.core.classloader.annotations.PowerMockIgnore;
 import org.powermock.core.classloader.annotations.PrepareForTest;
 import org.powermock.modules.testng.PowerMockTestCase;
 import org.testng.Assert;
+import org.testng.annotations.BeforeMethod;
 import org.testng.annotations.Test;
 import org.wso2.carbon.apimgt.impl.APIManagerAnalyticsConfiguration;
 import org.wso2.carbon.apimgt.impl.APIManagerConfigurationService;
@@ -50,30 +53,8 @@ import static org.powermock.api.mockito.PowerMockito.when;
 @PowerMockIgnore("jdk.internal.reflect.*")
 public class SPQueryExecutorUtilTest extends PowerMockTestCase {
 
-    @Test
-    public void testGetAnalyticsConfiguration() {
-
-        mockStatic(FrameworkUtil.class);
-        Bundle bundleMock = mock(Bundle.class);
-        BundleContext bundleContextMock = mock(BundleContext.class);
-        ServiceReference<APIManagerConfigurationService> serviceReferenceMock = mock(ServiceReference.class);
-        APIManagerConfigurationService apiManagerConfigurationServiceMock = mock(APIManagerConfigurationService.class);
-        when(FrameworkUtil.getBundle(Mockito.any())).thenReturn(bundleMock);
-        when(bundleMock.getBundleContext()).thenReturn(bundleContextMock);
-        when(bundleContextMock.getServiceReference(APIManagerConfigurationService.class))
-                .thenReturn(serviceReferenceMock);
-
-        APIManagerAnalyticsConfiguration apiManagerAnalyticsConfigurationMock =
-                mock(APIManagerAnalyticsConfiguration.class);
-        when(bundleContextMock.getService(Mockito.any())).thenReturn(apiManagerConfigurationServiceMock);
-        when(apiManagerConfigurationServiceMock.getAPIAnalyticsConfiguration())
-                .thenReturn(apiManagerAnalyticsConfigurationMock);
-
-        Assert.assertNotNull(SPQueryExecutorUtil.getAnalyticsConfiguration());
-    }
-
-    @Test
-    public void testExecuteQueryOnStreamProcessor() throws OpenBankingException, IOException, ParseException {
+    @BeforeMethod
+    public void setup() throws OpenBankingException, IOException {
 
         mockStatic(FrameworkUtil.class);
         Bundle bundleMock = mock(Bundle.class);
@@ -111,7 +92,20 @@ public class SPQueryExecutorUtilTest extends PowerMockTestCase {
 
         PowerMockito.mockStatic(HTTPClientUtils.class);
         Mockito.when(HTTPClientUtils.getHttpsClient()).thenReturn(closeableHttpClientMock);
+    }
 
+    @Test
+    public void testGetAnalyticsConfiguration() {
+        Assert.assertNotNull(SPQueryExecutorUtil.getAnalyticsConfiguration());
+    }
+
+    @Test
+    public void testExecuteQueryOnStreamProcessor() throws OpenBankingException, IOException, ParseException {
         Assert.assertNotNull(SPQueryExecutorUtil.executeQueryOnStreamProcessor("dummyAppName", "dummyQuery"));
+    }
+
+    @Test
+    public void testExecuteRequestOnStreamProcessor() throws OpenBankingException, IOException, ParseException {
+        Assert.assertNotNull(SPQueryExecutorUtil.executeRequestOnStreamProcessor(new JSONObject(), "dummyUrl"));
     }
 }

@@ -29,6 +29,7 @@ public class MetricsServiceUtilTest {
 
     private MetricsResponseModel currentDayMetrics;
     private MetricsResponseModel historicMetrics;
+    private static final int TOTAL_DAYS = 8;
 
     @BeforeMethod
     public void setUp() {
@@ -37,6 +38,7 @@ public class MetricsServiceUtilTest {
     }
 
     private MetricsResponseModel createMetricsResponseModelWithValues(int numberOfEntries) {
+
         String currentDate = ZonedDateTime.now().format(DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH:mm:ss'Z'"));
         MetricsResponseModel model = new MetricsResponseModel(currentDate);
         model.setAvailability(createBigDecimalList(numberOfEntries));
@@ -75,27 +77,27 @@ public class MetricsServiceUtilTest {
 
         MetricsServiceUtil.appendHistoricMetricsToCurrentDayMetrics(currentDayMetrics, historicMetrics);
         // Test if all metrics lists have been appended correctly
-        assertEquals(currentDayMetrics.getAvailability().size(), 8);
-        assertEquals(currentDayMetrics.getErrors().size(), 8);
-        assertEquals(currentDayMetrics.getPeakTPS().size(), 8);
-        assertEquals(currentDayMetrics.getAverageTPS().size(), 8);
-        assertEquals(currentDayMetrics.getPerformance().size(), 8);
-        assertEquals(currentDayMetrics.getSessionCount().size(), 8);
+        assertEquals(currentDayMetrics.getAvailability().size(), TOTAL_DAYS);
+        assertEquals(currentDayMetrics.getErrors().size(), TOTAL_DAYS);
+        assertEquals(currentDayMetrics.getPeakTPS().size(), TOTAL_DAYS);
+        assertEquals(currentDayMetrics.getAverageTPS().size(), TOTAL_DAYS);
+        assertEquals(currentDayMetrics.getPerformance().size(), TOTAL_DAYS);
+        assertEquals(currentDayMetrics.getSessionCount().size(), TOTAL_DAYS);
 
-        assertEquals(currentDayMetrics.getInvocationUnauthenticated().size(), 8);
-        assertEquals(currentDayMetrics.getInvocationHighPriority().size(), 8);
-        assertEquals(currentDayMetrics.getInvocationLowPriority().size(), 8);
-        assertEquals(currentDayMetrics.getInvocationUnattended().size(), 8);
-        assertEquals(currentDayMetrics.getInvocationLargePayload().size(), 8);
+        assertEquals(currentDayMetrics.getInvocationUnauthenticated().size(), TOTAL_DAYS);
+        assertEquals(currentDayMetrics.getInvocationHighPriority().size(), TOTAL_DAYS);
+        assertEquals(currentDayMetrics.getInvocationLowPriority().size(), TOTAL_DAYS);
+        assertEquals(currentDayMetrics.getInvocationUnattended().size(), TOTAL_DAYS);
+        assertEquals(currentDayMetrics.getInvocationLargePayload().size(), TOTAL_DAYS);
 
-        assertEquals(currentDayMetrics.getAverageResponseUnauthenticated().size(), 8);
-        assertEquals(currentDayMetrics.getAverageResponseHighPriority().size(), 8);
-        assertEquals(currentDayMetrics.getAverageResponseLowPriority().size(), 8);
-        assertEquals(currentDayMetrics.getAverageResponseUnattended().size(), 8);
-        assertEquals(currentDayMetrics.getAverageResponseLargePayload().size(), 8);
+        assertEquals(currentDayMetrics.getAverageResponseUnauthenticated().size(), TOTAL_DAYS);
+        assertEquals(currentDayMetrics.getAverageResponseHighPriority().size(), TOTAL_DAYS);
+        assertEquals(currentDayMetrics.getAverageResponseLowPriority().size(), TOTAL_DAYS);
+        assertEquals(currentDayMetrics.getAverageResponseUnattended().size(), TOTAL_DAYS);
+        assertEquals(currentDayMetrics.getAverageResponseLargePayload().size(), TOTAL_DAYS);
 
-        assertEquals(currentDayMetrics.getAuthenticatedEndpointRejections().size(), 8);
-        assertEquals(currentDayMetrics.getUnauthenticatedEndpointRejections().size(), 8);
+        assertEquals(currentDayMetrics.getAuthenticatedEndpointRejections().size(), TOTAL_DAYS);
+        assertEquals(currentDayMetrics.getUnauthenticatedEndpointRejections().size(), TOTAL_DAYS);
     }
 
     @Test
