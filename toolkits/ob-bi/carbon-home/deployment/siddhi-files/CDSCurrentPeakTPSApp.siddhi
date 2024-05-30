@@ -28,7 +28,7 @@ define function getAspect[JavaScript] return string {
 	var electedResource = data[0];
 	var unauthenticatedList = ["/banking/products", "/banking/products/{productId}", "/discovery/status", "/discovery/outages"];
 	var authenticatedList = ["/banking/accounts", "/common/customer", "/common/customer/detail", "/register", "/register/{ClientId}",
-	                         "/", "/token", "/authorize", "/revoke", "/userinfo", "/token/introspect", "/jwks", "/.well-known/openid-configuration",
+	                         "/", "/token", "/authorize", "/revoke", "/userinfo", "/introspect", "/jwks", "/.well-known/openid-configuration",
 	                         "/banking/accounts/{accountId}", "/banking/accounts/{accountId}/balance", "/banking/accounts/balances",
 	                         "/banking/accounts/{accountId}/transactions", "/banking/accounts/{accountId}/transactions/{transactionId}",
 	                         "/banking/payees", "/banking/payees/{payeeId}", "/banking/accounts/{accountId}/direct-debits",
@@ -48,10 +48,10 @@ define function getAspect[JavaScript] return string {
 @primaryKey('ID','ELECTED_RESOURCE')
 @store(type='rdbms', datasource='OB_REPORTING_DB')
 @Index('TIMESTAMP')
-define table API_INVOCATION_RAW_DATA(ID string,CONSENT_ID string,TPP_ID string,CLIENT_ID string,USER_AGENT string,STATUS_CODE int,
-                        STATUS_MESSAGE string,HTTP_METHOD string,RESPONSE_PAYLOAD_SIZE long,REQUEST_EXQ_START_TIME long,
-                        BACKEND_REQ_START_TIME long, BACKEND_REQ_END_TIME long,BACKEND_LATENCY long,ELECTED_RESOURCE string,
-                        AUTHORISATION_STATUS string,API_NAME string,TIMESTAMP long,API_SPEC_VERSION string,CUSTOMER_STATUS string);
+define table API_INVOCATION_RAW_DATA(ID string, MESSAGE_ID string, CONSENT_ID string, CONSUMER_ID string,
+                        CLIENT_ID string, USER_AGENT string, STATUS_CODE int, HTTP_METHOD string,
+                        RESPONSE_PAYLOAD_SIZE long, ELECTED_RESOURCE string, API_NAME string, API_SPEC_VERSION string,
+                        TIMESTAMP long, CUSTOMER_STATUS string, ACCESS_TOKEN_ID string, SESSION_TYPE string);
 
 from CDSCurrentPeakTPSAppStream
 select MESSAGE_ID, convert(START_TIME, 'long') as START_TIME, convert(END_TIME, 'long') as END_TIME
