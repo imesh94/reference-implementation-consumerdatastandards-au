@@ -9,10 +9,10 @@
 package com.wso2.openbanking.cds.identity.dcr.model;
 
 import com.google.gson.annotations.SerializedName;
+import com.wso2.openbanking.accelerator.identity.common.annotations.validationgroups.AttributeChecks;
+import com.wso2.openbanking.accelerator.identity.common.annotations.validationgroups.MandatoryChecks;
 import com.wso2.openbanking.accelerator.identity.dcr.model.SoftwareStatementBody;
 import com.wso2.openbanking.accelerator.identity.dcr.validation.DCRCommonConstants;
-import com.wso2.openbanking.accelerator.identity.dcr.validation.validationgroups.AttributeChecks;
-import com.wso2.openbanking.accelerator.identity.dcr.validation.validationgroups.MandatoryChecks;
 import com.wso2.openbanking.cds.identity.dcr.validation.annotation.ValidateSSACallbackUris;
 import com.wso2.openbanking.cds.identity.dcr.validation.annotation.ValidateSSAIssuer;
 import com.wso2.openbanking.cds.identity.dcr.validation.annotation.ValidateSSAScopes;
