@@ -296,7 +296,7 @@ public class JWTAuthenticationExecutor implements OpenBankingGatewayExecutor {
     protected boolean validateJWTSignature(String jwtString, String configuredJwksUrl, JSONObject jwtHeader)
             throws MalformedURLException, BadJOSEException, ParseException, JOSEException {
 
-        return JWTUtils.validateJWTSignature(jwtString, configuredJwksUrl, jwtHeader.getAsString("alg"));
+        return JWTUtils.isValidSignature(jwtString, configuredJwksUrl, jwtHeader.getAsString("alg"));
     }
 
 }

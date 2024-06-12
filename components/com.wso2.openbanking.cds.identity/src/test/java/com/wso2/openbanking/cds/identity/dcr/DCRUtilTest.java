@@ -164,7 +164,7 @@ public class DCRUtilTest {
     public void testValidUriConnection() throws Exception {
 
         mockStatic(JWTUtils.class);
-        when(JWTUtils.validateJWTSignature(Mockito.anyString(), Mockito.anyString(), Mockito.anyString()))
+        when(JWTUtils.isValidSignature(Mockito.anyString(), Mockito.anyString(), Mockito.anyString()))
                 .thenReturn(true);
         mockStatic(OpenBankingCDSConfigParser.class);
         openBankingCDSConfigParser = mock(OpenBankingCDSConfigParser.class);
@@ -209,7 +209,7 @@ public class DCRUtilTest {
         cdsConfigMap.put("DCR.EnableURIValidation", "false");
 
         mockStatic(JWTUtils.class);
-        when(JWTUtils.validateJWTSignature(Mockito.anyString(), Mockito.anyString(), Mockito.anyString()))
+        when(JWTUtils.isValidSignature(Mockito.anyString(), Mockito.anyString(), Mockito.anyString()))
                 .thenReturn(true);
         mockStatic(OpenBankingCDSConfigParser.class);
         openBankingCDSConfigParser = mock(OpenBankingCDSConfigParser.class);
@@ -246,7 +246,7 @@ public class DCRUtilTest {
         cdsConfigMap.put("DCR.EnableSectorIdentifierUriValidation", "true");
 
         mockStatic(JWTUtils.class);
-        when(JWTUtils.validateJWTSignature(Mockito.anyString(), Mockito.anyString(), Mockito.anyString()))
+        when(JWTUtils.isValidSignature(Mockito.anyString(), Mockito.anyString(), Mockito.anyString()))
                 .thenReturn(true);
         mockStatic(OpenBankingCDSConfigParser.class);
         openBankingCDSConfigParser = mock(OpenBankingCDSConfigParser.class);
@@ -329,7 +329,7 @@ public class DCRUtilTest {
     private void initiateData() throws Exception {
 
         mockStatic(JWTUtils.class);
-        when(JWTUtils.validateJWTSignature(Mockito.anyString(), Mockito.anyString(), Mockito.anyString()))
+        when(JWTUtils.isValidSignature(Mockito.anyString(), Mockito.anyString(), Mockito.anyString()))
                 .thenReturn(true);
         mockStatic(OpenBankingCDSConfigParser.class);
         openBankingCDSConfigParser = mock(OpenBankingCDSConfigParser.class);
