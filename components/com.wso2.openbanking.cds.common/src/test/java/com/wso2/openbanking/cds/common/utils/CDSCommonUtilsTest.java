@@ -44,4 +44,21 @@ public class CDSCommonUtilsTest extends PowerMockTestCase {
         Assert.assertEquals(encryptedToken, ENCRYPTED_STRING);
     }
 
+    @Test
+    public void testValidRequestUriKey() {
+        String expectedRequestUriKey = "abc123";
+        String actualRequestUriKey = CDSCommonUtils
+                .getRequestUriKey("abc:123:def:request_uri:" + expectedRequestUriKey);
+
+        Assert.assertEquals(actualRequestUriKey, expectedRequestUriKey);
+    }
+
+    @Test
+    public void testNullRequestUriKey() {
+        String expectedRequestUriKey = null;
+        String actualRequestUriKey = CDSCommonUtils.getRequestUriKey(null);
+
+        Assert.assertEquals(actualRequestUriKey, expectedRequestUriKey);
+    }
+
 }

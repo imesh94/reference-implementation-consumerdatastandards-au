@@ -15,6 +15,27 @@ public class CommonConstants {
 
     public static final String OB_CONSENT_ID_PREFIX = "OB_CONSENT_ID_";
     public static final String CDS_API_CONTEXT_PREFIX = "cds-au";
+    public static final String REQUEST = "request";
+    public static final String REQUEST_URI = "request_uri";
+    public static final String STAGE = "stage";
+    public static final String CDR_ARRANGEMENT_ID = "cdr_arrangement_id";
+    public static final String REQUEST_URI_KEY = "requestUriKey";
+    public static final String AUTHORIZATION_CODE = "authorization_code";
+    public static final long ONE_DAY_IN_SECONDS = 86400;
+
+    // Consent statuses
+    public static final String AUTHORISED = "Authorised";
+    public static final String REVOKED = "Revoked";
+    public static final String EXPIRED = "Expired";
+
+    // Auth flow types
+    public static final String CONSENT_AUTHORISATION = "consentAuthorisation";
+    public static final String CONSENT_AMENDMENT_AUTHORISATION = "consentAmendmentAuthorisation";
+    public static final String UNCLASSIFIED = "unclassified";
+
+    // Consent duration types
+    public static final String ONCE_OFF = "once-off";
+    public static final String ONGOING = "ongoing";
 
     // Config related constants
     public static final String OB_CONFIG_FILE = "open-banking-cds.xml";
