@@ -65,7 +65,10 @@
     String nameClaims = (String) session.getAttribute("nameClaims");
     String contactClaims = (String) session.getAttribute("contactClaims");
     boolean skipAccounts = (boolean) session.getAttribute("skipAccounts");
-    int sharingDurationValue = Integer.parseInt(getRequestAttribute(request, "sharing_duration_value"));
+    int sharingDurationValue = 0;
+    if (getRequestAttribute(request, "sharing_duration_value") != null) {
+        sharingDurationValue = Integer.parseInt(getRequestAttribute(request, "sharing_duration_value"));
+    }
 %>
 <div class="col-xs-12 col-sm-12 col-md-12 col-lg-12">
     <div class="clearfix"></div>
@@ -358,7 +361,15 @@
      * @return attribute value
      */
     private String getRequestAttribute(HttpServletRequest request, String attributeName) {
-        return String.valueOf(request.getAttribute(attributeName) != null ? request.getAttribute(attributeName) :
-                request.getParameter(attributeName));
+
+        if (request.getAttribute(attributeName) != null) {
+            return String.valueOf(request.getAttribute(attributeName));
+        } else {
+            if (request.getParameter(attributeName) != null) {
+                return String.valueOf(request.getParameter(attributeName));
+            } else {
+                return null;
+            }
+        }
     }
 %>
