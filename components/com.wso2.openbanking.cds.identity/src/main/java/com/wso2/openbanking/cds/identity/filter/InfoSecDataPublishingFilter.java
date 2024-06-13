@@ -104,19 +104,22 @@ public class InfoSecDataPublishingFilter implements Filter {
 
         Map<String, Object> requestData = new HashMap<>();
         String contentLength = response.getHeader(CDSFilterConstants.CONTENT_LENGTH);
-        String consentId = null;
 
-        // Get consent id from the access token
-        String token = request.getHeader("authorization").split(" ")[1];
-        try {
-            SignedJWT signedJWT = SignedJWT.parse(token);
-            JSONObject jsonObject = signedJWT.getJWTClaimsSet().toJSONObject();
-            consentId = (String) jsonObject.get("consent_id");
-        } catch (ParseException e) {
-            LOG.error("Error while parsing the JWT token", e);
+        if (request.getHeader("authorization") != null) {
+            String consentId = null;
+
+            // Get consent id from the access token
+            String token = request.getHeader("authorization").split(" ")[1];
+            try {
+                SignedJWT signedJWT = SignedJWT.parse(token);
+                JSONObject jsonObject = signedJWT.getJWTClaimsSet().toJSONObject();
+                consentId = (String) jsonObject.get("consent_id");
+            } catch (ParseException e) {
+                LOG.error("Error while parsing the JWT token", e);
+            }
+            requestData.put("consentId", consentId);
         }
 
-        requestData.put("consentId", consentId);
         requestData.put("clientId", extractClientId(request));
         // consumerId is not required for metrics calculations, hence publishing as null
         requestData.put("consumerId", null);
