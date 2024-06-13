@@ -87,5 +87,15 @@
         {% else %}
         <TimeZone>GMT</TimeZone>
         {% endif %}
+        {% if open_banking_cds.metrics.availability_start_date is defined %}
+        <AvailabilityStartDate>{{open_banking_cds.metrics.availability_start_date}}</AvailabilityStartDate>
+        {% else %}
+        <AvailabilityStartDate>2023-11-01</AvailabilityStartDate>
+        {% endif %}
+        {% if open_banking_cds.metrics.metrics_v5_start_date is defined %}
+        <MetricsV5StartDate>{{open_banking_cds.metrics.metrics_v5_start_date}}</MetricsV5StartDate>
+        {% else %}
+        <MetricsV5StartDate>2024-05-01</MetricsV5StartDate>
+        {% endif %}
     </Metrics>
 </Server>

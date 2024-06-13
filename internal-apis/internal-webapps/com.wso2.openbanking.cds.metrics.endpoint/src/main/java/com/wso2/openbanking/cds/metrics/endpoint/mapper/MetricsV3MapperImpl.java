@@ -9,7 +9,6 @@
 
 package com.wso2.openbanking.cds.metrics.endpoint.mapper;
 
-import com.wso2.openbanking.cds.common.config.OpenBankingCDSConfigParser;
 import com.wso2.openbanking.cds.metrics.endpoint.model.AvailabilityMetricsDTO;
 import com.wso2.openbanking.cds.metrics.endpoint.model.AverageResponseMetricsDTO;
 import com.wso2.openbanking.cds.metrics.endpoint.model.AverageResponseMetricsHighPriorityDTO;
@@ -34,7 +33,10 @@ import com.wso2.openbanking.cds.metrics.endpoint.model.RejectionMetricsUnauthent
 import com.wso2.openbanking.cds.metrics.endpoint.model.ResponseMetricsListDTO;
 import com.wso2.openbanking.cds.metrics.endpoint.model.ResponseMetricsListDataDTO;
 import com.wso2.openbanking.cds.metrics.endpoint.model.SessionCountMetricsDTO;
+import com.wso2.openbanking.cds.metrics.endpoint.model.v5.ResponseMetricsListV5DTO;
+import com.wso2.openbanking.cds.metrics.endpoint.util.CommonUtil;
 import com.wso2.openbanking.cds.metrics.model.MetricsResponseModel;
+import com.wso2.openbanking.cds.metrics.model.MetricsV5ResponseModel;
 import com.wso2.openbanking.cds.metrics.util.PeriodEnum;
 
 import java.math.BigDecimal;
@@ -48,6 +50,14 @@ public class MetricsV3MapperImpl implements MetricsMapper {
     /**
      * {@inheritDoc}
      */
+    public ResponseMetricsListV5DTO getResponseMetricsListV5DTO(MetricsV5ResponseModel metricsListModel,
+                                                                String period) {
+        return null;
+    }
+
+    /**
+     * {@inheritDoc}
+     */
     public ResponseMetricsListDTO getResponseMetricsListDTO(MetricsResponseModel metricsListModel, String period) {
 
         ResponseMetricsListDTO metricsListDTO = new ResponseMetricsListDTO();
@@ -56,7 +66,7 @@ public class MetricsV3MapperImpl implements MetricsMapper {
 
         ResponseMetricsListDataDTO metricsListDataDTO = getResponseMetricsListDataDTO(metricsListModel, periodEnum);
         metricsListDTO.setData(metricsListDataDTO);
-        linksDTO.setSelf(getCDSAdminSelfLink(period));
+        linksDTO.setSelf(CommonUtil.getCDSAdminSelfLink(period));
         metricsListDTO.setLinks(linksDTO);
 
         return metricsListDTO;
@@ -528,18 +538,6 @@ public class MetricsV3MapperImpl implements MetricsMapper {
             sessionCountMetricsDTO.setPreviousDays(sessionCountList);
         }
         return sessionCountMetricsDTO;
-    }
-
-    /**
-     * Get Admin API Self URL.
-     *
-     * @param period - period (ALL, CURRENT, HISTORIC)
-     * @return self-url string
-     */
-    private static String getCDSAdminSelfLink(String period) {
-
-        String adminAPIBaseURL = OpenBankingCDSConfigParser.getInstance().getAdminAPISelfLink();
-        return String.format("%smetrics?period=%s", adminAPIBaseURL, period);
     }
 
 }

@@ -10,7 +10,9 @@
 package com.wso2.openbanking.cds.metrics.endpoint.mapper;
 
 import com.wso2.openbanking.cds.metrics.endpoint.model.ResponseMetricsListDTO;
+import com.wso2.openbanking.cds.metrics.endpoint.model.v5.ResponseMetricsListV5DTO;
 import com.wso2.openbanking.cds.metrics.model.MetricsResponseModel;
+import com.wso2.openbanking.cds.metrics.model.MetricsV5ResponseModel;
 
 /**
  * Mapper to map MetricsResponseModel to Metrics API Response DTO.
@@ -24,5 +26,13 @@ public interface MetricsMapper {
      * @return - Specification supported DTO
      */
     ResponseMetricsListDTO getResponseMetricsListDTO(MetricsResponseModel metricsListModel, String period);
+
+    /**
+     * Map the MetricsResponseModel to ResponseMetricsListV5DTO.
+     *
+     * @param metricsListModel - Metrics model used in the service layer
+     * @return - Specification supported DTO
+     */
+    ResponseMetricsListV5DTO getResponseMetricsListV5DTO(MetricsV5ResponseModel metricsListModel, String period);
 
 }
