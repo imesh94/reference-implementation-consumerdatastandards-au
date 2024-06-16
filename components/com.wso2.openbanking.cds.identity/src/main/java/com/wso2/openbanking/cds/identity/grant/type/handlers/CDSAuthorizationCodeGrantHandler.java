@@ -88,7 +88,7 @@ public class CDSAuthorizationCodeGrantHandler extends OBAuthorizationCodeGrantHa
                     .generateAbandonedConsentFlowDataMap(
                             requestUriKey,
                             cdrArrangementId,
-                            AuthorisationStageEnum.COMPLETED.toString());
+                            AuthorisationStageEnum.COMPLETED);
 
             dataPublishingService.publishAbandonedConsentFlowData(abandonedConsentFlowData);
         } catch (ConsentManagementException e) {

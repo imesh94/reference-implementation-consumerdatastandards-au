@@ -9,8 +9,11 @@
 
 package com.wso2.openbanking.cds.common.utils;
 
-import com.wso2.openbanking.accelerator.common.util.Generated;
 import com.wso2.openbanking.cds.common.config.OpenBankingCDSConfigParser;
+import com.wso2.openbanking.cds.common.enums.AuthorisationFlowTypeEnum;
+import com.wso2.openbanking.cds.common.enums.AuthorisationStageEnum;
+import com.wso2.openbanking.cds.common.enums.ConsentDurationTypeEnum;
+import com.wso2.openbanking.cds.common.enums.ConsentStatusEnum;
 import org.apache.commons.codec.binary.Hex;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.logging.Log;
@@ -107,22 +110,22 @@ public class CDSCommonUtils {
      * @param sharingDurationValue sharing duration value
      * @return consent duration type
      */
-    public static String getConsentDurationType(String sharingDurationValue) {
+    public static ConsentDurationTypeEnum getConsentDurationType(String sharingDurationValue) {
 
         if (StringUtils.isEmpty(sharingDurationValue)) {
-            return CommonConstants.ONCE_OFF;
+            return ConsentDurationTypeEnum.ONCE_OFF;
         }
 
         try {
             long sharingDurationInSeconds = Long.parseLong(sharingDurationValue.trim());
             if (sharingDurationInSeconds <= CommonConstants.ONE_DAY_IN_SECONDS) {
-                return CommonConstants.ONCE_OFF;
+                return ConsentDurationTypeEnum.ONCE_OFF;
             }
         } catch (NumberFormatException e) {
             LOG.error("Error when converting sharing duration to a number.", e);
         }
 
-        return CommonConstants.ONGOING;
+        return ConsentDurationTypeEnum.ONGOING;
     }
 
     /**
@@ -133,15 +136,14 @@ public class CDSCommonUtils {
      * @param stage         consent flow stage
      * @return abandoned consent flow data map
      */
-    @Generated(message = "Excluding from code coverage since method does not have a logic")
     public static Map<String, Object> generateAbandonedConsentFlowDataMap(String requestUriKey, String consentId,
-                                                                          String stage) {
+                                                                          AuthorisationStageEnum stage) {
 
         Map<String, Object> abandonedConsentFlowDataMap = new HashMap<>();
 
         abandonedConsentFlowDataMap.put("requestUriKey", requestUriKey);
         abandonedConsentFlowDataMap.put("consentId", consentId);
-        abandonedConsentFlowDataMap.put("stage", stage);
+        abandonedConsentFlowDataMap.put("stage", stage.toString());
         abandonedConsentFlowDataMap.put("timestamp", Instant.now().toEpochMilli());
         return abandonedConsentFlowDataMap;
     }
@@ -156,18 +158,18 @@ public class CDSCommonUtils {
      * @param consentDurationType consent duration type
      * @return authorisation data map
      */
-    @Generated(message = "Excluding from code coverage since method does not have a logic")
-    public static Map<String, Object> generateAuthorisationDataMap(String consentId, String consentStatus,
-                                                                   String authFlowType, String customerProfile,
-                                                                   String consentDurationType) {
+    public static Map<String, Object> generateAuthorisationDataMap(String consentId, ConsentStatusEnum consentStatus,
+                                                                   AuthorisationFlowTypeEnum authFlowType,
+                                                                   String customerProfile,
+                                                                   ConsentDurationTypeEnum consentDurationType) {
 
         Map<String, Object> authorisationDataMap = new HashMap<>();
 
         authorisationDataMap.put("consentId", consentId);
-        authorisationDataMap.put("consentStatus", consentStatus);
-        authorisationDataMap.put("authFlowType", authFlowType);
+        authorisationDataMap.put("consentStatus", consentStatus.toString());
+        authorisationDataMap.put("authFlowType", authFlowType.toString());
         authorisationDataMap.put("customerProfile", customerProfile);
-        authorisationDataMap.put("consentDurationType", consentDurationType);
+        authorisationDataMap.put("consentDurationType", consentDurationType.toString());
         authorisationDataMap.put("timestamp", Instant.now().toEpochMilli());
         return authorisationDataMap;
     }

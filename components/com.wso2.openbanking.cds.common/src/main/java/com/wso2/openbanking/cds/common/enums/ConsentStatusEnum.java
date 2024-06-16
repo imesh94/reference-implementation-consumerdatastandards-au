@@ -5,28 +5,22 @@
  * Dissemination of any information or reproduction of any material contained
  * herein in any form is strictly forbidden, unless permitted by WSO2 expressly.
  * You may not alter or remove any copyright or other notice from copies of this content.
- *
  */
 
 package com.wso2.openbanking.cds.common.enums;
 
 /**
- * Specifies the type of authorisation stage.
+ * Specifies the consent status.
  */
-public enum AuthorisationStageEnum {
+public enum ConsentStatusEnum {
 
-    STARTED("started"),
-    USER_IDENTIFIED("userIdentified"),
-    USER_AUTHENTICATED("userAuthenticated"),
-    ACCOUNT_SELECTED("accountSelected"),
-    CONSENT_APPROVED("consentApproved"),
-    CONSENT_REJECTED("consentRejected"),
-    TOKEN_EXCHANGE_FAILED("tokenExchangeFailed"),
-    COMPLETED("completed");
+    AUTHORISED("Authorised"),
+    REVOKED("Revoked"),
+    EXPIRED("Expired");
 
     private String value;
 
-    AuthorisationStageEnum(String value) {
+    ConsentStatusEnum(String value) {
         this.value = value;
     }
 
@@ -34,10 +28,10 @@ public enum AuthorisationStageEnum {
         return value;
     }
 
-    public static AuthorisationStageEnum fromValue(String value) {
-        for (AuthorisationStageEnum stage : values()) {
-            if (stage.value.equals(value)) {
-                return stage;
+    public static ConsentStatusEnum fromValue(String value) {
+        for (ConsentStatusEnum status : values()) {
+            if (status.value.equals(value)) {
+                return status;
             }
         }
         throw new IllegalArgumentException("Unknown value: " + value);
@@ -47,5 +41,5 @@ public enum AuthorisationStageEnum {
     public String toString() {
         return String.valueOf(value);
     }
-}
 
+}

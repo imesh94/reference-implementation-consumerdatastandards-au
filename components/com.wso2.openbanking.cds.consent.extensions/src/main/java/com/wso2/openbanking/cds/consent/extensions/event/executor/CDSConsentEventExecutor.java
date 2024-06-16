@@ -20,6 +20,9 @@ import com.wso2.openbanking.accelerator.identity.util.HTTPClientUtils;
 import com.wso2.openbanking.accelerator.identity.util.IdentityCommonHelper;
 import com.wso2.openbanking.cds.common.config.OpenBankingCDSConfigParser;
 import com.wso2.openbanking.cds.common.data.publisher.CDSDataPublishingService;
+import com.wso2.openbanking.cds.common.enums.AuthorisationFlowTypeEnum;
+import com.wso2.openbanking.cds.common.enums.ConsentDurationTypeEnum;
+import com.wso2.openbanking.cds.common.enums.ConsentStatusEnum;
 import com.wso2.openbanking.cds.common.utils.CDSCommonUtils;
 import com.wso2.openbanking.cds.common.utils.CommonConstants;
 import com.wso2.openbanking.cds.consent.extensions.common.CDSConsentExtensionConstants;
@@ -145,8 +148,8 @@ public class CDSConsentEventExecutor implements OBEventExecutor {
 
             log.debug("Publishing consent data for authorisation metrics.");
             String consentId = (String) eventData.get(CONSENT_ID);
-            String consentStatus = getConsentStatusForEventType(obEvent.getEventType());
-            String authFlowType = getAuthFlowTypeForEventType(obEvent.getEventType());
+            ConsentStatusEnum consentStatus = getConsentStatusForEventType(obEvent.getEventType());
+            AuthorisationFlowTypeEnum authFlowType = getAuthFlowTypeForEventType(obEvent.getEventType());
 
             String customerProfile = null;
             String sharingDuration = null;
@@ -161,7 +164,7 @@ public class CDSConsentEventExecutor implements OBEventExecutor {
                 sharingDuration = detailedConsentResource.getConsentAttributes()
                         .get(CDSConsentExtensionConstants.SHARING_DURATION_VALUE);
             }
-            String consentDurationType = CDSCommonUtils.getConsentDurationType(sharingDuration);
+            ConsentDurationTypeEnum consentDurationType = CDSCommonUtils.getConsentDurationType(sharingDuration);
 
             Map<String, Object> authorisationData = CDSCommonUtils.generateAuthorisationDataMap(consentId,
                     consentStatus, authFlowType, customerProfile, consentDurationType);
@@ -345,25 +348,25 @@ public class CDSConsentEventExecutor implements OBEventExecutor {
         return generateJWT(jwtPayload.toString(), SignatureAlgorithm.PS256);
     }
 
-    private String getConsentStatusForEventType(String eventType) {
+    private ConsentStatusEnum getConsentStatusForEventType(String eventType) {
 
         if (eventType.equalsIgnoreCase(REVOKED_STATE)) {
-            return CommonConstants.REVOKED;
+            return ConsentStatusEnum.REVOKED;
         } else if (eventType.equalsIgnoreCase(EXPIRED_STATE)) {
-            return CommonConstants.EXPIRED;
+            return ConsentStatusEnum.EXPIRED;
         } else {
-            return CommonConstants.AUTHORISED;
+            return ConsentStatusEnum.AUTHORISED;
         }
     }
 
-    private String getAuthFlowTypeForEventType(String eventType) {
+    private AuthorisationFlowTypeEnum getAuthFlowTypeForEventType(String eventType) {
 
         if (eventType.equalsIgnoreCase(AUTHORIZED_STATE)) {
-            return CommonConstants.CONSENT_AUTHORISATION;
+            return AuthorisationFlowTypeEnum.CONSENT_AUTHORISATION;
         } else if (eventType.equalsIgnoreCase(AMENDED_STATE)) {
-            return CommonConstants.CONSENT_AMENDMENT_AUTHORISATION;
+            return AuthorisationFlowTypeEnum.CONSENT_AMENDMENT_AUTHORISATION;
         } else {
-            return CommonConstants.UNCLASSIFIED;
+            return AuthorisationFlowTypeEnum.UNCLASSIFIED;
         }
     }
 }

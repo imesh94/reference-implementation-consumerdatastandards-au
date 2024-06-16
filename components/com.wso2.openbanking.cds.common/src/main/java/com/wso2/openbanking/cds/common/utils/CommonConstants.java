@@ -23,20 +23,6 @@ public class CommonConstants {
     public static final String AUTHORIZATION_CODE = "authorization_code";
     public static final long ONE_DAY_IN_SECONDS = 86400;
 
-    // Consent statuses
-    public static final String AUTHORISED = "Authorised";
-    public static final String REVOKED = "Revoked";
-    public static final String EXPIRED = "Expired";
-
-    // Auth flow types
-    public static final String CONSENT_AUTHORISATION = "consentAuthorisation";
-    public static final String CONSENT_AMENDMENT_AUTHORISATION = "consentAmendmentAuthorisation";
-    public static final String UNCLASSIFIED = "unclassified";
-
-    // Consent duration types
-    public static final String ONCE_OFF = "once-off";
-    public static final String ONGOING = "ongoing";
-
     // Config related constants
     public static final String OB_CONFIG_FILE = "open-banking-cds.xml";
     public static final String ACCOUNT_MASKING = "ConsentManagement.EnableAccountMasking";

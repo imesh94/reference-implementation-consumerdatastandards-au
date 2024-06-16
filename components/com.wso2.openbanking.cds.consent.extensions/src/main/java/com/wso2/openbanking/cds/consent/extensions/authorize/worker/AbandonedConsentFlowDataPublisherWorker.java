@@ -14,6 +14,7 @@ import com.wso2.openbanking.accelerator.common.config.OpenBankingConfigParser;
 import com.wso2.openbanking.accelerator.data.publisher.common.constants.DataPublishingConstants;
 import com.wso2.openbanking.accelerator.identity.auth.extensions.adaptive.function.OpenBankingAuthenticationWorker;
 import com.wso2.openbanking.cds.common.data.publisher.CDSDataPublishingService;
+import com.wso2.openbanking.cds.common.enums.AuthorisationStageEnum;
 import com.wso2.openbanking.cds.common.utils.CDSCommonUtils;
 import com.wso2.openbanking.cds.common.utils.CommonConstants;
 import org.apache.commons.lang3.StringUtils;
@@ -47,7 +48,8 @@ public class AbandonedConsentFlowDataPublisherWorker implements OpenBankingAuthe
             }
 
             Map<String, Object> abandonedConsentFlowDataMap = CDSCommonUtils
-                    .generateAbandonedConsentFlowDataMap(requestUriKey, null, map.get(CommonConstants.STAGE));
+                    .generateAbandonedConsentFlowDataMap(requestUriKey, null,
+                            AuthorisationStageEnum.fromValue(map.get(CommonConstants.STAGE)));
 
             CDSDataPublishingService.getCDSDataPublishingService()
                     .publishAbandonedConsentFlowData(abandonedConsentFlowDataMap);

@@ -11,22 +11,16 @@
 package com.wso2.openbanking.cds.common.enums;
 
 /**
- * Specifies the type of authorisation stage.
+ * Specifies the type of consent duration.
  */
-public enum AuthorisationStageEnum {
+public enum ConsentDurationTypeEnum {
 
-    STARTED("started"),
-    USER_IDENTIFIED("userIdentified"),
-    USER_AUTHENTICATED("userAuthenticated"),
-    ACCOUNT_SELECTED("accountSelected"),
-    CONSENT_APPROVED("consentApproved"),
-    CONSENT_REJECTED("consentRejected"),
-    TOKEN_EXCHANGE_FAILED("tokenExchangeFailed"),
-    COMPLETED("completed");
+    ONCE_OFF("once-off"),
+    ONGOING("ongoing");
 
     private String value;
 
-    AuthorisationStageEnum(String value) {
+    ConsentDurationTypeEnum(String value) {
         this.value = value;
     }
 
@@ -34,10 +28,10 @@ public enum AuthorisationStageEnum {
         return value;
     }
 
-    public static AuthorisationStageEnum fromValue(String value) {
-        for (AuthorisationStageEnum stage : values()) {
-            if (stage.value.equals(value)) {
-                return stage;
+    public static ConsentDurationTypeEnum fromValue(String value) {
+        for (ConsentDurationTypeEnum type : values()) {
+            if (type.value.equals(value)) {
+                return type;
             }
         }
         throw new IllegalArgumentException("Unknown value: " + value);
@@ -47,5 +41,5 @@ public enum AuthorisationStageEnum {
     public String toString() {
         return String.valueOf(value);
     }
-}
 
+}

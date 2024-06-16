@@ -106,7 +106,7 @@ public class CDSTokenIssueListener extends AbstractOAuthEventInterceptor {
                     .generateAbandonedConsentFlowDataMap(
                             requestUriKey,
                             cdrArrangementId,
-                            AuthorisationStageEnum.TOKEN_EXCHANGE_FAILED.toString());
+                            AuthorisationStageEnum.TOKEN_EXCHANGE_FAILED);
 
             CDSDataPublishingService.getCDSDataPublishingService()
                     .publishAbandonedConsentFlowData(abandonedConsentFlowData);

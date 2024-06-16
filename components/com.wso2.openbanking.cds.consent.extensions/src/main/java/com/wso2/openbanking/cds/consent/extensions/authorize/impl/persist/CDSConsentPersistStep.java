@@ -599,7 +599,7 @@ public class CDSConsentPersistStep implements ConsentPersistStep {
                 .generateAbandonedConsentFlowDataMap(
                         requestUriKey,
                         consentData.getConsentId(),
-                        stageEnum.toString());
+                        stageEnum);
 
         CDSDataPublishingService.getCDSDataPublishingService()
                 .publishAbandonedConsentFlowData(abandonedConsentFlowData);
