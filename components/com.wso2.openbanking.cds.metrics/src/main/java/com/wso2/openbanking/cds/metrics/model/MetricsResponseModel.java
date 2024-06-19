@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2021-2024, WSO2 LLC. (https://www.wso2.com). All Rights Reserved.
+ * Copyright (c) 2024, WSO2 LLC. (https://www.wso2.com). All Rights Reserved.
  *
  * This software is the property of WSO2 LLC. and its suppliers, if any.
  * Dissemination of any information or reproduction of any material contained
@@ -17,7 +17,7 @@ import java.util.List;
 import java.util.Map;
 
 /**
- * Model class for CDS Metrics V3 data.
+ * Model class for CDS Metrics V5 data.
  * In this model, List<BigDecimal> is used to represent metrics that require representation of data for multiple days.
  * <p>
  * For the CURRENT period, each list will contain a single value representing the metric for the current day.
@@ -28,21 +28,29 @@ import java.util.Map;
 public class MetricsResponseModel {
 
     private String requestTime;
-    private int recipientCount;
     private int customerCount;
-    private List<BigDecimal> errors;
-    private List<BigDecimal> peakTPS;
-    private List<BigDecimal> averageTPS;
-    private List<BigDecimal> performance;
-    private List<BigDecimal> sessionCount;
+    private int recipientCount;
+    private List<Integer> sessionCount;
+
+    // Availability
     private List<BigDecimal> availability;
+    private List<BigDecimal> authenticatedAvailability;
+    private List<BigDecimal> unauthenticatedAvailability;
+
+    // Performance
+    private List<BigDecimal> performance;
+    private List<List<BigDecimal>> performanceUnauthenticated;
+    private List<List<BigDecimal>> performanceHighPriority;
+    private List<List<BigDecimal>> performanceLowPriority;
+    private List<List<BigDecimal>> performanceUnattended;
+    private List<List<BigDecimal>> performanceLargePayload;
 
     // Invocations
-    private List<BigDecimal> invocationUnauthenticated;
-    private List<BigDecimal> invocationHighPriority;
-    private List<BigDecimal> invocationLowPriority;
-    private List<BigDecimal> invocationUnattended;
-    private List<BigDecimal> invocationLargePayload;
+    private List<Integer> invocationUnauthenticated;
+    private List<Integer> invocationHighPriority;
+    private List<Integer> invocationLowPriority;
+    private List<Integer> invocationUnattended;
+    private List<Integer> invocationLargePayload;
 
     // Average response
     private List<BigDecimal> averageResponseUnauthenticated;
@@ -51,10 +59,41 @@ public class MetricsResponseModel {
     private List<BigDecimal> averageResponseUnattended;
     private List<BigDecimal> averageResponseLargePayload;
 
-    // Rejections
-    private List<BigDecimal> authenticatedEndpointRejections;
-    private List<BigDecimal> unauthenticatedEndpointRejections;
+    // Average TPS
+    private List<BigDecimal> averageTPS;
+    private List<BigDecimal> authenticatedAverageTPS;
+    private List<BigDecimal> unauthenticatedAverageTPS;
 
+    // Peak TPS
+    private List<BigDecimal> peakTPS;
+    private List<BigDecimal> authenticatedPeakTPS;
+    private List<BigDecimal> unauthenticatedPeakTPS;
+
+    // Errors
+    private List<Integer> errors;
+    private List<Map<String, Integer>> authenticatedErrors;
+    private List<Map<String, Integer>> unauthenticatedErrors;
+
+    // Rejections
+    private List<Integer> authenticatedEndpointRejections;
+    private List<Integer> unauthenticatedEndpointRejections;
+
+    // Authorisations
+    private int activeIndividualAuthorisationCount;
+    private int activeNonIndividualAuthorisationCount;
+    private List<AuthorisationMetric> newAuthorisationCount;
+    private List<CustomerTypeCount> revokedAuthorisationCount;
+    private List<CustomerTypeCount> amendedAuthorisationCount;
+    private List<CustomerTypeCount> expiredAuthorisationCount;
+    private List<Integer> abandonedConsentFlowCount;
+
+    // Abandonment by stage
+    private List<Integer> preIdentificationAbandonedConsentFlowCount;
+    private List<Integer> preAuthenticationAbandonedConsentFlowCount;
+    private List<Integer> preAccountSelectionAbandonedConsentFlowCount;
+    private List<Integer> preAuthorisationAbandonedConsentFlowCount;
+    private List<Integer> rejectedAbandonedConsentFlowCount;
+    private List<Integer> failedTokenExchangeAbandonedConsentFlowCount;
 
     public MetricsResponseModel(String requestTime) {
         this.requestTime = requestTime;
@@ -68,14 +107,6 @@ public class MetricsResponseModel {
         this.requestTime = requestTime;
     }
 
-    public int getRecipientCount() {
-        return recipientCount;
-    }
-
-    public void setRecipientCount(int recipientCount) {
-        this.recipientCount = recipientCount;
-    }
-
     public int getCustomerCount() {
         return customerCount;
     }
@@ -84,47 +115,135 @@ public class MetricsResponseModel {
         this.customerCount = customerCount;
     }
 
-    public List<BigDecimal> getInvocationUnauthenticated() {
+    public int getRecipientCount() {
+        return recipientCount;
+    }
+
+    public void setRecipientCount(int recipientCount) {
+        this.recipientCount = recipientCount;
+    }
+
+    public List<Integer> getSessionCount() {
+        return sessionCount;
+    }
+
+    public void setSessionCount(List<Integer> sessionCount) {
+        this.sessionCount = sessionCount;
+    }
+
+    public List<BigDecimal> getAvailability() {
+        return availability;
+    }
+
+    public void setAvailability(List<BigDecimal> availability) {
+        this.availability = availability;
+    }
+
+    public List<BigDecimal> getAuthenticatedAvailability() {
+        return authenticatedAvailability;
+    }
+
+    public void setAuthenticatedAvailability(List<BigDecimal> authenticatedAvailability) {
+        this.authenticatedAvailability = authenticatedAvailability;
+    }
+
+    public List<BigDecimal> getUnauthenticatedAvailability() {
+        return unauthenticatedAvailability;
+    }
+
+    public void setUnauthenticatedAvailability(List<BigDecimal> unauthenticatedAvailability) {
+        this.unauthenticatedAvailability = unauthenticatedAvailability;
+    }
+
+    public List<BigDecimal> getPerformance() {
+        return performance;
+    }
+
+    public void setPerformance(List<BigDecimal> performance) {
+        this.performance = performance;
+    }
+
+    public List<List<BigDecimal>> getPerformanceUnauthenticated() {
+        return performanceUnauthenticated;
+    }
+
+    public void setPerformanceUnauthenticated(List<List<BigDecimal>> performanceUnauthenticated) {
+        this.performanceUnauthenticated = performanceUnauthenticated;
+    }
+
+    public List<List<BigDecimal>> getPerformanceHighPriority() {
+        return performanceHighPriority;
+    }
+
+    public void setPerformanceHighPriority(List<List<BigDecimal>> performanceHighPriority) {
+        this.performanceHighPriority = performanceHighPriority;
+    }
+
+    public List<List<BigDecimal>> getPerformanceLowPriority() {
+        return performanceLowPriority;
+    }
+
+    public void setPerformanceLowPriority(List<List<BigDecimal>> performanceLowPriority) {
+        this.performanceLowPriority = performanceLowPriority;
+    }
+
+    public List<List<BigDecimal>> getPerformanceUnattended() {
+        return performanceUnattended;
+    }
+
+    public void setPerformanceUnattended(List<List<BigDecimal>> performanceUnattended) {
+        this.performanceUnattended = performanceUnattended;
+    }
+
+    public List<List<BigDecimal>> getPerformanceLargePayload() {
+        return performanceLargePayload;
+    }
+
+    public void setPerformanceLargePayload(List<List<BigDecimal>> performanceLargePayload) {
+        this.performanceLargePayload = performanceLargePayload;
+    }
+
+    public List<Integer> getInvocationUnauthenticated() {
         return invocationUnauthenticated;
     }
 
-    public void setInvocationUnauthenticated(List<BigDecimal> invocationUnauthenticated) {
+    public void setInvocationUnauthenticated(List<Integer> invocationUnauthenticated) {
         this.invocationUnauthenticated = invocationUnauthenticated;
     }
 
-    public List<BigDecimal> getInvocationHighPriority() {
+    public List<Integer> getInvocationHighPriority() {
         return invocationHighPriority;
     }
 
-    public void setInvocationHighPriority(List<BigDecimal> invocationHighPriority) {
+    public void setInvocationHighPriority(List<Integer> invocationHighPriority) {
         this.invocationHighPriority = invocationHighPriority;
     }
 
-    public List<BigDecimal> getInvocationLowPriority() {
+    public List<Integer> getInvocationLowPriority() {
         return invocationLowPriority;
     }
 
-    public void setInvocationLowPriority(List<BigDecimal> invocationLowPriority) {
+    public void setInvocationLowPriority(List<Integer> invocationLowPriority) {
         this.invocationLowPriority = invocationLowPriority;
     }
 
-    public List<BigDecimal> getInvocationUnattended() {
+    public List<Integer> getInvocationUnattended() {
         return invocationUnattended;
     }
 
-    public void setInvocationUnattended(List<BigDecimal> invocationUnattended) {
+    public void setInvocationUnattended(List<Integer> invocationUnattended) {
         this.invocationUnattended = invocationUnattended;
     }
 
-    public List<BigDecimal> getInvocationLargePayload() {
+    public List<Integer> getInvocationLargePayload() {
         return invocationLargePayload;
     }
 
-    public void setInvocationLargePayload(List<BigDecimal> invocationLargePayload) {
+    public void setInvocationLargePayload(List<Integer> invocationLargePayload) {
         this.invocationLargePayload = invocationLargePayload;
     }
 
-    public void setInvocations(Map<PriorityEnum, List<BigDecimal>> invocationMap) {
+    public void setInvocations(Map<PriorityEnum, List<Integer>> invocationMap) {
 
         setInvocationUnauthenticated(invocationMap.get(PriorityEnum.UNAUTHENTICATED));
         setInvocationHighPriority(invocationMap.get(PriorityEnum.HIGH_PRIORITY));
@@ -190,6 +309,22 @@ public class MetricsResponseModel {
         this.averageTPS = averageTPS;
     }
 
+    public List<BigDecimal> getAuthenticatedAverageTPS() {
+        return authenticatedAverageTPS;
+    }
+
+    public void setAuthenticatedAverageTPS(List<BigDecimal> authenticatedAverageTPS) {
+        this.authenticatedAverageTPS = authenticatedAverageTPS;
+    }
+
+    public List<BigDecimal> getUnauthenticatedAverageTPS() {
+        return unauthenticatedAverageTPS;
+    }
+
+    public void setUnauthenticatedAverageTPS(List<BigDecimal> unauthenticatedAverageTPS) {
+        this.unauthenticatedAverageTPS = unauthenticatedAverageTPS;
+    }
+
     public List<BigDecimal> getPeakTPS() {
         return peakTPS;
     }
@@ -198,57 +333,173 @@ public class MetricsResponseModel {
         this.peakTPS = peakTPS;
     }
 
-    public List<BigDecimal> getErrors() {
+    public List<BigDecimal> getAuthenticatedPeakTPS() {
+        return authenticatedPeakTPS;
+    }
+
+    public void setAuthenticatedPeakTPS(List<BigDecimal> authenticatedPeakTPS) {
+        this.authenticatedPeakTPS = authenticatedPeakTPS;
+    }
+
+    public List<BigDecimal> getUnauthenticatedPeakTPS() {
+        return unauthenticatedPeakTPS;
+    }
+
+    public void setUnauthenticatedPeakTPS(List<BigDecimal> unauthenticatedPeakTPS) {
+        this.unauthenticatedPeakTPS = unauthenticatedPeakTPS;
+    }
+
+    public List<Integer> getErrors() {
         return errors;
     }
 
-    public void setErrors(List<BigDecimal> errors) {
+    public void setErrors(List<Integer> errors) {
         this.errors = errors;
     }
 
-    public List<BigDecimal> getAuthenticatedEndpointRejections() {
+    public List<Map<String, Integer>> getAuthenticatedErrors() {
+        return authenticatedErrors;
+    }
+
+    public void setAuthenticatedErrors(List<Map<String, Integer>> authenticatedErrors) {
+        this.authenticatedErrors = authenticatedErrors;
+    }
+
+    public List<Map<String, Integer>> getUnauthenticatedErrors() {
+        return unauthenticatedErrors;
+    }
+
+    public void setUnauthenticatedErrors(List<Map<String, Integer>> unauthenticatedErrors) {
+        this.unauthenticatedErrors = unauthenticatedErrors;
+    }
+
+    public List<Integer> getAuthenticatedEndpointRejections() {
         return authenticatedEndpointRejections;
     }
 
-    public void setAuthenticatedEndpointRejections(List<BigDecimal> authenticatedEndpointRejections) {
+    public void setAuthenticatedEndpointRejections(List<Integer> authenticatedEndpointRejections) {
         this.authenticatedEndpointRejections = authenticatedEndpointRejections;
     }
 
-    public List<BigDecimal> getUnauthenticatedEndpointRejections() {
+    public List<Integer> getUnauthenticatedEndpointRejections() {
         return unauthenticatedEndpointRejections;
     }
 
-    public void setUnauthenticatedEndpointRejections(List<BigDecimal> unauthenticatedEndpointRejectons) {
-        this.unauthenticatedEndpointRejections = unauthenticatedEndpointRejectons;
+    public void setUnauthenticatedEndpointRejections(List<Integer> unauthenticatedEndpointRejections) {
+        this.unauthenticatedEndpointRejections = unauthenticatedEndpointRejections;
     }
 
-    public void setRejections(Map<AspectEnum, List<BigDecimal>> rejectionsMap) {
+    public void setRejections(Map<AspectEnum, List<Integer>> rejectionsMap) {
 
         setAuthenticatedEndpointRejections(rejectionsMap.get(AspectEnum.AUTHENTICATED));
         setUnauthenticatedEndpointRejections(rejectionsMap.get(AspectEnum.UNAUTHENTICATED));
     }
 
-    public List<BigDecimal> getPerformance() {
-        return performance;
+    public int getActiveIndividualAuthorisationCount() {
+        return activeIndividualAuthorisationCount;
     }
 
-    public void setPerformance(List<BigDecimal> performance) {
-        this.performance = performance;
+    public void setActiveIndividualAuthorisationCount(int activeIndividualAuthorisationCount) {
+        this.activeIndividualAuthorisationCount = activeIndividualAuthorisationCount;
     }
 
-    public List<BigDecimal> getSessionCount() {
-        return sessionCount;
+    public int getActiveNonIndividualAuthorisationCount() {
+        return activeNonIndividualAuthorisationCount;
     }
 
-    public void setSessionCount(List<BigDecimal> sessionCount) {
-        this.sessionCount = sessionCount;
+    public void setActiveNonIndividualAuthorisationCount(int activeNonIndividualAuthorisationCount) {
+        this.activeNonIndividualAuthorisationCount = activeNonIndividualAuthorisationCount;
     }
 
-    public List<BigDecimal> getAvailability() {
-        return availability;
+    public List<AuthorisationMetric> getNewAuthorisationCount() {
+        return newAuthorisationCount;
     }
 
-    public void setAvailability(List<BigDecimal> availability) {
-        this.availability = availability;
+    public void setNewAuthorisationCount(List<AuthorisationMetric> newAuthorisationCount) {
+        this.newAuthorisationCount = newAuthorisationCount;
+    }
+
+    public List<CustomerTypeCount> getRevokedAuthorisationCount() {
+        return revokedAuthorisationCount;
+    }
+
+    public void setRevokedAuthorisationCount(List<CustomerTypeCount> revokedAuthorisationCount) {
+        this.revokedAuthorisationCount = revokedAuthorisationCount;
+    }
+
+    public List<CustomerTypeCount> getAmendedAuthorisationCount() {
+        return amendedAuthorisationCount;
+    }
+
+    public void setAmendedAuthorisationCount(List<CustomerTypeCount> amendedAuthorisationCount) {
+        this.amendedAuthorisationCount = amendedAuthorisationCount;
+    }
+
+    public List<CustomerTypeCount> getExpiredAuthorisationCount() {
+        return expiredAuthorisationCount;
+    }
+
+    public void setExpiredAuthorisationCount(List<CustomerTypeCount> expiredAuthorisationCount) {
+        this.expiredAuthorisationCount = expiredAuthorisationCount;
+    }
+
+    public List<Integer> getAbandonedConsentFlowCount() {
+        return abandonedConsentFlowCount;
+    }
+
+    public void setAbandonedConsentFlowCount(List<Integer> abandonedConsentFlowCount) {
+        this.abandonedConsentFlowCount = abandonedConsentFlowCount;
+    }
+
+    public List<Integer> getPreIdentificationAbandonedConsentFlowCount() {
+        return preIdentificationAbandonedConsentFlowCount;
+    }
+
+    public void setPreIdentificationAbandonedConsentFlowCount(
+            List<Integer> preIdentificationAbandonedConsentFlowCount) {
+        this.preIdentificationAbandonedConsentFlowCount = preIdentificationAbandonedConsentFlowCount;
+    }
+
+    public List<Integer> getPreAuthenticationAbandonedConsentFlowCount() {
+        return preAuthenticationAbandonedConsentFlowCount;
+    }
+
+    public void setPreAuthenticationAbandonedConsentFlowCount(
+            List<Integer> preAuthenticationAbandonedConsentFlowCount) {
+        this.preAuthenticationAbandonedConsentFlowCount = preAuthenticationAbandonedConsentFlowCount;
+    }
+
+    public List<Integer> getPreAccountSelectionAbandonedConsentFlowCount() {
+        return preAccountSelectionAbandonedConsentFlowCount;
+    }
+
+    public void setPreAccountSelectionAbandonedConsentFlowCount(
+            List<Integer> preAccountSelectionAbandonedConsentFlowCount) {
+        this.preAccountSelectionAbandonedConsentFlowCount = preAccountSelectionAbandonedConsentFlowCount;
+    }
+
+    public List<Integer> getPreAuthorisationAbandonedConsentFlowCount() {
+        return preAuthorisationAbandonedConsentFlowCount;
+    }
+
+    public void setPreAuthorisationAbandonedConsentFlowCount(List<Integer> preAuthorisationAbandonedConsentFlowCount) {
+        this.preAuthorisationAbandonedConsentFlowCount = preAuthorisationAbandonedConsentFlowCount;
+    }
+
+    public List<Integer> getRejectedAbandonedConsentFlowCount() {
+        return rejectedAbandonedConsentFlowCount;
+    }
+
+    public void setRejectedAbandonedConsentFlowCount(List<Integer> rejectedAbandonedConsentFlowCount) {
+        this.rejectedAbandonedConsentFlowCount = rejectedAbandonedConsentFlowCount;
+    }
+
+    public List<Integer> getFailedTokenExchangeAbandonedConsentFlowCount() {
+        return failedTokenExchangeAbandonedConsentFlowCount;
+    }
+
+    public void setFailedTokenExchangeAbandonedConsentFlowCount(
+            List<Integer> failedTokenExchangeAbandonedConsentFlowCount) {
+        this.failedTokenExchangeAbandonedConsentFlowCount = failedTokenExchangeAbandonedConsentFlowCount;
     }
 }

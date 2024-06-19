@@ -42,17 +42,17 @@ public class MetricsServiceUtilTest {
         String currentDate = ZonedDateTime.now().format(DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH:mm:ss'Z'"));
         MetricsResponseModel model = new MetricsResponseModel(currentDate);
         model.setAvailability(createBigDecimalList(numberOfEntries));
-        model.setErrors(createBigDecimalList(numberOfEntries));
+        model.setErrors(createIntegerList(numberOfEntries));
         model.setPeakTPS(createBigDecimalList(numberOfEntries));
         model.setAverageTPS(createBigDecimalList(numberOfEntries));
         model.setPerformance(createBigDecimalList(numberOfEntries));
-        model.setSessionCount(createBigDecimalList(numberOfEntries));
+        model.setSessionCount(createIntegerList(numberOfEntries));
 
-        model.setInvocationUnauthenticated(createBigDecimalList(numberOfEntries));
-        model.setInvocationHighPriority(createBigDecimalList(numberOfEntries));
-        model.setInvocationLowPriority(createBigDecimalList(numberOfEntries));
-        model.setInvocationUnattended(createBigDecimalList(numberOfEntries));
-        model.setInvocationLargePayload(createBigDecimalList(numberOfEntries));
+        model.setInvocationUnauthenticated(createIntegerList(numberOfEntries));
+        model.setInvocationHighPriority(createIntegerList(numberOfEntries));
+        model.setInvocationLowPriority(createIntegerList(numberOfEntries));
+        model.setInvocationUnattended(createIntegerList(numberOfEntries));
+        model.setInvocationLargePayload(createIntegerList(numberOfEntries));
 
         model.setAverageResponseUnauthenticated(createBigDecimalList(numberOfEntries));
         model.setAverageResponseHighPriority(createBigDecimalList(numberOfEntries));
@@ -60,8 +60,8 @@ public class MetricsServiceUtilTest {
         model.setAverageResponseUnattended(createBigDecimalList(numberOfEntries));
         model.setAverageResponseLargePayload(createBigDecimalList(numberOfEntries));
 
-        model.setAuthenticatedEndpointRejections(createBigDecimalList(numberOfEntries));
-        model.setUnauthenticatedEndpointRejections(createBigDecimalList(numberOfEntries));
+        model.setAuthenticatedEndpointRejections(createIntegerList(numberOfEntries));
+        model.setUnauthenticatedEndpointRejections(createIntegerList(numberOfEntries));
 
         return model;
     }
@@ -69,6 +69,13 @@ public class MetricsServiceUtilTest {
     private List<BigDecimal> createBigDecimalList(int size) {
         return IntStream.range(0, size)
                 .mapToObj(i -> BigDecimal.valueOf(Math.random() * 10))
+                .collect(Collectors.toList());
+    }
+
+    private List<Integer> createIntegerList(int size) {
+        return IntStream.range(0, size)
+                .map(i -> (int) (Math.random() * 10))
+                .boxed()
                 .collect(Collectors.toList());
     }
 

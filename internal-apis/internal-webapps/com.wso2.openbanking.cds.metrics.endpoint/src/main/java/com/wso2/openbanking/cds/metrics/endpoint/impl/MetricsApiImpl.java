@@ -9,14 +9,17 @@
 
 package com.wso2.openbanking.cds.metrics.endpoint.impl;
 
+import com.fasterxml.jackson.annotation.JsonInclude;
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.wso2.openbanking.accelerator.common.exception.OpenBankingException;
 import com.wso2.openbanking.cds.common.error.handling.models.CDSErrorMeta;
 import com.wso2.openbanking.cds.common.error.handling.util.ErrorConstants;
 import com.wso2.openbanking.cds.common.error.handling.util.ErrorUtil;
 import com.wso2.openbanking.cds.metrics.endpoint.api.MetricsApi;
 import com.wso2.openbanking.cds.metrics.endpoint.mapper.MetricsMapper;
-import com.wso2.openbanking.cds.metrics.endpoint.mapper.MetricsV3MapperImpl;
-import com.wso2.openbanking.cds.metrics.endpoint.model.ResponseMetricsListDTO;
+import com.wso2.openbanking.cds.metrics.endpoint.mapper.MetricsV5MapperImpl;
+import com.wso2.openbanking.cds.metrics.endpoint.model.v5.ResponseMetricsListV5DTO;
 import com.wso2.openbanking.cds.metrics.model.MetricsResponseModel;
 import com.wso2.openbanking.cds.metrics.service.CDSMetricsService;
 import com.wso2.openbanking.cds.metrics.service.CDSMetricsServiceImpl;
@@ -35,9 +38,9 @@ public class MetricsApiImpl implements MetricsApi {
 
     private static final Log log = LogFactory.getLog(MetricsApiImpl.class);
     CDSMetricsService cdsMetricsServiceImpl = new CDSMetricsServiceImpl();
-    MetricsMapper metricsMapper = new MetricsV3MapperImpl();
+    MetricsMapper metricsMapper = new MetricsV5MapperImpl();
     private static final String XV_HEADER = "x-v";
-    private static final String[] SUPPORTED_X_VERSIONS = {"3"};
+    private static final String[] SUPPORTED_X_VERSIONS = {"5"};
 
     /**
      * {@inheritDoc}
@@ -55,9 +58,15 @@ public class MetricsApiImpl implements MetricsApi {
 
         try {
             MetricsResponseModel metricsListModel = cdsMetricsServiceImpl.getMetrics(xV, periodEnum);
-            ResponseMetricsListDTO metricsListDTO = metricsMapper.getResponseMetricsListDTO(metricsListModel, period);
-            return Response.ok().entity(metricsListDTO).header(XV_HEADER, xV).build();
-        } catch (OpenBankingException e) {
+            ResponseMetricsListV5DTO metricsListDTO = metricsMapper.getResponseMetricsListDTO(metricsListModel, period);
+
+            // Return the metrics list as a JSON object after excluding null values
+            ObjectMapper mapper = new ObjectMapper();
+            mapper.setSerializationInclusion(JsonInclude.Include.NON_NULL);
+            String serializedMetricsListDTO = mapper.writeValueAsString(metricsListDTO);
+
+            return Response.ok().entity(serializedMetricsListDTO).header(XV_HEADER, xV).build();
+        } catch (OpenBankingException | JsonProcessingException e) {
             log.error("Error occurred while computing metrics.", e);
             JSONArray errorList = new JSONArray();
             errorList.add(ErrorUtil.getErrorObject(ErrorConstants.AUErrorEnum.UNEXPECTED_ERROR,

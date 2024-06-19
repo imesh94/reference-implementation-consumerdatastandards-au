@@ -34,24 +34,24 @@ import static com.wso2.openbanking.cds.metrics.constants.MetricsConstants.ASYNC_
  * Errors that occur during the asynchronous calculation of metrics are handled by the
  * handleMetricsFutureCompletionErrors method.
  */
-public class MetricsV3FetcherImpl implements MetricsFetcher {
+public class MetricsV5FetcherImpl implements MetricsFetcher {
 
     MetricsProcessor metricsProcessor;
-    private static final Log log = LogFactory.getLog(MetricsV3FetcherImpl.class);
+    private static final Log log = LogFactory.getLog(MetricsV5FetcherImpl.class);
 
     private CompletableFuture<List<BigDecimal>> availabilityFuture;
-    private CompletableFuture<Map<PriorityEnum, List<BigDecimal>>> invocationFuture;
-    private CompletableFuture<List<BigDecimal>> sessionCountFuture;
+    private CompletableFuture<Map<PriorityEnum, List<Integer>>> invocationFuture;
+    private CompletableFuture<List<Integer>> sessionCountFuture;
     private CompletableFuture<List<BigDecimal>> peakTPSFuture;
-    private CompletableFuture<List<BigDecimal>> errorFuture;
-    private CompletableFuture<Map<AspectEnum, List<BigDecimal>>> rejectionFuture;
+    private CompletableFuture<List<Integer>> errorFuture;
+    private CompletableFuture<Map<AspectEnum, List<Integer>>> rejectionFuture;
     private CompletableFuture<Integer> recipientCountFuture;
     private CompletableFuture<Integer> customerCountFuture;
     private CompletableFuture<List<BigDecimal>> averageTPSFuture;
     private CompletableFuture<List<BigDecimal>> performanceFuture;
     private CompletableFuture<Map<PriorityEnum, List<BigDecimal>>> averageResponseTimeFuture;
 
-    public MetricsV3FetcherImpl(MetricsProcessor metricsProcessor) throws OpenBankingException {
+    public MetricsV5FetcherImpl(MetricsProcessor metricsProcessor) throws OpenBankingException {
         this.metricsProcessor = metricsProcessor;
     }
 
@@ -99,7 +99,7 @@ public class MetricsV3FetcherImpl implements MetricsFetcher {
      *
      * @return CompletableFuture of invocation metrics
      */
-    private CompletableFuture<Map<PriorityEnum, List<BigDecimal>>> fetchInvocationMetricsAsync() {
+    private CompletableFuture<Map<PriorityEnum, List<Integer>>> fetchInvocationMetricsAsync() {
         return CompletableFuture.supplyAsync(() -> {
             try {
                 return metricsProcessor.getInvocationMetrics();
@@ -116,7 +116,7 @@ public class MetricsV3FetcherImpl implements MetricsFetcher {
      *
      * @return CompletableFuture of session count metrics
      */
-    private CompletableFuture<List<BigDecimal>> fetchSessionCountMetricsAsync() {
+    private CompletableFuture<List<Integer>> fetchSessionCountMetricsAsync() {
         return CompletableFuture.supplyAsync(() -> {
             try {
                 return metricsProcessor.getSessionCountMetrics();
@@ -150,7 +150,7 @@ public class MetricsV3FetcherImpl implements MetricsFetcher {
      *
      * @return CompletableFuture of error metrics
      */
-    private CompletableFuture<List<BigDecimal>> fetchErrorMetricsAsync() {
+    private CompletableFuture<List<Integer>> fetchErrorMetricsAsync() {
         return CompletableFuture.supplyAsync(() -> {
             try {
                 return metricsProcessor.getErrorMetrics();
@@ -167,7 +167,7 @@ public class MetricsV3FetcherImpl implements MetricsFetcher {
      *
      * @return CompletableFuture of rejection metrics
      */
-    private CompletableFuture<Map<AspectEnum, List<BigDecimal>>> fetchRejectionMetricsAsync() {
+    private CompletableFuture<Map<AspectEnum, List<Integer>>> fetchRejectionMetricsAsync() {
         return CompletableFuture.supplyAsync(() -> {
             try {
                 return metricsProcessor.getRejectionMetrics();
@@ -220,7 +220,7 @@ public class MetricsV3FetcherImpl implements MetricsFetcher {
      * @return CompletableFuture of average TPS metrics
      */
     private CompletableFuture<List<BigDecimal>> fetchAverageTPSAsync(
-            CompletableFuture<Map<PriorityEnum, List<BigDecimal>>> invocationFuture) {
+            CompletableFuture<Map<PriorityEnum, List<Integer>>> invocationFuture) {
         return invocationFuture.thenApplyAsync(invocationMetrics ->
                 metricsProcessor.getAverageTPSMetrics(invocationMetrics));
     }
@@ -232,7 +232,7 @@ public class MetricsV3FetcherImpl implements MetricsFetcher {
      * @return CompletableFuture of performance metrics
      */
     private CompletableFuture<List<BigDecimal>> fetchPerformanceMetricsAsync(
-            CompletableFuture<Map<PriorityEnum, List<BigDecimal>>> invocationFuture) {
+            CompletableFuture<Map<PriorityEnum, List<Integer>>> invocationFuture) {
         return invocationFuture.thenApplyAsync(invocationMetrics -> {
             try {
                 return metricsProcessor.getPerformanceMetrics(invocationMetrics);
@@ -251,7 +251,7 @@ public class MetricsV3FetcherImpl implements MetricsFetcher {
      * @return CompletableFuture of average response time metrics
      */
     private CompletableFuture<Map<PriorityEnum, List<BigDecimal>>> fetchAverageResponseTimeAsync(
-            CompletableFuture<Map<PriorityEnum, List<BigDecimal>>> invocationFuture) {
+            CompletableFuture<Map<PriorityEnum, List<Integer>>> invocationFuture) {
         return invocationFuture.thenApplyAsync(invocationMetrics -> {
             try {
                 return metricsProcessor.getAverageResponseTimeMetrics(invocationMetrics);
@@ -288,7 +288,7 @@ public class MetricsV3FetcherImpl implements MetricsFetcher {
         } catch (InterruptedException | ExecutionException e) {
             // Handle errors that occurred during the asynchronous calculation of metrics.
             log.error("Error occurred while calculating metrics. " + e.getMessage(), e);
-            throw new OpenBankingException("Failed to populate metrics v3 model with data", e);
+            throw new OpenBankingException("Failed to populate metrics v5 model with data", e);
         }
     }
 }

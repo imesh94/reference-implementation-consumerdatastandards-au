@@ -38,7 +38,7 @@ import static com.wso2.openbanking.cds.metrics.constants.MetricsConstants.NO_DAT
 /**
  * A general metrics processor implementation that can be used to calculate metrics for any given period of time.
  */
-public class MetricsV3ProcessorImpl implements MetricsProcessor {
+public class MetricsV5ProcessorImpl implements MetricsProcessor {
 
     MetricsDataProvider metricsDataProvider;
     int numberOfDays;
@@ -46,14 +46,14 @@ public class MetricsV3ProcessorImpl implements MetricsProcessor {
     long metricsCountLastDateEpoch;
     ZonedDateTime availabilityMetricsLastDate;
 
-    private static final Log log = LogFactory.getLog(MetricsV3ProcessorImpl.class);
+    private static final Log log = LogFactory.getLog(MetricsV5ProcessorImpl.class);
 
     /**
-     * Constructor for MetricsV3ProcessorImpl.
+     * Constructor for MetricsV5ProcessorImpl.
      *
      * @param period - period (Current, Historic, All).
      */
-    public MetricsV3ProcessorImpl(PeriodEnum period, MetricsDataProvider metricsDataProvider, ZoneId timeZone)
+    public MetricsV5ProcessorImpl(PeriodEnum period, MetricsDataProvider metricsDataProvider, ZoneId timeZone)
             throws OpenBankingException {
 
         ZonedDateTime currentDateEnd = ZonedDateTime.now(timeZone).with(LocalTime.MAX);
@@ -107,12 +107,12 @@ public class MetricsV3ProcessorImpl implements MetricsProcessor {
      * {@inheritDoc}
      */
     @Override
-    public Map<PriorityEnum, List<BigDecimal>> getInvocationMetrics() throws OpenBankingException {
+    public Map<PriorityEnum, List<Integer>> getInvocationMetrics() throws OpenBankingException {
 
         log.debug("Starting invocation metrics calculation.");
         JSONObject invocationMetricsJsonObject = metricsDataProvider.getInvocationMetricsData();
         if (invocationMetricsJsonObject != null) {
-            Map<PriorityEnum, List<BigDecimal>> invocationMetricsMap = MetricsProcessorUtil.
+            Map<PriorityEnum, List<Integer>> invocationMetricsMap = MetricsProcessorUtil.
                 getPopulatedInvocationMetricsMap(invocationMetricsJsonObject, numberOfDays, metricsCountLastDateEpoch);
             log.debug("Finished invocation metrics calculation successfully.");
             return invocationMetricsMap;
@@ -125,13 +125,13 @@ public class MetricsV3ProcessorImpl implements MetricsProcessor {
      * {@inheritDoc}
      */
     @Override
-    public List<BigDecimal> getPerformanceMetrics(Map<PriorityEnum, List<BigDecimal>> invocationMetricsMap)
+    public List<BigDecimal> getPerformanceMetrics(Map<PriorityEnum, List<Integer>> invocationMetricsMap)
             throws OpenBankingException {
 
         log.debug("Starting performance metrics calculation.");
-        List<BigDecimal> totalInvocationList = MetricsProcessorUtil.getTotalInvocationsForEachDay(invocationMetricsMap);
-        List<BigDecimal> successInvocationList = getSuccessfulInvocations();
-        List<BigDecimal> performanceMetricsList = MetricsProcessorUtil.divideList(successInvocationList,
+        List<Integer> totalInvocationList = MetricsProcessorUtil.getTotalInvocationsForEachDay(invocationMetricsMap);
+        List<Integer> successInvocationList = getSuccessfulInvocations();
+        List<BigDecimal> performanceMetricsList = MetricsProcessorUtil.divideIntegerLists(successInvocationList,
                 totalInvocationList);
         log.debug("Finished performance metrics calculation successfully.");
         return performanceMetricsList;
@@ -142,7 +142,7 @@ public class MetricsV3ProcessorImpl implements MetricsProcessor {
      */
     @Override
     public Map<PriorityEnum, List<BigDecimal>> getAverageResponseTimeMetrics(
-            Map<PriorityEnum, List<BigDecimal>> invocationMetricsMap) throws OpenBankingException {
+            Map<PriorityEnum, List<Integer>> invocationMetricsMap) throws OpenBankingException {
 
         log.debug("Starting average response metrics calculation.");
         Map<PriorityEnum, List<BigDecimal>> totalResponseTimeMetricsMap = getTotalResponseTimeMap();
@@ -150,8 +150,9 @@ public class MetricsV3ProcessorImpl implements MetricsProcessor {
 
         for (PriorityEnum priority : PriorityEnum.values()) {
             List<BigDecimal> responseTimeList = totalResponseTimeMetricsMap.get(priority);
-            List<BigDecimal> invocationCountList = invocationMetricsMap.get(priority);
-            List<BigDecimal> tempAverageList = MetricsProcessorUtil.divideList(responseTimeList, invocationCountList);
+            List<Integer> invocationCountList = invocationMetricsMap.get(priority);
+            List<BigDecimal> tempAverageList = MetricsProcessorUtil
+                    .divideBigDecimalListWithIntegerList(responseTimeList, invocationCountList);
             averageResponseMetricsMap.put(priority, tempAverageList);
         }
         log.debug("Finished average response metrics calculation successfully.");
@@ -162,12 +163,12 @@ public class MetricsV3ProcessorImpl implements MetricsProcessor {
      * {@inheritDoc}
      */
     @Override
-    public List<BigDecimal> getSessionCountMetrics() throws OpenBankingException {
+    public List<Integer> getSessionCountMetrics() throws OpenBankingException {
 
         log.debug("Starting session count metrics calculation.");
         JSONObject sessionCountMetricsJsonObject = metricsDataProvider.getSessionCountMetricsData();
         if (sessionCountMetricsJsonObject != null) {
-            List<BigDecimal> sessionCountMetricsList = MetricsProcessorUtil.getPopulatedMetricsList(
+            List<Integer> sessionCountMetricsList = MetricsProcessorUtil.getPopulatedMetricsList(
                     sessionCountMetricsJsonObject, numberOfDays, metricsCountLastDateEpoch);
             log.debug("Finished session count metrics calculation successfully.");
             return sessionCountMetricsList;
@@ -180,13 +181,14 @@ public class MetricsV3ProcessorImpl implements MetricsProcessor {
      * {@inheritDoc}
      */
     @Override
-    public List<BigDecimal> getAverageTPSMetrics(Map<PriorityEnum, List<BigDecimal>> invocationMetricsMap) {
+    public List<BigDecimal> getAverageTPSMetrics(Map<PriorityEnum, List<Integer>> invocationMetricsMap) {
 
         log.debug("Starting average TPS metrics calculation.");
         List<BigDecimal> averageTPSList = new ArrayList<>();
-        List<BigDecimal> totalInvocationList = MetricsProcessorUtil.getTotalInvocationsForEachDay(invocationMetricsMap);
-        for (BigDecimal transactionCount : totalInvocationList) {
-            BigDecimal avgTPS = transactionCount.divide(MetricsConstants.SECONDS_IN_DAY, 3, RoundingMode.HALF_UP);
+        List<Integer> totalInvocationList = MetricsProcessorUtil.getTotalInvocationsForEachDay(invocationMetricsMap);
+        for (Integer transactionCount : totalInvocationList) {
+            BigDecimal avgTPS = new BigDecimal(transactionCount).divide(MetricsConstants.SECONDS_IN_DAY, 3,
+                    RoundingMode.HALF_UP);
             if (avgTPS.compareTo(BigDecimal.ZERO) == 0) {
                 averageTPSList.add(BigDecimal.valueOf(0).setScale(3, RoundingMode.HALF_UP));
             } else {
@@ -221,12 +223,12 @@ public class MetricsV3ProcessorImpl implements MetricsProcessor {
      * {@inheritDoc}
      */
     @Override
-    public List<BigDecimal> getErrorMetrics() throws OpenBankingException {
+    public List<Integer> getErrorMetrics() throws OpenBankingException {
 
         log.debug("Starting error metrics calculation.");
         JSONObject errorMetricsJsonObject = metricsDataProvider.getErrorMetricsData();
         if (errorMetricsJsonObject != null) {
-            List<BigDecimal> errorMetricsList = MetricsProcessorUtil.getPopulatedMetricsList(errorMetricsJsonObject,
+            List<Integer> errorMetricsList = MetricsProcessorUtil.getPopulatedMetricsList(errorMetricsJsonObject,
                     numberOfDays, metricsCountLastDateEpoch);
             log.debug("Finished error metrics calculation successfully.");
             return errorMetricsList;
@@ -239,12 +241,12 @@ public class MetricsV3ProcessorImpl implements MetricsProcessor {
      * {@inheritDoc}
      */
     @Override
-    public Map<AspectEnum, List<BigDecimal>> getRejectionMetrics() throws OpenBankingException {
+    public Map<AspectEnum, List<Integer>> getRejectionMetrics() throws OpenBankingException {
 
         log.debug("Starting rejection metrics calculation.");
         JSONObject rejectionMetricsJsonObject = metricsDataProvider.getRejectionMetricsData();
-        Map<AspectEnum, List<BigDecimal>> rejectionMetricsMap = new HashMap<>();
-        ArrayList<ArrayList<BigDecimal>> rejectedInvocationMetricsList = new ArrayList<ArrayList<BigDecimal>>(2);
+        Map<AspectEnum, List<Integer>> rejectionMetricsMap = new HashMap<>();
+        ArrayList<ArrayList<Integer>> rejectedInvocationMetricsList = new ArrayList<>(2);
 
         if (rejectionMetricsJsonObject != null) {
             rejectedInvocationMetricsList.addAll(MetricsProcessorUtil.getListFromRejectionsJson(
@@ -322,12 +324,12 @@ public class MetricsV3ProcessorImpl implements MetricsProcessor {
      * @return list of successful invocations
      * @throws OpenBankingException - OpenBankingException
      */
-    public List<BigDecimal> getSuccessfulInvocations() throws OpenBankingException {
+    public List<Integer> getSuccessfulInvocations() throws OpenBankingException {
 
         log.debug("Starting successful invocations calculation.");
         JSONObject successInvocationsJsonObject = metricsDataProvider.getSuccessfulInvocationMetricsData();
         if (successInvocationsJsonObject != null) {
-            List<BigDecimal> successInvocationsList = MetricsProcessorUtil.getPopulatedMetricsList(
+            List<Integer> successInvocationsList = MetricsProcessorUtil.getPopulatedMetricsList(
                     successInvocationsJsonObject, numberOfDays, metricsCountLastDateEpoch);
             log.debug("Finished total successful invocation calculation successfully.");
             return successInvocationsList;

@@ -34,9 +34,9 @@ import static org.mockito.Mockito.doReturn;
 
 @PrepareForTest({OpenBankingCDSConfigParser.class})
 @PowerMockIgnore({"javax.crypto.*", "jdk.internal.reflect.*"})
-public class MetricsV3ProcessorImplTest extends PowerMockTestCase {
+public class MetricsV5ProcessorImplTest extends PowerMockTestCase {
 
-    private MetricsV3ProcessorImpl metricsV3Processor;
+    private MetricsV5ProcessorImpl metricsV5Processor;
     private OpenBankingCDSConfigParser openBankingCDSConfigParserMock;
     private static final int TOTAL_DAYS = 8;
     private static final int TOTAL_MONTHS = 13;
@@ -45,7 +45,7 @@ public class MetricsV3ProcessorImplTest extends PowerMockTestCase {
     @BeforeClass
     public void init() throws OpenBankingException {
 
-        metricsV3Processor = new MetricsV3ProcessorImpl(PeriodEnum.ALL, new MockMetricsDataProvider(),
+        metricsV5Processor = new MetricsV5ProcessorImpl(PeriodEnum.ALL, new MockMetricsDataProvider(),
                 ZoneId.of("GMT"));
     }
 
@@ -61,7 +61,7 @@ public class MetricsV3ProcessorImplTest extends PowerMockTestCase {
     @Test
     public void testGetAvailabilityMetrics() throws Exception {
 
-        List<BigDecimal> availabilityMetrics = metricsV3Processor.getAvailabilityMetrics();
+        List<BigDecimal> availabilityMetrics = metricsV5Processor.getAvailabilityMetrics();
         Assert.assertNotNull(availabilityMetrics, "Availability metrics should not be null");
         Assert.assertEquals(availabilityMetrics.size(), TOTAL_MONTHS, "Availability metrics size should be " +
                 "equal to the number of months");
@@ -70,7 +70,7 @@ public class MetricsV3ProcessorImplTest extends PowerMockTestCase {
     @Test
     public void testGetInvocationMetrics() throws Exception {
 
-        Map<PriorityEnum, List<BigDecimal>> invocationMetrics = metricsV3Processor.getInvocationMetrics();
+        Map<PriorityEnum, List<Integer>> invocationMetrics = metricsV5Processor.getInvocationMetrics();
         Assert.assertNotNull(invocationMetrics, "Invocation metrics should not be null");
         Assert.assertEquals(invocationMetrics.size(), PRIORITY_TIERS, "Invocation metrics size should be " +
                 "equal to the number of priorities");
@@ -79,8 +79,8 @@ public class MetricsV3ProcessorImplTest extends PowerMockTestCase {
     @Test
     public void testGetPerformanceMetrics() throws Exception {
 
-        Map<PriorityEnum, List<BigDecimal>> invocationMetrics = metricsV3Processor.getInvocationMetrics();
-        List<BigDecimal> performanceMetrics = metricsV3Processor.getPerformanceMetrics(invocationMetrics);
+        Map<PriorityEnum, List<Integer>> invocationMetrics = metricsV5Processor.getInvocationMetrics();
+        List<BigDecimal> performanceMetrics = metricsV5Processor.getPerformanceMetrics(invocationMetrics);
 
         Assert.assertNotNull(performanceMetrics, "Performance metrics should not be null");
         Assert.assertEquals(performanceMetrics.size(), TOTAL_DAYS, "Performance metrics size should be " +
@@ -90,8 +90,8 @@ public class MetricsV3ProcessorImplTest extends PowerMockTestCase {
     @Test
     public void testGetAverageResponseTimeMetrics() throws Exception {
 
-        Map<PriorityEnum, List<BigDecimal>> invocationMetrics = metricsV3Processor.getInvocationMetrics();
-        Map<PriorityEnum, List<BigDecimal>> averageResponseTimeMetrics = metricsV3Processor.
+        Map<PriorityEnum, List<Integer>> invocationMetrics = metricsV5Processor.getInvocationMetrics();
+        Map<PriorityEnum, List<BigDecimal>> averageResponseTimeMetrics = metricsV5Processor.
                 getAverageResponseTimeMetrics(invocationMetrics);
 
         Assert.assertNotNull(averageResponseTimeMetrics, "Average response time metrics should not be null");
@@ -102,7 +102,7 @@ public class MetricsV3ProcessorImplTest extends PowerMockTestCase {
     @Test
     public void testGetSessionCountMetrics() throws Exception {
 
-        List<BigDecimal> sessionCountMetrics = metricsV3Processor.getSessionCountMetrics();
+        List<Integer> sessionCountMetrics = metricsV5Processor.getSessionCountMetrics();
         Assert.assertNotNull(sessionCountMetrics, "Session count metrics should not be null");
         Assert.assertEquals(sessionCountMetrics.size(), TOTAL_DAYS, "Session count metrics size should be " +
                 "equal to the number of days");
@@ -110,8 +110,8 @@ public class MetricsV3ProcessorImplTest extends PowerMockTestCase {
 
     @Test
     public void testGetAverageTPSMetrics() throws Exception {
-        Map<PriorityEnum, List<BigDecimal>> invocationMetrics = metricsV3Processor.getInvocationMetrics();
-        List<BigDecimal> averageTPSMetrics = metricsV3Processor.getAverageTPSMetrics(invocationMetrics);
+        Map<PriorityEnum, List<Integer>> invocationMetrics = metricsV5Processor.getInvocationMetrics();
+        List<BigDecimal> averageTPSMetrics = metricsV5Processor.getAverageTPSMetrics(invocationMetrics);
 
         Assert.assertNotNull(averageTPSMetrics, "Average TPS metrics should not be null");
         Assert.assertEquals(averageTPSMetrics.size(), TOTAL_DAYS, "Average TPS metrics size should be " +
@@ -121,7 +121,7 @@ public class MetricsV3ProcessorImplTest extends PowerMockTestCase {
     @Test
     public void testGetPeakTPSMetrics() throws Exception {
 
-        List<BigDecimal> peakTPSMetrics = metricsV3Processor.getPeakTPSMetrics();
+        List<BigDecimal> peakTPSMetrics = metricsV5Processor.getPeakTPSMetrics();
         Assert.assertNotNull(peakTPSMetrics, "Peak TPS metrics should not be null");
         Assert.assertEquals(peakTPSMetrics.size(), TOTAL_DAYS, "Peak TPS metrics size should be equal to " +
                 "the number of days");
@@ -129,7 +129,7 @@ public class MetricsV3ProcessorImplTest extends PowerMockTestCase {
 
     @Test
     public void testGetErrorMetrics() throws Exception {
-        List<BigDecimal> errorMetrics = metricsV3Processor.getErrorMetrics();
+        List<Integer> errorMetrics = metricsV5Processor.getErrorMetrics();
 
         Assert.assertNotNull(errorMetrics, "Error metrics should not be null");
         Assert.assertEquals(errorMetrics.size(), TOTAL_DAYS, "Error metrics size should be equal to the " +
@@ -139,7 +139,7 @@ public class MetricsV3ProcessorImplTest extends PowerMockTestCase {
     @Test
     public void testGetRejectionMetrics() throws Exception {
 
-        Map<AspectEnum, List<BigDecimal>> rejectionMetrics = metricsV3Processor.getRejectionMetrics();
+        Map<AspectEnum, List<Integer>> rejectionMetrics = metricsV5Processor.getRejectionMetrics();
         Assert.assertNotNull(rejectionMetrics, "Rejection metrics should not be null");
         Assert.assertEquals(rejectionMetrics.size(), 2, "Rejection metrics map size should be " +
                 "equal to the number of aspects");
@@ -147,7 +147,7 @@ public class MetricsV3ProcessorImplTest extends PowerMockTestCase {
 
     @Test
     public void testGetRecipientCountMetrics() throws Exception {
-        int recipientCountMetrics = metricsV3Processor.getRecipientCountMetrics();
+        int recipientCountMetrics = metricsV5Processor.getRecipientCountMetrics();
 
         Assert.assertNotNull(recipientCountMetrics, "Recipient count metrics should not be null");
         Assert.assertEquals(recipientCountMetrics, 1, "Recipient count metrics should be " +
@@ -156,7 +156,7 @@ public class MetricsV3ProcessorImplTest extends PowerMockTestCase {
 
     @Test
     public void testGetCustomerCountMetrics() throws Exception {
-        int recipientCountMetrics = metricsV3Processor.getCustomerCountMetrics();
+        int recipientCountMetrics = metricsV5Processor.getCustomerCountMetrics();
 
         Assert.assertNotNull(recipientCountMetrics, "Customer count metrics should not be null");
         Assert.assertEquals(recipientCountMetrics, 1, "Customer count metrics should be " +

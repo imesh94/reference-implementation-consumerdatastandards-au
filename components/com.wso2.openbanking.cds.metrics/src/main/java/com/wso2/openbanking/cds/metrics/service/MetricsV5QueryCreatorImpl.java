@@ -15,10 +15,10 @@ import com.wso2.openbanking.cds.metrics.util.TimeGranularityEnum;
 import net.minidev.json.JSONObject;
 
 /**
- * Implementation of Metrics Query Creator for CDS Metrics V3.
+ * Implementation of Metrics Query Creator for CDS Metrics V5.
  * This class will initialize a query creator with timestamps relevant to the given period.
  */
-public class MetricsV3QueryCreatorImpl implements MetricsQueryCreator {
+public class MetricsV5QueryCreatorImpl implements MetricsQueryCreator {
 
     private final String fromTimestamp;
     private final String toTimestamp;
@@ -28,7 +28,7 @@ public class MetricsV3QueryCreatorImpl implements MetricsQueryCreator {
     private final long availabilityToTimestamp;
     private final String timeGranularity;
 
-    public MetricsV3QueryCreatorImpl(PeriodEnum period) {
+    public MetricsV5QueryCreatorImpl(PeriodEnum period) {
 
         String[] timeRangeArray = DateTimeUtil.getTimeRange(period);
         String[] availabilityTimeRangeArray = DateTimeUtil.getAvailabilityMetricsTimeRange(period);

@@ -30,22 +30,22 @@ import static com.wso2.openbanking.cds.metrics.constants.MetricsConstants.RETRIE
  * This class provides data required to calculate metrics by interacting with WSO2 Streaming Integrator.
  * This class is excluded from code coverage since it requires an external dependency to function.
  */
-public class MetricsV3DataProvider implements MetricsDataProvider {
+public class MetricsV5DataProvider implements MetricsDataProvider {
 
-    MetricsQueryCreator metricsV3QueryCreator;
+    MetricsQueryCreator metricsV5QueryCreator;
     private static final OpenBankingCDSConfigParser configParser = OpenBankingCDSConfigParser.getInstance();
     private static final String tpsDataRetrievalUrl = configParser.getMetricsTPSDataRetrievalUrl();
-    private static final Log log = LogFactory.getLog(MetricsV3DataProvider.class);
+    private static final Log log = LogFactory.getLog(MetricsV5DataProvider.class);
 
-    public MetricsV3DataProvider(MetricsQueryCreator metricsV3QueryCreator) {
-        this.metricsV3QueryCreator = metricsV3QueryCreator;
+    public MetricsV5DataProvider(MetricsQueryCreator metricsV5QueryCreator) {
+        this.metricsV5QueryCreator = metricsV5QueryCreator;
     }
 
     @Override
     public JSONObject getAvailabilityMetricsData() throws OpenBankingException {
 
         JSONObject availabilityMetricsJsonObject;
-        String spQuery = metricsV3QueryCreator.getAvailabilityMetricsQuery();
+        String spQuery = metricsV5QueryCreator.getAvailabilityMetricsQuery();
         try {
             availabilityMetricsJsonObject = SPQueryExecutorUtil.executeQueryOnStreamProcessor(
                     MetricsConstants.CDS_AVAILABILITY_METRICS_APP, spQuery);
@@ -61,7 +61,7 @@ public class MetricsV3DataProvider implements MetricsDataProvider {
     public JSONObject getInvocationMetricsData() throws OpenBankingException {
 
         JSONObject invocationMetricsJsonObject;
-        String spQuery = metricsV3QueryCreator.getInvocationMetricsQuery();
+        String spQuery = metricsV5QueryCreator.getInvocationMetricsQuery();
 
         try {
             invocationMetricsJsonObject = SPQueryExecutorUtil.executeQueryOnStreamProcessor(
@@ -78,7 +78,7 @@ public class MetricsV3DataProvider implements MetricsDataProvider {
     public JSONObject getSessionCountMetricsData() throws OpenBankingException {
 
         JSONObject sessionCountMetricsJsonObject;
-        String spQuery = metricsV3QueryCreator.getSessionCountMetricsQuery();
+        String spQuery = metricsV5QueryCreator.getSessionCountMetricsQuery();
 
         try {
             sessionCountMetricsJsonObject = SPQueryExecutorUtil.executeQueryOnStreamProcessor(
@@ -94,7 +94,7 @@ public class MetricsV3DataProvider implements MetricsDataProvider {
     @Override
     public JSONArray getPeakTPSMetricsData() throws ParseException {
 
-        JSONObject peakTPSEvent = metricsV3QueryCreator.getPeakTPSMetricsEvent();
+        JSONObject peakTPSEvent = metricsV5QueryCreator.getPeakTPSMetricsEvent();
         String responseStr = SPQueryExecutorUtil.executeRequestOnStreamProcessor(peakTPSEvent, tpsDataRetrievalUrl);
         //ToDO: Address vulnerable usage of JSONParser
         Object jsonResponse = new JSONParser(JSONParser.MODE_PERMISSIVE).parse(responseStr);
@@ -115,7 +115,7 @@ public class MetricsV3DataProvider implements MetricsDataProvider {
     public JSONObject getErrorMetricsData() throws OpenBankingException {
 
         JSONObject errorMetricsJsonObject;
-        String spQuery = metricsV3QueryCreator.getErrorMetricsQuery();
+        String spQuery = metricsV5QueryCreator.getErrorMetricsQuery();
 
         try {
             errorMetricsJsonObject = SPQueryExecutorUtil.executeQueryOnStreamProcessor(
@@ -132,7 +132,7 @@ public class MetricsV3DataProvider implements MetricsDataProvider {
     public JSONObject getRejectionMetricsData() throws OpenBankingException {
 
         JSONObject rejectionMetricsJsonObject;
-        String spQuery = metricsV3QueryCreator.getRejectionMetricsQuery();
+        String spQuery = metricsV5QueryCreator.getRejectionMetricsQuery();
 
         try {
             rejectionMetricsJsonObject = SPQueryExecutorUtil.executeQueryOnStreamProcessor(
@@ -149,7 +149,7 @@ public class MetricsV3DataProvider implements MetricsDataProvider {
     public JSONObject getRecipientCountMetricsData() throws OpenBankingException {
 
         JSONObject recipientCountMetricsJsonObject;
-        String spQuery = metricsV3QueryCreator.getRecipientCountMetricsQuery();
+        String spQuery = metricsV5QueryCreator.getRecipientCountMetricsQuery();
 
         try {
             recipientCountMetricsJsonObject = SPQueryExecutorUtil.executeQueryOnStreamProcessor(
@@ -166,7 +166,7 @@ public class MetricsV3DataProvider implements MetricsDataProvider {
     public JSONObject getCustomerCountMetricsData() throws OpenBankingException {
 
         JSONObject customerCountMetricsJsonObject;
-        String spQuery = metricsV3QueryCreator.getCustomerCountMetricsQuery();
+        String spQuery = metricsV5QueryCreator.getCustomerCountMetricsQuery();
 
         try {
             customerCountMetricsJsonObject = SPQueryExecutorUtil.executeQueryOnStreamProcessor(
@@ -183,7 +183,7 @@ public class MetricsV3DataProvider implements MetricsDataProvider {
     public JSONObject getTotalResponseTimeMetricsData() throws OpenBankingException {
 
         JSONObject totalResponseTimeJsonObject;
-        String spQuery = metricsV3QueryCreator.getTotalResponseTimeQuery();
+        String spQuery = metricsV5QueryCreator.getTotalResponseTimeQuery();
 
         try {
             totalResponseTimeJsonObject = SPQueryExecutorUtil.executeQueryOnStreamProcessor(
@@ -200,7 +200,7 @@ public class MetricsV3DataProvider implements MetricsDataProvider {
     public JSONObject getSuccessfulInvocationMetricsData() throws OpenBankingException {
 
         JSONObject successInvocationsJsonObject;
-        String spQuery = metricsV3QueryCreator.getSuccessfulInvocationsQuery();
+        String spQuery = metricsV5QueryCreator.getSuccessfulInvocationsQuery();
 
         try {
             successInvocationsJsonObject = SPQueryExecutorUtil.executeQueryOnStreamProcessor(

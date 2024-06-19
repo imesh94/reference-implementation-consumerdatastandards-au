@@ -20,7 +20,7 @@ public class MetricsConstants {
     }
 
     public static final String RECORDS = "records";
-    public static final String METRICS_VERSION_3 = "3";
+    public static final String METRICS_VERSION_5 = "5";
 
     // sp api endpoint
     public static final String SP_API_PATH = "/stores/query";

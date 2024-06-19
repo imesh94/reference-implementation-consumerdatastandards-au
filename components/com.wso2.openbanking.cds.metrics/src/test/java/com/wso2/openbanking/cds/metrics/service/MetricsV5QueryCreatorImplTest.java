@@ -26,9 +26,9 @@ import static org.testng.Assert.assertEquals;
 
 @PrepareForTest({DateTimeUtil.class, OpenBankingCDSConfigParser.class})
 @PowerMockIgnore({"javax.crypto.*", "jdk.internal.reflect.*"})
-public class MetricsV3QueryCreatorImplTest extends PowerMockTestCase {
+public class MetricsV5QueryCreatorImplTest extends PowerMockTestCase {
 
-    private MetricsV3QueryCreatorImpl queryCreator;
+    private MetricsV5QueryCreatorImpl queryCreator;
     OpenBankingCDSConfigParser configParserMock;
 
 
@@ -51,7 +51,7 @@ public class MetricsV3QueryCreatorImplTest extends PowerMockTestCase {
         when(DateTimeUtil.getEpochTimestamp("2024-01-01T23:59:59Z")).thenReturn(1706745599L);
         when(DateTimeUtil.getEpochTimestamp("2024-01-31T23:59:59Z")).thenReturn(1706745599L);
 
-        queryCreator = new MetricsV3QueryCreatorImpl(PeriodEnum.CURRENT);
+        queryCreator = new MetricsV5QueryCreatorImpl(PeriodEnum.CURRENT);
     }
 
     @Test

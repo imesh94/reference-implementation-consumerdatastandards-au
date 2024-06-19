@@ -36,7 +36,7 @@ public interface MetricsProcessor {
      * @return Map of invocation metrics with priority tiers
      * @throws OpenBankingException - OpenBankingException
      */
-    Map<PriorityEnum, List<BigDecimal>> getInvocationMetrics() throws OpenBankingException;
+    Map<PriorityEnum, List<Integer>> getInvocationMetrics() throws OpenBankingException;
 
     /**
      * Get performance metrics.
@@ -45,7 +45,7 @@ public interface MetricsProcessor {
      * @return List of performance metrics
      * @throws OpenBankingException - OpenBankingException
      */
-    List<BigDecimal> getPerformanceMetrics(Map<PriorityEnum, List<BigDecimal>> invocationMetricsMap)
+    List<BigDecimal> getPerformanceMetrics(Map<PriorityEnum, List<Integer>> invocationMetricsMap)
             throws OpenBankingException;
 
     /**
@@ -56,7 +56,7 @@ public interface MetricsProcessor {
      * @throws OpenBankingException - OpenBankingException
      */
     Map<PriorityEnum, List<BigDecimal>> getAverageResponseTimeMetrics(
-            Map<PriorityEnum, List<BigDecimal>> invocationMetricsMap) throws OpenBankingException;
+            Map<PriorityEnum, List<Integer>> invocationMetricsMap) throws OpenBankingException;
 
     /**
      * Get session count metrics.
@@ -64,7 +64,7 @@ public interface MetricsProcessor {
      * @return List of session count metrics
      * @throws OpenBankingException - OpenBankingException
      */
-    List<BigDecimal> getSessionCountMetrics() throws OpenBankingException;
+    List<Integer> getSessionCountMetrics() throws OpenBankingException;
 
     /**
      * Calculate average TPS for a day.
@@ -73,7 +73,7 @@ public interface MetricsProcessor {
      * @param invocationMetricsMap - Map of invocation metrics
      * @return list of average TPS
      */
-    List<BigDecimal> getAverageTPSMetrics(Map<PriorityEnum, List<BigDecimal>> invocationMetricsMap);
+    List<BigDecimal> getAverageTPSMetrics(Map<PriorityEnum, List<Integer>> invocationMetricsMap);
 
     /**
      * Get peak TPS metrics.
@@ -89,7 +89,7 @@ public interface MetricsProcessor {
      * @return List of error metrics
      * @throws OpenBankingException - OpenBankingException
      */
-    List<BigDecimal> getErrorMetrics() throws OpenBankingException;
+    List<Integer> getErrorMetrics() throws OpenBankingException;
 
     /**
      * Get rejection metrics.
@@ -97,7 +97,7 @@ public interface MetricsProcessor {
      * @return Map of rejection metrics with aspect tiers
      * @throws OpenBankingException - OpenBankingException
      */
-    Map<AspectEnum, List<BigDecimal>> getRejectionMetrics() throws OpenBankingException;
+    Map<AspectEnum, List<Integer>> getRejectionMetrics() throws OpenBankingException;
 
     /**
      * Get recipient count metrics.

@@ -40,13 +40,13 @@ public class MetricsProcessorUtil {
     }
 
     /**
-     * Perform division between two lists.
+     * Perform division between two BigDecimal lists.
      *
      * @param list1 - dividend
      * @param list2 - divisor
      * @return resulting list
      */
-    public static List<BigDecimal> divideList(List<BigDecimal> list1, List<BigDecimal> list2)
+    public static List<BigDecimal> divideBigDecimalLists(List<BigDecimal> list1, List<BigDecimal> list2)
             throws OpenBankingException {
 
         int listSize = list1.size();
@@ -60,6 +60,67 @@ public class MetricsProcessorUtil {
         for (int i = 0; i < listSize; i++) {
             currentDivisor = list2.get(i);
             if (!(BigDecimal.valueOf(0).equals(currentDivisor))) {
+                currentResult = list1.get(i).divide(currentDivisor, 3, RoundingMode.HALF_UP);
+                resultList.add(currentResult);
+            } else {
+                resultList.add(BigDecimal.valueOf(0));
+            }
+        }
+        return resultList;
+    }
+
+    /**
+     * Perform division between two Integer lists.
+     *
+     * @param list1 - dividend
+     * @param list2 - divisor
+     * @return resulting list
+     */
+    public static List<BigDecimal> divideIntegerLists(List<Integer> list1, List<Integer> list2)
+            throws OpenBankingException {
+
+        int listSize = list1.size();
+        List<BigDecimal> resultList = new ArrayList<>();
+
+        if (listSize != list2.size()) {
+            throw new OpenBankingException("Cannot perform division between lists with different sizes");
+        }
+
+        for (int i = 0; i < listSize; i++) {
+            Integer currentDivisor = list2.get(i);
+            if (currentDivisor != 0) {
+                BigDecimal dividend = new BigDecimal(list1.get(i));
+                BigDecimal divisor = new BigDecimal(currentDivisor);
+                BigDecimal currentResult = dividend.divide(divisor, 3, RoundingMode.HALF_UP);
+                resultList.add(currentResult);
+            } else {
+                resultList.add(BigDecimal.valueOf(0));
+            }
+        }
+        return resultList;
+    }
+
+    /**
+     * Perform division between a BigDecimal and an Integer list.
+     *
+     * @param list1 - dividend
+     * @param list2 - divisor
+     * @return resulting list
+     */
+    public static List<BigDecimal> divideBigDecimalListWithIntegerList(List<BigDecimal> list1, List<Integer> list2)
+            throws OpenBankingException {
+
+        int listSize = list1.size();
+        List<BigDecimal> resultList = new ArrayList<>();
+
+        if (listSize != list2.size()) {
+            throw new OpenBankingException("Cannot perform division between lists with different sizes");
+        }
+        BigDecimal currentResult;
+        BigDecimal currentDivisor;
+        for (int i = 0; i < listSize; i++) {
+            currentDivisor = BigDecimal.valueOf(list2.get(i));
+            if (!currentDivisor.equals(BigDecimal.ZERO)) {
                 currentResult = list1.get(i).divide(currentDivisor, 3, RoundingMode.HALF_UP);
                 resultList.add(currentResult);
             } else {
@@ -91,21 +152,21 @@ public class MetricsProcessorUtil {
      * @param invocationMetricsMap - Map of invocation metrics
      * @return - Merged list of invocations
      */
-    public static List<BigDecimal> getTotalInvocationsForEachDay(Map<PriorityEnum,
-            List<BigDecimal>> invocationMetricsMap) {
+    public static List<Integer> getTotalInvocationsForEachDay(Map<PriorityEnum,
+            List<Integer>> invocationMetricsMap) {
 
-        List<BigDecimal> totalTransactionsList = new ArrayList<>();
+        List<Integer> totalTransactionsList = new ArrayList<>();
 
         // get number of days by list size
         int dayCount = invocationMetricsMap.get(PriorityEnum.UNAUTHENTICATED).size();
 
         for (int day = 0; day < dayCount; day++) {
-            BigDecimal totalTransactions = BigDecimal.valueOf(0);
-            List<BigDecimal> currentPriorityList;
+            int totalTransactions = 0;
+            List<Integer> currentPriorityList;
             for (PriorityEnum priority : PriorityEnum.values()) {
                 currentPriorityList = invocationMetricsMap.get(priority);
                 if (!currentPriorityList.isEmpty()) {
-                    totalTransactions = totalTransactions.add(currentPriorityList.get(day));
+                    totalTransactions = totalTransactions + currentPriorityList.get(day);
                 }
             }
             totalTransactionsList.add(totalTransactions);
@@ -121,22 +182,21 @@ public class MetricsProcessorUtil {
      * @param metricsCountLastDateEpoch - Epoch timestamp of the last date that metrics are required
      * @return - populated map
      */
-    public static Map<PriorityEnum, List<BigDecimal>> getPopulatedInvocationMetricsMap(
+    public static Map<PriorityEnum, List<Integer>> getPopulatedInvocationMetricsMap(
             JSONObject metricsJsonObject, int numberOfDays, long metricsCountLastDateEpoch) {
 
-        Map<PriorityEnum, List<BigDecimal>> dataMap = initializeMap(numberOfDays);
+        Map<PriorityEnum, List<Integer>> dataMap = initializeMapWithIntegers(numberOfDays);
         JSONArray records = (JSONArray) metricsJsonObject.get(RECORDS);
         for (Object recordObj : records) {
             JSONArray record = (JSONArray) recordObj;
             PriorityEnum priority = PriorityEnum.fromValue((String) record.get(0));
-            BigDecimal count = BigDecimal.valueOf((Integer) record.get(1));
+            Integer count = (Integer) record.get(1);
             long recordTimestamp = (Long) record.get(2);
             int daysAgo = DateTimeUtil.getDayDifference(recordTimestamp / 1000, metricsCountLastDateEpoch);
 
             // Number of days ago can be used as the index to insert data to the list
             if (daysAgo >= 0 && daysAgo < numberOfDays) {
-                dataMap.get(priority).set(
-                        daysAgo, dataMap.get(priority).get(daysAgo).add(count));
+                dataMap.get(priority).set(daysAgo, dataMap.get(priority).get(daysAgo) + count);
             }
         }
         return dataMap;
@@ -153,7 +213,7 @@ public class MetricsProcessorUtil {
     public static Map<PriorityEnum, List<BigDecimal>> getPopulatedTotalResponseTimeMetricsMap(
             JSONObject metricsJsonObject, int numberOfDays, long metricsCountLastDateEpoch) {
 
-        Map<PriorityEnum, List<BigDecimal>> dataMap = initializeMap(numberOfDays);
+        Map<PriorityEnum, List<BigDecimal>> dataMap = initializeMapWithBigDecimals(numberOfDays);
         JSONArray records = (JSONArray) metricsJsonObject.get(RECORDS);
         for (Object recordObj : records) {
             JSONArray record = (JSONArray) recordObj;
@@ -172,16 +232,31 @@ public class MetricsProcessorUtil {
     }
 
     /**
-     * Initialize new priority-tier map for Metrics data.
+     * Initialize new priority-tier map for Metrics data with BigDecimals.
      *
      * @param numberOfDays - Number of days to initialize
      * @return - Priority-tier map initialized for given number of days
      */
-    public static Map<PriorityEnum, List<BigDecimal>> initializeMap(int numberOfDays) {
+    public static Map<PriorityEnum, List<BigDecimal>> initializeMapWithBigDecimals(int numberOfDays) {
 
         Map<PriorityEnum, List<BigDecimal>> map = new HashMap<>();
         for (PriorityEnum priority : PriorityEnum.values()) {
             map.put(priority, new ArrayList<>(Collections.nCopies(numberOfDays, BigDecimal.ZERO)));
+        }
+        return map;
+    }
+
+    /**
+     * Initialize new priority-tier map for Metrics data with Integers.
+     *
+     * @param numberOfDays - Number of days to initialize
+     * @return - Priority-tier map initialized for given number of days
+     */
+    public static Map<PriorityEnum, List<Integer>> initializeMapWithIntegers(int numberOfDays) {
+
+        Map<PriorityEnum, List<Integer>> map = new HashMap<>();
+        for (PriorityEnum priority : PriorityEnum.values()) {
+            map.put(priority, new ArrayList<>(Collections.nCopies(numberOfDays, 0)));
         }
         return map;
     }
@@ -193,20 +268,20 @@ public class MetricsProcessorUtil {
      * @param metricsJsonObject - Json object with metrics
      * @return - populated map
      */
-    public static List<BigDecimal> getPopulatedMetricsList(
+    public static List<Integer> getPopulatedMetricsList(
             JSONObject metricsJsonObject, int numberOfDays, long metricsCountLastDateEpoch) {
 
-        List<BigDecimal> dataList = new ArrayList<>(Collections.nCopies(numberOfDays, BigDecimal.ZERO));
+        List<Integer> dataList = new ArrayList<>(Collections.nCopies(numberOfDays, 0));
         JSONArray records = (JSONArray) metricsJsonObject.get(RECORDS);
         for (Object recordObj : records) {
             JSONArray record = (JSONArray) recordObj;
-            BigDecimal count = BigDecimal.valueOf((Integer) record.get(0));
+            Integer count = (Integer) record.get(0);
             long recordTimestamp = (Long) record.get(1);
             int daysAgo = DateTimeUtil.getDayDifference(recordTimestamp / 1000, metricsCountLastDateEpoch);
 
             // Number of days ago can be used as the index to insert data to the list
             if (daysAgo >= 0 && daysAgo < numberOfDays) {
-                dataList.set(daysAgo, count);
+                dataList.set(daysAgo, dataList.get(daysAgo) + count);
             }
         }
         return dataList;
@@ -221,17 +296,17 @@ public class MetricsProcessorUtil {
      * @return - List of elements
      */
     @Generated(message = "Excluded from code coverage")
-    public static List<ArrayList<BigDecimal>> getListFromRejectionsJson(
+    public static List<ArrayList<Integer>> getListFromRejectionsJson(
             JSONObject jsonObject, int numberOfPastDays, long metricsCountLastDateEpoch) {
 
         JSONArray recordsArray = (JSONArray) jsonObject.get(RECORDS);
-        ArrayList<BigDecimal> elementListAuthenticated = initializeListWithZeros(numberOfPastDays);
-        ArrayList<BigDecimal> elementListUnauthenticated = initializeListWithZeros(numberOfPastDays);
+        ArrayList<Integer> elementListAuthenticated = initializeListWithZeros(numberOfPastDays);
+        ArrayList<Integer> elementListUnauthenticated = initializeListWithZeros(numberOfPastDays);
         populateRejectionLists(recordsArray, elementListAuthenticated, elementListUnauthenticated,
                 metricsCountLastDateEpoch);
 
         // 2 lists for authenticated and unauthenticated elements
-        List<ArrayList<BigDecimal>> elementList = new ArrayList<>(2);
+        List<ArrayList<Integer>> elementList = new ArrayList<>(2);
         elementList.add(elementListAuthenticated);
         elementList.add(elementListUnauthenticated);
 
@@ -244,12 +319,8 @@ public class MetricsProcessorUtil {
      * @param numberOfDays - Number of days
      * @return - List of zeros
      */
-    public static ArrayList<BigDecimal> initializeListWithZeros(int numberOfDays) {
-        ArrayList<BigDecimal> list = new ArrayList<>(numberOfDays);
-        for (int i = 0; i < numberOfDays; i++) {
-            list.add(BigDecimal.ZERO);
-        }
-        return list;
+    public static ArrayList<Integer> initializeListWithZeros(int numberOfDays) {
+        return new ArrayList<>(Collections.nCopies(numberOfDays, 0));
     }
 
     /**
@@ -260,8 +331,8 @@ public class MetricsProcessorUtil {
      * @param authenticated   - List of authenticated elements
      * @param unauthenticated - List of unauthenticated elements
      */
-    private static void populateRejectionLists(JSONArray recordsArray, ArrayList<BigDecimal> authenticated,
-                                               ArrayList<BigDecimal> unauthenticated, long metricsCountLastDateEpoch) {
+    private static void populateRejectionLists(JSONArray recordsArray, ArrayList<Integer> authenticated,
+                                               ArrayList<Integer> unauthenticated, long metricsCountLastDateEpoch) {
 
         for (Object object : recordsArray) {
             JSONArray countArray = (JSONArray) object;
@@ -271,11 +342,11 @@ public class MetricsProcessorUtil {
             int daysAgo = DateTimeUtil.getDayDifference(recordTimestamp, metricsCountLastDateEpoch);
 
             // Number of days ago can be used as the index to insert data to the list
-            BigDecimal currentCount = BigDecimal.valueOf(currentElement);
+            Integer currentCount = (int) currentElement;
             if (!MetricsConstants.CDS_REJECTION_METRICS_APP_VALIDITY.equals(validity)) {
-                authenticated.set(daysAgo, authenticated.get(daysAgo).add(currentCount));
+                authenticated.set(daysAgo, authenticated.get(daysAgo) + currentCount);
             } else {
-                unauthenticated.set(daysAgo, unauthenticated.get(daysAgo).add(currentCount));
+                unauthenticated.set(daysAgo, unauthenticated.get(daysAgo) + currentCount);
             }
         }
     }

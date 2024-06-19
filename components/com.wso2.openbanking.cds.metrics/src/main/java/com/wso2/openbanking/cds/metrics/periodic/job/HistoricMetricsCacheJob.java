@@ -68,7 +68,7 @@ public class HistoricMetricsCacheJob implements Job {
             MetricsCache metricsCache = MetricsCache.getInstance();
             metricsCache.removeFromCache(MetricsCache.getHistoricMetricsCacheKey());
             CDSMetricsServiceImpl metricsService = new CDSMetricsServiceImpl();
-            MetricsResponseModel metricsResponseModel = metricsService.getMetrics(MetricsConstants.METRICS_VERSION_3,
+            MetricsResponseModel metricsResponseModel = metricsService.getMetrics(MetricsConstants.METRICS_VERSION_5,
                     PeriodEnum.HISTORIC);
             Gson gson = new Gson();
             String responseMetricsV5ListModelJson = gson.toJson(metricsResponseModel);
