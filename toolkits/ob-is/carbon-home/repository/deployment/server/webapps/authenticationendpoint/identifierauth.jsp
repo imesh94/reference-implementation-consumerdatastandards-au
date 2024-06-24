@@ -287,8 +287,14 @@
     }
 
     function redirect() {
-        var error = "User skipped the consent flow";
-        top.location = "<%=callbackURL%>?status=Access Denied&statusMsg=" + error;
+        let error = "User skipped the consent flow";
+        let state = "${state}"
+        if (state) {
+            top.location = "<%=callbackURL%>?status=Access Denied&statusMsg=" + error +
+                "&state=" + state;
+        } else {
+            top.location = "<%=callbackURL%>?status=Access Denied&statusMsg=" + error;
+        }
     }
 
     window.onclick = function(event) {
