@@ -55,27 +55,27 @@ public class MetricsProcessorUtilTest extends PowerMockTestCase {
     }
 
     @Test
-    public void testDivideBigDecimalListsEqualSizeNoZeroDivisor() throws OpenBankingException {
+    public void testDivideListsEqualSizeNoZeroDivisor() throws OpenBankingException {
         List<BigDecimal> list1 = Arrays.asList(BigDecimal.valueOf(10), BigDecimal.valueOf(20));
         List<BigDecimal> list2 = Arrays.asList(BigDecimal.valueOf(2), BigDecimal.valueOf(5));
         List<BigDecimal> expected = Arrays.asList(new BigDecimal("5.000"), new BigDecimal("4.000"));
-        List<BigDecimal> result = MetricsProcessorUtil.divideBigDecimalLists(list1, list2);
+        List<BigDecimal> result = MetricsProcessorUtil.divideLists(list1, list2);
         Assert.assertEquals(result, expected);
     }
 
     @Test(expectedExceptions = OpenBankingException.class)
-    public void testDivideBigDecimalListsUnequalSizes() throws OpenBankingException {
+    public void testDivideListsUnequalSizes() throws OpenBankingException {
         List<BigDecimal> list1 = Arrays.asList(BigDecimal.valueOf(10), BigDecimal.valueOf(20));
         List<BigDecimal> list2 = Arrays.asList(BigDecimal.valueOf(2));
-        MetricsProcessorUtil.divideBigDecimalLists(list1, list2);
+        MetricsProcessorUtil.divideLists(list1, list2);
     }
 
     @Test
-    public void testDivideBigDecimalListsWithZeroDivisor() throws OpenBankingException {
+    public void testDivideListsWithZeroDivisor() throws OpenBankingException {
         List<BigDecimal> list1 = Arrays.asList(BigDecimal.valueOf(10), BigDecimal.valueOf(20));
         List<BigDecimal> list2 = Arrays.asList(BigDecimal.valueOf(2), BigDecimal.ZERO);
         List<BigDecimal> expected = Arrays.asList(new BigDecimal("5.000"), new BigDecimal("0"));
-        List<BigDecimal> result = MetricsProcessorUtil.divideBigDecimalLists(list1, list2);
+        List<BigDecimal> result = MetricsProcessorUtil.divideLists(list1, list2);
         Assert.assertEquals(result, expected);
     }
 
@@ -117,9 +117,9 @@ public class MetricsProcessorUtilTest extends PowerMockTestCase {
     }
 
     @Test
-    public void testInitializeListWithZeros() {
+    public void testInitializeList() {
         int numberOfDays = 7;
-        ArrayList<Integer> result = MetricsProcessorUtil.initializeListWithZeros(numberOfDays);
+        ArrayList<Integer> result = MetricsProcessorUtil.initializeList(numberOfDays, 0);
         Assert.assertEquals(result.size(), numberOfDays, "The list size should be exactly " + numberOfDays);
         for (Integer value : result) {
             Assert.assertEquals(value, Integer.valueOf(0), "Each entry in the list should be Zero.");
@@ -181,9 +181,9 @@ public class MetricsProcessorUtilTest extends PowerMockTestCase {
     }
 
     @Test
-    public void testInitializeMapWithBigDecimals() {
+    public void testInitializeMap() {
         int numberOfDays = 5;
-        Map<PriorityEnum, List<BigDecimal>> result = MetricsProcessorUtil.initializeMapWithBigDecimals(numberOfDays);
+        Map<PriorityEnum, List<BigDecimal>> result = MetricsProcessorUtil.initializeMap(numberOfDays, BigDecimal.ZERO);
 
         // Assert the size of the map
         Assert.assertEquals(result.size(), PriorityEnum.values().length);
