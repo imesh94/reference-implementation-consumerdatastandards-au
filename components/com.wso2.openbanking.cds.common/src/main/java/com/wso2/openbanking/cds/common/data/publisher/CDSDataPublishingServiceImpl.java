@@ -1,13 +1,11 @@
 /*
- * Copyright (c) 2021, WSO2 Inc. (http://www.wso2.com). All Rights Reserved.
+ * Copyright (c) 2021-2024, WSO2 LLC. (https://www.wso2.com). All Rights Reserved.
  *
- * This software is the property of WSO2 Inc. and its suppliers, if any.
+ * This software is the property of WSO2 LLC. and its suppliers, if any.
  * Dissemination of any information or reproduction of any material contained
- * herein is strictly forbidden, unless permitted by WSO2 in accordance with
- * the WSO2 Software License available at https://wso2.com/licenses/eula/3.1.
- * For specific language governing the permissions and limitations under this
- * license, please see the license as well as any agreement you’ve entered into
- * with WSO2 governing the purchase of this software and any associated services.
+ * herein in any form is strictly forbidden, unless permitted by WSO2 expressly.
+ * You may not alter or remove any copyright or other notice from copies of this content.
+ *
  */
 
 package com.wso2.openbanking.cds.common.data.publisher;
@@ -26,6 +24,8 @@ public class CDSDataPublishingServiceImpl implements CDSDataPublishingService {
     private static final String API_DATA_STREAM = "APIInputStream";
     private static final String CONSENT_INPUT_STREAM = "ConsentInputStream";
     private static final String API_LATENCY_INPUT_STREAM = "APILatencyInputStream";
+    private static final String AUTHORISATION_METRICS_INPUT_STREAM = "AuthorisationMetricsInputStream";
+    private static final String ABANDONED_CONSENT_FLOW_METRICS_INPUT_STREAM = "AbandonedConsentFlowMetricsInputStream";
 
     private static final CDSDataPublishingServiceImpl dataPublishingService = new CDSDataPublishingServiceImpl();
 
@@ -59,5 +59,18 @@ public class CDSDataPublishingServiceImpl implements CDSDataPublishingService {
     public void publishApiLatencyData(Map<String, Object> apiLatencyData) {
 
         OBDataPublisherUtil.publishData(API_LATENCY_INPUT_STREAM, INPUT_STREAM_VERSION, apiLatencyData);
+    }
+
+    @Override
+    public void publishAuthorisationData(Map<String, Object> authorisationData) {
+
+        OBDataPublisherUtil.publishData(AUTHORISATION_METRICS_INPUT_STREAM, INPUT_STREAM_VERSION, authorisationData);
+    }
+
+    @Override
+    public void publishAbandonedConsentFlowData(Map<String, Object> abandonedConsentFlowData) {
+
+        OBDataPublisherUtil.publishData(ABANDONED_CONSENT_FLOW_METRICS_INPUT_STREAM, INPUT_STREAM_VERSION,
+                abandonedConsentFlowData);
     }
 }
