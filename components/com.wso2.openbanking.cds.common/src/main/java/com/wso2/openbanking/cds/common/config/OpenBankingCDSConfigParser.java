@@ -734,6 +734,26 @@ public class OpenBankingCDSConfigParser {
         return ((String) getConfigElementFromKey(CommonConstants.METRICS_TIME_ZONE)).trim();
     }
 
+    /**
+     * Get availability metrics start date.
+     *
+     * @return String
+     */
+    public String getAvailabilityStartDate() {
+
+        return ((String) getConfigElementFromKey(CommonConstants.METRICS_AVAILABILITY_START_DATE)).trim();
+    }
+
+    /**
+     * Get metrics v5 start date.
+     *
+     * @return String
+     */
+    public String getMetricsV5StartDate() {
+
+        return ((String) getConfigElementFromKey(CommonConstants.METRICS_V5_START_DATE)).trim();
+    }
+
 
     /**
      * Perform integer value check on given config.

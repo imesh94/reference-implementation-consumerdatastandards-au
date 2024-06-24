@@ -118,6 +118,8 @@ public class CommonConstants {
     public static final int METRICS_CACHE_DEFAULT_EXPIRY_TIME = 1380;
     public static final String METRICS_TPS_DATA_RETRIEVAL_URL = "Metrics.TPSDataRetrievalURL";
     public static final String METRICS_TIME_ZONE = "Metrics.TimeZone";
+    public static final String METRICS_AVAILABILITY_START_DATE = "Metrics.AvailabilityStartDate";
+    public static final String METRICS_V5_START_DATE = "Metrics.MetricsV5StartDate";
 
     // Stream Processor related constants
     public static final String SP_API_PATH = "/stores/query";
