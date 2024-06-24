@@ -33,6 +33,7 @@ public class Constants {
     public static final String ISSUER_CLAIM = "iss";
     public static final String PRIVATE_KEY_JWT = "signedJWT";
     public static final String JWKS_URI = "jwksURI";
+    public static final String CLIENT_ID = "client_id";
 
     //Endpoint identifiers
     public static final String ARRANGEMENTS = "arrangements";

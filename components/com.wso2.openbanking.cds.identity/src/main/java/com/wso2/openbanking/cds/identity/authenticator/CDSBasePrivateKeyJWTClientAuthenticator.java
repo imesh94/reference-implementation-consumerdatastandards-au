@@ -80,6 +80,7 @@ public class CDSBasePrivateKeyJWTClientAuthenticator extends AbstractOAuthClient
                                       OAuthClientAuthnContext oAuthClientAuthnContext)
             throws OAuthClientAuthnException {
 
+        validateClientIdAgainstSubClaim(httpServletRequest, bodyParameters, oAuthClientAuthnContext);
         return jwtValidator.isValidAssertion(getSignedJWT(bodyParameters, oAuthClientAuthnContext));
     }
 
@@ -181,5 +182,32 @@ public class CDSBasePrivateKeyJWTClientAuthenticator extends AbstractOAuthClient
         mandatoryClaims.add(Constants.EXPIRATION_TIME_CLAIM);
         mandatoryClaims.add(Constants.JWT_ID_CLAIM);
         return mandatoryClaims;
+    }
+
+    /**
+     * Validates the client_id parameter value against the 'sub' claim in the client_assertion if the client_id is
+     * sent as a request body parameter (RFC7521).
+     *
+     * @param httpServletRequest - HTTP Servlet Request
+     * @param bodyParameters - map of request body params
+     * @param oAuthClientAuthnContext - OAuth Client Authentication Context
+     * @throws OAuthClientAuthnException - if the client_id does not match the 'sub' claim in the client_assertion
+     */
+    private void validateClientIdAgainstSubClaim(HttpServletRequest httpServletRequest,
+                                                 Map<String, List> bodyParameters, OAuthClientAuthnContext oAuthClientAuthnContext)
+            throws OAuthClientAuthnException {
+
+        if (httpServletRequest.getParameter(Constants.CLIENT_ID) != null) {
+            String subClaim = getClientId(httpServletRequest, bodyParameters, oAuthClientAuthnContext);
+            String clientId = httpServletRequest.getParameter(Constants.CLIENT_ID);
+            if (!subClaim.equals(clientId)) {
+                if (LOG.isDebugEnabled()) {
+                    LOG.debug("Mismatch between client_id parameter and sub claim. client_id: " + clientId +
+                            ", sub claim: " + subClaim);
+                }
+                throw new OAuthClientAuthnException("Request Parameter 'client_id' does not match the 'sub' claim " +
+                        "in the client_assertion", OAuth2ErrorCodes.INVALID_CLIENT);
+            }
+        }
     }
 }
