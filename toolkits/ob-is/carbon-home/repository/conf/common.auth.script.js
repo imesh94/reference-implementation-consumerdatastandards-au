@@ -2,6 +2,7 @@ var psuChannel = 'Online Banking';
 
 function onLoginRequest(context) {
     publishAuthData(context, "AuthenticationAttempted", {'psuChannel': psuChannel});
+    OBAuthenticationWorker(context, { stage: "started" }, "publishAbandonedConsentFlowData");
     doLogin(context);
 }
 
@@ -10,6 +11,7 @@ var doLogin = function(context) {
         onSuccess: function (context) {
             //identifier-first success
             publishAuthData(context, "AuthenticationSuccessful", {'psuChannel': psuChannel});
+            OBAuthenticationWorker(context, { stage: "userIdentified" }, "publishAbandonedConsentFlowData");
             OTPFlow(context);
         },
         onFail: function (context) { //identifier-first fail
@@ -25,6 +27,7 @@ var OTPFlow = function(context) {
         onSuccess: function (context) {
             context.selectedAcr = "urn:cds.au:cdr:2";
             publishAuthData(context, "AuthenticationSuccessful", {'psuChannel': psuChannel});
+            OBAuthenticationWorker(context, { stage: "userAuthenticated" }, "publishAbandonedConsentFlowData");
         },
         onFail: function (context) {
             publishAuthData(context, "AuthenticationFailed", {'psuChannel': psuChannel});

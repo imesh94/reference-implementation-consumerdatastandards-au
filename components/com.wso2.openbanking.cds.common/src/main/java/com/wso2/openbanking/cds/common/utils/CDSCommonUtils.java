@@ -1,25 +1,34 @@
 /*
- * Copyright (c) 2021, WSO2 Inc. (http://www.wso2.com). All Rights Reserved.
+ * Copyright (c) 2021-2024, WSO2 LLC. (https://www.wso2.com). All Rights Reserved.
  *
- * This software is the property of WSO2 Inc. and its suppliers, if any.
+ * This software is the property of WSO2 LLC. and its suppliers, if any.
  * Dissemination of any information or reproduction of any material contained
- * herein is strictly forbidden, unless permitted by WSO2 in accordance with
- * the WSO2 Software License available at https://wso2.com/licenses/eula/3.1. For specific
- * language governing the permissions and limitations under this license,
- * please see the license as well as any agreement you’ve entered into with
- * WSO2 governing the purchase of this software and any associated services.
+ * herein in any form is strictly forbidden, unless permitted by WSO2 expressly.
+ * You may not alter or remove any copyright or other notice from copies of this content.
  */
 
 package com.wso2.openbanking.cds.common.utils;
 
 import com.wso2.openbanking.cds.common.config.OpenBankingCDSConfigParser;
+import com.wso2.openbanking.cds.common.enums.AuthorisationFlowTypeEnum;
+import com.wso2.openbanking.cds.common.enums.AuthorisationStageEnum;
+import com.wso2.openbanking.cds.common.enums.ConsentDurationTypeEnum;
+import com.wso2.openbanking.cds.common.enums.ConsentStatusEnum;
 import org.apache.commons.codec.binary.Hex;
+import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.apache.http.NameValuePair;
+import org.apache.http.client.utils.URLEncodedUtils;
 
 import java.nio.charset.StandardCharsets;
 import java.security.InvalidKeyException;
 import java.security.NoSuchAlgorithmException;
+import java.time.Instant;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+
 import javax.crypto.Mac;
 import javax.crypto.spec.SecretKeySpec;
 
@@ -31,6 +40,44 @@ public class CDSCommonUtils {
     private static final String HMACSHA256 = "HmacSHA256";
 
     private static final Log LOG = LogFactory.getLog(CDSCommonUtils.class);
+
+    /**
+     * Method to retrieve the request URI key from the request URI.
+     *
+     * @param requestUri request URI
+     * @return request URI key
+     */
+    public static String getRequestUriKey(String requestUri) {
+
+        if (StringUtils.isBlank(requestUri)) {
+            LOG.error("Request URI not found.");
+            return null;
+        }
+
+        String[] uriParts = requestUri.split(":");
+        String requestUriKey = uriParts[uriParts.length - 1];
+
+        return StringUtils.isBlank(requestUriKey) ? null : requestUriKey;
+    }
+
+    /**
+     * Returns the request URI key after retrieving from the spQueryParams.
+     *
+     * @param spQueryParams query params
+     * @return request URI key
+     */
+    public static String getRequestUriKeyFromQueryParams(String spQueryParams) {
+
+        List<NameValuePair> params = URLEncodedUtils.parse(spQueryParams, StandardCharsets.UTF_8);
+
+        for (NameValuePair param : params) {
+            if (CommonConstants.REQUEST_URI.equals(param.getName())) {
+                return getRequestUriKey(param.getValue());
+            }
+        }
+
+        return null;
+    }
 
     /**
      * Encrypt access token using HmacSHA256.
@@ -55,5 +102,75 @@ public class CDSCommonUtils {
             return null;
         }
         return accessToken;
+    }
+
+    /**
+     * Returns the type of consent duration based on the sharing duration value.
+     *
+     * @param sharingDurationValue sharing duration value
+     * @return consent duration type
+     */
+    public static ConsentDurationTypeEnum getConsentDurationType(String sharingDurationValue) {
+
+        if (StringUtils.isEmpty(sharingDurationValue)) {
+            return ConsentDurationTypeEnum.ONCE_OFF;
+        }
+
+        try {
+            long sharingDurationInSeconds = Long.parseLong(sharingDurationValue.trim());
+            if (sharingDurationInSeconds <= CommonConstants.ONE_DAY_IN_SECONDS) {
+                return ConsentDurationTypeEnum.ONCE_OFF;
+            }
+        } catch (NumberFormatException e) {
+            LOG.error("Error when converting sharing duration to a number.", e);
+        }
+
+        return ConsentDurationTypeEnum.ONGOING;
+    }
+
+    /**
+     * Generate abandoned consent flow data map.
+     *
+     * @param requestUriKey request uri key
+     * @param consentId     consent id
+     * @param stage         consent flow stage
+     * @return abandoned consent flow data map
+     */
+    public static Map<String, Object> generateAbandonedConsentFlowDataMap(String requestUriKey, String consentId,
+                                                                          AuthorisationStageEnum stage) {
+
+        Map<String, Object> abandonedConsentFlowDataMap = new HashMap<>();
+
+        abandonedConsentFlowDataMap.put("requestUriKey", requestUriKey);
+        abandonedConsentFlowDataMap.put("consentId", consentId);
+        abandonedConsentFlowDataMap.put("stage", stage.toString());
+        abandonedConsentFlowDataMap.put("timestamp", Instant.now().toEpochMilli());
+        return abandonedConsentFlowDataMap;
+    }
+
+    /**
+     * Generate authorisation data map.
+     *
+     * @param consentId           consent id
+     * @param consentStatus       consent status
+     * @param authFlowType        authorisation flow type
+     * @param customerProfile     customer profile
+     * @param consentDurationType consent duration type
+     * @return authorisation data map
+     */
+    public static Map<String, Object> generateAuthorisationDataMap(String consentId, ConsentStatusEnum consentStatus,
+                                                                   AuthorisationFlowTypeEnum authFlowType,
+                                                                   String customerProfile,
+                                                                   ConsentDurationTypeEnum consentDurationType) {
+
+        Map<String, Object> authorisationDataMap = new HashMap<>();
+
+        authorisationDataMap.put("consentId", consentId);
+        authorisationDataMap.put("consentStatus", consentStatus.toString());
+        authorisationDataMap.put("authFlowType", authFlowType.toString());
+        authorisationDataMap.put("customerProfile", customerProfile);
+        authorisationDataMap.put("consentDurationType", consentDurationType.toString());
+        authorisationDataMap.put("timestamp", Instant.now().toEpochMilli());
+        return authorisationDataMap;
     }
 }

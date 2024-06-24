@@ -209,6 +209,13 @@ password = "${admin.password}"
 'header.X-WSO2-KEY-MANAGER' = "WSO2-IS"
 
 [[event_listener]]
+id = "cds_token_issue_listener"
+type = "org.wso2.carbon.identity.core.handler.AbstractIdentityHandler"
+name = "com.wso2.openbanking.cds.identity.listener.CDSTokenIssueListener"
+order = "892"
+enable = true
+
+[[event_listener]]
 id = "ob_token_revocation_listener"
 type = "org.wso2.carbon.identity.core.handler.AbstractIdentityHandler"
 name = "com.wso2.openbanking.accelerator.identity.listener.TokenRevocationListener"
@@ -508,6 +515,10 @@ read_timeout = 3000
 [[open_banking.dcr.regulatory_issuers.iss]]
 name = "cdr-register"
 
+[[open_banking.identity.authentication.worker]]
+name = "publishAbandonedConsentFlowData"
+class = "com.wso2.openbanking.cds.consent.extensions.authorize.worker.AbandonedConsentFlowDataPublisherWorker"
+
 #Signature algorithm types that are allowed
 #[[open_banking.signature_validation.allowed_algorithms]]
 #name = "PS256"
@@ -673,6 +684,49 @@ required=true
 type="long"
 [[open_banking.data_publishing.thrift.stream.attributes]]
 name="responseMediationLatency"
+priority=6
+required=true
+type="long"
+
+[[open_banking.data_publishing.thrift.stream]]
+name="AbandonedConsentFlowMetricsInputStream"
+[[open_banking.data_publishing.thrift.stream.attributes]]
+name="requestUriKey"
+priority=1
+required=true
+[[open_banking.data_publishing.thrift.stream.attributes]]
+name="consentId"
+priority=2
+[[open_banking.data_publishing.thrift.stream.attributes]]
+name="stage"
+priority=3
+required=true
+[[open_banking.data_publishing.thrift.stream.attributes]]
+name="timestamp"
+priority=4
+required=true
+type="long"
+
+[[open_banking.data_publishing.thrift.stream]]
+name="AuthorisationMetricsInputStream"
+[[open_banking.data_publishing.thrift.stream.attributes]]
+name="consentId"
+priority=1
+required=true
+[[open_banking.data_publishing.thrift.stream.attributes]]
+name="consentStatus"
+priority=2
+[[open_banking.data_publishing.thrift.stream.attributes]]
+name="authFlowType"
+priority=3
+[[open_banking.data_publishing.thrift.stream.attributes]]
+name="customerProfile"
+priority=4
+[[open_banking.data_publishing.thrift.stream.attributes]]
+name="consentDurationType"
+priority=5
+[[open_banking.data_publishing.thrift.stream.attributes]]
+name="timestamp"
 priority=6
 required=true
 type="long"

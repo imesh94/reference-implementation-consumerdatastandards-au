@@ -22,6 +22,10 @@ import com.wso2.openbanking.accelerator.consent.mgt.dao.models.ConsentResource;
 import com.wso2.openbanking.accelerator.consent.mgt.dao.models.DetailedConsentResource;
 import com.wso2.openbanking.accelerator.consent.mgt.service.constants.ConsentCoreServiceConstants;
 import com.wso2.openbanking.accelerator.consent.mgt.service.impl.ConsentCoreServiceImpl;
+import com.wso2.openbanking.cds.common.data.publisher.CDSDataPublishingService;
+import com.wso2.openbanking.cds.common.enums.AuthorisationStageEnum;
+import com.wso2.openbanking.cds.common.utils.CDSCommonUtils;
+import com.wso2.openbanking.cds.common.utils.CommonConstants;
 import com.wso2.openbanking.cds.consent.extensions.authorize.impl.model.AccountConsentRequest;
 import com.wso2.openbanking.cds.consent.extensions.authorize.utils.CDSConsentCommonUtil;
 import com.wso2.openbanking.cds.consent.extensions.authorize.utils.CDSDataRetrievalUtil;
@@ -210,6 +214,8 @@ public class CDSConsentPersistStep implements ConsentPersistStep {
                         "Exception occurred while persisting consent");
             }
         }
+
+        publishConsentApprovalStatus(consentPersistData);
     }
 
     @Generated(message = "Excluding from code coverage since it requires a service call")
@@ -284,6 +290,8 @@ public class CDSConsentPersistStep implements ConsentPersistStep {
 
         Map<String, String> consentAttributes = new HashMap<>();
 
+        consentAttributes.put(CommonConstants.REQUEST_URI_KEY, consentData.getMetaDataMap()
+                .get(CommonConstants.REQUEST_URI_KEY).toString());
         consentAttributes.put(CDSConsentExtensionConstants.COMMON_AUTH_ID,
                 consentPersistData.getBrowserCookies().get(CDSConsentExtensionConstants.COMMON_AUTH_ID));
         consentAttributes.put(CDSConsentExtensionConstants.SHARING_DURATION_VALUE, consentData.getMetaDataMap()
@@ -568,5 +576,32 @@ public class CDSConsentPersistStep implements ConsentPersistStep {
             throw new ConsentException(ResponseStatus.INTERNAL_SERVER_ERROR, "Error while activating account " +
                     "mappings for the consent");
         }
+    }
+
+    /**
+     * Publishes consent approval or denial data for abandoned consent flow metrics.
+     *
+     * @param consentPersistData consent persist data
+     */
+    private void publishConsentApprovalStatus(ConsentPersistData consentPersistData) {
+
+        AuthorisationStageEnum stageEnum;
+        if (consentPersistData.getApproval()) {
+            stageEnum = AuthorisationStageEnum.CONSENT_APPROVED;
+        } else {
+            stageEnum = AuthorisationStageEnum.CONSENT_REJECTED;
+        }
+
+        ConsentData consentData = consentPersistData.getConsentData();
+        String requestUriKey = CDSCommonUtils.getRequestUriKeyFromQueryParams(consentData.getSpQueryParams());
+
+        Map<String, Object> abandonedConsentFlowData = CDSCommonUtils
+                .generateAbandonedConsentFlowDataMap(
+                        requestUriKey,
+                        consentData.getConsentId(),
+                        stageEnum);
+
+        CDSDataPublishingService.getCDSDataPublishingService()
+                .publishAbandonedConsentFlowData(abandonedConsentFlowData);
     }
 }

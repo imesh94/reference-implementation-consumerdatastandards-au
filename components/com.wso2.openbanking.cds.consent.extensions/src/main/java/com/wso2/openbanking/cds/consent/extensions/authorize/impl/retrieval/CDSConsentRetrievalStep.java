@@ -18,6 +18,8 @@ import com.wso2.openbanking.accelerator.consent.mgt.dao.models.AuthorizationReso
 import com.wso2.openbanking.accelerator.consent.mgt.dao.models.ConsentMappingResource;
 import com.wso2.openbanking.accelerator.consent.mgt.dao.models.DetailedConsentResource;
 import com.wso2.openbanking.accelerator.consent.mgt.service.impl.ConsentCoreServiceImpl;
+import com.wso2.openbanking.cds.common.utils.CDSCommonUtils;
+import com.wso2.openbanking.cds.common.utils.CommonConstants;
 import com.wso2.openbanking.cds.consent.extensions.authorize.utils.CDSConsentCommonUtil;
 import com.wso2.openbanking.cds.consent.extensions.authorize.utils.CDSDataRetrievalUtil;
 import com.wso2.openbanking.cds.consent.extensions.common.CDSConsentExtensionConstants;
@@ -61,6 +63,10 @@ public class CDSConsentRetrievalStep implements ConsentRetrievalStep {
     public void execute(ConsentData consentData, JSONObject jsonObject) throws ConsentException {
 
         if (consentData.isRegulatory()) {
+            String requestUriKey = CDSCommonUtils.getRequestUriKeyFromQueryParams(consentData.getSpQueryParams());
+            consentData.getMetaDataMap().put(CommonConstants.REQUEST_URI_KEY, requestUriKey);
+            jsonObject.appendField(CommonConstants.REQUEST_URI_KEY, requestUriKey);
+
             String requestObject = CDSDataRetrievalUtil.extractRequestObject(consentData.getSpQueryParams());
             Map<String, Object> requiredData = extractRequiredDataFromRequestObject(requestObject);
             boolean isConsentAmendment = false;

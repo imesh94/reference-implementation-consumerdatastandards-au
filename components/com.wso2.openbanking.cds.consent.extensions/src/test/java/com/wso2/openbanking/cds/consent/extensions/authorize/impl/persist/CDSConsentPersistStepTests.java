@@ -19,14 +19,17 @@ import com.wso2.openbanking.accelerator.consent.mgt.dao.models.AuthorizationReso
 import com.wso2.openbanking.accelerator.consent.mgt.dao.models.ConsentResource;
 import com.wso2.openbanking.accelerator.consent.mgt.dao.models.DetailedConsentResource;
 import com.wso2.openbanking.accelerator.consent.mgt.service.impl.ConsentCoreServiceImpl;
+import com.wso2.openbanking.accelerator.data.publisher.common.util.OBDataPublisherUtil;
 import com.wso2.openbanking.cds.consent.extensions.authorize.utils.CDSConsentCommonUtil;
 import com.wso2.openbanking.cds.consent.extensions.common.CDSConsentExtensionConstants;
 import com.wso2.openbanking.cds.consent.extensions.util.CDSConsentAuthorizeTestConstants;
 import net.minidev.json.JSONObject;
 import net.minidev.json.parser.JSONParser;
+import org.mockito.Mockito;
 import org.powermock.api.mockito.PowerMockito;
 import org.powermock.core.classloader.annotations.PowerMockIgnore;
 import org.powermock.core.classloader.annotations.PrepareForTest;
+import org.powermock.modules.testng.PowerMockTestCase;
 import org.testng.Assert;
 import org.testng.annotations.BeforeClass;
 import org.testng.annotations.BeforeMethod;
@@ -51,9 +54,9 @@ import static org.mockito.Mockito.when;
 /**
  * Test class for CDS Consent Persistence.
  */
-@PrepareForTest({CDSConsentCommonUtil.class})
+@PrepareForTest({CDSConsentCommonUtil.class, OBDataPublisherUtil.class})
 @PowerMockIgnore({"com.wso2.openbanking.accelerator.consent.extensions.common.*", "jdk.internal.reflect.*"})
-public class CDSConsentPersistStepTests {
+public class CDSConsentPersistStepTests extends PowerMockTestCase {
 
     private static CDSConsentPersistStep cdsConsentPersistStep;
     private static ConsentPersistData consentPersistDataMock;
@@ -72,8 +75,9 @@ public class CDSConsentPersistStepTests {
         browserCookies.put("commonAuthId", "DummyCommonAuthId");
         consentDataMap.put("permissions",
                 new ArrayList<>(Arrays.asList(CDSConsentAuthorizeTestConstants.PERMISSION_SCOPES.split(" "))));
-        consentDataMap.put("expirationDateTime",  OffsetDateTime.now(ZoneOffset.UTC));
+        consentDataMap.put("expirationDateTime", OffsetDateTime.now(ZoneOffset.UTC));
         consentDataMap.put("sharing_duration_value", (long) 7600000);
+        consentDataMap.put("requestUriKey", "abc123");
         cdsConsentPersistStep = new CDSConsentPersistStep();
         consentPersistDataMock = mock(ConsentPersistData.class);
         consentDataMock = mock(ConsentData.class);
@@ -83,15 +87,19 @@ public class CDSConsentPersistStepTests {
     }
 
     @BeforeMethod
-    public void initMethod() {
+    public void initMethod() throws Exception {
         PowerMockito.mockStatic(CDSConsentCommonUtil.class);
         when(CDSConsentCommonUtil.getUserIdWithTenantDomain(anyString())).thenReturn("user1@wso2.com@carbon.super");
+
+        PowerMockito.mockStatic(OBDataPublisherUtil.class);
+        PowerMockito.doNothing().when(OBDataPublisherUtil.class, "publishData", Mockito.anyString(),
+                Mockito.anyString(), Mockito.anyObject());
     }
 
     @Test
     public void testConsentPersistWithApproval() throws Exception {
 
-        ArrayList<AuthorizationResource>  authorizationResources = new ArrayList<>();
+        ArrayList<AuthorizationResource> authorizationResources = new ArrayList<>();
         authorizationResources.add(authorizationResourceMock);
         doReturn(consentDataMock).when(consentPersistDataMock).getConsentData();
         doReturn(consentDataMap).when(consentDataMock).getMetaDataMap();

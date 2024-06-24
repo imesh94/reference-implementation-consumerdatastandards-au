@@ -20,6 +20,10 @@ import com.wso2.openbanking.accelerator.identity.util.HTTPClientUtils;
 import com.wso2.openbanking.accelerator.identity.util.IdentityCommonHelper;
 import com.wso2.openbanking.cds.common.config.OpenBankingCDSConfigParser;
 import com.wso2.openbanking.cds.common.data.publisher.CDSDataPublishingService;
+import com.wso2.openbanking.cds.common.enums.AuthorisationFlowTypeEnum;
+import com.wso2.openbanking.cds.common.enums.ConsentDurationTypeEnum;
+import com.wso2.openbanking.cds.common.enums.ConsentStatusEnum;
+import com.wso2.openbanking.cds.common.utils.CDSCommonUtils;
 import com.wso2.openbanking.cds.common.utils.CommonConstants;
 import com.wso2.openbanking.cds.consent.extensions.common.CDSConsentExtensionConstants;
 import com.wso2.openbanking.cds.identity.utils.CDSIdentityUtil;
@@ -59,7 +63,9 @@ public class CDSConsentEventExecutor implements OBEventExecutor {
     private CDSDataPublishingService dataPublishingService = CDSDataPublishingService.getCDSDataPublishingService();
     private static final String DATA_RECIPIENT_CDR_ARRANGEMENT_REVOCATION_PATH = "/arrangements/revoke";
     private static final String REVOKED_STATE = "revoked";
+    private static final String EXPIRED_STATE = "expired";
     private static final String AUTHORIZED_STATE = "authorized";
+    private static final String AMENDED_STATE = "amended";
     private static final String REASON = "Reason";
     private static final String CLIENT_ID = "ClientId";
     private static final String CONSENT_ID = "ConsentId";
@@ -100,6 +106,13 @@ public class CDSConsentEventExecutor implements OBEventExecutor {
             }
         }
 
+        HashMap<String, Object> consentDataMap = (HashMap<String, Object>) eventData
+                .get(CONSENT_DATA_MAP);
+        ConsentResource consentResource = (ConsentResource) consentDataMap
+                .get(CONSENT_RESOURCE);
+        DetailedConsentResource detailedConsentResource = (DetailedConsentResource) consentDataMap
+                .get(DETAILED_CONSENT_RESOURCE);
+
         // Publish consent data for metrics.
         if (REVOKED_STATE.equalsIgnoreCase(obEvent.getEventType()) ||
                 AUTHORIZED_STATE.equalsIgnoreCase(obEvent.getEventType())) {
@@ -113,13 +126,10 @@ public class CDSConsentEventExecutor implements OBEventExecutor {
 
             long expiryTime;
             if (AUTHORIZED_STATE.equalsIgnoreCase(obEvent.getEventType())) {
-                HashMap<String, Object> consentDataMap = (HashMap<String, Object>) eventData.get(CONSENT_DATA_MAP);
-                if (consentDataMap.containsKey(CONSENT_RESOURCE) && consentDataMap.get(CONSENT_RESOURCE) != null) {
-                    expiryTime = ((ConsentResource) consentDataMap.get(CONSENT_RESOURCE)).getValidityPeriod();
-                } else if (consentDataMap.containsKey(DETAILED_CONSENT_RESOURCE) &&
-                        consentDataMap.get(DETAILED_CONSENT_RESOURCE) != null) {
-                    expiryTime = ((DetailedConsentResource) consentDataMap.get(DETAILED_CONSENT_RESOURCE))
-                            .getValidityPeriod();
+                if (consentResource != null) {
+                    expiryTime = consentResource.getValidityPeriod();
+                } else if (detailedConsentResource != null) {
+                    expiryTime = detailedConsentResource.getValidityPeriod();
                 } else {
                     expiryTime = OffsetDateTime.now(ZoneOffset.UTC).toEpochSecond();
                 }
@@ -128,6 +138,38 @@ public class CDSConsentEventExecutor implements OBEventExecutor {
             }
             consentData.put(EXPIRY_TIME_KEY, expiryTime);
             dataPublishingService.publishConsentData(consentData);
+        }
+
+        // Publish consent data for authorisation metrics.
+        if (AUTHORIZED_STATE.equalsIgnoreCase(obEvent.getEventType()) ||
+                AMENDED_STATE.equalsIgnoreCase(obEvent.getEventType()) ||
+                REVOKED_STATE.equalsIgnoreCase(obEvent.getEventType()) ||
+                EXPIRED_STATE.equalsIgnoreCase(obEvent.getEventType())) {
+
+            log.debug("Publishing consent data for authorisation metrics.");
+            String consentId = (String) eventData.get(CONSENT_ID);
+            ConsentStatusEnum consentStatus = getConsentStatusForEventType(obEvent.getEventType());
+            AuthorisationFlowTypeEnum authFlowType = getAuthFlowTypeForEventType(obEvent.getEventType());
+
+            String customerProfile = null;
+            String sharingDuration = null;
+            if (consentResource != null) {
+                customerProfile = consentResource.getConsentAttributes()
+                        .get(CDSConsentExtensionConstants.CUSTOMER_PROFILE_TYPE);
+                sharingDuration = consentResource.getConsentAttributes()
+                        .get(CDSConsentExtensionConstants.SHARING_DURATION_VALUE);
+            } else if (detailedConsentResource != null) {
+                customerProfile = detailedConsentResource.getConsentAttributes()
+                        .get(CDSConsentExtensionConstants.CUSTOMER_PROFILE_TYPE);
+                sharingDuration = detailedConsentResource.getConsentAttributes()
+                        .get(CDSConsentExtensionConstants.SHARING_DURATION_VALUE);
+            }
+            ConsentDurationTypeEnum consentDurationType = CDSCommonUtils.getConsentDurationType(sharingDuration);
+
+            Map<String, Object> authorisationData = CDSCommonUtils.generateAuthorisationDataMap(consentId,
+                    consentStatus, authFlowType, customerProfile, consentDurationType);
+
+            dataPublishingService.publishAuthorisationData(authorisationData);
         }
 
     }
@@ -304,5 +346,27 @@ public class CDSConsentEventExecutor implements OBEventExecutor {
         long jti = Long.parseLong(jwtPayload.get(CommonConstants.JTI_CLAIM).toString());
         jwtPayload.put(CommonConstants.JTI_CLAIM, Long.toString(jti + 100));
         return generateJWT(jwtPayload.toString(), SignatureAlgorithm.PS256);
+    }
+
+    private ConsentStatusEnum getConsentStatusForEventType(String eventType) {
+
+        if (eventType.equalsIgnoreCase(REVOKED_STATE)) {
+            return ConsentStatusEnum.REVOKED;
+        } else if (eventType.equalsIgnoreCase(EXPIRED_STATE)) {
+            return ConsentStatusEnum.EXPIRED;
+        } else {
+            return ConsentStatusEnum.AUTHORISED;
+        }
+    }
+
+    private AuthorisationFlowTypeEnum getAuthFlowTypeForEventType(String eventType) {
+
+        if (eventType.equalsIgnoreCase(AUTHORIZED_STATE)) {
+            return AuthorisationFlowTypeEnum.CONSENT_AUTHORISATION;
+        } else if (eventType.equalsIgnoreCase(AMENDED_STATE)) {
+            return AuthorisationFlowTypeEnum.CONSENT_AMENDMENT_AUTHORISATION;
+        } else {
+            return AuthorisationFlowTypeEnum.UNCLASSIFIED;
+        }
     }
 }

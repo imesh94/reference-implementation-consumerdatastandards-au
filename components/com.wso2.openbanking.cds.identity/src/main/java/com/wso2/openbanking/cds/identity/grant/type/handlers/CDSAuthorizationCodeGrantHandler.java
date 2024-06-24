@@ -1,22 +1,26 @@
 /*
- * Copyright (c) 2021, WSO2 Inc. (http://www.wso2.com). All Rights Reserved.
+ * Copyright (c) 2021-2024, WSO2 LLC. (https://www.wso2.com). All Rights Reserved.
  *
- * This software is the property of WSO2 Inc. and its suppliers, if any.
+ * This software is the property of WSO2 LLC. and its suppliers, if any.
  * Dissemination of any information or reproduction of any material contained
- * herein is strictly forbidden, unless permitted by WSO2 in accordance with
- * the WSO2 Software License available at https://wso2.com/licenses/eula/3.1. For specific
- * language governing the permissions and limitations under this license,
- * please see the license as well as any agreement you’ve entered into with
- * WSO2 governing the purchase of this software and any associated services.
+ * herein in any form is strictly forbidden, unless permitted by WSO2 expressly.
+ * You may not alter or remove any copyright or other notice from copies of this content.
+ *
  */
 
 package com.wso2.openbanking.cds.identity.grant.type.handlers;
 
+import com.wso2.openbanking.accelerator.common.exception.ConsentManagementException;
 import com.wso2.openbanking.accelerator.common.exception.OpenBankingException;
 import com.wso2.openbanking.accelerator.common.util.Generated;
+import com.wso2.openbanking.accelerator.consent.mgt.dao.models.ConsentAttributes;
+import com.wso2.openbanking.accelerator.consent.mgt.service.impl.ConsentCoreServiceImpl;
 import com.wso2.openbanking.accelerator.identity.grant.type.handlers.OBAuthorizationCodeGrantHandler;
 import com.wso2.openbanking.accelerator.identity.util.IdentityCommonUtil;
 import com.wso2.openbanking.cds.common.data.publisher.CDSDataPublishingService;
+import com.wso2.openbanking.cds.common.enums.AuthorisationStageEnum;
+import com.wso2.openbanking.cds.common.utils.CDSCommonUtils;
+import com.wso2.openbanking.cds.common.utils.CommonConstants;
 import com.wso2.openbanking.cds.identity.grant.type.handlers.utils.CDSGrantHandlerUtil;
 import com.wso2.openbanking.cds.identity.utils.CDSIdentityUtil;
 import org.apache.commons.logging.Log;
@@ -35,13 +39,23 @@ import java.util.Map;
 public class CDSAuthorizationCodeGrantHandler extends OBAuthorizationCodeGrantHandler {
 
     private static Log log = LogFactory.getLog(CDSAuthorizationCodeGrantHandler.class);
+    private final ConsentCoreServiceImpl consentCoreService;
     private CDSDataPublishingService dataPublishingService = CDSDataPublishingService.getCDSDataPublishingService();
+
+    public CDSAuthorizationCodeGrantHandler() {
+        this.consentCoreService = new ConsentCoreServiceImpl();
+    }
+
+    public CDSAuthorizationCodeGrantHandler(ConsentCoreServiceImpl consentCoreService) {
+        this.consentCoreService = consentCoreService;
+    }
 
     /**
      * Set refresh token validity period and add cdr_arrangement_id.
      *
-     * @param oAuth2AccessTokenRespDTO
-     * @param tokReqMsgCtx
+     * @param oAuth2AccessTokenRespDTO - OAuth2 Access Token Response DTO
+     * @param tokReqMsgCtx             - Token Request Message Context
+     * @throws IdentityOAuth2Exception - Identity OAuth2 Exception
      */
     @Override
     public void executeInitialStep(OAuth2AccessTokenRespDTO oAuth2AccessTokenRespDTO,
@@ -64,6 +78,22 @@ public class CDSAuthorizationCodeGrantHandler extends OBAuthorizationCodeGrantHa
         Map<String, Object> tokenData = new HashMap<>();
         tokenData.put("accessTokenID", CDSGrantHandlerUtil.retrieveAccessToken(oAuth2AccessTokenRespDTO));
         dataPublishingService.publishUserAccessTokenData(tokenData);
+
+        try {
+            String cdrArrangementId = oAuth2AccessTokenRespDTO.getParameter(CommonConstants.CDR_ARRANGEMENT_ID);
+            ConsentAttributes consentAttributes = consentCoreService.getConsentAttributes(cdrArrangementId);
+            String requestUriKey = consentAttributes.getConsentAttributes().get(CommonConstants.REQUEST_URI_KEY);
+
+            Map<String, Object> abandonedConsentFlowData = CDSCommonUtils
+                    .generateAbandonedConsentFlowDataMap(
+                            requestUriKey,
+                            cdrArrangementId,
+                            AuthorisationStageEnum.COMPLETED);
+
+            dataPublishingService.publishAbandonedConsentFlowData(abandonedConsentFlowData);
+        } catch (ConsentManagementException e) {
+            log.error("Error while retrieving request URI from consent attributes", e);
+        }
     }
 
     /**

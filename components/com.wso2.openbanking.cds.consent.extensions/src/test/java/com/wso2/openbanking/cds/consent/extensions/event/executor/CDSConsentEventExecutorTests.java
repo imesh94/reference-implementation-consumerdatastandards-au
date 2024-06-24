@@ -12,6 +12,8 @@ package com.wso2.openbanking.cds.consent.extensions.event.executor;
 
 import com.wso2.openbanking.accelerator.common.event.executor.model.OBEvent;
 import com.wso2.openbanking.accelerator.common.exception.OpenBankingException;
+import com.wso2.openbanking.accelerator.consent.mgt.dao.models.ConsentResource;
+import com.wso2.openbanking.accelerator.consent.mgt.dao.models.DetailedConsentResource;
 import com.wso2.openbanking.accelerator.data.publisher.common.util.OBDataPublisherUtil;
 import com.wso2.openbanking.accelerator.identity.util.HTTPClientUtils;
 import com.wso2.openbanking.cds.common.config.OpenBankingCDSConfigParser;
@@ -90,6 +92,23 @@ public class CDSConsentEventExecutorTests extends PowerMockTestCase {
         eventData.put("ConsentId", "dummyConsentId");
         eventData.put("ClientId", "dummyClientId");
 
+        HashMap<String, Object> consentDataMap = new HashMap<>();
+
+        HashMap<String, String> consentAttributes = new HashMap<>();
+        consentAttributes.put("customerProfileType", "individual-profile");
+        consentAttributes.put("sharing_duration_value", "6000");
+
+        ConsentResource consentResource = new ConsentResource();
+        consentResource.setConsentAttributes(consentAttributes);
+
+        DetailedConsentResource detailedConsentResource = new DetailedConsentResource();
+        detailedConsentResource.setConsentAttributes(consentAttributes);
+
+        consentDataMap.put("ConsentResource", consentResource);
+        consentDataMap.put("DetailedConsentResource", detailedConsentResource);
+
+        eventData.put("ConsentDataMap", consentDataMap);
+
         OBEvent obEvent = new OBEvent("revoked", eventData);
 
         doNothing().when(cdsConsentEventExecutorSpy).sendArrangementRevocationRequestToADR(Mockito.anyString(),
@@ -122,6 +141,23 @@ public class CDSConsentEventExecutorTests extends PowerMockTestCase {
         eventData.put("Reason", "Revoke the consent from dashboard");
         eventData.put("ConsentId", "dummyConsentId");
         eventData.put("ClientId", "dummyClientId");
+
+        HashMap<String, Object> consentDataMap = new HashMap<>();
+
+        HashMap<String, String> consentAttributes = new HashMap<>();
+        consentAttributes.put("customerProfileType", "individual-profile");
+        consentAttributes.put("sharing_duration_value", "6000");
+
+        ConsentResource consentResource = new ConsentResource();
+        consentResource.setConsentAttributes(consentAttributes);
+
+        DetailedConsentResource detailedConsentResource = new DetailedConsentResource();
+        detailedConsentResource.setConsentAttributes(consentAttributes);
+
+        consentDataMap.put("ConsentResource", consentResource);
+        consentDataMap.put("DetailedConsentResource", detailedConsentResource);
+
+        eventData.put("ConsentDataMap", consentDataMap);
 
         OBEvent obEvent = new OBEvent("revoked", eventData);
 
