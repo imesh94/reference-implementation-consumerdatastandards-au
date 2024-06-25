@@ -1,13 +1,10 @@
 /*
- * Copyright (c) 2021, WSO2 Inc. (http://www.wso2.com). All Rights Reserved.
+ * Copyright (c) 2021-2024, WSO2 LLC. (https://www.wso2.com). All Rights Reserved.
  *
- * This software is the property of WSO2 Inc. and its suppliers, if any.
+ * This software is the property of WSO2 LLC. and its suppliers, if any.
  * Dissemination of any information or reproduction of any material contained
- * herein is strictly forbidden, unless permitted by WSO2 in accordance with
- * the WSO2 Software License available at https://wso2.com/licenses/eula/3.1. For specific
- * language governing the permissions and limitations under this license,
- * please see the license as well as any agreement you’ve entered into with
- * WSO2 governing the purchase of this software and any associated services.
+ * herein in any form is strictly forbidden, unless permitted by WSO2 expressly.
+ * You may not alter or remove any copyright or other notice from copies of this content.
  */
 
 package com.wso2.openbanking.cds.identity.filter;
@@ -104,19 +101,22 @@ public class InfoSecDataPublishingFilter implements Filter {
 
         Map<String, Object> requestData = new HashMap<>();
         String contentLength = response.getHeader(CDSFilterConstants.CONTENT_LENGTH);
-        String consentId = null;
 
-        // Get consent id from the access token
-        String token = request.getHeader("authorization").split(" ")[1];
-        try {
-            SignedJWT signedJWT = SignedJWT.parse(token);
-            JSONObject jsonObject = signedJWT.getJWTClaimsSet().toJSONObject();
-            consentId = (String) jsonObject.get("consent_id");
-        } catch (ParseException e) {
-            LOG.error("Error while parsing the JWT token", e);
+        if (request.getHeader("authorization") != null) {
+            String consentId = null;
+
+            // Get consent id from the access token
+            String token = request.getHeader("authorization").split(" ")[1];
+            try {
+                SignedJWT signedJWT = SignedJWT.parse(token);
+                JSONObject jsonObject = signedJWT.getJWTClaimsSet().toJSONObject();
+                consentId = (String) jsonObject.get("consent_id");
+            } catch (ParseException e) {
+                LOG.error("Error while parsing the JWT token", e);
+            }
+            requestData.put("consentId", consentId);
         }
 
-        requestData.put("consentId", consentId);
         requestData.put("clientId", extractClientId(request));
         // consumerId is not required for metrics calculations, hence publishing as null
         requestData.put("consumerId", null);
