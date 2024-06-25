@@ -365,11 +365,7 @@
         if (request.getAttribute(attributeName) != null) {
             return String.valueOf(request.getAttribute(attributeName));
         } else {
-            if (request.getParameter(attributeName) != null) {
-                return String.valueOf(request.getParameter(attributeName));
-            } else {
-                return null;
-            }
+            return request.getParameter(attributeName);
         }
     }
 %>
