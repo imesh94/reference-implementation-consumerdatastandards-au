@@ -191,7 +191,7 @@ public class CDSBasePrivateKeyJWTClientAuthenticator extends AbstractOAuthClient
      * @throws OAuthClientAuthnException - if the client_id does not match the 'sub' claim in the client_assertion
      */
     private void validateClientIdAgainstSubClaim(HttpServletRequest httpServletRequest,
-                                                 Map<String, List> bodyParameters, OAuthClientAuthnContext oAuthClientAuthnContext)
+         Map<String, List> bodyParameters, OAuthClientAuthnContext oAuthClientAuthnContext)
             throws OAuthClientAuthnException {
 
         if (httpServletRequest.getParameter(Constants.CLIENT_ID) != null) {
