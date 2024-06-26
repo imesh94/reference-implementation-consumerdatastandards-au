@@ -47,7 +47,10 @@ public class MetricsServiceUtilTest {
         model.setUnauthenticatedAvailability(createBigDecimalList(numberOfEntries));
 
         model.setErrors(createIntegerList(numberOfEntries));
+
         model.setPeakTPS(createBigDecimalList(numberOfEntries));
+        model.setAuthenticatedPeakTPS(createBigDecimalList(numberOfEntries));
+        model.setUnauthenticatedPeakTPS(createBigDecimalList(numberOfEntries));
 
         model.setAverageTPS(createBigDecimalList(numberOfEntries));
         model.setAuthenticatedAverageTPS(createBigDecimalList(numberOfEntries));
@@ -97,7 +100,10 @@ public class MetricsServiceUtilTest {
         assertEquals(currentDayMetrics.getUnauthenticatedAvailability().size(), TOTAL_DAYS);
 
         assertEquals(currentDayMetrics.getErrors().size(), TOTAL_DAYS);
+
         assertEquals(currentDayMetrics.getPeakTPS().size(), TOTAL_DAYS);
+        assertEquals(currentDayMetrics.getAuthenticatedPeakTPS().size(), TOTAL_DAYS);
+        assertEquals(currentDayMetrics.getUnauthenticatedPeakTPS().size(), TOTAL_DAYS);
 
         assertEquals(currentDayMetrics.getAverageTPS().size(), TOTAL_DAYS);
         assertEquals(currentDayMetrics.getAuthenticatedAverageTPS().size(), TOTAL_DAYS);

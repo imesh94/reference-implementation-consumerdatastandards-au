@@ -78,10 +78,10 @@ public interface MetricsProcessor {
     /**
      * Get peak TPS metrics.
      *
-     * @return List of peak TPS metrics
+     * @return Map of peak TPS metrics
      * @throws OpenBankingException - OpenBankingException
      */
-    List<BigDecimal> getPeakTPSMetrics() throws OpenBankingException;
+    Map<AspectEnum, List<BigDecimal>> getPeakTPSMetrics() throws OpenBankingException;
 
     /**
      * Get error metrics.

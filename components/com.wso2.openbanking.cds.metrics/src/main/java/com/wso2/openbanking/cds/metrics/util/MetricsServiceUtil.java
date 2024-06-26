@@ -32,11 +32,11 @@ public class MetricsServiceUtil {
 
         currentDayMetrics.getPerformance().addAll(historicMetrics.getPerformance());
         currentDayMetrics.getSessionCount().addAll(historicMetrics.getSessionCount());
-        currentDayMetrics.getPeakTPS().addAll(historicMetrics.getPeakTPS());
         currentDayMetrics.getErrors().addAll(historicMetrics.getErrors());
         appendAvailabilityMetrics(currentDayMetrics, historicMetrics);
         appendInvocationMetrics(currentDayMetrics, historicMetrics);
         appendAverageTPSMetrics(currentDayMetrics, historicMetrics);
+        appendPeakTPSMetrics(currentDayMetrics, historicMetrics);
         appendAverageResponseMetrics(currentDayMetrics, historicMetrics);
         appendRejectionMetrics(currentDayMetrics, historicMetrics);
     }
@@ -83,6 +83,20 @@ public class MetricsServiceUtil {
         currentDayMetrics.getAverageTPS().addAll(historicMetrics.getAverageTPS());
         currentDayMetrics.getAuthenticatedAverageTPS().addAll(historicMetrics.getAuthenticatedAverageTPS());
         currentDayMetrics.getUnauthenticatedAverageTPS().addAll(historicMetrics.getUnauthenticatedAverageTPS());
+    }
+
+    /**
+     * Append historic peak TPS metrics to current day peak TPS metrics.
+     *
+     * @param currentDayMetrics - current day metrics
+     * @param historicMetrics   - historic metrics
+     */
+    private static void appendPeakTPSMetrics(
+            MetricsResponseModel currentDayMetrics, MetricsResponseModel historicMetrics) {
+
+        currentDayMetrics.getPeakTPS().addAll(historicMetrics.getPeakTPS());
+        currentDayMetrics.getAuthenticatedPeakTPS().addAll(historicMetrics.getAuthenticatedPeakTPS());
+        currentDayMetrics.getUnauthenticatedPeakTPS().addAll(historicMetrics.getUnauthenticatedPeakTPS());
     }
 
     /**

@@ -147,10 +147,22 @@ public class MetricsV5ProcessorImplTest extends PowerMockTestCase {
     @Test
     public void testGetPeakTPSMetrics() throws Exception {
 
-        List<BigDecimal> peakTPSMetrics = metricsV5Processor.getPeakTPSMetrics();
-        Assert.assertNotNull(peakTPSMetrics, "Peak TPS metrics should not be null");
-        Assert.assertEquals(peakTPSMetrics.size(), TOTAL_DAYS, "Peak TPS metrics size should be equal to " +
-                "the number of days");
+        Map<AspectEnum, List<BigDecimal>> peakTPSMetrics = metricsV5Processor.getPeakTPSMetrics();
+
+        List<BigDecimal> aggregatePeakTPSMetrics = peakTPSMetrics.get(AspectEnum.ALL);
+        List<BigDecimal> authenticatedPeakTPSMetrics = peakTPSMetrics.get(AspectEnum.AUTHENTICATED);
+        List<BigDecimal> unauthenticatedPeakTPSMetrics = peakTPSMetrics.get(AspectEnum.UNAUTHENTICATED);
+
+        Assert.assertNotNull(aggregatePeakTPSMetrics, "Aggregate peak TPS metrics should not be null");
+        Assert.assertNotNull(authenticatedPeakTPSMetrics, "Authenticated peak TPS metrics should not be null");
+        Assert.assertNotNull(unauthenticatedPeakTPSMetrics, "Unauthenticated peak TPS metrics should not be null");
+
+        Assert.assertEquals(aggregatePeakTPSMetrics.size(), TOTAL_DAYS,
+                "Aggregate peak TPS metrics size should be equal to the number of days");
+        Assert.assertEquals(authenticatedPeakTPSMetrics.size(), TOTAL_DAYS,
+                "Authenticated peak TPS metrics size should be equal to the number of days");
+        Assert.assertEquals(unauthenticatedPeakTPSMetrics.size(), TOTAL_DAYS,
+                "Unauthenticated peak TPS metrics size should be equal to the number of days");
     }
 
     @Test

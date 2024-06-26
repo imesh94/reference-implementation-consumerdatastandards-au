@@ -42,7 +42,7 @@ public class MetricsV5FetcherImpl implements MetricsFetcher {
     private CompletableFuture<Map<AspectEnum, List<BigDecimal>>> availabilityFuture;
     private CompletableFuture<Map<PriorityEnum, List<Integer>>> invocationFuture;
     private CompletableFuture<List<Integer>> sessionCountFuture;
-    private CompletableFuture<List<BigDecimal>> peakTPSFuture;
+    private CompletableFuture<Map<AspectEnum, List<BigDecimal>>> peakTPSFuture;
     private CompletableFuture<List<Integer>> errorFuture;
     private CompletableFuture<Map<AspectEnum, List<Integer>>> rejectionFuture;
     private CompletableFuture<Integer> recipientCountFuture;
@@ -133,7 +133,7 @@ public class MetricsV5FetcherImpl implements MetricsFetcher {
      *
      * @return CompletableFuture of peak TPS metrics
      */
-    private CompletableFuture<List<BigDecimal>> fetchPeakTPSMetricsAsync() {
+    private CompletableFuture<Map<AspectEnum, List<BigDecimal>>> fetchPeakTPSMetricsAsync() {
         return CompletableFuture.supplyAsync(() -> {
             try {
                 return metricsProcessor.getPeakTPSMetrics();

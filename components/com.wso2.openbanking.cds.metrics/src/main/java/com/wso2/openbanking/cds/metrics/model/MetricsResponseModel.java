@@ -363,6 +363,13 @@ public class MetricsResponseModel {
         this.unauthenticatedPeakTPS = unauthenticatedPeakTPS;
     }
 
+    public void setPeakTPS(Map<AspectEnum, List<BigDecimal>> peakTPSMap) {
+
+        setPeakTPS(peakTPSMap.get(AspectEnum.ALL));
+        setAuthenticatedPeakTPS(peakTPSMap.get(AspectEnum.AUTHENTICATED));
+        setUnauthenticatedPeakTPS(peakTPSMap.get(AspectEnum.UNAUTHENTICATED));
+    }
+
     public List<Integer> getErrors() {
         return errors;
     }

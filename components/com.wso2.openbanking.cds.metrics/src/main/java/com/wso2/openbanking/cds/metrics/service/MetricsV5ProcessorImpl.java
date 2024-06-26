@@ -200,17 +200,15 @@ public class MetricsV5ProcessorImpl implements MetricsProcessor {
      * {@inheritDoc}
      */
     @Override
-    public List<BigDecimal> getPeakTPSMetrics() throws OpenBankingException {
+    public Map<AspectEnum, List<BigDecimal>> getPeakTPSMetrics() throws OpenBankingException {
 
         try {
             log.debug("Starting peak TPS metrics calculation.");
-            List<BigDecimal> peakTPSList;
             JSONArray peakTPSData = metricsDataProvider.getPeakTPSMetricsData();
             Map<AspectEnum, List<BigDecimal>> peakTPSDataMap = MetricsProcessorUtil.getPeakTPSMapFromJsonArray(
                     peakTPSData, numberOfDays, metricsCountLastDateEpoch);
-            peakTPSList = peakTPSDataMap.get(AspectEnum.ALL);
             log.debug("Finished peak TPS metrics calculation successfully.");
-            return peakTPSList;
+            return peakTPSDataMap;
         } catch (ParseException e) {
             throw new OpenBankingException("Error occurred while parsing peak TPS Json Array", e);
         }
