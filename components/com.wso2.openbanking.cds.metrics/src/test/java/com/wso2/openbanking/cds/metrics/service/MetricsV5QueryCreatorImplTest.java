@@ -57,9 +57,9 @@ public class MetricsV5QueryCreatorImplTest extends PowerMockTestCase {
     @Test
     public void testGetAvailabilityMetricsQuery() {
         // Expected SQL query construction using mocked timestamps
-        String expectedQuery = "from SERVER_OUTAGES_RAW_DATA select OUTAGE_ID, TIMESTAMP, TYPE, TIME_FROM, TIME_TO " +
-                "group by OUTAGE_ID, TIMESTAMP, TYPE, TIME_FROM, TIME_TO having TIME_FROM >= " + 1704067200 + " AND " +
-                "TIME_TO < " + 1706745599 + ";";
+        String expectedQuery = "from SERVER_OUTAGES_RAW_DATA select OUTAGE_ID, TIMESTAMP, TYPE, TIME_FROM, TIME_TO, " +
+                "ASPECT group by OUTAGE_ID, TIMESTAMP, TYPE, TIME_FROM, TIME_TO, ASPECT having TIME_FROM >= " +
+                1704067200 + " AND TIME_TO <= " + 1706745599 + ";";
 
         // Execute the method
         String actualQuery = queryCreator.getAvailabilityMetricsQuery();

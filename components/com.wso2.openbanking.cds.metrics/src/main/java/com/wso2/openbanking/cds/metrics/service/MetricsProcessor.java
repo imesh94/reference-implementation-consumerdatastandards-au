@@ -25,10 +25,10 @@ public interface MetricsProcessor {
     /**
      * Get availability metrics.
      *
-     * @return List of availability metrics
+     * @return Map of availability metrics
      * @throws OpenBankingException - OpenBankingException
      */
-    List<BigDecimal> getAvailabilityMetrics() throws OpenBankingException;
+    Map<AspectEnum, List<BigDecimal>> getAvailabilityMetrics() throws OpenBankingException;
 
     /**
      * Get invocation metrics.
@@ -67,13 +67,13 @@ public interface MetricsProcessor {
     List<Integer> getSessionCountMetrics() throws OpenBankingException;
 
     /**
-     * Calculate average TPS for a day.
+     * Get average TPS metrics.
      * Used formula: averageTPS = (total no. of transactions for a day / no. of seconds in a day)
      *
-     * @param invocationMetricsMap - Map of invocation metrics
-     * @return list of average TPS
+     * @return Map of average TPS
+     * @throws OpenBankingException - OpenBankingException
      */
-    List<BigDecimal> getAverageTPSMetrics(Map<PriorityEnum, List<Integer>> invocationMetricsMap);
+    Map<AspectEnum, List<BigDecimal>> getAverageTPSMetrics() throws OpenBankingException;
 
     /**
      * Get peak TPS metrics.

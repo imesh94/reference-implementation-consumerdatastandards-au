@@ -63,6 +63,7 @@ public class MetricsConstants {
     public static final String INVOCATION = "invocation";
     public static final String PERFORMANCE = "performance";
     public static final String SESSION_COUNT = "session count";
+    public static final String AVERAGE_TPS = "average TPS";
     public static final String PEAK_TPS = "peak TPS";
     public static final String ERROR = "error";
     public static final String REJECTION = "rejection";

@@ -61,10 +61,22 @@ public class MetricsV5ProcessorImplTest extends PowerMockTestCase {
     @Test
     public void testGetAvailabilityMetrics() throws Exception {
 
-        List<BigDecimal> availabilityMetrics = metricsV5Processor.getAvailabilityMetrics();
-        Assert.assertNotNull(availabilityMetrics, "Availability metrics should not be null");
-        Assert.assertEquals(availabilityMetrics.size(), TOTAL_MONTHS, "Availability metrics size should be " +
-                "equal to the number of months");
+        Map<AspectEnum, List<BigDecimal>> availabilityMetrics = metricsV5Processor.getAvailabilityMetrics();
+
+        List<BigDecimal> aggregateAvailability = availabilityMetrics.get(AspectEnum.ALL);
+        List<BigDecimal> authenticatedAvailability = availabilityMetrics.get(AspectEnum.AUTHENTICATED);
+        List<BigDecimal> unauthenticatedAvailability = availabilityMetrics.get(AspectEnum.UNAUTHENTICATED);
+
+        Assert.assertNotNull(aggregateAvailability, "Aggregate availability metrics should not be null");
+        Assert.assertNotNull(authenticatedAvailability, "Authenticated availability metrics should not be null");
+        Assert.assertNotNull(unauthenticatedAvailability, "Unauthenticated availability metrics should not be null");
+
+        Assert.assertEquals(aggregateAvailability.size(), TOTAL_MONTHS,
+                "Aggregate availability metrics size should be equal to the number of months");
+        Assert.assertEquals(authenticatedAvailability.size(), TOTAL_MONTHS,
+                "Authenticated availability metrics size should be equal to the number of months");
+        Assert.assertEquals(unauthenticatedAvailability.size(), TOTAL_MONTHS,
+                "Unauthenticated availability metrics size should be equal to the number of months");
     }
 
     @Test
@@ -110,12 +122,26 @@ public class MetricsV5ProcessorImplTest extends PowerMockTestCase {
 
     @Test
     public void testGetAverageTPSMetrics() throws Exception {
-        Map<PriorityEnum, List<Integer>> invocationMetrics = metricsV5Processor.getInvocationMetrics();
-        List<BigDecimal> averageTPSMetrics = metricsV5Processor.getAverageTPSMetrics(invocationMetrics);
 
-        Assert.assertNotNull(averageTPSMetrics, "Average TPS metrics should not be null");
-        Assert.assertEquals(averageTPSMetrics.size(), TOTAL_DAYS, "Average TPS metrics size should be " +
-                "equal to the number of days");
+        Map<AspectEnum, List<BigDecimal>> averageTPSMetrics = metricsV5Processor.getAverageTPSMetrics();
+
+        List<BigDecimal> aggregateAverageTPSMetrics = averageTPSMetrics.get(AspectEnum.ALL);
+        List<BigDecimal> authenticatedAverageTPSMetrics = averageTPSMetrics.get(AspectEnum.AUTHENTICATED);
+        List<BigDecimal> unauthenticatedAverageTPSMetrics = averageTPSMetrics.get(AspectEnum.UNAUTHENTICATED);
+
+        Assert.assertNotNull(aggregateAverageTPSMetrics,
+                "Aggregate average TPS metrics should not be null");
+        Assert.assertNotNull(authenticatedAverageTPSMetrics,
+                "Authenticated average TPS metrics should not be null");
+        Assert.assertNotNull(unauthenticatedAverageTPSMetrics,
+                "Unauthenticated average TPS metrics should not be null");
+
+        Assert.assertEquals(aggregateAverageTPSMetrics.size(), TOTAL_DAYS,
+                "Aggregate average TPS metrics size should be equal to the number of days");
+        Assert.assertEquals(authenticatedAverageTPSMetrics.size(), TOTAL_DAYS,
+                "Authenticated average TPS metrics size should be equal to the number of days");
+        Assert.assertEquals(unauthenticatedAverageTPSMetrics.size(), TOTAL_DAYS,
+                "Unauthenticated average TPS metrics size should be equal to the number of days");
     }
 
     @Test

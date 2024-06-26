@@ -31,6 +31,13 @@ public interface MetricsQueryCreator {
     String getInvocationMetricsQuery();
 
     /**
+     * Returns the query for getting api invocation data by aspect.
+     *
+     * @return Query as a String
+     */
+    String getInvocationByAspectMetricsQuery();
+
+    /**
      * Returns the query for getting session count.
      *
      * @return Query as a String

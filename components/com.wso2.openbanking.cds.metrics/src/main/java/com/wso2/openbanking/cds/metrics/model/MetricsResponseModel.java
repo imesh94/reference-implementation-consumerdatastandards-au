@@ -155,6 +155,13 @@ public class MetricsResponseModel {
         this.unauthenticatedAvailability = unauthenticatedAvailability;
     }
 
+    public void setAvailability(Map<AspectEnum, List<BigDecimal>> availabilityMap) {
+
+        setAvailability(availabilityMap.get(AspectEnum.ALL));
+        setAuthenticatedAvailability(availabilityMap.get(AspectEnum.AUTHENTICATED));
+        setUnauthenticatedAvailability(availabilityMap.get(AspectEnum.UNAUTHENTICATED));
+    }
+
     public List<BigDecimal> getPerformance() {
         return performance;
     }
@@ -323,6 +330,13 @@ public class MetricsResponseModel {
 
     public void setUnauthenticatedAverageTPS(List<BigDecimal> unauthenticatedAverageTPS) {
         this.unauthenticatedAverageTPS = unauthenticatedAverageTPS;
+    }
+
+    public void setAverageTPS(Map<AspectEnum, List<BigDecimal>> averageTPSMap) {
+
+        setAverageTPS(averageTPSMap.get(AspectEnum.ALL));
+        setAuthenticatedAverageTPS(averageTPSMap.get(AspectEnum.AUTHENTICATED));
+        setUnauthenticatedAverageTPS(averageTPSMap.get(AspectEnum.UNAUTHENTICATED));
     }
 
     public List<BigDecimal> getPeakTPS() {

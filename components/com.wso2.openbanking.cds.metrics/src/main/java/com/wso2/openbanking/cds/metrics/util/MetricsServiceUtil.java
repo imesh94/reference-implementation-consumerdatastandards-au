@@ -30,15 +30,29 @@ public class MetricsServiceUtil {
     public static void appendHistoricMetricsToCurrentDayMetrics(
             MetricsResponseModel currentDayMetrics, MetricsResponseModel historicMetrics) {
 
-        currentDayMetrics.getAvailability().addAll(historicMetrics.getAvailability());
         currentDayMetrics.getPerformance().addAll(historicMetrics.getPerformance());
         currentDayMetrics.getSessionCount().addAll(historicMetrics.getSessionCount());
-        currentDayMetrics.getAverageTPS().addAll(historicMetrics.getAverageTPS());
         currentDayMetrics.getPeakTPS().addAll(historicMetrics.getPeakTPS());
         currentDayMetrics.getErrors().addAll(historicMetrics.getErrors());
+        appendAvailabilityMetrics(currentDayMetrics, historicMetrics);
         appendInvocationMetrics(currentDayMetrics, historicMetrics);
+        appendAverageTPSMetrics(currentDayMetrics, historicMetrics);
         appendAverageResponseMetrics(currentDayMetrics, historicMetrics);
         appendRejectionMetrics(currentDayMetrics, historicMetrics);
+    }
+
+    /**
+     * Append historic availability metrics to current day availability metrics.
+     *
+     * @param currentDayMetrics - current day metrics
+     * @param historicMetrics   - historic metrics
+     */
+    private static void appendAvailabilityMetrics(
+            MetricsResponseModel currentDayMetrics, MetricsResponseModel historicMetrics) {
+
+        currentDayMetrics.getAvailability().addAll(historicMetrics.getAvailability());
+        currentDayMetrics.getAuthenticatedAvailability().addAll(historicMetrics.getAuthenticatedAvailability());
+        currentDayMetrics.getUnauthenticatedAvailability().addAll(historicMetrics.getUnauthenticatedAvailability());
     }
 
     /**
@@ -55,6 +69,20 @@ public class MetricsServiceUtil {
         currentDayMetrics.getInvocationUnattended().addAll(historicMetrics.getInvocationUnattended());
         currentDayMetrics.getInvocationUnauthenticated().addAll(historicMetrics.getInvocationUnauthenticated());
         currentDayMetrics.getInvocationLargePayload().addAll(historicMetrics.getInvocationLargePayload());
+    }
+
+    /**
+     * Append historic average TPS metrics to current day average TPS metrics.
+     *
+     * @param currentDayMetrics - current day metrics
+     * @param historicMetrics   - historic metrics
+     */
+    private static void appendAverageTPSMetrics(
+            MetricsResponseModel currentDayMetrics, MetricsResponseModel historicMetrics) {
+
+        currentDayMetrics.getAverageTPS().addAll(historicMetrics.getAverageTPS());
+        currentDayMetrics.getAuthenticatedAverageTPS().addAll(historicMetrics.getAuthenticatedAverageTPS());
+        currentDayMetrics.getUnauthenticatedAverageTPS().addAll(historicMetrics.getUnauthenticatedAverageTPS());
     }
 
     /**

@@ -61,5 +61,5 @@ from APIInputStreamDelayWindow as apiInputStream
 left outer join API_LATENCY_RAW_DATA as latencyRawData
     on apiInputStream.MESSAGE_ID == latencyRawData.MESSAGE_ID
 select apiInputStream.MESSAGE_ID as id, STATUS_CODE as statusCode, ifThenElse(RESPONSE_LATENCY is null, 0L, RESPONSE_LATENCY) as respTime, ELECTED_RESOURCE as electedResource,
-       TIMESTAMP as reqTimestamp, CUSTOMER_STATUS as customerStatus
+       TIMESTAMP * 1000 as reqTimestamp, CUSTOMER_STATUS as customerStatus
 insert into CDSMetricsRawStream;

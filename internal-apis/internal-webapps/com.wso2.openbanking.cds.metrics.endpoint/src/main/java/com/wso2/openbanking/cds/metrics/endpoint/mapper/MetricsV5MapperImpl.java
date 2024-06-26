@@ -122,12 +122,12 @@ public class MetricsV5MapperImpl implements MetricsMapper {
         responseMetricsListV5DataDTO.setAverageResponse(getAverageResponseDTO(metricsListModel, period));
         responseMetricsListV5DataDTO.setSessionCount(getSessionCountDTO(metricsListModel.getSessionCount(), period));
         responseMetricsListV5DataDTO.setRejections(getRejectionsDTO(metricsListModel, period));
+        responseMetricsListV5DataDTO.setAvailability(getAvailabilityDTO(metricsListModel, period));
+        responseMetricsListV5DataDTO.setAverageTps(getAverageTpsDTO(metricsListModel, period));
 
         /*TODO: populate data*/
         populateTempData(metricsListModel);
-        responseMetricsListV5DataDTO.setAvailability(getAvailabilityDTO(metricsListModel, period));
         responseMetricsListV5DataDTO.setPerformance(getPerformanceDTO(metricsListModel, period));
-        responseMetricsListV5DataDTO.setAverageTps(getAverageTpsDTO(metricsListModel, period));
         responseMetricsListV5DataDTO.setPeakTps(getPeakTpsDTO(metricsListModel, period));
         responseMetricsListV5DataDTO.setErrors(getErrorsDTO(metricsListModel, period));
         responseMetricsListV5DataDTO.setAuthorisations(getAuthorisationsDTO(metricsListModel, period));
@@ -137,9 +137,9 @@ public class MetricsV5MapperImpl implements MetricsMapper {
 
     private void populateTempData(MetricsResponseModel metricsListModel) {
 
-        metricsListModel.setAvailability(new ArrayList<>(Collections.nCopies(13, BigDecimal.ZERO)));
+        /*metricsListModel.setAvailability(new ArrayList<>(Collections.nCopies(13, BigDecimal.ZERO)));
         metricsListModel.setAuthenticatedAvailability(new ArrayList<>(Collections.nCopies(13, BigDecimal.ZERO)));
-        metricsListModel.setUnauthenticatedAvailability(new ArrayList<>(Collections.nCopies(13, BigDecimal.ZERO)));
+        metricsListModel.setUnauthenticatedAvailability(new ArrayList<>(Collections.nCopies(13, BigDecimal.ZERO)));*/
 
         List<BigDecimal> bigDecimalZeros = new ArrayList<>(Collections.nCopies(8, BigDecimal.ZERO));
         List<Integer> integerZeros = new ArrayList<>(Collections.nCopies(8, 0));
@@ -154,9 +154,9 @@ public class MetricsV5MapperImpl implements MetricsMapper {
         metricsListModel.setPerformanceUnattended(new ArrayList<>(bigDecimalZerosPerDay));
         metricsListModel.setPerformanceUnauthenticated(new ArrayList<>(bigDecimalZerosPerDay));
 
-        metricsListModel.setAverageTPS(new ArrayList<>(bigDecimalZeros));
+        /*metricsListModel.setAverageTPS(new ArrayList<>(bigDecimalZeros));
         metricsListModel.setAuthenticatedAverageTPS(new ArrayList<>(bigDecimalZeros));
-        metricsListModel.setUnauthenticatedAverageTPS(new ArrayList<>(bigDecimalZeros));
+        metricsListModel.setUnauthenticatedAverageTPS(new ArrayList<>(bigDecimalZeros));*/
 
         metricsListModel.setPeakTPS(new ArrayList<>(bigDecimalZeros));
         metricsListModel.setAuthenticatedPeakTPS(new ArrayList<>(bigDecimalZeros));
@@ -211,11 +211,11 @@ public class MetricsV5MapperImpl implements MetricsMapper {
         }
         if (PeriodEnum.ALL == period || PeriodEnum.HISTORIC == period) {
             aggregate.setPreviousMonths(CommonUtil.convertToStringListWithScale(CommonUtil
-                    .addMissingMonths(allAvailability)));
+                    .removeAdditionalMonths(allAvailability)));
             authenticated.setPreviousMonths(CommonUtil.convertToStringListWithScale(CommonUtil
-                    .addMissingMonths(authenticatedAvailability)));
+                    .removeAdditionalMonths(authenticatedAvailability)));
             unauthenticated.setPreviousMonths(CommonUtil.convertToStringListWithScale(CommonUtil
-                    .addMissingMonths(unauthenticatedAvailability)));
+                    .removeAdditionalMonths(unauthenticatedAvailability)));
         }
 
         availabilityMetricsDTO.setAuthenticated(authenticated);
@@ -540,7 +540,7 @@ public class MetricsV5MapperImpl implements MetricsMapper {
 
         List<BigDecimal> averageTPS = metricsListModel.getAverageTPS();
         List<BigDecimal> authenticatedAverageTPS = metricsListModel.getAuthenticatedAverageTPS();
-        List<BigDecimal> unauthenticatedAverageTPS = metricsListModel.getAuthenticatedAverageTPS();
+        List<BigDecimal> unauthenticatedAverageTPS = metricsListModel.getUnauthenticatedAverageTPS();
 
         if (PeriodEnum.ALL == period || PeriodEnum.CURRENT == period) {
             aggregate.setCurrentDay(averageTPS.remove(0));

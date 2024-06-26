@@ -110,7 +110,8 @@ public class MetricsProcessorUtilTest extends PowerMockTestCase {
         invocationMetricsMap.put(PriorityEnum.UNAUTHENTICATED, Arrays.asList(5, 10));
         invocationMetricsMap.put(PriorityEnum.LARGE_PAYLOAD, Arrays.asList(5, 10));
 
-        List<Integer> result = MetricsProcessorUtil.getTotalInvocationsForEachDay(invocationMetricsMap);
+        List<Integer> result = MetricsProcessorUtil
+                .getTotalInvocationsForEachDay(invocationMetricsMap, PriorityEnum.values());
         List<Integer> expected = Arrays.asList(55, 90);
 
         Assert.assertEquals(result, expected);
@@ -127,7 +128,7 @@ public class MetricsProcessorUtilTest extends PowerMockTestCase {
     }
 
     @Test
-    public void testGetPopulatedInvocationMetricsMap() {
+    public void testGetPopulatedInvocationByPriorityMetricsMap() {
 
         JSONArray records = new JSONArray();
         records.add(new JSONArray().appendElement("Unattended").appendElement(13).appendElement(1715273999000L));
@@ -136,7 +137,7 @@ public class MetricsProcessorUtilTest extends PowerMockTestCase {
 
         when(metricsJsonObject.get("records")).thenReturn(records);
 
-        Map<PriorityEnum, List<Integer>> result = MetricsProcessorUtil.getPopulatedInvocationMetricsMap(
+        Map<PriorityEnum, List<Integer>> result = MetricsProcessorUtil.getPopulatedInvocationByPriorityMetricsMap(
                 metricsJsonObject, numberOfDays, metricsCountLastDateEpoch);
 
         // Assert the size of the map
@@ -181,9 +182,10 @@ public class MetricsProcessorUtilTest extends PowerMockTestCase {
     }
 
     @Test
-    public void testInitializeMap() {
+    public void testInitializePriorityMap() {
         int numberOfDays = 5;
-        Map<PriorityEnum, List<BigDecimal>> result = MetricsProcessorUtil.initializeMap(numberOfDays, BigDecimal.ZERO);
+        Map<PriorityEnum, List<BigDecimal>> result = MetricsProcessorUtil
+                .initializePriorityMap(numberOfDays, BigDecimal.ZERO);
 
         // Assert the size of the map
         Assert.assertEquals(result.size(), PriorityEnum.values().length);

@@ -41,10 +41,18 @@ public class MetricsServiceUtilTest {
 
         String currentDate = ZonedDateTime.now().format(DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH:mm:ss'Z'"));
         MetricsResponseModel model = new MetricsResponseModel(currentDate);
+
         model.setAvailability(createBigDecimalList(numberOfEntries));
+        model.setAuthenticatedAvailability(createBigDecimalList(numberOfEntries));
+        model.setUnauthenticatedAvailability(createBigDecimalList(numberOfEntries));
+
         model.setErrors(createIntegerList(numberOfEntries));
         model.setPeakTPS(createBigDecimalList(numberOfEntries));
+
         model.setAverageTPS(createBigDecimalList(numberOfEntries));
+        model.setAuthenticatedAverageTPS(createBigDecimalList(numberOfEntries));
+        model.setUnauthenticatedAverageTPS(createBigDecimalList(numberOfEntries));
+
         model.setPerformance(createBigDecimalList(numberOfEntries));
         model.setSessionCount(createIntegerList(numberOfEntries));
 
@@ -85,9 +93,16 @@ public class MetricsServiceUtilTest {
         MetricsServiceUtil.appendHistoricMetricsToCurrentDayMetrics(currentDayMetrics, historicMetrics);
         // Test if all metrics lists have been appended correctly
         assertEquals(currentDayMetrics.getAvailability().size(), TOTAL_DAYS);
+        assertEquals(currentDayMetrics.getAuthenticatedAvailability().size(), TOTAL_DAYS);
+        assertEquals(currentDayMetrics.getUnauthenticatedAvailability().size(), TOTAL_DAYS);
+
         assertEquals(currentDayMetrics.getErrors().size(), TOTAL_DAYS);
         assertEquals(currentDayMetrics.getPeakTPS().size(), TOTAL_DAYS);
+
         assertEquals(currentDayMetrics.getAverageTPS().size(), TOTAL_DAYS);
+        assertEquals(currentDayMetrics.getAuthenticatedAverageTPS().size(), TOTAL_DAYS);
+        assertEquals(currentDayMetrics.getUnauthenticatedAverageTPS().size(), TOTAL_DAYS);
+
         assertEquals(currentDayMetrics.getPerformance().size(), TOTAL_DAYS);
         assertEquals(currentDayMetrics.getSessionCount().size(), TOTAL_DAYS);
 

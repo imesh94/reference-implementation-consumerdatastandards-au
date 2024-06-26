@@ -50,6 +50,7 @@ public class MetricsProcessorUtil {
      * @throws OpenBankingException if lists have different sizes or division by zero occurs
      */
     public static <T1, T2> List<BigDecimal> divideLists(List<T1> list1, List<T2> list2) throws OpenBankingException {
+
         int listSize = list1.size();
         List<BigDecimal> resultList = new ArrayList<>();
 
@@ -79,6 +80,7 @@ public class MetricsProcessorUtil {
      * @throws IllegalArgumentException if the value type is not supported
      */
     private static <T> BigDecimal convertToBigDecimal(T value) {
+
         if (value instanceof BigDecimal) {
             return (BigDecimal) value;
         } else if (value instanceof Integer) {
@@ -96,10 +98,28 @@ public class MetricsProcessorUtil {
      * @param <T> - Type of the list elements
      * @return - Priority-tier map initialized for given number of days
      */
-    public static <T> Map<PriorityEnum, List<T>> initializeMap(int numberOfDays, T initialValue) {
+    public static <T> Map<PriorityEnum, List<T>> initializePriorityMap(int numberOfDays, T initialValue) {
+
         Map<PriorityEnum, List<T>> map = new HashMap<>();
         for (PriorityEnum priority : PriorityEnum.values()) {
             map.put(priority, initializeList(numberOfDays, initialValue));
+        }
+        return map;
+    }
+
+    /**
+     * Initialize new aspect map for Metrics data with a given type.
+     *
+     * @param numberOfDays - Number of days to initialize
+     * @param initialValue - Initial value for the list elements
+     * @param <T> - Type of the list elements
+     * @return - Aspect map initialized for given number of days
+     */
+    public static <T> Map<AspectEnum, List<T>> initializeAspectMap(int numberOfDays, T initialValue) {
+
+        Map<AspectEnum, List<T>> map = new HashMap<>();
+        for (AspectEnum aspect : AspectEnum.values()) {
+            map.put(aspect, initializeList(numberOfDays, initialValue));
         }
         return map;
     }
@@ -113,6 +133,7 @@ public class MetricsProcessorUtil {
      * @return An ArrayList initialized with the specified number of items, each set to the provided initial value.
      */
     public static <T> ArrayList<T> initializeList(int numberOfItems, T initialValue) {
+
         return new ArrayList<>(Collections.nCopies(numberOfItems, initialValue));
     }
 
@@ -133,31 +154,50 @@ public class MetricsProcessorUtil {
     }
 
     /**
-     * Merge priority tiers together to get a single list of invocations for each day.
+     * Merge keys together to get a single list of invocations for each day.
      *
      * @param invocationMetricsMap - Map of invocation metrics
      * @return - Merged list of invocations
      */
-    public static List<Integer> getTotalInvocationsForEachDay(Map<PriorityEnum,
-            List<Integer>> invocationMetricsMap) {
+    public static <K> List<Integer> getTotalInvocationsForEachDay(Map<K, List<Integer>> invocationMetricsMap,
+                                                                  K[] keys) {
 
         List<Integer> totalTransactionsList = new ArrayList<>();
 
-        // get number of days by list size
-        int dayCount = invocationMetricsMap.get(PriorityEnum.UNAUTHENTICATED).size();
+        // Get number of days by list size of the first key in the array
+        int dayCount = invocationMetricsMap.get(keys[0]).size();
 
         for (int day = 0; day < dayCount; day++) {
             int totalTransactions = 0;
-            List<Integer> currentPriorityList;
-            for (PriorityEnum priority : PriorityEnum.values()) {
-                currentPriorityList = invocationMetricsMap.get(priority);
-                if (!currentPriorityList.isEmpty()) {
-                    totalTransactions = totalTransactions + currentPriorityList.get(day);
+            List<Integer> currentList;
+            for (K key : keys) {
+                currentList = invocationMetricsMap.get(key);
+                if (!currentList.isEmpty()) {
+                    totalTransactions += currentList.get(day);
                 }
             }
             totalTransactionsList.add(totalTransactions);
         }
         return totalTransactionsList;
+    }
+
+    /**
+     * Populates the average TPS list based on the given invocation counts.
+     *
+     * @param invocationList the list of integer invocation counts
+     * @param averageTPSList the list to be populated with the calculated average TPS values
+     */
+    public static void populateAverageTPSList(List<Integer> invocationList, List<BigDecimal> averageTPSList) {
+
+        for (Integer transactionCount : invocationList) {
+            BigDecimal avgTPS = new BigDecimal(transactionCount).divide(MetricsConstants.SECONDS_IN_DAY, 3,
+                    RoundingMode.HALF_UP);
+            if (avgTPS.compareTo(BigDecimal.ZERO) == 0) {
+                averageTPSList.add(BigDecimal.valueOf(0).setScale(3, RoundingMode.HALF_UP));
+            } else {
+                averageTPSList.add(avgTPS);
+            }
+        }
     }
 
     /**
@@ -168,10 +208,10 @@ public class MetricsProcessorUtil {
      * @param metricsCountLastDateEpoch - Epoch timestamp of the last date that metrics are required
      * @return - populated map
      */
-    public static Map<PriorityEnum, List<Integer>> getPopulatedInvocationMetricsMap(
+    public static Map<PriorityEnum, List<Integer>> getPopulatedInvocationByPriorityMetricsMap(
             JSONObject metricsJsonObject, int numberOfDays, long metricsCountLastDateEpoch) {
 
-        Map<PriorityEnum, List<Integer>> dataMap = initializeMap(numberOfDays, 0);
+        Map<PriorityEnum, List<Integer>> dataMap = initializePriorityMap(numberOfDays, 0);
         JSONArray records = (JSONArray) metricsJsonObject.get(RECORDS);
         for (Object recordObj : records) {
             JSONArray record = (JSONArray) recordObj;
@@ -189,6 +229,83 @@ public class MetricsProcessorUtil {
     }
 
     /**
+     * Populate a map of invocation metrics data categorized by aspects.
+     *
+     * @param metricsJsonObject         - Json object with invocation metrics
+     * @param numberOfDays              - Number of days to consider
+     * @param metricsCountLastDateEpoch - Epoch timestamp of the last date that metrics are required
+     * @return - populated map
+     */
+    public static Map<AspectEnum, List<Integer>> getPopulatedInvocationByAspectMetricsMap(
+            JSONObject metricsJsonObject, int numberOfDays, long metricsCountLastDateEpoch) {
+
+        Map<AspectEnum, List<Integer>> dataMap = initializeAspectMap(numberOfDays, 0);
+        JSONArray records = (JSONArray) metricsJsonObject.get(RECORDS);
+        for (Object recordObj : records) {
+            JSONArray record = (JSONArray) recordObj;
+            AspectEnum aspect = AspectEnum.fromValue((String) record.get(0));
+            Integer count = (Integer) record.get(1);
+            long recordTimestamp = (Long) record.get(2);
+            int daysAgo = DateTimeUtil.getDayDifference(recordTimestamp / 1000, metricsCountLastDateEpoch);
+
+            // Number of days ago can be used as the index to insert data to the list
+            if (daysAgo >= 0 && daysAgo < numberOfDays) {
+                dataMap.get(aspect).set(daysAgo, dataMap.get(aspect).get(daysAgo) + count);
+            }
+        }
+        return dataMap;
+    }
+
+    /**
+     * Populate a map of average TPS metrics data.
+     *
+     * @param invocationByAspectMetricsJsonObject   - Json object with invocation metrics
+     * @param numberOfDays                          - Number of days to consider
+     * @param metricsCountLastDateEpoch             - Epoch timestamp of the last date that metrics are required
+     * @return - populated map
+     */
+    public static Map<AspectEnum, List<BigDecimal>> getPopulatedAverageTPSMetricsMap(
+            JSONObject invocationByAspectMetricsJsonObject, int numberOfDays, long metricsCountLastDateEpoch) {
+
+        Map<AspectEnum, List<Integer>> invocationByAspectMetricsMap =
+                getPopulatedInvocationByAspectMetricsMap(invocationByAspectMetricsJsonObject, numberOfDays,
+                metricsCountLastDateEpoch);
+
+        Map<AspectEnum, List<BigDecimal>> averageTPSMap = new HashMap<>();
+        List<BigDecimal> aggregateAverageTPSList = new ArrayList<>();
+        List<BigDecimal> authenticatedAverageTPSList = new ArrayList<>();
+        List<BigDecimal> unauthenticatedAverageTPSList = new ArrayList<>();
+
+        Map<AspectEnum, List<Integer>> authenticatedInvocationMetricsMap = new HashMap<>();
+        authenticatedInvocationMetricsMap.put(AspectEnum.AUTHENTICATED,
+                invocationByAspectMetricsMap.get(AspectEnum.AUTHENTICATED));
+
+        Map<AspectEnum, List<Integer>> unAuthenticatedInvocationMetricsMap = new HashMap<>();
+        unAuthenticatedInvocationMetricsMap.put(AspectEnum.UNAUTHENTICATED,
+                invocationByAspectMetricsMap.get(AspectEnum.UNAUTHENTICATED));
+
+        List<Integer> totalInvocationList =
+                MetricsProcessorUtil.getTotalInvocationsForEachDay(invocationByAspectMetricsMap,
+                        AspectEnum.values());
+        List<Integer> authenticatedInvocationList =
+                MetricsProcessorUtil.getTotalInvocationsForEachDay(authenticatedInvocationMetricsMap,
+                        new AspectEnum[]{AspectEnum.AUTHENTICATED});
+        List<Integer> unauthenticatedInvocationList =
+                MetricsProcessorUtil.getTotalInvocationsForEachDay(unAuthenticatedInvocationMetricsMap,
+                        new AspectEnum[]{AspectEnum.UNAUTHENTICATED});
+
+        MetricsProcessorUtil.populateAverageTPSList(totalInvocationList, aggregateAverageTPSList);
+        MetricsProcessorUtil.populateAverageTPSList(authenticatedInvocationList, authenticatedAverageTPSList);
+        MetricsProcessorUtil.populateAverageTPSList(unauthenticatedInvocationList, unauthenticatedAverageTPSList);
+
+        averageTPSMap.put(AspectEnum.ALL, aggregateAverageTPSList);
+        averageTPSMap.put(AspectEnum.AUTHENTICATED, authenticatedAverageTPSList);
+        averageTPSMap.put(AspectEnum.UNAUTHENTICATED, unauthenticatedAverageTPSList);
+
+        return averageTPSMap;
+    }
+
+    /**
      * Populate a map of total response time data categorized to priority tiers.
      *
      * @param metricsJsonObject         - Json object with total response metrics
@@ -199,7 +316,7 @@ public class MetricsProcessorUtil {
     public static Map<PriorityEnum, List<BigDecimal>> getPopulatedTotalResponseTimeMetricsMap(
             JSONObject metricsJsonObject, int numberOfDays, long metricsCountLastDateEpoch) {
 
-        Map<PriorityEnum, List<BigDecimal>> dataMap = initializeMap(numberOfDays, BigDecimal.ZERO);
+        Map<PriorityEnum, List<BigDecimal>> dataMap = initializePriorityMap(numberOfDays, BigDecimal.ZERO);
         JSONArray records = (JSONArray) metricsJsonObject.get(RECORDS);
         for (Object recordObj : records) {
             JSONArray record = (JSONArray) recordObj;
@@ -302,12 +419,16 @@ public class MetricsProcessorUtil {
      *
      * @param serverOutageDataList - Server Outage Data List
      * @param noOfMonths           - Number of months
-     * @return Availability list
+     * @return Availability map
      */
-    public static List<BigDecimal> getAvailabilityFromServerOutages(
+    public static Map<AspectEnum, List<BigDecimal>> getAvailabilityMapFromServerOutages(
             List<ServerOutageDataModel> serverOutageDataList, int noOfMonths, ZonedDateTime endOfMonth) {
 
-        List<BigDecimal> availabilityList = initializeList(noOfMonths, BigDecimal.ONE);
+        Map<AspectEnum, List<BigDecimal>> availabilityMap = new HashMap<>();
+        List<BigDecimal> availabilityAggregatedList = initializeList(noOfMonths, BigDecimal.ONE);
+        List<BigDecimal> availabilityAuthenticatedList = initializeList(noOfMonths, BigDecimal.ONE);
+        List<BigDecimal> availabilityUnauthenticatedList = initializeList(noOfMonths, BigDecimal.ONE);
+
         ZonedDateTime currentEndOfMonth = endOfMonth;
         ZonedDateTime currentStartOfMonth;
 
@@ -317,13 +438,28 @@ public class MetricsProcessorUtil {
             long startTimestamp = currentStartOfMonth.toEpochSecond();
             long endTimestamp = currentEndOfMonth.with(LocalTime.MAX).toEpochSecond();
 
-            BigDecimal availability = getAvailabilityFromServerOutagesForTimeRange(serverOutageDataList, startTimestamp,
-                    endTimestamp);
-            availabilityList.set(monthIndex, availability); // Set availability for the month using current index
+            // Computing availability for the particular month for the relevant aspect
+            BigDecimal aggregateAvailability = getAvailabilityFromServerOutagesForTimeRange(serverOutageDataList,
+                    startTimestamp, endTimestamp, AspectEnum.ALL);
+            BigDecimal authenticatedAvailability = getAvailabilityFromServerOutagesForTimeRange(serverOutageDataList,
+                    startTimestamp, endTimestamp, AspectEnum.AUTHENTICATED);
+            BigDecimal unauthenticatedAvailability = getAvailabilityFromServerOutagesForTimeRange(serverOutageDataList,
+                    startTimestamp, endTimestamp, AspectEnum.UNAUTHENTICATED);
+
+            // Set availability for the month using current index
+            availabilityAggregatedList.set(monthIndex, aggregateAvailability);
+            availabilityAuthenticatedList.set(monthIndex, authenticatedAvailability);
+            availabilityUnauthenticatedList.set(monthIndex, unauthenticatedAvailability);
+
             // Get end date of previous month for the next iteration
             currentEndOfMonth = currentStartOfMonth.minusDays(1);
         }
-        return availabilityList;
+
+        availabilityMap.put(AspectEnum.ALL, availabilityAggregatedList);
+        availabilityMap.put(AspectEnum.AUTHENTICATED, availabilityAuthenticatedList);
+        availabilityMap.put(AspectEnum.UNAUTHENTICATED, availabilityUnauthenticatedList);
+
+        return availabilityMap;
     }
 
     /**
@@ -332,10 +468,11 @@ public class MetricsProcessorUtil {
      * @param serverOutageDataList - Server Outage Data List
      * @param fromTime             - From epoch timestamp
      * @param toTime               - To epoch timestamp
+     * @param aspect               - Aspect of the outages
      * @return availability value
      */
     public static BigDecimal getAvailabilityFromServerOutagesForTimeRange(
-            List<ServerOutageDataModel> serverOutageDataList, long fromTime, long toTime) {
+            List<ServerOutageDataModel> serverOutageDataList, long fromTime, long toTime, AspectEnum aspect) {
 
         long timeDurationOfReportingPeriod = toTime - fromTime;
         long totalScheduledOutages;
@@ -346,14 +483,25 @@ public class MetricsProcessorUtil {
 
         // filter the outages. scheduled vs incidents
         for (ServerOutageDataModel dataModel : serverOutageDataList) {
-            if (dataModel.getTimeFrom() >= fromTime && dataModel.getTimeFrom() < toTime) {
-                if (MetricsConstants.SCHEDULED_OUTAGE.equals(dataModel.getType())) {
-                    scheduledOutages.add(dataModel);
-                } else {
-                    incidentOutages.add(dataModel);
+            /*
+            Filtering by aspect.
+            If the aspect sent is ALL, then all the data models will be added to the list.
+            If a specific aspect is requested, only the data models with that aspect will be added to the list along
+             with common data models.
+            If the aspect of the data model is ALL, then it belongs to any requested aspect.
+            */
+            if (aspect.equals(dataModel.getAspect()) || AspectEnum.ALL.equals(dataModel.getAspect()) || AspectEnum
+                    .ALL.equals(aspect)) {
+                if (dataModel.getTimeFrom() >= fromTime && dataModel.getTimeFrom() < toTime) {
+                    if (MetricsConstants.SCHEDULED_OUTAGE.equals(dataModel.getType())) {
+                        scheduledOutages.add(dataModel);
+                    } else {
+                        incidentOutages.add(dataModel);
+                    }
                 }
             }
         }
+
         // Calculate the summation of total time
         totalScheduledOutages = calculateServerOutageTime(scheduledOutages);
         totalIncidentOutages = calculateServerOutageTime(incidentOutages);
@@ -431,7 +579,8 @@ public class MetricsProcessorUtil {
      * timestamp (epoch seconds),
      * "type" (scheduled/incident),
      * time_from (epoch seconds),
-     * time_to (epoch seconds)
+     * time_to (epoch seconds),
+     * aspect (all/authenticated/authenticated)
      * ]
      *
      * @param serverOutageDateJsonObject - Server Outage Date JsonObject
@@ -444,7 +593,8 @@ public class MetricsProcessorUtil {
                 Long.parseLong(serverOutageDateJsonObject.get(1).toString()),
                 serverOutageDateJsonObject.get(2).toString(),
                 Long.parseLong(serverOutageDateJsonObject.get(3).toString()),
-                Long.parseLong(serverOutageDateJsonObject.get(4).toString()));
+                Long.parseLong(serverOutageDateJsonObject.get(4).toString()),
+                AspectEnum.fromValue(serverOutageDateJsonObject.get(5).toString()));
     }
 
     /**

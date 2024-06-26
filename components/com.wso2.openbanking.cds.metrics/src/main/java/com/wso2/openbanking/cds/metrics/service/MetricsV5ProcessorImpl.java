@@ -24,7 +24,6 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
 import java.math.BigDecimal;
-import java.math.RoundingMode;
 import java.time.LocalTime;
 import java.time.ZoneId;
 import java.time.ZonedDateTime;
@@ -87,17 +86,17 @@ public class MetricsV5ProcessorImpl implements MetricsProcessor {
      * {@inheritDoc}
      */
     @Override
-    public List<BigDecimal> getAvailabilityMetrics() throws OpenBankingException {
+    public Map<AspectEnum, List<BigDecimal>> getAvailabilityMetrics() throws OpenBankingException {
 
         log.debug("Starting availability metrics calculation.");
         JSONObject availabilityMetricsJsonObject = metricsDataProvider.getAvailabilityMetricsData();
         if (availabilityMetricsJsonObject != null) {
-            List<ServerOutageDataModel> serverOutageData = MetricsProcessorUtil.getServerOutageDataFromJson(
-                    availabilityMetricsJsonObject);
-            List<BigDecimal> availabilityList = MetricsProcessorUtil.getAvailabilityFromServerOutages(serverOutageData,
-                    numberOfMonths, availabilityMetricsLastDate);
+            List<ServerOutageDataModel> serverOutageData = MetricsProcessorUtil
+                    .getServerOutageDataFromJson(availabilityMetricsJsonObject);
+            Map<AspectEnum, List<BigDecimal>> availabilityMap = MetricsProcessorUtil
+                    .getAvailabilityMapFromServerOutages(serverOutageData, numberOfMonths, availabilityMetricsLastDate);
             log.debug("Finished availability metrics calculation successfully.");
-            return availabilityList;
+            return availabilityMap;
         } else {
             throw new OpenBankingException(String.format(NO_DATA_ERROR, MetricsConstants.AVAILABILITY));
         }
@@ -113,7 +112,8 @@ public class MetricsV5ProcessorImpl implements MetricsProcessor {
         JSONObject invocationMetricsJsonObject = metricsDataProvider.getInvocationMetricsData();
         if (invocationMetricsJsonObject != null) {
             Map<PriorityEnum, List<Integer>> invocationMetricsMap = MetricsProcessorUtil.
-                getPopulatedInvocationMetricsMap(invocationMetricsJsonObject, numberOfDays, metricsCountLastDateEpoch);
+                    getPopulatedInvocationByPriorityMetricsMap(invocationMetricsJsonObject, numberOfDays,
+                            metricsCountLastDateEpoch);
             log.debug("Finished invocation metrics calculation successfully.");
             return invocationMetricsMap;
         } else {
@@ -129,7 +129,8 @@ public class MetricsV5ProcessorImpl implements MetricsProcessor {
             throws OpenBankingException {
 
         log.debug("Starting performance metrics calculation.");
-        List<Integer> totalInvocationList = MetricsProcessorUtil.getTotalInvocationsForEachDay(invocationMetricsMap);
+        List<Integer> totalInvocationList = MetricsProcessorUtil.getTotalInvocationsForEachDay(invocationMetricsMap,
+                PriorityEnum.values());
         List<Integer> successInvocationList = getSuccessfulInvocations();
         List<BigDecimal> performanceMetricsList = MetricsProcessorUtil.divideLists(successInvocationList,
                 totalInvocationList);
@@ -180,22 +181,19 @@ public class MetricsV5ProcessorImpl implements MetricsProcessor {
      * {@inheritDoc}
      */
     @Override
-    public List<BigDecimal> getAverageTPSMetrics(Map<PriorityEnum, List<Integer>> invocationMetricsMap) {
+    public Map<AspectEnum, List<BigDecimal>> getAverageTPSMetrics() throws OpenBankingException {
 
         log.debug("Starting average TPS metrics calculation.");
-        List<BigDecimal> averageTPSList = new ArrayList<>();
-        List<Integer> totalInvocationList = MetricsProcessorUtil.getTotalInvocationsForEachDay(invocationMetricsMap);
-        for (Integer transactionCount : totalInvocationList) {
-            BigDecimal avgTPS = new BigDecimal(transactionCount).divide(MetricsConstants.SECONDS_IN_DAY, 3,
-                    RoundingMode.HALF_UP);
-            if (avgTPS.compareTo(BigDecimal.ZERO) == 0) {
-                averageTPSList.add(BigDecimal.valueOf(0).setScale(3, RoundingMode.HALF_UP));
-            } else {
-                averageTPSList.add(avgTPS);
-            }
+        JSONObject invocationByAspectMetricsJsonObject = metricsDataProvider.getInvocationByAspectMetricsData();
+        if (invocationByAspectMetricsJsonObject != null) {
+            Map<AspectEnum, List<BigDecimal>> averageTPSMetricsMap = MetricsProcessorUtil.
+                    getPopulatedAverageTPSMetricsMap(invocationByAspectMetricsJsonObject, numberOfDays,
+                            metricsCountLastDateEpoch);
+            log.debug("Finished average TPS metrics calculation successfully.");
+            return averageTPSMetricsMap;
+        } else {
+            throw new OpenBankingException(String.format(NO_DATA_ERROR, MetricsConstants.AVERAGE_TPS));
         }
-        log.debug("Finished average TPS metrics calculation successfully.");
-        return averageTPSList;
     }
 
     /**

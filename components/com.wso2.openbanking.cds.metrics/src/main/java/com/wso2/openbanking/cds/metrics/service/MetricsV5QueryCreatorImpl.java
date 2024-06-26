@@ -47,9 +47,9 @@ public class MetricsV5QueryCreatorImpl implements MetricsQueryCreator {
     @Override
     public String getAvailabilityMetricsQuery() {
 
-        return "from SERVER_OUTAGES_RAW_DATA select OUTAGE_ID, TIMESTAMP, TYPE, TIME_FROM, TIME_TO group by " +
-                "OUTAGE_ID, TIMESTAMP, TYPE, TIME_FROM, TIME_TO having TIME_FROM >= " + availabilityFromTimestamp +
-                " AND TIME_TO < " + availabilityToTimestamp + ";";
+        return "from SERVER_OUTAGES_RAW_DATA select OUTAGE_ID, TIMESTAMP, TYPE, TIME_FROM, TIME_TO, ASPECT group by " +
+                "OUTAGE_ID, TIMESTAMP, TYPE, TIME_FROM, TIME_TO, ASPECT having TIME_FROM >= "
+                + availabilityFromTimestamp + " AND TIME_TO <= " + availabilityToTimestamp + ";";
     }
 
     /**
@@ -61,6 +61,17 @@ public class MetricsV5QueryCreatorImpl implements MetricsQueryCreator {
         return "from CDSMetricsAgg within '" + fromTimestamp + "', '" + toTimestamp + "' per '" + timeGranularity +
                 "' select priorityTier, totalReqCount, AGG_TIMESTAMP group by priorityTier, AGG_TIMESTAMP order by " +
                 "AGG_TIMESTAMP desc;";
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public String getInvocationByAspectMetricsQuery() {
+
+        return "from CDSMetricsAspectAgg within '" + fromTimestamp + "', '" + toTimestamp + "' per '" +
+                timeGranularity + "' select aspect, totalReqCount, AGG_TIMESTAMP group by aspect, AGG_TIMESTAMP " +
+                "having aspect != 'uncategorized' order by AGG_TIMESTAMP desc;";
     }
 
     /**

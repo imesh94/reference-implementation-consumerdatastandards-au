@@ -39,7 +39,7 @@ public class MetricsV5FetcherImpl implements MetricsFetcher {
     MetricsProcessor metricsProcessor;
     private static final Log log = LogFactory.getLog(MetricsV5FetcherImpl.class);
 
-    private CompletableFuture<List<BigDecimal>> availabilityFuture;
+    private CompletableFuture<Map<AspectEnum, List<BigDecimal>>> availabilityFuture;
     private CompletableFuture<Map<PriorityEnum, List<Integer>>> invocationFuture;
     private CompletableFuture<List<Integer>> sessionCountFuture;
     private CompletableFuture<List<BigDecimal>> peakTPSFuture;
@@ -47,7 +47,7 @@ public class MetricsV5FetcherImpl implements MetricsFetcher {
     private CompletableFuture<Map<AspectEnum, List<Integer>>> rejectionFuture;
     private CompletableFuture<Integer> recipientCountFuture;
     private CompletableFuture<Integer> customerCountFuture;
-    private CompletableFuture<List<BigDecimal>> averageTPSFuture;
+    private CompletableFuture<Map<AspectEnum, List<BigDecimal>>> averageTPSFuture;
     private CompletableFuture<List<BigDecimal>> performanceFuture;
     private CompletableFuture<Map<PriorityEnum, List<BigDecimal>>> averageResponseTimeFuture;
 
@@ -63,13 +63,13 @@ public class MetricsV5FetcherImpl implements MetricsFetcher {
         availabilityFuture = fetchAvailabilityMetricsAsync();
         invocationFuture = fetchInvocationMetricsAsync();
         sessionCountFuture = fetchSessionCountMetricsAsync();
+        averageTPSFuture = fetchAverageTPSAsync();
         peakTPSFuture = fetchPeakTPSMetricsAsync();
         errorFuture = fetchErrorMetricsAsync();
         rejectionFuture = fetchRejectionMetricsAsync();
         recipientCountFuture = fetchRecipientCountMetricsAsync();
         customerCountFuture = fetchCustomerCountMetricsAsync();
         // Dependent futures that require results from the invocationFuture
-        averageTPSFuture = fetchAverageTPSAsync(invocationFuture);
         performanceFuture = fetchPerformanceMetricsAsync(invocationFuture);
         averageResponseTimeFuture = fetchAverageResponseTimeAsync(invocationFuture);
 
@@ -82,7 +82,7 @@ public class MetricsV5FetcherImpl implements MetricsFetcher {
      *
      * @return CompletableFuture of availability metrics
      */
-    private CompletableFuture<List<BigDecimal>> fetchAvailabilityMetricsAsync() {
+    private CompletableFuture<Map<AspectEnum, List<BigDecimal>>> fetchAvailabilityMetricsAsync() {
         return CompletableFuture.supplyAsync(() -> {
             try {
                 return metricsProcessor.getAvailabilityMetrics();
@@ -216,13 +216,18 @@ public class MetricsV5FetcherImpl implements MetricsFetcher {
     /**
      * Get average TPS metrics asynchronously.
      *
-     * @param invocationFuture - CompletableFuture of invocation metrics
      * @return CompletableFuture of average TPS metrics
      */
-    private CompletableFuture<List<BigDecimal>> fetchAverageTPSAsync(
-            CompletableFuture<Map<PriorityEnum, List<Integer>>> invocationFuture) {
-        return invocationFuture.thenApplyAsync(invocationMetrics ->
-                metricsProcessor.getAverageTPSMetrics(invocationMetrics));
+    private CompletableFuture<Map<AspectEnum, List<BigDecimal>>> fetchAverageTPSAsync() {
+        return CompletableFuture.supplyAsync(() -> {
+            try {
+                return metricsProcessor.getAverageTPSMetrics();
+            } catch (OpenBankingException e) {
+                String errorMessage = String.format(ASYNC_FETCH_ERROR, MetricsConstants.AVERAGE_TPS);
+                log.debug(errorMessage, e);
+                throw new RuntimeException(errorMessage, e);
+            }
+        });
     }
 
     /**
