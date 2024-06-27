@@ -9,6 +9,7 @@
 
 package com.wso2.openbanking.cds.metrics.model;
 
+import com.wso2.openbanking.cds.metrics.util.AspectEnum;
 import net.minidev.json.JSONArray;
 
 /**
@@ -18,7 +19,7 @@ public class ErrorMetricDataModel {
 
     private long timestamp;
     private String statusCode;
-    private String aspect;
+    private AspectEnum aspect;
     private int count;
 
     public ErrorMetricDataModel() {
@@ -27,7 +28,7 @@ public class ErrorMetricDataModel {
     public ErrorMetricDataModel(JSONArray jsonArray) {
         this.timestamp = (long) jsonArray.get(0);
         this.statusCode = jsonArray.get(1).toString();
-        this.aspect = (String) jsonArray.get(2);
+        this.aspect = AspectEnum.fromValue((String) jsonArray.get(2));
         this.count = (int) jsonArray.get(3);
     }
 
@@ -47,11 +48,11 @@ public class ErrorMetricDataModel {
         this.statusCode = statusCode;
     }
 
-    public String getAspect() {
+    public AspectEnum getAspect() {
         return aspect;
     }
 
-    public void setAspect(String aspect) {
+    public void setAspect(AspectEnum aspect) {
         this.aspect = aspect;
     }
 

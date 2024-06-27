@@ -87,6 +87,27 @@ public interface MetricsQueryCreator {
     String getRejectionMetricsQuery();
 
     /**
+     * Return the query for getting active authorisation count data.
+     *
+     * @return Query as a String
+     */
+    String getActiveAuthorisationCountMetricsQuery();
+
+    /**
+     * Return the query for getting authorisation data.
+     *
+     * @return Query as a String
+     */
+    String getAuthorisationMetricsQuery();
+
+    /**
+     * Return the query for getting abandoned consent flow count data.
+     *
+     * @return Query as a String
+     */
+    String getAbandonedConsentFlowCountMetricsQuery();
+
+    /**
      * Returns the query for getting data recipient count.
      *
      * @return Query as a String

@@ -75,7 +75,6 @@ import com.wso2.openbanking.cds.metrics.util.PeriodEnum;
 
 import java.math.BigDecimal;
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 
@@ -126,70 +125,9 @@ public class MetricsV5MapperImpl implements MetricsMapper {
         responseMetricsListV5DataDTO.setPeakTps(getPeakTpsDTO(metricsListModel, period));
         responseMetricsListV5DataDTO.setPerformance(getPerformanceDTO(metricsListModel, period));
         responseMetricsListV5DataDTO.setErrors(getErrorsDTO(metricsListModel, period));
-
-        /*TODO: populate data*/
-        populateTempData(metricsListModel);
         responseMetricsListV5DataDTO.setAuthorisations(getAuthorisationsDTO(metricsListModel, period));
 
         return responseMetricsListV5DataDTO;
-    }
-
-    private void populateTempData(MetricsResponseModel metricsListModel) {
-
-        /*metricsListModel.setAvailability(new ArrayList<>(Collections.nCopies(13, BigDecimal.ZERO)));
-        metricsListModel.setAuthenticatedAvailability(new ArrayList<>(Collections.nCopies(13, BigDecimal.ZERO)));
-        metricsListModel.setUnauthenticatedAvailability(new ArrayList<>(Collections.nCopies(13, BigDecimal.ZERO)));*/
-
-        /*List<BigDecimal> bigDecimalZeros = new ArrayList<>(Collections.nCopies(8, BigDecimal.ZERO));*/
-        List<Integer> integerZeros = new ArrayList<>(Collections.nCopies(8, 0));
-
-        /*List<BigDecimal> bigDecimalZerosPerHour = new ArrayList<>(Collections.nCopies(24, BigDecimal.ZERO));*/
-        /*List<List<BigDecimal>> bigDecimalZerosPerDay = new ArrayList<>(Collections.nCopies(8,
-        bigDecimalZerosPerHour));*/
-
-        /*metricsListModel.setPerformance(new ArrayList<>(bigDecimalZeros));
-        metricsListModel.setPerformanceHighPriority(new ArrayList<>(bigDecimalZerosPerDay));
-        metricsListModel.setPerformanceLargePayload(new ArrayList<>(bigDecimalZerosPerDay));
-        metricsListModel.setPerformanceLowPriority(new ArrayList<>(bigDecimalZerosPerDay));
-        metricsListModel.setPerformanceUnattended(new ArrayList<>(bigDecimalZerosPerDay));
-        metricsListModel.setPerformanceUnauthenticated(new ArrayList<>(bigDecimalZerosPerDay));*/
-
-        /*metricsListModel.setAverageTPS(new ArrayList<>(bigDecimalZeros));
-        metricsListModel.setAuthenticatedAverageTPS(new ArrayList<>(bigDecimalZeros));
-        metricsListModel.setUnauthenticatedAverageTPS(new ArrayList<>(bigDecimalZeros));*/
-
-        /*metricsListModel.setPeakTPS(new ArrayList<>(bigDecimalZeros));
-        metricsListModel.setAuthenticatedPeakTPS(new ArrayList<>(bigDecimalZeros));
-        metricsListModel.setUnauthenticatedPeakTPS(new ArrayList<>(bigDecimalZeros));*/
-
-        /*metricsListModel.setErrors(new ArrayList<>(integerZeros));
-        metricsListModel.setAuthenticatedErrors(new ArrayList<>(Collections.nCopies(2, new HashMap<>())));
-        metricsListModel.setUnauthenticatedErrors(new ArrayList<>(Collections.nCopies(2, new HashMap<>())));*/
-
-        metricsListModel.setActiveIndividualAuthorisationCount(0);
-        metricsListModel.setActiveNonIndividualAuthorisationCount(0);
-
-        AuthorisationMetric authorisationMetric = new AuthorisationMetric();
-        CustomerTypeCount customerTypeCount = new CustomerTypeCount();
-        customerTypeCount.setIndividual(0);
-        customerTypeCount.setNonIndividual(0);
-        authorisationMetric.setOnceOff(customerTypeCount);
-        authorisationMetric.setOngoing(customerTypeCount);
-
-        metricsListModel.setNewAuthorisationCount(new ArrayList<>(Collections.nCopies(8, authorisationMetric)));
-
-        List<CustomerTypeCount> customerTypeCounts = new ArrayList<>(Collections.nCopies(8, customerTypeCount));
-        metricsListModel.setRevokedAuthorisationCount(new ArrayList<>(customerTypeCounts));
-        metricsListModel.setAmendedAuthorisationCount(new ArrayList<>(customerTypeCounts));
-        metricsListModel.setExpiredAuthorisationCount(new ArrayList<>(customerTypeCounts));
-
-        metricsListModel.setAbandonedConsentFlowCount(new ArrayList<>(integerZeros));
-        metricsListModel.setPreIdentificationAbandonedConsentFlowCount(new ArrayList<>(integerZeros));
-        metricsListModel.setPreAuthenticationAbandonedConsentFlowCount(new ArrayList<>(integerZeros));
-        metricsListModel.setPreAccountSelectionAbandonedConsentFlowCount(new ArrayList<>(integerZeros));
-        metricsListModel.setPreAuthorisationAbandonedConsentFlowCount(new ArrayList<>(integerZeros));
-        metricsListModel.setRejectedAbandonedConsentFlowCount(new ArrayList<>(integerZeros));
-        metricsListModel.setFailedTokenExchangeAbandonedConsentFlowCount(new ArrayList<>(integerZeros));
     }
 
     private AvailabilityMetricsV2DTO getAvailabilityDTO(MetricsResponseModel metricsListModel, PeriodEnum period) {

@@ -10,6 +10,8 @@
 
 package com.wso2.openbanking.cds.metrics.util;
 
+import com.wso2.openbanking.cds.metrics.model.AuthorisationMetric;
+import com.wso2.openbanking.cds.metrics.model.CustomerTypeCount;
 import com.wso2.openbanking.cds.metrics.model.MetricsResponseModel;
 import org.testng.annotations.BeforeMethod;
 import org.testng.annotations.Test;
@@ -84,6 +86,20 @@ public class MetricsServiceUtilTest {
         model.setAuthenticatedEndpointRejections(createIntegerList(numberOfEntries));
         model.setUnauthenticatedEndpointRejections(createIntegerList(numberOfEntries));
 
+        model.setNewAuthorisationCount(createAuthorisationMetricList(numberOfEntries));
+        model.setAmendedAuthorisationCount(createCustomerTypeCountList(numberOfEntries));
+        model.setExpiredAuthorisationCount(createCustomerTypeCountList(numberOfEntries));
+        model.setRevokedAuthorisationCount(createCustomerTypeCountList(numberOfEntries));
+
+        model.setAbandonedConsentFlowCount(createIntegerList(numberOfEntries));
+
+        model.setPreIdentificationAbandonedConsentFlowCount(createIntegerList(numberOfEntries));
+        model.setPreAuthenticationAbandonedConsentFlowCount(createIntegerList(numberOfEntries));
+        model.setPreAccountSelectionAbandonedConsentFlowCount(createIntegerList(numberOfEntries));
+        model.setPreAuthorisationAbandonedConsentFlowCount(createIntegerList(numberOfEntries));
+        model.setRejectedAbandonedConsentFlowCount(createIntegerList(numberOfEntries));
+        model.setFailedTokenExchangeAbandonedConsentFlowCount(createIntegerList(numberOfEntries));
+
         return model;
     }
 
@@ -115,6 +131,18 @@ public class MetricsServiceUtilTest {
                     map.put("400", (int) (Math.random() * 10));
                     return map;
                 })
+                .collect(Collectors.toList());
+    }
+
+    private List<AuthorisationMetric> createAuthorisationMetricList(int size) {
+        return IntStream.range(0, size)
+                .mapToObj(i -> new AuthorisationMetric())
+                .collect(Collectors.toList());
+    }
+
+    private List<CustomerTypeCount> createCustomerTypeCountList(int size) {
+        return IntStream.range(0, size)
+                .mapToObj(i -> new CustomerTypeCount())
                 .collect(Collectors.toList());
     }
 
@@ -162,6 +190,20 @@ public class MetricsServiceUtilTest {
 
         assertEquals(currentDayMetrics.getAuthenticatedEndpointRejections().size(), TOTAL_DAYS);
         assertEquals(currentDayMetrics.getUnauthenticatedEndpointRejections().size(), TOTAL_DAYS);
+
+        assertEquals(currentDayMetrics.getNewAuthorisationCount().size(), TOTAL_DAYS);
+        assertEquals(currentDayMetrics.getAmendedAuthorisationCount().size(), TOTAL_DAYS);
+        assertEquals(currentDayMetrics.getExpiredAuthorisationCount().size(), TOTAL_DAYS);
+        assertEquals(currentDayMetrics.getRevokedAuthorisationCount().size(), TOTAL_DAYS);
+
+        assertEquals(currentDayMetrics.getAbandonedConsentFlowCount().size(), TOTAL_DAYS);
+
+        assertEquals(currentDayMetrics.getPreIdentificationAbandonedConsentFlowCount().size(), TOTAL_DAYS);
+        assertEquals(currentDayMetrics.getPreAuthenticationAbandonedConsentFlowCount().size(), TOTAL_DAYS);
+        assertEquals(currentDayMetrics.getPreAccountSelectionAbandonedConsentFlowCount().size(), TOTAL_DAYS);
+        assertEquals(currentDayMetrics.getPreAuthorisationAbandonedConsentFlowCount().size(), TOTAL_DAYS);
+        assertEquals(currentDayMetrics.getRejectedAbandonedConsentFlowCount().size(), TOTAL_DAYS);
+        assertEquals(currentDayMetrics.getFailedTokenExchangeAbandonedConsentFlowCount().size(), TOTAL_DAYS);
     }
 
     @Test

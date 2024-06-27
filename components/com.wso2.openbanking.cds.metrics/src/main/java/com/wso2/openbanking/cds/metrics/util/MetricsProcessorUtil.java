@@ -12,7 +12,18 @@ package com.wso2.openbanking.cds.metrics.util;
 import com.wso2.openbanking.accelerator.common.exception.OpenBankingException;
 import com.wso2.openbanking.accelerator.common.util.Generated;
 import com.wso2.openbanking.cds.common.config.OpenBankingCDSConfigParser;
+import com.wso2.openbanking.cds.common.enums.AbandonmentsByStageEnum;
+import com.wso2.openbanking.cds.common.enums.AuthorisationFlowTypeEnum;
+import com.wso2.openbanking.cds.common.enums.AuthorisationStageEnum;
+import com.wso2.openbanking.cds.common.enums.ConsentDurationTypeEnum;
+import com.wso2.openbanking.cds.common.enums.ConsentStatusEnum;
 import com.wso2.openbanking.cds.metrics.constants.MetricsConstants;
+import com.wso2.openbanking.cds.metrics.model.AbandonedConsentFlowByStageMetricDay;
+import com.wso2.openbanking.cds.metrics.model.AbandonedConsentFlowMetricDataModel;
+import com.wso2.openbanking.cds.metrics.model.ActiveAuthorisationMetricDataModel;
+import com.wso2.openbanking.cds.metrics.model.AuthorisationMetricDataModel;
+import com.wso2.openbanking.cds.metrics.model.AuthorisationMetricDay;
+import com.wso2.openbanking.cds.metrics.model.AuthorisationStageTimestamp;
 import com.wso2.openbanking.cds.metrics.model.ErrorMetricDataModel;
 import com.wso2.openbanking.cds.metrics.model.ErrorMetricDay;
 import com.wso2.openbanking.cds.metrics.model.PerformanceMetric;
@@ -51,6 +62,8 @@ public class MetricsProcessorUtil {
     private static final OpenBankingCDSConfigParser configParser = OpenBankingCDSConfigParser.getInstance();
     private static final ZoneId timeZone = ZoneId.of(configParser.getMetricsTimeZone());
     private static final LocalDate metricsV5StartDate = LocalDate.parse(configParser.getMetricsV5StartDate());
+    private static final long consentAbandonmentTime = configParser.getConsentAbandonmentTime();
+    private static final long authCodeExpiredTime = configParser.getAuthorizationCodeValidityPeriod();
 
     private MetricsProcessorUtil() {
     }
@@ -500,7 +513,7 @@ public class MetricsProcessorUtil {
             PerformanceMetric performanceRecord = new PerformanceMetric();
             performanceRecord.setPriorityTier(recordArray.get(0).toString());
             performanceRecord.setTimestamp((long) recordArray.get(1));
-            performanceRecord.setPerformanceValue((double) recordArray.get(2));
+            performanceRecord.setPerformanceValue((Double) recordArray.get(2));
             performanceRecords.add(performanceRecord);
         }
         return performanceRecords;
@@ -635,6 +648,150 @@ public class MetricsProcessorUtil {
     }
 
     /**
+     * This method maps the retrieved authorisation metrics to a list of ActiveAuthorisationMetricDataModel objects.
+     *
+     * @param authorisationMetricsJsonObject - retrieved authorisation metrics data
+     * @return List of ActiveAuthorisationMetricDataModel objects
+     */
+    public static List<ActiveAuthorisationMetricDataModel> mapToActiveAuthorisationMetricDataModel(
+            JSONObject authorisationMetricsJsonObject) {
+
+        List<ActiveAuthorisationMetricDataModel> activeAuthorisationMetricDataModelList = new ArrayList<>();
+        JSONArray recordsArray = (JSONArray) authorisationMetricsJsonObject.get(RECORDS);
+
+        for (Object singleRecordObject : recordsArray) {
+            if (singleRecordObject instanceof JSONArray) {
+                JSONArray singleRecordArray = (JSONArray) singleRecordObject;
+
+                ActiveAuthorisationMetricDataModel activeAuthorisationMetricDataModel =
+                        new ActiveAuthorisationMetricDataModel(singleRecordArray);
+
+                activeAuthorisationMetricDataModelList.add(activeAuthorisationMetricDataModel);
+            }
+        }
+
+        return activeAuthorisationMetricDataModelList;
+    }
+
+    /**
+     * This method maps the retrieved authorisation metrics to a list of AuthorisationMetricDataModel objects.
+     *
+     * @param authorisationMetricsJsonObject - retrieved authorisation metrics data
+     * @return List of AuthorisationMetricDataModel objects
+     */
+    public static List<AuthorisationMetricDataModel> mapToAuthorisationMetricDataModel(
+            JSONObject authorisationMetricsJsonObject) {
+
+        List<AuthorisationMetricDataModel> authorisationMetricDataModelList = new ArrayList<>();
+        JSONArray recordsArray = (JSONArray) authorisationMetricsJsonObject.get(RECORDS);
+
+        for (Object singleRecordObject : recordsArray) {
+            if (singleRecordObject instanceof JSONArray) {
+                JSONArray singleRecordArray = (JSONArray) singleRecordObject;
+
+                AuthorisationMetricDataModel authorisationMetricDataModel =
+                        new AuthorisationMetricDataModel(singleRecordArray);
+
+                authorisationMetricDataModelList.add(authorisationMetricDataModel);
+            }
+        }
+
+        return authorisationMetricDataModelList;
+    }
+
+    /**
+     * This method maps the retrieved abandoned consent flow metrics to a list of
+     * AbandonedConsentFlowMetricDataModel objects.
+     *
+     * @param abandonedConsentFlowMetricsJsonObject - retrieved abandoned consent flow metrics data
+     * @return List of AbandonedConsentFlowMetricDataModel objects
+     */
+    public static List<AbandonedConsentFlowMetricDataModel> mapToAbandonedConsentFlowMetricDataModel(
+            JSONObject abandonedConsentFlowMetricsJsonObject) {
+
+        List<AbandonedConsentFlowMetricDataModel> abandonedConsentFlowMetricDataModelList = new ArrayList<>();
+        JSONArray recordsArray = (JSONArray) abandonedConsentFlowMetricsJsonObject.get(RECORDS);
+
+        for (Object singleRecordObject : recordsArray) {
+            if (singleRecordObject instanceof JSONArray) {
+                JSONArray singleRecordArray = (JSONArray) singleRecordObject;
+
+                AbandonedConsentFlowMetricDataModel abandonedConsentFlowMetricDataModel =
+                        new AbandonedConsentFlowMetricDataModel(singleRecordArray);
+
+                abandonedConsentFlowMetricDataModelList.add(abandonedConsentFlowMetricDataModel);
+            }
+        }
+
+        return abandonedConsentFlowMetricDataModelList;
+    }
+
+    /**
+     * Maps all the AbandonedConsentFlowMetricDataModel to AuthorisationStageTimestamp,
+     * this will help to identify the timestamps of each stage of an authorisation.
+     *
+     * @param abandonedConsentFlowMetricDataModelList - list of AbandonedConsentFlowMetricDataModel
+     * @return - list of AuthorisationStageTimestamp
+     */
+    public static List<AuthorisationStageTimestamp> getAuthorisationStageTimestampList(
+            List<AbandonedConsentFlowMetricDataModel> abandonedConsentFlowMetricDataModelList) {
+
+        Map<String, AuthorisationStageTimestamp> authorisationStageTimestampMap = new HashMap<>();
+        for (AbandonedConsentFlowMetricDataModel abandonedConsentFlowMetricDataModel :
+                abandonedConsentFlowMetricDataModelList) {
+            String requestUriKey = abandonedConsentFlowMetricDataModel.getRequestUriKey();
+            AuthorisationStageEnum stage = abandonedConsentFlowMetricDataModel.getStage();
+            long timestamp = abandonedConsentFlowMetricDataModel.getTimestamp();
+
+            // Check if the request URI key already exists in the map, if true then update that object.
+            if (authorisationStageTimestampMap.containsKey(requestUriKey)) {
+                AuthorisationStageTimestamp authorisationStageTimestamp = authorisationStageTimestampMap
+                        .get(requestUriKey);
+
+                authorisationStageTimestamp.setTimestampByStage(stage, timestamp);
+            } else {
+                AuthorisationStageTimestamp authorisationStageTimestamp = new AuthorisationStageTimestamp();
+                authorisationStageTimestamp.setRequestUriKey(requestUriKey);
+
+                authorisationStageTimestamp.setTimestampByStage(stage, timestamp);
+
+                authorisationStageTimestampMap.put(requestUriKey, authorisationStageTimestamp);
+            }
+        }
+
+        return new ArrayList<>(authorisationStageTimestampMap.values());
+    }
+
+    /**
+     * Returns the authorisations that are currently in Authorised state.
+     *
+     * @param activeAuthorisationMetricDataModelList - list of ActiveAuthorisationMetricDataModel
+     * @return - map of active authorisations
+     */
+    public static Map<String, ActiveAuthorisationMetricDataModel> getActiveAuthorisationsMap(
+            List<ActiveAuthorisationMetricDataModel> activeAuthorisationMetricDataModelList) {
+
+        Map<String, ActiveAuthorisationMetricDataModel> latestConsentStatusMap = new HashMap<>();
+        for (ActiveAuthorisationMetricDataModel activeAuthorisationMetricDataModel :
+                activeAuthorisationMetricDataModelList) {
+            String consentId = activeAuthorisationMetricDataModel.getConsentId();
+            long timestamp = activeAuthorisationMetricDataModel.getTimestamp();
+
+            // Check if the consent id is already in the map and if the timestamp is greater
+            if (!latestConsentStatusMap.containsKey(consentId) ||
+                    timestamp > latestConsentStatusMap.get(consentId).getTimestamp()) {
+                latestConsentStatusMap.put(consentId, activeAuthorisationMetricDataModel);
+            }
+        }
+
+        // filtering only the consents whose latest status is authorised
+        return latestConsentStatusMap.entrySet()
+                .stream()
+                .filter(entry -> ConsentStatusEnum.AUTHORISED.equals(entry.getValue().getConsentStatus()))
+                .collect(Collectors.toMap(Map.Entry::getKey, Map.Entry::getValue));
+    }
+
+    /**
      * This method initializes the errorMetricDayList with date values.
      *
      * @param errorMetricDayList - List of ErrorMetricDay objects
@@ -648,6 +805,43 @@ public class MetricsProcessorUtil {
             ErrorMetricDay errorMetricDay = new ErrorMetricDay();
             errorMetricDay.setDate(date);
             errorMetricDayList.add(errorMetricDay);
+        }
+    }
+
+    /**
+     * This method initializes the authorisationMetricDayList with date values.
+     *
+     * @param authorisationMetricDayList - List of AuthorisationMetricDay objects
+     */
+    public static void initializeAuthorisationMetricDayList(List<AuthorisationMetricDay> authorisationMetricDayList,
+                                                             int numberOfDays) {
+
+        LocalDate today = LocalDate.now(timeZone);
+
+        for (int i = 0; i < numberOfDays; i++) {
+            LocalDate date = today.minusDays(i);
+            AuthorisationMetricDay authorisationMetricDay = new AuthorisationMetricDay();
+            authorisationMetricDay.setDate(date);
+            authorisationMetricDayList.add(authorisationMetricDay);
+        }
+    }
+
+    /**
+     * This method initializes the abandonedConsentFlowByStageMetricsDayList with date values.
+     *
+     * @param abandonedConsentFlowByStageMetricsDayList - List of AbandonedConsentFlowByStageMetricDay objects
+     */
+    public static void initializeAbandonedConsentFlowByStageMetricDayList(
+            List<AbandonedConsentFlowByStageMetricDay> abandonedConsentFlowByStageMetricsDayList, int numberOfDays) {
+
+        LocalDate today = LocalDate.now(timeZone);
+
+        for (int i = 0; i < numberOfDays; i++) {
+            LocalDate date = today.minusDays(i);
+            AbandonedConsentFlowByStageMetricDay abandonedConsentFlowByStageMetricDay =
+                    new AbandonedConsentFlowByStageMetricDay();
+            abandonedConsentFlowByStageMetricDay.setDate(date);
+            abandonedConsentFlowByStageMetricsDayList.add(abandonedConsentFlowByStageMetricDay);
         }
     }
 
@@ -669,7 +863,7 @@ public class MetricsProcessorUtil {
                     Map<String, Integer> unauthenticatedErrorMap = errorMetricDay.getUnauthenticatedErrorMap();
                     Map<String, Integer> authenticatedErrorMap = errorMetricDay.getAuthenticatedErrorMap();
 
-                    if (errorMetricDataModel.getAspect().equals(AspectEnum.UNAUTHENTICATED.toString())) {
+                    if (errorMetricDataModel.getAspect().equals(AspectEnum.UNAUTHENTICATED)) {
                         // updating the unauthenticated errors map
                         if (unauthenticatedErrorMap.containsKey(errorMetricDataModel.getStatusCode())) {
                             Integer errorCount = unauthenticatedErrorMap.get(errorMetricDataModel.getStatusCode());
@@ -699,6 +893,231 @@ public class MetricsProcessorUtil {
         }
 
         return errorMetricDayList;
+    }
+
+    /**
+     * Compose authorisation metrics data per day.
+     *
+     * @param authorisationMetricDayList - list of authorisation metrics per day
+     * @param authorisationMetricDataModelList - list of authorisation metrics data model
+     * @return - list of authorisation metrics per day
+     */
+    public static List<AuthorisationMetricDay> populateAuthorisationMetricDayList(
+            List<AuthorisationMetricDataModel> authorisationMetricDataModelList,
+            List<AuthorisationMetricDay> authorisationMetricDayList) {
+
+        for (AuthorisationMetricDataModel authorisationMetricDataModel : authorisationMetricDataModelList) {
+            for (int i = 0; i < authorisationMetricDayList.size(); i++) {
+                AuthorisationMetricDay authorisationMetricDay = authorisationMetricDayList.get(i);
+                if (isTimestampInDate(authorisationMetricDataModel.getTimestamp(),
+                        authorisationMetricDay.getDate())) {
+
+                    // populating new authorisation metrics
+                    if (ConsentStatusEnum.AUTHORISED.equals(authorisationMetricDataModel.getConsentStatus()) &&
+                            AuthorisationFlowTypeEnum.CONSENT_AUTHORISATION.equals(
+                                    authorisationMetricDataModel.getAuthFlowType()) &&
+                            ConsentDurationTypeEnum.ONGOING.equals(authorisationMetricDataModel
+                                    .getConsentDurationType())) {
+                        if (authorisationMetricDataModel.getCustomerProfile().contains(MetricsConstants.INDIVIDUAL)) {
+                            authorisationMetricDay.getNewAuthorisationMetric().getOngoing()
+                                    .setIndividual(authorisationMetricDataModel.getCount());
+                        } else {
+                            authorisationMetricDay.getNewAuthorisationMetric().getOngoing()
+                                    .setNonIndividual(authorisationMetricDataModel.getCount());
+                        }
+                    }
+
+                    if (ConsentStatusEnum.AUTHORISED.equals(authorisationMetricDataModel.getConsentStatus()) &&
+                            AuthorisationFlowTypeEnum.CONSENT_AUTHORISATION.equals(
+                                    authorisationMetricDataModel.getAuthFlowType()) &&
+                            ConsentDurationTypeEnum.ONCE_OFF.equals(authorisationMetricDataModel
+                                    .getConsentDurationType())) {
+                        if (authorisationMetricDataModel.getCustomerProfile().contains(MetricsConstants.INDIVIDUAL)) {
+                            authorisationMetricDay.getNewAuthorisationMetric().getOnceOff()
+                                    .setIndividual(authorisationMetricDataModel.getCount());
+                        } else {
+                            authorisationMetricDay.getNewAuthorisationMetric().getOnceOff()
+                                    .setNonIndividual(authorisationMetricDataModel.getCount());
+                        }
+                    }
+
+                    // populating revoked authorisation metrics
+                    if (ConsentStatusEnum.REVOKED.equals(authorisationMetricDataModel.getConsentStatus()) &&
+                            ConsentDurationTypeEnum.ONGOING.equals(authorisationMetricDataModel
+                                    .getConsentDurationType())) {
+                        if (authorisationMetricDataModel.getCustomerProfile().contains(MetricsConstants.INDIVIDUAL)) {
+                            authorisationMetricDay.getRevokedAuthorisationMetric().getOngoing()
+                                    .setIndividual(authorisationMetricDataModel.getCount());
+                        } else {
+                            authorisationMetricDay.getRevokedAuthorisationMetric().getOngoing()
+                                    .setNonIndividual(authorisationMetricDataModel.getCount());
+                        }
+                    }
+
+                    // populating amended authorisation metrics
+                    if (ConsentStatusEnum.AUTHORISED.equals(authorisationMetricDataModel.getConsentStatus()) &&
+                            AuthorisationFlowTypeEnum.CONSENT_AMENDMENT_AUTHORISATION.equals(
+                                    authorisationMetricDataModel.getAuthFlowType()) &&
+                            ConsentDurationTypeEnum.ONGOING.equals(authorisationMetricDataModel
+                                    .getConsentDurationType())) {
+                        if (authorisationMetricDataModel.getCustomerProfile().contains(MetricsConstants.INDIVIDUAL)) {
+                            authorisationMetricDay.getAmendedAuthorisationMetric().getOngoing()
+                                    .setIndividual(authorisationMetricDataModel.getCount());
+                        } else {
+                            authorisationMetricDay.getAmendedAuthorisationMetric().getOngoing()
+                                    .setNonIndividual(authorisationMetricDataModel.getCount());
+                        }
+                    }
+
+                    // populating expired authorisation metrics
+                    if (ConsentStatusEnum.EXPIRED.equals(authorisationMetricDataModel.getConsentStatus()) &&
+                            ConsentDurationTypeEnum.ONGOING.equals(authorisationMetricDataModel
+                                    .getConsentDurationType())) {
+                        if (authorisationMetricDataModel.getCustomerProfile().contains(MetricsConstants.INDIVIDUAL)) {
+                            authorisationMetricDay.getExpiredAuthorisationMetric().getOngoing()
+                                    .setIndividual(authorisationMetricDataModel.getCount());
+                        } else {
+                            authorisationMetricDay.getExpiredAuthorisationMetric().getOngoing()
+                                    .setNonIndividual(authorisationMetricDataModel.getCount());
+                        }
+                    }
+
+                }
+            }
+        }
+
+        return authorisationMetricDayList;
+    }
+
+    /**
+     * Compose abandoned consent flow by stage metrics data per day.
+     *
+     * @param authorisationStageTimeList - list of authorisation stage timestamps
+     * @param abandonedConsentFlowByStageMetricsDayList - list of abandoned consent flow by stage metrics per day
+     * @return - list of abandoned consent flow by stage metrics per day
+     */
+    public static List<AbandonedConsentFlowByStageMetricDay> populateAbandonedConsentFlowByStageMetricDayList(
+            List<AuthorisationStageTimestamp> authorisationStageTimeList,
+            List<AbandonedConsentFlowByStageMetricDay> abandonedConsentFlowByStageMetricsDayList) {
+
+        // Looping through the table records
+        for (AuthorisationStageTimestamp authorisationStageTimestamp : authorisationStageTimeList) {
+
+            // Skipping the records that are completed
+            if (authorisationStageTimestamp.getCompletedTimestamp() == 0) {
+                long timestampToCheck = 0;
+                AbandonmentsByStageEnum stage = null;
+
+                if (authorisationStageTimestamp.getConsentRejectedTimestamp() > 0) {
+                    // Updating the rejected metric if the consent flow was rejected
+                    timestampToCheck = authorisationStageTimestamp.getConsentRejectedTimestamp();
+                    stage = AbandonmentsByStageEnum.REJECTED;
+                } else if (authorisationStageTimestamp.getTokenExchangeFailedTimestamp() > 0) {
+                    // Updating the failedTokenExchange metric if the token exchange failed
+                    timestampToCheck = authorisationStageTimestamp.getTokenExchangeFailedTimestamp();
+                    stage = AbandonmentsByStageEnum.FAILED_TOKEN_EXCHANGE;
+                } else if (authorisationStageTimestamp.getConsentApprovedTimestamp() > 0) {
+                    long elapsedTimeMillis = getElapsedTimeMillis(authorisationStageTimestamp
+                            .getConsentApprovedTimestamp());
+                    if (elapsedTimeMillis > authCodeExpiredTime) {
+                        // Updating the failedTokenExchange metric if the consent flow has consentApproved but
+                        // not completed after the auth code has expired
+                        timestampToCheck = authorisationStageTimestamp.getConsentApprovedTimestamp() +
+                                authCodeExpiredTime;
+                        stage = AbandonmentsByStageEnum.FAILED_TOKEN_EXCHANGE;
+                    }
+                } else if (authorisationStageTimestamp.getAccountSelectedTimestamp() > 0) {
+                    long elapsedTimeMillis = getElapsedTimeMillis(authorisationStageTimestamp
+                            .getAccountSelectedTimestamp());
+                    if (elapsedTimeMillis > consentAbandonmentTime) {
+                        // Updating the preAuthorisation metric if the consent flow has accountSelected but
+                        // not consentApproved or consentRejected after the consent flow
+                        // abandonment cut off time has passed
+                        timestampToCheck = authorisationStageTimestamp.getAccountSelectedTimestamp() +
+                                consentAbandonmentTime;
+                        stage = AbandonmentsByStageEnum.PRE_AUTHORISATION;
+                    }
+                } else if (authorisationStageTimestamp.getUserAuthenticatedTimestamp() > 0) {
+                    long elapsedTimeMillis = getElapsedTimeMillis(authorisationStageTimestamp
+                            .getUserAuthenticatedTimestamp());
+                    if (elapsedTimeMillis > consentAbandonmentTime) {
+                        // Updating the preAccountSelection metric if the consent flow has userAuthenticated but
+                        // not accountSelected after the consent flow abandonment cut off time has passed
+                        timestampToCheck = authorisationStageTimestamp.getUserAuthenticatedTimestamp() +
+                                consentAbandonmentTime;
+                        stage = AbandonmentsByStageEnum.PRE_ACCOUNT_SELECTION;
+                    }
+                } else if (authorisationStageTimestamp.getUserIdentifiedTimestamp() > 0) {
+                    long elapsedTimeMillis = getElapsedTimeMillis(authorisationStageTimestamp
+                            .getUserIdentifiedTimestamp());
+                    if (elapsedTimeMillis > consentAbandonmentTime) {
+                        // Updating the preAuthentication metric if the consent flow has userIdentified but
+                        // not userAuthenticated after the consent flow abandonment cut off time has passed
+                        timestampToCheck = authorisationStageTimestamp.getUserIdentifiedTimestamp() +
+                                consentAbandonmentTime;
+                        stage = AbandonmentsByStageEnum.PRE_AUTHENTICATION;
+                    }
+                } else if (authorisationStageTimestamp.getStartedTimestamp() > 0) {
+                    long elapsedTimeMillis = getElapsedTimeMillis(authorisationStageTimestamp
+                            .getStartedTimestamp());
+                    if (elapsedTimeMillis > consentAbandonmentTime) {
+                        // Updating the preIdentification metric if the consent flow has started but
+                        // not userIdentified after the consent flow abandonment cut off time has passed
+                        timestampToCheck = authorisationStageTimestamp.getStartedTimestamp() +
+                                consentAbandonmentTime;
+                        stage = AbandonmentsByStageEnum.PRE_IDENTIFICATION;
+                    }
+                }
+
+                if (stage != null) {
+                    for (AbandonedConsentFlowByStageMetricDay metricDay : abandonedConsentFlowByStageMetricsDayList) {
+                        if (isTimestampInDate(timestampToCheck, metricDay.getDate())) {
+                            updateMetricCount(stage, metricDay);
+                            break;
+                        }
+                    }
+                }
+            }
+        }
+
+        return abandonedConsentFlowByStageMetricsDayList;
+    }
+
+    private static long getElapsedTimeMillis(long timestampInMillis) {
+
+        return System.currentTimeMillis() - timestampInMillis;
+    }
+
+    private static void updateMetricCount(AbandonmentsByStageEnum stage,
+                                          AbandonedConsentFlowByStageMetricDay metricDay) {
+        switch (stage) {
+            case REJECTED:
+                metricDay.setAbandonedByRejectedStageCount(metricDay
+                        .getAbandonedByRejectedStageCount() + 1);
+                break;
+            case PRE_IDENTIFICATION:
+                metricDay.setAbandonedByPreIdentificationStageCount(metricDay
+                        .getAbandonedByPreIdentificationStageCount() + 1);
+                break;
+            case PRE_AUTHENTICATION:
+                metricDay.setAbandonedByPreAuthenticationStageCount(metricDay
+                        .getAbandonedByPreAuthenticationStageCount() + 1);
+                break;
+            case PRE_ACCOUNT_SELECTION:
+                metricDay.setAbandonedByPreAccountSelectionStageCount(metricDay
+                        .getAbandonedByPreAccountSelectionStageCount() + 1);
+                break;
+            case PRE_AUTHORISATION:
+                metricDay.setAbandonedByPreAuthorisationStageCount(metricDay
+                        .getAbandonedByPreAuthorisationStageCount() + 1);
+                break;
+            case FAILED_TOKEN_EXCHANGE:
+                metricDay.setAbandonedByFailedTokenExchangeStageCount(metricDay
+                        .getAbandonedByFailedTokenExchangeStageCount() + 1);
+                break;
+            default:
+                break;
+        }
     }
 
     /**

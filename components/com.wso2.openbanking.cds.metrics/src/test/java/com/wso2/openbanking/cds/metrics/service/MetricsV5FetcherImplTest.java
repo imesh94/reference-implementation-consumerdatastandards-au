@@ -53,6 +53,8 @@ public class MetricsV5FetcherImplTest extends PowerMockTestCase {
         PowerMockito.when(OpenBankingCDSConfigParser.getInstance()).thenReturn(openBankingCDSConfigParserMock);
         doReturn("GMT").when(openBankingCDSConfigParserMock).getMetricsTimeZone();
         doReturn("2024-05-01").when(openBankingCDSConfigParserMock).getMetricsV5StartDate();
+        doReturn(300000L).when(openBankingCDSConfigParserMock).getConsentAbandonmentTime();
+        doReturn(300000L).when(openBankingCDSConfigParserMock).getAuthorizationCodeValidityPeriod();
     }
 
     @Test

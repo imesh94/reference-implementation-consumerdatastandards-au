@@ -12,6 +12,12 @@ package com.wso2.openbanking.cds.metrics.service;
 import com.wso2.openbanking.accelerator.common.exception.OpenBankingException;
 import com.wso2.openbanking.cds.metrics.constants.MetricsConstants;
 import com.wso2.openbanking.cds.metrics.data.MetricsDataProvider;
+import com.wso2.openbanking.cds.metrics.model.AbandonedConsentFlowByStageMetricDay;
+import com.wso2.openbanking.cds.metrics.model.AbandonedConsentFlowMetricDataModel;
+import com.wso2.openbanking.cds.metrics.model.ActiveAuthorisationMetricDataModel;
+import com.wso2.openbanking.cds.metrics.model.AuthorisationMetricDataModel;
+import com.wso2.openbanking.cds.metrics.model.AuthorisationMetricDay;
+import com.wso2.openbanking.cds.metrics.model.AuthorisationStageTimestamp;
 import com.wso2.openbanking.cds.metrics.model.ErrorMetricDataModel;
 import com.wso2.openbanking.cds.metrics.model.ErrorMetricDay;
 import com.wso2.openbanking.cds.metrics.model.ServerOutageDataModel;
@@ -304,6 +310,115 @@ public class MetricsV5ProcessorImpl implements MetricsProcessor {
         }
         log.debug("Finished rejection metrics calculation successfully.");
         return rejectionMetricsMap;
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public Map<String, Integer> getActiveAuthorisationCountMetrics() throws OpenBankingException {
+
+        log.debug("Starting active authorisation count metrics calculation.");
+        JSONObject activeAuthorisationMetricsJsonObject = metricsDataProvider.getActiveAuthorisationCountMetricsData();
+        if (activeAuthorisationMetricsJsonObject != null) {
+            Map<String, Integer> activeAuthorisationMetrics = new HashMap<>();
+
+            // Mapping the result set to ActiveAuthorisationMetricDataModel objects.
+            List<ActiveAuthorisationMetricDataModel> activeAuthorisationMetricDataModelList =
+                    MetricsProcessorUtil.mapToActiveAuthorisationMetricDataModel(activeAuthorisationMetricsJsonObject);
+
+            // Get authorisations that are currently in Authorised state.
+            Map<String, ActiveAuthorisationMetricDataModel> activeAuthorisationsMap =
+                    MetricsProcessorUtil.getActiveAuthorisationsMap(activeAuthorisationMetricDataModelList);
+
+            long individualActiveAuthorisationsCount = activeAuthorisationsMap.values()
+                    .stream()
+                    .filter(activeAuthorisationMetricDataModel -> MetricsConstants.INDIVIDUAL
+                            .equalsIgnoreCase(activeAuthorisationMetricDataModel.getCustomerProfile()))
+                    .count();
+
+            long nonIndividualActiveAuthorisationsCount =
+                    activeAuthorisationsMap.size() - individualActiveAuthorisationsCount;
+
+            activeAuthorisationMetrics.put(MetricsConstants.INDIVIDUAL,
+                    (int) individualActiveAuthorisationsCount);
+            activeAuthorisationMetrics.put(MetricsConstants.NON_INDIVIDUAL,
+                    (int) nonIndividualActiveAuthorisationsCount);
+
+            log.debug("Finished active authorisation count metrics calculation successfully.");
+            return activeAuthorisationMetrics;
+        } else {
+            throw new OpenBankingException(String.format(NO_DATA_ERROR, MetricsConstants.AUTHORISATION));
+        }
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public List<AuthorisationMetricDay> getAuthorisationMetrics() throws OpenBankingException {
+
+        log.debug("Starting authorisation metrics calculation.");
+        JSONObject authorisationMetricsJsonObject = metricsDataProvider.getAuthorisationMetricsData();
+        if (authorisationMetricsJsonObject != null) {
+            List<AuthorisationMetricDay> authorisationMetricDayList = new ArrayList<>();
+
+            // Mapping the result set to AuthorisationMetricDataModel objects.
+            List<AuthorisationMetricDataModel> authorisationMetricDataModelList =
+                    MetricsProcessorUtil.mapToAuthorisationMetricDataModel(authorisationMetricsJsonObject);
+
+            // Initialize the authorisationMetricDayList with days and default values.
+            MetricsProcessorUtil.initializeAuthorisationMetricDayList(authorisationMetricDayList, numberOfDays);
+
+            // Populate the retrieved results to the authorisationMetricDayList according to the respective day.
+            authorisationMetricDayList =
+                    MetricsProcessorUtil.populateAuthorisationMetricDayList(authorisationMetricDataModelList,
+                    authorisationMetricDayList);
+
+            log.debug("Finished authorisation metrics calculation successfully.");
+            return authorisationMetricDayList;
+        } else {
+            throw new OpenBankingException(String.format(NO_DATA_ERROR, MetricsConstants.AUTHORISATION));
+        }
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public List<AbandonedConsentFlowByStageMetricDay> getAbandonedConsentFlowCountMetrics()
+            throws OpenBankingException {
+
+        log.debug("Starting abandoned consent flow count metrics calculation.");
+        JSONObject abandonedConsentFlowMetricsJsonObject = metricsDataProvider
+                .getAbandonedConsentFlowCountMetricsData();
+        if (abandonedConsentFlowMetricsJsonObject != null) {
+            List<AbandonedConsentFlowByStageMetricDay> abandonedConsentFlowByStageMetricsDayList = new ArrayList<>();
+
+            // Mapping the result set to AbandonedConsentFlowMetricDataModel objects.
+            List<AbandonedConsentFlowMetricDataModel> abandonedConsentFlowMetricDataModelList =
+                    MetricsProcessorUtil
+                            .mapToAbandonedConsentFlowMetricDataModel(abandonedConsentFlowMetricsJsonObject);
+
+            // Grouping each authorisation with the timestamps of their stages.
+            List<AuthorisationStageTimestamp> authorisationStageTimeList =
+                    MetricsProcessorUtil.getAuthorisationStageTimestampList(abandonedConsentFlowMetricDataModelList);
+
+            // Initialize the abandonedConsentFlowByStageMetricsDayList with days and default values.
+            MetricsProcessorUtil.initializeAbandonedConsentFlowByStageMetricDayList(
+                    abandonedConsentFlowByStageMetricsDayList, numberOfDays);
+
+            // Populate the retrieved results to the abandonedConsentFlowByStageMetricsDayList according
+            // to the respective day.
+            abandonedConsentFlowByStageMetricsDayList =
+                    MetricsProcessorUtil.populateAbandonedConsentFlowByStageMetricDayList(
+                    authorisationStageTimeList, abandonedConsentFlowByStageMetricsDayList);
+
+            log.debug("Finished abandoned consent flow count metrics calculation successfully.");
+            return abandonedConsentFlowByStageMetricsDayList;
+        } else {
+            throw new OpenBankingException(String.format(NO_DATA_ERROR, MetricsConstants.AUTHORISATION));
+        }
     }
 
     /**

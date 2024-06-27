@@ -793,6 +793,8 @@ cache_expiry_time = "1440"
 [open_banking_cds.metrics]
 tps_data_retrieval_url = "http://BI_HOSTNAME:8007/CDSCurrentPeakTPSApp/CDSCurrentPeakTPSAppStream"
 time_zone = "GMT"
+consent_abandonment_time = 300
+authorization_code_validity = 300
 
 [open_banking_cds.metrics.aggregation_job]
 enabled = true

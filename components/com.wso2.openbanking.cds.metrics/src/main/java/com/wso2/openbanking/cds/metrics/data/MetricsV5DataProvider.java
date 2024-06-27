@@ -197,6 +197,57 @@ public class MetricsV5DataProvider implements MetricsDataProvider {
     }
 
     @Override
+    public JSONObject getActiveAuthorisationCountMetricsData() throws OpenBankingException {
+
+        JSONObject activeAuthorisationCountMetricsJsonObject;
+        String spQuery = metricsV5QueryCreator.getActiveAuthorisationCountMetricsQuery();
+
+        try {
+            activeAuthorisationCountMetricsJsonObject = SPQueryExecutorUtil.executeQueryOnStreamProcessor(
+                    MetricsConstants.CDS_AUTHORISATION_METRICS_APP, spQuery);
+        } catch (ParseException | IOException e) {
+            String errorMessage = String.format(RETRIEVAL_ERROR, MetricsConstants.AUTHORISATION);
+            log.error(errorMessage, e);
+            throw new OpenBankingException(errorMessage, e);
+        }
+        return activeAuthorisationCountMetricsJsonObject;
+    }
+
+    @Override
+    public JSONObject getAuthorisationMetricsData() throws OpenBankingException {
+
+        JSONObject authorisationMetricsJsonObject;
+        String spQuery = metricsV5QueryCreator.getAuthorisationMetricsQuery();
+
+        try {
+            authorisationMetricsJsonObject = SPQueryExecutorUtil.executeQueryOnStreamProcessor(
+                    MetricsConstants.CDS_AUTHORISATION_METRICS_APP, spQuery);
+        } catch (ParseException | IOException e) {
+            String errorMessage = String.format(RETRIEVAL_ERROR, MetricsConstants.AUTHORISATION);
+            log.error(errorMessage, e);
+            throw new OpenBankingException(errorMessage, e);
+        }
+        return authorisationMetricsJsonObject;
+    }
+
+    @Override
+    public JSONObject getAbandonedConsentFlowCountMetricsData() throws OpenBankingException {
+
+        JSONObject abandonedConsentFlowCountMetricsJsonObject;
+        String spQuery = metricsV5QueryCreator.getAbandonedConsentFlowCountMetricsQuery();
+
+        try {
+            abandonedConsentFlowCountMetricsJsonObject = SPQueryExecutorUtil.executeQueryOnStreamProcessor(
+                    MetricsConstants.CDS_AUTHORISATION_METRICS_APP, spQuery);
+        } catch (ParseException | IOException e) {
+            String errorMessage = String.format(RETRIEVAL_ERROR, MetricsConstants.AUTHORISATION);
+            log.error(errorMessage, e);
+            throw new OpenBankingException(errorMessage, e);
+        }
+        return abandonedConsentFlowCountMetricsJsonObject;
+    }
+
+    @Override
     public JSONObject getRecipientCountMetricsData() throws OpenBankingException {
 
         JSONObject recipientCountMetricsJsonObject;

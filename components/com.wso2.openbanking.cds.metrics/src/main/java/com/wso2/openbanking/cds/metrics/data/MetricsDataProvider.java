@@ -39,6 +39,12 @@ public interface MetricsDataProvider {
 
     JSONObject getRejectionMetricsData() throws OpenBankingException;
 
+    JSONObject getActiveAuthorisationCountMetricsData() throws OpenBankingException;
+
+    JSONObject getAuthorisationMetricsData() throws OpenBankingException;
+
+    JSONObject getAbandonedConsentFlowCountMetricsData() throws OpenBankingException;
+
     JSONObject getRecipientCountMetricsData() throws OpenBankingException;
 
     JSONObject getCustomerCountMetricsData() throws OpenBankingException;

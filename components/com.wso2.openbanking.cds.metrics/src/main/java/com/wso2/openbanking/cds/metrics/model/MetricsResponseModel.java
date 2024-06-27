@@ -9,6 +9,7 @@
 
 package com.wso2.openbanking.cds.metrics.model;
 
+import com.wso2.openbanking.cds.metrics.constants.MetricsConstants;
 import com.wso2.openbanking.cds.metrics.util.AspectEnum;
 import com.wso2.openbanking.cds.metrics.util.PriorityEnum;
 
@@ -86,9 +87,9 @@ public class MetricsResponseModel {
     private List<CustomerTypeCount> revokedAuthorisationCount;
     private List<CustomerTypeCount> amendedAuthorisationCount;
     private List<CustomerTypeCount> expiredAuthorisationCount;
-    private List<Integer> abandonedConsentFlowCount;
 
     // Abandonment by stage
+    private List<Integer> abandonedConsentFlowCount;
     private List<Integer> preIdentificationAbandonedConsentFlowCount;
     private List<Integer> preAuthenticationAbandonedConsentFlowCount;
     private List<Integer> preAccountSelectionAbandonedConsentFlowCount;
@@ -454,6 +455,12 @@ public class MetricsResponseModel {
         this.activeNonIndividualAuthorisationCount = activeNonIndividualAuthorisationCount;
     }
 
+    public void setActiveAuthorisationCount(Map<String, Integer> activeAuthorisationCountMap) {
+
+        setActiveIndividualAuthorisationCount(activeAuthorisationCountMap.get(MetricsConstants.INDIVIDUAL));
+        setActiveNonIndividualAuthorisationCount(activeAuthorisationCountMap.get(MetricsConstants.INDIVIDUAL));
+    }
+
     public List<AuthorisationMetric> getNewAuthorisationCount() {
         return newAuthorisationCount;
     }
@@ -484,6 +491,29 @@ public class MetricsResponseModel {
 
     public void setExpiredAuthorisationCount(List<CustomerTypeCount> expiredAuthorisationCount) {
         this.expiredAuthorisationCount = expiredAuthorisationCount;
+    }
+
+    public void setAuthorisation(List<AuthorisationMetricDay> authorisationMetricDayList) {
+
+        setNewAuthorisationCount(authorisationMetricDayList
+                .stream()
+                .map(AuthorisationMetricDay::getNewAuthorisationMetric)
+                .collect(Collectors.toList()));
+        setRevokedAuthorisationCount(authorisationMetricDayList
+                .stream()
+                .map(AuthorisationMetricDay::getRevokedAuthorisationMetric)
+                .map(AuthorisationMetric::getOngoing)
+                .collect(Collectors.toList()));
+        setAmendedAuthorisationCount(authorisationMetricDayList
+                .stream()
+                .map(AuthorisationMetricDay::getAmendedAuthorisationMetric)
+                .map(AuthorisationMetric::getOngoing)
+                .collect(Collectors.toList()));
+        setExpiredAuthorisationCount(authorisationMetricDayList
+                .stream()
+                .map(AuthorisationMetricDay::getExpiredAuthorisationMetric)
+                .map(AuthorisationMetric::getOngoing)
+                .collect(Collectors.toList()));
     }
 
     public List<Integer> getAbandonedConsentFlowCount() {
@@ -544,5 +574,41 @@ public class MetricsResponseModel {
     public void setFailedTokenExchangeAbandonedConsentFlowCount(
             List<Integer> failedTokenExchangeAbandonedConsentFlowCount) {
         this.failedTokenExchangeAbandonedConsentFlowCount = failedTokenExchangeAbandonedConsentFlowCount;
+    }
+
+    public void setAbandonedConsentFlow(List<AbandonedConsentFlowByStageMetricDay>
+                                                     abandonedConsentFlowByStageCountMetricDayList) {
+
+        // set abandoned consent flow metrics
+        setAbandonedConsentFlowCount(abandonedConsentFlowByStageCountMetricDayList
+                .stream()
+                .map(AbandonedConsentFlowByStageMetricDay::getAbandonedConsentFlowCount)
+                .collect(Collectors.toList()));
+
+        // set abandoned consent flow by stage metrics
+        setPreIdentificationAbandonedConsentFlowCount(abandonedConsentFlowByStageCountMetricDayList
+                .stream()
+                .map(AbandonedConsentFlowByStageMetricDay::getAbandonedByPreIdentificationStageCount)
+                .collect(Collectors.toList()));
+        setPreAuthenticationAbandonedConsentFlowCount(abandonedConsentFlowByStageCountMetricDayList
+                .stream()
+                .map(AbandonedConsentFlowByStageMetricDay::getAbandonedByPreAuthenticationStageCount)
+                .collect(Collectors.toList()));
+        setPreAccountSelectionAbandonedConsentFlowCount(abandonedConsentFlowByStageCountMetricDayList
+                .stream()
+                .map(AbandonedConsentFlowByStageMetricDay::getAbandonedByPreAccountSelectionStageCount)
+                .collect(Collectors.toList()));
+        setPreAuthorisationAbandonedConsentFlowCount(abandonedConsentFlowByStageCountMetricDayList
+                .stream()
+                .map(AbandonedConsentFlowByStageMetricDay::getAbandonedByPreAuthorisationStageCount)
+                .collect(Collectors.toList()));
+        setRejectedAbandonedConsentFlowCount(abandonedConsentFlowByStageCountMetricDayList
+                .stream()
+                .map(AbandonedConsentFlowByStageMetricDay::getAbandonedByRejectedStageCount)
+                .collect(Collectors.toList()));
+        setFailedTokenExchangeAbandonedConsentFlowCount(abandonedConsentFlowByStageCountMetricDayList
+                .stream()
+                .map(AbandonedConsentFlowByStageMetricDay::getAbandonedByFailedTokenExchangeStageCount)
+                .collect(Collectors.toList()));
     }
 }

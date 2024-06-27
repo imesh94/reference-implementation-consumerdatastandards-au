@@ -11,6 +11,8 @@ package com.wso2.openbanking.cds.metrics.service;
 
 import com.wso2.openbanking.accelerator.common.exception.OpenBankingException;
 import com.wso2.openbanking.cds.metrics.constants.MetricsConstants;
+import com.wso2.openbanking.cds.metrics.model.AbandonedConsentFlowByStageMetricDay;
+import com.wso2.openbanking.cds.metrics.model.AuthorisationMetricDay;
 import com.wso2.openbanking.cds.metrics.model.ErrorMetricDay;
 import com.wso2.openbanking.cds.metrics.model.MetricsResponseModel;
 import com.wso2.openbanking.cds.metrics.util.AspectEnum;
@@ -53,6 +55,9 @@ public class MetricsV5FetcherImpl implements MetricsFetcher {
     private CompletableFuture<List<BigDecimal>> performanceFuture;
     private CompletableFuture<Map<PriorityEnum, List<List<BigDecimal>>>> hourlyPerformanceByPriorityFuture;
     private CompletableFuture<Map<PriorityEnum, List<BigDecimal>>> averageResponseTimeFuture;
+    private CompletableFuture<Map<String, Integer>> activeAuthorisationCountFuture;
+    private CompletableFuture<List<AuthorisationMetricDay>> authorisationFuture;
+    private CompletableFuture<List<AbandonedConsentFlowByStageMetricDay>> abandonedConsentFlowCountFuture;
 
     public MetricsV5FetcherImpl(MetricsProcessor metricsProcessor) throws OpenBankingException {
         this.metricsProcessor = metricsProcessor;
@@ -74,6 +79,9 @@ public class MetricsV5FetcherImpl implements MetricsFetcher {
         recipientCountFuture = fetchRecipientCountMetricsAsync();
         customerCountFuture = fetchCustomerCountMetricsAsync();
         hourlyPerformanceByPriorityFuture = fetchHourlyPerformanceByPriorityMetricsAsync();
+        activeAuthorisationCountFuture = fetchActiveAuthorisationCountMetricsAsync();
+        authorisationFuture = fetchAuthorisationMetricsAsync();
+        abandonedConsentFlowCountFuture = fetchAbandonedConsentFlowCountMetricsAsync();
         // Dependent futures that require results from the invocationFuture
         performanceFuture = fetchPerformanceMetricsAsync(invocationFuture);
         averageResponseTimeFuture = fetchAverageResponseTimeAsync(invocationFuture);
@@ -309,6 +317,57 @@ public class MetricsV5FetcherImpl implements MetricsFetcher {
     }
 
     /**
+     * Get active authorisation count metrics asynchronously.
+     *
+     * @return CompletableFuture of active authorisation count metrics
+     */
+    private CompletableFuture<Map<String, Integer>> fetchActiveAuthorisationCountMetricsAsync() {
+        return CompletableFuture.supplyAsync(() -> {
+            try {
+                return metricsProcessor.getActiveAuthorisationCountMetrics();
+            } catch (OpenBankingException e) {
+                String errorMessage = String.format(ASYNC_FETCH_ERROR, MetricsConstants.ERROR);
+                log.debug(errorMessage, e);
+                throw new RuntimeException(errorMessage, e);
+            }
+        });
+    }
+
+    /**
+     * Get authorisation metrics asynchronously.
+     *
+     * @return CompletableFuture of authorisation metrics
+     */
+    private CompletableFuture<List<AuthorisationMetricDay>> fetchAuthorisationMetricsAsync() {
+        return CompletableFuture.supplyAsync(() -> {
+            try {
+                return metricsProcessor.getAuthorisationMetrics();
+            } catch (OpenBankingException e) {
+                String errorMessage = String.format(ASYNC_FETCH_ERROR, MetricsConstants.AUTHORISATION);
+                log.debug(errorMessage, e);
+                throw new RuntimeException(errorMessage, e);
+            }
+        });
+    }
+
+    /**
+     * Get abandoned consent flow count metrics asynchronously.
+     *
+     * @return CompletableFuture of abandoned consent flow count metrics
+     */
+    private CompletableFuture<List<AbandonedConsentFlowByStageMetricDay>> fetchAbandonedConsentFlowCountMetricsAsync() {
+        return CompletableFuture.supplyAsync(() -> {
+            try {
+                return metricsProcessor.getAbandonedConsentFlowCountMetrics();
+            } catch (OpenBankingException e) {
+                String errorMessage = String.format(ASYNC_FETCH_ERROR, MetricsConstants.AUTHORISATION);
+                log.debug(errorMessage, e);
+                throw new RuntimeException(errorMessage, e);
+            }
+        });
+    }
+
+    /**
      * Populate the metrics model with the calculated metrics data.
      * Errors occurred during the asynchronous calculation of metrics are also handled here.
      *
@@ -332,6 +391,9 @@ public class MetricsV5FetcherImpl implements MetricsFetcher {
             metricsResponseModel.setPerformance(performanceFuture.get());
             metricsResponseModel.setHourlyPerformanceByPriority(hourlyPerformanceByPriorityFuture.get());
             metricsResponseModel.setAverageResponseTime(averageResponseTimeFuture.get());
+            metricsResponseModel.setActiveAuthorisationCount(activeAuthorisationCountFuture.get());
+            metricsResponseModel.setAuthorisation(authorisationFuture.get());
+            metricsResponseModel.setAbandonedConsentFlow(abandonedConsentFlowCountFuture.get());
         } catch (InterruptedException | ExecutionException e) {
             // Handle errors that occurred during the asynchronous calculation of metrics.
             log.error("Error occurred while calculating metrics. " + e.getMessage(), e);

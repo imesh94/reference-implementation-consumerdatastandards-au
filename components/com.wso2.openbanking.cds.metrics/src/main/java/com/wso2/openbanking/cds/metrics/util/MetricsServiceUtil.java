@@ -39,6 +39,7 @@ public class MetricsServiceUtil {
         appendErrorMetrics(currentDayMetrics, historicMetrics);
         appendAverageResponseMetrics(currentDayMetrics, historicMetrics);
         appendRejectionMetrics(currentDayMetrics, historicMetrics);
+        appendAuthorisationMetrics(currentDayMetrics, historicMetrics);
     }
 
     /**
@@ -160,6 +161,36 @@ public class MetricsServiceUtil {
                 getAuthenticatedEndpointRejections());
         currentDayMetrics.getUnauthenticatedEndpointRejections().addAll(historicMetrics.
                 getUnauthenticatedEndpointRejections());
+    }
+
+    /**
+     * Append historic authorisation metrics to current day authorisation metrics.
+     *
+     * @param currentDayMetrics - current day metrics
+     * @param historicMetrics   - historic metrics
+     */
+    private static void appendAuthorisationMetrics(
+            MetricsResponseModel currentDayMetrics, MetricsResponseModel historicMetrics) {
+
+        currentDayMetrics.getNewAuthorisationCount().addAll(historicMetrics.getNewAuthorisationCount());
+        currentDayMetrics.getAmendedAuthorisationCount().addAll(historicMetrics.getAmendedAuthorisationCount());
+        currentDayMetrics.getExpiredAuthorisationCount().addAll(historicMetrics.getExpiredAuthorisationCount());
+        currentDayMetrics.getRevokedAuthorisationCount().addAll(historicMetrics.getRevokedAuthorisationCount());
+
+        currentDayMetrics.getAbandonedConsentFlowCount().addAll(historicMetrics.getAbandonedConsentFlowCount());
+
+        currentDayMetrics.getPreIdentificationAbandonedConsentFlowCount().addAll(historicMetrics
+                .getPreIdentificationAbandonedConsentFlowCount());
+        currentDayMetrics.getPreAuthenticationAbandonedConsentFlowCount().addAll(historicMetrics
+                .getPreAuthenticationAbandonedConsentFlowCount());
+        currentDayMetrics.getPreAccountSelectionAbandonedConsentFlowCount().addAll(historicMetrics
+                .getPreAccountSelectionAbandonedConsentFlowCount());
+        currentDayMetrics.getPreAuthorisationAbandonedConsentFlowCount().addAll(historicMetrics
+                .getPreAuthorisationAbandonedConsentFlowCount());
+        currentDayMetrics.getRejectedAbandonedConsentFlowCount().addAll(historicMetrics
+                .getRejectedAbandonedConsentFlowCount());
+        currentDayMetrics.getFailedTokenExchangeAbandonedConsentFlowCount().addAll(historicMetrics
+                .getFailedTokenExchangeAbandonedConsentFlowCount());
     }
 
     /**

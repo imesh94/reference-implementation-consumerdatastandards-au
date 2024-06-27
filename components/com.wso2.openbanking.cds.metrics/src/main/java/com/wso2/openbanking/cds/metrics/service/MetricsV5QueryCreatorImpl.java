@@ -24,6 +24,8 @@ public class MetricsV5QueryCreatorImpl implements MetricsQueryCreator {
     private final String toTimestamp;
     private final long fromTimestampEpochSecond;
     private final long toTimestampEpochSecond;
+    private final long fromTimestampEpochMilliSecond;
+    private final long toTimestampEpochMilliSecond;
     private final long availabilityFromTimestamp;
     private final long availabilityToTimestamp;
     private final String timeGranularity;
@@ -37,6 +39,8 @@ public class MetricsV5QueryCreatorImpl implements MetricsQueryCreator {
         this.toTimestamp = timeRangeArray[1];
         this.fromTimestampEpochSecond = DateTimeUtil.getEpochTimestamp(fromTimestamp);
         this.toTimestampEpochSecond = DateTimeUtil.getEpochTimestamp(toTimestamp);
+        this.fromTimestampEpochMilliSecond = fromTimestampEpochSecond * 1000;
+        this.toTimestampEpochMilliSecond = toTimestampEpochSecond * 1000;
         this.availabilityFromTimestamp = DateTimeUtil.getEpochTimestamp(availabilityTimeRangeArray[0]);
         this.availabilityToTimestamp = DateTimeUtil.getEpochTimestamp(availabilityTimeRangeArray[1]);
     }
@@ -149,6 +153,40 @@ public class MetricsV5QueryCreatorImpl implements MetricsQueryCreator {
                 "select count(STATUS_CODE) as throttleOutCount, TIMESTAMP, CONSUMER_ID group by TIMESTAMP, " +
                 "CONSUMER_ID having STATUS_CODE == 429 and TIMESTAMP > " + fromTimestampEpochSecond + " and " +
                 "TIMESTAMP < " + toTimestampEpochSecond + ";";
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public String getActiveAuthorisationCountMetricsQuery() {
+
+        return "from AUTHORISATION_METRICS_DATA select CONSENT_ID, CONSENT_STATUS, CUSTOMER_PROFILE, " +
+                "CONSENT_DURATION_TYPE, TIMESTAMP, AUTH_FLOW_TYPE " +
+                "group by CONSENT_ID, CONSENT_STATUS, CUSTOMER_PROFILE, CONSENT_DURATION_TYPE, TIMESTAMP, " +
+                "AUTH_FLOW_TYPE " +
+                "having CONSENT_DURATION_TYPE == 'ongoing' AND AUTH_FLOW_TYPE == 'consentAuthorisation';";
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public String getAuthorisationMetricsQuery() {
+
+        return "from CDSAuthorisationMetricsAgg within '" + fromTimestamp + "', '" + toTimestamp + "' per '" +
+                timeGranularity + "' select * order by AGG_TIMESTAMP desc;";
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public String getAbandonedConsentFlowCountMetricsQuery() {
+
+        return "from ABANDONED_CONSENT_FLOW_METRICS_DATA select REQUEST_URI_KEY, STAGE, TIMESTAMP " +
+                "group by REQUEST_URI_KEY, STAGE, TIMESTAMP having TIMESTAMP > " +
+                fromTimestampEpochMilliSecond + "l AND TIMESTAMP < " + toTimestampEpochMilliSecond + "l;";
     }
 
     /**

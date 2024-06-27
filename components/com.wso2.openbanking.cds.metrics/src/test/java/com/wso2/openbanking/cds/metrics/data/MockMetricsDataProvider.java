@@ -268,6 +268,79 @@ public class MockMetricsDataProvider implements MetricsDataProvider {
     }
 
     @Override
+    public JSONObject getActiveAuthorisationCountMetricsData() throws OpenBankingException {
+
+        String activeAuthorisationCountData = "{\"records\":[" +
+                "[\"1001\", \"Authorised\", \"individual\", \"ongoing\", " + getRandomEpochSecondWithinPast7Days() +
+                ", \"consentAuthorisation\"]," +
+                "[\"1002\", \"Revoked\", \"individual\", \"ongoing\", " + getRandomEpochSecondWithinPast7Days() +
+                ", \"consentAuthorisation\"]," +
+                "[\"1003\", \"Authorised\", \"business\", \"ongoing\", " + getRandomEpochSecondWithinPast7Days() +
+                ", \"consentAuthorisation\"]" +
+                "]}";
+
+        JSONParser parser = new JSONParser(JSONParser.MODE_JSON_SIMPLE);
+        try {
+            return (JSONObject) parser.parse(activeAuthorisationCountData);
+        } catch (ParseException e) {
+            throw new RuntimeException(e);
+        }
+    }
+
+    @Override
+    public JSONObject getAuthorisationMetricsData() throws OpenBankingException {
+
+        String authorisationData = "{\"records\":[" +
+                "[" + getRandomEpochSecondWithinPast7Days() + ", \"Authorised\", \"consentAuthorisation\", " +
+                "\"individual\", \"ongoing\", 5]," +
+                "[" + getRandomEpochSecondWithinPast7Days() + ", \"Authorised\", \"consentAuthorisation\", " +
+                "\"individual\", \"ongoing\", 5]," +
+                "[" + getRandomEpochSecondWithinPast7Days() + ", \"Authorised\", \"consentAuthorisation\", " +
+                "\"individual\", \"ongoing\", 5]" +
+                "]}";
+
+        JSONParser parser = new JSONParser(JSONParser.MODE_JSON_SIMPLE);
+        try {
+            JSONObject jsonObject = (JSONObject) parser.parse(authorisationData);
+            JSONArray records = (JSONArray) jsonObject.get("records");
+
+            for (Object record : records) {
+                List<Object> recordList = (List<Object>) record;
+                if (recordList.get(5) instanceof Long) {
+                    Long longValue = (Long) recordList.get(5);
+                    Integer intValue = longValue.intValue();
+                    recordList.set(5, intValue);
+                }
+            }
+            return jsonObject;
+        } catch (ParseException e) {
+            throw new RuntimeException(e);
+        }
+    }
+
+    @Override
+    public JSONObject getAbandonedConsentFlowCountMetricsData() throws OpenBankingException {
+
+        String abandonedConsentFlowData = "{\"records\":[" +
+                "[\"abc\", \"started\", " + getRandomEpochSecondWithinPast7Days() + "]," +
+                "[\"abc\", \"userIdentified\", " + getRandomEpochSecondWithinPast7Days() + "]," +
+                "[\"abc\", \"userAuthenticated\", " + getRandomEpochSecondWithinPast7Days() + "]," +
+                "[\"abc\", \"accountSelected\", " + getRandomEpochSecondWithinPast7Days() + "]," +
+                "[\"abc\", \"consentApproved\", " + getRandomEpochSecondWithinPast7Days() + "]," +
+                "[\"abc\", \"completed\", " + getRandomEpochSecondWithinPast7Days() + "]," +
+                "[\"def\", \"started\", " + getRandomEpochSecondWithinPast7Days() + "]," +
+                "[\"ghi\", \"started\", " + getRandomEpochSecondWithinPast7Days() + "]" +
+                "]}";
+
+        JSONParser parser = new JSONParser(JSONParser.MODE_JSON_SIMPLE);
+        try {
+            return (JSONObject) parser.parse(abandonedConsentFlowData);
+        } catch (ParseException e) {
+            throw new RuntimeException(e);
+        }
+    }
+
+    @Override
     public JSONObject getRecipientCountMetricsData() throws OpenBankingException {
 
         String recipientCountData = "{\"records\":[[1]]}";

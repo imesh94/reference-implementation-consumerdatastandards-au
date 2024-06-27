@@ -10,6 +10,8 @@
 package com.wso2.openbanking.cds.metrics.service;
 
 import com.wso2.openbanking.accelerator.common.exception.OpenBankingException;
+import com.wso2.openbanking.cds.metrics.model.AbandonedConsentFlowByStageMetricDay;
+import com.wso2.openbanking.cds.metrics.model.AuthorisationMetricDay;
 import com.wso2.openbanking.cds.metrics.model.ErrorMetricDay;
 import com.wso2.openbanking.cds.metrics.util.AspectEnum;
 import com.wso2.openbanking.cds.metrics.util.PriorityEnum;
@@ -115,6 +117,30 @@ public interface MetricsProcessor {
      * @throws OpenBankingException - OpenBankingException
      */
     Map<AspectEnum, List<Integer>> getRejectionMetrics() throws OpenBankingException;
+
+    /**
+     * Get active authorisation count metrics.
+     *
+     * @return Map of active authorisation count metrics
+     * @throws OpenBankingException - OpenBankingException
+     */
+    Map<String, Integer> getActiveAuthorisationCountMetrics() throws OpenBankingException;
+
+    /**
+     * Get authorisation metrics.
+     *
+     * @return List of authorisation metrics
+     * @throws OpenBankingException - OpenBankingException
+     */
+    List<AuthorisationMetricDay> getAuthorisationMetrics() throws OpenBankingException;
+
+    /**
+     * Get abandoned consent flow count metrics.
+     *
+     * @return List of abandoned consent flow count metrics
+     * @throws OpenBankingException - OpenBankingException
+     */
+    List<AbandonedConsentFlowByStageMetricDay> getAbandonedConsentFlowCountMetrics() throws OpenBankingException;
 
     /**
      * Get recipient count metrics.
