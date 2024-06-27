@@ -469,7 +469,6 @@ public class CDSConsentPersistStep implements ConsentPersistStep {
                             CDSConsentExtensionConstants.AUTHORIZED_STATUS);
                 }
             }
-
         }
         if (!secondaryUserAuthResources.isEmpty() && !secondaryUserAccountMappings.isEmpty()) {
             additionalAmendmentData
