@@ -92,6 +92,23 @@ public class MetricsV5DataProvider implements MetricsDataProvider {
     }
 
     @Override
+    public JSONObject getHourlyPerformanceByPriorityMetricsData() throws OpenBankingException {
+
+        JSONObject performanceMetricsJsonObject;
+        String spQuery = metricsV5QueryCreator.getHourlyPerformanceByPriorityMetricsQuery();
+
+        try {
+            performanceMetricsJsonObject = SPQueryExecutorUtil.executeQueryOnStreamProcessor(
+                    MetricsConstants.CDS_INVOCATION_METRICS_APP, spQuery);
+        } catch (ParseException | IOException e) {
+            String errorMessage = String.format(RETRIEVAL_ERROR, MetricsConstants.PERFORMANCE);
+            log.error(errorMessage, e);
+            throw new OpenBankingException(errorMessage, e);
+        }
+        return performanceMetricsJsonObject;
+    }
+
+    @Override
     public JSONObject getSessionCountMetricsData() throws OpenBankingException {
 
         JSONObject sessionCountMetricsJsonObject;

@@ -210,6 +210,15 @@ public class MetricsResponseModel {
         this.performanceLargePayload = performanceLargePayload;
     }
 
+    public void setHourlyPerformanceByPriority(Map<PriorityEnum, List<List<BigDecimal>>> performanceMap) {
+
+        setPerformanceUnauthenticated(performanceMap.get(PriorityEnum.UNAUTHENTICATED));
+        setPerformanceHighPriority(performanceMap.get(PriorityEnum.HIGH_PRIORITY));
+        setPerformanceLowPriority(performanceMap.get(PriorityEnum.LOW_PRIORITY));
+        setPerformanceUnattended(performanceMap.get(PriorityEnum.UNATTENDED));
+        setPerformanceLargePayload(performanceMap.get(PriorityEnum.LARGE_PAYLOAD));
+    }
+
     public List<Integer> getInvocationUnauthenticated() {
         return invocationUnauthenticated;
     }

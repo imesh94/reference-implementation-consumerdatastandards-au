@@ -109,6 +109,24 @@ public class MockMetricsDataProvider implements MetricsDataProvider {
     }
 
     @Override
+    public JSONObject getHourlyPerformanceByPriorityMetricsData() throws OpenBankingException {
+
+        String performanceMetricsData = "{\"records\":" +
+                "[[\"LargePayload\"," + getRandomEpochMilliWithinPast7Days() + ", 0.92]," +
+                "[\"LowPriority\"," + getRandomEpochMilliWithinPast7Days() + ", 1.00]," +
+                "[\"Unauthenticated\"," + getRandomEpochMilliWithinPast7Days() + ", 0.88]," +
+                "[\"Unattended\"," + getRandomEpochMilliWithinPast7Days() + ", 0.70]," +
+                "[\"HighPriority\"," + getRandomEpochMilliWithinPast7Days() + ", 0.99]]}";
+
+        JSONParser parser = new JSONParser(JSONParser.MODE_JSON_SIMPLE);
+        try {
+            return (JSONObject) parser.parse(performanceMetricsData);
+        } catch (ParseException e) {
+            throw new RuntimeException(e);
+        }
+    }
+
+    @Override
     public JSONObject getInvocationByAspectMetricsData() throws OpenBankingException {
 
         String invocationMetricsData = "{\"records\":" +

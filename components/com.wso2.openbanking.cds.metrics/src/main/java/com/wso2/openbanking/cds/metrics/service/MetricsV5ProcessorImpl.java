@@ -142,6 +142,26 @@ public class MetricsV5ProcessorImpl implements MetricsProcessor {
      * {@inheritDoc}
      */
     @Override
+    public Map<PriorityEnum, List<List<BigDecimal>>> getHourlyPerformanceByPriorityMetrics()
+            throws OpenBankingException {
+
+        log.debug("Starting hourly performance metrics calculation.");
+        JSONObject performanceMetricsJsonObject = metricsDataProvider.getHourlyPerformanceByPriorityMetricsData();
+        if (performanceMetricsJsonObject != null) {
+            Map<PriorityEnum, List<List<BigDecimal>>> performanceMetricsMap =
+                    MetricsProcessorUtil.getPopulatedHourlyPerformanceByPriorityMetricsMap(performanceMetricsJsonObject,
+                            numberOfDays);
+            log.debug("Finished hourly performance metrics calculation successfully.");
+            return performanceMetricsMap;
+        } else {
+            throw new OpenBankingException(String.format(NO_DATA_ERROR, MetricsConstants.PERFORMANCE));
+        }
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
     public Map<PriorityEnum, List<BigDecimal>> getAverageResponseTimeMetrics(
             Map<PriorityEnum, List<Integer>> invocationMetricsMap) throws OpenBankingException {
 

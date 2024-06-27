@@ -49,6 +49,14 @@ public interface MetricsProcessor {
             throws OpenBankingException;
 
     /**
+     * Get hourly performance by priority metrics.
+     *
+     * @return Map of hourly performance metrics with priority tiers
+     * @throws OpenBankingException - OpenBankingException
+     */
+    Map<PriorityEnum, List<List<BigDecimal>>> getHourlyPerformanceByPriorityMetrics() throws OpenBankingException;
+
+    /**
      * Get average response time metrics.
      *
      * @param invocationMetricsMap - Map of invocation metrics

@@ -49,6 +49,7 @@ public class MetricsV5FetcherImpl implements MetricsFetcher {
     private CompletableFuture<Integer> customerCountFuture;
     private CompletableFuture<Map<AspectEnum, List<BigDecimal>>> averageTPSFuture;
     private CompletableFuture<List<BigDecimal>> performanceFuture;
+    private CompletableFuture<Map<PriorityEnum, List<List<BigDecimal>>>> hourlyPerformanceByPriorityFuture;
     private CompletableFuture<Map<PriorityEnum, List<BigDecimal>>> averageResponseTimeFuture;
 
     public MetricsV5FetcherImpl(MetricsProcessor metricsProcessor) throws OpenBankingException {
@@ -69,6 +70,7 @@ public class MetricsV5FetcherImpl implements MetricsFetcher {
         rejectionFuture = fetchRejectionMetricsAsync();
         recipientCountFuture = fetchRecipientCountMetricsAsync();
         customerCountFuture = fetchCustomerCountMetricsAsync();
+        hourlyPerformanceByPriorityFuture = fetchHourlyPerformanceByPriorityMetricsAsync();
         // Dependent futures that require results from the invocationFuture
         performanceFuture = fetchPerformanceMetricsAsync(invocationFuture);
         averageResponseTimeFuture = fetchAverageResponseTimeAsync(invocationFuture);
@@ -250,6 +252,24 @@ public class MetricsV5FetcherImpl implements MetricsFetcher {
     }
 
     /**
+     * Get hourly performance by priority metrics asynchronously.
+     *
+     * @return CompletableFuture of hourly performance by priority metrics
+     */
+    private CompletableFuture<Map<PriorityEnum, List<List<BigDecimal>>>>
+    fetchHourlyPerformanceByPriorityMetricsAsync() {
+        return CompletableFuture.supplyAsync(() -> {
+            try {
+                return metricsProcessor.getHourlyPerformanceByPriorityMetrics();
+            } catch (OpenBankingException e) {
+                String errorMessage = String.format(ASYNC_FETCH_ERROR, MetricsConstants.PERFORMANCE);
+                log.debug(errorMessage, e);
+                throw new RuntimeException(errorMessage, e);
+            }
+        });
+    }
+
+    /**
      * Get average response time metrics asynchronously.
      *
      * @param invocationFuture - CompletableFuture of invocation metrics
@@ -289,6 +309,7 @@ public class MetricsV5FetcherImpl implements MetricsFetcher {
             metricsResponseModel.setCustomerCount(customerCountFuture.get());
             metricsResponseModel.setAverageTPS(averageTPSFuture.get());
             metricsResponseModel.setPerformance(performanceFuture.get());
+            metricsResponseModel.setHourlyPerformanceByPriority(hourlyPerformanceByPriorityFuture.get());
             metricsResponseModel.setAverageResponseTime(averageResponseTimeFuture.get());
         } catch (InterruptedException | ExecutionException e) {
             // Handle errors that occurred during the asynchronous calculation of metrics.

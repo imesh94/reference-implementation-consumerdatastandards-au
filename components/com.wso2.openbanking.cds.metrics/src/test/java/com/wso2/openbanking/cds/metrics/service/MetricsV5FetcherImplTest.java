@@ -52,6 +52,7 @@ public class MetricsV5FetcherImplTest extends PowerMockTestCase {
         PowerMockito.mockStatic(OpenBankingCDSConfigParser.class);
         PowerMockito.when(OpenBankingCDSConfigParser.getInstance()).thenReturn(openBankingCDSConfigParserMock);
         doReturn("GMT").when(openBankingCDSConfigParserMock).getMetricsTimeZone();
+        doReturn("2024-05-01").when(openBankingCDSConfigParserMock).getMetricsV5StartDate();
     }
 
     @Test

@@ -11,19 +11,28 @@ package com.wso2.openbanking.cds.metrics.util;
 
 import com.wso2.openbanking.accelerator.common.exception.OpenBankingException;
 import com.wso2.openbanking.accelerator.common.util.Generated;
+import com.wso2.openbanking.cds.common.config.OpenBankingCDSConfigParser;
 import com.wso2.openbanking.cds.metrics.constants.MetricsConstants;
+import com.wso2.openbanking.cds.metrics.model.PerformanceMetric;
 import com.wso2.openbanking.cds.metrics.model.ServerOutageDataModel;
 import net.minidev.json.JSONArray;
 import net.minidev.json.JSONObject;
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 
 import java.math.BigDecimal;
 import java.math.RoundingMode;
+import java.time.Instant;
+import java.time.LocalDate;
 import java.time.LocalTime;
+import java.time.ZoneId;
 import java.time.ZonedDateTime;
+import java.time.temporal.ChronoUnit;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.Comparator;
+import java.util.EnumMap;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -35,6 +44,11 @@ import static com.wso2.openbanking.cds.metrics.constants.MetricsConstants.RECORD
  * Contains utility methods for calculating metrics.
  */
 public class MetricsProcessorUtil {
+
+    private static final Log log = LogFactory.getLog(MetricsProcessorUtil.class);
+    private static final OpenBankingCDSConfigParser configParser = OpenBankingCDSConfigParser.getInstance();
+    private static final ZoneId timeZone = ZoneId.of(configParser.getMetricsTimeZone());
+    private static final LocalDate metricsV5StartDate = LocalDate.parse(configParser.getMetricsV5StartDate());
 
     private MetricsProcessorUtil() {
     }
@@ -254,6 +268,240 @@ public class MetricsProcessorUtil {
             }
         }
         return dataMap;
+    }
+
+    /**
+     * Populate a map of hourly performance metrics data categorized to priority tiers.
+     *
+     * @param metricsJsonObject         - Json object with invocation metrics
+     * @param numberOfDays              - Number of days to consider
+     * @return - populated map
+     */
+    public static Map<PriorityEnum, List<List<BigDecimal>>> getPopulatedHourlyPerformanceByPriorityMetricsMap(
+            JSONObject metricsJsonObject, int numberOfDays) throws OpenBankingException {
+
+        boolean isCurrentDay = numberOfDays == 1;
+        int alteredNoOfDays = getNumberOfDaysAccordingToV5StartDay(numberOfDays);
+        Map<PriorityEnum, List<List<BigDecimal>>> performanceMetricsMap = getInitialPerformanceMetricsMap(
+                alteredNoOfDays, isCurrentDay);
+        List<PerformanceMetric> performanceRecords = parsePerformanceMetricsJson(metricsJsonObject);
+
+        if (!performanceRecords.isEmpty()) {
+            validateDateRangeOfRecords(performanceRecords, alteredNoOfDays);
+            populatePerformanceMetricsMap(performanceRecords, performanceMetricsMap);
+        }
+
+        return performanceMetricsMap;
+    }
+
+    /**
+     * Check if the date range of the records matches with the given number of days.
+     *
+     * @param noOfDays - Number of days
+     * @throws OpenBankingException - OpenBankingException
+     */
+    private static void validateDateRangeOfRecords(List<PerformanceMetric> performanceRecords, int noOfDays)
+            throws OpenBankingException {
+
+        // Get the starting and ending dates of the records
+        LocalDate recordsStartingDate = Instant.ofEpochMilli(getStartingTimestampOfTheFirstDay(performanceRecords)).
+                atZone(timeZone).toLocalDate();
+        LocalDate recordsEndingDate = Instant.ofEpochMilli(getEndingTimestampOfTheLastDay(performanceRecords)).
+                atZone(timeZone).toLocalDate();
+        final String invalidV5DateErrorMsg = "Metrics V5 start date is not configured correctly.";
+
+        // Compare the starting date of records with the v5 start date config
+        if (recordsStartingDate.isBefore(metricsV5StartDate)) {
+            log.error("Performance metrics records for the date " + recordsStartingDate + " which is before the " +
+                    "configured Metrics V5 start date " + metricsV5StartDate + "were found. Please configure the " +
+                    "correct starting date.");
+            throw new OpenBankingException(invalidV5DateErrorMsg);
+        }
+
+        // Check if the day difference in records is greater than the considered number of days for performance metrics
+        long dayDifference = ChronoUnit.DAYS.between(recordsStartingDate, recordsEndingDate);
+        if (dayDifference > noOfDays) {
+            log.error("Range of performance metrics records: " + recordsStartingDate + " to " + recordsEndingDate +
+                    " is greater than the considered number of days: " + noOfDays);
+            throw new OpenBankingException(invalidV5DateErrorMsg);
+        }
+
+    }
+
+    /**
+     * Populate the performance metrics map with the performance values of the records.
+     *
+     * @param performanceRecords - performance records retrieved from the stream processor
+     * @param performanceMetricsMap - performance metrics map to be populated
+     */
+    private static void populatePerformanceMetricsMap(List<PerformanceMetric> performanceRecords,
+                                                      Map<PriorityEnum, List<List<BigDecimal>>> performanceMetricsMap) {
+
+        // Populate the performance metrics map going through each record
+        for (PerformanceMetric record : performanceRecords) {
+            String priorityTier = record.getPriorityTier();
+            long timestamp = record.getTimestamp();
+            BigDecimal performance = BigDecimal.valueOf(record.getPerformanceValue())
+                    .setScale(3, RoundingMode.HALF_UP);
+
+            // Calculate which day the record belongs to
+            ZonedDateTime recordDateTime = Instant.ofEpochMilli(timestamp).atZone(timeZone);
+            int dayDifference = getDayDifferenceForTheRecord(recordDateTime.toLocalDate());
+            PriorityEnum priorityEnum = PriorityEnum.fromValue(priorityTier);
+            performanceMetricsMap.get(priorityEnum).get(dayDifference).set(recordDateTime.getHour(), performance);
+
+        }
+    }
+
+    /**
+     * Get the day difference for the given date from the current day.
+     * If the record is for the current day, return 0. Otherwise, return the day difference minus 1.
+     *
+     * @param recordDate - date of the record
+     * @return - day difference
+     */
+    private static int getDayDifferenceForTheRecord(LocalDate recordDate) {
+
+        LocalDate currentDate = LocalDate.now(timeZone);
+
+        // Check if the recordDate is the current date
+        if (recordDate.equals(currentDate)) {
+            return 0;
+        } else {
+            // Calculate the difference in days. Subtract 1 to support zero-indexing for the previous days.
+            return (int) ChronoUnit.DAYS.between(recordDate, currentDate) - 1;
+        }
+    }
+
+    /**
+     * Get the starting timestamp of the first day from the performance records.
+     *
+     * @param performanceRecords - performance records retrieved from the stream processor
+     * @return - starting timestamp of the first day
+     */
+    private static long getStartingTimestampOfTheFirstDay(List<PerformanceMetric> performanceRecords) {
+
+        PerformanceMetric firstRecord = performanceRecords.get(0);
+        long firstDayStartTimestamp = firstRecord.getTimestamp();
+        if (log.isDebugEnabled()) {
+            log.debug("Earliest timestamp retrieved from performance metrics records: " + firstDayStartTimestamp);
+        }
+        return firstDayStartTimestamp;
+    }
+
+    /**
+     * Get the ending timestamp of the last day from the performance records.
+     *
+     * @param performanceRecords - performance records retrieved from the stream processor
+     * @return - ending timestamp of the last day
+     */
+    private static long getEndingTimestampOfTheLastDay(List<PerformanceMetric> performanceRecords) {
+
+        PerformanceMetric lastRecord = performanceRecords.get(performanceRecords.size() - 1);
+        long lastDayEndTimestamp = lastRecord.getTimestamp();
+        if (log.isDebugEnabled()) {
+            log.debug("Last timestamp retrieved from performance metrics records: " + lastDayEndTimestamp);
+        }
+        return lastDayEndTimestamp;
+    }
+
+    /**
+     * Get the correct number of days to display records considering the starting date of Metrics V5 feature.
+     *
+     * @param noOfDays - given number of days
+     * @return - corrected number of days
+     */
+    private static int getNumberOfDaysAccordingToV5StartDay(int noOfDays) throws OpenBankingException {
+
+        LocalDate currentDate = LocalDate.now(timeZone);
+        if (metricsV5StartDate.isAfter(currentDate)) {
+            throw new OpenBankingException("Metrics V5 start date is configured incorrectly. Please set a " +
+                    "past date as the starting date.");
+        } else {
+            int dayDifference = (int) ChronoUnit.DAYS.between(metricsV5StartDate, currentDate);
+            if (noOfDays > dayDifference) {
+                if (log.isDebugEnabled()) {
+                    log.debug("Calculated day difference according to the configured Metrics V5 start date: " +
+                            dayDifference);
+                }
+                noOfDays = dayDifference;
+            }
+        }
+        return noOfDays;
+    }
+
+    /**
+     * Get a map to add performance metrics values for given number of days initialized with 1.00 for 24 hours.
+     * If it's the current day, the map will be initialized with 1.00 upto current hour.
+     *
+     * @param noOfDays - Number of days
+     * @return - Initial performance map
+     */
+    private static Map<PriorityEnum, List<List<BigDecimal>>> getInitialPerformanceMetricsMap(
+            int noOfDays, boolean isCurrentDay) {
+
+        Map<PriorityEnum, List<List<BigDecimal>>> initialPerformanceMap = new EnumMap<>(PriorityEnum.class);
+        int noOfHours = isCurrentDay ? ZonedDateTime.now(timeZone).getHour() + 1 : 24;
+
+        for (PriorityEnum priority : PriorityEnum.values()) {
+            List<List<BigDecimal>> daysPerformance = getInitialHourlyPerformanceListForDays(noOfDays, noOfHours);
+            initialPerformanceMap.put(priority, daysPerformance);
+        }
+        return initialPerformanceMap;
+    }
+
+    /**
+     * Get a list of hourly performance values for given number of days initialized with
+     * 1.00 for given number of hours.
+     *
+     * @param noOfDays - Number of days
+     * @param noOfHours - Number of hours
+     * @return - Initial hourly performance list
+     */
+    private static List<List<BigDecimal>> getInitialHourlyPerformanceListForDays(int noOfDays, int noOfHours) {
+
+        List<List<BigDecimal>> daysPerformance = new ArrayList<>();
+        BigDecimal initialValue = new BigDecimal("1.000");
+        for (int day = 0; day < noOfDays; day++) {
+            List<BigDecimal> hourlyPerformance = new ArrayList<>(Collections.nCopies(noOfHours, initialValue));
+            daysPerformance.add(hourlyPerformance);
+        }
+        return daysPerformance;
+    }
+
+    /**
+     * Parse performance metrics JSON object to a List.
+     * Json object should contain an array of records with performance tier, hourly timestamp and performance value.
+     * Expected JSON object sample:
+     * <pre>{@code
+     * {
+     *     "records": [
+     *         [
+     *             "LargePayload",
+     *             1702278000000,
+     *             0.92
+     *         ],
+     *         .....
+     *     ]
+     * }
+     * }</pre>
+     * @param performanceJsonObject - JSON object with performance metrics
+     * @return - List of performance records
+     */
+    protected static List<PerformanceMetric> parsePerformanceMetricsJson(JSONObject performanceJsonObject) {
+
+        JSONArray performanceRecordsArray = (JSONArray) performanceJsonObject.get(RECORDS);
+        List<PerformanceMetric> performanceRecords = new ArrayList<>();
+
+        for (Object record : performanceRecordsArray) {
+            JSONArray recordArray = (JSONArray) record;
+            PerformanceMetric performanceRecord = new PerformanceMetric();
+            performanceRecord.setPriorityTier(recordArray.get(0).toString());
+            performanceRecord.setTimestamp((long) recordArray.get(1));
+            performanceRecord.setPerformanceValue((double) recordArray.get(2));
+            performanceRecords.add(performanceRecord);
+        }
+        return performanceRecords;
     }
 
     /**

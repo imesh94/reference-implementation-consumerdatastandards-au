@@ -78,6 +78,18 @@ public class MetricsV5QueryCreatorImpl implements MetricsQueryCreator {
      * {@inheritDoc}
      */
     @Override
+    public String getHourlyPerformanceByPriorityMetricsQuery() {
+
+        return "from CDSMetricsPerfPriorityAgg within '" + fromTimestamp + "', '" + toTimestamp + "' per '" +
+                timeGranularity + "' select priorityTier, AGG_TIMESTAMP, " +
+                "withinThresholdCount/totalReqCount as performance group by priorityTier, AGG_TIMESTAMP " +
+                "order by AGG_TIMESTAMP asc;";
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
     public String getSessionCountMetricsQuery() {
 
         return "from CDSMetricsSessionAgg within '" + fromTimestamp + "', '" + toTimestamp + "' per '" +

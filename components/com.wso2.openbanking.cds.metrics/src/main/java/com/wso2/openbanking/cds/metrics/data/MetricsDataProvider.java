@@ -25,6 +25,8 @@ public interface MetricsDataProvider {
 
     JSONObject getInvocationMetricsData() throws OpenBankingException;
 
+    JSONObject getHourlyPerformanceByPriorityMetricsData() throws OpenBankingException;
+
     JSONObject getInvocationByAspectMetricsData() throws OpenBankingException;
 
     JSONObject getSessionCountMetricsData() throws OpenBankingException;

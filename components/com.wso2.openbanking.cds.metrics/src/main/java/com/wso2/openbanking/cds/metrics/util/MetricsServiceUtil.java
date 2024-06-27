@@ -30,10 +30,10 @@ public class MetricsServiceUtil {
     public static void appendHistoricMetricsToCurrentDayMetrics(
             MetricsResponseModel currentDayMetrics, MetricsResponseModel historicMetrics) {
 
-        currentDayMetrics.getPerformance().addAll(historicMetrics.getPerformance());
         currentDayMetrics.getSessionCount().addAll(historicMetrics.getSessionCount());
         currentDayMetrics.getErrors().addAll(historicMetrics.getErrors());
         appendAvailabilityMetrics(currentDayMetrics, historicMetrics);
+        appendPerformanceMetrics(currentDayMetrics, historicMetrics);
         appendInvocationMetrics(currentDayMetrics, historicMetrics);
         appendAverageTPSMetrics(currentDayMetrics, historicMetrics);
         appendPeakTPSMetrics(currentDayMetrics, historicMetrics);
@@ -53,6 +53,23 @@ public class MetricsServiceUtil {
         currentDayMetrics.getAvailability().addAll(historicMetrics.getAvailability());
         currentDayMetrics.getAuthenticatedAvailability().addAll(historicMetrics.getAuthenticatedAvailability());
         currentDayMetrics.getUnauthenticatedAvailability().addAll(historicMetrics.getUnauthenticatedAvailability());
+    }
+
+    /**
+     * Append historic performance metrics to current day performance metrics.
+     *
+     * @param currentDayMetrics - current day metrics
+     * @param historicMetrics   - historic metrics
+     */
+    private static void appendPerformanceMetrics(
+            MetricsResponseModel currentDayMetrics, MetricsResponseModel historicMetrics) {
+
+        currentDayMetrics.getPerformance().addAll(historicMetrics.getPerformance());
+        currentDayMetrics.getPerformanceHighPriority().addAll(historicMetrics.getPerformanceHighPriority());
+        currentDayMetrics.getPerformanceLowPriority().addAll(historicMetrics.getPerformanceLowPriority());
+        currentDayMetrics.getPerformanceUnattended().addAll(historicMetrics.getPerformanceUnattended());
+        currentDayMetrics.getPerformanceUnauthenticated().addAll(historicMetrics.getPerformanceUnauthenticated());
+        currentDayMetrics.getPerformanceLargePayload().addAll(historicMetrics.getPerformanceLargePayload());
     }
 
     /**

@@ -125,10 +125,10 @@ public class MetricsV5MapperImpl implements MetricsMapper {
         responseMetricsListV5DataDTO.setAvailability(getAvailabilityDTO(metricsListModel, period));
         responseMetricsListV5DataDTO.setAverageTps(getAverageTpsDTO(metricsListModel, period));
         responseMetricsListV5DataDTO.setPeakTps(getPeakTpsDTO(metricsListModel, period));
+        responseMetricsListV5DataDTO.setPerformance(getPerformanceDTO(metricsListModel, period));
 
         /*TODO: populate data*/
         populateTempData(metricsListModel);
-        responseMetricsListV5DataDTO.setPerformance(getPerformanceDTO(metricsListModel, period));
         responseMetricsListV5DataDTO.setErrors(getErrorsDTO(metricsListModel, period));
         responseMetricsListV5DataDTO.setAuthorisations(getAuthorisationsDTO(metricsListModel, period));
 
@@ -141,18 +141,19 @@ public class MetricsV5MapperImpl implements MetricsMapper {
         metricsListModel.setAuthenticatedAvailability(new ArrayList<>(Collections.nCopies(13, BigDecimal.ZERO)));
         metricsListModel.setUnauthenticatedAvailability(new ArrayList<>(Collections.nCopies(13, BigDecimal.ZERO)));*/
 
-        List<BigDecimal> bigDecimalZeros = new ArrayList<>(Collections.nCopies(8, BigDecimal.ZERO));
+        /*List<BigDecimal> bigDecimalZeros = new ArrayList<>(Collections.nCopies(8, BigDecimal.ZERO));*/
         List<Integer> integerZeros = new ArrayList<>(Collections.nCopies(8, 0));
 
-        List<BigDecimal> bigDecimalZerosPerHour = new ArrayList<>(Collections.nCopies(24, BigDecimal.ZERO));
-        List<List<BigDecimal>> bigDecimalZerosPerDay = new ArrayList<>(Collections.nCopies(8, bigDecimalZerosPerHour));
+        /*List<BigDecimal> bigDecimalZerosPerHour = new ArrayList<>(Collections.nCopies(24, BigDecimal.ZERO));*/
+        /*List<List<BigDecimal>> bigDecimalZerosPerDay = new ArrayList<>(Collections.nCopies(8,
+        bigDecimalZerosPerHour));*/
 
-        metricsListModel.setPerformance(new ArrayList<>(bigDecimalZeros));
+        /*metricsListModel.setPerformance(new ArrayList<>(bigDecimalZeros));
         metricsListModel.setPerformanceHighPriority(new ArrayList<>(bigDecimalZerosPerDay));
         metricsListModel.setPerformanceLargePayload(new ArrayList<>(bigDecimalZerosPerDay));
         metricsListModel.setPerformanceLowPriority(new ArrayList<>(bigDecimalZerosPerDay));
         metricsListModel.setPerformanceUnattended(new ArrayList<>(bigDecimalZerosPerDay));
-        metricsListModel.setPerformanceUnauthenticated(new ArrayList<>(bigDecimalZerosPerDay));
+        metricsListModel.setPerformanceUnauthenticated(new ArrayList<>(bigDecimalZerosPerDay));*/
 
         /*metricsListModel.setAverageTPS(new ArrayList<>(bigDecimalZeros));
         metricsListModel.setAuthenticatedAverageTPS(new ArrayList<>(bigDecimalZeros));

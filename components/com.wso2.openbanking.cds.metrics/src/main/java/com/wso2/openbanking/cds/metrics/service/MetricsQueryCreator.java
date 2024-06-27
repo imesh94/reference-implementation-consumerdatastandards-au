@@ -38,6 +38,13 @@ public interface MetricsQueryCreator {
     String getInvocationByAspectMetricsQuery();
 
     /**
+     * Returns the query for getting hourly performance by priority data.
+     *
+     * @return Query as a String
+     */
+    String getHourlyPerformanceByPriorityMetricsQuery();
+
+    /**
      * Returns the query for getting session count.
      *
      * @return Query as a String

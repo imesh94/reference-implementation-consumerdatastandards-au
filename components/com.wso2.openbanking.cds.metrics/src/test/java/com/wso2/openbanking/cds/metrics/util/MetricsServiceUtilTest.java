@@ -57,6 +57,12 @@ public class MetricsServiceUtilTest {
         model.setUnauthenticatedAverageTPS(createBigDecimalList(numberOfEntries));
 
         model.setPerformance(createBigDecimalList(numberOfEntries));
+        model.setPerformanceHighPriority(createBigDecimalListOfLists(numberOfEntries));
+        model.setPerformanceLowPriority(createBigDecimalListOfLists(numberOfEntries));
+        model.setPerformanceUnattended(createBigDecimalListOfLists(numberOfEntries));
+        model.setPerformanceUnauthenticated(createBigDecimalListOfLists(numberOfEntries));
+        model.setPerformanceLargePayload(createBigDecimalListOfLists(numberOfEntries));
+
         model.setSessionCount(createIntegerList(numberOfEntries));
 
         model.setInvocationUnauthenticated(createIntegerList(numberOfEntries));
@@ -80,6 +86,14 @@ public class MetricsServiceUtilTest {
     private List<BigDecimal> createBigDecimalList(int size) {
         return IntStream.range(0, size)
                 .mapToObj(i -> BigDecimal.valueOf(Math.random() * 10))
+                .collect(Collectors.toList());
+    }
+
+    private List<List<BigDecimal>> createBigDecimalListOfLists(int size) {
+        return IntStream.range(0, size)
+                .mapToObj(i -> IntStream.range(0, 24)
+                        .mapToObj(j -> BigDecimal.valueOf(Math.random() * 10))
+                        .collect(Collectors.toList()))
                 .collect(Collectors.toList());
     }
 
@@ -110,6 +124,12 @@ public class MetricsServiceUtilTest {
         assertEquals(currentDayMetrics.getUnauthenticatedAverageTPS().size(), TOTAL_DAYS);
 
         assertEquals(currentDayMetrics.getPerformance().size(), TOTAL_DAYS);
+        assertEquals(currentDayMetrics.getPerformanceHighPriority().size(), TOTAL_DAYS);
+        assertEquals(currentDayMetrics.getPerformanceLowPriority().size(), TOTAL_DAYS);
+        assertEquals(currentDayMetrics.getPerformanceUnattended().size(), TOTAL_DAYS);
+        assertEquals(currentDayMetrics.getPerformanceUnauthenticated().size(), TOTAL_DAYS);
+        assertEquals(currentDayMetrics.getPerformanceLargePayload().size(), TOTAL_DAYS);
+
         assertEquals(currentDayMetrics.getSessionCount().size(), TOTAL_DAYS);
 
         assertEquals(currentDayMetrics.getInvocationUnauthenticated().size(), TOTAL_DAYS);
