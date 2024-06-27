@@ -102,7 +102,7 @@ public class ArrangementRevocationApi {
 
         // Return error if consent is not available in the database
         if (consent == null) {
-            return handleErrorResponse(ErrorConstants.AUErrorEnum.INVALID_RESOURCE_BODY,
+            return handleErrorResponse(ErrorConstants.AUErrorEnum.INVALID_ARRANGEMENT,
                     "invalid cdr-arrangement-id sent in the request", 422);
         }
 
@@ -117,7 +117,7 @@ public class ArrangementRevocationApi {
 
         // Return error if consent is not in the authorized status
         if (!(Constants.AUTHORIZED_CONSENT_STATUS.equals(consent.getCurrentStatus()))) {
-            return handleErrorResponse(ErrorConstants.AUErrorEnum.INVALID_RESOURCE_BODY,
+            return handleErrorResponse(ErrorConstants.AUErrorEnum.INVALID_ARRANGEMENT,
                     "cdr arrangement is not in authorised state",
                     422);
         }

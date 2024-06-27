@@ -192,6 +192,9 @@ public class ErrorConstants {
         //Expected general error occurred
         EXPECTED_GENERAL_ERROR(404, "urn:au-cds:error:cds-all:GeneralError/Expected",
                 "Expected Error Encountered", "Expected Error Encountered"),
+        INVALID_ARRANGEMENT(422, "urn:au-cds:error:cds-all:Authorisation/InvalidArrangement",
+                "Invalid Arrangement ID", "Arrangement ID is invalid, does not exist or the arrangement " +
+                "is not in authorised state"),
 
         /**
          * Error enumerations defined by the WSO2.
