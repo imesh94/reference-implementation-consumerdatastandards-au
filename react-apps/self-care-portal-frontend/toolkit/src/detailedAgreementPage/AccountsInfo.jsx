@@ -30,20 +30,24 @@ export const AccountsInfo = ({ consent }) => {
         .map((account) => account.accountId)
     ),
   ];
+
   const keyDatesConfig = account_lang.filter((lbl) => lbl.id === consent.currentStatus.toLowerCase())[0];
-  return (
-    <div className="accountsInfoBody mb-3">
-      {keyDatesConfig && (specConfigurations.consent.permissionsView.permissionBindType ===
-      permissionBindTypes.samePermissionSetForAllAccounts) ? (
-        <>
-          <h5>{keyDatesConfig.accountsInfoLabel}</h5>
-          {uniqueActiveAccountIds.map((accountId, index) => (
-            <li key={index}>{accountId}</li>
-          ))}
-        </>
-      ) : (
-        <></>
-      )}
-    </div>
+
+    return (
+      <div className="accountsInfoBody mb-3">
+        {keyDatesConfig && uniqueActiveAccountIds.length > 0 && 
+        (specConfigurations.consent.permissionsView.permissionBindType ===
+        permissionBindTypes.samePermissionSetForAllAccounts) ? (
+          <>
+            <hr id = "sharingDetailsHr" className = "horizontalLine" />
+            <h5>{keyDatesConfig.accountsInfoLabel}</h5>
+            {uniqueActiveAccountIds.map((accountId, index) => (
+              <li key={index}>{accountId}</li>
+            ))}
+          </>
+        ) : (
+          <></>
+        )}
+     </div>
   );
 };

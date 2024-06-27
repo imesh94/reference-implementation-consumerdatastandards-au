@@ -32,10 +32,11 @@ import { permissionDataLanguageIndividual } from '../../../toolkit/src/specConfi
 import '../css/Buttons.css';
 import '../css/DetailedAgreement.css';
 import '../css/withdrawal.css';
-import { withdrawLang, specConfigurations } from '../specConfigs';
+import { common, withdrawLang, specConfigurations } from '../specConfigs';
 import { FourOhFourError } from '../errorPage';
 import { PermissionItem } from '../detailedAgreementPage';
 import { useToggles } from '../../../toolkit/src/cdsHooks/useToggles.jsx';
+import { keyValues, keyPermissionScopes } from '../specConfigs/common.js';
 import {revokeConsent} from "../api";
 
 export const WithdrawStep2 = ({ match }) => {
@@ -68,10 +69,25 @@ export const WithdrawStep2 = ({ match }) => {
       ? permissionDataLanguageBusiness
       : permissionDataLanguageIndividual;
 
-  const consentAccountResponseDataPermissions = getValueFromConsent(
+  //Checking whether the permissions contain both basic and detailed permissions, if so, remove basic permissions
+  const checkIfDetailed = (permissions) => {
+    if (permissions.includes(keyPermissionScopes.bankAccountDetailRead)) {
+      permissions = permissions.filter(permission => permission !== keyPermissionScopes.bankAccountBasicRead);
+    }
+
+    if (permissions.includes(keyPermissionScopes.commonCustomerDetailsRead)) {
+      permissions = permissions.filter(permission => permission !== keyPermissionScopes.commonCustomerBasicRead);
+    }
+
+    return permissions;
+  };
+
+  const consentAccountResponseDataPermissions = checkIfDetailed (getValueFromConsent(
     specConfigurations.consent.permissionsView.permissionsAttribute,
     matchedConsent
-  ) || [];
+  ) || [] );
+  
+  
 
   const handleRevokeConsent = () => {
     revokeConsent(clientId, consentId, user)
@@ -80,7 +96,6 @@ export const WithdrawStep2 = ({ match }) => {
                 setMessage(withdrawLang.withdrawModalSuccessMsg + applicationName);
                 setWithdrawMessageIcon(faCheckCircle);
                 setWithdrawIconId('withdrawSuccess');
-                console.log('Consent Revoked Successfully')
             } else {
                 setMessage(withdrawLang.withdrawModalFailMsg);
                 setWithdrawMessageIcon(faExclamationCircle);
@@ -164,7 +179,7 @@ export const WithdrawStep2 = ({ match }) => {
                   </Link>
                 </div>
                 <div className="actionBtnDiv">
-                <button onClick={handleRevokeConsent} className="withdrawBtn" id="withdrawBtn2">
+                  <button onClick={handleRevokeConsent} className="withdrawBtn" id="withdrawBtn2">
                     {withdrawLang.nextBtnStep2}
                   </button>
                 </div>

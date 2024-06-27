@@ -120,13 +120,13 @@ export const account_lang = [
       {
         title: 'Your consent will expire on',
         type: keyDateTypes.date,
-        dateParameterKey: 'consentAttributes.ExpirationDateTime',
+        dateParameterKey: 'validityPeriod',
         dateFormat: 'DD MMM YYYY',
       },
       {
         title: 'Sharing period',
         type: keyDateTypes.dateRange,
-        dateParameterKey: 'createdTimestamp,consentAttributes.ExpirationDateTime',
+        dateParameterKey: 'createdTimestamp,validityPeriod',
         dateFormat: 'DD MMM YYYY',
       },
       {

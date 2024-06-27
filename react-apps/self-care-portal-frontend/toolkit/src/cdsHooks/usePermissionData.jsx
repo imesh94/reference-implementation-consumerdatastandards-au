@@ -18,6 +18,7 @@
 
 import { useContext } from 'react';
 import { ConsentContext } from '../../../accelerator/src/context/ConsentContext.js';
+import { UserContext } from '../../../accelerator/src/context/UserContext.js';
 import { permissionDataLanguageBusiness } from '../specConfigs/permissionDataLanguageBusiness.js';
 import { permissionDataLanguageIndividual } from '../specConfigs/permissionDataLanguageIndividual.js';
 import { keyValues, keyPermissionScopes } from '../specConfigs/common.js';
@@ -40,7 +41,8 @@ import { keyValues, keyPermissionScopes } from '../specConfigs/common.js';
 
 export const usePermissionData = (permissionData) => {
   const { allContextConsents } = useContext(ConsentContext);
-
+  const {currentContextUser} = useContext(UserContext);
+  const user = currentContextUser.user;
   const consumerType = allContextConsents.consents.data[0].consentAttributes.customerProfileType;
 
   const permissionDataLanguage =
@@ -48,28 +50,28 @@ export const usePermissionData = (permissionData) => {
       ? permissionDataLanguageBusiness
       : permissionDataLanguageIndividual;
 
-  const accountList = permissionData.permissionData.previousConsentData.userList[0];
-  const accountArray = accountList['accountList'];
+  const accountList = permissionData.permissionData.previousConsentData.userList;
+  const matchedUser =  accountList.find(u => u.userId === user.email);  
+  const accountArray = matchedUser['accountList'];
   const permissionArray = permissionData.permissionData.previousConsentData.permissions;
   const sharingDuration = permissionData.permissionData.previousConsentData.sharingDuration;
 
   //Checking whether the permissions contain both basic and detailed permissions, if so, remove basic permissions
   const checkIfDetailed = (permissions) => {
-    if (permissions.includes(keyPermissionScopes.bankAccountDetailReadScope)) {
-      permissions = permissions.filter(permission => permission !== keyPermissionScopes.bankAccountBasicReadScope);
+    if (permissions.includes(keyPermissionScopes.bankAccountDetailRead)) {
+      permissions = permissions.filter(permission => permission !== keyPermissionScopes.bankAccountBasicRead);
     }
 
-    if (permissions.includes(keyPermissionScopes.commonCustomerDetailsReadScope)) {
-      permissions = permissions.filter(permission => permission !== keyPermissionScopes.commonCustomerBasicReadScope);
+    if (permissions.includes(keyPermissionScopes.commonCustomerDetailsRead)) {
+      permissions = permissions.filter(permission => permission !== keyPermissionScopes.commonCustomerBasicRead);
     }
-
     return permissions;
   };
 
   const filteredPermissionArray = checkIfDetailed(permissionArray);
 
   const dataClusters = permissionDataLanguage
-  .filter(pdl => filteredPermissionArray.includes(pdl.permissionScope))
+  .filter(pdl => filteredPermissionArray.includes(pdl.scope))
   .map(pdl => pdl.dataCluster);
 
   return { accountArray, sharingDuration, dataClusters, permissionDataLanguage };

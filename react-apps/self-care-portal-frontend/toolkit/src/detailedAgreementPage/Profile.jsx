@@ -69,7 +69,7 @@ export const Profile = ({
           <p>
             You should check with {dataRecipientName} for more information on how they are handling
             your data, and for any other permissions you may have given them. See
-            {dataRecipientName}’s CDR policy or their Dashboard for more information
+            {" "+dataRecipientName}’s CDR policy or their Dashboard for more information
           </p>
         </div>
       </div>
