@@ -65,13 +65,19 @@ public interface MetricsQueryCreator {
      */
     JSONObject getPeakTPSMetricsEvent();
 
-
     /**
      * Return the query for getting error data.
      *
      * @return Query as a String
      */
     String getErrorMetricsQuery();
+
+    /**
+     * Return the query for getting error by aspect data.
+     *
+     * @return Query as a String
+     */
+    String getErrorByAspectMetricsQuery();
 
     /**
      * Return the query for getting rejection data (throttled out requests).

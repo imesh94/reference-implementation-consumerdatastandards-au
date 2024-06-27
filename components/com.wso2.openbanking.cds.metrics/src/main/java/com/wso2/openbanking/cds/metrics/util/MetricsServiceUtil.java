@@ -31,12 +31,12 @@ public class MetricsServiceUtil {
             MetricsResponseModel currentDayMetrics, MetricsResponseModel historicMetrics) {
 
         currentDayMetrics.getSessionCount().addAll(historicMetrics.getSessionCount());
-        currentDayMetrics.getErrors().addAll(historicMetrics.getErrors());
         appendAvailabilityMetrics(currentDayMetrics, historicMetrics);
         appendPerformanceMetrics(currentDayMetrics, historicMetrics);
         appendInvocationMetrics(currentDayMetrics, historicMetrics);
         appendAverageTPSMetrics(currentDayMetrics, historicMetrics);
         appendPeakTPSMetrics(currentDayMetrics, historicMetrics);
+        appendErrorMetrics(currentDayMetrics, historicMetrics);
         appendAverageResponseMetrics(currentDayMetrics, historicMetrics);
         appendRejectionMetrics(currentDayMetrics, historicMetrics);
     }
@@ -114,6 +114,20 @@ public class MetricsServiceUtil {
         currentDayMetrics.getPeakTPS().addAll(historicMetrics.getPeakTPS());
         currentDayMetrics.getAuthenticatedPeakTPS().addAll(historicMetrics.getAuthenticatedPeakTPS());
         currentDayMetrics.getUnauthenticatedPeakTPS().addAll(historicMetrics.getUnauthenticatedPeakTPS());
+    }
+
+    /**
+     * Append historic error metrics to current day error metrics.
+     *
+     * @param currentDayMetrics - current day metrics
+     * @param historicMetrics   - historic metrics
+     */
+    private static void appendErrorMetrics(
+            MetricsResponseModel currentDayMetrics, MetricsResponseModel historicMetrics) {
+
+        currentDayMetrics.getErrors().addAll(historicMetrics.getErrors());
+        currentDayMetrics.getAuthenticatedErrors().addAll(historicMetrics.getAuthenticatedErrors());
+        currentDayMetrics.getUnauthenticatedErrors().addAll(historicMetrics.getUnauthenticatedErrors());
     }
 
     /**

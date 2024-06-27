@@ -225,6 +225,32 @@ public class MockMetricsDataProvider implements MetricsDataProvider {
     }
 
     @Override
+    public JSONObject getErrorByAspectMetricsData() throws OpenBankingException {
+
+        String errorData = "{\"records\":[" +
+                "[" + getRandomEpochMilliWithinPast7Days() + ",\"400\",\"authenticated\",1]," +
+                "[" + getRandomEpochMilliWithinPast7Days() + ",\"401\",\"unauthenticated\",8]" +
+                "]}";
+        JSONParser parser = new JSONParser(JSONParser.MODE_JSON_SIMPLE);
+        try {
+            JSONObject jsonObject = (JSONObject) parser.parse(errorData);
+            JSONArray records = (JSONArray) jsonObject.get("records");
+
+            for (Object record : records) {
+                List<Object> recordList = (List<Object>) record;
+                if (recordList.get(3) instanceof Long) {
+                    Long longValue = (Long) recordList.get(3);
+                    Integer intValue = longValue.intValue();
+                    recordList.set(3, intValue);
+                }
+            }
+            return jsonObject;
+        } catch (ParseException e) {
+            throw new RuntimeException(e);
+        }
+    }
+
+    @Override
     public JSONObject getRejectionMetricsData() throws OpenBankingException {
         String rejectionData = "{\"records\":" +
                 "[[1," + getRandomEpochSecondWithinPast7Days() + ",\"anonymous\"]," +

@@ -35,6 +35,8 @@ public interface MetricsDataProvider {
 
     JSONObject getErrorMetricsData() throws OpenBankingException;
 
+    JSONObject getErrorByAspectMetricsData() throws OpenBankingException;
+
     JSONObject getRejectionMetricsData() throws OpenBankingException;
 
     JSONObject getRecipientCountMetricsData() throws OpenBankingException;

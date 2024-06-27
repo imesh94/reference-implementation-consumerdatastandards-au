@@ -163,6 +163,23 @@ public class MetricsV5DataProvider implements MetricsDataProvider {
     }
 
     @Override
+    public JSONObject getErrorByAspectMetricsData() throws OpenBankingException {
+
+        JSONObject errorMetricsJsonObject;
+        String spQuery = metricsV5QueryCreator.getErrorByAspectMetricsQuery();
+
+        try {
+            errorMetricsJsonObject = SPQueryExecutorUtil.executeQueryOnStreamProcessor(
+                    MetricsConstants.CDS_INVOCATION_METRICS_APP, spQuery);
+        } catch (ParseException | IOException e) {
+            String errorMessage = String.format(RETRIEVAL_ERROR, MetricsConstants.ERROR);
+            log.error(errorMessage, e);
+            throw new OpenBankingException(errorMessage, e);
+        }
+        return errorMetricsJsonObject;
+    }
+
+    @Override
     public JSONObject getRejectionMetricsData() throws OpenBankingException {
 
         JSONObject rejectionMetricsJsonObject;

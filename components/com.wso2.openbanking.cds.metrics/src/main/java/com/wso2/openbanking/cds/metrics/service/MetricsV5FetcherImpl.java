@@ -11,6 +11,7 @@ package com.wso2.openbanking.cds.metrics.service;
 
 import com.wso2.openbanking.accelerator.common.exception.OpenBankingException;
 import com.wso2.openbanking.cds.metrics.constants.MetricsConstants;
+import com.wso2.openbanking.cds.metrics.model.ErrorMetricDay;
 import com.wso2.openbanking.cds.metrics.model.MetricsResponseModel;
 import com.wso2.openbanking.cds.metrics.util.AspectEnum;
 import com.wso2.openbanking.cds.metrics.util.PriorityEnum;
@@ -44,6 +45,7 @@ public class MetricsV5FetcherImpl implements MetricsFetcher {
     private CompletableFuture<List<Integer>> sessionCountFuture;
     private CompletableFuture<Map<AspectEnum, List<BigDecimal>>> peakTPSFuture;
     private CompletableFuture<List<Integer>> errorFuture;
+    private CompletableFuture<List<ErrorMetricDay>> errorByAspectFuture;
     private CompletableFuture<Map<AspectEnum, List<Integer>>> rejectionFuture;
     private CompletableFuture<Integer> recipientCountFuture;
     private CompletableFuture<Integer> customerCountFuture;
@@ -67,6 +69,7 @@ public class MetricsV5FetcherImpl implements MetricsFetcher {
         averageTPSFuture = fetchAverageTPSAsync();
         peakTPSFuture = fetchPeakTPSMetricsAsync();
         errorFuture = fetchErrorMetricsAsync();
+        errorByAspectFuture = fetchErrorByAspectMetricsAsync();
         rejectionFuture = fetchRejectionMetricsAsync();
         recipientCountFuture = fetchRecipientCountMetricsAsync();
         customerCountFuture = fetchCustomerCountMetricsAsync();
@@ -156,6 +159,23 @@ public class MetricsV5FetcherImpl implements MetricsFetcher {
         return CompletableFuture.supplyAsync(() -> {
             try {
                 return metricsProcessor.getErrorMetrics();
+            } catch (OpenBankingException e) {
+                String errorMessage = String.format(ASYNC_FETCH_ERROR, MetricsConstants.ERROR);
+                log.debug(errorMessage, e);
+                throw new RuntimeException(errorMessage, e);
+            }
+        });
+    }
+
+    /**
+     * Get error by aspect metrics asynchronously.
+     *
+     * @return CompletableFuture of error by aspect metrics
+     */
+    private CompletableFuture<List<ErrorMetricDay>> fetchErrorByAspectMetricsAsync() {
+        return CompletableFuture.supplyAsync(() -> {
+            try {
+                return metricsProcessor.getErrorByAspectMetrics();
             } catch (OpenBankingException e) {
                 String errorMessage = String.format(ASYNC_FETCH_ERROR, MetricsConstants.ERROR);
                 log.debug(errorMessage, e);
@@ -304,6 +324,7 @@ public class MetricsV5FetcherImpl implements MetricsFetcher {
             metricsResponseModel.setSessionCount(sessionCountFuture.get());
             metricsResponseModel.setPeakTPS(peakTPSFuture.get());
             metricsResponseModel.setErrors(errorFuture.get());
+            metricsResponseModel.setErrorsByAspect(errorByAspectFuture.get());
             metricsResponseModel.setRejections(rejectionFuture.get());
             metricsResponseModel.setRecipientCount(recipientCountFuture.get());
             metricsResponseModel.setCustomerCount(customerCountFuture.get());

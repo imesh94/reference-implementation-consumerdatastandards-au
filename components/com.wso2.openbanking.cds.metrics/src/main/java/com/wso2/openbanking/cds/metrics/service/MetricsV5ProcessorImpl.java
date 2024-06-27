@@ -12,6 +12,8 @@ package com.wso2.openbanking.cds.metrics.service;
 import com.wso2.openbanking.accelerator.common.exception.OpenBankingException;
 import com.wso2.openbanking.cds.metrics.constants.MetricsConstants;
 import com.wso2.openbanking.cds.metrics.data.MetricsDataProvider;
+import com.wso2.openbanking.cds.metrics.model.ErrorMetricDataModel;
+import com.wso2.openbanking.cds.metrics.model.ErrorMetricDay;
 import com.wso2.openbanking.cds.metrics.model.ServerOutageDataModel;
 import com.wso2.openbanking.cds.metrics.util.AspectEnum;
 import com.wso2.openbanking.cds.metrics.util.MetricsProcessorUtil;
@@ -246,6 +248,35 @@ public class MetricsV5ProcessorImpl implements MetricsProcessor {
             List<Integer> errorMetricsList = MetricsProcessorUtil.getPopulatedMetricsList(errorMetricsJsonObject,
                     numberOfDays, metricsCountLastDateEpoch);
             log.debug("Finished error metrics calculation successfully.");
+            return errorMetricsList;
+        } else {
+            throw new OpenBankingException(String.format(NO_DATA_ERROR, MetricsConstants.ERROR));
+        }
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public List<ErrorMetricDay> getErrorByAspectMetrics() throws OpenBankingException {
+
+        log.debug("Starting error by aspect metrics calculation.");
+        JSONObject errorMetricsJsonObject = metricsDataProvider.getErrorByAspectMetricsData();
+        if (errorMetricsJsonObject != null) {
+            List<ErrorMetricDay> errorMetricsList = new ArrayList<>();
+
+            // Mapping the result set to ErrorMetricDataModel objects.
+            List<ErrorMetricDataModel> errorMetricDataModelList = MetricsProcessorUtil
+                    .mapToErrorMetricDataModel(errorMetricsJsonObject);
+
+            // Initialize the errorMetricsList with days and default values.
+            MetricsProcessorUtil.initializeErrorMetricDayList(errorMetricsList, numberOfDays);
+
+            // Populate the retrieved results to the errorMetricsList according to the respective day.
+            errorMetricsList = MetricsProcessorUtil.populateErrorMetricDayList(errorMetricDataModelList,
+                    errorMetricsList);
+
+            log.debug("Finished error by aspect metrics calculation successfully.");
             return errorMetricsList;
         } else {
             throw new OpenBankingException(String.format(NO_DATA_ERROR, MetricsConstants.ERROR));

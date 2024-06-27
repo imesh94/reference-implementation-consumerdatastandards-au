@@ -13,6 +13,8 @@ import com.wso2.openbanking.accelerator.common.exception.OpenBankingException;
 import com.wso2.openbanking.accelerator.common.util.Generated;
 import com.wso2.openbanking.cds.common.config.OpenBankingCDSConfigParser;
 import com.wso2.openbanking.cds.metrics.constants.MetricsConstants;
+import com.wso2.openbanking.cds.metrics.model.ErrorMetricDataModel;
+import com.wso2.openbanking.cds.metrics.model.ErrorMetricDay;
 import com.wso2.openbanking.cds.metrics.model.PerformanceMetric;
 import com.wso2.openbanking.cds.metrics.model.ServerOutageDataModel;
 import net.minidev.json.JSONArray;
@@ -606,6 +608,119 @@ public class MetricsProcessorUtil {
             }
         }
         return dataList;
+    }
+
+    /**
+     * This method maps the retrieved error metrics to a list of ErrorMetricDataModel objects.
+     *
+     * @param errorMetricsJsonObject - retrieved error metrics data
+     * @return List of ErrorMetricDataModel objects
+     */
+    public static List<ErrorMetricDataModel> mapToErrorMetricDataModel(JSONObject errorMetricsJsonObject) {
+
+        List<ErrorMetricDataModel> errorMetricDataModelList = new ArrayList<>();
+        JSONArray recordsArray = (JSONArray) errorMetricsJsonObject.get(RECORDS);
+
+        for (Object singleRecordObject : recordsArray) {
+            if (singleRecordObject instanceof JSONArray) {
+                JSONArray singleRecordArray = (JSONArray) singleRecordObject;
+
+                ErrorMetricDataModel errorMetricDataModel = new ErrorMetricDataModel(singleRecordArray);
+
+                errorMetricDataModelList.add(errorMetricDataModel);
+            }
+        }
+
+        return errorMetricDataModelList;
+    }
+
+    /**
+     * This method initializes the errorMetricDayList with date values.
+     *
+     * @param errorMetricDayList - List of ErrorMetricDay objects
+     */
+    public static void initializeErrorMetricDayList(List<ErrorMetricDay> errorMetricDayList, int numberOfDays) {
+
+        LocalDate today = LocalDate.now(timeZone);
+
+        for (int i = 0; i < numberOfDays; i++) {
+            LocalDate date = today.minusDays(i);
+            ErrorMetricDay errorMetricDay = new ErrorMetricDay();
+            errorMetricDay.setDate(date);
+            errorMetricDayList.add(errorMetricDay);
+        }
+    }
+
+    /**
+     * Compose error metrics data per day.
+     *
+     * @param errorMetricDataModelList - list of error metrics data model
+     * @param errorMetricDayList - list of error metrics per day
+     * @return - list of error metrics per day
+     */
+    public static List<ErrorMetricDay> populateErrorMetricDayList(List<ErrorMetricDataModel> errorMetricDataModelList,
+                                                                   List<ErrorMetricDay> errorMetricDayList) {
+
+        for (ErrorMetricDataModel errorMetricDataModel : errorMetricDataModelList) {
+            for (int i = 0; i < errorMetricDayList.size(); i++) {
+                ErrorMetricDay errorMetricDay = errorMetricDayList.get(i);
+                if (isTimestampInDate(errorMetricDataModel.getTimestamp(), errorMetricDay.getDate())) {
+
+                    Map<String, Integer> unauthenticatedErrorMap = errorMetricDay.getUnauthenticatedErrorMap();
+                    Map<String, Integer> authenticatedErrorMap = errorMetricDay.getAuthenticatedErrorMap();
+
+                    if (errorMetricDataModel.getAspect().equals(AspectEnum.UNAUTHENTICATED.toString())) {
+                        // updating the unauthenticated errors map
+                        if (unauthenticatedErrorMap.containsKey(errorMetricDataModel.getStatusCode())) {
+                            Integer errorCount = unauthenticatedErrorMap.get(errorMetricDataModel.getStatusCode());
+                            Integer newErrorCount = errorCount + errorMetricDataModel.getCount();
+                            unauthenticatedErrorMap.put(errorMetricDataModel.getStatusCode(), newErrorCount);
+                        } else {
+                            unauthenticatedErrorMap.put(errorMetricDataModel.getStatusCode(),
+                                    errorMetricDataModel.getCount());
+                        }
+                    } else {
+                        // updating the authenticated errors map
+                        if (authenticatedErrorMap.containsKey(errorMetricDataModel.getStatusCode())) {
+                            Integer errorCount = authenticatedErrorMap.get(errorMetricDataModel.getStatusCode());
+                            Integer newErrorCount = errorCount + errorMetricDataModel.getCount();
+                            authenticatedErrorMap.put(errorMetricDataModel.getStatusCode(), newErrorCount);
+                        } else {
+                            authenticatedErrorMap.put(errorMetricDataModel.getStatusCode(),
+                                    errorMetricDataModel.getCount());
+                        }
+                    }
+
+                    // setting the updated error maps
+                    errorMetricDay.setUnauthenticatedErrorMap(unauthenticatedErrorMap);
+                    errorMetricDay.setAuthenticatedErrorMap(authenticatedErrorMap);
+                }
+            }
+        }
+
+        return errorMetricDayList;
+    }
+
+    /**
+     * Checks if a timestamp is in a specific date.
+     *
+     * @param gmtTimestamp - timestamp to be checked
+     * @param targetDate - date to be checked against
+     * @return boolean
+     */
+    private static boolean isTimestampInDate(long gmtTimestamp, LocalDate targetDate) {
+
+        // Convert GMT timestamp to Instant
+        Instant instant = Instant.ofEpochMilli(gmtTimestamp);
+
+        // Convert Instant to ZonedDateTime using GMT time zone
+        ZonedDateTime zonedDateTime = instant.atZone(timeZone);
+
+        // Extract the date from the ZonedDateTime
+        LocalDate timestampDate = zonedDateTime.toLocalDate();
+
+        // Compare the extracted date with the target date
+        return timestampDate.equals(targetDate);
     }
 
     /**

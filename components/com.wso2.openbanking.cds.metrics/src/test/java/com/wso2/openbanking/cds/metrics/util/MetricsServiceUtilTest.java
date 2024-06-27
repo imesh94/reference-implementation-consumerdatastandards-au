@@ -17,7 +17,9 @@ import org.testng.annotations.Test;
 import java.math.BigDecimal;
 import java.time.ZonedDateTime;
 import java.time.format.DateTimeFormatter;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 
@@ -47,6 +49,8 @@ public class MetricsServiceUtilTest {
         model.setUnauthenticatedAvailability(createBigDecimalList(numberOfEntries));
 
         model.setErrors(createIntegerList(numberOfEntries));
+        model.setAuthenticatedErrors(createErrorList(numberOfEntries));
+        model.setUnauthenticatedErrors(createErrorList(numberOfEntries));
 
         model.setPeakTPS(createBigDecimalList(numberOfEntries));
         model.setAuthenticatedPeakTPS(createBigDecimalList(numberOfEntries));
@@ -104,6 +108,16 @@ public class MetricsServiceUtilTest {
                 .collect(Collectors.toList());
     }
 
+    private List<Map<String, Integer>> createErrorList(int size) {
+        return IntStream.range(0, size)
+                .mapToObj(i -> {
+                    Map<String, Integer> map = new HashMap<>();
+                    map.put("400", (int) (Math.random() * 10));
+                    return map;
+                })
+                .collect(Collectors.toList());
+    }
+
     @Test
     public void testAppendHistoricMetricsToCurrentDayMetrics() {
 
@@ -114,6 +128,8 @@ public class MetricsServiceUtilTest {
         assertEquals(currentDayMetrics.getUnauthenticatedAvailability().size(), TOTAL_DAYS);
 
         assertEquals(currentDayMetrics.getErrors().size(), TOTAL_DAYS);
+        assertEquals(currentDayMetrics.getAuthenticatedErrors().size(), TOTAL_DAYS);
+        assertEquals(currentDayMetrics.getUnauthenticatedErrors().size(), TOTAL_DAYS);
 
         assertEquals(currentDayMetrics.getPeakTPS().size(), TOTAL_DAYS);
         assertEquals(currentDayMetrics.getAuthenticatedPeakTPS().size(), TOTAL_DAYS);

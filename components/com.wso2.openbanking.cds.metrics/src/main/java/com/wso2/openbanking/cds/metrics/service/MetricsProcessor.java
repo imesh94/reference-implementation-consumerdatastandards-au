@@ -10,6 +10,7 @@
 package com.wso2.openbanking.cds.metrics.service;
 
 import com.wso2.openbanking.accelerator.common.exception.OpenBankingException;
+import com.wso2.openbanking.cds.metrics.model.ErrorMetricDay;
 import com.wso2.openbanking.cds.metrics.util.AspectEnum;
 import com.wso2.openbanking.cds.metrics.util.PriorityEnum;
 
@@ -98,6 +99,14 @@ public interface MetricsProcessor {
      * @throws OpenBankingException - OpenBankingException
      */
     List<Integer> getErrorMetrics() throws OpenBankingException;
+
+    /**
+     * Get error by aspect metrics.
+     *
+     * @return List of error by aspect metrics
+     * @throws OpenBankingException - OpenBankingException
+     */
+    List<ErrorMetricDay> getErrorByAspectMetrics() throws OpenBankingException;
 
     /**
      * Get rejection metrics.

@@ -15,6 +15,7 @@ import com.wso2.openbanking.cds.metrics.util.PriorityEnum;
 import java.math.BigDecimal;
 import java.util.List;
 import java.util.Map;
+import java.util.stream.Collectors;
 
 /**
  * Model class for CDS Metrics V5 data.
@@ -401,6 +402,18 @@ public class MetricsResponseModel {
 
     public void setUnauthenticatedErrors(List<Map<String, Integer>> unauthenticatedErrors) {
         this.unauthenticatedErrors = unauthenticatedErrors;
+    }
+
+    public void setErrorsByAspect(List<ErrorMetricDay> errorMetricDayList) {
+
+        setUnauthenticatedErrors(errorMetricDayList
+                .stream()
+                .map(ErrorMetricDay::getUnauthenticatedErrorMap)
+                .collect(Collectors.toList()));
+        setAuthenticatedErrors(errorMetricDayList
+                .stream()
+                .map(ErrorMetricDay::getAuthenticatedErrorMap)
+                .collect(Collectors.toList()));
     }
 
     public List<Integer> getAuthenticatedEndpointRejections() {

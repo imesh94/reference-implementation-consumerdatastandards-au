@@ -124,8 +124,19 @@ public class MetricsV5QueryCreatorImpl implements MetricsQueryCreator {
     public String getErrorMetricsQuery() {
 
         return "from CDSMetricsStatusAgg within '" + fromTimestamp + "', '" + toTimestamp + "' per '" +
-                timeGranularity + "' select totalReqCount, AGG_TIMESTAMP as reqCount having statusCode >= 500 and " +
+                timeGranularity + "' select totalReqCount, AGG_TIMESTAMP having statusCode >= 500 and " +
                 "statusCode < 600;";
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public String getErrorByAspectMetricsQuery() {
+
+        return "from CDSMetricsStatusAspectAgg within '" + fromTimestamp + "', '" + toTimestamp + "' per '" +
+                timeGranularity + "' select AGG_TIMESTAMP, statusCode, aspect, totalReqCount " +
+                "having statusCode >= 400 and statusCode < 600 order by AGG_TIMESTAMP desc;";
     }
 
     /**

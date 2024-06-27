@@ -89,7 +89,7 @@ public class MetricsV5QueryCreatorImplTest extends PowerMockTestCase {
     @Test
     public void testGetErrorMetricsQuery() {
         String expectedQuery = "from CDSMetricsStatusAgg within '2024-01-01T00:00:00Z', '2024-01-01T23:59:59Z' " +
-                "per 'days' select totalReqCount, AGG_TIMESTAMP as reqCount having statusCode >= 500 and statusCode " +
+                "per 'days' select totalReqCount, AGG_TIMESTAMP having statusCode >= 500 and statusCode " +
                 "< 600;";
         String actualQuery = queryCreator.getErrorMetricsQuery();
         assertEquals(actualQuery, expectedQuery);

@@ -76,7 +76,6 @@ import com.wso2.openbanking.cds.metrics.util.PeriodEnum;
 import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.Collections;
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -126,10 +125,10 @@ public class MetricsV5MapperImpl implements MetricsMapper {
         responseMetricsListV5DataDTO.setAverageTps(getAverageTpsDTO(metricsListModel, period));
         responseMetricsListV5DataDTO.setPeakTps(getPeakTpsDTO(metricsListModel, period));
         responseMetricsListV5DataDTO.setPerformance(getPerformanceDTO(metricsListModel, period));
+        responseMetricsListV5DataDTO.setErrors(getErrorsDTO(metricsListModel, period));
 
         /*TODO: populate data*/
         populateTempData(metricsListModel);
-        responseMetricsListV5DataDTO.setErrors(getErrorsDTO(metricsListModel, period));
         responseMetricsListV5DataDTO.setAuthorisations(getAuthorisationsDTO(metricsListModel, period));
 
         return responseMetricsListV5DataDTO;
@@ -163,9 +162,9 @@ public class MetricsV5MapperImpl implements MetricsMapper {
         metricsListModel.setAuthenticatedPeakTPS(new ArrayList<>(bigDecimalZeros));
         metricsListModel.setUnauthenticatedPeakTPS(new ArrayList<>(bigDecimalZeros));*/
 
-        metricsListModel.setErrors(new ArrayList<>(integerZeros));
+        /*metricsListModel.setErrors(new ArrayList<>(integerZeros));
         metricsListModel.setAuthenticatedErrors(new ArrayList<>(Collections.nCopies(2, new HashMap<>())));
-        metricsListModel.setUnauthenticatedErrors(new ArrayList<>(Collections.nCopies(2, new HashMap<>())));
+        metricsListModel.setUnauthenticatedErrors(new ArrayList<>(Collections.nCopies(2, new HashMap<>())));*/
 
         metricsListModel.setActiveIndividualAuthorisationCount(0);
         metricsListModel.setActiveNonIndividualAuthorisationCount(0);
