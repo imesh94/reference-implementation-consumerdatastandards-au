@@ -391,7 +391,8 @@ public class CDSConsentPersistStep implements ConsentPersistStep {
 
         List<String> addedUserAuthTypeMappings = new ArrayList<>();
         // add primary user to already added users auth type mapping list
-        addedUserAuthTypeMappings.add(consentData.getUserId() + ":primary_member");
+        addedUserAuthTypeMappings.add(consentData.getUserId() + ":" +
+                CDSConsentExtensionConstants.AUTH_RESOURCE_TYPE_PRIMARY);
         // Users who have already stored as auth resources
         Map<String, AuthorizationResource> reAuthorizableResources = new HashMap<>();
         // Users who need to store as auth resources
