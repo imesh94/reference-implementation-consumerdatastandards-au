@@ -1132,14 +1132,14 @@ public class MetricsProcessorUtil {
     /**
      * Checks if a timestamp is in a specific date.
      *
-     * @param gmtTimestamp - timestamp to be checked
+     * @param timestamp - timestamp to be checked
      * @param targetDate - date to be checked against
      * @return boolean
      */
-    private static boolean isTimestampInDate(long gmtTimestamp, LocalDate targetDate) {
+    private static boolean isTimestampInDate(long timestamp, LocalDate targetDate) {
 
         // Convert GMT timestamp to Instant
-        Instant instant = Instant.ofEpochMilli(gmtTimestamp);
+        Instant instant = Instant.ofEpochMilli(timestamp);
 
         // Convert Instant to ZonedDateTime using GMT time zone
         ZonedDateTime zonedDateTime = instant.atZone(timeZone);
