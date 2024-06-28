@@ -800,8 +800,11 @@ public class MetricsProcessorUtil {
 
         LocalDate today = LocalDate.now(timeZone);
 
+        // If the request is only historic, then populate days starting from yesterday
+        LocalDate startingDate = numberOfDays == 7 ? today.minusDays(1) : today;
+
         for (int i = 0; i < numberOfDays; i++) {
-            LocalDate date = today.minusDays(i);
+            LocalDate date = startingDate.minusDays(i);
             ErrorMetricDay errorMetricDay = new ErrorMetricDay();
             errorMetricDay.setDate(date);
             errorMetricDayList.add(errorMetricDay);
@@ -818,8 +821,11 @@ public class MetricsProcessorUtil {
 
         LocalDate today = LocalDate.now(timeZone);
 
+        // If the request is only historic, then populate days starting from yesterday
+        LocalDate startingDate = numberOfDays == 7 ? today.minusDays(1) : today;
+
         for (int i = 0; i < numberOfDays; i++) {
-            LocalDate date = today.minusDays(i);
+            LocalDate date = startingDate.minusDays(i);
             AuthorisationMetricDay authorisationMetricDay = new AuthorisationMetricDay();
             authorisationMetricDay.setDate(date);
             authorisationMetricDayList.add(authorisationMetricDay);
@@ -836,8 +842,11 @@ public class MetricsProcessorUtil {
 
         LocalDate today = LocalDate.now(timeZone);
 
+        // If the request is only historic, then populate days starting from yesterday
+        LocalDate startingDate = numberOfDays == 7 ? today.minusDays(1) : today;
+
         for (int i = 0; i < numberOfDays; i++) {
-            LocalDate date = today.minusDays(i);
+            LocalDate date = startingDate.minusDays(i);
             AbandonedConsentFlowByStageMetricDay abandonedConsentFlowByStageMetricDay =
                     new AbandonedConsentFlowByStageMetricDay();
             abandonedConsentFlowByStageMetricDay.setDate(date);
