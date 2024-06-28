@@ -12,7 +12,16 @@ package com.wso2.openbanking.cds.metrics.model;
 import java.time.LocalDate;
 
 /**
- * Model class for AuthorisationMetricDay.
+ * Represents the authorisation metrics for a specific day.
+ * This class maintains all the different types of authorisations
+ * for a given date, facilitating easy calculation.
+ *
+ * Eg:
+ * For the date 2024-01-01,
+ * There are 5 new authorisations
+ * There are 4 revocations
+ * There are 5 amendments
+ * There are 2 expirations
  */
 public class AuthorisationMetricDay {
 

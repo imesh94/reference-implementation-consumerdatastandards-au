@@ -32,20 +32,20 @@ import static com.wso2.openbanking.cds.metrics.constants.MetricsConstants.RETRIE
  */
 public class MetricsV5DataProvider implements MetricsDataProvider {
 
-    MetricsQueryCreator metricsV5QueryCreator;
+    MetricsQueryCreator metricsQueryCreator;
     private static final OpenBankingCDSConfigParser configParser = OpenBankingCDSConfigParser.getInstance();
     private static final String tpsDataRetrievalUrl = configParser.getMetricsTPSDataRetrievalUrl();
     private static final Log log = LogFactory.getLog(MetricsV5DataProvider.class);
 
-    public MetricsV5DataProvider(MetricsQueryCreator metricsV5QueryCreator) {
-        this.metricsV5QueryCreator = metricsV5QueryCreator;
+    public MetricsV5DataProvider(MetricsQueryCreator metricsQueryCreator) {
+        this.metricsQueryCreator = metricsQueryCreator;
     }
 
     @Override
     public JSONObject getAvailabilityMetricsData() throws OpenBankingException {
 
         JSONObject availabilityMetricsJsonObject;
-        String spQuery = metricsV5QueryCreator.getAvailabilityMetricsQuery();
+        String spQuery = metricsQueryCreator.getAvailabilityMetricsQuery();
         try {
             availabilityMetricsJsonObject = SPQueryExecutorUtil.executeQueryOnStreamProcessor(
                     MetricsConstants.CDS_AVAILABILITY_METRICS_APP, spQuery);
@@ -61,7 +61,7 @@ public class MetricsV5DataProvider implements MetricsDataProvider {
     public JSONObject getInvocationMetricsData() throws OpenBankingException {
 
         JSONObject invocationMetricsJsonObject;
-        String spQuery = metricsV5QueryCreator.getInvocationMetricsQuery();
+        String spQuery = metricsQueryCreator.getInvocationMetricsQuery();
 
         try {
             invocationMetricsJsonObject = SPQueryExecutorUtil.executeQueryOnStreamProcessor(
@@ -78,7 +78,7 @@ public class MetricsV5DataProvider implements MetricsDataProvider {
     public JSONObject getInvocationByAspectMetricsData() throws OpenBankingException {
 
         JSONObject invocationByAspectMetricsJsonObject;
-        String spQuery = metricsV5QueryCreator.getInvocationByAspectMetricsQuery();
+        String spQuery = metricsQueryCreator.getInvocationByAspectMetricsQuery();
 
         try {
             invocationByAspectMetricsJsonObject = SPQueryExecutorUtil.executeQueryOnStreamProcessor(
@@ -95,7 +95,7 @@ public class MetricsV5DataProvider implements MetricsDataProvider {
     public JSONObject getHourlyPerformanceByPriorityMetricsData() throws OpenBankingException {
 
         JSONObject performanceMetricsJsonObject;
-        String spQuery = metricsV5QueryCreator.getHourlyPerformanceByPriorityMetricsQuery();
+        String spQuery = metricsQueryCreator.getHourlyPerformanceByPriorityMetricsQuery();
 
         try {
             performanceMetricsJsonObject = SPQueryExecutorUtil.executeQueryOnStreamProcessor(
@@ -112,7 +112,7 @@ public class MetricsV5DataProvider implements MetricsDataProvider {
     public JSONObject getSessionCountMetricsData() throws OpenBankingException {
 
         JSONObject sessionCountMetricsJsonObject;
-        String spQuery = metricsV5QueryCreator.getSessionCountMetricsQuery();
+        String spQuery = metricsQueryCreator.getSessionCountMetricsQuery();
 
         try {
             sessionCountMetricsJsonObject = SPQueryExecutorUtil.executeQueryOnStreamProcessor(
@@ -128,7 +128,7 @@ public class MetricsV5DataProvider implements MetricsDataProvider {
     @Override
     public JSONArray getPeakTPSMetricsData() throws ParseException {
 
-        JSONObject peakTPSEvent = metricsV5QueryCreator.getPeakTPSMetricsEvent();
+        JSONObject peakTPSEvent = metricsQueryCreator.getPeakTPSMetricsEvent();
         String responseStr = SPQueryExecutorUtil.executeRequestOnStreamProcessor(peakTPSEvent, tpsDataRetrievalUrl);
         //ToDO: Address vulnerable usage of JSONParser
         Object jsonResponse = new JSONParser(JSONParser.MODE_PERMISSIVE).parse(responseStr);
@@ -149,7 +149,7 @@ public class MetricsV5DataProvider implements MetricsDataProvider {
     public JSONObject getErrorMetricsData() throws OpenBankingException {
 
         JSONObject errorMetricsJsonObject;
-        String spQuery = metricsV5QueryCreator.getErrorMetricsQuery();
+        String spQuery = metricsQueryCreator.getErrorMetricsQuery();
 
         try {
             errorMetricsJsonObject = SPQueryExecutorUtil.executeQueryOnStreamProcessor(
@@ -166,7 +166,7 @@ public class MetricsV5DataProvider implements MetricsDataProvider {
     public JSONObject getErrorByAspectMetricsData() throws OpenBankingException {
 
         JSONObject errorMetricsJsonObject;
-        String spQuery = metricsV5QueryCreator.getErrorByAspectMetricsQuery();
+        String spQuery = metricsQueryCreator.getErrorByAspectMetricsQuery();
 
         try {
             errorMetricsJsonObject = SPQueryExecutorUtil.executeQueryOnStreamProcessor(
@@ -183,7 +183,7 @@ public class MetricsV5DataProvider implements MetricsDataProvider {
     public JSONObject getRejectionMetricsData() throws OpenBankingException {
 
         JSONObject rejectionMetricsJsonObject;
-        String spQuery = metricsV5QueryCreator.getRejectionMetricsQuery();
+        String spQuery = metricsQueryCreator.getRejectionMetricsQuery();
 
         try {
             rejectionMetricsJsonObject = SPQueryExecutorUtil.executeQueryOnStreamProcessor(
@@ -200,7 +200,7 @@ public class MetricsV5DataProvider implements MetricsDataProvider {
     public JSONObject getActiveAuthorisationCountMetricsData() throws OpenBankingException {
 
         JSONObject activeAuthorisationCountMetricsJsonObject;
-        String spQuery = metricsV5QueryCreator.getActiveAuthorisationCountMetricsQuery();
+        String spQuery = metricsQueryCreator.getActiveAuthorisationCountMetricsQuery();
 
         try {
             activeAuthorisationCountMetricsJsonObject = SPQueryExecutorUtil.executeQueryOnStreamProcessor(
@@ -217,7 +217,7 @@ public class MetricsV5DataProvider implements MetricsDataProvider {
     public JSONObject getAuthorisationMetricsData() throws OpenBankingException {
 
         JSONObject authorisationMetricsJsonObject;
-        String spQuery = metricsV5QueryCreator.getAuthorisationMetricsQuery();
+        String spQuery = metricsQueryCreator.getAuthorisationMetricsQuery();
 
         try {
             authorisationMetricsJsonObject = SPQueryExecutorUtil.executeQueryOnStreamProcessor(
@@ -234,7 +234,7 @@ public class MetricsV5DataProvider implements MetricsDataProvider {
     public JSONObject getAbandonedConsentFlowCountMetricsData() throws OpenBankingException {
 
         JSONObject abandonedConsentFlowCountMetricsJsonObject;
-        String spQuery = metricsV5QueryCreator.getAbandonedConsentFlowCountMetricsQuery();
+        String spQuery = metricsQueryCreator.getAbandonedConsentFlowCountMetricsQuery();
 
         try {
             abandonedConsentFlowCountMetricsJsonObject = SPQueryExecutorUtil.executeQueryOnStreamProcessor(
@@ -251,7 +251,7 @@ public class MetricsV5DataProvider implements MetricsDataProvider {
     public JSONObject getRecipientCountMetricsData() throws OpenBankingException {
 
         JSONObject recipientCountMetricsJsonObject;
-        String spQuery = metricsV5QueryCreator.getRecipientCountMetricsQuery();
+        String spQuery = metricsQueryCreator.getRecipientCountMetricsQuery();
 
         try {
             recipientCountMetricsJsonObject = SPQueryExecutorUtil.executeQueryOnStreamProcessor(
@@ -268,7 +268,7 @@ public class MetricsV5DataProvider implements MetricsDataProvider {
     public JSONObject getCustomerCountMetricsData() throws OpenBankingException {
 
         JSONObject customerCountMetricsJsonObject;
-        String spQuery = metricsV5QueryCreator.getCustomerCountMetricsQuery();
+        String spQuery = metricsQueryCreator.getCustomerCountMetricsQuery();
 
         try {
             customerCountMetricsJsonObject = SPQueryExecutorUtil.executeQueryOnStreamProcessor(
@@ -285,7 +285,7 @@ public class MetricsV5DataProvider implements MetricsDataProvider {
     public JSONObject getTotalResponseTimeMetricsData() throws OpenBankingException {
 
         JSONObject totalResponseTimeJsonObject;
-        String spQuery = metricsV5QueryCreator.getTotalResponseTimeQuery();
+        String spQuery = metricsQueryCreator.getTotalResponseTimeQuery();
 
         try {
             totalResponseTimeJsonObject = SPQueryExecutorUtil.executeQueryOnStreamProcessor(
@@ -302,7 +302,7 @@ public class MetricsV5DataProvider implements MetricsDataProvider {
     public JSONObject getSuccessfulInvocationMetricsData() throws OpenBankingException {
 
         JSONObject successInvocationsJsonObject;
-        String spQuery = metricsV5QueryCreator.getSuccessfulInvocationsQuery();
+        String spQuery = metricsQueryCreator.getSuccessfulInvocationsQuery();
 
         try {
             successInvocationsJsonObject = SPQueryExecutorUtil.executeQueryOnStreamProcessor(

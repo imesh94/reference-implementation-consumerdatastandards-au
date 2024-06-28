@@ -63,7 +63,7 @@ public class MetricsProcessorUtil {
     private static final ZoneId timeZone = ZoneId.of(configParser.getMetricsTimeZone());
     private static final LocalDate metricsV5StartDate = LocalDate.parse(configParser.getMetricsV5StartDate());
     private static final long consentAbandonmentTime = configParser.getConsentAbandonmentTime();
-    private static final long authCodeExpiredTime = configParser.getAuthorizationCodeValidityPeriod();
+    private static final long authCodeValidityPeriod = configParser.getAuthorizationCodeValidityPeriod();
 
     private MetricsProcessorUtil() {
     }
@@ -1028,11 +1028,11 @@ public class MetricsProcessorUtil {
                 } else if (authorisationStageTimestamp.getConsentApprovedTimestamp() > 0) {
                     long elapsedTimeMillis = getElapsedTimeMillis(authorisationStageTimestamp
                             .getConsentApprovedTimestamp());
-                    if (elapsedTimeMillis > authCodeExpiredTime) {
+                    if (elapsedTimeMillis > authCodeValidityPeriod) {
                         // Updating the failedTokenExchange metric if the consent flow has consentApproved but
                         // not completed after the auth code has expired
                         timestampToCheck = authorisationStageTimestamp.getConsentApprovedTimestamp() +
-                                authCodeExpiredTime;
+                                authCodeValidityPeriod;
                         stage = AbandonmentsByStageEnum.FAILED_TOKEN_EXCHANGE;
                     }
                 } else if (authorisationStageTimestamp.getAccountSelectedTimestamp() > 0) {

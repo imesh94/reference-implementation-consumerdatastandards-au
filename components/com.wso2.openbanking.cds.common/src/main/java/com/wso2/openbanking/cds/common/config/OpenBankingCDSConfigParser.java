@@ -755,7 +755,7 @@ public class OpenBankingCDSConfigParser {
     }
 
     /**
-     * Get metrics consent abandonment time in seconds.
+     * Get metrics consent abandonment time in milliseconds.
      *
      * @return String
      */
@@ -769,7 +769,7 @@ public class OpenBankingCDSConfigParser {
     }
 
     /**
-     * Get metrics authorization code validity period in seconds.
+     * Get metrics authorization code validity period in milliseconds.
      *
      * @return String
      */

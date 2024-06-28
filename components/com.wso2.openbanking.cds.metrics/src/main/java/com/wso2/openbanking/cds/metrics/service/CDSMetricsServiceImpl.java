@@ -66,10 +66,10 @@ public class CDSMetricsServiceImpl implements CDSMetricsService {
     public MetricsResponseModel getCurrentDayMetrics(String requestTime) throws OpenBankingException {
 
         MetricsQueryCreator metricsV5QueryCreator = new MetricsV5QueryCreatorImpl(PeriodEnum.CURRENT);
-        MetricsDataProvider metricsDataProvider = new MetricsV5DataProvider(metricsV5QueryCreator);
-        MetricsProcessor metricsProcessor = new MetricsV5ProcessorImpl(PeriodEnum.CURRENT,
-                metricsDataProvider, TIME_ZONE);
-        MetricsFetcher metricsFetcherV5Current = new MetricsV5FetcherImpl(metricsProcessor);
+        MetricsDataProvider metricsV5DataProvider = new MetricsV5DataProvider(metricsV5QueryCreator);
+        MetricsProcessor metricsV5Processor = new MetricsV5ProcessorImpl(PeriodEnum.CURRENT,
+                metricsV5DataProvider, TIME_ZONE);
+        MetricsFetcher metricsFetcherV5Current = new MetricsV5FetcherImpl(metricsV5Processor);
         return metricsFetcherV5Current.getResponseMetricsListModel(requestTime);
     }
 

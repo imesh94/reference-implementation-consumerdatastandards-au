@@ -12,7 +12,18 @@ package com.wso2.openbanking.cds.metrics.model;
 import java.time.LocalDate;
 
 /**
- * Model class for AbandonedConsentFlowByStageMetricDay.
+ * Represents the abandoned consent flow metrics for a specific day.
+ * This class maintains the number of abandonment for all the different types of stages
+ * for a given date, facilitating easy calculation.
+ *
+ * Eg:
+ * For the date 2024-01-01,
+ * There are 5 consents which were abandoned in the pre identification stage
+ * There are 4 consents which were abandoned in the pre authentication stage
+ * There are 5 consents which were abandoned in the pre account selection stage
+ * There are 1 consents which were abandoned in the pre authorisation stage
+ * There are 0 consents which were abandoned in the rejected stage
+ * There are 9 consents which were abandoned in the failed token exchange stage
  */
 public class AbandonedConsentFlowByStageMetricDay {
 

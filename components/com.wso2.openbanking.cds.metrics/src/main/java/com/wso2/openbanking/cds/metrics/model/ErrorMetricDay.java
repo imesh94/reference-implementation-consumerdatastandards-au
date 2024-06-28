@@ -14,7 +14,14 @@ import java.util.HashMap;
 import java.util.Map;
 
 /**
- * Model class for ErrorMetricDay.
+ * Represents the error metrics for a specific day.
+ * This class maintains a map of authenticated and unauthenticated
+ * error invocations for a given date, facilitating easy calculation.
+ *
+ * Eg:
+ * For the date 2024-01-01,
+ * There are 5 authenticated errors
+ * There are 4 unauthenticated errors
  */
 public class ErrorMetricDay {
 

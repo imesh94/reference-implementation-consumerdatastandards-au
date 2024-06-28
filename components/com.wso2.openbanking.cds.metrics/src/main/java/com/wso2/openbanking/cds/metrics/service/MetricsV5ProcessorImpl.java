@@ -84,7 +84,7 @@ public class MetricsV5ProcessorImpl implements MetricsProcessor {
                 availabilityMetricsLastDate = currentDateEnd;
                 break;
             default:
-                throw new OpenBankingException("Invalid period value. Only CURRENT and HISTORIC and ALL periods are" +
+                throw new OpenBankingException("Invalid period value. Only CURRENT, HISTORIC and ALL periods are" +
                         " accepted at this level.");
         }
         this.metricsDataProvider = metricsDataProvider;
