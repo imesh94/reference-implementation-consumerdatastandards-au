@@ -13,7 +13,6 @@ import com.wso2.openbanking.cds.identity.authenticator.CDSIntrospectionPrivateKe
 import com.wso2.openbanking.cds.identity.authenticator.CDSPARPrivateKeyJWTClientAuthenticator;
 import com.wso2.openbanking.cds.identity.authenticator.CDSRevocationPrivateKeyJWTClientAuthenticator;
 import com.wso2.openbanking.cds.identity.authenticator.CDSTokenPrivateKeyJWTClientAuthenticator;
-import com.wso2.openbanking.cds.identity.listener.CDSIntrospectionDataProvider;
 import com.wso2.openbanking.cds.identity.listener.CDSTokenIntrospectionListener;
 import com.wso2.openbanking.cds.identity.listener.CDSTokenIssueListener;
 import org.apache.commons.logging.Log;
@@ -27,7 +26,6 @@ import org.osgi.service.component.annotations.Reference;
 import org.osgi.service.component.annotations.ReferenceCardinality;
 import org.osgi.service.component.annotations.ReferencePolicy;
 import org.wso2.carbon.identity.oauth.event.OAuthEventInterceptor;
-import org.wso2.carbon.identity.oauth2.IntrospectionDataProvider;
 import org.wso2.carbon.identity.oauth2.client.authentication.OAuthClientAuthenticator;
 import org.wso2.carbon.identity.oauth2.client.authentication.OAuthClientAuthnService;
 import org.wso2.carbon.user.core.service.RealmService;
@@ -63,8 +61,6 @@ public class CDSIdentityServiceComponent {
                 new CDSTokenIssueListener(), null);
         bundleContext.registerService(OAuthEventInterceptor.class.getName(),
                 new CDSTokenIntrospectionListener(), null);
-        bundleContext.registerService(IntrospectionDataProvider.class.getName(),
-                new CDSIntrospectionDataProvider(), null);
     }
 
     @Reference(

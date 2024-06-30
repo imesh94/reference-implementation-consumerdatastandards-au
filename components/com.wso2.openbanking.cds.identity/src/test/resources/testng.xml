@@ -73,4 +73,9 @@
             <class name="com.wso2.openbanking.cds.identity.filter.CDSTokenRevocationFilterTest"/>
         </classes>
     </test>
+    <test name="cds-introspection-data-provider">
+        <classes>
+            <class name="com.wso2.openbanking.cds.identity.listener.CDSIntrospectionDataProviderTest"/>
+        </classes>
+    </test>
 </suite>
