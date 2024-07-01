@@ -73,7 +73,7 @@ public class MetricsV5QueryCreatorImplTest extends PowerMockTestCase {
     public void testGetInvocationMetricsQuery() {
         String expectedQuery = "from CDSMetricsAgg within '2024-01-01T00:00:00Z', '2024-01-01T23:59:59Z' per " +
                 "'days' select priorityTier, totalReqCount, AGG_TIMESTAMP group by priorityTier, AGG_TIMESTAMP " +
-                "order by AGG_TIMESTAMP desc;";
+                "having priorityTier != 'Uncategorized' order by AGG_TIMESTAMP desc;";
         String actualQuery = queryCreator.getInvocationMetricsQuery();
         assertEquals(actualQuery, expectedQuery);
     }
@@ -131,8 +131,9 @@ public class MetricsV5QueryCreatorImplTest extends PowerMockTestCase {
     @Test
     public void testGetTotalResponseTimeQuery() {
         String expectedQuery = "from CDSMetricsAgg within '2024-01-01T00:00:00Z', '2024-01-01T23:59:59Z' " +
-                "per 'days' select priorityTier, (totalRespTime / 1000.0) as totalRespTime, " +
-                "AGG_TIMESTAMP group by priorityTier, AGG_TIMESTAMP order by AGG_TIMESTAMP desc;";
+                "per 'days' select priorityTier, (totalRespTime / 1000.0) as totalRespTime, AGG_TIMESTAMP " +
+                "group by priorityTier, AGG_TIMESTAMP having priorityTier != 'Uncategorized' " +
+                "order by AGG_TIMESTAMP desc;";
         String actualQuery = queryCreator.getTotalResponseTimeQuery();
         assertEquals(actualQuery, expectedQuery);
     }

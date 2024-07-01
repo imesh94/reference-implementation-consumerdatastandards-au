@@ -63,8 +63,8 @@ public class MetricsV5QueryCreatorImpl implements MetricsQueryCreator {
     public String getInvocationMetricsQuery() {
 
         return "from CDSMetricsAgg within '" + fromTimestamp + "', '" + toTimestamp + "' per '" + timeGranularity +
-                "' select priorityTier, totalReqCount, AGG_TIMESTAMP group by priorityTier, AGG_TIMESTAMP order by " +
-                "AGG_TIMESTAMP desc;";
+                "' select priorityTier, totalReqCount, AGG_TIMESTAMP group by priorityTier, AGG_TIMESTAMP " +
+                "having priorityTier != 'Uncategorized' order by AGG_TIMESTAMP desc;";
     }
 
     /**
@@ -227,7 +227,8 @@ public class MetricsV5QueryCreatorImpl implements MetricsQueryCreator {
 
         return "from CDSMetricsAgg within '" + fromTimestamp + "', '" + toTimestamp + "' per '" + timeGranularity +
                 "' select priorityTier, (totalRespTime / 1000.0) as totalRespTime, AGG_TIMESTAMP " +
-                "group by priorityTier, AGG_TIMESTAMP order by AGG_TIMESTAMP desc;";
+                "group by priorityTier, AGG_TIMESTAMP having priorityTier != 'Uncategorized' " +
+                "order by AGG_TIMESTAMP desc;";
     }
 
 }
