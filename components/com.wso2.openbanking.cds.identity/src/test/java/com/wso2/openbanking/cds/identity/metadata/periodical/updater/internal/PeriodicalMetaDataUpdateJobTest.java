@@ -38,6 +38,9 @@ import java.util.Map;
 
 import static com.wso2.openbanking.cds.common.metadata.periodical.updater.constants.MetadataConstants.MAP_DATA_RECIPIENTS;
 import static com.wso2.openbanking.cds.common.metadata.periodical.updater.constants.MetadataConstants.MAP_SOFTWARE_PRODUCTS;
+import static com.wso2.openbanking.cds.common.metadata.periodical.updater.constants.MetadataConstants.STATUS;
+import static com.wso2.openbanking.cds.common.metadata.periodical.updater.constants.MetadataConstants.STATUS_JSON_LEGAL_ENTITY_KEY;
+import static com.wso2.openbanking.cds.common.metadata.periodical.updater.constants.MetadataConstants.STATUS_JSON_SP_KEY;
 
 /**
  * Test class for Periodical MetaData Update Job.
@@ -75,8 +78,8 @@ public class PeriodicalMetaDataUpdateJobTest extends PowerMockTestCase {
         softwareProducts.put(softwareProduct1);
         softwareProducts.put(softwareProduct2);
 
-        dataRecipientsWrapper.put("dataRecipients", dataRecipients);
-        softwareProductsWrapper.put("softwareProducts", softwareProducts);
+        dataRecipientsWrapper.put("data", dataRecipients);
+        softwareProductsWrapper.put("data", softwareProducts);
 
     }
 
@@ -146,8 +149,8 @@ public class PeriodicalMetaDataUpdateJobTest extends PowerMockTestCase {
     private JSONObject getSoftwareProduct(String softwareProductId, SoftwareProductStatusEnum status) {
 
         JSONObject softwareProduct = new JSONObject();
-        softwareProduct.put(MetadataConstants.DR_JSON_SP_KEY, softwareProductId);
-        softwareProduct.put(MetadataConstants.SOFTWARE_PRODUCT_STATUS, status.toString());
+        softwareProduct.put(STATUS_JSON_SP_KEY, softwareProductId);
+        softwareProduct.put(STATUS, status.toString());
 
         return softwareProduct;
     }
@@ -156,8 +159,8 @@ public class PeriodicalMetaDataUpdateJobTest extends PowerMockTestCase {
     private JSONObject getDataRecipient(String legalEntityId, DataRecipientStatusEnum status) {
 
         JSONObject dataRecipient = new JSONObject();
-        dataRecipient.put(MetadataConstants.DATA_RECIPIENT_ID, legalEntityId);
-        dataRecipient.put(MetadataConstants.DATA_RECIPIENT_STATUS, status.toString());
+        dataRecipient.put(STATUS_JSON_LEGAL_ENTITY_KEY, legalEntityId);
+        dataRecipient.put(STATUS, status.toString());
         return dataRecipient;
     }
 }
