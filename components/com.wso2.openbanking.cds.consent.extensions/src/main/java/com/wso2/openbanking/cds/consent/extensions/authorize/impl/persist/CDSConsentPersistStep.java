@@ -389,13 +389,14 @@ public class CDSConsentPersistStep implements ConsentPersistStep {
             Map<String, ArrayList<String>> userIdAgainstNonPrimaryAccounts, boolean isConsentAmendment)
             throws ConsentManagementException {
 
-        List<String> alreadyAddedUsers = new ArrayList<>();
-        // add primary user to already added users list
-        alreadyAddedUsers.add(consentData.getUserId());
+        List<String> addedUserAuthTypeMappings = new ArrayList<>();
+        // add primary user to already added users auth type mapping list
+        addedUserAuthTypeMappings.add(consentData.getUserId() + ":" +
+                CDSConsentExtensionConstants.AUTH_RESOURCE_TYPE_PRIMARY);
         // Users who have already stored as auth resources
         Map<String, AuthorizationResource> reAuthorizableResources = new HashMap<>();
         // Users who need to store as auth resources
-        Map<String, String> authorizableResources = new HashMap<>();
+        Map<String, List<String>> authorizableResources = new HashMap<>();
 
         final String consentId = StringUtils.isBlank(consentData.getConsentId())
                 ? consentData.getMetaDataMap().get(CDSConsentExtensionConstants.CDR_ARRANGEMENT_ID).toString()
@@ -407,7 +408,8 @@ public class CDSConsentPersistStep implements ConsentPersistStep {
             for (Entry userEntry : userIdList.entrySet()) {
                 String userId = userEntry.getKey().toString();
                 String authType = userEntry.getValue().toString();
-                if (StringUtils.isNotBlank(userId) && !alreadyAddedUsers.contains(userId)) {
+                String userAuthTypeMapping = userId + ":" + authType;
+                if (StringUtils.isNotBlank(userId) && !addedUserAuthTypeMappings.contains(userAuthTypeMapping)) {
 
                     if (isConsentAmendment) {
                         for (AuthorizationResource authResource : detailedConsent.getAuthorizationResources()) {
@@ -418,10 +420,10 @@ public class CDSConsentPersistStep implements ConsentPersistStep {
                     }
 
                     if (!reAuthorizableResources.containsKey(userId)) {
-                        authorizableResources.put(userId, authType);
+                        authorizableResources.computeIfAbsent(userId, k -> new ArrayList<>()).add(authType);
                     }
 
-                    alreadyAddedUsers.add(userId);
+                    addedUserAuthTypeMappings.add(userAuthTypeMapping);
                 }
             }
         }
@@ -432,7 +434,7 @@ public class CDSConsentPersistStep implements ConsentPersistStep {
 
     @Generated(message = "Excluding from code coverage since it requires a service call")
     private Map<String, Object> createNewAuthResources(String consentId, ConsentResource consentResource,
-                                                       Map<String, String> authorizableResources,
+                                                       Map<String, List<String>> authorizableResources,
                                                        Map<String, ArrayList<String>> userIdAgainstNonPrimaryAccounts,
                                                        boolean isConsentAmendment)
             throws ConsentManagementException {
@@ -442,28 +444,31 @@ public class CDSConsentPersistStep implements ConsentPersistStep {
         Map<String, ArrayList<ConsentMappingResource>> secondaryUserAccountMappings = new HashMap<>();
 
         consentResource.setConsentID(consentId);
-        for (Entry<String, String> authorizableResource : authorizableResources.entrySet()) {
+        for (Entry<String, List<String>> authorizableResource : authorizableResources.entrySet()) {
             String userId = authorizableResource.getKey();
-            String authType = authorizableResource.getValue();
-            AuthorizationResource secondaryAuthResource = getSecondaryAuthorizationResource(consentId, userId,
-                    authType);
-            if (isConsentAmendment) {
-                // if the flow is a consent amendment, the new joint accounts details are mapped to
-                // AuthorizationResources, ConsentMappingResources against the userId and returned.
-                secondaryUserAuthResources.put(userId, secondaryAuthResource);
+            List<String> authTypes = authorizableResource.getValue();
+            ArrayList<ConsentMappingResource> mappingResources = new ArrayList<>();
 
-                ArrayList<ConsentMappingResource> mappingResources = new ArrayList<>();
-                for (String accountId : userIdAgainstNonPrimaryAccounts.get(userId)) {
-                    mappingResources.add(getSecondaryConsentMappingResource(accountId));
+            for (String authType : authTypes) {
+                AuthorizationResource secondaryAuthResource = getSecondaryAuthorizationResource(consentId, userId,
+                        authType);
+                if (isConsentAmendment) {
+                    // if the flow is a consent amendment, the new joint accounts details are mapped to
+                    // AuthorizationResources, ConsentMappingResources against the userId and returned.
+                    secondaryUserAuthResources.put(userId, secondaryAuthResource);
+
+                    for (String accountId : userIdAgainstNonPrimaryAccounts.get(userId)) {
+                        mappingResources.add(getSecondaryConsentMappingResource(accountId));
+                    }
+                    secondaryUserAccountMappings.put(userId, mappingResources);
+                } else {
+                    AuthorizationResource authorizationResource = consentCoreService
+                            .createConsentAuthorization(secondaryAuthResource);
+                    consentCoreService.bindUserAccountsToConsent(consentResource, userId,
+                            authorizationResource.getAuthorizationID(), userIdAgainstNonPrimaryAccounts.get(userId),
+                            CDSConsentExtensionConstants.AUTHORIZED_STATUS,
+                            CDSConsentExtensionConstants.AUTHORIZED_STATUS);
                 }
-                secondaryUserAccountMappings.put(userId, mappingResources);
-            } else {
-                AuthorizationResource authorizationResource = consentCoreService
-                        .createConsentAuthorization(secondaryAuthResource);
-                consentCoreService.bindUserAccountsToConsent(consentResource, userId,
-                        authorizationResource.getAuthorizationID(), userIdAgainstNonPrimaryAccounts.get(userId),
-                        CDSConsentExtensionConstants.AUTHORIZED_STATUS,
-                        CDSConsentExtensionConstants.AUTHORIZED_STATUS);
             }
         }
         if (!secondaryUserAuthResources.isEmpty() && !secondaryUserAccountMappings.isEmpty()) {
