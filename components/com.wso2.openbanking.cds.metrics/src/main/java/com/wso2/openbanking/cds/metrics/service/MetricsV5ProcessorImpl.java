@@ -64,12 +64,13 @@ public class MetricsV5ProcessorImpl implements MetricsProcessor {
             throws OpenBankingException {
 
         ZonedDateTime currentDateEnd = ZonedDateTime.now(timeZone).with(LocalTime.MAX);
+        ZonedDateTime currentDate = ZonedDateTime.now(timeZone);
         switch (period) {
             case CURRENT:
                 numberOfDays = 1;
                 numberOfMonths = 1;
                 metricsCountLastDateEpoch = currentDateEnd.toEpochSecond();
-                availabilityMetricsLastDate = currentDateEnd;
+                availabilityMetricsLastDate = currentDate;
                 break;
             case HISTORIC:
                 numberOfDays = 7;
@@ -81,7 +82,7 @@ public class MetricsV5ProcessorImpl implements MetricsProcessor {
                 numberOfDays = 8;
                 numberOfMonths = 13;
                 metricsCountLastDateEpoch = currentDateEnd.toEpochSecond();
-                availabilityMetricsLastDate = currentDateEnd;
+                availabilityMetricsLastDate = currentDate;
                 break;
             default:
                 throw new OpenBankingException("Invalid period value. Only CURRENT, HISTORIC and ALL periods are" +

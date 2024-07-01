@@ -1225,9 +1225,9 @@ public class MetricsProcessorUtil {
 
         // Iterate through the months in reverse order
         for (int monthIndex = 0; monthIndex < noOfMonths; monthIndex++) {
-            currentStartOfMonth = currentEndOfMonth.withDayOfMonth(1);
+            currentStartOfMonth = currentEndOfMonth.withHour(0).withMinute(0).withSecond(0).withDayOfMonth(1);
             long startTimestamp = currentStartOfMonth.toEpochSecond();
-            long endTimestamp = currentEndOfMonth.with(LocalTime.MAX).toEpochSecond();
+            long endTimestamp = currentEndOfMonth.toEpochSecond();
 
             // Computing availability for the particular month for the relevant aspect
             BigDecimal aggregateAvailability = getAvailabilityFromServerOutagesForTimeRange(serverOutageDataList,
@@ -1243,7 +1243,7 @@ public class MetricsProcessorUtil {
             availabilityUnauthenticatedList.set(monthIndex, unauthenticatedAvailability);
 
             // Get end date of previous month for the next iteration
-            currentEndOfMonth = currentStartOfMonth.minusDays(1);
+            currentEndOfMonth = currentStartOfMonth.minusDays(1).with(LocalTime.MAX);
         }
 
         availabilityMap.put(AspectEnum.ALL, availabilityAggregatedList);
