@@ -36,6 +36,7 @@ import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
 
+import static com.wso2.openbanking.cds.common.metadata.periodical.updater.constants.MetadataConstants.DATA;
 import static com.wso2.openbanking.cds.common.metadata.periodical.updater.constants.MetadataConstants.MAP_DATA_RECIPIENTS;
 import static com.wso2.openbanking.cds.common.metadata.periodical.updater.constants.MetadataConstants.MAP_SOFTWARE_PRODUCTS;
 import static com.wso2.openbanking.cds.common.metadata.periodical.updater.constants.MetadataConstants.STATUS;
@@ -78,8 +79,8 @@ public class PeriodicalMetaDataUpdateJobTest extends PowerMockTestCase {
         softwareProducts.put(softwareProduct1);
         softwareProducts.put(softwareProduct2);
 
-        dataRecipientsWrapper.put("data", dataRecipients);
-        softwareProductsWrapper.put("data", softwareProducts);
+        dataRecipientsWrapper.put(DATA, dataRecipients);
+        softwareProductsWrapper.put(DATA, softwareProducts);
 
     }
 
