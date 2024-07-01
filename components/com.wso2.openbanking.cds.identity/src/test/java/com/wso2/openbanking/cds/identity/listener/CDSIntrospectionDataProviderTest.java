@@ -32,7 +32,7 @@ public class CDSIntrospectionDataProviderTest extends PowerMockTestCase {
     OpenBankingConfigParser openBankingConfigParser;
 
     @Test(description = "Test additional data setting to introspection response")
-    public void testMethod() throws Exception {
+    public void testGetCdrArrangementIdFromScopes() throws Exception {
 
         Map<String, Object> configMap = new HashMap<>();
         configMap.put(IdentityCommonConstants.CONSENT_ID_CLAIM_NAME, "consent_id");
