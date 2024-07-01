@@ -2,22 +2,7 @@ FROM
   RequestStream
 SELECT
   messageID,
-  NOT regex: find(
-    'null',
-    cast(
-      map: get(propertiesMap, 'x-fapi-customer-ip-address'),
-      'string'
-    )
-  ) AS isEligible,
-  str: concat(
-    cast(
-      map: get(propertiesMap, 'x-fapi-customer-ip-address'),
-      'string'
-    ),
-    ':',
-    appId
-  ) as throttleKey,
-  propertiesMap
+  NOT regex: find('null', cast(map: get(propertiesMap, 'x-fapi-customer-ip-address'), 'string')) AS isEligible, str: concat(cast(map: get(propertiesMap, 'x-fapi-customer-ip-address'), 'string'), ':', appId) as throttleKey, propertiesMap
 INSERT INTO
   EligibilityStream;
 FROM

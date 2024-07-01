@@ -1,14 +1,7 @@
 FROM
   RequestStream
 SELECT
-  messageID,
-  true AS isEligible,
-  str: concat(
-    cast(map: get(propertiesMap, 'customerStatus'), 'string'),
-    ':',
-    appId
-  ) as throttleKey,
-  propertiesMap
+  messageID, true AS isEligible, str: concat(cast(map: get(propertiesMap, 'customerStatus'), 'string'), ':', appId) as throttleKey, propertiesMap
 INSERT INTO
   EligibilityStream;
 FROM

@@ -19,29 +19,7 @@
 FROM
   RequestStream
 SELECT
-  regex: find(
-    'unattended',
-    cast(map: get(propertiesMap, 'customerStatus'), 'string')
-  )
-  AND regex: find(
-    'secured',
-    cast(
-      map: get(propertiesMap, 'authorizationStatus'),
-      'string'
-    )
-  ) AS isEligible,
-  str: concat(
-    appId,
-    ':',
-    userId,
-    ':',
-    cast(map: get(propertiesMap, 'customerStatus'), 'string')
-  ) as throttleKey,
-  propertiesMap,
-  cast(
-    map: get(propertiesMap, 'authorizationHeader'),
-    'string'
-  ) as accessToken
+  regex: find('unattended', cast(map: get(propertiesMap, 'customerStatus'), 'string')) AND regex: find('secured', cast(map: get(propertiesMap, 'authorizationStatus'), 'string')) AS isEligible, str: concat(appId, ':', userId, ':', cast(map: get(propertiesMap, 'customerStatus'), 'string')) as throttleKey, propertiesMap, cast(map: get(propertiesMap, 'authorizationHeader'), 'string') as accessToken
 INSERT INTO
   EligibilityStream;
 FROM
