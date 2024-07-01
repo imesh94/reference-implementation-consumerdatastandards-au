@@ -15,20 +15,22 @@ import com.wso2.openbanking.cds.metrics.util.TimeGranularityEnum;
 import net.minidev.json.JSONObject;
 
 /**
- * Implementation of Metrics Query Creator for CDS Metrics V3.
+ * Implementation of Metrics Query Creator for CDS Metrics V5.
  * This class will initialize a query creator with timestamps relevant to the given period.
  */
-public class MetricsV3QueryCreatorImpl implements MetricsQueryCreator {
+public class MetricsV5QueryCreatorImpl implements MetricsQueryCreator {
 
     private final String fromTimestamp;
     private final String toTimestamp;
     private final long fromTimestampEpochSecond;
     private final long toTimestampEpochSecond;
+    private final long fromTimestampEpochMilliSecond;
+    private final long toTimestampEpochMilliSecond;
     private final long availabilityFromTimestamp;
     private final long availabilityToTimestamp;
     private final String timeGranularity;
 
-    public MetricsV3QueryCreatorImpl(PeriodEnum period) {
+    public MetricsV5QueryCreatorImpl(PeriodEnum period) {
 
         String[] timeRangeArray = DateTimeUtil.getTimeRange(period);
         String[] availabilityTimeRangeArray = DateTimeUtil.getAvailabilityMetricsTimeRange(period);
@@ -37,6 +39,8 @@ public class MetricsV3QueryCreatorImpl implements MetricsQueryCreator {
         this.toTimestamp = timeRangeArray[1];
         this.fromTimestampEpochSecond = DateTimeUtil.getEpochTimestamp(fromTimestamp);
         this.toTimestampEpochSecond = DateTimeUtil.getEpochTimestamp(toTimestamp);
+        this.fromTimestampEpochMilliSecond = fromTimestampEpochSecond * 1000;
+        this.toTimestampEpochMilliSecond = toTimestampEpochSecond * 1000;
         this.availabilityFromTimestamp = DateTimeUtil.getEpochTimestamp(availabilityTimeRangeArray[0]);
         this.availabilityToTimestamp = DateTimeUtil.getEpochTimestamp(availabilityTimeRangeArray[1]);
     }
@@ -47,9 +51,9 @@ public class MetricsV3QueryCreatorImpl implements MetricsQueryCreator {
     @Override
     public String getAvailabilityMetricsQuery() {
 
-        return "from SERVER_OUTAGES_RAW_DATA select OUTAGE_ID, TIMESTAMP, TYPE, TIME_FROM, TIME_TO group by " +
-                "OUTAGE_ID, TIMESTAMP, TYPE, TIME_FROM, TIME_TO having TIME_FROM >= " + availabilityFromTimestamp +
-                " AND TIME_TO < " + availabilityToTimestamp + ";";
+        return "from SERVER_OUTAGES_RAW_DATA select OUTAGE_ID, TIMESTAMP, TYPE, TIME_FROM, TIME_TO, ASPECT group by " +
+                "OUTAGE_ID, TIMESTAMP, TYPE, TIME_FROM, TIME_TO, ASPECT having TIME_FROM >= "
+                + availabilityFromTimestamp + " AND TIME_TO <= " + availabilityToTimestamp + ";";
     }
 
     /**
@@ -61,6 +65,29 @@ public class MetricsV3QueryCreatorImpl implements MetricsQueryCreator {
         return "from CDSMetricsAgg within '" + fromTimestamp + "', '" + toTimestamp + "' per '" + timeGranularity +
                 "' select priorityTier, totalReqCount, AGG_TIMESTAMP group by priorityTier, AGG_TIMESTAMP order by " +
                 "AGG_TIMESTAMP desc;";
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public String getInvocationByAspectMetricsQuery() {
+
+        return "from CDSMetricsAspectAgg within '" + fromTimestamp + "', '" + toTimestamp + "' per '" +
+                timeGranularity + "' select aspect, totalReqCount, AGG_TIMESTAMP group by aspect, AGG_TIMESTAMP " +
+                "having aspect != 'uncategorized' order by AGG_TIMESTAMP desc;";
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public String getHourlyPerformanceByPriorityMetricsQuery() {
+
+        return "from CDSMetricsPerfPriorityAgg within '" + fromTimestamp + "', '" + toTimestamp + "' per '" +
+                timeGranularity + "' select priorityTier, AGG_TIMESTAMP, " +
+                "withinThresholdCount/totalReqCount as performance group by priorityTier, AGG_TIMESTAMP " +
+                "order by AGG_TIMESTAMP asc;";
     }
 
     /**
@@ -101,8 +128,19 @@ public class MetricsV3QueryCreatorImpl implements MetricsQueryCreator {
     public String getErrorMetricsQuery() {
 
         return "from CDSMetricsStatusAgg within '" + fromTimestamp + "', '" + toTimestamp + "' per '" +
-                timeGranularity + "' select totalReqCount, AGG_TIMESTAMP as reqCount having statusCode >= 500 and " +
+                timeGranularity + "' select totalReqCount, AGG_TIMESTAMP having statusCode >= 500 and " +
                 "statusCode < 600;";
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public String getErrorByAspectMetricsQuery() {
+
+        return "from CDSMetricsStatusAspectAgg within '" + fromTimestamp + "', '" + toTimestamp + "' per '" +
+                timeGranularity + "' select AGG_TIMESTAMP, statusCode, aspect, totalReqCount " +
+                "having statusCode >= 400 and statusCode < 600 order by AGG_TIMESTAMP desc;";
     }
 
     /**
@@ -115,6 +153,40 @@ public class MetricsV3QueryCreatorImpl implements MetricsQueryCreator {
                 "select count(STATUS_CODE) as throttleOutCount, TIMESTAMP, CONSUMER_ID group by TIMESTAMP, " +
                 "CONSUMER_ID having STATUS_CODE == 429 and TIMESTAMP > " + fromTimestampEpochSecond + " and " +
                 "TIMESTAMP < " + toTimestampEpochSecond + ";";
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public String getActiveAuthorisationCountMetricsQuery() {
+
+        return "from AUTHORISATION_METRICS_DATA select CONSENT_ID, CONSENT_STATUS, CUSTOMER_PROFILE, " +
+                "CONSENT_DURATION_TYPE, TIMESTAMP, AUTH_FLOW_TYPE " +
+                "group by CONSENT_ID, CONSENT_STATUS, CUSTOMER_PROFILE, CONSENT_DURATION_TYPE, TIMESTAMP, " +
+                "AUTH_FLOW_TYPE " +
+                "having CONSENT_DURATION_TYPE == 'ongoing' AND AUTH_FLOW_TYPE == 'consentAuthorisation';";
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public String getAuthorisationMetricsQuery() {
+
+        return "from CDSAuthorisationMetricsAgg within '" + fromTimestamp + "', '" + toTimestamp + "' per '" +
+                timeGranularity + "' select * order by AGG_TIMESTAMP desc;";
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public String getAbandonedConsentFlowCountMetricsQuery() {
+
+        return "from ABANDONED_CONSENT_FLOW_METRICS_DATA select REQUEST_URI_KEY, STAGE, TIMESTAMP " +
+                "group by REQUEST_URI_KEY, STAGE, TIMESTAMP having TIMESTAMP > " +
+                fromTimestampEpochMilliSecond + "l AND TIMESTAMP < " + toTimestampEpochMilliSecond + "l;";
     }
 
     /**

@@ -9,7 +9,6 @@
 
 package com.wso2.openbanking.cds.metrics.endpoint.mapper;
 
-import com.wso2.openbanking.cds.metrics.endpoint.model.ResponseMetricsListDTO;
 import com.wso2.openbanking.cds.metrics.endpoint.model.v5.AuthorisationMetricsV2AbandonedConsentFlowCountDTO;
 import com.wso2.openbanking.cds.metrics.endpoint.model.v5.AuthorisationMetricsV2AbandonmentsByStageDTO;
 import com.wso2.openbanking.cds.metrics.endpoint.model.v5.AuthorisationMetricsV2AbandonmentsByStageFailedTokenExchangeDTO;
@@ -72,7 +71,6 @@ import com.wso2.openbanking.cds.metrics.endpoint.util.CommonUtil;
 import com.wso2.openbanking.cds.metrics.model.AuthorisationMetric;
 import com.wso2.openbanking.cds.metrics.model.CustomerTypeCount;
 import com.wso2.openbanking.cds.metrics.model.MetricsResponseModel;
-import com.wso2.openbanking.cds.metrics.model.MetricsV5ResponseModel;
 import com.wso2.openbanking.cds.metrics.util.PeriodEnum;
 
 import java.math.BigDecimal;
@@ -88,14 +86,7 @@ public class MetricsV5MapperImpl implements MetricsMapper {
     /**
      * {@inheritDoc}
      */
-    public ResponseMetricsListDTO getResponseMetricsListDTO(MetricsResponseModel metricsListModel, String period) {
-        return null;
-    }
-
-    /**
-     * {@inheritDoc}
-     */
-    public ResponseMetricsListV5DTO getResponseMetricsListV5DTO(MetricsV5ResponseModel metricsListModel,
+    public ResponseMetricsListV5DTO getResponseMetricsListDTO(MetricsResponseModel metricsListModel,
                                                                 String period) {
 
         ResponseMetricsListV5DTO metricsListV5DTO = new ResponseMetricsListV5DTO();
@@ -112,34 +103,34 @@ public class MetricsV5MapperImpl implements MetricsMapper {
     }
 
     /**
-     * Get ResponseMetricsListV5DataDTO from MetricsV5ResponseModel and period enum.
+     * Get ResponseMetricsListV5DataDTO from MetricsResponseModel and period enum.
      *
      * @param metricsListModel - Metrics model
      * @param period           - period enum
      * @return ResponseMetricsListV5DataDTO
      */
-    private ResponseMetricsListV5DataDTO getResponseMetricsListV5DataDTO(MetricsV5ResponseModel metricsListModel
+    private ResponseMetricsListV5DataDTO getResponseMetricsListV5DataDTO(MetricsResponseModel metricsListModel
             , PeriodEnum period) {
 
         ResponseMetricsListV5DataDTO responseMetricsListV5DataDTO = new ResponseMetricsListV5DataDTO();
         responseMetricsListV5DataDTO.setRequestTime(metricsListModel.getRequestTime());
         responseMetricsListV5DataDTO.setCustomerCount(metricsListModel.getCustomerCount());
         responseMetricsListV5DataDTO.setRecipientCount(metricsListModel.getRecipientCount());
-        responseMetricsListV5DataDTO.setAvailability(getAvailabilityDTO(metricsListModel, period));
-        responseMetricsListV5DataDTO.setPerformance(getPerformanceDTO(metricsListModel, period));
         responseMetricsListV5DataDTO.setInvocations(getInvocationsDTO(metricsListModel, period));
         responseMetricsListV5DataDTO.setAverageResponse(getAverageResponseDTO(metricsListModel, period));
         responseMetricsListV5DataDTO.setSessionCount(getSessionCountDTO(metricsListModel.getSessionCount(), period));
+        responseMetricsListV5DataDTO.setRejections(getRejectionsDTO(metricsListModel, period));
+        responseMetricsListV5DataDTO.setAvailability(getAvailabilityDTO(metricsListModel, period));
         responseMetricsListV5DataDTO.setAverageTps(getAverageTpsDTO(metricsListModel, period));
         responseMetricsListV5DataDTO.setPeakTps(getPeakTpsDTO(metricsListModel, period));
+        responseMetricsListV5DataDTO.setPerformance(getPerformanceDTO(metricsListModel, period));
         responseMetricsListV5DataDTO.setErrors(getErrorsDTO(metricsListModel, period));
-        responseMetricsListV5DataDTO.setRejections(getRejectionsDTO(metricsListModel, period));
         responseMetricsListV5DataDTO.setAuthorisations(getAuthorisationsDTO(metricsListModel, period));
 
         return responseMetricsListV5DataDTO;
     }
 
-    private AvailabilityMetricsV2DTO getAvailabilityDTO(MetricsV5ResponseModel metricsListModel, PeriodEnum period) {
+    private AvailabilityMetricsV2DTO getAvailabilityDTO(MetricsResponseModel metricsListModel, PeriodEnum period) {
 
         AvailabilityMetricsV2DTO availabilityMetricsDTO = new AvailabilityMetricsV2DTO();
 
@@ -158,11 +149,11 @@ public class MetricsV5MapperImpl implements MetricsMapper {
         }
         if (PeriodEnum.ALL == period || PeriodEnum.HISTORIC == period) {
             aggregate.setPreviousMonths(CommonUtil.convertToStringListWithScale(CommonUtil
-                    .addMissingMonths(allAvailability)));
+                    .removeAdditionalMonths(allAvailability)));
             authenticated.setPreviousMonths(CommonUtil.convertToStringListWithScale(CommonUtil
-                    .addMissingMonths(authenticatedAvailability)));
+                    .removeAdditionalMonths(authenticatedAvailability)));
             unauthenticated.setPreviousMonths(CommonUtil.convertToStringListWithScale(CommonUtil
-                    .addMissingMonths(unauthenticatedAvailability)));
+                    .removeAdditionalMonths(unauthenticatedAvailability)));
         }
 
         availabilityMetricsDTO.setAuthenticated(authenticated);
@@ -172,7 +163,7 @@ public class MetricsV5MapperImpl implements MetricsMapper {
         return availabilityMetricsDTO;
     }
 
-    private PerformanceMetricsV3DTO getPerformanceDTO(MetricsV5ResponseModel metricsListModel, PeriodEnum period) {
+    private PerformanceMetricsV3DTO getPerformanceDTO(MetricsResponseModel metricsListModel, PeriodEnum period) {
 
         PerformanceMetricsV3DTO performanceMetricsDTO = new PerformanceMetricsV3DTO();
 
@@ -287,7 +278,7 @@ public class MetricsV5MapperImpl implements MetricsMapper {
         return performanceMetricsUnauthenticatedDTO;
     }
 
-    private InvocationMetricsV3DTO getInvocationsDTO(MetricsV5ResponseModel metricsListModel, PeriodEnum period) {
+    private InvocationMetricsV3DTO getInvocationsDTO(MetricsResponseModel metricsListModel, PeriodEnum period) {
 
         InvocationMetricsV3DTO invocationMetricsDTO = new InvocationMetricsV3DTO();
 
@@ -374,7 +365,7 @@ public class MetricsV5MapperImpl implements MetricsMapper {
         return invocationMetricsLargePayloadDTO;
     }
 
-    private AverageResponseMetricsV2DTO getAverageResponseDTO(MetricsV5ResponseModel metricsListModel,
+    private AverageResponseMetricsV2DTO getAverageResponseDTO(MetricsResponseModel metricsListModel,
                                                               PeriodEnum period) {
 
         AverageResponseMetricsV2DTO averageResponseMetricsDTO = new AverageResponseMetricsV2DTO();
@@ -476,7 +467,7 @@ public class MetricsV5MapperImpl implements MetricsMapper {
         return sessionCountMetricsDTO;
     }
 
-    private AverageTPSMetricsV2DTO getAverageTpsDTO(MetricsV5ResponseModel metricsListModel,
+    private AverageTPSMetricsV2DTO getAverageTpsDTO(MetricsResponseModel metricsListModel,
                                                     PeriodEnum period) {
 
         AverageTPSMetricsV2DTO averageTPSMetricsDTO = new AverageTPSMetricsV2DTO();
@@ -487,7 +478,7 @@ public class MetricsV5MapperImpl implements MetricsMapper {
 
         List<BigDecimal> averageTPS = metricsListModel.getAverageTPS();
         List<BigDecimal> authenticatedAverageTPS = metricsListModel.getAuthenticatedAverageTPS();
-        List<BigDecimal> unauthenticatedAverageTPS = metricsListModel.getAuthenticatedAverageTPS();
+        List<BigDecimal> unauthenticatedAverageTPS = metricsListModel.getUnauthenticatedAverageTPS();
 
         if (PeriodEnum.ALL == period || PeriodEnum.CURRENT == period) {
             aggregate.setCurrentDay(averageTPS.remove(0));
@@ -507,7 +498,7 @@ public class MetricsV5MapperImpl implements MetricsMapper {
         return averageTPSMetricsDTO;
     }
 
-    private PeakTPSMetricsV2DTO getPeakTpsDTO(MetricsV5ResponseModel metricsListModel, PeriodEnum period) {
+    private PeakTPSMetricsV2DTO getPeakTpsDTO(MetricsResponseModel metricsListModel, PeriodEnum period) {
 
         PeakTPSMetricsV2DTO peakTPSMetricsDTO = new PeakTPSMetricsV2DTO();
 
@@ -537,7 +528,7 @@ public class MetricsV5MapperImpl implements MetricsMapper {
         return peakTPSMetricsDTO;
     }
 
-    private ErrorMetricsV2DTO getErrorsDTO(MetricsV5ResponseModel metricsListModel, PeriodEnum period) {
+    private ErrorMetricsV2DTO getErrorsDTO(MetricsResponseModel metricsListModel, PeriodEnum period) {
 
         ErrorMetricsV2DTO errorMetricsDTO = new ErrorMetricsV2DTO();
 
@@ -567,7 +558,7 @@ public class MetricsV5MapperImpl implements MetricsMapper {
         return errorMetricsDTO;
     }
 
-    private RejectionMetricsV3DTO getRejectionsDTO(MetricsV5ResponseModel metricsListModel, PeriodEnum period) {
+    private RejectionMetricsV3DTO getRejectionsDTO(MetricsResponseModel metricsListModel, PeriodEnum period) {
 
         RejectionMetricsV3DTO rejectionMetricsDTO = new RejectionMetricsV3DTO();
 
@@ -592,7 +583,7 @@ public class MetricsV5MapperImpl implements MetricsMapper {
         return rejectionMetricsDTO;
     }
 
-    private AuthorisationMetricsV2DTO getAuthorisationsDTO(MetricsV5ResponseModel metricsListModel,
+    private AuthorisationMetricsV2DTO getAuthorisationsDTO(MetricsResponseModel metricsListModel,
                                                            PeriodEnum period) {
 
         AuthorisationMetricsV2DTO authorisationMetricsDTO = new AuthorisationMetricsV2DTO();
@@ -779,7 +770,7 @@ public class MetricsV5MapperImpl implements MetricsMapper {
     }
 
     private AuthorisationMetricsV2AbandonmentsByStageDTO getAbandonedByStageDTO(
-            MetricsV5ResponseModel metricsListModel, PeriodEnum period) {
+            MetricsResponseModel metricsListModel, PeriodEnum period) {
 
         AuthorisationMetricsV2AbandonmentsByStageDTO abandonmentByStageDTO =
                 new AuthorisationMetricsV2AbandonmentsByStageDTO();

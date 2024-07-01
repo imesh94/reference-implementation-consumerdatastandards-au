@@ -31,6 +31,20 @@ public interface MetricsQueryCreator {
     String getInvocationMetricsQuery();
 
     /**
+     * Returns the query for getting api invocation data by aspect.
+     *
+     * @return Query as a String
+     */
+    String getInvocationByAspectMetricsQuery();
+
+    /**
+     * Returns the query for getting hourly performance by priority data.
+     *
+     * @return Query as a String
+     */
+    String getHourlyPerformanceByPriorityMetricsQuery();
+
+    /**
      * Returns the query for getting session count.
      *
      * @return Query as a String
@@ -51,7 +65,6 @@ public interface MetricsQueryCreator {
      */
     JSONObject getPeakTPSMetricsEvent();
 
-
     /**
      * Return the query for getting error data.
      *
@@ -60,11 +73,39 @@ public interface MetricsQueryCreator {
     String getErrorMetricsQuery();
 
     /**
+     * Return the query for getting error by aspect data.
+     *
+     * @return Query as a String
+     */
+    String getErrorByAspectMetricsQuery();
+
+    /**
      * Return the query for getting rejection data (throttled out requests).
      *
      * @return Query as a String
      */
     String getRejectionMetricsQuery();
+
+    /**
+     * Return the query for getting active authorisation count data.
+     *
+     * @return Query as a String
+     */
+    String getActiveAuthorisationCountMetricsQuery();
+
+    /**
+     * Return the query for getting authorisation data.
+     *
+     * @return Query as a String
+     */
+    String getAuthorisationMetricsQuery();
+
+    /**
+     * Return the query for getting abandoned consent flow count data.
+     *
+     * @return Query as a String
+     */
+    String getAbandonedConsentFlowCountMetricsQuery();
 
     /**
      * Returns the query for getting data recipient count.

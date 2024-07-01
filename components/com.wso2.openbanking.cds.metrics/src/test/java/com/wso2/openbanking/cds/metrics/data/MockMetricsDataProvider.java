@@ -33,29 +33,41 @@ public class MockMetricsDataProvider implements MetricsDataProvider {
 
         String availabilityMetricsData = "{\"records\":" +
                 "[[\"2004\"," + getRandomEpochSecondWithinPast13Months() + ",\"scheduled\"," +
-                getRandomEpochSecondWithinPast13Months() + "," + getRandomEpochSecondWithinPast13Months() + "]," +
+                getRandomEpochSecondWithinPast13Months() + "," + getRandomEpochSecondWithinPast13Months() +
+                ",\"all\"]," +
                 "[\"2004\"," + getRandomEpochSecondWithinPast13Months() + ",\"scheduled\"," +
-                getRandomEpochSecondWithinPast13Months() + "," + getRandomEpochSecondWithinPast13Months() + "]," +
+                getRandomEpochSecondWithinPast13Months() + "," + getRandomEpochSecondWithinPast13Months() +
+                ",\"all\"]," +
                 "[\"2005\"," + getRandomEpochSecondWithinPast13Months() + ",\"incident\"," +
-                getRandomEpochSecondWithinPast13Months() + "," + getRandomEpochSecondWithinPast13Months() + "]," +
+                getRandomEpochSecondWithinPast13Months() + "," + getRandomEpochSecondWithinPast13Months() +
+                ",\"all\"]," +
                 "[\"2005\"," + getRandomEpochSecondWithinPast13Months() + ",\"incident\"," +
-                getRandomEpochSecondWithinPast13Months() + "," + getRandomEpochSecondWithinPast13Months() + "]," +
+                getRandomEpochSecondWithinPast13Months() + "," + getRandomEpochSecondWithinPast13Months() +
+                ",\"all\"]," +
                 "[\"2006\"," + getRandomEpochSecondWithinPast13Months() + ",\"scheduled\"," +
-                getRandomEpochSecondWithinPast13Months() + "," + getRandomEpochSecondWithinPast13Months() + "]," +
+                getRandomEpochSecondWithinPast13Months() + "," + getRandomEpochSecondWithinPast13Months() +
+                ",\"all\"]," +
                 "[\"2006\"," + getRandomEpochSecondWithinPast13Months() + ",\"scheduled\"," +
-                getRandomEpochSecondWithinPast13Months() + "," + getRandomEpochSecondWithinPast13Months() + "]," +
+                getRandomEpochSecondWithinPast13Months() + "," + getRandomEpochSecondWithinPast13Months() +
+                ",\"all\"]," +
                 "[\"2007\"," + getRandomEpochSecondWithinPast13Months() + ",\"incident\"," +
-                getRandomEpochSecondWithinPast13Months() + "," + getRandomEpochSecondWithinPast13Months() + "]," +
+                getRandomEpochSecondWithinPast13Months() + "," + getRandomEpochSecondWithinPast13Months() +
+                ",\"authenticated\"]," +
                 "[\"2007\"," + getRandomEpochSecondWithinPast13Months() + ",\"incident\"," +
-                getRandomEpochSecondWithinPast13Months() + "," + getRandomEpochSecondWithinPast13Months() + "]," +
+                getRandomEpochSecondWithinPast13Months() + "," + getRandomEpochSecondWithinPast13Months() +
+                ",\"authenticated\"]," +
                 "[\"2028\"," + getRandomEpochSecondWithinPast13Months() + ",\"scheduled\"," +
-                getRandomEpochSecondWithinPast13Months() + "," + getRandomEpochSecondWithinPast13Months() + "]," +
+                getRandomEpochSecondWithinPast13Months() + "," + getRandomEpochSecondWithinPast13Months() +
+                ",\"authenticated\"]," +
                 "[\"2028\"," + getRandomEpochSecondWithinPast13Months() + ",\"scheduled\"," +
-                getRandomEpochSecondWithinPast13Months() + "," + getRandomEpochSecondWithinPast13Months() + "]," +
+                getRandomEpochSecondWithinPast13Months() + "," + getRandomEpochSecondWithinPast13Months() +
+                ",\"unauthenticated\"]," +
                 "[\"2029\"," + getRandomEpochSecondWithinPast13Months() + ",\"incident\"," +
-                getRandomEpochSecondWithinPast13Months() + "," + getRandomEpochSecondWithinPast13Months() + "]," +
+                getRandomEpochSecondWithinPast13Months() + "," + getRandomEpochSecondWithinPast13Months() +
+                ",\"unauthenticated\"]," +
                 "[\"2029\"," + getRandomEpochSecondWithinPast13Months() + ",\"incident\"," +
-                getRandomEpochSecondWithinPast13Months() + "," + getRandomEpochSecondWithinPast13Months() + "]]}";
+                getRandomEpochSecondWithinPast13Months() + "," + getRandomEpochSecondWithinPast13Months() +
+                ",\"unauthenticated\"]]}";
         JSONParser parser = new JSONParser(JSONParser.MODE_JSON_SIMPLE);
         try {
             return (JSONObject) parser.parse(availabilityMetricsData);
@@ -75,6 +87,56 @@ public class MockMetricsDataProvider implements MetricsDataProvider {
                 "[\"LargePayload\",2," + getRandomEpochMilliWithinPast7Days() + "],[\"Unattended\",9," +
                 getRandomEpochMilliWithinPast7Days() + "]," +
                 "[\"HighPriority\",7," + getRandomEpochMilliWithinPast7Days() + "]]}";
+
+        JSONParser parser = new JSONParser(JSONParser.MODE_JSON_SIMPLE);
+        try {
+            JSONObject jsonObject = (JSONObject) parser.parse(invocationMetricsData);
+            JSONArray records = (JSONArray) jsonObject.get("records");
+
+            for (Object record : records) {
+                List<Object> recordList = (List<Object>) record;
+                if (recordList.get(1) instanceof Long) {
+                    Long longValue = (Long) recordList.get(1);
+                    int intValue = longValue.intValue();
+                    recordList.set(1, intValue);
+                }
+            }
+
+            return jsonObject;
+        } catch (ParseException e) {
+            throw new RuntimeException(e);
+        }
+    }
+
+    @Override
+    public JSONObject getHourlyPerformanceByPriorityMetricsData() throws OpenBankingException {
+
+        String performanceMetricsData = "{\"records\":" +
+                "[[\"LargePayload\"," + getRandomEpochMilliWithinPast7Days() + ", 0.92]," +
+                "[\"LowPriority\"," + getRandomEpochMilliWithinPast7Days() + ", 1.00]," +
+                "[\"Unauthenticated\"," + getRandomEpochMilliWithinPast7Days() + ", 0.88]," +
+                "[\"Unattended\"," + getRandomEpochMilliWithinPast7Days() + ", 0.70]," +
+                "[\"HighPriority\"," + getRandomEpochMilliWithinPast7Days() + ", 0.99]]}";
+
+        JSONParser parser = new JSONParser(JSONParser.MODE_JSON_SIMPLE);
+        try {
+            return (JSONObject) parser.parse(performanceMetricsData);
+        } catch (ParseException e) {
+            throw new RuntimeException(e);
+        }
+    }
+
+    @Override
+    public JSONObject getInvocationByAspectMetricsData() throws OpenBankingException {
+
+        String invocationMetricsData = "{\"records\":" +
+                "[[\"unauthenticated\",8," + getRandomEpochMilliWithinPast7Days() + "],[\"unauthenticated\",2," +
+                getRandomEpochMilliWithinPast7Days() + "]," +
+                "[\"unauthenticated\",1," + getRandomEpochMilliWithinPast7Days() + "],[\"authenticated\",57," +
+                getRandomEpochMilliWithinPast7Days() + "]," +
+                "[\"authenticated\",2," + getRandomEpochMilliWithinPast7Days() + "],[\"authenticated\",9," +
+                getRandomEpochMilliWithinPast7Days() + "]," +
+                "[\"authenticated\",7," + getRandomEpochMilliWithinPast7Days() + "]]}";
 
         JSONParser parser = new JSONParser(JSONParser.MODE_JSON_SIMPLE);
         try {
@@ -163,6 +225,32 @@ public class MockMetricsDataProvider implements MetricsDataProvider {
     }
 
     @Override
+    public JSONObject getErrorByAspectMetricsData() throws OpenBankingException {
+
+        String errorData = "{\"records\":[" +
+                "[" + getRandomEpochMilliWithinPast7Days() + ",\"400\",\"authenticated\",1]," +
+                "[" + getRandomEpochMilliWithinPast7Days() + ",\"401\",\"unauthenticated\",8]" +
+                "]}";
+        JSONParser parser = new JSONParser(JSONParser.MODE_JSON_SIMPLE);
+        try {
+            JSONObject jsonObject = (JSONObject) parser.parse(errorData);
+            JSONArray records = (JSONArray) jsonObject.get("records");
+
+            for (Object record : records) {
+                List<Object> recordList = (List<Object>) record;
+                if (recordList.get(3) instanceof Long) {
+                    Long longValue = (Long) recordList.get(3);
+                    Integer intValue = longValue.intValue();
+                    recordList.set(3, intValue);
+                }
+            }
+            return jsonObject;
+        } catch (ParseException e) {
+            throw new RuntimeException(e);
+        }
+    }
+
+    @Override
     public JSONObject getRejectionMetricsData() throws OpenBankingException {
         String rejectionData = "{\"records\":" +
                 "[[1," + getRandomEpochSecondWithinPast7Days() + ",\"anonymous\"]," +
@@ -174,6 +262,79 @@ public class MockMetricsDataProvider implements MetricsDataProvider {
         JSONParser parser = new JSONParser(JSONParser.MODE_JSON_SIMPLE);
         try {
             return (JSONObject) parser.parse(rejectionData);
+        } catch (ParseException e) {
+            throw new RuntimeException(e);
+        }
+    }
+
+    @Override
+    public JSONObject getActiveAuthorisationCountMetricsData() throws OpenBankingException {
+
+        String activeAuthorisationCountData = "{\"records\":[" +
+                "[\"1001\", \"Authorised\", \"individual\", \"ongoing\", " + getRandomEpochSecondWithinPast7Days() +
+                ", \"consentAuthorisation\"]," +
+                "[\"1002\", \"Revoked\", \"individual\", \"ongoing\", " + getRandomEpochSecondWithinPast7Days() +
+                ", \"consentAuthorisation\"]," +
+                "[\"1003\", \"Authorised\", \"business\", \"ongoing\", " + getRandomEpochSecondWithinPast7Days() +
+                ", \"consentAuthorisation\"]" +
+                "]}";
+
+        JSONParser parser = new JSONParser(JSONParser.MODE_JSON_SIMPLE);
+        try {
+            return (JSONObject) parser.parse(activeAuthorisationCountData);
+        } catch (ParseException e) {
+            throw new RuntimeException(e);
+        }
+    }
+
+    @Override
+    public JSONObject getAuthorisationMetricsData() throws OpenBankingException {
+
+        String authorisationData = "{\"records\":[" +
+                "[" + getRandomEpochSecondWithinPast7Days() + ", \"Authorised\", \"consentAuthorisation\", " +
+                "\"individual\", \"ongoing\", 5]," +
+                "[" + getRandomEpochSecondWithinPast7Days() + ", \"Authorised\", \"consentAuthorisation\", " +
+                "\"individual\", \"ongoing\", 5]," +
+                "[" + getRandomEpochSecondWithinPast7Days() + ", \"Authorised\", \"consentAuthorisation\", " +
+                "\"individual\", \"ongoing\", 5]" +
+                "]}";
+
+        JSONParser parser = new JSONParser(JSONParser.MODE_JSON_SIMPLE);
+        try {
+            JSONObject jsonObject = (JSONObject) parser.parse(authorisationData);
+            JSONArray records = (JSONArray) jsonObject.get("records");
+
+            for (Object record : records) {
+                List<Object> recordList = (List<Object>) record;
+                if (recordList.get(5) instanceof Long) {
+                    Long longValue = (Long) recordList.get(5);
+                    Integer intValue = longValue.intValue();
+                    recordList.set(5, intValue);
+                }
+            }
+            return jsonObject;
+        } catch (ParseException e) {
+            throw new RuntimeException(e);
+        }
+    }
+
+    @Override
+    public JSONObject getAbandonedConsentFlowCountMetricsData() throws OpenBankingException {
+
+        String abandonedConsentFlowData = "{\"records\":[" +
+                "[\"abc\", \"started\", " + getRandomEpochSecondWithinPast7Days() + "]," +
+                "[\"abc\", \"userIdentified\", " + getRandomEpochSecondWithinPast7Days() + "]," +
+                "[\"abc\", \"userAuthenticated\", " + getRandomEpochSecondWithinPast7Days() + "]," +
+                "[\"abc\", \"accountSelected\", " + getRandomEpochSecondWithinPast7Days() + "]," +
+                "[\"abc\", \"consentApproved\", " + getRandomEpochSecondWithinPast7Days() + "]," +
+                "[\"abc\", \"completed\", " + getRandomEpochSecondWithinPast7Days() + "]," +
+                "[\"def\", \"started\", " + getRandomEpochSecondWithinPast7Days() + "]," +
+                "[\"ghi\", \"started\", " + getRandomEpochSecondWithinPast7Days() + "]" +
+                "]}";
+
+        JSONParser parser = new JSONParser(JSONParser.MODE_JSON_SIMPLE);
+        try {
+            return (JSONObject) parser.parse(abandonedConsentFlowData);
         } catch (ParseException e) {
             throw new RuntimeException(e);
         }

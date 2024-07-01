@@ -10,6 +10,9 @@
 package com.wso2.openbanking.cds.metrics.service;
 
 import com.wso2.openbanking.accelerator.common.exception.OpenBankingException;
+import com.wso2.openbanking.cds.metrics.model.AbandonedConsentFlowByStageMetricDay;
+import com.wso2.openbanking.cds.metrics.model.AuthorisationMetricDay;
+import com.wso2.openbanking.cds.metrics.model.ErrorMetricDay;
 import com.wso2.openbanking.cds.metrics.util.AspectEnum;
 import com.wso2.openbanking.cds.metrics.util.PriorityEnum;
 
@@ -25,10 +28,10 @@ public interface MetricsProcessor {
     /**
      * Get availability metrics.
      *
-     * @return List of availability metrics
+     * @return Map of availability metrics
      * @throws OpenBankingException - OpenBankingException
      */
-    List<BigDecimal> getAvailabilityMetrics() throws OpenBankingException;
+    Map<AspectEnum, List<BigDecimal>> getAvailabilityMetrics() throws OpenBankingException;
 
     /**
      * Get invocation metrics.
@@ -36,7 +39,7 @@ public interface MetricsProcessor {
      * @return Map of invocation metrics with priority tiers
      * @throws OpenBankingException - OpenBankingException
      */
-    Map<PriorityEnum, List<BigDecimal>> getInvocationMetrics() throws OpenBankingException;
+    Map<PriorityEnum, List<Integer>> getInvocationMetrics() throws OpenBankingException;
 
     /**
      * Get performance metrics.
@@ -45,8 +48,16 @@ public interface MetricsProcessor {
      * @return List of performance metrics
      * @throws OpenBankingException - OpenBankingException
      */
-    List<BigDecimal> getPerformanceMetrics(Map<PriorityEnum, List<BigDecimal>> invocationMetricsMap)
+    List<BigDecimal> getPerformanceMetrics(Map<PriorityEnum, List<Integer>> invocationMetricsMap)
             throws OpenBankingException;
+
+    /**
+     * Get hourly performance by priority metrics.
+     *
+     * @return Map of hourly performance metrics with priority tiers
+     * @throws OpenBankingException - OpenBankingException
+     */
+    Map<PriorityEnum, List<List<BigDecimal>>> getHourlyPerformanceByPriorityMetrics() throws OpenBankingException;
 
     /**
      * Get average response time metrics.
@@ -56,7 +67,7 @@ public interface MetricsProcessor {
      * @throws OpenBankingException - OpenBankingException
      */
     Map<PriorityEnum, List<BigDecimal>> getAverageResponseTimeMetrics(
-            Map<PriorityEnum, List<BigDecimal>> invocationMetricsMap) throws OpenBankingException;
+            Map<PriorityEnum, List<Integer>> invocationMetricsMap) throws OpenBankingException;
 
     /**
      * Get session count metrics.
@@ -64,24 +75,24 @@ public interface MetricsProcessor {
      * @return List of session count metrics
      * @throws OpenBankingException - OpenBankingException
      */
-    List<BigDecimal> getSessionCountMetrics() throws OpenBankingException;
+    List<Integer> getSessionCountMetrics() throws OpenBankingException;
 
     /**
-     * Calculate average TPS for a day.
+     * Get average TPS metrics.
      * Used formula: averageTPS = (total no. of transactions for a day / no. of seconds in a day)
      *
-     * @param invocationMetricsMap - Map of invocation metrics
-     * @return list of average TPS
+     * @return Map of average TPS
+     * @throws OpenBankingException - OpenBankingException
      */
-    List<BigDecimal> getAverageTPSMetrics(Map<PriorityEnum, List<BigDecimal>> invocationMetricsMap);
+    Map<AspectEnum, List<BigDecimal>> getAverageTPSMetrics() throws OpenBankingException;
 
     /**
      * Get peak TPS metrics.
      *
-     * @return List of peak TPS metrics
+     * @return Map of peak TPS metrics
      * @throws OpenBankingException - OpenBankingException
      */
-    List<BigDecimal> getPeakTPSMetrics() throws OpenBankingException;
+    Map<AspectEnum, List<BigDecimal>> getPeakTPSMetrics() throws OpenBankingException;
 
     /**
      * Get error metrics.
@@ -89,7 +100,15 @@ public interface MetricsProcessor {
      * @return List of error metrics
      * @throws OpenBankingException - OpenBankingException
      */
-    List<BigDecimal> getErrorMetrics() throws OpenBankingException;
+    List<Integer> getErrorMetrics() throws OpenBankingException;
+
+    /**
+     * Get error by aspect metrics.
+     *
+     * @return List of error by aspect metrics
+     * @throws OpenBankingException - OpenBankingException
+     */
+    List<ErrorMetricDay> getErrorByAspectMetrics() throws OpenBankingException;
 
     /**
      * Get rejection metrics.
@@ -97,7 +116,31 @@ public interface MetricsProcessor {
      * @return Map of rejection metrics with aspect tiers
      * @throws OpenBankingException - OpenBankingException
      */
-    Map<AspectEnum, List<BigDecimal>> getRejectionMetrics() throws OpenBankingException;
+    Map<AspectEnum, List<Integer>> getRejectionMetrics() throws OpenBankingException;
+
+    /**
+     * Get active authorisation count metrics.
+     *
+     * @return Map of active authorisation count metrics
+     * @throws OpenBankingException - OpenBankingException
+     */
+    Map<String, Integer> getActiveAuthorisationCountMetrics() throws OpenBankingException;
+
+    /**
+     * Get authorisation metrics.
+     *
+     * @return List of authorisation metrics
+     * @throws OpenBankingException - OpenBankingException
+     */
+    List<AuthorisationMetricDay> getAuthorisationMetrics() throws OpenBankingException;
+
+    /**
+     * Get abandoned consent flow count metrics.
+     *
+     * @return List of abandoned consent flow count metrics
+     * @throws OpenBankingException - OpenBankingException
+     */
+    List<AbandonedConsentFlowByStageMetricDay> getAbandonedConsentFlowCountMetrics() throws OpenBankingException;
 
     /**
      * Get recipient count metrics.

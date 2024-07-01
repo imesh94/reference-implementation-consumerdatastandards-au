@@ -48,6 +48,7 @@ public class MetricsProcessorUtilTest extends PowerMockTestCase {
         PowerMockito.mockStatic(OpenBankingCDSConfigParser.class);
         PowerMockito.when(OpenBankingCDSConfigParser.getInstance()).thenReturn(openBankingCDSConfigParserMock);
         doReturn("GMT").when(openBankingCDSConfigParserMock).getMetricsTimeZone();
+        doReturn("2024-05-01").when(openBankingCDSConfigParserMock).getMetricsV5StartDate();
 
         metricsJsonObject = Mockito.mock(JSONObject.class);
         numberOfDays = 7;
@@ -55,27 +56,27 @@ public class MetricsProcessorUtilTest extends PowerMockTestCase {
     }
 
     @Test
-    public void testDivideListEqualSizeNoZeroDivisor() throws OpenBankingException {
+    public void testDivideListsEqualSizeNoZeroDivisor() throws OpenBankingException {
         List<BigDecimal> list1 = Arrays.asList(BigDecimal.valueOf(10), BigDecimal.valueOf(20));
         List<BigDecimal> list2 = Arrays.asList(BigDecimal.valueOf(2), BigDecimal.valueOf(5));
         List<BigDecimal> expected = Arrays.asList(new BigDecimal("5.000"), new BigDecimal("4.000"));
-        List<BigDecimal> result = MetricsProcessorUtil.divideList(list1, list2);
+        List<BigDecimal> result = MetricsProcessorUtil.divideLists(list1, list2);
         Assert.assertEquals(result, expected);
     }
 
     @Test(expectedExceptions = OpenBankingException.class)
-    public void testDivideListUnequalSizes() throws OpenBankingException {
+    public void testDivideListsUnequalSizes() throws OpenBankingException {
         List<BigDecimal> list1 = Arrays.asList(BigDecimal.valueOf(10), BigDecimal.valueOf(20));
         List<BigDecimal> list2 = Arrays.asList(BigDecimal.valueOf(2));
-        MetricsProcessorUtil.divideList(list1, list2);
+        MetricsProcessorUtil.divideLists(list1, list2);
     }
 
     @Test
-    public void testDivideListWithZeroDivisor() throws OpenBankingException {
+    public void testDivideListsWithZeroDivisor() throws OpenBankingException {
         List<BigDecimal> list1 = Arrays.asList(BigDecimal.valueOf(10), BigDecimal.valueOf(20));
         List<BigDecimal> list2 = Arrays.asList(BigDecimal.valueOf(2), BigDecimal.ZERO);
         List<BigDecimal> expected = Arrays.asList(new BigDecimal("5.000"), new BigDecimal("0"));
-        List<BigDecimal> result = MetricsProcessorUtil.divideList(list1, list2);
+        List<BigDecimal> result = MetricsProcessorUtil.divideLists(list1, list2);
         Assert.assertEquals(result, expected);
     }
 
@@ -103,32 +104,32 @@ public class MetricsProcessorUtilTest extends PowerMockTestCase {
 
     @Test
     public void testGetTotalInvocationsForEachDay_BasicScenario() {
-        Map<PriorityEnum, List<BigDecimal>> invocationMetricsMap = new HashMap<>();
-        invocationMetricsMap.put(PriorityEnum.HIGH_PRIORITY, Arrays.asList(new BigDecimal("10"), new BigDecimal("20")));
-        invocationMetricsMap.put(PriorityEnum.LOW_PRIORITY, Arrays.asList(new BigDecimal("30"), new BigDecimal("40")));
-        invocationMetricsMap.put(PriorityEnum.UNATTENDED, Arrays.asList(new BigDecimal("5"), new BigDecimal("10")));
-        invocationMetricsMap.put(PriorityEnum.UNAUTHENTICATED, Arrays.asList(new BigDecimal("5"),
-                new BigDecimal("10")));
-        invocationMetricsMap.put(PriorityEnum.LARGE_PAYLOAD, Arrays.asList(new BigDecimal("5"), new BigDecimal("10")));
+        Map<PriorityEnum, List<Integer>> invocationMetricsMap = new HashMap<>();
+        invocationMetricsMap.put(PriorityEnum.HIGH_PRIORITY, Arrays.asList(10, 20));
+        invocationMetricsMap.put(PriorityEnum.LOW_PRIORITY, Arrays.asList(30, 40));
+        invocationMetricsMap.put(PriorityEnum.UNATTENDED, Arrays.asList(5, 10));
+        invocationMetricsMap.put(PriorityEnum.UNAUTHENTICATED, Arrays.asList(5, 10));
+        invocationMetricsMap.put(PriorityEnum.LARGE_PAYLOAD, Arrays.asList(5, 10));
 
-        List<BigDecimal> result = MetricsProcessorUtil.getTotalInvocationsForEachDay(invocationMetricsMap);
-        List<BigDecimal> expected = Arrays.asList(new BigDecimal("55"), new BigDecimal("90"));
+        List<Integer> result = MetricsProcessorUtil
+                .getTotalInvocationsForEachDay(invocationMetricsMap, PriorityEnum.values());
+        List<Integer> expected = Arrays.asList(55, 90);
 
         Assert.assertEquals(result, expected);
     }
 
     @Test
-    public void testInitializeListWithZeros() {
+    public void testInitializeList() {
         int numberOfDays = 7;
-        ArrayList<BigDecimal> result = MetricsProcessorUtil.initializeListWithZeros(numberOfDays);
+        ArrayList<Integer> result = MetricsProcessorUtil.initializeList(numberOfDays, 0);
         Assert.assertEquals(result.size(), numberOfDays, "The list size should be exactly " + numberOfDays);
-        for (BigDecimal value : result) {
-            Assert.assertEquals(value, BigDecimal.ZERO, "Each entry in the list should be BigDecimal.ZERO.");
+        for (Integer value : result) {
+            Assert.assertEquals(value, Integer.valueOf(0), "Each entry in the list should be Zero.");
         }
     }
 
     @Test
-    public void testGetPopulatedInvocationMetricsMap() {
+    public void testGetPopulatedInvocationByPriorityMetricsMap() {
 
         JSONArray records = new JSONArray();
         records.add(new JSONArray().appendElement("Unattended").appendElement(13).appendElement(1715273999000L));
@@ -137,7 +138,7 @@ public class MetricsProcessorUtilTest extends PowerMockTestCase {
 
         when(metricsJsonObject.get("records")).thenReturn(records);
 
-        Map<PriorityEnum, List<BigDecimal>> result = MetricsProcessorUtil.getPopulatedInvocationMetricsMap(
+        Map<PriorityEnum, List<Integer>> result = MetricsProcessorUtil.getPopulatedInvocationByPriorityMetricsMap(
                 metricsJsonObject, numberOfDays, metricsCountLastDateEpoch);
 
         // Assert the size of the map
@@ -149,9 +150,9 @@ public class MetricsProcessorUtilTest extends PowerMockTestCase {
         }
 
         // Assert specific values based on the provided JSON
-        Assert.assertEquals(result.get(PriorityEnum.UNATTENDED).get(0), BigDecimal.valueOf(13));
-        Assert.assertEquals(result.get(PriorityEnum.LOW_PRIORITY).get(1), BigDecimal.valueOf(12));
-        Assert.assertEquals(result.get(PriorityEnum.HIGH_PRIORITY).get(2), BigDecimal.valueOf(13));
+        Assert.assertEquals(result.get(PriorityEnum.UNATTENDED).get(0), Integer.valueOf(13));
+        Assert.assertEquals(result.get(PriorityEnum.LOW_PRIORITY).get(1), Integer.valueOf(12));
+        Assert.assertEquals(result.get(PriorityEnum.HIGH_PRIORITY).get(2), Integer.valueOf(13));
     }
 
     @Test
@@ -182,9 +183,10 @@ public class MetricsProcessorUtilTest extends PowerMockTestCase {
     }
 
     @Test
-    public void testInitializeMap() {
+    public void testInitializePriorityMap() {
         int numberOfDays = 5;
-        Map<PriorityEnum, List<BigDecimal>> result = MetricsProcessorUtil.initializeMap(numberOfDays);
+        Map<PriorityEnum, List<BigDecimal>> result = MetricsProcessorUtil
+                .initializePriorityMap(numberOfDays, BigDecimal.ZERO);
 
         // Assert the size of the map
         Assert.assertEquals(result.size(), PriorityEnum.values().length);
@@ -212,16 +214,16 @@ public class MetricsProcessorUtilTest extends PowerMockTestCase {
 
         when(metricsJsonObject.get("records")).thenReturn(records);
 
-        List<BigDecimal> result = MetricsProcessorUtil.getPopulatedMetricsList(metricsJsonObject, numberOfDays,
+        List<Integer> result = MetricsProcessorUtil.getPopulatedMetricsList(metricsJsonObject, numberOfDays,
                 metricsCountLastDateEpoch);
 
         // Assert the size of the list
         Assert.assertEquals(result.size(), numberOfDays);
 
         // Assert specific values based on the provided JSON
-        Assert.assertEquals(result.get(0), BigDecimal.valueOf(13));
-        Assert.assertEquals(result.get(1), BigDecimal.valueOf(12));
-        Assert.assertEquals(result.get(2), BigDecimal.valueOf(13));
+        Assert.assertEquals(result.get(0), Integer.valueOf(13));
+        Assert.assertEquals(result.get(1), Integer.valueOf(12));
+        Assert.assertEquals(result.get(2), Integer.valueOf(13));
     }
 
     @Test
@@ -232,15 +234,15 @@ public class MetricsProcessorUtilTest extends PowerMockTestCase {
 
         when(metricsJsonObject.get("records")).thenReturn(records);
 
-        List<ArrayList<BigDecimal>> result = MetricsProcessorUtil.getListFromRejectionsJson(metricsJsonObject,
+        List<ArrayList<Integer>> result = MetricsProcessorUtil.getListFromRejectionsJson(metricsJsonObject,
                 numberOfDays, metricsCountLastDateEpoch);
 
         // Assert the size of the list
         Assert.assertEquals(result.size(), 2);
 
         // Assert specific values based on the provided JSON
-        Assert.assertEquals(result.get(0).get(0), BigDecimal.valueOf(13));
-        Assert.assertEquals(result.get(1).get(1), BigDecimal.valueOf(12));
+        Assert.assertEquals(result.get(0).get(0), Integer.valueOf(13));
+        Assert.assertEquals(result.get(1).get(1), Integer.valueOf(12));
     }
 
     @Test

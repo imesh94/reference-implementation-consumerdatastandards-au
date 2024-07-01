@@ -11,6 +11,9 @@ package com.wso2.openbanking.cds.metrics.service;
 
 import com.wso2.openbanking.accelerator.common.exception.OpenBankingException;
 import com.wso2.openbanking.cds.metrics.constants.MetricsConstants;
+import com.wso2.openbanking.cds.metrics.model.AbandonedConsentFlowByStageMetricDay;
+import com.wso2.openbanking.cds.metrics.model.AuthorisationMetricDay;
+import com.wso2.openbanking.cds.metrics.model.ErrorMetricDay;
 import com.wso2.openbanking.cds.metrics.model.MetricsResponseModel;
 import com.wso2.openbanking.cds.metrics.util.AspectEnum;
 import com.wso2.openbanking.cds.metrics.util.PriorityEnum;
@@ -34,24 +37,29 @@ import static com.wso2.openbanking.cds.metrics.constants.MetricsConstants.ASYNC_
  * Errors that occur during the asynchronous calculation of metrics are handled by the
  * handleMetricsFutureCompletionErrors method.
  */
-public class MetricsV3FetcherImpl implements MetricsFetcher {
+public class MetricsV5FetcherImpl implements MetricsFetcher {
 
     MetricsProcessor metricsProcessor;
-    private static final Log log = LogFactory.getLog(MetricsV3FetcherImpl.class);
+    private static final Log log = LogFactory.getLog(MetricsV5FetcherImpl.class);
 
-    private CompletableFuture<List<BigDecimal>> availabilityFuture;
-    private CompletableFuture<Map<PriorityEnum, List<BigDecimal>>> invocationFuture;
-    private CompletableFuture<List<BigDecimal>> sessionCountFuture;
-    private CompletableFuture<List<BigDecimal>> peakTPSFuture;
-    private CompletableFuture<List<BigDecimal>> errorFuture;
-    private CompletableFuture<Map<AspectEnum, List<BigDecimal>>> rejectionFuture;
+    private CompletableFuture<Map<AspectEnum, List<BigDecimal>>> availabilityFuture;
+    private CompletableFuture<Map<PriorityEnum, List<Integer>>> invocationFuture;
+    private CompletableFuture<List<Integer>> sessionCountFuture;
+    private CompletableFuture<Map<AspectEnum, List<BigDecimal>>> peakTPSFuture;
+    private CompletableFuture<List<Integer>> errorFuture;
+    private CompletableFuture<List<ErrorMetricDay>> errorByAspectFuture;
+    private CompletableFuture<Map<AspectEnum, List<Integer>>> rejectionFuture;
     private CompletableFuture<Integer> recipientCountFuture;
     private CompletableFuture<Integer> customerCountFuture;
-    private CompletableFuture<List<BigDecimal>> averageTPSFuture;
+    private CompletableFuture<Map<AspectEnum, List<BigDecimal>>> averageTPSFuture;
     private CompletableFuture<List<BigDecimal>> performanceFuture;
+    private CompletableFuture<Map<PriorityEnum, List<List<BigDecimal>>>> hourlyPerformanceByPriorityFuture;
     private CompletableFuture<Map<PriorityEnum, List<BigDecimal>>> averageResponseTimeFuture;
+    private CompletableFuture<Map<String, Integer>> activeAuthorisationCountFuture;
+    private CompletableFuture<List<AuthorisationMetricDay>> authorisationFuture;
+    private CompletableFuture<List<AbandonedConsentFlowByStageMetricDay>> abandonedConsentFlowCountFuture;
 
-    public MetricsV3FetcherImpl(MetricsProcessor metricsProcessor) throws OpenBankingException {
+    public MetricsV5FetcherImpl(MetricsProcessor metricsProcessor) throws OpenBankingException {
         this.metricsProcessor = metricsProcessor;
     }
 
@@ -63,13 +71,18 @@ public class MetricsV3FetcherImpl implements MetricsFetcher {
         availabilityFuture = fetchAvailabilityMetricsAsync();
         invocationFuture = fetchInvocationMetricsAsync();
         sessionCountFuture = fetchSessionCountMetricsAsync();
+        averageTPSFuture = fetchAverageTPSAsync();
         peakTPSFuture = fetchPeakTPSMetricsAsync();
         errorFuture = fetchErrorMetricsAsync();
+        errorByAspectFuture = fetchErrorByAspectMetricsAsync();
         rejectionFuture = fetchRejectionMetricsAsync();
         recipientCountFuture = fetchRecipientCountMetricsAsync();
         customerCountFuture = fetchCustomerCountMetricsAsync();
+        hourlyPerformanceByPriorityFuture = fetchHourlyPerformanceByPriorityMetricsAsync();
+        activeAuthorisationCountFuture = fetchActiveAuthorisationCountMetricsAsync();
+        authorisationFuture = fetchAuthorisationMetricsAsync();
+        abandonedConsentFlowCountFuture = fetchAbandonedConsentFlowCountMetricsAsync();
         // Dependent futures that require results from the invocationFuture
-        averageTPSFuture = fetchAverageTPSAsync(invocationFuture);
         performanceFuture = fetchPerformanceMetricsAsync(invocationFuture);
         averageResponseTimeFuture = fetchAverageResponseTimeAsync(invocationFuture);
 
@@ -82,7 +95,7 @@ public class MetricsV3FetcherImpl implements MetricsFetcher {
      *
      * @return CompletableFuture of availability metrics
      */
-    private CompletableFuture<List<BigDecimal>> fetchAvailabilityMetricsAsync() {
+    private CompletableFuture<Map<AspectEnum, List<BigDecimal>>> fetchAvailabilityMetricsAsync() {
         return CompletableFuture.supplyAsync(() -> {
             try {
                 return metricsProcessor.getAvailabilityMetrics();
@@ -99,7 +112,7 @@ public class MetricsV3FetcherImpl implements MetricsFetcher {
      *
      * @return CompletableFuture of invocation metrics
      */
-    private CompletableFuture<Map<PriorityEnum, List<BigDecimal>>> fetchInvocationMetricsAsync() {
+    private CompletableFuture<Map<PriorityEnum, List<Integer>>> fetchInvocationMetricsAsync() {
         return CompletableFuture.supplyAsync(() -> {
             try {
                 return metricsProcessor.getInvocationMetrics();
@@ -116,7 +129,7 @@ public class MetricsV3FetcherImpl implements MetricsFetcher {
      *
      * @return CompletableFuture of session count metrics
      */
-    private CompletableFuture<List<BigDecimal>> fetchSessionCountMetricsAsync() {
+    private CompletableFuture<List<Integer>> fetchSessionCountMetricsAsync() {
         return CompletableFuture.supplyAsync(() -> {
             try {
                 return metricsProcessor.getSessionCountMetrics();
@@ -133,7 +146,7 @@ public class MetricsV3FetcherImpl implements MetricsFetcher {
      *
      * @return CompletableFuture of peak TPS metrics
      */
-    private CompletableFuture<List<BigDecimal>> fetchPeakTPSMetricsAsync() {
+    private CompletableFuture<Map<AspectEnum, List<BigDecimal>>> fetchPeakTPSMetricsAsync() {
         return CompletableFuture.supplyAsync(() -> {
             try {
                 return metricsProcessor.getPeakTPSMetrics();
@@ -150,10 +163,27 @@ public class MetricsV3FetcherImpl implements MetricsFetcher {
      *
      * @return CompletableFuture of error metrics
      */
-    private CompletableFuture<List<BigDecimal>> fetchErrorMetricsAsync() {
+    private CompletableFuture<List<Integer>> fetchErrorMetricsAsync() {
         return CompletableFuture.supplyAsync(() -> {
             try {
                 return metricsProcessor.getErrorMetrics();
+            } catch (OpenBankingException e) {
+                String errorMessage = String.format(ASYNC_FETCH_ERROR, MetricsConstants.ERROR);
+                log.debug(errorMessage, e);
+                throw new RuntimeException(errorMessage, e);
+            }
+        });
+    }
+
+    /**
+     * Get error by aspect metrics asynchronously.
+     *
+     * @return CompletableFuture of error by aspect metrics
+     */
+    private CompletableFuture<List<ErrorMetricDay>> fetchErrorByAspectMetricsAsync() {
+        return CompletableFuture.supplyAsync(() -> {
+            try {
+                return metricsProcessor.getErrorByAspectMetrics();
             } catch (OpenBankingException e) {
                 String errorMessage = String.format(ASYNC_FETCH_ERROR, MetricsConstants.ERROR);
                 log.debug(errorMessage, e);
@@ -167,7 +197,7 @@ public class MetricsV3FetcherImpl implements MetricsFetcher {
      *
      * @return CompletableFuture of rejection metrics
      */
-    private CompletableFuture<Map<AspectEnum, List<BigDecimal>>> fetchRejectionMetricsAsync() {
+    private CompletableFuture<Map<AspectEnum, List<Integer>>> fetchRejectionMetricsAsync() {
         return CompletableFuture.supplyAsync(() -> {
             try {
                 return metricsProcessor.getRejectionMetrics();
@@ -216,13 +246,18 @@ public class MetricsV3FetcherImpl implements MetricsFetcher {
     /**
      * Get average TPS metrics asynchronously.
      *
-     * @param invocationFuture - CompletableFuture of invocation metrics
      * @return CompletableFuture of average TPS metrics
      */
-    private CompletableFuture<List<BigDecimal>> fetchAverageTPSAsync(
-            CompletableFuture<Map<PriorityEnum, List<BigDecimal>>> invocationFuture) {
-        return invocationFuture.thenApplyAsync(invocationMetrics ->
-                metricsProcessor.getAverageTPSMetrics(invocationMetrics));
+    private CompletableFuture<Map<AspectEnum, List<BigDecimal>>> fetchAverageTPSAsync() {
+        return CompletableFuture.supplyAsync(() -> {
+            try {
+                return metricsProcessor.getAverageTPSMetrics();
+            } catch (OpenBankingException e) {
+                String errorMessage = String.format(ASYNC_FETCH_ERROR, MetricsConstants.AVERAGE_TPS);
+                log.debug(errorMessage, e);
+                throw new RuntimeException(errorMessage, e);
+            }
+        });
     }
 
     /**
@@ -232,10 +267,28 @@ public class MetricsV3FetcherImpl implements MetricsFetcher {
      * @return CompletableFuture of performance metrics
      */
     private CompletableFuture<List<BigDecimal>> fetchPerformanceMetricsAsync(
-            CompletableFuture<Map<PriorityEnum, List<BigDecimal>>> invocationFuture) {
+            CompletableFuture<Map<PriorityEnum, List<Integer>>> invocationFuture) {
         return invocationFuture.thenApplyAsync(invocationMetrics -> {
             try {
                 return metricsProcessor.getPerformanceMetrics(invocationMetrics);
+            } catch (OpenBankingException e) {
+                String errorMessage = String.format(ASYNC_FETCH_ERROR, MetricsConstants.PERFORMANCE);
+                log.debug(errorMessage, e);
+                throw new RuntimeException(errorMessage, e);
+            }
+        });
+    }
+
+    /**
+     * Get hourly performance by priority metrics asynchronously.
+     *
+     * @return CompletableFuture of hourly performance by priority metrics
+     */
+    private CompletableFuture<Map<PriorityEnum, List<List<BigDecimal>>>>
+    fetchHourlyPerformanceByPriorityMetricsAsync() {
+        return CompletableFuture.supplyAsync(() -> {
+            try {
+                return metricsProcessor.getHourlyPerformanceByPriorityMetrics();
             } catch (OpenBankingException e) {
                 String errorMessage = String.format(ASYNC_FETCH_ERROR, MetricsConstants.PERFORMANCE);
                 log.debug(errorMessage, e);
@@ -251,12 +304,63 @@ public class MetricsV3FetcherImpl implements MetricsFetcher {
      * @return CompletableFuture of average response time metrics
      */
     private CompletableFuture<Map<PriorityEnum, List<BigDecimal>>> fetchAverageResponseTimeAsync(
-            CompletableFuture<Map<PriorityEnum, List<BigDecimal>>> invocationFuture) {
+            CompletableFuture<Map<PriorityEnum, List<Integer>>> invocationFuture) {
         return invocationFuture.thenApplyAsync(invocationMetrics -> {
             try {
                 return metricsProcessor.getAverageResponseTimeMetrics(invocationMetrics);
             } catch (OpenBankingException e) {
                 String errorMessage = String.format(ASYNC_FETCH_ERROR, MetricsConstants.AVERAGE_RESPONSE_TIME);
+                log.debug(errorMessage, e);
+                throw new RuntimeException(errorMessage, e);
+            }
+        });
+    }
+
+    /**
+     * Get active authorisation count metrics asynchronously.
+     *
+     * @return CompletableFuture of active authorisation count metrics
+     */
+    private CompletableFuture<Map<String, Integer>> fetchActiveAuthorisationCountMetricsAsync() {
+        return CompletableFuture.supplyAsync(() -> {
+            try {
+                return metricsProcessor.getActiveAuthorisationCountMetrics();
+            } catch (OpenBankingException e) {
+                String errorMessage = String.format(ASYNC_FETCH_ERROR, MetricsConstants.ERROR);
+                log.debug(errorMessage, e);
+                throw new RuntimeException(errorMessage, e);
+            }
+        });
+    }
+
+    /**
+     * Get authorisation metrics asynchronously.
+     *
+     * @return CompletableFuture of authorisation metrics
+     */
+    private CompletableFuture<List<AuthorisationMetricDay>> fetchAuthorisationMetricsAsync() {
+        return CompletableFuture.supplyAsync(() -> {
+            try {
+                return metricsProcessor.getAuthorisationMetrics();
+            } catch (OpenBankingException e) {
+                String errorMessage = String.format(ASYNC_FETCH_ERROR, MetricsConstants.AUTHORISATION);
+                log.debug(errorMessage, e);
+                throw new RuntimeException(errorMessage, e);
+            }
+        });
+    }
+
+    /**
+     * Get abandoned consent flow count metrics asynchronously.
+     *
+     * @return CompletableFuture of abandoned consent flow count metrics
+     */
+    private CompletableFuture<List<AbandonedConsentFlowByStageMetricDay>> fetchAbandonedConsentFlowCountMetricsAsync() {
+        return CompletableFuture.supplyAsync(() -> {
+            try {
+                return metricsProcessor.getAbandonedConsentFlowCountMetrics();
+            } catch (OpenBankingException e) {
+                String errorMessage = String.format(ASYNC_FETCH_ERROR, MetricsConstants.AUTHORISATION);
                 log.debug(errorMessage, e);
                 throw new RuntimeException(errorMessage, e);
             }
@@ -279,16 +383,21 @@ public class MetricsV3FetcherImpl implements MetricsFetcher {
             metricsResponseModel.setSessionCount(sessionCountFuture.get());
             metricsResponseModel.setPeakTPS(peakTPSFuture.get());
             metricsResponseModel.setErrors(errorFuture.get());
+            metricsResponseModel.setErrorsByAspect(errorByAspectFuture.get());
             metricsResponseModel.setRejections(rejectionFuture.get());
             metricsResponseModel.setRecipientCount(recipientCountFuture.get());
             metricsResponseModel.setCustomerCount(customerCountFuture.get());
             metricsResponseModel.setAverageTPS(averageTPSFuture.get());
             metricsResponseModel.setPerformance(performanceFuture.get());
+            metricsResponseModel.setHourlyPerformanceByPriority(hourlyPerformanceByPriorityFuture.get());
             metricsResponseModel.setAverageResponseTime(averageResponseTimeFuture.get());
+            metricsResponseModel.setActiveAuthorisationCount(activeAuthorisationCountFuture.get());
+            metricsResponseModel.setAuthorisation(authorisationFuture.get());
+            metricsResponseModel.setAbandonedConsentFlow(abandonedConsentFlowCountFuture.get());
         } catch (InterruptedException | ExecutionException e) {
             // Handle errors that occurred during the asynchronous calculation of metrics.
             log.error("Error occurred while calculating metrics. " + e.getMessage(), e);
-            throw new OpenBankingException("Failed to populate metrics v3 model with data", e);
+            throw new OpenBankingException("Failed to populate metrics v5 model with data", e);
         }
     }
 }

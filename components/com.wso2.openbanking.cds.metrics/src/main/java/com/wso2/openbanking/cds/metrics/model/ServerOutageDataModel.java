@@ -13,6 +13,8 @@
 
 package com.wso2.openbanking.cds.metrics.model;
 
+import com.wso2.openbanking.cds.metrics.util.AspectEnum;
+
 import java.util.Objects;
 
 /**
@@ -25,14 +27,17 @@ public class ServerOutageDataModel {
     private String type;
     private long timeFrom;
     private long timeTo;
+    private AspectEnum aspect;
 
-    public ServerOutageDataModel(String outageId, long timestamp, String type, long timeFrom, long timeTo) {
+    public ServerOutageDataModel(String outageId, long timestamp, String type, long timeFrom, long timeTo,
+                                 AspectEnum aspect) {
 
         this.outageId = outageId;
         this.timestamp = timestamp;
         this.type = type;
         this.timeFrom = timeFrom;
         this.timeTo = timeTo;
+        this.aspect = aspect;
     }
 
     public String getOutageId() {
@@ -83,6 +88,14 @@ public class ServerOutageDataModel {
     public void setTimeTo(long timeTo) {
 
         this.timeTo = timeTo;
+    }
+
+    public AspectEnum getAspect() {
+        return aspect;
+    }
+
+    public void setAspect(AspectEnum aspect) {
+        this.aspect = aspect;
     }
 
     @Override

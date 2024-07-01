@@ -20,7 +20,11 @@ public class MetricsConstants {
     }
 
     public static final String RECORDS = "records";
-    public static final String METRICS_VERSION_3 = "3";
+    public static final String METRICS_VERSION_5 = "5";
+
+    // customer profile
+    public static final String INDIVIDUAL = "individual";
+    public static final String NON_INDIVIDUAL = "non-individual";
 
     // sp api endpoint
     public static final String SP_API_PATH = "/stores/query";
@@ -34,6 +38,7 @@ public class MetricsConstants {
     public static final String CDS_SESSION_METRICS_APP = "CDSSessionMetricsApp";
     public static final String CDS_CUSTOMER_RECIPIENT_METRICS_APP = "CDSCustomerRecipientMetricsApp";
     public static final String API_RAW_DATA_SUBMISSION_APP = "APIRawDataSubmissionApp";
+    public static final String CDS_AUTHORISATION_METRICS_APP = "CDSAuthorisationMetricsApp";
 
     //date-time constants
     public static final String SP_TIMESTAMP_PATTERN = "yyyy-MM-dd HH:mm:ss XXX";
@@ -63,6 +68,7 @@ public class MetricsConstants {
     public static final String INVOCATION = "invocation";
     public static final String PERFORMANCE = "performance";
     public static final String SESSION_COUNT = "session count";
+    public static final String AVERAGE_TPS = "average TPS";
     public static final String PEAK_TPS = "peak TPS";
     public static final String ERROR = "error";
     public static final String REJECTION = "rejection";
@@ -71,5 +77,6 @@ public class MetricsConstants {
     public static final String SUCCESSFUL_INVOCATIONS = "successful invocations";
     public static final String TOTAL_RESPONSE_TIME = "total response time";
     public static final String AVERAGE_RESPONSE_TIME = "average response time";
+    public static final String AUTHORISATION = "authorisation";
 
 }

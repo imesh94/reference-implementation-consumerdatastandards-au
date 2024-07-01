@@ -97,5 +97,15 @@
         {% else %}
         <MetricsV5StartDate>2024-05-01</MetricsV5StartDate>
         {% endif %}
+        {% if open_banking_cds.metrics.consent_abandonment_time is defined %}
+        <ConsentAbandonmentTime>{{open_banking_cds.metrics.consent_abandonment_time}}</ConsentAbandonmentTime>
+        {% else %}
+        <ConsentAbandonmentTime>300</ConsentAbandonmentTime>
+        {% endif %}
+        {% if open_banking_cds.metrics.authorization_code_validity is defined %}
+        <AuthorizationCodeValidityPeriod>{{open_banking_cds.metrics.authorization_code_validity}}</AuthorizationCodeValidityPeriod>
+        {% else %}
+        <AuthorizationCodeValidityPeriod>300</AuthorizationCodeValidityPeriod>
+        {% endif %}
     </Metrics>
 </Server>

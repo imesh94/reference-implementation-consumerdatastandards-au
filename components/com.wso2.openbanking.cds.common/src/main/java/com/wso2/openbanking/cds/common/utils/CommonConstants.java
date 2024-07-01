@@ -120,6 +120,8 @@ public class CommonConstants {
     public static final String METRICS_TIME_ZONE = "Metrics.TimeZone";
     public static final String METRICS_AVAILABILITY_START_DATE = "Metrics.AvailabilityStartDate";
     public static final String METRICS_V5_START_DATE = "Metrics.MetricsV5StartDate";
+    public static final String CONSENT_ABANDONMENT_TIME = "Metrics.ConsentAbandonmentTime";
+    public static final String AUTH_CODE_VALIDITY_PERIOD = "Metrics.AuthorizationCodeValidityPeriod";
 
     // Stream Processor related constants
     public static final String SP_API_PATH = "/stores/query";

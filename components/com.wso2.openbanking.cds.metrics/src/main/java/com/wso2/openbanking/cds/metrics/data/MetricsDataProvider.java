@@ -25,13 +25,25 @@ public interface MetricsDataProvider {
 
     JSONObject getInvocationMetricsData() throws OpenBankingException;
 
+    JSONObject getHourlyPerformanceByPriorityMetricsData() throws OpenBankingException;
+
+    JSONObject getInvocationByAspectMetricsData() throws OpenBankingException;
+
     JSONObject getSessionCountMetricsData() throws OpenBankingException;
 
     JSONArray getPeakTPSMetricsData() throws ParseException;
 
     JSONObject getErrorMetricsData() throws OpenBankingException;
 
+    JSONObject getErrorByAspectMetricsData() throws OpenBankingException;
+
     JSONObject getRejectionMetricsData() throws OpenBankingException;
+
+    JSONObject getActiveAuthorisationCountMetricsData() throws OpenBankingException;
+
+    JSONObject getAuthorisationMetricsData() throws OpenBankingException;
+
+    JSONObject getAbandonedConsentFlowCountMetricsData() throws OpenBankingException;
 
     JSONObject getRecipientCountMetricsData() throws OpenBankingException;
 

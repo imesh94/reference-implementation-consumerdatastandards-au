@@ -754,6 +754,34 @@ public class OpenBankingCDSConfigParser {
         return ((String) getConfigElementFromKey(CommonConstants.METRICS_V5_START_DATE)).trim();
     }
 
+    /**
+     * Get metrics consent abandonment time in milliseconds.
+     *
+     * @return String
+     */
+    public long getConsentAbandonmentTime() {
+
+        String value = (String) getConfigElementFromKey(CommonConstants.CONSENT_ABANDONMENT_TIME);
+        long secondsValue = value == null ? 300L : Long.parseLong(value);
+
+        // Converting to milliseconds
+        return secondsValue * 1000L;
+    }
+
+    /**
+     * Get metrics authorization code validity period in milliseconds.
+     *
+     * @return String
+     */
+    public long getAuthorizationCodeValidityPeriod() {
+
+        String value = (String) getConfigElementFromKey(CommonConstants.AUTH_CODE_VALIDITY_PERIOD);
+        long secondsValue = value == null ? 300L : Long.parseLong(value);
+
+        // Converting to milliseconds
+        return secondsValue * 1000L;
+    }
+
 
     /**
      * Perform integer value check on given config.

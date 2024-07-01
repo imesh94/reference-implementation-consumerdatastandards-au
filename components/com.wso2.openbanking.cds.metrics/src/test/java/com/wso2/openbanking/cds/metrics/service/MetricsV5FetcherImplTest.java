@@ -30,18 +30,18 @@ import static org.mockito.Mockito.doReturn;
 
 @PrepareForTest({OpenBankingCDSConfigParser.class})
 @PowerMockIgnore({"javax.crypto.*", "jdk.internal.reflect.*"})
-public class MetricsV3FetcherImplTest extends PowerMockTestCase {
+public class MetricsV5FetcherImplTest extends PowerMockTestCase {
 
-    private MetricsV3FetcherImpl metricsFetcher;
+    private MetricsV5FetcherImpl metricsFetcher;
     private MetricsProcessor metricsProcessor;
     private OpenBankingCDSConfigParser openBankingCDSConfigParserMock;
 
     @BeforeClass
     public void init() throws OpenBankingException {
 
-        metricsProcessor = new MetricsV3ProcessorImpl(PeriodEnum.ALL, new MockMetricsDataProvider(),
+        metricsProcessor = new MetricsV5ProcessorImpl(PeriodEnum.ALL, new MockMetricsDataProvider(),
                 ZoneId.of("GMT"));
-        metricsFetcher = new MetricsV3FetcherImpl(metricsProcessor);
+        metricsFetcher = new MetricsV5FetcherImpl(metricsProcessor);
 
     }
 
@@ -52,6 +52,9 @@ public class MetricsV3FetcherImplTest extends PowerMockTestCase {
         PowerMockito.mockStatic(OpenBankingCDSConfigParser.class);
         PowerMockito.when(OpenBankingCDSConfigParser.getInstance()).thenReturn(openBankingCDSConfigParserMock);
         doReturn("GMT").when(openBankingCDSConfigParserMock).getMetricsTimeZone();
+        doReturn("2024-05-01").when(openBankingCDSConfigParserMock).getMetricsV5StartDate();
+        doReturn(300000L).when(openBankingCDSConfigParserMock).getConsentAbandonmentTime();
+        doReturn(300000L).when(openBankingCDSConfigParserMock).getAuthorizationCodeValidityPeriod();
     }
 
     @Test

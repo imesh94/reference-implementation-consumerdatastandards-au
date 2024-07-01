@@ -26,9 +26,9 @@ import static org.testng.Assert.assertEquals;
 
 @PrepareForTest({DateTimeUtil.class, OpenBankingCDSConfigParser.class})
 @PowerMockIgnore({"javax.crypto.*", "jdk.internal.reflect.*"})
-public class MetricsV3QueryCreatorImplTest extends PowerMockTestCase {
+public class MetricsV5QueryCreatorImplTest extends PowerMockTestCase {
 
-    private MetricsV3QueryCreatorImpl queryCreator;
+    private MetricsV5QueryCreatorImpl queryCreator;
     OpenBankingCDSConfigParser configParserMock;
 
 
@@ -51,15 +51,15 @@ public class MetricsV3QueryCreatorImplTest extends PowerMockTestCase {
         when(DateTimeUtil.getEpochTimestamp("2024-01-01T23:59:59Z")).thenReturn(1706745599L);
         when(DateTimeUtil.getEpochTimestamp("2024-01-31T23:59:59Z")).thenReturn(1706745599L);
 
-        queryCreator = new MetricsV3QueryCreatorImpl(PeriodEnum.CURRENT);
+        queryCreator = new MetricsV5QueryCreatorImpl(PeriodEnum.CURRENT);
     }
 
     @Test
     public void testGetAvailabilityMetricsQuery() {
         // Expected SQL query construction using mocked timestamps
-        String expectedQuery = "from SERVER_OUTAGES_RAW_DATA select OUTAGE_ID, TIMESTAMP, TYPE, TIME_FROM, TIME_TO " +
-                "group by OUTAGE_ID, TIMESTAMP, TYPE, TIME_FROM, TIME_TO having TIME_FROM >= " + 1704067200 + " AND " +
-                "TIME_TO < " + 1706745599 + ";";
+        String expectedQuery = "from SERVER_OUTAGES_RAW_DATA select OUTAGE_ID, TIMESTAMP, TYPE, TIME_FROM, TIME_TO, " +
+                "ASPECT group by OUTAGE_ID, TIMESTAMP, TYPE, TIME_FROM, TIME_TO, ASPECT having TIME_FROM >= " +
+                1704067200 + " AND TIME_TO <= " + 1706745599 + ";";
 
         // Execute the method
         String actualQuery = queryCreator.getAvailabilityMetricsQuery();
@@ -89,7 +89,7 @@ public class MetricsV3QueryCreatorImplTest extends PowerMockTestCase {
     @Test
     public void testGetErrorMetricsQuery() {
         String expectedQuery = "from CDSMetricsStatusAgg within '2024-01-01T00:00:00Z', '2024-01-01T23:59:59Z' " +
-                "per 'days' select totalReqCount, AGG_TIMESTAMP as reqCount having statusCode >= 500 and statusCode " +
+                "per 'days' select totalReqCount, AGG_TIMESTAMP having statusCode >= 500 and statusCode " +
                 "< 600;";
         String actualQuery = queryCreator.getErrorMetricsQuery();
         assertEquals(actualQuery, expectedQuery);

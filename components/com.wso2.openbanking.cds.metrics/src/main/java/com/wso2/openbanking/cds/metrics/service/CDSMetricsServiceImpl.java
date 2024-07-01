@@ -15,7 +15,7 @@ import com.wso2.openbanking.cds.common.config.OpenBankingCDSConfigParser;
 import com.wso2.openbanking.cds.metrics.cache.MetricsCache;
 import com.wso2.openbanking.cds.metrics.constants.MetricsConstants;
 import com.wso2.openbanking.cds.metrics.data.MetricsDataProvider;
-import com.wso2.openbanking.cds.metrics.data.MetricsV3DataProvider;
+import com.wso2.openbanking.cds.metrics.data.MetricsV5DataProvider;
 import com.wso2.openbanking.cds.metrics.model.MetricsResponseModel;
 import com.wso2.openbanking.cds.metrics.util.MetricsServiceUtil;
 import com.wso2.openbanking.cds.metrics.util.PeriodEnum;
@@ -65,12 +65,12 @@ public class CDSMetricsServiceImpl implements CDSMetricsService {
      */
     public MetricsResponseModel getCurrentDayMetrics(String requestTime) throws OpenBankingException {
 
-        MetricsQueryCreator metricsV3QueryCreator = new MetricsV3QueryCreatorImpl(PeriodEnum.CURRENT);
-        MetricsDataProvider metricsDataProvider = new MetricsV3DataProvider(metricsV3QueryCreator);
-        MetricsProcessor metricsProcessor = new MetricsV3ProcessorImpl(PeriodEnum.CURRENT,
-                metricsDataProvider, TIME_ZONE);
-        MetricsFetcher metricsFetcherV3Current = new MetricsV3FetcherImpl(metricsProcessor);
-        return metricsFetcherV3Current.getResponseMetricsListModel(requestTime);
+        MetricsQueryCreator metricsV5QueryCreator = new MetricsV5QueryCreatorImpl(PeriodEnum.CURRENT);
+        MetricsDataProvider metricsV5DataProvider = new MetricsV5DataProvider(metricsV5QueryCreator);
+        MetricsProcessor metricsV5Processor = new MetricsV5ProcessorImpl(PeriodEnum.CURRENT,
+                metricsV5DataProvider, TIME_ZONE);
+        MetricsFetcher metricsV5FetcherCurrent = new MetricsV5FetcherImpl(metricsV5Processor);
+        return metricsV5FetcherCurrent.getResponseMetricsListModel(requestTime);
     }
 
     /**
@@ -104,12 +104,12 @@ public class CDSMetricsServiceImpl implements CDSMetricsService {
      */
     private MetricsResponseModel getRealtimeHistoricMetrics(String requestTime) throws OpenBankingException {
 
-        MetricsQueryCreator metricsV3QueryCreator = new MetricsV3QueryCreatorImpl(PeriodEnum.HISTORIC);
-        MetricsDataProvider metricsDataProvider = new MetricsV3DataProvider(metricsV3QueryCreator);
-        MetricsProcessor metricsProcessor = new MetricsV3ProcessorImpl(
-                PeriodEnum.HISTORIC, metricsDataProvider, TIME_ZONE);
-        MetricsFetcher metricsFetcherV3Historic = new MetricsV3FetcherImpl(metricsProcessor);
-        return metricsFetcherV3Historic.getResponseMetricsListModel(requestTime);
+        MetricsQueryCreator metricsV5QueryCreator = new MetricsV5QueryCreatorImpl(PeriodEnum.HISTORIC);
+        MetricsDataProvider metricsV5DataProvider = new MetricsV5DataProvider(metricsV5QueryCreator);
+        MetricsProcessor metricsV5Processor = new MetricsV5ProcessorImpl(
+                PeriodEnum.HISTORIC, metricsV5DataProvider, TIME_ZONE);
+        MetricsFetcher metricsV5FetcherHistoric = new MetricsV5FetcherImpl(metricsV5Processor);
+        return metricsV5FetcherHistoric.getResponseMetricsListModel(requestTime);
     }
 
     /**
@@ -150,12 +150,12 @@ public class CDSMetricsServiceImpl implements CDSMetricsService {
                     metricsResponseModelHistoric);
         } else {
             log.debug("Getting all metrics from analytics server since cached model is not found.");
-            MetricsQueryCreator metricsV3QueryCreator = new MetricsV3QueryCreatorImpl(PeriodEnum.ALL);
-            MetricsDataProvider metricsDataProvider = new MetricsV3DataProvider(metricsV3QueryCreator);
-            MetricsProcessor metricsProcessor = new MetricsV3ProcessorImpl(
-                    PeriodEnum.ALL, metricsDataProvider, TIME_ZONE);
-            MetricsFetcher metricsFetcherV3Current = new MetricsV3FetcherImpl(metricsProcessor);
-            metricsResponseModel = metricsFetcherV3Current.getResponseMetricsListModel(requestTime);
+            MetricsQueryCreator metricsV5QueryCreator = new MetricsV5QueryCreatorImpl(PeriodEnum.ALL);
+            MetricsDataProvider metricsV5DataProvider = new MetricsV5DataProvider(metricsV5QueryCreator);
+            MetricsProcessor metricsV5Processor = new MetricsV5ProcessorImpl(
+                    PeriodEnum.ALL, metricsV5DataProvider, TIME_ZONE);
+            MetricsFetcher metricsV5FetcherCurrent = new MetricsV5FetcherImpl(metricsV5Processor);
+            metricsResponseModel = metricsV5FetcherCurrent.getResponseMetricsListModel(requestTime);
             log.debug("All metrics retrieval completed.");
         }
         return metricsResponseModel;
