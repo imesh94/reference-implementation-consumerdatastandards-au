@@ -33,34 +33,31 @@ public class CDSIntrospectionDataProvider extends OBIntrospectionDataProvider {
 
         /* No need to check whether the request is for a refresh token introspection because it is validated before
         this point in CDSTokenIntrospectionListener. */
-        String consentIdClaim = OpenBankingConfigParser.getInstance().getConfiguration()
-                .get(IdentityCommonConstants.CONSENT_ID_CLAIM_NAME).toString();
-        return getAdditionalDataForIntrospectResponse(oAuth2IntrospectionResponseDTO,
-                consentIdClaim);
-    }
-
-    /**
-     * Method to set additional data to the introspection response.
-     *
-     * @param oAuth2IntrospectionResponseDTO introspection response DTO
-     * @param consentIdClaimName the name of the consent ID claim
-     * @return the additional data map
-     */
-    private Map<String, Object> getAdditionalDataForIntrospectResponse(OAuth2IntrospectionResponseDTO
-                                                                               oAuth2IntrospectionResponseDTO,
-                                                                       String consentIdClaimName) {
-
         Map<String, Object> additionalIntrospectionData = new HashMap<>();
-        String scopes = oAuth2IntrospectionResponseDTO.getScope();
-        String cdrArrangementIdWithPrefix = Arrays.stream(scopes.split(IdentityCommonConstants.SPACE_SEPARATOR))
-                .filter(word -> word.startsWith(consentIdClaimName))
-                .findFirst()
-                .orElse(null);
-
-        if (StringUtils.isNotBlank(cdrArrangementIdWithPrefix)) {
-            String cdrArrangementId = StringUtils.removeStart(cdrArrangementIdWithPrefix, consentIdClaimName);
+        String cdrArrangementId = getCdrArrangementIdFromScopes(oAuth2IntrospectionResponseDTO);
+        if (StringUtils.isNotBlank(cdrArrangementId)) {
             additionalIntrospectionData.put(CommonConstants.CDR_ARRANGEMENT_ID, cdrArrangementId);
         }
         return additionalIntrospectionData;
+    }
+
+    /**
+     * Extracts CDR arrangement ID from scopes.
+     *
+     * @return CDR arrangement ID
+     */
+    private String getCdrArrangementIdFromScopes(OAuth2IntrospectionResponseDTO oAuth2IntrospectionResponseDTO) {
+
+        String consentIdClaim = OpenBankingConfigParser.getInstance().getConfiguration()
+                .get(IdentityCommonConstants.CONSENT_ID_CLAIM_NAME).toString();
+        String scopes = oAuth2IntrospectionResponseDTO.getScope();
+        String cdrArrangementIdWithPrefix = Arrays.stream(scopes.split(IdentityCommonConstants.SPACE_SEPARATOR))
+                .filter(word -> word.startsWith(consentIdClaim))
+                .findFirst()
+                .orElse(null);
+        if (StringUtils.isNotBlank(cdrArrangementIdWithPrefix)) {
+            return StringUtils.removeStart(cdrArrangementIdWithPrefix, consentIdClaim);
+        }
+        return null;
     }
 }
