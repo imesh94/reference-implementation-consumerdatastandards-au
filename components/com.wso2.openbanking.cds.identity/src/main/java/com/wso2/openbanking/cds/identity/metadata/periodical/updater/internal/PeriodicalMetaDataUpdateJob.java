@@ -170,14 +170,14 @@ public class PeriodicalMetaDataUpdateJob implements Job, MetaDataUpdate {
     public Map<String, String> getDataRecipientStatusesFromRegister(@NotNull JSONObject responseJson)
             throws OpenBankingException {
 
-        JSONArray softwareProductsArray = responseJson.getJSONArray(DATA);
-        Map<String, String> softwareProductsMap = new HashMap<>();
-        for (int jsonElementIndex = 0; jsonElementIndex < softwareProductsArray.length(); jsonElementIndex++) {
-            JSONObject softwareProduct = softwareProductsArray.getJSONObject(jsonElementIndex);
-            softwareProductsMap.put(softwareProduct.getString(STATUS_JSON_LEGAL_ENTITY_KEY),
+        JSONArray dataRecipientsArray = responseJson.getJSONArray(DATA);
+        Map<String, String> dataRecipientsMap = new HashMap<>();
+        for (int jsonElementIndex = 0; jsonElementIndex < dataRecipientsArray.length(); jsonElementIndex++) {
+            JSONObject softwareProduct = dataRecipientsArray.getJSONObject(jsonElementIndex);
+            dataRecipientsMap.put(softwareProduct.getString(STATUS_JSON_LEGAL_ENTITY_KEY),
                     softwareProduct.getString(STATUS));
         }
-        return softwareProductsMap;
+        return dataRecipientsMap;
     }
 
     /**
