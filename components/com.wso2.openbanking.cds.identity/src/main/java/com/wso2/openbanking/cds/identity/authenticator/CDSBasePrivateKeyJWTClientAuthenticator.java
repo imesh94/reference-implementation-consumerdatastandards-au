@@ -1,13 +1,10 @@
 /*
- * Copyright (c) 2021, WSO2 Inc. (http://www.wso2.com). All Rights Reserved.
+ * Copyright (c) 2021-2024, WSO2 LLC. (https://www.wso2.com). All Rights Reserved.
  *
- * This software is the property of WSO2 Inc. and its suppliers, if any.
+ * This software is the property of WSO2 LLC. and its suppliers, if any.
  * Dissemination of any information or reproduction of any material contained
- * herein is strictly forbidden, unless permitted by WSO2 in accordance with
- * the WSO2 Software License available at https://wso2.com/licenses/eula/3.1. For specific
- * language governing the permissions and limitations under this license,
- * please see the license as well as any agreement you’ve entered into with
- * WSO2 governing the purchase of this software and any associated services.
+ * herein in any form is strictly forbidden, unless permitted by WSO2 expressly.
+ * You may not alter or remove any copyright or other notice from copies of this content.
  */
 package com.wso2.openbanking.cds.identity.authenticator;
 
@@ -80,6 +77,7 @@ public class CDSBasePrivateKeyJWTClientAuthenticator extends AbstractOAuthClient
                                       OAuthClientAuthnContext oAuthClientAuthnContext)
             throws OAuthClientAuthnException {
 
+        validateClientIdAgainstSubClaim(httpServletRequest, bodyParameters, oAuthClientAuthnContext);
         return jwtValidator.isValidAssertion(getSignedJWT(bodyParameters, oAuthClientAuthnContext));
     }
 
@@ -181,5 +179,32 @@ public class CDSBasePrivateKeyJWTClientAuthenticator extends AbstractOAuthClient
         mandatoryClaims.add(Constants.EXPIRATION_TIME_CLAIM);
         mandatoryClaims.add(Constants.JWT_ID_CLAIM);
         return mandatoryClaims;
+    }
+
+    /**
+     * Validates the client_id parameter value against the 'sub' claim in the client_assertion if the client_id is
+     * sent as a request body parameter (RFC7521).
+     *
+     * @param httpServletRequest - HTTP Servlet Request
+     * @param bodyParameters - map of request body params
+     * @param oAuthClientAuthnContext - OAuth Client Authentication Context
+     * @throws OAuthClientAuthnException - if the client_id does not match the 'sub' claim in the client_assertion
+     */
+    private void validateClientIdAgainstSubClaim(HttpServletRequest httpServletRequest,
+         Map<String, List> bodyParameters, OAuthClientAuthnContext oAuthClientAuthnContext)
+            throws OAuthClientAuthnException {
+
+        if (httpServletRequest.getParameter(Constants.CLIENT_ID) != null) {
+            String subClaim = getClientId(httpServletRequest, bodyParameters, oAuthClientAuthnContext);
+            String clientId = httpServletRequest.getParameter(Constants.CLIENT_ID);
+            if (!subClaim.equals(clientId)) {
+                if (LOG.isDebugEnabled()) {
+                    LOG.debug("Mismatch between client_id parameter and sub claim. client_id: " + clientId +
+                            ", sub claim: " + subClaim);
+                }
+                throw new OAuthClientAuthnException("Request Parameter 'client_id' does not match the 'sub' claim " +
+                        "in the client_assertion", OAuth2ErrorCodes.INVALID_CLIENT);
+            }
+        }
     }
 }
