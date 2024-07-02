@@ -38,16 +38,14 @@ import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 
-import static com.wso2.openbanking.cds.common.metadata.periodical.updater.constants.MetadataConstants.DATA_RECIPIENTS;
-import static com.wso2.openbanking.cds.common.metadata.periodical.updater.constants.MetadataConstants.DATA_RECIPIENT_ID;
-import static com.wso2.openbanking.cds.common.metadata.periodical.updater.constants.MetadataConstants.DATA_RECIPIENT_STATUS;
+import static com.wso2.openbanking.cds.common.metadata.periodical.updater.constants.MetadataConstants.DATA;
 import static com.wso2.openbanking.cds.common.metadata.periodical.updater.constants.MetadataConstants.LEGAL_ENTITY_ID;
 import static com.wso2.openbanking.cds.common.metadata.periodical.updater.constants.MetadataConstants.MAP_DATA_RECIPIENTS;
 import static com.wso2.openbanking.cds.common.metadata.periodical.updater.constants.MetadataConstants.MAP_SOFTWARE_PRODUCTS;
 import static com.wso2.openbanking.cds.common.metadata.periodical.updater.constants.MetadataConstants.SOFTWARE_ID;
-import static com.wso2.openbanking.cds.common.metadata.periodical.updater.constants.MetadataConstants.SOFTWARE_PRODUCTS;
-import static com.wso2.openbanking.cds.common.metadata.periodical.updater.constants.MetadataConstants.SOFTWARE_PRODUCT_ID;
-import static com.wso2.openbanking.cds.common.metadata.periodical.updater.constants.MetadataConstants.SOFTWARE_PRODUCT_STATUS;
+import static com.wso2.openbanking.cds.common.metadata.periodical.updater.constants.MetadataConstants.STATUS;
+import static com.wso2.openbanking.cds.common.metadata.periodical.updater.constants.MetadataConstants.STATUS_JSON_LEGAL_ENTITY_KEY;
+import static com.wso2.openbanking.cds.common.metadata.periodical.updater.constants.MetadataConstants.STATUS_JSON_SP_KEY;
 
 /**
  * Scheduled Task to get data every n minutes and perform data holder responsibilities depending
@@ -78,7 +76,7 @@ import static com.wso2.openbanking.cds.common.metadata.periodical.updater.consta
  * For each of the OAuth Client IDs of the service provider,
  * Add a new entry of Client ID - status in softwareProductStatus Map.
  * Add a new entry of Client ID - status in dataRecipientStatus Map.
- * If the softwareProductId / dataRecipientId has status that needs to cleanup registration,
+ * If the softwareProductId / dataRecipientId has status that needs to clean up registration,
  * For each of the OAuth Client IDs of the service provider,
  * Delete the application registered with the ClientID.
  * If the softwareProductId / dataRecipientId has status that needs to expire consents,
@@ -172,14 +170,14 @@ public class PeriodicalMetaDataUpdateJob implements Job, MetaDataUpdate {
     public Map<String, String> getDataRecipientStatusesFromRegister(@NotNull JSONObject responseJson)
             throws OpenBankingException {
 
-        JSONArray softwareProductsArray = responseJson.getJSONArray(DATA_RECIPIENTS);
-        Map<String, String> softwareProductsMap = new HashMap<>();
-        for (int jsonElementIndex = 0; jsonElementIndex < softwareProductsArray.length(); jsonElementIndex++) {
-            JSONObject softwareProduct = softwareProductsArray.getJSONObject(jsonElementIndex);
-            softwareProductsMap.put(softwareProduct.getString(DATA_RECIPIENT_ID),
-                    softwareProduct.getString(DATA_RECIPIENT_STATUS));
+        JSONArray dataRecipientsArray = responseJson.getJSONArray(DATA);
+        Map<String, String> dataRecipientsMap = new HashMap<>();
+        for (int jsonElementIndex = 0; jsonElementIndex < dataRecipientsArray.length(); jsonElementIndex++) {
+            JSONObject softwareProduct = dataRecipientsArray.getJSONObject(jsonElementIndex);
+            dataRecipientsMap.put(softwareProduct.getString(STATUS_JSON_LEGAL_ENTITY_KEY),
+                    softwareProduct.getString(STATUS));
         }
-        return softwareProductsMap;
+        return dataRecipientsMap;
     }
 
     /**
@@ -191,12 +189,12 @@ public class PeriodicalMetaDataUpdateJob implements Job, MetaDataUpdate {
     public Map<String, String> getSoftwareProductStatusesFromRegister(@NotNull JSONObject responseJson)
             throws OpenBankingException {
 
-        JSONArray softwareProductsArray = responseJson.getJSONArray(SOFTWARE_PRODUCTS);
+        JSONArray softwareProductsArray = responseJson.getJSONArray(DATA);
         Map<String, String> softwareProductsMap = new HashMap<>();
         for (int jsonElementIndex = 0; jsonElementIndex < softwareProductsArray.length(); jsonElementIndex++) {
             JSONObject softwareProduct = softwareProductsArray.getJSONObject(jsonElementIndex);
-            softwareProductsMap.put(softwareProduct.getString(SOFTWARE_PRODUCT_ID),
-                    softwareProduct.getString(SOFTWARE_PRODUCT_STATUS));
+            softwareProductsMap.put(softwareProduct.getString(STATUS_JSON_SP_KEY),
+                    softwareProduct.getString(STATUS));
         }
         return softwareProductsMap;
     }

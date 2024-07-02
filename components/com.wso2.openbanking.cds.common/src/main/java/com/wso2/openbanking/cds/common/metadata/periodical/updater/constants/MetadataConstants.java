@@ -17,28 +17,21 @@ package com.wso2.openbanking.cds.common.metadata.periodical.updater.constants;
  */
 public class MetadataConstants {
 
-    public static final String DR_JSON_ROOT                 = "data";
-    public static final String DR_JSON_STATUS               = "status";
-    public static final String DR_JSON_SP_KEY               = "softwareProductId";
-    public static final String DR_JSON_BRANDS               = "dataRecipientBrands";
-    public static final String DR_JSON_SOFTWARE_PRODUCTS    = "softwareProducts";
-    public static final String DR_JSON_LEGAL_ENTITY_ID      = "legalEntityId";
-    public static final String DATA_RECIPIENTS              = "dataRecipients";
-    public static final String DATA_RECIPIENT_ID            = "dataRecipientId";
-    public static final String DATA_RECIPIENT_STATUS        = "dataRecipientStatus";
-    public static final String SOFTWARE_PRODUCTS            = "softwareProducts";
-    public static final String SOFTWARE_PRODUCT_ID          = "softwareProductId";
-    public static final String SOFTWARE_PRODUCT_STATUS      = "softwareProductStatus";
+    public static final String DATA = "data";
+    public static final String STATUS = "status";
+    public static final String STATUS_JSON_SP_KEY = "softwareProductId";
+    public static final String STATUS_JSON_LEGAL_ENTITY_KEY = "legalEntityId";
 
-    public static final String MAP_DATA_RECIPIENTS          = "MAP_DATA_RECIPIENTS";
-    public static final String MAP_SOFTWARE_PRODUCTS        = "MAP_SOFTWARE_PRODUCTS";
+    public static final String MAP_DATA_RECIPIENTS = "MAP_DATA_RECIPIENTS";
+    public static final String MAP_SOFTWARE_PRODUCTS = "MAP_SOFTWARE_PRODUCTS";
 
-    public static final String AUTH_BASIC                   = "Basic ";
-    public static final String LEGAL_ENTITY_ID              = "legal_entity_id";
-    public static final String SOFTWARE_ID                  = "software_id";
-    public static final String LIST                         = "list";
-    public static final String APPLICATION_ID               = "applicationId";
-    public static final String APPLICATION_NAME             = "name";
+    public static final String AUTH_BASIC = "Basic ";
+    public static final String LEGAL_ENTITY_ID = "legal_entity_id";
+    public static final String SOFTWARE_ID = "software_id";
+    public static final String LIST = "list";
+    public static final String APPLICATION_ID = "applicationId";
+    public static final String APPLICATION_NAME = "name";
 
-    private MetadataConstants() {}
+    private MetadataConstants() {
+    }
 }
