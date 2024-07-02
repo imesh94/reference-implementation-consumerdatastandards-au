@@ -87,7 +87,7 @@ public class MetricsV5QueryCreatorImpl implements MetricsQueryCreator {
         return "from CDSMetricsPerfPriorityAgg within '" + fromTimestamp + "', '" + toTimestamp + "' per '" +
                 timeGranularity + "' select priorityTier, AGG_TIMESTAMP, " +
                 "withinThresholdCount/totalReqCount as performance group by priorityTier, AGG_TIMESTAMP " +
-                "order by AGG_TIMESTAMP asc;";
+                "having priorityTier != 'Uncategorized' order by AGG_TIMESTAMP asc;";
     }
 
     /**
@@ -140,7 +140,8 @@ public class MetricsV5QueryCreatorImpl implements MetricsQueryCreator {
 
         return "from CDSMetricsStatusAspectAgg within '" + fromTimestamp + "', '" + toTimestamp + "' per '" +
                 timeGranularity + "' select AGG_TIMESTAMP, statusCode, aspect, totalReqCount " +
-                "having statusCode >= 400 and statusCode < 600 order by AGG_TIMESTAMP desc;";
+                "having aspect != 'uncategorized' and statusCode >= 400 and statusCode < 600 " +
+                "order by AGG_TIMESTAMP desc;";
     }
 
     /**
