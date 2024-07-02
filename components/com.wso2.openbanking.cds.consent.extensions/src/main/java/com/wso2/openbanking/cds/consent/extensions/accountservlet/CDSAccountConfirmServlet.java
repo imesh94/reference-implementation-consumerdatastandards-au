@@ -42,12 +42,12 @@ public class CDSAccountConfirmServlet extends HttpServlet {
         if (requestUriKey != null) {
             Map<String, Object> abandonedConsentFlowData = CDSCommonUtils.generateAbandonedConsentFlowDataMap(
                     requestUriKey.toString(), null, AuthorisationStageEnum.ACCOUNT_SELECTED);
-            log.debug("Publishing abandoned consent flow data in the account selected stage.");
+            log.debug("Publishing abandoned consent flow data in the account selection confirmed stage.");
             CDSDataPublishingService.getCDSDataPublishingService().publishAbandonedConsentFlowData(
                     abandonedConsentFlowData);
         } else {
             log.warn("Request URI key not found in session attributes. Continuing without publishing abandoned " +
-                    "consent flow data in the account selection stage.");
+                    "consent flow data in the account selection confirmed stage.");
         }
 
         RequestDispatcher dispatcher = this.getServletContext()
