@@ -334,8 +334,9 @@ public class MetricsV5ProcessorImpl implements MetricsProcessor {
 
             long individualActiveAuthorisationsCount = activeAuthorisationsMap.values()
                     .stream()
-                    .filter(activeAuthorisationMetricDataModel -> MetricsConstants.INDIVIDUAL
-                            .equalsIgnoreCase(activeAuthorisationMetricDataModel.getCustomerProfile()))
+                    .filter(activeAuthorisationMetricDataModel ->
+                            activeAuthorisationMetricDataModel.getCustomerProfile()
+                                    .contains(MetricsConstants.INDIVIDUAL))
                     .count();
 
             long nonIndividualActiveAuthorisationsCount =
