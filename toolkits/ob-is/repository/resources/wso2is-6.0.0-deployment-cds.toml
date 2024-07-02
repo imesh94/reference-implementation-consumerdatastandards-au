@@ -742,6 +742,10 @@ url_pattern = "/token"
 
 [[tomcat.filter_mapping]]
 name = "InfoSecDataPublishingFilter"
+url_pattern = "/authorize"
+
+[[tomcat.filter_mapping]]
+name = "InfoSecDataPublishingFilter"
 url_pattern = "/token/.well-known/openid-configuration"
 
 [[tomcat.filter_mapping]]

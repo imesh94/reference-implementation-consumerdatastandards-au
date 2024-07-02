@@ -28,6 +28,7 @@ import com.wso2.openbanking.cds.metrics.model.ErrorMetricDataModel;
 import com.wso2.openbanking.cds.metrics.model.ErrorMetricDay;
 import com.wso2.openbanking.cds.metrics.model.PerformanceMetric;
 import com.wso2.openbanking.cds.metrics.model.ServerOutageDataModel;
+import net.minidev.asm.DefaultConverter;
 import net.minidev.json.JSONArray;
 import net.minidev.json.JSONObject;
 import org.apache.commons.logging.Log;
@@ -513,7 +514,7 @@ public class MetricsProcessorUtil {
             PerformanceMetric performanceRecord = new PerformanceMetric();
             performanceRecord.setPriorityTier(recordArray.get(0).toString());
             performanceRecord.setTimestamp((long) recordArray.get(1));
-            performanceRecord.setPerformanceValue((Double) recordArray.get(2));
+            performanceRecord.setPerformanceValue(DefaultConverter.convertToDouble(recordArray.get(2)));
             performanceRecords.add(performanceRecord);
         }
         return performanceRecords;

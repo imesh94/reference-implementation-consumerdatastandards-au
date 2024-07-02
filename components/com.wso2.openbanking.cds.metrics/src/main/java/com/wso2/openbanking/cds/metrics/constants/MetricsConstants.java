@@ -42,7 +42,7 @@ public class MetricsConstants {
 
     //date-time constants
     public static final String SP_TIMESTAMP_PATTERN = "yyyy-MM-dd HH:mm:ss XXX";
-    public static final String REQUEST_TIMESTAMP_PATTERN = "yyyy-MM-dd'T'HH:mm:ssXXX";
+    public static final String REQUEST_TIMESTAMP_PATTERN = "yyyy-MM-dd'T'HH:mm:ss.SSSXXX";
     public static final BigDecimal SECONDS_IN_DAY = BigDecimal.valueOf(86400); // 60 * 60 * 24
 
     //rejection metrics constants
