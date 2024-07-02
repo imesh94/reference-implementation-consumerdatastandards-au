@@ -151,9 +151,11 @@ public class OBCDSAuthServletImplTests extends PowerMockTestCase {
 
     @Test
     public void testUpdateSessionAttribute() {
+        JSONObject testJsonObject = new JSONObject();
+        testJsonObject.put(CommonConstants.REQUEST_URI_KEY, "test-key");
         Map<String, Object> returnMap = obCdsAuthServlet.updateSessionAttribute(
-                httpServletRequest, new JSONObject(), resourceBundle);
-        Assert.assertTrue(returnMap.isEmpty());
+                httpServletRequest, testJsonObject, resourceBundle);
+        Assert.assertTrue(returnMap.containsKey(CommonConstants.REQUEST_URI_KEY));
     }
 
     @Test

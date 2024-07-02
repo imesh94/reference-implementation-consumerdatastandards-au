@@ -76,8 +76,8 @@
 
 <div class="row data-container">
     <div class="clearfix"></div>
-    <form action="${pageContext.request.contextPath}/oauth2_authz_consent.do" method="post" id="oauth2_authz_consent"
-          name="oauth2_authz_consent"
+    <form action="${pageContext.request.contextPath}/account_selection_confirm.do" method="post" id="oauth2_authz_consent"
+          name="account_selection_confirm"
           class="form-horizontal">
         <div class="login-form">
             <div class="form-group ui form">
