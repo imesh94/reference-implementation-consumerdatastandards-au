@@ -14,6 +14,7 @@ import com.wso2.openbanking.accelerator.consent.extensions.authservlet.model.OBA
 import com.wso2.openbanking.accelerator.consent.extensions.common.ConsentException;
 import com.wso2.openbanking.accelerator.consent.extensions.common.ResponseStatus;
 import com.wso2.openbanking.cds.common.config.OpenBankingCDSConfigParser;
+import com.wso2.openbanking.cds.common.utils.CommonConstants;
 import com.wso2.openbanking.cds.consent.extensions.common.CDSConsentExtensionConstants;
 import com.wso2.openbanking.cds.consent.extensions.util.CDSConsentExtensionsUtil;
 import org.apache.commons.lang3.StringUtils;
@@ -135,7 +136,12 @@ public class OBCDSAuthServletImpl implements OBAuthServletInterface {
     @Override
     public Map<String, Object> updateSessionAttribute(HttpServletRequest httpServletRequest, JSONObject jsonObject,
                                                       ResourceBundle resourceBundle) {
-        return new HashMap<>();
+
+        // Setting request uri key as a session attribute to publish in the CDSAccountConfirmServlet.
+        String requestUriKey = jsonObject.getString(CommonConstants.REQUEST_URI_KEY);
+        Map<String, Object> sessionAttributes = new HashMap<>();
+        sessionAttributes.put(CommonConstants.REQUEST_URI_KEY, requestUriKey);
+        return sessionAttributes;
     }
 
     @Override
