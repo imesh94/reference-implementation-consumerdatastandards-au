@@ -31,6 +31,7 @@ import com.wso2.openbanking.cds.metrics.model.ServerOutageDataModel;
 import net.minidev.asm.DefaultConverter;
 import net.minidev.json.JSONArray;
 import net.minidev.json.JSONObject;
+import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
@@ -1193,12 +1194,12 @@ public class MetricsProcessorUtil {
             JSONArray countArray = (JSONArray) object;
             long currentElement = Long.parseLong(countArray.get(0).toString());
             long recordTimestamp = Long.parseLong(countArray.get(1).toString());
-            String validity = countArray.get(2).toString();
+            String username = (String) countArray.get(2);
             int daysAgo = DateTimeUtil.getDayDifference(recordTimestamp, metricsCountLastDateEpoch);
 
             // Number of days ago can be used as the index to insert data to the list
             Integer currentCount = (int) currentElement;
-            if (!MetricsConstants.CDS_REJECTION_METRICS_APP_VALIDITY.equals(validity)) {
+            if (StringUtils.isNotBlank(username)) {
                 authenticated.set(daysAgo, authenticated.get(daysAgo) + currentCount);
             } else {
                 unauthenticated.set(daysAgo, unauthenticated.get(daysAgo) + currentCount);

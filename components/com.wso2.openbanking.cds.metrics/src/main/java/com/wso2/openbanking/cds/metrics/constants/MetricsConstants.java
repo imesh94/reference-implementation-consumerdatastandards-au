@@ -45,11 +45,6 @@ public class MetricsConstants {
     public static final String REQUEST_TIMESTAMP_PATTERN = "yyyy-MM-dd'T'HH:mm:ss.SSSXXX";
     public static final BigDecimal SECONDS_IN_DAY = BigDecimal.valueOf(86400); // 60 * 60 * 24
 
-    //rejection metrics constants
-    public static final String CDS_REJECTION_METRICS_APP_AUTHENTICATED = "authenticated";
-    public static final String CDS_REJECTION_METRICS_APP_UNAUTHENTICATED = "unauthenticated";
-    public static final String CDS_REJECTION_METRICS_APP_VALIDITY = "anonymous";
-
     //peak TPS metrics constants
     public static final String EVENT = "event";
     public static final String ASPECT = "aspect";

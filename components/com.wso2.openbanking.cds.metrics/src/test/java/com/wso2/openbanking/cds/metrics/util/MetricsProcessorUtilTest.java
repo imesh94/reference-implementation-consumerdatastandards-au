@@ -230,7 +230,7 @@ public class MetricsProcessorUtilTest extends PowerMockTestCase {
     public void testGetListFromRejectionsJson() {
         JSONArray records = new JSONArray();
         records.add(new JSONArray().appendElement(13).appendElement(1715273999L).appendElement("authenticated"));
-        records.add(new JSONArray().appendElement(12).appendElement(1715187599L).appendElement("anonymous"));
+        records.add(new JSONArray().appendElement(12).appendElement(1715187599L).appendElement(null));
 
         when(metricsJsonObject.get("records")).thenReturn(records);
 
