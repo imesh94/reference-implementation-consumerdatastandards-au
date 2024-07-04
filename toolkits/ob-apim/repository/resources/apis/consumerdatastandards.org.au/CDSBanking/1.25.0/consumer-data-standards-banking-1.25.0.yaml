@@ -3519,6 +3519,8 @@ paths:
         schema:
           default: 25
           type: integer
+          minimum: 1
+          maximum: 1000
           x-cds-type: PositiveInteger
         style: form
         x-cds-type: PositiveInteger
