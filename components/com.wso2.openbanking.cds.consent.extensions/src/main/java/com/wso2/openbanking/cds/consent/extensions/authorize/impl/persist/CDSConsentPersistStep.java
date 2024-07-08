@@ -16,6 +16,7 @@ import com.wso2.openbanking.accelerator.consent.extensions.authorize.model.Conse
 import com.wso2.openbanking.accelerator.consent.extensions.authorize.model.ConsentPersistStep;
 import com.wso2.openbanking.accelerator.consent.extensions.common.ConsentException;
 import com.wso2.openbanking.accelerator.consent.extensions.common.ResponseStatus;
+import com.wso2.openbanking.accelerator.consent.mgt.dao.constants.ConsentMgtDAOConstants;
 import com.wso2.openbanking.accelerator.consent.mgt.dao.models.AuthorizationResource;
 import com.wso2.openbanking.accelerator.consent.mgt.dao.models.ConsentMappingResource;
 import com.wso2.openbanking.accelerator.consent.mgt.dao.models.ConsentResource;
@@ -296,6 +297,14 @@ public class CDSConsentPersistStep implements ConsentPersistStep {
                 consentPersistData.getBrowserCookies().get(CDSConsentExtensionConstants.COMMON_AUTH_ID));
         consentAttributes.put(CDSConsentExtensionConstants.SHARING_DURATION_VALUE, consentData.getMetaDataMap()
                 .get(CDSConsentExtensionConstants.SHARING_DURATION_VALUE).toString());
+
+        // The ExpirationDateTime attribute needs to be there in order for the periodical consent expiry job to
+        // execute as expected
+        String expirationDateTimeAttribute = getExpirationDateTimeAttribute(consentData);
+        if (StringUtils.isNotBlank(expirationDateTimeAttribute)) {
+            consentAttributes.put(ConsentMgtDAOConstants.CONSENT_EXPIRY_TIME_ATTRIBUTE, expirationDateTimeAttribute);
+        }
+
         final Object jointAccountsPayload = consentPersistData.getMetadata()
                 .get(CDSConsentExtensionConstants.JOINT_ACCOUNTS_PAYLOAD);
         if (jointAccountsPayload != null && StringUtils.isNotBlank(jointAccountsPayload.toString())) {
@@ -318,6 +327,24 @@ public class CDSConsentPersistStep implements ConsentPersistStep {
         }
 
         return consentAttributes;
+    }
+
+    /**
+     * Retrieves the expiration date and time from the given ConsentData object as a string representing epoch seconds.
+     *
+     * @param consentData consent data
+     * @return expiry time in epoch seconds
+     */
+    private String getExpirationDateTimeAttribute(ConsentData consentData) {
+
+        Object expirationDateTimeObject = consentData.getMetaDataMap()
+                .get(CDSConsentExtensionConstants.EXPIRATION_DATE_TIME);
+        if (expirationDateTimeObject instanceof OffsetDateTime) {
+            OffsetDateTime expirationDateTime = (OffsetDateTime) expirationDateTimeObject;
+            return Long.toString(expirationDateTime.toEpochSecond());
+        }
+
+        return null;
     }
 
     /**
