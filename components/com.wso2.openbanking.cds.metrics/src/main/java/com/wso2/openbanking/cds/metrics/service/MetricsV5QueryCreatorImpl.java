@@ -28,13 +28,15 @@ public class MetricsV5QueryCreatorImpl implements MetricsQueryCreator {
     private final long toTimestampEpochMilliSecond;
     private final long availabilityFromTimestamp;
     private final long availabilityToTimestamp;
-    private final String timeGranularity;
+    private final String dailyTimeGranularity;
+    private final String hourlyTimeGranularity;
 
     public MetricsV5QueryCreatorImpl(PeriodEnum period) {
 
         String[] timeRangeArray = DateTimeUtil.getTimeRange(period);
         String[] availabilityTimeRangeArray = DateTimeUtil.getAvailabilityMetricsTimeRange(period);
-        this.timeGranularity = TimeGranularityEnum.DAYS.toString();
+        this.dailyTimeGranularity = TimeGranularityEnum.DAYS.toString();
+        this.hourlyTimeGranularity = TimeGranularityEnum.HOURS.toString();
         this.fromTimestamp = timeRangeArray[0];
         this.toTimestamp = timeRangeArray[1];
         this.fromTimestampEpochSecond = DateTimeUtil.getEpochTimestamp(fromTimestamp);
@@ -62,7 +64,7 @@ public class MetricsV5QueryCreatorImpl implements MetricsQueryCreator {
     @Override
     public String getInvocationMetricsQuery() {
 
-        return "from CDSMetricsAgg within '" + fromTimestamp + "', '" + toTimestamp + "' per '" + timeGranularity +
+        return "from CDSMetricsAgg within '" + fromTimestamp + "', '" + toTimestamp + "' per '" + dailyTimeGranularity +
                 "' select priorityTier, totalReqCount, AGG_TIMESTAMP group by priorityTier, AGG_TIMESTAMP " +
                 "having priorityTier != 'Uncategorized' order by AGG_TIMESTAMP desc;";
     }
@@ -74,7 +76,7 @@ public class MetricsV5QueryCreatorImpl implements MetricsQueryCreator {
     public String getInvocationByAspectMetricsQuery() {
 
         return "from CDSMetricsAspectAgg within '" + fromTimestamp + "', '" + toTimestamp + "' per '" +
-                timeGranularity + "' select aspect, totalReqCount, AGG_TIMESTAMP group by aspect, AGG_TIMESTAMP " +
+                dailyTimeGranularity + "' select aspect, totalReqCount, AGG_TIMESTAMP group by aspect, AGG_TIMESTAMP " +
                 "having aspect != 'uncategorized' order by AGG_TIMESTAMP desc;";
     }
 
@@ -85,7 +87,7 @@ public class MetricsV5QueryCreatorImpl implements MetricsQueryCreator {
     public String getHourlyPerformanceByPriorityMetricsQuery() {
 
         return "from CDSMetricsPerfPriorityAgg within '" + fromTimestamp + "', '" + toTimestamp + "' per '" +
-                timeGranularity + "' select priorityTier, AGG_TIMESTAMP, " +
+                hourlyTimeGranularity + "' select priorityTier, AGG_TIMESTAMP, " +
                 "withinThresholdCount/totalReqCount as performance group by priorityTier, AGG_TIMESTAMP " +
                 "having priorityTier != 'Uncategorized' order by AGG_TIMESTAMP asc;";
     }
@@ -97,7 +99,7 @@ public class MetricsV5QueryCreatorImpl implements MetricsQueryCreator {
     public String getSessionCountMetricsQuery() {
 
         return "from CDSMetricsSessionAgg within '" + fromTimestamp + "', '" + toTimestamp + "' per '" +
-                timeGranularity + "' select sessionCount, AGG_TIMESTAMP;";
+                dailyTimeGranularity + "' select sessionCount, AGG_TIMESTAMP;";
     }
 
     /**
@@ -128,7 +130,7 @@ public class MetricsV5QueryCreatorImpl implements MetricsQueryCreator {
     public String getErrorMetricsQuery() {
 
         return "from CDSMetricsStatusAgg within '" + fromTimestamp + "', '" + toTimestamp + "' per '" +
-                timeGranularity + "' select totalReqCount, AGG_TIMESTAMP having statusCode >= 500 and " +
+                dailyTimeGranularity + "' select totalReqCount, AGG_TIMESTAMP having statusCode >= 500 and " +
                 "statusCode < 600;";
     }
 
@@ -139,7 +141,7 @@ public class MetricsV5QueryCreatorImpl implements MetricsQueryCreator {
     public String getErrorByAspectMetricsQuery() {
 
         return "from CDSMetricsStatusAspectAgg within '" + fromTimestamp + "', '" + toTimestamp + "' per '" +
-                timeGranularity + "' select AGG_TIMESTAMP, statusCode, aspect, totalReqCount " +
+                dailyTimeGranularity + "' select AGG_TIMESTAMP, statusCode, aspect, totalReqCount " +
                 "having aspect != 'uncategorized' and statusCode >= 400 and statusCode < 600 " +
                 "order by AGG_TIMESTAMP desc;";
     }
@@ -176,7 +178,7 @@ public class MetricsV5QueryCreatorImpl implements MetricsQueryCreator {
     public String getAuthorisationMetricsQuery() {
 
         return "from CDSAuthorisationMetricsAgg within '" + fromTimestamp + "', '" + toTimestamp + "' per '" +
-                timeGranularity + "' select * order by AGG_TIMESTAMP desc;";
+                dailyTimeGranularity + "' select * order by AGG_TIMESTAMP desc;";
     }
 
     /**
@@ -216,8 +218,8 @@ public class MetricsV5QueryCreatorImpl implements MetricsQueryCreator {
     @Override
     public String getSuccessfulInvocationsQuery() {
 
-        return "from CDSMetricsPerfAgg within '" + fromTimestamp + "', '" + toTimestamp + "' per '" + timeGranularity +
-                "' select totalReqCount, AGG_TIMESTAMP having withinThreshold == true;";
+        return "from CDSMetricsPerfAgg within '" + fromTimestamp + "', '" + toTimestamp + "' per '" +
+                dailyTimeGranularity + "' select totalReqCount, AGG_TIMESTAMP having withinThreshold == true;";
     }
 
     /**
@@ -226,7 +228,7 @@ public class MetricsV5QueryCreatorImpl implements MetricsQueryCreator {
     @Override
     public String getTotalResponseTimeQuery() {
 
-        return "from CDSMetricsAgg within '" + fromTimestamp + "', '" + toTimestamp + "' per '" + timeGranularity +
+        return "from CDSMetricsAgg within '" + fromTimestamp + "', '" + toTimestamp + "' per '" + dailyTimeGranularity +
                 "' select priorityTier, (totalRespTime / 1000.0) as totalRespTime, AGG_TIMESTAMP " +
                 "group by priorityTier, AGG_TIMESTAMP having priorityTier != 'Uncategorized' " +
                 "order by AGG_TIMESTAMP desc;";
