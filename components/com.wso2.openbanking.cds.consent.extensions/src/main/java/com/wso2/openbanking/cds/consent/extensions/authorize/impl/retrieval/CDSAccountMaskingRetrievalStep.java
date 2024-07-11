@@ -15,6 +15,10 @@ import com.wso2.openbanking.cds.common.config.OpenBankingCDSConfigParser;
 import com.wso2.openbanking.cds.consent.extensions.common.CDSConsentExtensionConstants;
 import net.minidev.json.JSONArray;
 import net.minidev.json.JSONObject;
+
+/**
+ * CDS account ID masking step.
+ */
 public class CDSAccountMaskingRetrievalStep implements ConsentRetrievalStep {
 
     @Override
