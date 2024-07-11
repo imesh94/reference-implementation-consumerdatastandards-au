@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2021-2023, WSO2 LLC. (https://www.wso2.com). All Rights Reserved.
+ * Copyright (c) 2021-2024, WSO2 LLC. (https://www.wso2.com). All Rights Reserved.
  *
  * This software is the property of WSO2 LLC. and its suppliers, if any.
  * Dissemination of any information or reproduction of any material contained
@@ -32,6 +32,7 @@ public class CDSConsentExtensionConstants {
     public static final String ACCOUNT_DATA = "accountData";
     public static final String ACCOUNTS_DATA = "accounts_data";
     public static final String ACCOUNT_ID = "accountId";
+    public static final String ACCOUNT_ID_DISPLAYABLE = "accountIdToDisplay";
     public static final String DISPLAY_NAME = "displayName";
     public static final String PRE_ACCOUNTS_DATA = "pre_accounts_data";
     public static final String REDIRECT_URL = "redirectURL";

@@ -1,5 +1,5 @@
 <!--
-~ Copyright (c) 2021-2023, WSO2 LLC. (https://www.wso2.com). All Rights Reserved.
+~ Copyright (c) 2021-2024, WSO2 LLC. (https://www.wso2.com). All Rights Reserved.
 ~
 ~ This software is the property of WSO2 LLC. and its suppliers, if any.
 ~ Dissemination of any information or reproduction of any material contained
@@ -24,6 +24,8 @@
     String isConsentAmendment = getRequestAttribute(request, "isConsentAmendment");
     String isSharingDurationUpdated = getRequestAttribute(request, "isSharingDurationUpdated");
     String accounts = getRequestAttribute(request, "accountsArry[]");
+    String accountDisplayNames = null;
+    String[] accountDisplayNameList = null;
     String accounNames = getRequestAttribute(request, "accNames");
     String appName = getRequestAttribute(request, "app");
     String spFullName = getRequestAttribute(request, "spFullName");
@@ -32,10 +34,8 @@
     String selectedProfileId = getRequestAttribute(request, "selectedProfileId");
     String selectedProfileName = getRequestAttribute(request, "selectedProfileName");
     String[] accountList = accounNames.split(":");
-    String[] accountIdList = accounts.split(":");
     String consentExpiryDateTime = getRequestAttribute(request, "consent-expiry-date");
     String consentExpiryDate = consentExpiryDateTime.split("T")[0];
-    String accountMaskingEnabled = getRequestAttribute(request, "accountMaskingEnabled");
     DateTimeFormatter dtf = DateTimeFormatter.ofPattern("yyyy-MM-dd");
     LocalDateTime now = LocalDateTime.now();
     String currentDate = dtf.format(now);
@@ -69,7 +69,12 @@
     if (getRequestAttribute(request, "sharing_duration_value") != null) {
         sharingDurationValue = Integer.parseInt(getRequestAttribute(request, "sharing_duration_value"));
     }
+    if (!skipAccounts) {
+        accountDisplayNames = getRequestAttribute(request, "accDisplayNames");
+        accountDisplayNameList = accountDisplayNames.split(":");
+    }
 %>
+
 <div class="col-xs-12 col-sm-12 col-md-12 col-lg-12">
     <div class="clearfix"></div>
     <form action="${pageContext.request.contextPath}/oauth2_authz_confirm.do" method="post" id="oauth2_authz_confirm"
@@ -92,8 +97,8 @@
                                     %>
                                         <li>
                                             <strong><% out.println(accountList[i]); %></strong><br>
-                                            <span class ="accountIdClass" id="<% out.println(accountIdList[i]);%>">
-                                                <small><% out.println(accountIdList[i]);%></small>
+                                            <span class ="accountIdClass" id="<% out.println(accountDisplayNameList[i]);%>">
+                                                <small><% out.println(accountDisplayNameList[i]);%></small>
                                             </span>
                                         </li><br>
                                     <%
@@ -253,24 +258,6 @@
 
 <script>
     $(document).ready(function(){
-        var accountMaskinEnabled="<%=accountMaskingEnabled%>";
-
-        function maskAccountId(accountId) {
-            var start = accountId.substring(0,4);
-            var end = accountId.slice(accountId.length - 4);
-            var mask = "*".repeat(accountId.length - 8);
-            var maskedAccId = start + mask + end;
-            return maskedAccId;
-        }
-
-        if (accountMaskinEnabled == "true") {
-            var accountElements = document.getElementsByClassName("accountIdClass");
-            for (var i = 0; i < accountElements.length; i++) {
-                var elementId = accountElements.item(i).id;
-                document.getElementById(elementId).textContent=maskAccountId(elementId);
-            }
-        }
-
         var consentExpiryDate = "<%=consentExpiryDateTime%>";
         var sharingDurationValue = "<%=sharingDurationValue%>";
         var output = "";
