@@ -272,7 +272,7 @@
     }
 
     $(document).ready(function(){
-        updateAcc();
+        updateCDSAcc();
         const popoverTemplate = ['<div class="popover" role="tooltip">',
             '<div class="arrow"></div>',
             '<h6 class="popover-title"></h6>',

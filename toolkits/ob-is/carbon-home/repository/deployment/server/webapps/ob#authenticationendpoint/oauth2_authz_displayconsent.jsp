@@ -24,7 +24,6 @@
     String isConsentAmendment = getRequestAttribute(request, "isConsentAmendment");
     String isSharingDurationUpdated = getRequestAttribute(request, "isSharingDurationUpdated");
     String accounts = getRequestAttribute(request, "accountsArry[]");
-    String accountDisplayNames = null;
     String[] accountDisplayNameList = null;
     String accounNames = getRequestAttribute(request, "accNames");
     String appName = getRequestAttribute(request, "app");
@@ -70,8 +69,7 @@
         sharingDurationValue = Integer.parseInt(getRequestAttribute(request, "sharing_duration_value"));
     }
     if (!skipAccounts) {
-        accountDisplayNames = getRequestAttribute(request, "accDisplayNames");
-        accountDisplayNameList = accountDisplayNames.split(":");
+        accountDisplayNameList = getRequestAttribute(request, "accDisplayNames").split(":");
     }
 %>
 

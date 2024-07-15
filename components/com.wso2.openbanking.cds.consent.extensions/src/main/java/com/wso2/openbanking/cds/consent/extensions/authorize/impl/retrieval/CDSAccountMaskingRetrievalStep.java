@@ -45,6 +45,9 @@ public class CDSAccountMaskingRetrievalStep implements ConsentRetrievalStep {
     /**
      * Account number masking is performed in this method.
      *
+     * Eg: Original account ID: 30080012343456
+     *     Masked account ID: 3008*******456
+     *
      * @param accountId plain account id.
      * @return account number in the displayable masked format.
      */
