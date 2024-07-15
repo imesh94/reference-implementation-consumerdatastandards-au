@@ -343,6 +343,8 @@ public class OBCDSAuthServletImpl implements OBAuthServletInterface {
             Map<String, Object> data = new HashMap<>();
             JSONObject account = accountsArray.getJSONObject(accountIndex);
             String accountId = account.getString(CDSConsentExtensionConstants.ACCOUNT_ID);
+            String accountIdToDisplay = account.has(CDSConsentExtensionConstants.ACCOUNT_ID_DISPLAYABLE)
+                    ? account.getString(CDSConsentExtensionConstants.ACCOUNT_ID_DISPLAYABLE) : accountId;
             String displayName = account.getString(CDSConsentExtensionConstants.DISPLAY_NAME);
             String isPreSelectedAccount = "false";
             updateIndividualPersonalAccountAttributes(account, data);
@@ -354,6 +356,7 @@ public class OBCDSAuthServletImpl implements OBAuthServletInterface {
                 isPreSelectedAccount = account.getString(CDSConsentExtensionConstants.IS_PRE_SELECTED_ACCOUNT);
             }
             data.put(CDSConsentExtensionConstants.ACCOUNT_ID, accountId);
+            data.put(CDSConsentExtensionConstants.ACCOUNT_ID_DISPLAYABLE, accountIdToDisplay);
             data.put(CDSConsentExtensionConstants.DISPLAY_NAME, displayName);
             data.put(CDSConsentExtensionConstants.IS_PRE_SELECTED_ACCOUNT, isPreSelectedAccount);
             accountsData.add(data);
