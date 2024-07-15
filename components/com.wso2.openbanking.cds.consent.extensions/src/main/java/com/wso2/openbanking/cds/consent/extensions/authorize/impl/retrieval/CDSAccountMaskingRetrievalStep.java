@@ -15,6 +15,7 @@ import com.wso2.openbanking.cds.common.config.OpenBankingCDSConfigParser;
 import com.wso2.openbanking.cds.consent.extensions.common.CDSConsentExtensionConstants;
 import net.minidev.json.JSONArray;
 import net.minidev.json.JSONObject;
+import org.apache.commons.lang3.StringUtils;
 
 /**
  * CDS account ID masking step.
@@ -43,21 +44,36 @@ public class CDSAccountMaskingRetrievalStep implements ConsentRetrievalStep {
     }
 
     /**
-     * Account number masking is performed in this method.
+     * Account number masking is performed in this method. Logic is executed when the account ID length is 2 or higher.
+     * The logic is handled like this because the specification doesn't mention the exact length of an account ID.
      *
-     * Eg: Original account ID: 12345678901234
-     *     Masked account ID: 1234*******234
+     * If the account ID length is less than 4, mask all but the last character.
+     * If the account ID length is exactly 4, mask all but the last two characters.
+     * If the length is greater than 4, mask all but the last 4 characters.
      *
      * @param accountId plain account id.
      * @return account number in the displayable masked format.
      */
     protected String getDisplayableAccountNumber(String accountId) {
 
-        String accountNumberDisplay;
-        String patternRegex = ".(?=.{3})";
-        String lastDigits = accountId.substring(4);
-        lastDigits = lastDigits.replaceAll(patternRegex, "*");
-        accountNumberDisplay = accountId.substring(0, 4) + lastDigits;
-        return accountNumberDisplay;
+        int accountIdLength = accountId.length();
+
+        if (accountIdLength > 1) {
+            if (accountIdLength < 4) {
+                // If the length is less than 4, mask all but the last character
+                String maskedPart = StringUtils.repeat('*', accountIdLength - 1);
+                String visiblePart = StringUtils.right(accountId, 1);
+                return maskedPart + visiblePart;
+            } else if (accountIdLength == 4) {
+                // If the length is exactly 4, mask all but the last two characters
+                return "**" + StringUtils.right(accountId, 2);
+            } else {
+                // If the length is greater than 4, mask all but the last 4 characters
+                String maskedPart = StringUtils.repeat('*', accountIdLength - 4);
+                String visiblePart = StringUtils.right(accountId, 4);
+                return maskedPart + visiblePart;
+            }
+        }
+        return accountId;
     }
 }

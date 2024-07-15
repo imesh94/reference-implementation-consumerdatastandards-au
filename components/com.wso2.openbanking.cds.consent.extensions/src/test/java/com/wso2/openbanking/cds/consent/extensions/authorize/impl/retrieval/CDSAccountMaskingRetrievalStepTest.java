@@ -66,9 +66,30 @@ public class CDSAccountMaskingRetrievalStepTest extends PowerMockTestCase {
     @Test
     public void testGetDisplayableAccountNumber() {
 
+        // 2 character account number (highly unlikely)
+        String displayableAccountNumber1 = cdsAccountMaskingRetrievalStep
+                .getDisplayableAccountNumber("12");
+        Assert.assertEquals(displayableAccountNumber1, "*2");
+
+        // 3 character account number (highly unlikely)
+        String displayableAccountNumber2 = cdsAccountMaskingRetrievalStep
+                .getDisplayableAccountNumber("123");
+        Assert.assertEquals(displayableAccountNumber2, "**3");
+
+        // 4 character account number (highly unlikely)
+        String displayableAccountNumber3 = cdsAccountMaskingRetrievalStep
+                .getDisplayableAccountNumber("1234");
+        Assert.assertEquals(displayableAccountNumber3, "**34");
+
+        // 5 character account number
+        String displayableAccountNumber4 = cdsAccountMaskingRetrievalStep
+                .getDisplayableAccountNumber("12345");
+        Assert.assertEquals(displayableAccountNumber4, "*2345");
+
+        // An account ID with 14 characters
         String displayableAccountNumber = cdsAccountMaskingRetrievalStep
-                .getDisplayableAccountNumber("30080012343456");
-        Assert.assertEquals(displayableAccountNumber, "3008*******456");
+                .getDisplayableAccountNumber("12345678901234");
+        Assert.assertEquals(displayableAccountNumber, "**********1234");
     }
 
     @Test
@@ -87,7 +108,7 @@ public class CDSAccountMaskingRetrievalStepTest extends PowerMockTestCase {
         JSONArray returnedAccountsJsonArray = (JSONArray) accountJson.get(CDSConsentExtensionConstants.ACCOUNTS);
         JSONObject returnedAccountJson = (JSONObject) returnedAccountsJsonArray.get(0);
         Assert.assertNotNull(returnedAccountJson.get(CDSConsentExtensionConstants.ACCOUNT_ID_DISPLAYABLE));
-        Assert.assertEquals("3008*******456", returnedAccountJson
+        Assert.assertEquals("**********3456", returnedAccountJson
                 .get(CDSConsentExtensionConstants.ACCOUNT_ID_DISPLAYABLE));
     }
 
