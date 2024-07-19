@@ -142,7 +142,7 @@ public class MetricsV5ProcessorImpl implements MetricsProcessor {
                 PriorityEnum.values());
         List<Integer> successInvocationList = getSuccessfulInvocations();
         List<BigDecimal> performanceMetricsList = MetricsProcessorUtil.divideLists(successInvocationList,
-                totalInvocationList);
+                totalInvocationList, new BigDecimal("1.000"));
         log.debug("Finished performance metrics calculation successfully.");
         return performanceMetricsList;
     }
@@ -181,7 +181,8 @@ public class MetricsV5ProcessorImpl implements MetricsProcessor {
         for (PriorityEnum priority : PriorityEnum.values()) {
             List<BigDecimal> responseTimeList = totalResponseTimeMetricsMap.get(priority);
             List<Integer> invocationCountList = invocationMetricsMap.get(priority);
-            List<BigDecimal> tempAverageList = MetricsProcessorUtil.divideLists(responseTimeList, invocationCountList);
+            List<BigDecimal> tempAverageList = MetricsProcessorUtil
+                    .divideLists(responseTimeList, invocationCountList, new BigDecimal("0"));
             averageResponseMetricsMap.put(priority, tempAverageList);
         }
         log.debug("Finished average response metrics calculation successfully.");

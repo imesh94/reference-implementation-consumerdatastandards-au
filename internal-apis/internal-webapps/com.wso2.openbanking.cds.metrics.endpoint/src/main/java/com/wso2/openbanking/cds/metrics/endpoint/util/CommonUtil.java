@@ -22,7 +22,6 @@ import java.time.ZonedDateTime;
 import java.time.format.DateTimeFormatter;
 import java.time.format.DateTimeParseException;
 import java.time.temporal.ChronoUnit;
-import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -46,17 +45,13 @@ public class CommonUtil {
     }
 
     /**
-     * Trims the provided list of BigDecimal values to keep only the relevant months based on the
-     * availability start date and the current date. If the calculated months from the availability
-     * start date to the current date is less than 12, this method will return a list containing
-     * only the first 'monthsFromStart' items. If the number of months is 12, it returns
-     * the original list.
+     * Add missing months of full availability data from the start date to the current date or the first outage
      *
-     * @param list the list of BigDecimal values representing months
-     * @return the updated list of BigDecimal values with excess months removed,
-     * or the original list if no trimming is needed
+     * @param list availability data list
+     * @return availability data list with additional values for missing months
      */
-    public static List<BigDecimal> removeAdditionalMonths(List<BigDecimal> list) {
+    public static List<BigDecimal> addMissingMonths(List<BigDecimal> list) {
+
         try {
             OpenBankingCDSConfigParser configParser = OpenBankingCDSConfigParser.getInstance();
             ZoneId timeZone = ZoneId.of(configParser.getMetricsTimeZone());
@@ -65,38 +60,27 @@ public class CommonUtil {
             if (availabilityStartDateString == null || availabilityStartDateString.isEmpty()) {
                 return list;
             }
-
-            // Parse the availability start date
             DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd");
-            ZonedDateTime availabilityStartDate = LocalDate.parse(availabilityStartDateString, formatter)
-                    .atStartOfDay(timeZone);
-
-            // Get the current date and time
+            ZonedDateTime availabilityStartDate = LocalDate.parse(availabilityStartDateString, formatter).atStartOfDay()
+                    .atZone(timeZone);
             ZonedDateTime currentDateTime = LocalDateTime.now().atZone(timeZone);
-
-            // Calculate the number of months from the availability start date to the current date
-            int monthsFromStart = (int) ChronoUnit.MONTHS.between(
-                    availabilityStartDate.withDayOfMonth(1),
-                    currentDateTime.withDayOfMonth(1).withHour(0).withMinute(0).withSecond(0)
-            );
-
-            if (monthsFromStart < 12) {
-
-                // If the number of months from the start is less than 12,
-                // return a new ArrayList containing only the first 'monthsFromStart' items from the original list.
-                // This trims the list to keep only the relevant months.
-                return new ArrayList<>(list.subList(0, monthsFromStart));
-            } else {
-
-                // If the number of months from the start is 12 or more (cannot be more since we are initializing the
-                // months list to only have 12 values for historic data)
-                // return the original list as it already has the required months.
-                return list;
+            if (list.size() < 12) {
+                int monthsCount = list.size();
+                int monthsFromStart = (int) ChronoUnit.MONTHS.between(availabilityStartDate.withDayOfMonth(1),
+                        currentDateTime.withDayOfMonth(1).withHour(0).withMinute(0).withSecond(0));
+                if (monthsFromStart > 12) {
+                    monthsFromStart = 12;
+                }
+                if (monthsCount < monthsFromStart) {
+                    int missingMonths = monthsFromStart - monthsCount;
+                    for (int i = 0; i < missingMonths; i++) {
+                        list.add(BigDecimal.ONE);
+                    }
+                }
             }
         } catch (DateTimeParseException e) {
             log.error("Error while adding missing months. Proceeding with available data", e);
         }
-
         return list;
     }
 

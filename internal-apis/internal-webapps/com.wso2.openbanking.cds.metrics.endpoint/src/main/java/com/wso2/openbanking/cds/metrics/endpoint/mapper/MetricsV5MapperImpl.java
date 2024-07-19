@@ -149,11 +149,11 @@ public class MetricsV5MapperImpl implements MetricsMapper {
         }
         if (PeriodEnum.ALL == period || PeriodEnum.HISTORIC == period) {
             aggregate.setPreviousMonths(CommonUtil.convertToStringListWithScale(CommonUtil
-                    .removeAdditionalMonths(allAvailability)));
+                    .addMissingMonths(allAvailability)));
             authenticated.setPreviousMonths(CommonUtil.convertToStringListWithScale(CommonUtil
-                    .removeAdditionalMonths(authenticatedAvailability)));
+                    .addMissingMonths(authenticatedAvailability)));
             unauthenticated.setPreviousMonths(CommonUtil.convertToStringListWithScale(CommonUtil
-                    .removeAdditionalMonths(unauthenticatedAvailability)));
+                    .addMissingMonths(unauthenticatedAvailability)));
         }
 
         availabilityMetricsDTO.setAuthenticated(authenticated);

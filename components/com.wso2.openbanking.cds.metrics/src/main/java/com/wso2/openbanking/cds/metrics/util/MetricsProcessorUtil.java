@@ -75,12 +75,14 @@ public class MetricsProcessorUtil {
      *
      * @param list1 - dividend list
      * @param list2 - divisor list
+     * @param defaultValue - default big decimal value
      * @param <T1> - type of the first list elements
      * @param <T2> - type of the second list elements
      * @return resulting list of BigDecimal
      * @throws OpenBankingException if lists have different sizes or division by zero occurs
      */
-    public static <T1, T2> List<BigDecimal> divideLists(List<T1> list1, List<T2> list2) throws OpenBankingException {
+    public static <T1, T2> List<BigDecimal> divideLists(List<T1> list1, List<T2> list2, BigDecimal defaultValue)
+            throws OpenBankingException {
 
         int listSize = list1.size();
         List<BigDecimal> resultList = new ArrayList<>();
@@ -96,7 +98,7 @@ public class MetricsProcessorUtil {
                 BigDecimal currentResult = dividend.divide(divisor, 3, RoundingMode.HALF_UP);
                 resultList.add(currentResult);
             } else {
-                resultList.add(BigDecimal.valueOf(0));
+                resultList.add(defaultValue);
             }
         }
         return resultList;
@@ -1218,6 +1220,8 @@ public class MetricsProcessorUtil {
             List<ServerOutageDataModel> serverOutageDataList, int noOfMonths, ZonedDateTime endOfMonth) {
 
         Map<AspectEnum, List<BigDecimal>> availabilityMap = new HashMap<>();
+
+        noOfMonths = calculateNumberOfMonths(serverOutageDataList, noOfMonths);
         List<BigDecimal> availabilityAggregatedList = initializeList(noOfMonths, BigDecimal.ONE);
         List<BigDecimal> availabilityAuthenticatedList = initializeList(noOfMonths, BigDecimal.ONE);
         List<BigDecimal> availabilityUnauthenticatedList = initializeList(noOfMonths, BigDecimal.ONE);
@@ -1253,6 +1257,38 @@ public class MetricsProcessorUtil {
         availabilityMap.put(AspectEnum.UNAUTHENTICATED, availabilityUnauthenticatedList);
 
         return availabilityMap;
+    }
+
+    /**
+     * Calculate the number of months based on the server outage data list
+     *
+     * @param serverOutageDataList server outage list
+     * @param noOfMonths number of months
+     * @return computed number of months based on period
+     */
+    private static int calculateNumberOfMonths(List<ServerOutageDataModel> serverOutageDataList, int noOfMonths) {
+
+        // The only values for noOfMonths that can come to this method are
+        // 1 for CURRENT, 12 for HISTORIC and 13 for ALL.
+        if (noOfMonths == 1) {
+            return 1;
+        }
+
+        if (serverOutageDataList.isEmpty()) {
+            return noOfMonths == 12 ? 0 : 1;
+        }
+
+        long earliestOutageTimestamp = serverOutageDataList.stream()
+                .mapToLong(ServerOutageDataModel::getTimeFrom)
+                .min()
+                .getAsLong();
+
+        LocalDate earliestOutageToDate = Instant.ofEpochSecond(earliestOutageTimestamp).atZone(timeZone).toLocalDate();
+        LocalDate currentDate = LocalDate.now(timeZone);
+        int numOfMonthsFromEarliestOutage = (int) ChronoUnit.MONTHS.between(
+                earliestOutageToDate.withDayOfMonth(1), currentDate.withDayOfMonth(1));
+
+        return Math.min(numOfMonthsFromEarliestOutage, noOfMonths);
     }
 
     /**
