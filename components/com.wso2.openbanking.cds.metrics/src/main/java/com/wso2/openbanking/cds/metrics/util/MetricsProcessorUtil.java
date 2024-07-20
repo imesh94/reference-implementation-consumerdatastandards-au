@@ -933,10 +933,10 @@ public class MetricsProcessorUtil {
                                     .getConsentDurationType())) {
                         if (authorisationMetricDataModel.getCustomerProfile().contains(MetricsConstants.INDIVIDUAL)) {
                             authorisationMetricDay.getNewAuthorisationMetric().getOngoing()
-                                    .setIndividual(authorisationMetricDataModel.getCount());
+                                    .updateIndividual(authorisationMetricDataModel.getCount());
                         } else {
                             authorisationMetricDay.getNewAuthorisationMetric().getOngoing()
-                                    .setNonIndividual(authorisationMetricDataModel.getCount());
+                                    .updateNonIndividual(authorisationMetricDataModel.getCount());
                         }
                     }
 
@@ -947,10 +947,10 @@ public class MetricsProcessorUtil {
                                     .getConsentDurationType())) {
                         if (authorisationMetricDataModel.getCustomerProfile().contains(MetricsConstants.INDIVIDUAL)) {
                             authorisationMetricDay.getNewAuthorisationMetric().getOnceOff()
-                                    .setIndividual(authorisationMetricDataModel.getCount());
+                                    .updateIndividual(authorisationMetricDataModel.getCount());
                         } else {
                             authorisationMetricDay.getNewAuthorisationMetric().getOnceOff()
-                                    .setNonIndividual(authorisationMetricDataModel.getCount());
+                                    .updateNonIndividual(authorisationMetricDataModel.getCount());
                         }
                     }
 
@@ -960,10 +960,10 @@ public class MetricsProcessorUtil {
                                     .getConsentDurationType())) {
                         if (authorisationMetricDataModel.getCustomerProfile().contains(MetricsConstants.INDIVIDUAL)) {
                             authorisationMetricDay.getRevokedAuthorisationMetric().getOngoing()
-                                    .setIndividual(authorisationMetricDataModel.getCount());
+                                    .updateIndividual(authorisationMetricDataModel.getCount());
                         } else {
                             authorisationMetricDay.getRevokedAuthorisationMetric().getOngoing()
-                                    .setNonIndividual(authorisationMetricDataModel.getCount());
+                                    .updateNonIndividual(authorisationMetricDataModel.getCount());
                         }
                     }
 
@@ -975,10 +975,10 @@ public class MetricsProcessorUtil {
                                     .getConsentDurationType())) {
                         if (authorisationMetricDataModel.getCustomerProfile().contains(MetricsConstants.INDIVIDUAL)) {
                             authorisationMetricDay.getAmendedAuthorisationMetric().getOngoing()
-                                    .setIndividual(authorisationMetricDataModel.getCount());
+                                    .updateIndividual(authorisationMetricDataModel.getCount());
                         } else {
                             authorisationMetricDay.getAmendedAuthorisationMetric().getOngoing()
-                                    .setNonIndividual(authorisationMetricDataModel.getCount());
+                                    .updateNonIndividual(authorisationMetricDataModel.getCount());
                         }
                     }
 
@@ -988,10 +988,10 @@ public class MetricsProcessorUtil {
                                     .getConsentDurationType())) {
                         if (authorisationMetricDataModel.getCustomerProfile().contains(MetricsConstants.INDIVIDUAL)) {
                             authorisationMetricDay.getExpiredAuthorisationMetric().getOngoing()
-                                    .setIndividual(authorisationMetricDataModel.getCount());
+                                    .updateIndividual(authorisationMetricDataModel.getCount());
                         } else {
                             authorisationMetricDay.getExpiredAuthorisationMetric().getOngoing()
-                                    .setNonIndividual(authorisationMetricDataModel.getCount());
+                                    .updateNonIndividual(authorisationMetricDataModel.getCount());
                         }
                     }
 
