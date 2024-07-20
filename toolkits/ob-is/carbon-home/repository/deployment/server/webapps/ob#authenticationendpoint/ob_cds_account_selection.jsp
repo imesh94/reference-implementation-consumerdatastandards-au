@@ -1,5 +1,5 @@
 <!--
-~ Copyright (c) 2021-2023, WSO2 LLC. (https://www.wso2.com). All Rights Reserved.
+~ Copyright (c) 2021-2024, WSO2 LLC. (https://www.wso2.com). All Rights Reserved.
 ~
 ~ This software is the property of WSO2 LLC. and its suppliers, if any.
 ~ Dissemination of any information or reproduction of any material contained
@@ -68,7 +68,6 @@
         Object consentExpiryDateTime = request.getAttribute("consent_expiration") != null ?
                 request.getAttribute("consent_expiration") : session.getAttribute("consent_expiration");
         request.setAttribute("consent-expiry-date", consentExpiryDateTime);
-        request.setAttribute("accountMaskingEnabled", session.getAttribute("account_masking_enabled"));
         request.setAttribute("sharing_duration_value", session.getAttribute("sharing_duration_value"));
         requestDispatcher.forward(request, response);
     }
@@ -76,8 +75,8 @@
 
 <div class="row data-container">
     <div class="clearfix"></div>
-    <form action="${pageContext.request.contextPath}/oauth2_authz_consent.do" method="post" id="oauth2_authz_consent"
-          name="oauth2_authz_consent"
+    <form action="${pageContext.request.contextPath}/account_selection_confirm.do" method="post" id="oauth2_authz_consent"
+          name="account_selection_confirm"
           class="form-horizontal">
         <div class="login-form">
             <div class="form-group ui form">
@@ -112,8 +111,8 @@
                                     <c:choose>
                                         <c:when test="${record['is_selectable']}">
                                             <label for="${record['displayName']}">
-                                                <input type="checkbox" id="${record['displayName']}" name="chkAccounts"
-                                                       value="${record['accountId']}" onclick="updateAcc()"
+                                                <input type="checkbox" id="${record['displayName']}" name="chkAccounts" data-displayName="${record['accountIdToDisplay']}"
+                                                value="${record['accountId']}" onclick="updateCDSAcc()"
                                                     ${record['isPreSelectedAccount'] ? 'checked' : ''}
                                                 />
                                                     ${record['displayName']}
@@ -127,8 +126,8 @@
                                                 </c:if>
                                             </span>
 
-                                            <div class="accountIdClass" id="${record['accountId']}">
-                                                <small>${record['accountId']}</small>
+                                            <div class="accountIdClass" id="${record['accountIdToDisplay']}">
+                                                <small>${record['accountIdToDisplay']}</small>
                                             </div><br/>
                                         </c:when>
                                     </c:choose>
@@ -156,8 +155,8 @@
                                     <label for="${record['displayName']}">
                                             ${record['displayName']}
                                     </label>
-                                    <div class="accountIdClass" id="${record['accountId']}">
-                                        <small>${record['accountId']}</small>
+                                    <div class="accountIdClass" id="${record['accountIdToDisplay']}">
+                                        <small>${record['accountIdToDisplay']}</small>
                                     </div><br/>
                                 </c:if>
                             </c:forEach>
@@ -179,9 +178,9 @@
                     <input type="hidden" name="spFullName" id="app" value="${sp_full_name}"/>
                     <input type="hidden" name="accountsArry[]" id="account" value=""/>
                     <input type="hidden" name="accNames" id="accountName" value=""/>
+                    <input type="hidden" name="accDisplayNames" id="accountDisplayName" value=""/>
                     <input type="hidden" name="type" id="type" value="accounts"/>
                     <input type="hidden" name="consent-expiry-date" id="consentExp" value="${consent_expiration}"/>
-                    <input type="hidden" name="accountMaskingEnabled" id="accountMaskingEnabled" value="${account_masking_enabled}"/>
                     <input type="hidden" name="isConsentAmendment" id="isConsentAmendment" value="${isConsentAmendment}"/>
                     <input type="hidden" name="isSharingDurationUpdated" id="isSharingDurationUpdated" value="${isSharingDurationUpdated}"/>
                     <input type="hidden" name="selectedProfileId" id="selectedProfileId" value="<%=selectedProfileId%>"/>
@@ -273,25 +272,7 @@
     }
 
     $(document).ready(function(){
-        updateAcc();
-        var accountMaskingEnabled="${account_masking_enabled}";
-
-        function maskAccountId(accountId) {
-            var start = accountId.substring(0,4);
-            var end = accountId.slice(accountId.length - 3); 
-            var mask = "*".repeat(accountId.length - 7); // 4+3
-            var maskedAccId = start + mask + end; 
-            return maskedAccId;
-        }
-
-        if (accountMaskingEnabled == "true") {
-            var accountElements = document.getElementsByClassName("accountIdClass");
-            for (var i = 0; i < accountElements.length; i++) {
-                var elementId = accountElements.item(i).id;
-                document.getElementById(elementId).textContent=maskAccountId(elementId);
-            }
-        }
-
+        updateCDSAcc();
         const popoverTemplate = ['<div class="popover" role="tooltip">',
             '<div class="arrow"></div>',
             '<h6 class="popover-title"></h6>',
@@ -326,8 +307,19 @@
                 items[i].checked = true;
             }
         }
-        updateAcc();
+        updateCDSAcc();
     }
+
+    function updateCDSAcc() {
+        updateAcc();
+        var accDisplayNames = "";
+        $("input:checkbox[name=chkAccounts]:checked").each(function(){
+            accDisplayNames = accDisplayNames.concat(":", $(this).attr("data-displayName"));
+        });
+        accDisplayNames = accDisplayNames.replace(/^\:/, '');
+        document.getElementById('accountDisplayName').value = accDisplayNames;
+    }
+
 </script>
 
 <jsp:include page="includes/consent_bottom.jsp"/>

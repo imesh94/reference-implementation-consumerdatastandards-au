@@ -1,5 +1,5 @@
 <!--
-~ Copyright (c) 2021-2023, WSO2 LLC. (https://www.wso2.com). All Rights Reserved.
+~ Copyright (c) 2021-2024, WSO2 LLC. (https://www.wso2.com). All Rights Reserved.
 ~
 ~ This software is the property of WSO2 LLC. and its suppliers, if any.
 ~ Dissemination of any information or reproduction of any material contained
@@ -492,6 +492,9 @@
     <%!
         private boolean isIdentifierFirstLogin(String inputType) {
             return "idf".equalsIgnoreCase(inputType);
+        }
+        private boolean isLoginHintAvailable(String inputType) {
+            return "login_hint".equalsIgnoreCase(inputType);
         }
     %>
 </body>

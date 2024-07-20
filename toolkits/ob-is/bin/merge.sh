@@ -1,7 +1,7 @@
 #!/bin/bash
 # ------------------------------------------------------------------------
 #
-# Copyright (c) 2021-2023, WSO2 LLC. (https://www.wso2.com). All Rights Reserved.
+# Copyright (c) 2021-2024, WSO2 LLC. (https://www.wso2.com). All Rights Reserved.
 #
 # This software is the property of WSO2 LLC. and its suppliers, if any.
 # Dissemination of any information or reproduction of any material contained
@@ -48,3 +48,26 @@ echo -e "\nCopying open banking artifacts\n"
 echo -e "================================================\n"
 cp -r ${TOOLKIT_HOME}/carbon-home/* "${WSO2_OB_IS_HOME}"/
 echo -e "\nComplete!\n"
+
+echo -e "\nWARNING: This will replace the current consentmgr dist with the updated one.\n"
+echo -e "\nExtracting consentmgr_cds.zip\n"
+echo -e "================================================\n"
+unzip -q "${WSO2_OB_IS_HOME}/repository/deployment/server/webapps/consentmgr/consentmgr_cds.zip" -d "${WSO2_OB_IS_HOME}/repository/deployment/server/webapps/consentmgr"
+rm -f "${WSO2_OB_IS_HOME}/repository/deployment/server/webapps/consentmgr/consentmgr_cds.zip"
+echo -e "\nComplete! \n"
+
+echo -e "\nRemoving current consentmgr dist directory\n"
+echo -e "================================================\n"
+rm -rf  "${WSO2_OB_IS_HOME}/repository/deployment/server/webapps/consentmgr/dist"
+echo -e "\nComplete! \n"
+
+echo -e "\nCopying files from consentmgr_cds to consentmgr\n"
+echo -e "================================================\n"
+cp -r "${WSO2_OB_IS_HOME}/repository/deployment/server/webapps/consentmgr/consentmgr_cds/dist/." "${WSO2_OB_IS_HOME}/repository/deployment/server/webapps/consentmgr/dist"
+cp -r "${WSO2_OB_IS_HOME}/repository/deployment/server/webapps/consentmgr/consentmgr_cds/self-care-portal-frontend/." "${WSO2_OB_IS_HOME}/repository/deployment/server/webapps/consentmgr/self-care-portal-frontend"
+echo -e "\nComplete! \n"
+
+echo -e "\nRemoving consentmgr_cds directory\n"
+echo -e "================================================\n"
+rm -rf  "${WSO2_OB_IS_HOME}/repository/deployment/server/webapps/consentmgr/consentmgr_cds"
+echo -e "\nComplete! \n"

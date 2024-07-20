@@ -111,4 +111,15 @@
         <url-pattern>/retry.do</url-pattern>
     </servlet-mapping>
 
+    <!-- 7 -->
+    <servlet>
+        <servlet-name>CDSAccountConfirmServlet</servlet-name>
+        <servlet-class>com.wso2.openbanking.cds.consent.extensions.accountservlet.CDSAccountConfirmServlet</servlet-class>
+    </servlet>
+
+    <servlet-mapping>
+        <servlet-name>CDSAccountConfirmServlet</servlet-name>
+        <url-pattern>/account_selection_confirm.do</url-pattern>
+    </servlet-mapping>
+
 </web-app>

@@ -782,8 +782,12 @@ class = "com.wso2.openbanking.cds.consent.extensions.authorize.impl.retrieval.CD
 priority = 4
 
 [[open_banking.consent.authorize_steps.retrieve]]
-class = "com.wso2.openbanking.cds.consent.extensions.authorize.impl.retrieval.CDSProfileListRetrievalStep"
+class = "com.wso2.openbanking.cds.consent.extensions.authorize.impl.retrieval.CDSAccountMaskingRetrievalStep"
 priority = 5
+
+[[open_banking.consent.authorize_steps.retrieve]]
+class = "com.wso2.openbanking.cds.consent.extensions.authorize.impl.retrieval.CDSProfileListRetrievalStep"
+priority = 6
 
 [[open_banking.consent.authorize_steps.persist]]
 class = "com.wso2.openbanking.cds.consent.extensions.authorize.impl.persist.CDSBusinessAccountConsentPersistenceStep"

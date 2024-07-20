@@ -1,15 +1,10 @@
-<?xml version="1.0" encoding="UTF-8"?>
 <!--
+  ~ Copyright (c) 2021-2024, WSO2 LLC. (https://www.wso2.com). All Rights Reserved.
   ~
-  ~ Copyright (c) 2021, WSO2 Inc. (http://www.wso2.com). All Rights Reserved.
-  ~
-  ~  This software is the property of WSO2 Inc. and its suppliers, if any.
-  ~  Dissemination of any information or reproduction of any material contained
-  ~  herein is strictly forbidden, unless permitted by WSO2 in accordance with
-  ~  the WSO2 Software License available at https://wso2.com/licenses/eula/3.1. For specific
-  ~  language governing the permissions and limitations under this license,
-  ~  please see the license as well as any agreement you’ve entered into with
-  ~  WSO2 governing the purchase of this software and any associated services.
+  ~ This software is the property of WSO2 LLC. and its suppliers, if any.
+  ~ Dissemination of any information or reproduction of any material contained
+  ~ herein in any form is strictly forbidden, unless permitted by WSO2 expressly.
+  ~ You may not alter or remove any copyright or other notice from copies of this content.
   ~
   -->
 <project xmlns="http://maven.apache.org/POM/4.0.0"
@@ -65,32 +60,27 @@
                         <configuration>
                             <target>
                                 <!-- Copying jars to lib -->
-                                <copy todir="${project.basedir}/carbon-home/repository/components/dropins" overwrite="true">
-                                    <fileset
-                                            dir="../../components/com.wso2.openbanking.cds.identity/target">
-                                        <filename
-                                                regex="com.wso2.openbanking.cds.identity-(\d.*?)\.jar$"/>
+                                <copy overwrite="true" todir="${project.basedir}/carbon-home/repository/components/dropins">
+                                    <fileset dir="../../components/com.wso2.openbanking.cds.identity/target">
+                                        <filename regex="com.wso2.openbanking.cds.identity-(\d.*?)\.jar$"/>
                                     </fileset>
                                 </copy>
-                                <copy todir="${project.basedir}/carbon-home/repository/components/lib" overwrite="true">
-                                    <fileset
-                                            dir="../../components/com.wso2.openbanking.cds.common/target">
-                                        <filename
-                                                regex="com.wso2.openbanking.cds.common-(\d.*?)\.jar$"/>
+                                <copy overwrite="true" todir="${project.basedir}/carbon-home/repository/components/lib">
+                                    <fileset dir="../../components/com.wso2.openbanking.cds.common/target">
+                                        <filename regex="com.wso2.openbanking.cds.common-(\d.*?)\.jar$"/>
                                     </fileset>
                                 </copy>
-                                <copy todir="${project.basedir}/carbon-home/repository/components/lib" overwrite="true">
-                                    <fileset
-                                            dir="../../components/com.wso2.openbanking.cds.consent.extensions/target">
-                                        <filename
-                                                regex="com.wso2.openbanking.cds.consent.extensions-(\d.*?)\.jar$"/>
+                                <copy overwrite="true" todir="${project.basedir}/carbon-home/repository/components/lib">
+                                    <fileset dir="../../components/com.wso2.openbanking.cds.consent.extensions/target">
+                                        <filename regex="com.wso2.openbanking.cds.consent.extensions-(\d.*?)\.jar$"/>
                                     </fileset>
                                 </copy>
                                 <unzip dest="${project.basedir}/carbon-home/repository/deployment/server/webapps/api#openbanking#account-type-mgt/" src="../../internal-apis/internal-webapps/com.wso2.openbanking.cds.account.type.management.endpoint/target/api#openbanking#account-type-mgt.war"/>
+                                <copy overwrite="true" todir="${project.basedir}/carbon-home/repository/deployment/server/webapps/consentmgr">
+                                    <fileset file="../../react-apps/target/consentmgr_cds.zip"/>
+                                </copy>
                                 <unzip dest="${project.basedir}/carbon-home/repository/deployment/server/webapps/api#openbanking#cds-arrangement-revocation/" src="../../internal-apis/internal-webapps/com.wso2.openbanking.cds.arrangement.revocation.endpoint/target/api#openbanking#cds-arrangement-revocation.war"/>
                                 <unzip dest="${project.basedir}/carbon-home/repository/deployment/server/webapps/api#openbanking#metadata-mgt/" src="../../internal-apis/internal-webapps/com.wso2.openbanking.cds.metadata.mgt.endpoint/target/api#openbanking#metadata-mgt.war"/>
-                                <unzip dest="${project.basedir}/carbon-home/repository/deployment/server/webapps/consentmgr/"
-                                       src="../../react-apps/self-care-portal/target/consentmgr.war"/>
                             </target>
                         </configuration>
                         <goals>

@@ -32,6 +32,7 @@ public class CDSConsentExtensionConstants {
     public static final String ACCOUNT_DATA = "accountData";
     public static final String ACCOUNTS_DATA = "accounts_data";
     public static final String ACCOUNT_ID = "accountId";
+    public static final String ACCOUNT_ID_DISPLAYABLE = "accountIdToDisplay";
     public static final String DISPLAY_NAME = "displayName";
     public static final String PRE_ACCOUNTS_DATA = "pre_accounts_data";
     public static final String REDIRECT_URL = "redirectURL";
