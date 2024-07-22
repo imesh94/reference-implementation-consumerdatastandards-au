@@ -127,7 +127,7 @@ public class CDSMetricsServiceImpl implements CDSMetricsService {
                     (String) cachedResponseMetricsJson, MetricsResponseModel.class);
             return MetricsServiceUtil.isResponseModelExpired(metricsResponseModel) ? null : metricsResponseModel;
         }
-        log.error("Historic metrics model not found in cache.");
+        log.debug("Historic metrics model not found in cache.");
         return null;
     }
 
