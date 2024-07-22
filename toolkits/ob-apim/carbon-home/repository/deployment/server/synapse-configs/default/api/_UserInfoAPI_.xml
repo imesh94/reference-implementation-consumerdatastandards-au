@@ -8,7 +8,7 @@
  ~
 -->
 
-<api xmlns="http://ws.apache.org/ns/synapse" name="_WSO2_AM_UserInfo_API_" context="/oauth2/userinfo">
+<api xmlns="http://ws.apache.org/ns/synapse" name="_WSO2_AM_UserInfo_API_" context="/userinfo">
     <resource methods="GET POST" url-mapping="/*" faultSequence="_token_fault_">
         <inSequence>
             <property name="uri.var.portnum" expression="get-property('keyManager.port')"/>

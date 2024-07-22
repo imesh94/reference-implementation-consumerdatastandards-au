@@ -65,7 +65,7 @@ public class InfoSecDataPublishingHandlerTest extends PowerMockTestCase {
                 synapseEnvironmentMock);
 
         messageContext.setProperty(GatewayConstants.HTTP_RESPONSE_STATUS_CODE, 500);
-        messageContext.setProperty(GatewayConstants.REST_API_CONTEXT, "/oauth2/token");
+        messageContext.setProperty(GatewayConstants.REST_API_CONTEXT, "/token");
         messageContext.setProperty(GatewayConstants.REST_METHOD, "POST");
         org.apache.axis2.context.MessageContext axis2MessageContext = new org.apache.axis2.context.MessageContext();
         axis2MessageContext.setProperty(org.apache.axis2.context.MessageContext.TRANSPORT_HEADERS, configs);

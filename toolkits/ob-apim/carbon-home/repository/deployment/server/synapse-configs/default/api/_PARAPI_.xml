@@ -8,7 +8,7 @@
  ~
 -->
 
-<api xmlns="http://ws.apache.org/ns/synapse" name="_WSO2_AM_PAR_API_" context="/oauth2/par">
+<api xmlns="http://ws.apache.org/ns/synapse" name="_WSO2_AM_PAR_API_" context="/par">
     <resource methods="POST" url-mapping="/*" faultSequence="_token_fault_">
         <inSequence>
             <property name="uri.var.portnum" expression="get-property('keyManager.port')"/>
@@ -30,6 +30,5 @@
     </resource>
     <handlers>
         <handler class="org.wso2.carbon.apimgt.gateway.handlers.common.SynapsePropertiesHandler"/>
-        <handler class="com.wso2.openbanking.cds.gateway.handlers.InfoSecDataPublishingHandler"/>
     </handlers>
 </api>

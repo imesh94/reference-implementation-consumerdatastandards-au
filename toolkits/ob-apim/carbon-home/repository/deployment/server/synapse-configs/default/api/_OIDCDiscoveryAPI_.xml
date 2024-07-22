@@ -8,7 +8,7 @@
  ~
 -->
 
-<api xmlns="http://ws.apache.org/ns/synapse" name="_WSO2_AM_OIDC_Discovery_API_" context="/oauth2/token/.well-known/openid-configuration">
+<api xmlns="http://ws.apache.org/ns/synapse" name="_WSO2_AM_OIDC_Discovery_API_" context="/.well-known/openid-configuration">
     <resource methods="GET" url-mapping="/*" faultSequence="_token_fault_">
         <inSequence>
             <property name="uri.var.portnum" expression="get-property('keyManager.port')"/>
