@@ -60,7 +60,7 @@ public class MetricsProcessorUtilTest extends PowerMockTestCase {
         List<BigDecimal> list1 = Arrays.asList(BigDecimal.valueOf(10), BigDecimal.valueOf(20));
         List<BigDecimal> list2 = Arrays.asList(BigDecimal.valueOf(2), BigDecimal.valueOf(5));
         List<BigDecimal> expected = Arrays.asList(new BigDecimal("5.000"), new BigDecimal("4.000"));
-        List<BigDecimal> result = MetricsProcessorUtil.divideLists(list1, list2);
+        List<BigDecimal> result = MetricsProcessorUtil.divideLists(list1, list2, new BigDecimal("0"));
         Assert.assertEquals(result, expected);
     }
 
@@ -68,7 +68,7 @@ public class MetricsProcessorUtilTest extends PowerMockTestCase {
     public void testDivideListsUnequalSizes() throws OpenBankingException {
         List<BigDecimal> list1 = Arrays.asList(BigDecimal.valueOf(10), BigDecimal.valueOf(20));
         List<BigDecimal> list2 = Arrays.asList(BigDecimal.valueOf(2));
-        MetricsProcessorUtil.divideLists(list1, list2);
+        MetricsProcessorUtil.divideLists(list1, list2, new BigDecimal("0"));
     }
 
     @Test
@@ -76,7 +76,7 @@ public class MetricsProcessorUtilTest extends PowerMockTestCase {
         List<BigDecimal> list1 = Arrays.asList(BigDecimal.valueOf(10), BigDecimal.valueOf(20));
         List<BigDecimal> list2 = Arrays.asList(BigDecimal.valueOf(2), BigDecimal.ZERO);
         List<BigDecimal> expected = Arrays.asList(new BigDecimal("5.000"), new BigDecimal("0"));
-        List<BigDecimal> result = MetricsProcessorUtil.divideLists(list1, list2);
+        List<BigDecimal> result = MetricsProcessorUtil.divideLists(list1, list2, new BigDecimal("0"));
         Assert.assertEquals(result, expected);
     }
 
@@ -230,7 +230,7 @@ public class MetricsProcessorUtilTest extends PowerMockTestCase {
     public void testGetListFromRejectionsJson() {
         JSONArray records = new JSONArray();
         records.add(new JSONArray().appendElement(13).appendElement(1715273999L).appendElement("authenticated"));
-        records.add(new JSONArray().appendElement(12).appendElement(1715187599L).appendElement("anonymous"));
+        records.add(new JSONArray().appendElement(12).appendElement(1715187599L).appendElement(null));
 
         when(metricsJsonObject.get("records")).thenReturn(records);
 

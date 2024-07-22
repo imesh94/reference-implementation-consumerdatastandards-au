@@ -35,11 +35,19 @@ public class CustomerTypeCount {
         this.individual = individual;
     }
 
+    public void updateIndividual(int individual) {
+        this.individual = this.individual + individual;
+    }
+
     public int getNonIndividual() {
         return nonIndividual;
     }
 
     public void setNonIndividual(int nonIndividual) {
         this.nonIndividual = nonIndividual;
+    }
+
+    public void updateNonIndividual(int nonIndividual) {
+        this.nonIndividual = this.nonIndividual + nonIndividual;
     }
 }

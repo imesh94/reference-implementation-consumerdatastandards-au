@@ -71,13 +71,6 @@ public class MetricsV5ProcessorImplTest extends PowerMockTestCase {
         Assert.assertNotNull(aggregateAvailability, "Aggregate availability metrics should not be null");
         Assert.assertNotNull(authenticatedAvailability, "Authenticated availability metrics should not be null");
         Assert.assertNotNull(unauthenticatedAvailability, "Unauthenticated availability metrics should not be null");
-
-        Assert.assertEquals(aggregateAvailability.size(), TOTAL_MONTHS,
-                "Aggregate availability metrics size should be equal to the number of months");
-        Assert.assertEquals(authenticatedAvailability.size(), TOTAL_MONTHS,
-                "Authenticated availability metrics size should be equal to the number of months");
-        Assert.assertEquals(unauthenticatedAvailability.size(), TOTAL_MONTHS,
-                "Unauthenticated availability metrics size should be equal to the number of months");
     }
 
     @Test

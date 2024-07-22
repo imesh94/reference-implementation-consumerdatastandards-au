@@ -50,7 +50,7 @@ define function getDataCluster[JavaScript] return string {
 	return dataCluster;
 };
 
-from APIInputStream[STATUS_CODE == 200 or STATUS_CODE == 201]
+from APIInputStream[not(CONSENT_ID is null) and (STATUS_CODE == 200 or STATUS_CODE == 201)]
 select CONSENT_ID, getDataCluster(ELECTED_RESOURCE) AS DATA_CLUSTER, TIMESTAMP as SHARING_START_DATE, TIMESTAMP as LAST_SHARED_DATE
 update or insert into CDS_SHARING_START_END_DATE
 set CDS_SHARING_START_END_DATE.LAST_SHARED_DATE = LAST_SHARED_DATE

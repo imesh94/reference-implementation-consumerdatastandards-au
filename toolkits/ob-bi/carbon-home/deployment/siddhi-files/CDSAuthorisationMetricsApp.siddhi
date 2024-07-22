@@ -34,6 +34,9 @@ define stream AuthorisationMetricsInputStream(CONSENT_ID string, CONSENT_STATUS 
 define stream AbandonedConsentFlowMetricsInputStream(REQUEST_URI_KEY string, CONSENT_ID string, STAGE string,
                                                      TIMESTAMP long);
 
+define stream CountableAuthorisationMetricsInputStream(CONSENT_ID string, CONSENT_STATUS string, AUTH_FLOW_TYPE string,
+                                              CUSTOMER_PROFILE string, CONSENT_DURATION_TYPE string, TIMESTAMP long);
+
 @primaryKey('ID')
 @store(type='rdbms', datasource='OB_REPORTING_DB')
 define table AUTHORISATION_METRICS_DATA(ID string, CONSENT_ID string, CONSENT_STATUS string, AUTH_FLOW_TYPE string,
@@ -47,10 +50,15 @@ define table ABANDONED_CONSENT_FLOW_METRICS_DATA(ID string, REQUEST_URI_KEY stri
 @store(type='rdbms', datasource='OB_REPORTING_DB')
 @purge(enable='true', interval='60 min', @retentionPeriod(sec='10 days', min='10 days', hours='90 days', days='1 year', months='2 years'))
 define aggregation CDSAuthorisationMetricsAgg
-from AuthorisationMetricsInputStream
+from CountableAuthorisationMetricsInputStream
 select CONSENT_STATUS, AUTH_FLOW_TYPE, CUSTOMER_PROFILE, CONSENT_DURATION_TYPE, count(CONSENT_ID) as totalCount
 group by CONSENT_STATUS, AUTH_FLOW_TYPE, CUSTOMER_PROFILE, CONSENT_DURATION_TYPE
 aggregate by TIMESTAMP every seconds...month;
+
+-- Filter authorisations that should be counted
+from AuthorisationMetricsInputStream#window.unique:first(CONSENT_ID, CONSENT_STATUS, AUTH_FLOW_TYPE, CUSTOMER_PROFILE, CONSENT_DURATION_TYPE)
+select *
+insert into CountableAuthorisationMetricsInputStream;
 
 from AuthorisationMetricsInputStream
 select UUID() as ID, CONSENT_ID, CONSENT_STATUS, AUTH_FLOW_TYPE, CUSTOMER_PROFILE, CONSENT_DURATION_TYPE, TIMESTAMP

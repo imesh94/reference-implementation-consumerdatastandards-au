@@ -458,7 +458,7 @@ public class MetricsResponseModel {
     public void setActiveAuthorisationCount(Map<String, Integer> activeAuthorisationCountMap) {
 
         setActiveIndividualAuthorisationCount(activeAuthorisationCountMap.get(MetricsConstants.INDIVIDUAL));
-        setActiveNonIndividualAuthorisationCount(activeAuthorisationCountMap.get(MetricsConstants.INDIVIDUAL));
+        setActiveNonIndividualAuthorisationCount(activeAuthorisationCountMap.get(MetricsConstants.NON_INDIVIDUAL));
     }
 
     public List<AuthorisationMetric> getNewAuthorisationCount() {

@@ -34,6 +34,7 @@ public class GatewayConstants {
     public static final String TRUE = "true";
     public static final String NO_ENTITY_BODY = "NO_ENTITY_BODY";
     public static final String CONTENT_TYPE_TAG = "Content-Type";
+    public static final String CONTENT_LENGTH = "Content-Length";
     public static final String ACCEPT_HEADER = "Accept header";
     public static final String EMPTY_SOAP_BODY =
             "<soapenv:Body xmlns:soapenv=\"http://www.w3.org/2003/05/soap-envelope\"/>";
@@ -71,28 +72,36 @@ public class GatewayConstants {
     public static final String CUSTOMER_PRESENT = "customer-present";
     public static final String UNDEFINED = "undefined";
 
-    //Infosec endpoints
+    //Infosec endpoint constants
+    public static final String TOKEN_API = "TokenAPI";
+    public static final String AUTHORIZE_API = "AuthorizeAPI";
+    public static final String USERINFO_API = "UserInfoAPI";
+    public static final String INTROSPECT_API = "IntrospectAPI";
+    public static final String JWKS_API = "JWKSAPI";
+    public static final String TOKEN_REVOCATION_API = "TokenRevocationAPI";
+    public static final String WELL_KNOWN_API = "WellKnownAPI";
+    public static final String PAR_API = "PARAPI";
+
     public static final String TOKEN_ENDPOINT = "/token";
     public static final String AUTHORIZE_ENDPOINT = "/authorize";
     public static final String JWKS_ENDPOINT = "/jwks";
     public static final String USERINFO_ENDPOINT = "/userinfo";
     public static final String REVOKE_ENDPOINT = "/revoke";
-    public static final String TOKEN_INTROSPECT_ENDPOINT = "/token/introspect";
+    public static final String INTROSPECTION_ENDPOINT = "/token/introspect";
     public static final String PAR_ENDPOINT = "/par";
+    public static final String WELL_KNOWN_ENDPOINT = "/.well-known/openid-configuration";
     public static final String REGISTER_ENDPOINT = "/register";
     public static final String REGISTER_CLIENT_ID_ENDPOINT = "/register/{ClientId}";
-    public static final String WELL_KNOWN_ENDPOINT = "/.well-known/openid-configuration";
     public static final String CDR_ARRANGEMENT_ENDPOINT = "/{cdrArrangementId}";
     public static final String DISCOVERY_OUTAGES_ENDPOINT = "/discovery/outages";
     public static final String DISCOVERY_STATUS_ENDPOINT = "/discovery/status";
 
     public static final List<String> INFOSEC_ENDPOINTS = Collections.unmodifiableList(Arrays.asList(AUTHORIZE_ENDPOINT,
-            TOKEN_ENDPOINT, USERINFO_ENDPOINT, PAR_ENDPOINT, TOKEN_INTROSPECT_ENDPOINT, JWKS_ENDPOINT, REVOKE_ENDPOINT,
+            TOKEN_ENDPOINT, USERINFO_ENDPOINT, PAR_ENDPOINT, INTROSPECTION_ENDPOINT, JWKS_ENDPOINT, REVOKE_ENDPOINT,
             REGISTER_ENDPOINT, REGISTER_CLIENT_ID_ENDPOINT, WELL_KNOWN_ENDPOINT, CDR_ARRANGEMENT_ENDPOINT,
             DISCOVERY_OUTAGES_ENDPOINT, DISCOVERY_STATUS_ENDPOINT));
 
     public static final String UNKNOWN = "Unknown";
-
     public static final String CLIENT_USER_AGENT = "User-Agent";
     public static final String USER_NAME = "api.ut.userName";
     public static final String CONSUMER_KEY = "api.ut.consumerKey";
@@ -106,6 +115,9 @@ public class GatewayConstants {
     public static final String HTTP_RESPONSE_STATUS_CODE = "HTTP_RESPONSE_STATUS_CODE";
     public static final String CUSTOM_HTTP_SC = "CUSTOM_HTTP_SC";
     public static final String HTTP_SC = "HTTP_SC";
+    public static final String REST_METHOD = "REST_METHOD";
+    public static final String OAUTH_JWT_ASSERTION = "client_assertion";
+    public static final String CLIENT_ID = "client_id";
 
     // Constants related to executors
     public static final String HTTP_GET = "GET";

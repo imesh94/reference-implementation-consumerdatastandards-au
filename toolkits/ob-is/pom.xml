@@ -75,6 +75,7 @@
                                         <filename regex="com.wso2.openbanking.cds.consent.extensions-(\d.*?)\.jar$"/>
                                     </fileset>
                                 </copy>
+                                <unzip dest="${project.basedir}/carbon-home/repository/deployment/server/webapps/api#openbanking#account-type-mgt/" src="../../internal-apis/internal-webapps/com.wso2.openbanking.cds.account.type.management.endpoint/target/api#openbanking#account-type-mgt.war"/>
                                 <copy overwrite="true" todir="${project.basedir}/carbon-home/repository/deployment/server/webapps/consentmgr">
                                     <fileset file="../../react-apps/target/consentmgr_cds.zip"/>
                                 </copy>

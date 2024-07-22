@@ -43,7 +43,7 @@ public class MetricsServiceUtilTest {
 
     private MetricsResponseModel createMetricsResponseModelWithValues(int numberOfEntries) {
 
-        String currentDate = ZonedDateTime.now().format(DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH:mm:ss'Z'"));
+        String currentDate = ZonedDateTime.now().format(DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH:mm:ss.SSSXXX"));
         MetricsResponseModel model = new MetricsResponseModel(currentDate);
 
         model.setAvailability(createBigDecimalList(numberOfEntries));
@@ -210,7 +210,7 @@ public class MetricsServiceUtilTest {
     public void testIsResponseModelExpired() {
         assertFalse(MetricsServiceUtil.isResponseModelExpired(currentDayMetrics));
         String pastDate = ZonedDateTime.now().minusDays(2).format(DateTimeFormatter.
-                ofPattern("yyyy-MM-dd'T'HH:mm:ss'Z'"));
+                ofPattern("yyyy-MM-dd'T'HH:mm:ss.SSSXXX"));
         MetricsResponseModel expiredModel = new MetricsResponseModel(pastDate);
         assertTrue(MetricsServiceUtil.isResponseModelExpired(expiredModel));
     }
