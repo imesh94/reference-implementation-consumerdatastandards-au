@@ -27,7 +27,7 @@ paths:
       parameters:
         - description: Used to filter results on the productCategory field applicable
             to accounts. Any one of the valid values for this field can be supplied.
-            If absent then all accounts returned.)
+            If absent then all accounts returned.
           explode: true
           in: query
           name: product-category
