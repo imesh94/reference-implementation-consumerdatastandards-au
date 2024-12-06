@@ -24,8 +24,9 @@ jobs:
       - name: Remove -SNAPSHOT for release
         run: |
           echo "Updating versions to release version..."
-          mvn versions:set -DnewVersion=${{ github.event.inputs.version }}
-          git commit -am "Release version ${{ github.event.inputs.version }}"
+          mvn versions:set -DnewVersion=${{ github.event.inputs.release-version }} -DprocessAllModules
+          mvn versions:commit
+          git commit -am "Release version ${{ github.event.inputs.release-version }}"
 
       - name: Create a Git tag for the release
         run: |
@@ -35,12 +36,11 @@ jobs:
       - name: Increment to next SNAPSHOT version
         run: |
           echo "Incrementing to the next development version..."
-          NEXT_VERSION=$(echo ${{ github.event.inputs.version }} | awk -F. '{printf "%d.%d.%d-SNAPSHOT", $1, $2, $3+1}')
-          mvn versions:set -DnewVersion=$NEXT_VERSION
-          git commit -am "Start development for $NEXT_VERSION"
+          mvn versions:set -DnewVersion=${{ github.event.inputs.snapshot-version }} -DprocessAllModules
+          git commit -am "Start development for ${{ github.event.inputs.snapshot-version }}"
 
       - name: Push changes and tags
         run: |
           echo "Pushing changes and tags to the repository..."
-          git push origin maintenance/release-workflow
+          git push origin main
           git push origin --tags
