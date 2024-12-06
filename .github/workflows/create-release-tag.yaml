@@ -3,8 +3,11 @@ name: Release
 on:
   workflow_dispatch:
     inputs:
-      version:
+      release-version:
         description: "Release version (e.g., 1.0.1)"
+        required: true
+      snapshot-version:
+        description: "Snapshot version (e.g., 1.0.2-SNAPSHOT)"
         required: true
 
 jobs:
