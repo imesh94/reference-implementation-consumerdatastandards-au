@@ -24,6 +24,11 @@ jobs:
           distribution: 'temurin'
           java-version: '11'
 
+      - name: Configure Git user as workflow triggerer
+        run: |
+          git config user.name "${{ github.actor }}"
+          git config user.email "${{ github.actor }}@users.noreply.github.com"
+
       - name: Remove -SNAPSHOT for release
         run: |
           echo "Updating versions to release version..."
